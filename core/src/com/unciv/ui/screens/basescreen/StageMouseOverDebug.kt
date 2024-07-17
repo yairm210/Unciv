@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 
@@ -66,11 +67,11 @@ internal class StageMouseOverDebug {
         stage.screenToStageCoordinates(mouseCoords)
 
         sb.clear()
-        sb.append(mouseCoords.x.toInt())
+        sb.append(mouseCoords.x.toInt().tr())
         sb.append(" / ")
-        sb.append(mouseCoords.y.toInt())
+        sb.append(mouseCoords.y.toInt().tr())
         sb.append(" (")
-        sb.append(Gdx.graphics.framesPerSecond)
+        sb.append(Gdx.graphics.framesPerSecond.tr())
         sb.append(")\n")
         addActorLabel(stage.hit(mouseCoords.x, mouseCoords.y, false))
 

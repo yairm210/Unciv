@@ -26,7 +26,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.utils.Log
 
@@ -312,7 +312,7 @@ class MapEditorEditTab(
 
         brushAction(tile)
         tile.setTerrainTransients()
-        TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
+        TileNormalizer.normalizeToRuleset(tile, ruleset)
         if (!paintedTile.isSimilarEnough(tile)) {
             // revert tile to original state
             tile.applyFrom(savedTile)
@@ -357,7 +357,7 @@ class MapEditorEditTab(
 
     companion object {
         private fun getBrushTip(value: Float, abbreviate: Boolean = false) = when {
-            value <= 5f -> value.toInt().toString()
+            value <= 5f -> value.toInt().tr()
             abbreviate -> "Floodfill_Abbreviation"
             else -> "Floodfill"
         }

@@ -17,6 +17,7 @@ import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.isUsersTurn
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LoadingImage
@@ -129,7 +130,7 @@ private class TurnIndicator : HorizontalGroup(), Disposable {
         if (gamesWithUpdates < 2) {
             gameAmount.remove()
         } else {
-            gameAmount.setText(gamesWithUpdates)
+            gameAmount.setText(gamesWithUpdates.tr())
             addActorAt(0, gameAmount)
         }
     }

@@ -25,7 +25,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
@@ -123,7 +123,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getIcon(combatant: ICombatant) =
-        if (combatant is MapUnitCombatant) UnitGroup(combatant.unit,25f)
+        if (combatant is MapUnitCombatant) UnitIconGroup(combatant.unit,25f)
         else ImageGetter.getNationPortrait(combatant.getCivInfo().nation, 25f)
 
     private val quarterScreen = worldScreen.stage.width / 4
@@ -164,8 +164,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !(defender is MapUnitCombatant && defender.unit.isEmbarked()))
                 Fonts.rangedStrength
             else Fonts.strength // use strength icon if attacker is melee, defender is melee, defender is a city, or defender is embarked
-        add(attacker.getAttackingStrength().toString() + attackIcon)
-        add(defender.getDefendingStrength(attacker.isRanged()).toString() + defenceIcon).row()
+        add(attacker.getAttackingStrength().tr() + attackIcon)
+        add(defender.getDefendingStrength(attacker.isRanged()).tr() + defenceIcon).row()
 
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender, tileToAttackFrom).map {
@@ -188,14 +188,15 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             addSeparator()
             val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender, tileToAttackFrom).roundToInt()
             val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender, tileToAttackFrom).roundToInt()
-            add(attackerStrength.toString() + attackIcon)
-            add(defenderStrength.toString() + attackIcon).row()
+            add(attackerStrength.tr() + attackIcon)
+            add(defenderStrength.tr() + attackIcon).row()
         }
 
         // from Battle.addXp(), check for can't gain more XP from Barbarians
         val maxXPFromBarbarians = attacker.getCivInfo().gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
         if (attacker is MapUnitCombatant && attacker.unit.promotions.totalXpProduced() >= maxXPFromBarbarians
-                && defender.getCivInfo().isBarbarian()) {
+                && defender.getCivInfo().isBarbarian
+        ) {
             add("Cannot gain more XP from Barbarians".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
             row()
         }
@@ -377,7 +378,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         addSeparator().pad(0f)
 
         val attackIcon = Fonts.rangedStrength
-        add(attacker.getAttackingStrength().toString() + attackIcon)
+        add(attacker.getAttackingStrength().tr() + attackIcon)
         add("???$attackIcon").row()
 
         val attackerModifiers =

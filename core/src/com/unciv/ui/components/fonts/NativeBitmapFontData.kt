@@ -81,7 +81,8 @@ class NativeBitmapFontData(
 
         // Check alpha to guess whether this is a round icon
         // Needs to be done before disposing charPixmap, and we want to do that soon
-        val assumeRoundIcon = charPixmap.guessIsRoundSurroundedByTransparency()
+        val isFontRulesetIcon = ch.code >= FontRulesetIcons.UNUSED_CHARACTER_CODES_START && ch <= DiacriticSupport.getCurrentFreeCode()
+        val assumeRoundIcon = isFontRulesetIcon && charPixmap.guessIsRoundSurroundedByTransparency()
 
         val rect = packer.pack(charPixmap)
         charPixmap.dispose()
@@ -89,7 +90,7 @@ class NativeBitmapFontData(
         glyph.srcX = rect.x.toInt()
         glyph.srcY = rect.y.toInt()
 
-        if (ch.code >= FontRulesetIcons.UNUSED_CHARACTER_CODES_START)
+        if (isFontRulesetIcon)
             glyph.setRulesetIconGeometry(assumeRoundIcon)
 
         // If a page was added, create a new texture region for the incrementally added glyph.
@@ -137,17 +138,20 @@ class NativeBitmapFontData(
         Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(regionName).region)
 
     private fun getPixmapFromChar(ch: Char): Pixmap {
-        return when (ch) {
-            in Fonts.allSymbols -> getPixmapForTextureName(Fonts.allSymbols[ch]!!)
-            in FontRulesetIcons.charToRulesetImageActor ->
-                try {
+        val textureName = Fonts.allSymbols[ch]
+        if (textureName != null && ImageGetter.imageExists(textureName))
+            return getPixmapForTextureName(textureName)
+        val actor = FontRulesetIcons.charToRulesetImageActor[ch]
+        if (actor != null)
+            return try {
                     // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
-                    FontRulesetIcons.getPixmapFromActor(FontRulesetIcons.charToRulesetImageActor[ch]!!)
+                    FontRulesetIcons.getPixmapFromActor(actor)
                 } catch (_: Exception) {
                     Pixmap(0, 0, Pixmap.Format.RGBA8888) // Empty space
                 }
-            else -> fontImplementation.getCharPixmap(ch)
-        }
+        if (DiacriticSupport.isEmpty())
+            return fontImplementation.getCharPixmap(ch)
+        return fontImplementation.getCharPixmap(DiacriticSupport.getStringFor(ch))
     }
 
     override fun getGlyphs(run: GlyphLayout.GlyphRun, str: CharSequence, start: Int, end: Int, lastGlyph: BitmapFont.Glyph?) {

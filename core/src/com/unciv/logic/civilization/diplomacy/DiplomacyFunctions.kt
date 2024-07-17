@@ -38,7 +38,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
 
 
-        if (civInfo.isCityState() && otherCiv.isMajorCiv()) {
+        if (civInfo.isCityState && otherCiv.isMajorCiv()) {
             if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 
             val cityStateLocation = if (civInfo.cities.isEmpty()) null else civInfo.getCapital()!!.location
@@ -58,7 +58,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             else
                 otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
 
-            if (otherCiv.isCityState() && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)) {
+            if (otherCiv.isCityState && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)) {
                 otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
 
                 for ((key, value) in faithAmount)
@@ -78,7 +78,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun isAtWarWith(otherCiv: Civilization): Boolean {
         return when {
             otherCiv == civInfo -> false
-            otherCiv.isBarbarian() || civInfo.isBarbarian() -> true
+            otherCiv.isBarbarian || civInfo.isBarbarian -> true
             else -> {
                 val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
                     ?: return false // not encountered yet
@@ -89,20 +89,19 @@ class DiplomacyFunctions(val civInfo: Civilization) {
 
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
         return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
-            && !civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.Denunciation)
-            && !civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation)
+            && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
     }
 
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
-        if (civInfo.gameInfo.ruleset.technologies.values
-                    .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
+        if (civInfo.tech.allTechsAreResearched()) return false
         return true
     }
 
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
             && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
@@ -129,7 +128,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
             && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
@@ -149,14 +148,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      */
     fun canPassThroughTiles(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true
-        if (otherCiv.isBarbarian()) return true
-        if (civInfo.isBarbarian() && civInfo.gameInfo.turns >= civInfo.gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
+        if (otherCiv.isBarbarian) return true
+        if (civInfo.isBarbarian && civInfo.gameInfo.turns >= civInfo.gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
             return true
         val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
             return true
         // Players can always pass through city-state tiles
-        if (!civInfo.isAIOrAutoPlaying() && otherCiv.isCityState()) return true
+        if (!civInfo.isAIOrAutoPlaying() && otherCiv.isCityState) return true
         return false
     }
 

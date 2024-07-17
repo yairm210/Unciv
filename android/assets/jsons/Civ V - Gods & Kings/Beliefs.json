@@ -209,7 +209,7 @@
     {
         "name": "Initiation Rites",
         "type": "Founder",
-        "uniques": ["[+100 Gold] when a city adopts this religion for the first time (modified by game speed)"]
+        "uniques": ["[+100 Gold] when a city adopts this religion for the first time <(modified by game speed)>"]
     },
     {
         "name": "Interfaith Dialogue",
@@ -289,6 +289,6 @@
     {
         "name": "Reliquary",
         "type": "Enhancer",
-        "uniques": ["[+50 Faith] whenever a Great Person is expended"]
+        "uniques": ["Gain [50] [Faith] <upon expending a [Great Person] unit> <(modified by game speed)>"]
     }
 ]

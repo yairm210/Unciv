@@ -313,6 +313,9 @@ class UncivFiles(
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false, Charsets.UTF_8.name())
     }
 
+    //endregion
+    //region Scenarios
+
     val scenarioFolder = "scenarios"
     fun getScenarioFiles() = sequence {
 
@@ -339,6 +342,8 @@ class UncivFiles(
 
         return game
     }
+
+    //endregion
 
     companion object {
 

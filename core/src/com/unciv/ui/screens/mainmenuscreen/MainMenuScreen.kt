@@ -16,7 +16,6 @@ import com.unciv.logic.github.GraphQLResult
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
@@ -211,7 +210,7 @@ class MainMenuScreen private constructor(
             val newMap = MapGenerator(backgroundMapRuleset, this)
                 .generateMap(MapParameters().apply {
                     shape = MapShape.rectangular
-                    mapSize = MapSizeNew(MapSize.Small)
+                    mapSize = MapSize.Small
                     type = MapType.pangaea
                     temperatureExtremeness = .7f
                     waterThreshold = -0.1f // mainly land, gets about 30% water

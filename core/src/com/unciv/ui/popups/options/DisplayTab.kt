@@ -196,7 +196,7 @@ private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectB
 private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
     table.add("Screen Size".toLabel()).left().fillX()
 
-    val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.values().map { it.name }, settings.screenSize.name, table.skin)
+    val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.entries.map { it.name }, settings.screenSize.name)
     table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 
     screenSizeSelectBox.onChange {
@@ -291,9 +291,8 @@ private fun addNotificationScrollSelect(table: Table, settings: GameSettings, se
     table.add("Notifications on world screen".toLabel()).left().fillX()
 
     val selectBox = TranslatedSelectBox(
-        NotificationsScroll.UserSetting.values().map { it.name },
-        settings.notificationScroll,
-        table.skin
+        NotificationsScroll.UserSetting.entries.map { it.name },
+        settings.notificationScroll
     )
     table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 

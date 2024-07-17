@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
@@ -72,9 +73,9 @@ class LineChart(
         yLabels = generateLabels(newData, true)
 
         xLabelsAsLabels =
-            xLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
+            xLabels.map { Label(it.tr(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
         yLabelsAsLabels =
-            yLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
+            yLabels.map { Label(it.tr(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
     }
 
     fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {

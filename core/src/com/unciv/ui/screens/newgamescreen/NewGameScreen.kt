@@ -48,8 +48,7 @@ import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
-    defaultGameSetupInfo: GameSetupInfo? = null,
-    isReset: Boolean = false
+    defaultGameSetupInfo: GameSetupInfo? = null
 ): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
     override val gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
@@ -79,7 +78,7 @@ class NewGameScreen(
             updatePlayerPickerTable = { desiredCiv -> playerPickerTable.update(desiredCiv) },
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
-        mapOptionsTable = MapOptionsTable(this, isReset)
+        mapOptionsTable = MapOptionsTable(this)
         closeButton.onActivation {
             mapOptionsTable.cancelBackgroundJobs()
             game.popScreen()
@@ -102,7 +101,7 @@ class NewGameScreen(
                     "Are you sure you want to reset all game options to defaults?",
                     "Reset to defaults",
                 ) {
-                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo(), isReset = true))
+                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
                 }.open(true)
             }
         }
@@ -210,9 +209,9 @@ class NewGameScreen(
             if (message != null) {
                 ToastPopup( message, UncivGame.Current.screen!!, 4000 )
                 with (mapOptionsTable.generatedMapOptionsTable) {
-                    customMapSizeRadius.text = mapSize.radius.toString()
-                    customMapWidth.text = mapSize.width.toString()
-                    customMapHeight.text = mapSize.height.toString()
+                    customMapSizeRadius.text = mapSize.radius.tr()
+                    customMapWidth.text = mapSize.width.tr()
+                    customMapHeight.text = mapSize.height.tr()
                 }
                 Gdx.input.inputProcessor = stage
                 return

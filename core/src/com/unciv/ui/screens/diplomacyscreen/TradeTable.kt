@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
@@ -58,18 +58,18 @@ class TradeTable(
             // There must be enough gold to add to the offer to satisfy this, otherwise the research agreement button would be disabled
             if (tradeLogic.currentTrade.ourOffers.any { it.name == Constants.researchAgreement}) {
                 val researchCost = civ.diplomacyFunctions.getResearchAgreementCost(otherCivilization)
-                val currentPlayerOfferedGold = tradeLogic.currentTrade.ourOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
-                val otherCivOfferedGold = tradeLogic.currentTrade.theirOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
+                val currentPlayerOfferedGold = tradeLogic.currentTrade.ourOffers.firstOrNull { it.type == TradeOfferType.Gold }?.amount ?: 0
+                val otherCivOfferedGold = tradeLogic.currentTrade.theirOffers.firstOrNull { it.type == TradeOfferType.Gold }?.amount ?: 0
                 val newCurrentPlayerGold = civ.gold + otherCivOfferedGold - researchCost
                 val newOtherCivGold = otherCivilization.gold + currentPlayerOfferedGold - researchCost
                 // Check if we require more gold from them
                 if (newCurrentPlayerGold < 0) {
-                    offerColumnsTable.addOffer( tradeLogic.theirAvailableOffers.first { it.type == TradeType.Gold }
+                    offerColumnsTable.addOffer( tradeLogic.theirAvailableOffers.first { it.type == TradeOfferType.Gold }
                             .copy(amount = -newCurrentPlayerGold), tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
                 }
                 // Check if they require more gold from us
                 if (newOtherCivGold < 0) {
-                    offerColumnsTable.addOffer( tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }
+                    offerColumnsTable.addOffer( tradeLogic.ourAvailableOffers.first { it.type == TradeOfferType.Gold }
                             .copy(amount = -newOtherCivGold), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
                 }
             }

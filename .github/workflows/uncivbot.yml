@@ -11,13 +11,12 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
           npm i @octokit/rest
-
-          node .github/workflows/incrementVersionAndChangelog.js
+          node .github/workflows/incrementVersionAndChangelog.mjs
 
           rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
           rm package-lock.json
@@ -32,7 +31,7 @@ jobs:
       - name: Add translation PRs to the new branch, and PR the new branch to master
         run: |
           npm i @octokit/rest
-          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
+          node .github/workflows/mergeTranslations.mjs ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
 
   release_patch_version:
     if: github.event_name == 'issue_comment' && (github.event.comment.body == 'release patch') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
@@ -53,7 +52,7 @@ jobs:
               repo: repository.repo,
             })
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with: # Required for triggering the deploy on tags added by this automation
           # See https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
           token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
@@ -63,7 +62,7 @@ jobs:
 
       - name: Increment version and release
         run: |
-          export version=$(node .github/workflows/releasePatch.js)
+          export version=$(node .github/workflows/releasePatch.mjs)
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - uses: stefanzweifel/git-auto-commit-action@v5
@@ -76,7 +75,7 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
       - name: Add translation PRs to the new branch, and PR the new branch to master
 

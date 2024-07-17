@@ -90,9 +90,9 @@ class AndroidFont : FontImplementation {
         return paint.textSize.toInt()
     }
 
-    override fun getCharPixmap(char: Char): Pixmap {
+    override fun getCharPixmap(symbolString: String): Pixmap {
         val metric = getMetrics()  // Use our interpretation instead of paint.fontMetrics because it fixes some bad metrics
-        var width = paint.measureText(char.toString()).toInt()
+        var width = paint.measureText(symbolString).toInt()
         var height = ceil(metric.height).toInt()
         if (width == 0) {
             height = getFontSize()
@@ -101,7 +101,7 @@ class AndroidFont : FontImplementation {
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawText(char.toString(), 0f, metric.leading + metric.ascent + 1f, paint)
+        canvas.drawText(symbolString, 0f, metric.leading + metric.ascent + 1f, paint)
 
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
         val data = IntArray(width * height)

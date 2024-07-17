@@ -22,7 +22,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.UnitMovementMemoryType
-import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import kotlin.math.max
@@ -126,11 +125,21 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
-            val withdrawUniques = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-            val combinedProbabilityToStayPut = withdrawUniques.fold(100) { probabilityToStayPut, unique -> probabilityToStayPut * (100-unique.params[0].toInt()) / 100 }
-            val baseWithdrawChance = 100 - combinedProbabilityToStayPut
-            // If a mod allows multiple withdraw properties, they stack multiplicatively
-            if (baseWithdrawChance != 0 && doWithdrawFromMeleeAbility(attacker, defender, baseWithdrawChance))
+            val withdrawChance =
+                if (defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, stateForConditionals = StateForConditionals(
+                        civInfo = defender.getCivInfo(),
+                        ourCombatant = defender,
+                        theirCombatant = attacker,
+                        tile = attackedTile
+                    ))
+                ) 100
+
+                else 100 - defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
+                    .fold(100) { probabilityToWithdraw, unique ->
+                        probabilityToWithdraw * (100 - unique.params[0].toInt()) / 100
+                    }
+
+            if (withdrawChance != 0 && doWithdrawFromMeleeAbility(attacker, defender, withdrawChance))
                 return DamageDealt.None
         }
 
@@ -145,14 +154,14 @@ object Battle {
         if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
-        if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment)
+        if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
                 && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
             // Barbarians can't capture cities
-            if (attacker.unit.civ.isBarbarian()) {
+            if (attacker.unit.civ.isBarbarian) {
                 defender.takeDamage(-1) // Back to 2 HP
                 val ransom = min(200, defender.city.civ.gold)
                 defender.city.civ.addGold(-ransom)
@@ -244,7 +253,7 @@ object Battle {
         }
 
         // CS friendship from killing barbarians
-        if (defeatedUnit.getCivInfo().isBarbarian() && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
+        if (defeatedUnit.getCivInfo().isBarbarian && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in defeatedUnit.getCivInfo().gameInfo.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
@@ -356,6 +365,7 @@ object Battle {
         val civ = plunderingUnit.getCivInfo()
         for ((key, value) in plunderedGoods) {
             val plunderedAmount = value.toInt()
+            if (plunderedAmount == 0) continue
             civ.addStat(key, plunderedAmount)
             civ.addNotification(
                 "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
@@ -381,7 +391,7 @@ object Battle {
                     NotificationIcon.War to " was destroyed while attacking"
                 !defender.isDefeated() ->
                     NotificationIcon.War to " has attacked"
-                defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian() ->
+                defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian ->
                     NotificationIcon.War to " has raided"
                 defender.isCity() && attacker.isMelee() ->
                     NotificationIcon.War to " has captured"
@@ -461,7 +471,7 @@ object Battle {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...
-                if (!attacker.unit.baseUnit.movesLikeAirUnits() && !(attacker.isMelee() && defender.isDefeated()))
+                if (!attacker.unit.baseUnit.movesLikeAirUnits && !(attacker.isMelee() && defender.isDefeated()))
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
             if (unit.isFortified() || unit.isSleeping())
@@ -475,7 +485,7 @@ object Battle {
     internal fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
         if (thisCombatant !is MapUnitCombatant) return
         val civ = thisCombatant.getCivInfo()
-        val otherIsBarbarian = otherCombatant.getCivInfo().isBarbarian()
+        val otherIsBarbarian = otherCombatant.getCivInfo().isBarbarian
         val promotions = thisCombatant.unit.promotions
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
 
@@ -551,7 +561,7 @@ object Battle {
             )
         }
 
-        if (attackerCiv.isBarbarian() || attackerCiv.isOneCityChallenger()) {
+        if (attackerCiv.isBarbarian || attackerCiv.isOneCityChallenger()) {
             city.destroyCity(true)
             return
         }
@@ -582,7 +592,7 @@ object Battle {
             var valueAlliance = NextTurnAutomation.valueCityStateAlliance(civInfo, foundingCiv)
             if (civInfo.getHappiness() < 0)
                 valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
-            if (foundingCiv.isCityState() && city.civ != civInfo && foundingCiv != civInfo
+            if (foundingCiv.isCityState && city.civ != civInfo && foundingCiv != civInfo
                 && !civInfo.isAtWarWith(foundingCiv)
                 && valueAlliance > 0) {
                 city.liberateCity(civInfo)
@@ -591,7 +601,7 @@ object Battle {
         }
 
         city.puppetCity(civInfo)
-        if ((city.population.population < 4 || civInfo.isCityState())
+        if ((city.population.population < 4 || civInfo.isCityState)
             && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
             // raze if attacker is a city state
             if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) city.annexCity()
@@ -608,51 +618,36 @@ object Battle {
 
     fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: Vector2? = null) {
         if (attackedCiv.isDefeated()) {
-            if (attackedCiv.isCityState())
+            if (attackedCiv.isCityState)
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
             attackedCiv.destroy(notificationLocation)
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
 
-    private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, baseWithdrawChance: Int): Boolean {
-        if (baseWithdrawChance == 0) return false
-        // Some notes...
-        // unit.getUniques() is a union of BaseUnit uniques and Promotion effects.
-        // according to some strategy guide the Slinger's withdraw ability is inherited on upgrade,
-        // according to the Ironclad entry of the wiki the Caravel's is lost on upgrade.
-        // therefore: Implement the flag as unique for the Caravel and Destroyer, as promotion for the Slinger.
-        if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
-        if (defender !is MapUnitCombatant) return false
+    private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant, withdrawChance: Int): Boolean {
+        if (withdrawChance == 0) return false
         if (defender.unit.isEmbarked()) return false
         if (defender.unit.cache.cannotMove) return false
+
+        // This is where the chance comes into play
+        if (Random( // 'randomness' is consistent for turn and tile, to avoid save-scumming
+                attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode().toLong()
+            ).nextInt(100) > withdrawChance) return false
+
         // Promotions have no effect as per what I could find in available documentation
-        val attackBaseUnit = attacker.unit.baseUnit
-        val defendBaseUnit = defender.unit.baseUnit
         val fromTile = defender.getTile()
-        val attTile = attacker.getTile()
+        val attackerTile = attacker.getTile()
+
         fun canNotWithdrawTo(tile: Tile): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
            return !defender.unit.movement.canMoveTo(tile)
-                   || defendBaseUnit.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
+                   || defender.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
                    || tile.isCityCenter() && tile.getOwner() != defender.getCivInfo() // forbid retreat into the city which doesn't belong to the defender
         }
-        /* Calculate success chance: Base chance from json, calculation method from https://www.bilibili.com/read/cv2216728
-        In general, except attacker's tile, 5 tiles neighbors the defender :
-        2 of which are also attacker's neighbors ( we call them 2-Tiles) and the other 3 aren't (we call them 3-Tiles).
-        Withdraw chance depends on 2 factors : attacker's movement and how many tiles in 3-Tiles the defender can't withdraw to.
-        If the defender can withdraw, at first we choose a tile as toTile from 3-Tiles the defender can withdraw to.
-        If 3-Tiles the defender can withdraw to is null, we choose this from 2-Tiles the defender can withdraw to.
-        If 2-Tiles the defender can withdraw to is also null, we return false.
-        */
-        val percentChance = baseWithdrawChance - max(0, (attackBaseUnit.movement-2)) * 20 -
-                fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
-        // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
-        if (Random( // 'randomness' is consistent for turn and tile, to avoid save-scumming
-                    (attacker.getCivInfo().gameInfo.turns * defender.getTile().hashCode()).toLong()
-        ).nextInt(100) > percentChance) return false
-        val firstCandidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
+
+        val firstCandidateTiles = fromTile.neighbors.filterNot { it == attackerTile || it in attackerTile.neighbors }
                 .filterNot { canNotWithdrawTo(it) }
-        val secondCandidateTiles = fromTile.neighbors.filter { it in attTile.neighbors }
+        val secondCandidateTiles = fromTile.neighbors.filter { it in attackerTile.neighbors }
                 .filterNot { canNotWithdrawTo(it) }
         val toTile: Tile = when {
             firstCandidateTiles.any() -> firstCandidateTiles.toList().random()
@@ -667,11 +662,12 @@ object Battle {
         // and count 1 attack for attacker but leave it in place
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
 
-        val attackingUnit = attackBaseUnit.name; val defendingUnit = defendBaseUnit.name
-        val notificationString = "[$defendingUnit] withdrew from a [$attackingUnit]"
+        val attackerName = attacker.getName()
+        val defenderName = defender.getName()
+        val notificationString = "[$defenderName] withdrew from a [$attackerName]"
         val locations = LocationAction(toTile.position, attacker.getTile().position)
-        defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, defendingUnit, NotificationIcon.War, attackingUnit)
-        attacker.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, defendingUnit, NotificationIcon.War, attackingUnit)
+        defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, defenderName, NotificationIcon.War, attackerName)
+        attacker.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, defenderName, NotificationIcon.War, attackerName)
         return true
     }
 

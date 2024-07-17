@@ -4,10 +4,12 @@
 
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
 
+-   [Bangladeshi flag] InkScaped by touhidurrr licensed under CC-BY-SA 4.0. Original SVG, [here.](https://github.com/touhidurrr/artworks/blob/4cd5db12ac1a042ed82a515fed35d1a4971b5e9b/Bangladeshi%20Flag%20Circular.svg)
 -   [Catalan flag] by J0anJosep licensed under Public Domain
 -   [Rusyn flag] gimped from the wikipedia flag [Flag of Pannonian Rusyns](https://en.wikipedia.org/wiki/File:Flag_of_Rusyns_in_Serbia.svg) (CC-BY-SA 4.0)
 -   [Latin flag] made from [wikipedia entry for SPQR](https://en.wikipedia.org/wiki/SPQR#/media/File:Roman_SPQR_banner.svg), Creative Commons Attribution 3.0 Unported
 -   [Zulu flag] made from [wikipedia entry for the Z flag](https://en.wikipedia.org/wiki/Z_flag#/media/File:ICS_Zulu.svg): public domain
+-   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): public domain
 
 New Unciv logo made by u-ndefined on Discord
 
@@ -745,6 +747,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
+- [Galileo Donatello](https://en.wikipedia.org/wiki/File:Galileo_Donato.jpg) for the "Meet another civilization" tutorial: Public domain
 
 ### Main menu
 
@@ -826,3 +829,22 @@ The following audio is from https://pixabay.com/ [Pixabay License](https://pixab
 -   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/) by Rizzard for final boom
 -   [Cymbal Swell 2](https://pixabay.com/sound-effects/cymbal-swell-2-74766/) by rubberduckie for cymbal swells
 -   [hit of orchestral cymbals and bass drum](https://pixabay.com/sound-effects/hit-of-orchestral-cymbals-and-bass-drum-14471/) by Selector for intro crash
+
+## Visual effects
+
+The fireworks on the City screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
+All differences and edits done by the Unciv team.
+License quoted:
+```
+Particle Park Fireworks License
+
+------------------------------------------------------------------------------------------
+
+Copyright © 2019 Raymond Buckley
+
+Particle Park Fireworks can be used under the Creative Commons Attribution 4.0 International license.
+
+See a human readable version here: https://creativecommons.org/licenses/by/4.0/
+
+------------------------------------------------------------------------------------------
+```

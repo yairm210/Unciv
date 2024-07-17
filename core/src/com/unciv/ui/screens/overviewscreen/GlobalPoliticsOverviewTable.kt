@@ -19,6 +19,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator
@@ -93,7 +94,7 @@ class GlobalPoliticsOverviewTable(
     /** Clears fixedContent and adds the header cells.
      *  Needs to stay matched to [createGlobalPoliticsTable].
      *
-     *  9 Columns: 5 info, 4 separators. First gets an empty header for contend below = civ image
+     *  9 Columns: 5 info, 4 separators. The first column gets an empty header, the content below is the civ image
      */
     private fun createGlobalPoliticsHeader() = fixedContent.run {
         val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
@@ -264,7 +265,10 @@ class GlobalPoliticsOverviewTable(
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
         persistableData.showDiagram = true
-        val politicsButton = "Show global politics".toTextButton().onClick(::updatePoliticsTable)
+        val politicsButton = "Show global politics".toTextButton().onClick {
+            updatePoliticsTable()
+            overviewScreen.resizePage(this)  // Or else the header stays curernt size, which with any non-empty diagram is most of the client area
+        }
 
         val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
             onClick {
@@ -286,8 +290,8 @@ class GlobalPoliticsOverviewTable(
             persistableData.includeCityStates && viewingPlayer.hideCityStateCount()
         relevantCivsCount = if (hideCivsCount) "?"
             else gameInfo.civilizations.count {
-                !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
-            }.toString()
+                !it.isSpectator() && !it.isBarbarian && (persistableData.includeCityStates || !it.isCityState)
+            }.tr()
         undefeatedCivs = sequenceOf(viewingPlayer) +
                 viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
         defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
@@ -332,7 +336,7 @@ class GlobalPoliticsOverviewTable(
     /** Same as [Civilization.hideCivCount] but for City-States instead of Major Civs */
     private fun Civilization.hideCityStateCount(): Boolean {
         if (!gameInfo.gameParameters.randomNumberOfCityStates) return false
-        val knownCivs = 1 + getKnownCivs().count { it.isCityState() }
+        val knownCivs = 1 + getKnownCivs().count { it.isCityState }
         if (knownCivs >= gameInfo.gameParameters.maxNumberOfCityStates) return false
         if (hasUnique(UniqueType.OneTimeRevealEntireMap)) return false
         return true
@@ -363,7 +367,7 @@ class GlobalPoliticsOverviewTable(
         add("Our Civilization:".toLabel()).colspan(columns).left().padLeft(10f).padTop(10f).row()
         add(getCivMiniTable(viewingPlayer)).left()
         val scoreText = if (viewingPlayer.isDefeated()) Fonts.death.toString()
-            else viewingPlayer.calculateTotalScore().toInt().toString()
+            else viewingPlayer.calculateTotalScore().toInt().tr()
         add(scoreText.toLabel()).left().row()
         val turnsTillNextDiplomaticVote = viewingPlayer.getTurnsTillNextDiplomaticVote() ?: return
         add("Turns until the next\ndiplomacy victory vote: [$turnsTillNextDiplomaticVote]".toLabel()).colspan(columns).row()
@@ -389,10 +393,10 @@ class GlobalPoliticsOverviewTable(
         }
 
         for (civ in civs) {
-            if (lastCivWasMajor && civ.isCityState())
+            if (lastCivWasMajor && civ.isCityState)
                 advanceCols(columns)
             add(getCivMiniTable(civ)).left()
-            if (civ.isCityState()) {
+            if (civ.isCityState) {
                 advanceCols(1)
             } else {
                 add(civ.calculateTotalScore().toInt().toLabel()).left()
@@ -493,8 +497,8 @@ class GlobalPoliticsOverviewTable(
 
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
-                        || (diplomacy.civInfo.isCityState() && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
-                        || (otherCiv.isCityState() && otherCiv.getAllyCiv() == diplomacy.civInfo.civName)
+                        || (diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
+                        || (otherCiv.isCityState && otherCiv.getAllyCiv() == diplomacy.civInfo.civName)
                     ) Color.CYAN
                     else diplomacy.relationshipLevel().color
 

@@ -13,6 +13,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaultPage
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
 
 /**
  *  Manages creation of [UnitAction] instances.
@@ -165,16 +169,16 @@ object UnitActions {
 
     private suspend fun SequenceScope<UnitAction>.addEscortAction(unit: MapUnit) {
         // Air units cannot escort
-        if (unit.baseUnit.movesLikeAirUnits()) return
+        if (unit.baseUnit.movesLikeAirUnits) return
 
         val worldScreen = GUI.getWorldScreen()
         val selectedUnits = worldScreen.bottomUnitTable.selectedUnits
         if (selectedUnits.size == 2) {
-            // We can still create a formation in the case that we have two units selected 
+            // We can still create a formation in the case that we have two units selected
             // and they are on the same tile. We still have to manualy confirm they are on the same tile here.
             val tile = selectedUnits.first().getTile()
             if (selectedUnits.last().getTile() != tile) return
-            if (selectedUnits.any { it.baseUnit.movesLikeAirUnits() }) return
+            if (selectedUnits.any { it.baseUnit.movesLikeAirUnits }) return
         } else if (selectedUnits.size != 1) {
             return
         }
@@ -195,10 +199,10 @@ object UnitActions {
                 }))
         }
     }
-    
+
     private suspend fun SequenceScope<UnitAction>.addSwapAction(unit: MapUnit) {
         // Air units cannot swap
-        if (unit.baseUnit.movesLikeAirUnits()) return
+        if (unit.baseUnit.movesLikeAirUnits) return
         // Disable unit swapping if multiple units are selected. It would make little sense.
         // In principle, the unit swapping mode /will/ function with multiselect: it will simply
         // only consider the first selected unit, and ignore the other selections. However, it does
@@ -254,7 +258,7 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addExplorationActions(unit: MapUnit) {
-        if (unit.baseUnit.movesLikeAirUnits()) return
+        if (unit.baseUnit.movesLikeAirUnits) return
         if (unit.isExploring()) return
         yield(UnitAction(UnitActionType.Explore, 5f) {
             unit.action = UnitActionType.Explore.value
@@ -312,7 +316,7 @@ object UnitActions {
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return@sequence
 
-        if (recipient.isCityState()) {
+        if (recipient.isCityState) {
             if (recipient.isAtWarWith(unit.civ)) return@sequence // No gifts to enemy CS
             // City States only take military units (and units specifically allowed by uniques)
             if (!unit.isMilitary()
@@ -335,23 +339,23 @@ object UnitActions {
         }
 
         val giftAction = {
-            if (recipient.isCityState()) {
+            if (recipient.isCityState) {
                 for (unique in unit.getMatchingUniques(
                     UniqueType.GainInfluenceWithUnitGiftToCityState,
                     checkCivInfoUniques = true
                 )) {
                     if (unit.matchesFilter(unique.params[1])) {
-                        recipient.getDiplomacyManager(unit.civ)
+                        recipient.getDiplomacyManager(unit.civ)!!
                             .addInfluence(unique.params[0].toFloat() - 5f)
                         break
                     }
                 }
 
-                recipient.getDiplomacyManager(unit.civ).addInfluence(5f)
-            } else recipient.getDiplomacyManager(unit.civ)
+                recipient.getDiplomacyManager(unit.civ)!!.addInfluence(5f)
+            } else recipient.getDiplomacyManager(unit.civ)!!
                 .addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
-            if (recipient.isCityState() && unit.isGreatPerson())
+            if (recipient.isCityState && unit.isGreatPerson())
                 unit.destroy()  // City states don't get GPs
             else
                 unit.gift(recipient)
@@ -366,8 +370,6 @@ object UnitActions {
             isCurrentAction = unit.isAutomated(),
             useFrequency = 25f,
             action = {
-                // Temporary, for compatibility - we want games serialized *moving through old versions* to come out the other end with units still automated
-                unit.action = UnitActionType.Automate.value
                 unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }

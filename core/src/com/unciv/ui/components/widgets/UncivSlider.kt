@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -68,7 +69,7 @@ class UncivSlider (
     companion object {
         /** Can be passed directly to the [getTipText] constructor parameter */
         fun formatPercent(value: Float): String {
-            return (value * 100f + 0.5f).toInt().toString() + "%"
+            return (value * 100f + 0.5f).toInt().tr() + "%"
         }
         // constants for geometry tuning
         const val plusMinusFontSize = Constants.defaultFontSize

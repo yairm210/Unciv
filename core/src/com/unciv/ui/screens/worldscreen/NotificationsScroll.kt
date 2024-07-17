@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -436,7 +437,7 @@ class NotificationsScroll(
         fun updateCount(count: Int) {
             if (count == shownCount) return
             shownCount = count
-            countLabel.setText(if (count > 9) "+" else count.toString()) // No tr() needed - or should we use Maya numerals for the Maya?
+            countLabel.setText(if (count > 9) "+" else count.tr()) // should we use Maya numerals for the Maya?
             countLabel.pack()
             countLabel.centerAtNumberPosition()
         }

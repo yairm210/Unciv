@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -13,6 +14,7 @@ object MapPathing {
      * to upgrade it to a railroad, we consider it to be a railroad for pathing since it will be upgraded.
      * Otherwise, we set every tile to have equal value since building a road on any of them makes the original movement cost irrelevant.
      */
+    @Suppress("UNUSED_PARAMETER") // While `from` is unused, this function should stay close to the signatures expected by the AStar and getPath `heuristic` parameter.
     private fun roadPreferredMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
         // hasRoadConnection accounts for civs that treat jungle/forest as roads
         // Ignore road over river penalties.
@@ -29,8 +31,8 @@ object MapPathing {
             && !tile.isImpassible()
             && unit.civ.hasExplored(tile)
             && tile.canCivPassThrough(unit.civ)
-            && (tile.hasRoadConnection(unit.civ, false) 
-                || tile.hasRailroadConnection(false) 
+            && (tile.hasRoadConnection(unit.civ, false)
+                || tile.hasRailroadConnection(false)
                 || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
                 || tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.civ)
     }
@@ -50,9 +52,8 @@ object MapPathing {
             startTile,
             endTile,
             ::isValidRoadPathTile,
-            ::roadPreferredMovementCost,
-            {_, _, _ -> 0f}
-            )
+            ::roadPreferredMovementCost
+        ) { _, _, _ -> 0f }
     }
 
     /**
@@ -83,7 +84,7 @@ object MapPathing {
         while (true) {
             if (astar.hasEnded()) {
                 // We failed to find a path
-                Log.debug("getRoadPath failed at AStar search size ${astar.size()}")
+                Log.debug("getPath failed at AStar search size ${astar.size()}")
                 return null
             }
             if (!astar.hasReachedTile(endTile)) {
@@ -97,4 +98,35 @@ object MapPathing {
         }
     }
 
+    /**
+     * Gets the connection to the end tile. This does not take into account tile movement costs.
+     * Takes in a civilization instead of a specific unit.
+     */
+    fun getConnection(civ: Civilization,
+        startTile: Tile,
+        endTile: Tile,
+        predicate: (Civilization, Tile) -> Boolean
+    ): List<Tile>? {
+        val astar = AStar(
+                startTile,
+                predicate = { tile -> predicate(civ, tile) },
+                cost = { _, _ -> 1f },
+                heuristic = { from, to -> from.aerialDistanceTo(to).toFloat() }
+        )
+        while (true) {
+            if (astar.hasEnded()) {
+                // We failed to find a path
+                Log.debug("getConnection failed at AStar search size ${astar.size()}")
+                return null
+            }
+            if (!astar.hasReachedTile(endTile)) {
+                astar.nextStep()
+                continue
+            }
+            // Found a path.
+            return astar.getPathTo(endTile)
+                    .toList()
+                    .reversed()
+        }
+    }
 }

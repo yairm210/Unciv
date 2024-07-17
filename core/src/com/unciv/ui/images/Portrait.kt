@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -16,6 +18,17 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
 
+/**
+ *  ### Manages "portraits" for a subset of RulesetObjects
+ *  - A Portrait will be a classic circular Icon in vanilla
+ *  - Mods can supply portraits in separate texture paths that can fill a square
+ *  - Instantiate through [ImageGetter]`.get<type>Portrait()` methods
+ *  - TODO - that's as far as I understand this - @SomeTroglodyte
+ *  ### Caveat
+ *  - This is a Group and does **not** support [Layout].
+ *  - It sets its own [size] but **paints outside these bounds** - by [borderSize].
+ *  - Typically, if you want one in a Table Cell, add an extra [borderSize] padding to avoid surprises.
+ */
 open class Portrait(val type: Type, val imageName: String, val size: Float, val borderSize: Float = 2f) : Group() {
 
     enum class Type(val directory: String) {
@@ -132,7 +145,7 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
 
     init {
         if (amount > 0) {
-            val label = amount.toString().toLabel(
+            val label = amount.tr().toLabel(
                 fontSize = 8,
                 fontColor = Color.WHITE,
                 alignment = Align.center)

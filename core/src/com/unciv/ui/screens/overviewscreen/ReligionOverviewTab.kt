@@ -29,9 +29,7 @@ class ReligionOverviewTab(
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     class ReligionTabPersistableData(
         var selectedReligion: String? = null
-    ) : EmpireOverviewTabPersistableData() {
-        override fun isEmpty() = selectedReligion == null
-    }
+    ) : EmpireOverviewTabPersistableData()
     override val persistableData = (persistedData as? ReligionTabPersistableData) ?: ReligionTabPersistableData()
 
     private val civStatsTable = Table()
@@ -82,7 +80,7 @@ class ReligionOverviewTab(
             it.defaults().padTop(10f)
             for ((text, num) in manager.remainingFoundableReligionsBreakdown()) {
                 it.add(text.toLabel())
-                it.add(num.toString().toLabel(alignment = Align.right)).right().row()
+                it.add(num.tr().toLabel(alignment = Align.right)).right().row()
             }
         }
         add(religionCountExpander).colspan(2).growX().row()

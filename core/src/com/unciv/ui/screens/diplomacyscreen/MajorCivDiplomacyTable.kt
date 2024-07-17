@@ -13,7 +13,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
@@ -29,7 +29,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
     fun getMajorCivDiplomacyTable(otherCiv: Civilization): Table {
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
@@ -50,7 +50,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val diplomaticRelationshipsCanChange =
             !viewingCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)
 
-        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
 
         if (!viewingCiv.isAtWarWith(otherCiv)) {
             diplomacyTable.add(getTradeButton(otherCiv)).row()
@@ -106,7 +106,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val negotiatePeaceButton = "Negotiate Peace".toTextButton()
         negotiatePeaceButton.onClick {
             val tradeTable = diplomacyScreen.setTrade(otherCiv)
-            val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeType.Treaty)
+            val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty)
             tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
             tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
             tradeTable.offerColumnsTable.update()
@@ -118,7 +118,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
             negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
             val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
-            negotiatePeaceButton.setText(negotiatePeaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
+            negotiatePeaceButton.setText(negotiatePeaceButton.text.toString() + "\n${turnsLeft.tr()}" + Fonts.turn)
         }
         return negotiatePeaceButton
     }

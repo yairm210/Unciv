@@ -1,6 +1,5 @@
 package com.unciv.logic.map.mapunit
 
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -19,7 +18,12 @@ class UnitTurnManager(val unit: MapUnit) {
         if (unit.currentMovement > 0
                 && unit.getTile().improvementInProgress != null
                 && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!)
-        ) workOnImprovement()
+        ) {
+            val tile = unit.getTile()
+            if (tile.doWorkerTurn(unit))
+                tile.getCity()?.updateCitizens = true
+        }
+
         if (!unit.hasUnitMovedThisTurn() && unit.isFortified() && unit.turnsFortified < 2) {
             unit.turnsFortified++
         }
@@ -39,7 +43,7 @@ class UnitTurnManager(val unit: MapUnit) {
 
         if (unit.hasUnique(UniqueType.ReligiousUnit)
                 && unit.getTile().getOwner() != null
-                && !unit.getTile().getOwner()!!.isCityState()
+                && !unit.getTile().getOwner()!!.isCityState
                 && !unit.civ.diplomacyFunctions.canPassThroughTiles(unit.getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
@@ -156,29 +160,11 @@ class UnitTurnManager(val unit: MapUnit) {
         if (tileOwner != null
                 && !unit.cache.canEnterForeignTerrain
                 && !unit.civ.diplomacyFunctions.canPassThroughTiles(tileOwner)
-                && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
+                && !tileOwner.isCityState
+        ) // if an enemy city expanded onto this tile while I was in it
             unit.movement.teleportToClosestMoveableTile()
 
         unit.addMovementMemory()
         unit.attacksSinceTurnStart.clear()
     }
-
-    private fun workOnImprovement() {
-        val tile = unit.getTile()
-        if (tile.isMarkedForCreatesOneImprovement()) return
-        tile.turnsToImprovement -= 1
-        if (tile.turnsToImprovement != 0) return
-
-        if (unit.civ.isCurrentPlayer())
-            UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
-
-        val improvementInProgress = tile.improvementInProgress ?: return
-        tile.changeImprovement(improvementInProgress, unit.civ, unit)
-
-        tile.improvementInProgress = null
-        tile.getCity()?.updateCitizens = true
-    }
-
-
-
 }

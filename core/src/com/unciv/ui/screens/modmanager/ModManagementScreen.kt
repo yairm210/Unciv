@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -118,7 +118,7 @@ class ModManagementScreen private constructor(
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     override fun dispose() {
-        queryAPI.dispose()
+        queryAPI.dispose() // This stops background tasks
         super.dispose()
     }
 
@@ -151,11 +151,10 @@ class ModManagementScreen private constructor(
         // Replace the PickerScreen's descriptionLabel
         val labelWrapper = Table()
         labelWrapper.defaults().top().left().growX()
-        val labelScroll = descriptionLabel.parent as ScrollPane
         descriptionLabel.remove()
         labelWrapper.row()
         labelWrapper.add(modDescriptionLabel).row()
-        labelScroll.actor = labelWrapper
+        descriptionScroll.actor = labelWrapper
 
         isPortrait = isNarrowerThan4to3()
         if (isPortrait) initPortrait()
@@ -358,7 +357,7 @@ class ModManagementScreen private constructor(
         downloadButton.onClick {
             val popup = Popup(this)
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
-            val textField = UncivTextField.create("").apply { maxLength = 666 }
+            val textField = UncivTextField("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
             pasteLinkButton.onClick {
@@ -441,7 +440,7 @@ class ModManagementScreen private constructor(
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     reloadCachesAfterModChange()
-                    UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
+
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
@@ -609,15 +608,16 @@ class ModManagementScreen private constructor(
 
     private fun reloadCachesAfterModChange() {
         RulesetCache.loadRulesets()
-        ImageGetter.reloadImages()
         TileSetCache.loadTileSetConfigs()
+        ImageGetter.reloadImages()
+        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
     }
 
     internal fun refreshOnlineModTable() {
-        if (queryAPI.isRunning()) {
-            ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
-            return  // cowardice: prevent concurrent modification, avoid a manager layer
-        }
+//         if (queryAPI.isRunning()) {
+//             ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
+//             return  // cowardice: prevent concurrent modification, avoid a manager layer
+//         }
 
         val newHeaderText = optionsManager.getOnlineHeader()
         onlineHeaderLabel?.setText(newHeaderText)

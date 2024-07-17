@@ -26,7 +26,7 @@ class ThreatManangerTests {
         testGame.makeHexagonalMap(10)
         civ.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
         civ.diplomacyFunctions.makeCivilizationsMeet(neutralCiv)
-        civ.getDiplomacyManager(enemyCiv).declareWar()
+        civ.getDiplomacyManager(enemyCiv)!!.declareWar()
     }
     
     @After

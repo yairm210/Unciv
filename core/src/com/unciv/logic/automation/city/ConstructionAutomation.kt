@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -68,11 +69,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
 
     private val civUnits = civInfo.units.getCivUnits()
-    private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
+    private val militaryUnits = civUnits.count { it.baseUnit.isMilitary }
     private val workers = civUnits.count { it.cache.hasUniqueToBuildImprovements}.toFloat()
     private val cities = civInfo.cities.size
-    private val allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values
-        .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
+    private val allTechsAreResearched = civInfo.tech.allTechsAreResearched()
 
     private val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
@@ -98,7 +98,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             cityConstructions.getRemainingWork(choice), cityConstructions.productionForConstruction(choice)))
     }
 
-    private fun Sequence<INonPerpetualConstruction>.filterBuildable(): Sequence<INonPerpetualConstruction> {
+
+    private fun <T:INonPerpetualConstruction> Sequence<T>.filterBuildable(): Sequence<T> {
         return this.filter {
             val cache = if (it is Building) buildableBuildings else buildableUnits
             if (cache[it.name] == null) {
@@ -164,13 +165,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(5, cities * 2))) return
+        if (civInfo.stats.getUnitSupplyDeficit() > 0) return // we don't want more units if it's already hurting our empire
+        // todo: add worker disbandment and consumption of great persons if under attack & short on unit supply
+        if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(7, cities * 5))) return
         if (civInfo.gold < -50) return
 
         val militaryUnit = Automation.chooseMilitaryUnit(city, units) ?: return
         val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
         // most buildings and civ units contribute the the civ's growth, military units are anti-growth
-        var modifier = sqrt(unitsToCitiesRatio) / 2
+        var modifier = 1 + sqrt(unitsToCitiesRatio) / 2
         if (civInfo.wantsToFocusOn(Victory.Focus.Military) || isAtWar) modifier *= 2
 
         if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
@@ -178,11 +181,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         val civilianUnit = city.getCenterTile().civilianUnit
         if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
-                && city.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civ == civInfo })
+                && city.getCenterTile().getTilesInDistance(city.getExpandRange()).none { it.militaryUnit?.civ == civInfo })
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
         if (!civInfo.isAIOrAutoPlaying()) modifier /= 2 // Players prefer to make their own unit choices usually
-        modifier *= personality.scaledFocus(PersonalityValue.Aggressive)
+        modifier *= personality.modifierFocus(PersonalityValue.Military, .3f)
         addChoice(relativeCostEffectiveness, militaryUnit, modifier)
     }
 
@@ -198,9 +201,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         // Is there already a Workboat nearby?
         // todo Still ignores whether that boat can reach the not-yet-found tile to improve
-        val twoTurnsMovement = buildableWorkboatUnits.maxOf { (it as BaseUnit).movement } * 2
+        val twoTurnsMovement = buildableWorkboatUnits.maxOf { it.movement } * 2
         fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements && this.civ == this@ConstructionAutomation.civInfo
-        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistanceRange(1..twoTurnsMovement)
+        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistance(twoTurnsMovement)
             .any { it.civilianUnit?.isOurWorkBoat() == true }
         if (alreadyHasWorkBoat) return
 
@@ -255,20 +258,23 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
             ?: return
-        val modifier = 2f
+        val modifier = 3f * personality.modifierFocus(PersonalityValue.Science, .4f)
         addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
     }
 
     private fun addBuildingChoices() {
-        for (building in buildings.filterBuildable() as Sequence<Building>) {
+        val localUniqueCache = LocalUniqueCache()
+        for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
-            addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building))
+            // We shouldn't try to build wonders in undeveloped empires
+            if (building.isWonder && civInfo.cities.size < 3) continue
+            addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building, localUniqueCache))
         }
     }
 
-    private fun getValueOfBuilding(building: Building): Float {
+    private fun getValueOfBuilding(building: Building, localUniqueCache: LocalUniqueCache): Float {
         var value = 0f
-        value += applyBuildingStats(building)
+        value += applyBuildingStats(building, localUniqueCache)
         value += applyMilitaryBuildingValue(building)
         value += applyVictoryBuildingValue(building)
         value += applyOnetimeUniqueBonuses(building)
@@ -276,6 +282,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
 
+    @Suppress("UNUSED_PARAMETER") // stub for future use
     private fun applyOnetimeUniqueBonuses(building: Building): Float {
         var value = 0f
         // TODO: Add specific Uniques here
@@ -286,8 +293,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var value = 0f
         if (!cityIsOverAverageProduction) return value
         if (building.isWonder) value += 2f
-        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f
-        if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f
+        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f * personality.modifierFocus(PersonalityValue.Culture, .3f)
+        if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f * personality.modifierFocus(PersonalityValue.Science, .3f)
         return value
     }
 
@@ -299,8 +306,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                     .mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
                     .any { it.city1 == city })
             warModifier *= 2f
-        value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth()
-        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) // The + 3 here is to reduce the priority of building walls immedietly
+        value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
+        value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
         for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
             var modifier = experienceUnique.params[1].toFloat() / 5
@@ -314,8 +321,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-    private fun applyBuildingStats(building: Building): Float {
-        val buildingStats = city.cityStats.getStatDifferenceFromBuilding(building.name)
+    private fun applyBuildingStats(building: Building, localUniqueCache: LocalUniqueCache): Float {
+        val buildingStats = getStatDifferenceFromBuilding(building.name, localUniqueCache)
         getBuildingStatsFromUniques(building, buildingStats)
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
@@ -341,14 +348,24 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.culture *= 2
         }
 
-        for (stat in Stat.values()) {
+        for (stat in Stat.entries) {
             if (civInfo.wantsToFocusOn(stat))
                 buildingStats[stat] *= 2f
 
-            buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
+            buildingStats[stat] *= personality.modifierFocus(PersonalityValue[stat], .5f)
         }
 
         return Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)
+    }
+
+    private fun getStatDifferenceFromBuilding(building: String, localUniqueCache: LocalUniqueCache): Stats {
+        val newCity = city.clone()
+        newCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
+        newCity.cityConstructions.builtBuildings.add(building)
+        newCity.cityConstructions.setTransients()
+        newCity.cityStats.update(updateCivStats = false, localUniqueCache = localUniqueCache)
+        city.expansion.setTransients() // Revert owned tiles to original city
+        return newCity.cityStats.currentCityStats - city.cityStats.currentCityStats
     }
 
     private fun getBuildingStatsFromUniques(building: Building, buildingStats: Stats) {

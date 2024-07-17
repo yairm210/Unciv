@@ -4,27 +4,38 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.stats.INamed
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
 
-class Event : INamed, ICivilopediaText {
-
-    override var name = ""
+class Event : RulesetObject() {
+    enum class Presentation { None, Alert, Floating }
+    val presentation = Presentation.Alert
     var text = ""
-    override var civilopediaText = listOf<FormattedLine>()
+
+    override fun getUniqueTarget() = UniqueTarget.Event
     override fun makeLink() = "Event/$name"
 
     // todo: add unrepeatable events
 
     var choices = ArrayList<EventChoice>()
 
-    /** @return `null` when no choice passes the condition tests, so client code can easily bail using Elvis `?:`. */
-    fun getMatchingChoices(stateForConditionals: StateForConditionals) =
-        choices.filter { it.matchesConditions(stateForConditionals) }.ifEmpty { null }
+    /** @return `null` when no choice passes the condition tests, so client code can easily bail using Elvis `?:`.
+     *          An empty list is possible when the Event definition contains no choices and the event's conditions are fulfilled.
+     */
+    fun getMatchingChoices(stateForConditionals: StateForConditionals): Collection<EventChoice>? {
+        if (!isAvailable(stateForConditionals)) return null
+        if (choices.isEmpty()) return emptyList()
+        return choices.filter { it.matchesConditions(stateForConditionals) }.ifEmpty { null }
+    }
+
+    fun isAvailable(stateForConditionals: StateForConditionals) =
+        getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).none { !it.conditionalsApply(stateForConditionals) } &&
+        getMatchingUniques(UniqueType.Unavailable, stateForConditionals).none()
 }
 
 class EventChoice : ICivilopediaText {
@@ -44,8 +55,11 @@ class EventChoice : ICivilopediaText {
     fun matchesConditions(stateForConditionals: StateForConditionals) =
         conditionObjects.all { Conditionals.conditionalApplies(null, it, stateForConditionals) }
 
-    fun triggerChoice(civ: Civilization) {
-        for (unique in triggeredUniqueObjects)
-            UniqueTriggerActivation.triggerUnique(unique, civ)
+    fun triggerChoice(civ: Civilization): Boolean {
+        var success = false
+        val stateForConditionals = StateForConditionals(civ)
+        for (unique in triggeredUniqueObjects.flatMap { it.getMultiplied(stateForConditionals) })
+            if (UniqueTriggerActivation.triggerUnique(unique, civ)) success = true
+        return success
     }
 }

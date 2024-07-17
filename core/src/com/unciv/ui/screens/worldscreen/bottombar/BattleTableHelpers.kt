@@ -18,6 +18,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
@@ -208,7 +209,7 @@ object BattleTableHelpers {
     private fun createDamageLabel(damage: Int, target: Actor) {
         if (damage == 0) return
 
-        val container = ShadowedLabel((-damage).toString(), damageLabelFontSize, Color.RED)
+        val container = ShadowedLabel((-damage).tr(), damageLabelFontSize, Color.RED)
         val targetRight = target.run { localToStageCoordinates(Vector2(width, height * 0.5f)) }
         container.setPosition(targetRight.x, targetRight.y, Align.center)
         target.stage.addActor(container)

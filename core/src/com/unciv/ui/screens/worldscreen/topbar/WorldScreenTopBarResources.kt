@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.toLabel
@@ -84,7 +85,7 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
         val yearText = YearTextUtil.toYearText(
             civInfo.gameInfo.getYear(), civInfo.isLongCountDisplay()
         )
-        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText)
+        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns.tr() + " | " + yearText)
 
         resourcesWrapper.clearChildren()
         val civResources = civInfo.getCivResourcesByName()
@@ -103,11 +104,11 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
             resourcesWrapper.add(icon).padLeft(if (index == 0) 0f else extraPadBetweenResources)
 
             if (!resource.isStockpiled())
-                label.setText(amount)
+                label.setText(amount.tr())
             else {
                 val perTurn = civResourceSupply.firstOrNull { it.resource == resource }?.amount ?: 0
-                if (perTurn == 0) label.setText(amount)
-                else label.setText("$amount (${perTurn.toStringSigned()})")
+                if (perTurn == 0) label.setText(amount.tr())
+                else label.setText("${amount.tr()} (${perTurn.toStringSigned()})")
             }
             resourcesWrapper.add(label).padTop(resourceAmountDescentTweak)  // digits don't have descenders, so push them down a little
         }

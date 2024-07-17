@@ -1,0 +1,12 @@
+Fixed spy automation crash
+
+By tuvus:
+- Personality implementation
+- AI is more likely to sign Defensive pacts
+- Giving the AI good trades is stored as credit
+- Fix election crash
+
+By SomeTroglodyte:
+- Map editor can place improvements again
+- Reduce size of the save game json
+- Improvement queue

@@ -7,10 +7,11 @@ import com.unciv.Constants
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -51,19 +52,19 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         val symbols: String,
         val comparator: Comparator<in ModUIData>
     ) {
-        Name("Name ￪", "￪", sortByName),
-        NameDesc("Name ￬", "￬", sortByNameDesc),
-        Date("Date ￪", "⌚￪", sortByDate),
-        DateDesc("Date ￬", "⌚￬", sortByDateDesc),
-        Stars("Stars ￬", "✯￬", sortByStars),
-        Status("Status ￬", "◉￬", sortByStatus);
-
-        fun next() = values()[(ordinal + 1) % values().size]
+        Name("Name ${Fonts.sortUpArrow}", Fonts.sortUpArrow.toString(), sortByName),
+        NameDesc("Name ${Fonts.sortDownArrow}", Fonts.sortDownArrow.toString(), sortByNameDesc),
+        Date("Date ${Fonts.sortUpArrow}", "${Fonts.clock}${Fonts.sortUpArrow}", sortByDate),
+        DateDesc("Date ${Fonts.sortDownArrow}", "${Fonts.clock}${Fonts.sortDownArrow}", sortByDateDesc),
+        Stars("Stars ${Fonts.sortDownArrow}", "${Fonts.star}${Fonts.sortDownArrow}", sortByStars),
+        Status("Status ${Fonts.sortDownArrow}", "${Fonts.status}${Fonts.sortDownArrow}", sortByStatus)
+        ;
+        fun next() = entries[(ordinal + 1) % entries.size]
 
         companion object {
             fun fromSelectBox(selectBox: TranslatedSelectBox): SortType {
                 val selected = selectBox.selected.value
-                return values().firstOrNull { it.label == selected } ?: Name
+                return entries.firstOrNull { it.label == selected } ?: Name
             }
         }
     }
@@ -77,7 +78,7 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         return Filter(textField.text, category.topic)
     }
 
-    private val textField = UncivTextField.create("Enter search text")
+    private val textField = UncivTextField("Enter search text")
 
     var category = ModCategories.default()
 
@@ -96,9 +97,8 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
             .surroundWithCircle(50f, color = Color.CLEAR)
 
         sortInstalledSelect = TranslatedSelectBox(
-            SortType.values().filter { sort -> sort != SortType.Stars }.map { sort -> sort.label },
-            sortInstalled.label,
-            BaseScreen.skin
+            SortType.entries.filter { sort -> sort != SortType.Stars }.map { sort -> sort.label },
+            sortInstalled.label
         )
         sortInstalledSelect.onChange {
             sortInstalled = SortType.fromSelectBox(sortInstalledSelect)
@@ -106,9 +106,8 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
         }
 
         sortOnlineSelect = TranslatedSelectBox(
-            SortType.values().map { sort -> sort.label },
-            sortOnline.label,
-            BaseScreen.skin
+            SortType.entries.map { sort -> sort.label },
+            sortOnline.label
         )
         sortOnlineSelect.onChange {
             sortOnline = SortType.fromSelectBox(sortOnlineSelect)
@@ -117,8 +116,7 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
 
         categorySelect = TranslatedSelectBox(
             ModCategories.asSequence().map { it.label }.toList(),
-            category.label,
-            BaseScreen.skin
+            category.label
         )
         categorySelect.onChange {
             category = ModCategories.fromSelectBox(categorySelect)

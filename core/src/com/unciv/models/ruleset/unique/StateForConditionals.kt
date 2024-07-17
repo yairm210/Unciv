@@ -54,8 +54,16 @@ data class StateForConditionals(
     }
 
     val relevantCity by lazy {
-        city
-            ?: relevantTile?.getCity()
+        if (city != null) return@lazy city
+        // Edge case: If we attack a city, the "relevant tile" becomes the attacked tile -
+        //  but we DO NOT want that city to become the relevant city because then *our* conditionals get checked against
+        //  the *other civ's* cities, leading to e.g. resource amounts being defined as the *other civ's* resource amounts
+        val relevantTileForCity = tile ?: relevantUnit?.run { if (hasTile()) getTile() else null }
+        val cityForRelevantTile = relevantTileForCity?.getCity()
+        if (cityForRelevantTile != null &&
+            // ...and we can't use the relevantCiv here either, because that'll cause a loop
+            (cityForRelevantTile.civ == civInfo || cityForRelevantTile.civ == relevantUnit?.civ)) return@lazy cityForRelevantTile
+        else return@lazy null
     }
 
     val relevantCiv by lazy {

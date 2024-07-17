@@ -75,7 +75,7 @@ class ResourceTests {
         val tile = game.tileMap[1,1]
         tile.resource = "Coal"
         tile.resourceAmount = 1
-        tile.changeImprovement("Mine")
+        tile.setImprovement("Mine")
 
         civInfo.tech.addTechnology(game.ruleset.tileImprovements["Mine"]!!.techRequired!!)
         assertEquals(civInfo.getCivResourcesByName()["Coal"], 0)
@@ -91,7 +91,7 @@ class ResourceTests {
         val tile = game.tileMap[1,1]
         tile.resource = "Coal"
         tile.resourceAmount = 1
-        tile.changeImprovement("Mine")
+        tile.setImprovement("Mine")
 
         civInfo.tech.addTechnology(game.ruleset.tileImprovements["Mine"]!!.techRequired!!)
         civInfo.tech.addTechnology(game.ruleset.tileResources["Coal"]!!.revealedBy!!)
@@ -106,7 +106,7 @@ class ResourceTests {
     fun testImprovementProvidesResourceEvenWithoutTech() {
         val tile = game.tileMap[1,1]
         val improvement = game.createTileImprovement("Provides [1] [Coal]", "Consumes [1] [Silver]")
-        tile.changeImprovement(improvement.name, civInfo)
+        tile.setImprovement(improvement.name, civInfo)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Silver"] == -1)
     }
@@ -116,7 +116,7 @@ class ResourceTests {
     fun testImprovementProvidesResourceWithUniqueBonuses() {
         val tile = game.tileMap[1,1]
         val improvement = game.createTileImprovement("Provides [1] [Coal]")
-        tile.changeImprovement(improvement.name, civInfo)
+        tile.setImprovement(improvement.name, civInfo)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
 
         val doubleCoal = game.createBuilding("Double quantity of [Coal] produced")
@@ -154,7 +154,7 @@ class ResourceTests {
         tile.improvement = "Mine"
 
         // when
-        val cityResources = city.getResourcesGeneratedByCity()
+        val cityResources = city.getResourcesGeneratedByCity(civInfo.getResourceModifiers())
 
         // then
         assertEquals(1, cityResources.size)
@@ -240,7 +240,7 @@ class ResourceTests {
         // given
         val religion = game.addReligion(civInfo)
         val belief = game.createBelief(BeliefType.Follower, "Provides [1] [Iron]")
-        religion.followerBeliefs.add(belief.name)
+        religion.addBeliefs(listOf(belief))
         city.population.setPopulation(1)
         city.religion.addPressure(religion.name, 1000)
         val otherCity = civInfo.addCity(Vector2(2f,2f)) // NOT religionized
@@ -253,7 +253,6 @@ class ResourceTests {
         assertEquals(1, resourceAmountInCapital)
         assertEquals(1, resourceAmountInOtherCity)
     }
-
 
 
     @Test
@@ -269,5 +268,20 @@ class ResourceTests {
 
         // then
         assertEquals(1f, faith)
+    }
+
+    @Test
+    fun CityResourcesFromImprovementWithConditional() {
+        // given
+        val resource = game.createResource(UniqueType.CityResource.text)
+        val resourceImprovement = game.createTileImprovement("Provides [2] [${resource.name}] <in [non-[Fresh water]] tiles>")
+        game.getTile(1,1).addTerrainFeature("Oasis")
+
+        // when
+        game.getTile(1,1).setImprovement(resourceImprovement.name)
+
+        // then
+        val resourceAmountInCapital = city.getAvailableResourceAmount(resource.name)
+        assert(resourceAmountInCapital == 0)
     }
 }

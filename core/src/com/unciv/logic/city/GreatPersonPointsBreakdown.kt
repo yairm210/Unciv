@@ -61,7 +61,7 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
             // Now add boni for GreatPersonBoostWithFriendship (Sweden UP)
             val civ = city.civ
             for (otherCiv in civ.getKnownCivs()) {
-                if (!civ.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+                if (!civ.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
                     continue
                 val boostUniques = civ.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship) +
                     otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship)

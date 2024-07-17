@@ -87,7 +87,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
         unit.destroy(destroyTransportedUnit = false)
         val civ = unit.civ
         val position = unit.currentTile.position
-        val newUnit = civ.units.placeUnitNearTile(position, upgradedUnit)
+        val newUnit = civ.units.placeUnitNearTile(position, upgradedUnit, unit.id)
 
         /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
          * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.

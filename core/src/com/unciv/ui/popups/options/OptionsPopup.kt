@@ -86,8 +86,8 @@ class OptionsPopup(
             ImageGetter.getImage("OtherIcons/Options"), 24f
         )
         tabs.addPage(
-            "AutoPlay",
-            autoPlayTab(this),
+            "Automation",
+            automationTab(this),
             ImageGetter.getImage("OtherIcons/NationSwap"), 24f
         )
         tabs.addPage(

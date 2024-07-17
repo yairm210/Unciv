@@ -137,7 +137,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             var text = "$prefix contains the conditional \"${conditional.text}\"," +
                 " which is of an unknown type!"
 
-            val similarConditionals = UniqueType.values().filter {
+            val similarConditionals = UniqueType.entries.filter {
                 getRelativeTextDistance(
                     it.placeholderText,
                     conditional.placeholderText
@@ -169,7 +169,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
 
         if (unique.type in resourceUniques && conditional.type in resourceConditionals
-            && ruleset.tileResources[conditional.params.last()]?.let { it.hasUnique(UniqueType.CityResource) } == true)
+            && ruleset.tileResources[conditional.params.last()]?.hasUnique(UniqueType.CityResource) == true)
             rulesetErrors.add(
                 "$prefix contains the conditional \"${conditional.text}\"," +
                     " which references a citywide resource. This is not a valid conditional for a resource uniques, " +
@@ -184,14 +184,14 @@ class UniqueValidator(val ruleset: Ruleset) {
                 continue
 
             rulesetErrors.add(
-                "$prefix contains conditional \"${conditional.text}\"." +
+                "$prefix contains modifier \"${conditional.text}\"." +
                 " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
         }
 
-        addDeprecationAnnotationErrors(conditional, "$prefix contains conditional \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
+        addDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
     }
 
     private fun addDeprecationAnnotationErrors(
@@ -283,7 +283,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     private fun tryFixUnknownUnique(unique: Unique, uniqueContainer: IHasUniques?, prefix: String): RulesetErrorList {
-        val similarUniques = UniqueType.values().filter {
+        val similarUniques = UniqueType.entries.filter {
             getRelativeTextDistance(
                 it.placeholderText,
                 unique.placeholderText

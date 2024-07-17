@@ -378,7 +378,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             return false
         if (getAssignedQuestsOfName(quest.questNameInstance).any { it.assignee == challenger.civName })
             return false
-        if (quest.isIndividual() && civ.getDiplomacyManager(challenger).hasFlag(DiplomacyFlags.Bullied))
+        if (quest.isIndividual() && civ.getDiplomacyManager(challenger)!!.hasFlag(DiplomacyFlags.Bullied))
             return false
 
         return when (quest.questNameInstance) {
@@ -417,8 +417,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun isDenounceCivQuestValid(challenger: Civilization, mostRecentBully: String?): Boolean {
         return mostRecentBully != null
             && challenger.knows(mostRecentBully)
-            && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
-            && challenger.getDiplomacyManager(mostRecentBully).diplomaticStatus != DiplomaticStatus.War
+            && !challenger.getDiplomacyManager(mostRecentBully)!!.hasFlag(DiplomacyFlags.Denunciation)
+            && challenger.getDiplomacyManager(mostRecentBully)!!.diplomaticStatus != DiplomaticStatus.War
             && !( challenger.playerType == PlayerType.Human
             && civ.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
     }
@@ -434,7 +434,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             QuestName.FindPlayer -> assignee.hasMetCivTerritory(civ.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder -> assignee.naturalWonders.contains(assignedQuest.data1)
             QuestName.PledgeToProtect -> assignee in civ.cityStateFunctions.getProtectorCivs()
-            QuestName.DenounceCiv -> assignee.getDiplomacyManager(assignedQuest.data1).hasFlag(DiplomacyFlags.Denunciation)
+            QuestName.DenounceCiv -> assignee.getDiplomacyManager(assignedQuest.data1)!!.hasFlag(DiplomacyFlags.Denunciation)
             QuestName.SpreadReligion -> civ.getCapital()!!.religion.getMajorityReligion() == civ.gameInfo.religions[assignedQuest.data2]
             else -> false
         }
@@ -459,7 +459,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val rewardInfluence = assignedQuest.getInfluence()
         val assignee = civ.gameInfo.getCivilization(assignedQuest.assignee)
 
-        civ.getDiplomacyManager(assignedQuest.assignee).addInfluence(rewardInfluence)
+        civ.getDiplomacyManager(assignedQuest.assignee)!!.addInfluence(rewardInfluence)
         if (rewardInfluence > 0)
             assignee.addNotification(
                 "[${civ.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
@@ -670,7 +670,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (updatedKillCount >= unitsToKillForCiv[killed.civName]!!) {
             killer.addNotification("[${civ.civName}] is deeply grateful for your assistance in the war against [${killed.civName}]!",
                 DiplomacyAction(civ.civName), NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
-            civ.getDiplomacyManager(killer).addInfluence(100f) // yikes
+            civ.getDiplomacyManager(killer)!!.addInfluence(100f) // yikes
             endWarWithMajorQuest(killed)
         }
     }
@@ -853,7 +853,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (closestProximity == null || closestProximity == Proximity.Distant) // None close enough
             return null
 
-        val validTargets = civ.getKnownCivs().filter { it.isCityState() && challenger.knows(it)
+        val validTargets = civ.getKnownCivs().filter { it.isCityState && challenger.knows(it)
                 && civ.proximity[it.civName] == closestProximity }
 
         return validTargets.toList().randomOrNull()

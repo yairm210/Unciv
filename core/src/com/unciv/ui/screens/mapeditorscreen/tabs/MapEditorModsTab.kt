@@ -18,7 +18,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.ui.screens.newgamescreen.ModCheckboxTable
 
 class MapEditorModsTab(
@@ -38,7 +38,7 @@ class MapEditorModsTab(
         modsTable = ModCheckboxTable(linkedSetOf(), rulesetName, editorScreen, false) {}
 
         val baseRulesets = RulesetCache.getSortedBaseRulesets()
-        baseRulesetSelectBox = TranslatedSelectBox(baseRulesets, rulesetName, BaseScreen.skin)
+        baseRulesetSelectBox = TranslatedSelectBox(baseRulesets, rulesetName)
         baseRulesetSelectBox.onChange {
             val newBaseRuleset = baseRulesetSelectBox.selected.value
             editorScreen.newMapParameters.baseRuleset = newBaseRuleset
@@ -147,6 +147,6 @@ class MapEditorModsTab(
 
     private fun fitMapToRuleset(newRuleset: Ruleset) {
         for (tile in editorScreen.tileMap.values)
-            TileInfoNormalizer.normalizeToRuleset(tile, newRuleset)
+            TileNormalizer.normalizeToRuleset(tile, newRuleset)
     }
 }
