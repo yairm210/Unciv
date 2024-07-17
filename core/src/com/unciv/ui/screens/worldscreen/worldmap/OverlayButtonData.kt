@@ -29,7 +29,7 @@ interface OverlayButtonData{
 }
 
 const val buttonSize = 60f
-val smallerCircleSizes = 25f
+const val smallerCircleSizes = 25f
 
 class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tile: Tile) :
     OverlayButtonData {
