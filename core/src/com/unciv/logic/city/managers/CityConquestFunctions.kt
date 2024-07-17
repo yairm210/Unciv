@@ -124,7 +124,6 @@ class CityConquestFunctions(val city: City) {
         conquerCity(conqueringCiv, oldCiv, conqueringCiv)
 
         city.isPuppet = true
-        // Humans dislike puppet cities spawning great merchants, but Rationalism trade posts may be desirable
         city.cityStats.update()
         // The city could be producing something that puppets shouldn't, like units
         city.cityConstructions.currentConstructionIsUserSet = false
