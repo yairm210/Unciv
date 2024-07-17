@@ -111,7 +111,7 @@ jobs:
           - windows-latest
 
     runs-on: ${{ matrix.os }}
-    needs: get-release-body
+    needs: build-jar
     steps:
       - uses: actions/checkout@v4
 
