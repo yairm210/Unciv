@@ -39,7 +39,7 @@ object Automation {
             gpp = specialistInfo.greatPersonPoints.sumValues().toFloat()
         }
         gpp = gpp * (100 + city.currentGPPBonus) / 100
-        rank += gpp * 2 // GPP weight
+        rank += gpp * 1 // GPP weight
         return rank
     }
 
@@ -61,6 +61,7 @@ object Automation {
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
+            yieldStats.science *= 1.4f // we want to be working scientists
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
@@ -82,11 +83,15 @@ object Automation {
             else
                 yieldStats.food /= 2
         } else if (!city.avoidGrowth) {
-            // NoFocus or Food/Growth Focus. Target +2 Food Surplus
-            if (surplusFood < 2)
-                yieldStats.food *= 8
-            else if (city.population.population < 5)
-                yieldStats.food *= 3
+            // NoFocus or Food/Growth Focus. Target +10 Food Surplus when happy
+            if (surplusFood < 0)
+                yieldStats.food *= 8 // Starving, need Food, get to 0
+            else if (surplusFood < 10 && city.civ.getHappiness() > -1)
+                yieldStats.food *= 2
+            else if (city.civ.getHappiness() < 0) {
+                // 75% of excess food is wasted when in negative happiness
+                yieldStats.food /= 4
+            }
         }
 
         if (city.population.population < 5) {
@@ -103,11 +108,6 @@ object Automation {
             if (city.civ.getHappiness() < 0)
                 yieldStats.happiness *= 2
             }
-
-        if (city.civ.getHappiness() < 0) {
-            // 75% of excess food is wasted when in negative happiness
-            yieldStats.food /= 4
-        }
 
         if (allTechsAreResearched) {
             // Science is useless at this point
