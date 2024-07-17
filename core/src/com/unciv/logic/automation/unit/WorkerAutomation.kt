@@ -310,7 +310,7 @@ class WorkerAutomation(
      */
     private fun tileHasWorkToDo(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Boolean {
         if (getImprovementPriority(tile, unit, localUniqueCache) <= 0) return false
-        check(!(tileRankings[tile]!!.bestImprovement != null || tileRankings[tile]!!.repairImprovement!!))
+        check(tileRankings[tile]!!.bestImprovement != null || tileRankings[tile]!!.repairImprovement!!)
             { "There was an improvementPriority > 0 and nothing to do" }
         return true
     }

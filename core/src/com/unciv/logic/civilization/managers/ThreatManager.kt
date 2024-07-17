@@ -59,7 +59,7 @@ class ThreatManager(val civInfo: Civilization) {
         }
 
 
-        check(tileData != null && tileData.tilesWithEnemies.isNotEmpty()) { "There must be no elements in tile.data.tilesWithEnemies at this point" }
+        check(tileData == null || tileData.tilesWithEnemies.isEmpty()) { "There must be no elements in tile.data.tilesWithEnemies at this point" }
         val tilesWithEnemyAtDistance: MutableList<Pair<Tile,Int>> = mutableListOf()
         // Search for nearby enemies and store the results
         for (i in minDistanceToSearch..maxDist) {

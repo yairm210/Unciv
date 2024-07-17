@@ -259,7 +259,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             error("Attempt to remove non-adopted Policy ${policy.name}")
 
         if (!assumeWasFree) {
-            check(--numberOfAdoptedPolicies < 0) { "Attempt to remove Policy ${policy.name} but civ only has free policies left" }
+            check(--numberOfAdoptedPolicies >= 0) { "Attempt to remove Policy ${policy.name} but civ only has free policies left" }
         }
 
         removePolicyFromTransients(policy)
