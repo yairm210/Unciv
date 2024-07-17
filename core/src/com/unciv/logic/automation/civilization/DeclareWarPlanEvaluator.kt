@@ -131,7 +131,7 @@ object DeclareWarPlanEvaluator {
 
         // They should to be at least half the targets size
         val thirdCivForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
-        motivation += (2 * thirdCivForce / targetForce.toFloat()).coerceAtMost(40f)
+        motivation += (20 * (1 - (thirdCivForce / targetForce.toFloat()))).coerceAtMost(40f)
 
         // If we have less relative force then the target then we have more motivation to accept
         motivation += 20 * (1 - (civForce / targetForce.toFloat())).coerceIn(-40f, 40f)
