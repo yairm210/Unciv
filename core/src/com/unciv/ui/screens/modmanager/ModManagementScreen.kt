@@ -440,7 +440,6 @@ class ModManagementScreen private constructor(
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     reloadCachesAfterModChange()
-
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
@@ -614,11 +613,6 @@ class ModManagementScreen private constructor(
     }
 
     internal fun refreshOnlineModTable() {
-//         if (queryAPI.isRunning()) {
-//             ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
-//             return  // cowardice: prevent concurrent modification, avoid a manager layer
-//         }
-
         val newHeaderText = optionsManager.getOnlineHeader()
         onlineHeaderLabel?.setText(newHeaderText)
         onlineExpanderTab?.setText(newHeaderText)
