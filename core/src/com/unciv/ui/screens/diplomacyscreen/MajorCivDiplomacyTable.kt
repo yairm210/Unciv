@@ -85,12 +85,12 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.getCenterTile()))
             diplomacyTable.add(diplomacyScreen.getGoToOnMapButton(otherCiv)).row()
 
-//         if (!otherCiv.isHuman()) { // human players make their own choices
-        diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
-        diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
-        val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
-        if (promisesTable != null) diplomacyTable.add(promisesTable).row()
-//         }
+        if (!otherCiv.isHuman()) { // human players make their own choices
+            diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
+            diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
+            val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
+            if (promisesTable != null) diplomacyTable.add(promisesTable).row()
+        }
 
         // Starting playback here assumes the MajorCivDiplomacyTable is shown immediately
         UncivGame.Current.musicController.playVoice(helloVoice)
