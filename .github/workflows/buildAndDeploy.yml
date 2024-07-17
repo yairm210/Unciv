@@ -101,6 +101,41 @@ jobs:
           name: UncivServer
           path: server/build/libs/UncivServer.jar
 
+  graalvm-build:
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+
+    runs-on: ${{ matrix.os }}
+    needs: get-release-body
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download JAR
+        uses: actions/download-artifact@v4
+        # See 'Upload JAR' step in 'build' job
+        with:
+          name: UncivJar
+
+      - name: Build native image
+        run: native-image Unciv
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: NativeImage-${{ matrix.os }}
+          path: unciv*
 
   android-build:
     continue-on-error: true
@@ -239,7 +274,7 @@ jobs:
           ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{ github.ref_name }}
 
   upload-github-release-and-post-to-discord:
-    needs: [get-release-body, android-build, packr-build]
+    needs: [get-release-body, android-build, packr-build, graalvm-build]
     runs-on: ubuntu-latest
     steps:
 
@@ -255,6 +290,9 @@ jobs:
           mv UncivDeploymentZips/Unciv-Linux64.zip deploy
           mv UncivAPK/Unciv-signed.apk deploy
           mv UncivServer/UncivServer.jar deploy
+          mv NativeImage-ubuntu-latest/unciv* deploy/native-image-linux
+          mv NativeImage-macos-latest/unciv* deploy/native-image-macos
+          mv NativeImage-windows-latest/unciv* deploy/native-image-windows
 
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
