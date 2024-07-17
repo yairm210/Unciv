@@ -23,7 +23,6 @@ import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontFamilyData
@@ -34,6 +33,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
