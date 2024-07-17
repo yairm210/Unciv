@@ -129,7 +129,7 @@ jobs:
           name: UncivJar
 
       - name: Build native image
-        run: native-image Unciv
+        run: native-image -jar Unciv.jar unciv
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
