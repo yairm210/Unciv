@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
@@ -16,6 +15,7 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.KeyCapturingButton
 import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
