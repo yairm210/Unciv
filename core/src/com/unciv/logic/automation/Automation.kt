@@ -62,6 +62,8 @@ object Automation {
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
             yieldStats.science *= 1.4f // we want to be working scientists
+            if (city.civ.getHappiness() < 0) // slotting Democracy specialists is an easy fix to happiness problems
+                yieldStats.happiness *= 2
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
