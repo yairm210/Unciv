@@ -114,7 +114,7 @@ object DeclareWarPlanEvaluator {
     /**
      * How much motivation [civInfo] has for [civToJoin] to join them in their war against [target].
      *
-     * @return The movtivation of the plan. If it is > 0 then we can declare the war.
+     * @return The movtivation of the plan. If it is >= 0 then we can accept their war offer.
      */
     fun evaluateJoinOurWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Float?): Float {
         if (civInfo.getDiplomacyManager(civToJoin)!!.isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000f
@@ -126,12 +126,15 @@ object DeclareWarPlanEvaluator {
         val targetForce = target.getStatForRanking(RankingType.Force)
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
-        // They need to be at least half the targets size
+        // If we have more force than all enemies and overpower this enemy then we don't need help
+        if (civForce - civInfo.threatManager.getCombinedForceOfWarringCivs() > targetForce * 2) return 0f
+
+        // They should to be at least half the targets size
         val thirdCivForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
-        motivation += 20 * thirdCivForce / targetForce.toFloat().coerceAtMost(40f)
+        motivation += (2 * thirdCivForce / targetForce.toFloat()).coerceAtMost(40f)
 
         // If we have less relative force then the target then we have more motivation to accept
-        motivation += 30 * (1 - (civForce / targetForce.toFloat())).coerceIn(-30f, 30f)
+        motivation += 20 * (1 - (civForce / targetForce.toFloat())).coerceIn(-40f, 40f)
 
         return motivation - 20
     }
