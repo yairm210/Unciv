@@ -27,8 +27,8 @@ android {
         resources.excludes += "DebugProbesKt.bin"
     }
     defaultConfig {
-        namespace = "com.unciv.app"
-        applicationId = "com.unciv.app"
+        namespace = BuildConfig.identifier
+        applicationId = BuildConfig.identifier
         minSdk = 21
         targetSdk = 33 // See #5044
         versionCode = BuildConfig.appCodeNumber
