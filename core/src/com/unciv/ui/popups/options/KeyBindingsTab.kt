@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
@@ -59,7 +59,7 @@ class KeyBindingsTab(
         //     associated with the actual UI widget (a KeyCapturingButton),
         //     and we want to easily index that by binding, so it should be a order-preserving map.
         val collator = UncivGame.Current.settings.getCollatorFromLocale()
-        return KeyboardBinding.values().asSequence()
+        return KeyboardBinding.entries.asSequence()
             .filterNot { it.hidden }
             .groupBy { it.category }  // Materializes a Map<Category,List<KeyboardBinding>>
             .asSequence()
@@ -211,10 +211,10 @@ class KeyBindingsTab(
         }
 
         fun Table.addNameField() {
-            nameField = UncivTextField.create("Key name", widget.current.toString()) { focused ->
-                if (focused) return@create
+            nameField = UncivTextField("Key name", widget.current.toString()) { focused ->
+                if (focused) return@UncivTextField
                 val key = KeyCharAndCode.parse(nameField.text)
-                if (key == KeyCharAndCode.UNKNOWN) return@create
+                if (key == KeyCharAndCode.UNKNOWN) return@UncivTextField
                 widget.current = key
                 onKeyChanged()
             }
