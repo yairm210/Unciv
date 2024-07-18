@@ -1,3 +1,23 @@
+## 4.12.12
+
+Terrain civilopedia displays improvements that can be placed
+
+Fixed paradrop to areas outside of movement range
+
+Fix number translation removing 0 digits from strings like "1,023"
+
+Modding:
+
+- Catch & fix unknown json filenames
+- Added autoreplace for deprecated modifiers
+- "counted unit actions" can handle different parameters of same unique
+
+AI can no longer buy wonders
+
+Gift gold fix  - By tuvus
+
+Fix parameter mapping for UnitSupplyPerPop  - By SomeTroglodyte
+
 ## 4.12.11
 
 Modding: Added unique builder screen, accessible from mod checker :D

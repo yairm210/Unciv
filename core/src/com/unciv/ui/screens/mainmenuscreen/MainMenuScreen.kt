@@ -10,6 +10,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
+import com.unciv.logic.HolidayDates
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
@@ -119,6 +120,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         ImageGetter.ruleset = baseRuleset
 
         if (game.settings.enableEasterEggs) {
+            val holiday = HolidayDates.getHolidayByDate()
+            if (holiday != null)
+                EasterEggFloatingArt(stage, holiday.name)
             val easterEggMod = EasterEggRulesets.getTodayEasterEggRuleset()
             if (easterEggMod != null)
                 easterEggRuleset = RulesetCache.getComplexRuleset(baseRuleset, listOf(easterEggMod))

@@ -47,7 +47,7 @@
             {"text":"Click on the tech button → Select technology → Click 'Research' (bottom right)."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled>",
+            "Only available <if tutorials are enabled> <if tutorial [Found city] is completed>",
             "Unavailable <if tutorial [Pick technology] is completed>"
         ]
     },

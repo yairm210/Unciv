@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.worldscreen
+package com.unciv.ui.screens.worldscreen.worldmap
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
@@ -26,24 +25,25 @@ import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
-import com.unciv.models.UnitActionType
-import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
-import com.unciv.ui.components.extensions.*
-import com.unciv.ui.components.input.*
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.isShiftKeyPressed
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.ClickableCircle
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.widgets.ZoomableScrollPane
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.recordUndoCheckpoint
+import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -58,6 +58,7 @@ class WorldMapHolder(
     internal var selectedTile: Tile? = null
     val tileGroups = HashMap<Tile, WorldTileGroup>()
 
+    /** Holds buttons created by [OverlayButtonData] implementations */
     internal val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
     internal val unitMovementPaths: HashMap<MapUnit, ArrayList<Tile>> = HashMap()
@@ -97,20 +98,6 @@ class WorldMapHolder(
         onZoomStartListener = { setActHit() }
         onZoomStopListener = { setActHit() }
     }
-
-    // Interface for classes that contain the data required to draw a button
-    interface ButtonDto
-    // Contains the data required to draw a "move here" button
-    class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tile: Tile) :
-        ButtonDto
-    // Contains the data required to draw a "swap with" button
-    class SwapWithButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
-
-    // Contains the data required to draw a "connect road" button
-    class ConnectRoadButtonDto(val unit: MapUnit, val tile: Tile) : ButtonDto
-
-    // Contains the data required to draw a "move spy" button
-    class MoveSpyButtonDto(val spy: Spy, val city: City?) : ButtonDto
 
 
     internal fun addTiles() {
@@ -266,7 +253,7 @@ class WorldMapHolder(
         UncivGame.Current.settings.addCompletedTutorialTask(key)
     }
 
-    private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: Tile) {
+    internal fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: Tile) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         // THIS PART IS REALLY ANNOYING
         // So lets say you have 2 units you want to move in the same direction, right
@@ -286,7 +273,7 @@ class WorldMapHolder(
             var pathToTile: List<Tile>? = null
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-                if (!selectedUnit.type.isAirUnit())
+                if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop())
                     pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
             } catch (ex: Exception) {
                 when (ex) {
@@ -381,7 +368,7 @@ class WorldMapHolder(
         )
     }
 
-    private fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
+    internal fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
         markUnitMoveTutorialComplete(selectedUnit)
         selectedUnit.movement.swapMoveToTile(targetTile)
 
@@ -396,24 +383,6 @@ class WorldMapHolder(
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
     }
-
-    private fun connectRoadToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
-        selectedUnit.automatedRoadConnectionDestination = targetTile.position
-        selectedUnit.automatedRoadConnectionPath = null
-        selectedUnit.action = UnitActionType.ConnectRoad.value
-        selectedUnit.automated = true
-        UnitAutomation.automateUnitMoves(selectedUnit)
-
-        SoundPlayer.play(UncivSound("wagon"))
-
-        worldScreen.shouldUpdate = true
-        removeUnitActionOverlay()
-
-        // Make highlighting go away
-        worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad = false
-
-    }
-
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tile: Tile) {
         Concurrency.run("TurnsToGetThere") {
@@ -460,7 +429,7 @@ class WorldMapHolder(
                     worldScreen.bottomUnitTable.selectUnit(selectedUnit) // keep moved unit selected
                 } else {
                     // add "move to" button if there is a path to tileInfo
-                    val moveHereButtonDto = MoveHereButtonDto(unitsWhoCanMoveThere, tile)
+                    val moveHereButtonDto = MoveHereOverlayButtonData(unitsWhoCanMoveThere, tile)
                     addTileOverlays(tile, moveHereButtonDto)
                 }
                 worldScreen.shouldUpdate = true
@@ -479,7 +448,7 @@ class WorldMapHolder(
         }
         else {
             // Add "swap with" button
-            val swapWithButtonDto = SwapWithButtonDto(selectedUnit, tile)
+            val swapWithButtonDto = SwapWithOverlayButtonData(selectedUnit, tile)
             addTileOverlays(tile, swapWithButtonDto)
         }
         worldScreen.shouldUpdate = true
@@ -500,7 +469,7 @@ class WorldMapHolder(
                         return@launchOnGLThread
                     }
                     unitConnectRoadPaths[selectedUnit] = roadPath
-                    val connectRoadButtonDto = ConnectRoadButtonDto(selectedUnit, tile)
+                    val connectRoadButtonDto = ConnectRoadOverlayButtonData(selectedUnit, tile)
                     addTileOverlays(tile, connectRoadButtonDto)
                     worldScreen.shouldUpdate = true
                 }
@@ -510,22 +479,14 @@ class WorldMapHolder(
 
     private fun addMovingSpyOverlay(spy: Spy, tile: Tile) {
         val city: City? = if (tile.isCityCenter() && spy.canMoveTo(tile.getCity()!!)) tile.getCity() else null
-        addTileOverlays(tile, MoveSpyButtonDto(spy, city))
+        addTileOverlays(tile, MoveSpyOverlayButtonData(spy, city))
         worldScreen.shouldUpdate = true
     }
 
-    private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
+    private fun addTileOverlays(tile: Tile, buttonDto: OverlayButtonData? = null) {
         val table = Table().apply { defaults().pad(10f) }
         if (buttonDto != null && worldScreen.canChangeState)
-            table.add(
-                when (buttonDto) {
-                    is MoveHereButtonDto -> getMoveHereButton(buttonDto)
-                    is SwapWithButtonDto -> getSwapWithButton(buttonDto)
-                    is ConnectRoadButtonDto -> getConnectRoadButton(buttonDto)
-                    is MoveSpyButtonDto -> getMoveSpyButton(buttonDto)
-                    else -> null
-                }
-            )
+            table.add(buttonDto.createButton(this))
 
         val unitList = ArrayList<MapUnit>()
         if (tile.isCityCenter()
@@ -553,134 +514,6 @@ class WorldMapHolder(
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)
         table.moveBy(0f, 48f)
-
-    }
-
-    val buttonSize = 60f
-    val smallerCircleSizes = 25f
-
-    private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
-        val isParadrop = dto.unitToTurnsToDestination.keys.all { it.isPreparingParadrop() }
-        val image = if (isParadrop)
-                ImageGetter.getUnitActionPortrait("Paradrop", buttonSize / 2)
-            else ImageGetter.getStatIcon("Movement")
-                .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
-        val moveHereButton = image
-            .surroundWithCircle(buttonSize - 2, false)
-            .surroundWithCircle(buttonSize, false, Color.BLACK)
-
-        if (!isParadrop) {
-            val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.tr().toLabel(fontSize = 14)
-                .apply { setAlignment(Align.center) }
-                .surroundWithCircle(smallerCircleSizes - 2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
-                .surroundWithCircle(smallerCircleSizes, false)
-            moveHereButton.addActor(numberCircle)
-        }
-
-        val firstUnit = dto.unitToTurnsToDestination.keys.first()
-        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit, smallerCircleSizes)
-        else dto.unitToTurnsToDestination.size.tr().toLabel(fontColor = firstUnit.civ.nation.getInnerColor()).apply { setAlignment(Align.center) }
-                .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civ.nation.getOuterColor() }
-        unitIcon.y = buttonSize - unitIcon.height
-        moveHereButton.addActor(unitIcon)
-
-        val unitsThatCanMove = dto.unitToTurnsToDestination.keys.filter { it.currentMovement > 0 }
-        if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
-        else {
-            moveHereButton.onActivation(UncivSound.Silent) {
-                moveUnitToTargetTile(unitsThatCanMove, dto.tile)
-            }
-            moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
-        }
-        return moveHereButton
-    }
-
-    private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
-        val swapWithButton = Group()
-        swapWithButton.setSize(buttonSize, buttonSize)
-        swapWithButton.addActor(ImageGetter.getCircle(size = buttonSize))
-        swapWithButton.addActor(
-            ImageGetter.getImage("OtherIcons/Swap").apply {
-                color = Color.BLACK
-                setSize(buttonSize / 2)
-                center(swapWithButton)
-            }
-        )
-
-        val unitIcon = UnitIconGroup(dto.unit, smallerCircleSizes)
-        unitIcon.y = buttonSize - unitIcon.height
-        swapWithButton.addActor(unitIcon)
-
-        swapWithButton.onActivation(UncivSound.Silent) {
-            swapMoveUnitToTargetTile(dto.unit, dto.tile)
-        }
-        swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
-
-        return swapWithButton
-    }
-
-    private fun getConnectRoadButton(dto: ConnectRoadButtonDto): Group {
-        val connectRoadButton = Group()
-        connectRoadButton.setSize(buttonSize, buttonSize)
-        connectRoadButton.addActor(ImageGetter.getUnitActionPortrait("RoadConnection", buttonSize * 0.8f).apply {
-                center(connectRoadButton)
-            }
-        )
-
-        val unitIcon = UnitIconGroup(dto.unit, smallerCircleSizes)
-        unitIcon.y = buttonSize - unitIcon.height
-        connectRoadButton.addActor(unitIcon)
-
-        connectRoadButton.onActivation(UncivSound.Silent) {
-            connectRoadToTargetTile(dto.unit, dto.tile)
-        }
-        connectRoadButton.keyShortcuts.add(KeyboardBinding.ConnectRoad)
-
-        return connectRoadButton
-    }
-
-    private fun getMoveSpyButton(dto: MoveSpyButtonDto): Group {
-        val spyActionButton = Group()
-        spyActionButton.setSize(buttonSize, buttonSize)
-        spyActionButton.addActor(ImageGetter.getCircle(size = buttonSize))
-        if (dto.city != null) {
-            spyActionButton.addActor(
-                    ImageGetter.getStatIcon("Movement").apply {
-                        name = "Button"
-                        color = Color.BLACK
-                        setSize(buttonSize / 2)
-                        center(spyActionButton)
-                    }
-            )
-        } else {
-            spyActionButton.addActor(
-                    ImageGetter.getImage("OtherIcons/Close").apply {
-                        name = "Button"
-                        color = Color.RED
-                        setSize(buttonSize / 2)
-                        center(spyActionButton)
-                    }
-            )
-        }
-
-        spyActionButton.onActivation(UncivSound.Silent) {
-            if (dto.city != null) {
-                dto.spy.moveTo(dto.city)
-                worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
-            } else {
-                worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
-                worldScreen.bottomUnitTable.selectedSpy = null
-            }
-            removeUnitActionOverlay()
-            selectedTile = null
-            worldScreen.shouldUpdate = true
-            worldScreen.bottomUnitTable.selectSpy(null)
-        }
-        spyActionButton.keyShortcuts.add(KeyCharAndCode.TAB)
-        spyActionButton.keyShortcuts.add(KeyCharAndCode.RETURN)
-        spyActionButton.keyShortcuts.add(KeyCharAndCode.NUMPAD_ENTER)
-
-        return spyActionButton
     }
 
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
@@ -861,7 +694,6 @@ class WorldMapHolder(
 
         return result
     }
-
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
