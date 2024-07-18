@@ -103,7 +103,7 @@ object Automation {
         }
 
         if (city.civ.stats.statsForNextTurn.gold < 0) {
-            // We have a global problem, better deal with it before it becomes science loss as well
+            // We have a global problem, we need to deal with it before it leads to science loss
             yieldStats.gold *= 2
         }
 
