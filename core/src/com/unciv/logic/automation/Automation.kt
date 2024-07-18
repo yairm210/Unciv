@@ -99,17 +99,17 @@ object Automation {
         if (city.population.population < 5) {
             // "small city" - we care more about food and less about global problems like gold science and culture
             // Food already handled above. Science/Culture have low weights in Stats already
-            yieldStats.gold /= 2 // it's barely worth anything at this point
-        } else {
-            if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
-                yieldStats.gold *= 2 // We have a global problem
+            yieldStats.gold /= 2
+        }
+        
+        if (city.civ.stats.statsForNextTurn.gold <= 0) {
+            // We have a global problem, better deal with it before it becomes science loss as well
+            yieldStats.gold *= 2
+        }
 
-            if (city.tiles.size < 12)
-                yieldStats.culture *= 2
-
-            if (city.civ.getHappiness() < 0)
-                yieldStats.happiness *= 2
-            }
+        if (city.civ.getHappiness() < 0) {
+            yieldStats.happiness *= 2
+        }
 
         if (city.isPuppet) {
             // Puppets need to produce gold, but no great merchants
