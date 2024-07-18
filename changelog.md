@@ -1,54 +1,18 @@
 ## 4.12.12
 
-Terrain civilopedia displays improvements that can be placed there
+Terrain civilopedia displays improvements that can be placed
 
-"choose tech" tutorial hidden until player has founded a city
-
-chore: identifier moved to BuildConfig
-
-Okay, that was a good try. Bye graal native-image
-
-Resolved  - Fixed paradrop to areas outside of movement range
-
-Resolved  - Limited unit action can accept different actions with the same template but different parameters, and counts them differently
-
-native-image specify jar
-
-Graal native image test
-
-Graal native image test
+Fixed paradrop to areas outside of movement range
 
 Fix number translation removing 0 digits from strings like "1,023"
 
-Split tilemapholder overlay buttons to separate file
+Modding:
 
-Added terrains.json schema
-
-Ruleset validation: Catch, and try and fix, unknown json filenames
-
-Unified uniques/ruleset objects from ruleset
+- Catch & fix unknown json filenames
+- Added autoreplace for deprecated modifiers
+- "counted unit actions" can handle different parameters of same unique
 
 AI can no longer buy wonders
-
-4.12.11-patch1
-
-Multiplayer notifications need to be untranslated because it accesses 'current game' 
-
-Added autoreplace for deprecated modifiers
-
-Added error handling
-
-Damn detekt
-
-Added documentation for autoupdates
-
-Mod CI - Really autoupdate uniques
-
-Mod CI - Load vanilla ruleset into cache before validation
-
-Mod CI - Place before "screen"-oriented logic to run on CI machines
-
-Mod CI step 1 - allow running Unciv as a cli tool for linting etc
 
 Gift gold fix  - By tuvus
 
