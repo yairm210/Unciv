@@ -97,6 +97,15 @@ class Terrain : RulesetStatsObject() {
             }
         }
 
+        val improvementsThatCanBePlacedHere = ruleset.tileImprovements.values
+            .filter { it.terrainsCanBeBuiltOn.contains(name) }
+        if (improvementsThatCanBePlacedHere.isNotEmpty()){
+            textList += FormattedLine("{Tile Improvements}:")
+            for (improvement in improvementsThatCanBePlacedHere){
+                textList += FormattedLine(improvement.name, improvement.makeLink(), indent=1)
+            }
+        }
+
         if (turnsInto != null) {
             textList += FormattedLine("Placed on [$turnsInto]", link="Terrain/$turnsInto")
         }
