@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.worldscreen
+package com.unciv.ui.screens.worldscreen.worldmap
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants

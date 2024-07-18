@@ -101,7 +101,6 @@ jobs:
           name: UncivServer
           path: server/build/libs/UncivServer.jar
 
-
   android-build:
     continue-on-error: true
     runs-on: ubuntu-latest
