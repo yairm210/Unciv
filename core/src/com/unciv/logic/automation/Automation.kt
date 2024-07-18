@@ -101,8 +101,8 @@ object Automation {
             // Food already handled above. Science/Culture have low weights in Stats already
             yieldStats.gold /= 2
         }
-        
-        if (city.civ.stats.statsForNextTurn.gold <= 0) {
+
+        if (city.civ.stats.statsForNextTurn.gold < 0) {
             // We have a global problem, better deal with it before it becomes science loss as well
             yieldStats.gold *= 2
         }
