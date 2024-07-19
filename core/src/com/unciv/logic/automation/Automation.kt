@@ -61,9 +61,9 @@ object Automation {
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
+                    if (city.civ.getHappiness() < 0) // slotting Democracy specialists is an easy fix to happiness problemss
+                        yieldStats.happiness *= 2
             yieldStats.science *= 1.5f // we want to be working scientists
-            if (city.civ.getHappiness() < 0) // slotting Democracy specialists is an easy fix to happiness problems
-                yieldStats.happiness *= 2
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
@@ -122,7 +122,7 @@ object Automation {
         }
 
         if (city.cityConstructions.getCurrentConstruction() is PerpetualConstruction) {
-            // With 4:1 conversion of production to gold, production is overvalued by a factor (12*4)/8 = 6
+            // With 4:1 conversion of production to science, production is overvalued by a factor (12*4)/7 = 6.9
             yieldStats.production /= 6
         }
 
