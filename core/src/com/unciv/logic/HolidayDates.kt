@@ -59,7 +59,7 @@ object HolidayDates {
             // This makes it the 15th day after the Spring Equinox, either 4, 5 or 6 April in a given year"
             override fun getByYear(year: Int): DateRange {
                 val springEquinoxInstant = Tables.equinoxes[year] ?: return DateRange.never
-                val springEquinox = springEquinoxInstant.atZone(ZoneId.systemDefault()).toLocalDate()  // This way, LocalDate.ofInstant is missing from Android's Java
+                val springEquinox = springEquinoxInstant.atZone(ZoneId.systemDefault()).toLocalDate()  // This way, because LocalDate.ofInstant is missing from Android's Java
                 return DateRange.of(springEquinox.plusDays(15L))
             }
         },
