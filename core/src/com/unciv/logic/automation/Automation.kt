@@ -61,8 +61,6 @@ object Automation {
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
-                    if (city.civ.getHappiness() < 0) // slotting Democracy specialists is an easy fix to happiness problemss
-                        yieldStats.happiness *= 2
             yieldStats.science *= 1.5f // we want to be working scientists
         }
 
