@@ -218,6 +218,8 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | baseTurnsUntilRevolt                     | Int    | 4                             | [^Q]  |
 | cityStateElectionTurns                   | Int    | 15                            | [^R]  |
 | maxImprovementTechErasForward            | Int    | None                          | [^S]  |
+| goldGiftMultiplier                       | Float  | 1                             | [^T]  |
+| goldGiftTradeMultiplier                  | Float  | 0.8                           | [^U]  |
 
 Legend:
 
@@ -257,6 +259,8 @@ Legend:
 - [^Q]: The number of turns before a revolt is spawned
 - [^R]: The number of turns between city-state elections
 - [^S]: If set, the Improvement picker will silently skip improvements whose tech requirement is more advanced than your current Era + this value. Example: With a 0, Trade posts will not show until the Medieval Era, with a 1 they will already show in the CLassical Era.
+- [^T]: The multiplier of the gold value of a one-sided trade to be stored as gifts.
+- [^U]: The multiplier of the gold value of a regular trade to be stored as gifts. Set to 0 to disable gold gifting in two-sided trades.
 
 #### UnitUpgradeCost
 

@@ -44,7 +44,7 @@ class GoldGiftingTests {
     fun `Gold Gift Test` () {
         assertEquals(0, aDiplomacy.getGoldGifts())
         assertEquals(0, bDiplomacy.getGoldGifts())
-        aDiplomacy.giftGold(10)
+        aDiplomacy.giftGold(10, true)
         assertTrue(aDiplomacy.getGoldGifts() > 0)
         assertEquals(0, bDiplomacy.getGoldGifts())
     }
@@ -72,7 +72,7 @@ class GoldGiftingTests {
         val gold2 = aDiplomacy.getGoldGifts()
         assertTrue(gold > gold2)
         assertTrue(gold2 >= gold * .9) // We shoulden't loose more than 10% of the value in one turn
-        assertTrue(gold2 >= 0) 
+        assertTrue(gold2 >= 0)
     }
 
     @Test
@@ -88,8 +88,8 @@ class GoldGiftingTests {
 
     @Test
     fun `Gifting gold reduces previous gifts taken` () {
-        aDiplomacy.giftGold(1000)
-        bDiplomacy.giftGold(500)
+        aDiplomacy.giftGold(1000, true)
+        bDiplomacy.giftGold(500, true)
         assertTrue(aDiplomacy.getGoldGifts() > 0)
         assertTrue(aDiplomacy.getGoldGifts() < 1000)
         assertTrue(bDiplomacy.getGoldGifts() == 0)
@@ -132,6 +132,30 @@ class GoldGiftingTests {
         tradeOffer.acceptTrade()
         val tradeOffer2 = TradeLogic(a,b)
         assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer2.currentTrade.reverse(), b,a,true) > 0)
+    }
+
+    @Test
+    fun `Gold gifted uses pure gold multiplier constant`() {
+        a.addGold(1000)
+        a.gameInfo.ruleset.modOptions.constants.goldGiftMultiplier = .5f
+        a.gameInfo.ruleset.modOptions.constants.goldGiftTradeMultiplier = 0f
+        val tradeOffer = TradeLogic(a,b)
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeOfferType.Gold })
+        tradeOffer.acceptTrade()
+        assertEquals(500, bDiplomacy.getGoldGifts())
+    }
+
+    @Test
+    fun `Gold gifted uses gold multiplier constant`() {
+        a.addGold(1000)
+        b.addGold(500)
+        a.gameInfo.ruleset.modOptions.constants.goldGiftMultiplier = 0f
+        a.gameInfo.ruleset.modOptions.constants.goldGiftTradeMultiplier = .5f
+        val tradeOffer = TradeLogic(a,b)
+        tradeOffer.currentTrade.ourOffers.add(tradeOffer.ourAvailableOffers.first { it.type == TradeOfferType.Gold })
+        tradeOffer.currentTrade.theirOffers.add(tradeOffer.theirAvailableOffers.first { it.type == TradeOfferType.Gold })
+        tradeOffer.acceptTrade()
+        assertEquals(250, bDiplomacy.getGoldGifts())
     }
 
 }

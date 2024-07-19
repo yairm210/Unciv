@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.roundToInt
 import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
@@ -690,18 +691,24 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Resolves adding gifts with negative gold values.
+     * Resolves the otherCiv giving gifts to this civ with negative gold values.
      * Prioritises reducing gifts given to the other civ before increasing our gift value.
      * Does not take the gold from either civ's stockpile
      * @param gold the amount of gold without inflation, can be negative
+     * @param isPureGift should be true if the gift was one-sided, or false if it wasn't
      */
-    fun giftGold(gold: Int) {
+    fun giftGold(gold: Int, isPureGift: Boolean) {
+        val currentGold = if (isPureGift)
+            (gold * civInfo.gameInfo.ruleset.modOptions.constants.goldGiftMultiplier).roundToInt()
+        else
+            (gold * civInfo.gameInfo.ruleset.modOptions.constants.goldGiftTradeMultiplier).roundToInt()
+
         val otherGold = otherCivDiplomacy().getGoldGifts()
-        if (otherGold > gold) {
-            otherCivDiplomacy().recieveGoldGifts(-gold)
+        if (otherGold > currentGold) {
+            otherCivDiplomacy().recieveGoldGifts(-currentGold)
         } else {
             otherCivDiplomacy().removeModifier(DiplomaticModifiers.GaveUsGifts)
-            recieveGoldGifts(gold - otherGold)
+            recieveGoldGifts(currentGold - otherGold)
         }
     }
 
