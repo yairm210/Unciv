@@ -7,6 +7,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -29,6 +30,9 @@ class GoldGiftingTests {
         a.diplomacyFunctions.makeCivilizationsMeet(b)
         aDiplomacy = a.getDiplomacyManager(b)!!
         bDiplomacy = b.getDiplomacyManager(a)!!
+        a.gameInfo.ruleset.modOptions.constants.goldGiftMultiplier = 1f
+        a.gameInfo.ruleset.modOptions.constants.goldGiftTradeMultiplier = 1f
+        a.gameInfo.ruleset.modOptions.constants.goldGiftDegradationMultiplier = 1f
     }
 
     @Test
@@ -156,6 +160,46 @@ class GoldGiftingTests {
         tradeOffer.currentTrade.theirOffers.add(tradeOffer.theirAvailableOffers.first { it.type == TradeOfferType.Gold })
         tradeOffer.acceptTrade()
         assertEquals(250, bDiplomacy.getGoldGifts())
+    }
+
+    @Test
+    fun `Gifted Gold Disapears using gold gift degradation multiplier constant` () {
+        val c = testGame.addCiv()
+        c.diplomacyFunctions.makeCivilizationsMeet(a)
+        val caDiplomacy = c.getDiplomacyManager(a)!!
+        a.gameInfo.ruleset.modOptions.constants.goldGiftDegradationMultiplier = 1f
+        aDiplomacy.recieveGoldGifts(100)
+        caDiplomacy.recieveGoldGifts(100)
+        assertTrue(aDiplomacy.getGoldGifts() > 0)
+        assertTrue(caDiplomacy.getGoldGifts() > 0)
+
+        aDiplomacy.nextTurn()
+        a.gameInfo.ruleset.modOptions.constants.goldGiftDegradationMultiplier = 10f
+        caDiplomacy.nextTurn()
+
+        assertTrue(caDiplomacy.getGoldGifts() < aDiplomacy.getGoldGifts())
+    }
+
+    @Test
+    fun `Gifted Gold doesn't disapear when gold gift degradation multiplier constant is set to 0` () {
+        a.gameInfo.ruleset.modOptions.constants.goldGiftDegradationMultiplier = 0f
+        aDiplomacy.recieveGoldGifts(1000)
+        assertTrue(aDiplomacy.getGoldGifts() > 0)
+        val gold = aDiplomacy.getGoldGifts()
+        aDiplomacy.nextTurn()
+        val gold2 = aDiplomacy.getGoldGifts()
+        assertTrue(gold == gold2)
+    }
+
+    @Test
+    fun `Gifted Gold doesn't disapear when gold gift degradation multiplier constant is set to 0 with low gold` () {
+        a.gameInfo.ruleset.modOptions.constants.goldGiftDegradationMultiplier = 0f
+        aDiplomacy.recieveGoldGifts(10)
+        assertTrue(aDiplomacy.getGoldGifts() > 0)
+        val gold = aDiplomacy.getGoldGifts()
+        aDiplomacy.nextTurn()
+        val gold2 = aDiplomacy.getGoldGifts()
+        assertTrue(gold == gold2)
     }
 
 }

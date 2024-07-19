@@ -52,11 +52,14 @@ class ModConstants {
     var cityWorkRange = 3
     var cityExpandRange = 5
 
-    // Modifies how much the gold value of a one-sided trade is applied to the gifts diplomatic modifier
-    // Eg: One side offers a city, resource or gold for nothing in return
+    // Modifies how much the gold value of a one-sided trade is applied to the gifts diplomatic modifier.
+    // Eg: One side offers a city, resource or gold for nothing in return.
     var goldGiftMultiplier = 1f
-    // Modifies how much the gold value of a regular trade is applied to the gifts diplomatic modifier
+    // Modifies how much the gold value of a regular trade is applied to the gifts diplomatic modifier.
     var goldGiftTradeMultiplier = .8f
+    // Modifies how quickly the GaveUsGifts dimplomacy modifier runs out. A higher value makes it run out quicker.
+    // Normally the gifts reduced by ~2.5% per turn depending on the diplomatic relations with the default value.
+    var goldGiftDegradationMultiplier = 1f
 
     // Constants used to calculate Unit Upgrade gold Cost (can only be modded all-or-nothing)
     // This is a data class for one reason only: The equality implementation enables Gdx Json to omit it when default (otherwise only the individual fields are omitted)

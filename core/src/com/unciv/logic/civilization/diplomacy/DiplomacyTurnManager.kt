@@ -294,22 +294,22 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
         if (hasModifier(DiplomaticModifiers.GaveUsGifts)) {
             val giftLoss = when {
-                relationshipLevel() == RelationshipLevel.Ally -> .5f
-                relationshipLevel() == RelationshipLevel.Friend -> 1f
-                relationshipLevel() == RelationshipLevel.Favorable -> 1.5f
+                relationshipLevel() == RelationshipLevel.Ally -> 1f
+                relationshipLevel() == RelationshipLevel.Friend -> 1.5f
+                relationshipLevel() == RelationshipLevel.Favorable -> 2f
+                relationshipLevel() == RelationshipLevel.Neutral -> 2.5f
                 relationshipLevel() == RelationshipLevel.Competitor -> 5f
                 relationshipLevel() == RelationshipLevel.Enemy -> 7.5f
                 relationshipLevel() == RelationshipLevel.Unforgivable -> 10f
-                else -> 2f // Neutral
-            }
+                else -> 2.5f
+            } * civInfo.gameInfo.ruleset.modOptions.constants.goldGiftDegradationMultiplier
             // We should subtract a certain amount from this balanced each turn
             // Assuming neutral relations we will subtract the higher of either:
-            //  2% of the total amount or
-            //  roughly 40 gold per turn (a value of ~.4 without inflation)
+            //  2.5% of the total amount or roughly 50 gold per turn (a value of ~.5 without inflation)
             // This ensures that the amount can be reduced to zero but scales with larger numbers
             val amountLost = (getModifier(DiplomaticModifiers.GaveUsGifts).absoluteValue * giftLoss / 100)
                 .coerceAtLeast(giftLoss / 5)
-            revertToZero(DiplomaticModifiers.GaveUsGifts, amountLost) // Roughly worth 20 GPT without inflation
+            revertToZero(DiplomaticModifiers.GaveUsGifts, amountLost)
         }
 
         setFriendshipBasedModifier()
