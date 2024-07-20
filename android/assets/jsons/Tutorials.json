@@ -416,14 +416,14 @@
   },
   {
     "name": "Air Combat and Interception",
-    "steps": [
-        "Air Combat is very similar to normal Combat, with a few wrinkles. Damage is still dealt using the same equations based on the relative Strength of the Attacking and Defending Unit.",
-        "However, before the Attacker and Defender fight, there is an added combat phase called Interception. If there is any unit with Interception Range that covers the target attacked tile, then it will attempt to Intercept the Attacking Air Unit. If multiple units can Intercept, the one with higher Intercept chance does it.",
-        "Generally Land/Naval Units have an Intercept Range of 2 Tiles, and Air Units have an Intercept Range of their Attack Range.",
-        "The Intercepting Unit rolls to see if it hits. Whether it hits or not costs an Attack, and most units (without Promotions) can only Attack Once per Nation's Turn. It does NOT cost Movement Points, but Air Units that have used their Movement cannot Intercept between turns.",
-        "If the Intercepting Unit Hits, it deals damage according to the Combat Strength calculation to the Attacking Air Unit, potentially with any Strength Bonuses that apply to Interception. It does not receive damage from the Attacking Air Unit.",
-        "After Interception resolves, the Attacking Air Unit and the Defending Unit in the targeted tile do Combat as normal, with damage dealt to both sides.",
-        "To help deal with Interceptions, see [Air Sweeps]."
+    "civilopediaText": [
+        {"text":"Air Combat is very similar to normal Combat, with a few wrinkles. Damage is still dealt using the same equations based on the relative Strength of the Attacking and Defending Unit."},
+        {"text":"However, before the Attacker and Defender fight, there is an added combat phase called Interception. If there is any unit with Interception Range that covers the target attacked tile, then it will attempt to Intercept the Attacking Air Unit. If multiple units can Intercept, the one with higher Intercept chance does it."},
+        {"text":"Generally Land/Naval Units have an Intercept Range of 2 Tiles, and Air Units have an Intercept Range of their Attack Range."},
+        {"text":"The Intercepting Unit rolls to see if it hits. Whether it hits or not costs an Attack, and most units (without Promotions) can only Attack Once per Nation's Turn. It does NOT cost Movement Points, but Air Units that have used their Movement cannot Intercept between turns."},
+        {"text":"If the Intercepting Unit Hits, it deals damage according to the Combat Strength calculation to the Attacking Air Unit, potentially with any Strength Bonuses that apply to Interception. It does not receive damage from the Attacking Air Unit."},
+        {"text":"After Interception resolves, the Attacking Air Unit and the Defending Unit in the targeted tile do Combat as normal, with damage dealt to both sides."},
+        {"text":"To help deal with Interceptions, see Air Sweeps.","link": "Tutorials/Air Sweeps"},
     ]
   },
   {
