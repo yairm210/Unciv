@@ -314,7 +314,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     //region pure functions
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
-        // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
+        if (gameInfo.ruleset.difficulties.containsKey(gameInfo.getDifficulty().aiDifficultyLevel)) {
+            return gameInfo.ruleset.difficulties[gameInfo.getDifficulty().aiDifficultyLevel]!!
+        }
         val chieftainDifficulty = gameInfo.ruleset.difficulties["Chieftain"]
         if (chieftainDifficulty != null) return chieftainDifficulty
         return gameInfo.ruleset.difficulties.values.first()
