@@ -48,23 +48,21 @@ object HolidayDates {
             override fun getByYear(year: Int) = DateRange.of(year, 11, 1, 2)
         },
         YuleGoat {
-            //todo add art and visualization
-
             // https://en.m.wikipedia.org/wiki/Advent:
             // "Advent begins with First Vespers (Evening Prayer I) of the Sunday that falls on or closest to 30 November"
             override fun getByYear(year: Int) =
                 DateRange.of(LocalDate.of(year, 11, 30).closestWeekday(DayOfWeek.SUNDAY))
         },
-//        Qingming {
-//            // https://en.wikipedia.org/wiki/Qingming_Festival
-//            // "it falls on the first day of the fifth solar term (also called Qingming) of the traditional Chinese lunisolar calendar.
-//            // This makes it the 15th day after the Spring Equinox, either 4, 5 or 6 April in a given year"
-//            override fun getByYear(year: Int): DateRange {
-//                val springEquinoxInstant = Tables.equinoxes[year] ?: return DateRange.never
-//                val springEquinox = LocalDate.ofInstant(springEquinoxInstant, ZoneId.systemDefault())
-//                return DateRange.of(springEquinox.plusDays(15L))
-//            }
-//        },
+        Qingming {
+            // https://en.wikipedia.org/wiki/Qingming_Festival
+            // "it falls on the first day of the fifth solar term (also called Qingming) of the traditional Chinese lunisolar calendar.
+            // This makes it the 15th day after the Spring Equinox, either 4, 5 or 6 April in a given year"
+            override fun getByYear(year: Int): DateRange {
+                val springEquinoxInstant = Tables.equinoxes[year] ?: return DateRange.never
+                val springEquinox = springEquinoxInstant.atZone(ZoneId.systemDefault()).toLocalDate()  // This way, because LocalDate.ofInstant is missing from Android's Java
+                return DateRange.of(springEquinox.plusDays(15L))
+            }
+        },
         Diwali(0.2f) {
             // https://en.wikipedia.org/wiki/Diwali#Dates
             // Darkest new moon night between mid-october and mid-november, then add +/- two days for a 5-day festival...
