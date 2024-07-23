@@ -152,7 +152,7 @@ open class Stats(
         science *= 7
         culture *= 8
         happiness *= 10 // base
-        faith *= 5
+        faith *= 7
     }
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
