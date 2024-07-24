@@ -1,28 +1,15 @@
-Fix endless loop when many units can transfer movement to each other
+Special nuke animation, to make it feel more momentous
 
-Remove line breaks from game data when loading games (affects some uploaded bug reports)
+Better repeatable unique randomization
 
-Better display of "object is missing a name" errors
-
-special nuke animation, to make it feel more momentous
-
-Better state-based random - ensure repeatability while increasing diversity (less "bunching" of so-called "random" results)
-
-Okay that was dumb
-
-4.12.12-patch2
-
-Revert "AI can no longer buy wonders" 
-
-Resolved  - mapUnitFilter errors for correct values
-
-4.12.12-patch1
-
-Remove crashing holiday 
+Modding:
+- mapUnitFilter no longer errors for correct values
+- Better display of "object is missing a name" errors
+- Fix endless loop when many units can transfer movement to each other
 
 By tuvus:
 - Made Gold Gifting moddable 
-- Make AI difficulty changable 
+- Make AI difficulty moddable 
 
 Repair Qingmin holiday  - By SomeTroglodyte
 
