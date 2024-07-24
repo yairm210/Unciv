@@ -1,0 +1,31 @@
+
+
+Fix endless loop when many units can transfer movement to each other
+
+Remove line breaks from game data when loading games (affects some uploaded bug reports)
+
+Better display of "object is missing a name" errors
+
+special nuke animation, to make it feel more momentous
+
+Better state-based random - ensure repeatability while increasing diversity (less "bunching" of so-called "random" results)
+
+Okay that was dumb
+
+4.12.12-patch2
+
+Revert "AI can no longer buy wonders" 
+
+Resolved  - mapUnitFilter errors for correct values
+
+4.12.12-patch1
+
+Remove crashing holiday 
+
+By tuvus:
+- Made Gold Gifting moddable 
+- Make AI difficulty changable 
+
+Repair Qingmin holiday  - By SomeTroglodyte
+
+Civilopedia Updates: Trade Routes and Air Combat  - By itanasi
