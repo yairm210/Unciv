@@ -1,5 +1,3 @@
-
-
 Fix endless loop when many units can transfer movement to each other
 
 Remove line breaks from game data when loading games (affects some uploaded bug reports)
