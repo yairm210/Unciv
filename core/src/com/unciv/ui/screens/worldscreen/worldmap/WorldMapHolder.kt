@@ -320,7 +320,7 @@ class WorldMapHolder(
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
 
-                    if (UncivGame.Current.settings.autoUnitCycle && selected!unit.hasMovement())
+                    if (UncivGame.Current.settings.autoUnitCycle && selectedUnit.hasMovement())
                         worldScreen.switchToNextUnit()
 
                 } catch (ex: Exception) {
@@ -378,7 +378,7 @@ class WorldMapHolder(
         // Play something like a swish-swoosh
         SoundPlayer.play(UncivSound.Swap)
 
-        if (selectedunit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+        if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
