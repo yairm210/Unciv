@@ -55,6 +55,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      */
     var instanceName: String? = null
 
+    /** Should not be changed directly - instead use [useMovementPoints] */
     var currentMovement: Float = 0f
     var health: Int = 100
     var id: Int = Constants.NO_ID
@@ -701,10 +702,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Can accept a negative number to gain movement points */
     fun useMovementPoints(amount: Float) {
         turnsFortified = 0
         currentMovement -= amount
         if (currentMovement < 0) currentMovement = 0f
+        if (amount < 0) {
+            val maxMovement = getMaxMovement().toFloat()
+            if (currentMovement > maxMovement) currentMovement = maxMovement
+        }
     }
 
     fun fortify() {
