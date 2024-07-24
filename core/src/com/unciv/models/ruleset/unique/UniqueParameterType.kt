@@ -105,6 +105,7 @@ enum class UniqueParameterType(
                     CityFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
+
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
         override val staticKnownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",
@@ -112,10 +113,13 @@ enum class UniqueParameterType(
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
+
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            super.isKnownValue(parameterText, ruleset) -> true
-            // We don't add the unit promotion uniques into the "known values" set because it's too much
+            parameterText in staticKnownValues -> true
+            parameterText in ruleset.unitPromotions -> true
             ruleset.unitPromotions.values.any { it.hasUnique(parameterText) } -> true
+            CivFilter.isKnownValue(parameterText, ruleset) -> true
+            BaseUnitFilter.isKnownValue(parameterText, ruleset) -> true
             else -> false
         }
 

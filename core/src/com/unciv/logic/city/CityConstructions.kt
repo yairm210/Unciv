@@ -699,7 +699,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
 
-    /** This is the *one true test* of "can we butyb this construction"
+    /** This is the *one true test* of "can we buty this construction"
      * This tests whether the buy button should be _enabled_ */
     fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
         return when {
@@ -707,7 +707,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.isInResistance() -> false
             !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
             construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
-            !construction.canBePurchasedWithStat(city, Stat.Gold) -> false
+            !construction.canBePurchasedWithStat(city, stat) -> false
             city.civ.gameInfo.gameParameters.godMode -> true
             constructionBuyCost == 0 -> true
             else -> city.getStatReserve(stat) >= constructionBuyCost

@@ -48,8 +48,6 @@ object HolidayDates {
             override fun getByYear(year: Int) = DateRange.of(year, 11, 1, 2)
         },
         YuleGoat {
-            //todo add art and visualization
-
             // https://en.m.wikipedia.org/wiki/Advent:
             // "Advent begins with First Vespers (Evening Prayer I) of the Sunday that falls on or closest to 30 November"
             override fun getByYear(year: Int) =
@@ -61,7 +59,7 @@ object HolidayDates {
             // This makes it the 15th day after the Spring Equinox, either 4, 5 or 6 April in a given year"
             override fun getByYear(year: Int): DateRange {
                 val springEquinoxInstant = Tables.equinoxes[year] ?: return DateRange.never
-                val springEquinox = LocalDate.ofInstant(springEquinoxInstant, ZoneId.systemDefault())
+                val springEquinox = springEquinoxInstant.atZone(ZoneId.systemDefault()).toLocalDate()  // This way, because LocalDate.ofInstant is missing from Android's Java
                 return DateRange.of(springEquinox.plusDays(15L))
             }
         },
@@ -125,7 +123,7 @@ object HolidayDates {
         abstract fun getByYear(year: Int): DateRange
 
         companion object {
-            fun safeValueOf(name: String) = values().firstOrNull { it.name == name }
+            fun safeValueOf(name: String) = entries.firstOrNull { it.name == name }
         }
     }
 
@@ -155,7 +153,7 @@ object HolidayDates {
     fun getHolidayByDate(date: LocalDate = LocalDate.now()): Holidays? {
         return System.getProperty("easterEgg")?.let {
             Holidays.safeValueOf(it)
-        } ?: Holidays.values().firstOrNull {
+        } ?: Holidays.entries.firstOrNull {
             val range = it.getByYear(date.year)
             date in range && Random.nextFloat() <= it.chance
         }
