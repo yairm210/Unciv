@@ -316,6 +316,6 @@ jobs:
             Update to ${{ github.ref_name }}
 
             ${{needs.get-release-body.outputs.release_body}}
-          ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
+          ssh_keyscan_types: rsa
           updpkgsums: true
           allow_empty_commits: false
