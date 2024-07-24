@@ -37,7 +37,7 @@ object BattleHelper {
                 Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
             }
         }
-        return unit.currentMovement == 0f
+        return !unit.hasMovement()
     }
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {

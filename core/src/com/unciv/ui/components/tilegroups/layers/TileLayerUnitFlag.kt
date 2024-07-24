@@ -72,7 +72,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
                 newIcon.actionGroup?.color?.a = 0.5f
 
             // Fade out flag for own out-of-moves units
-            if (unit.civ == viewingCiv && unit.currentMovement == 0f)
+            if (unit.civ == viewingCiv && !unit.hasMovement())
                 newIcon.color.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
 
         }

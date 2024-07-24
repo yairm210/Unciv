@@ -65,7 +65,7 @@ object UnitActionsPillage {
 
                 if (pillagingImprovement)  // only Improvements heal HP
                     unit.healBy(25)
-            }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) }
+            }.takeIf { unit.hasMovement() && canPillage(unit, tile) }
         )
     }
 

@@ -81,7 +81,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         * - It can move to
         * - Can be improved/upgraded
         * */
-        if (unit.currentMovement > 0 && !shouldBuildRoadOnTile(currentTile)) {
+        if (unit.hasMovement() && !shouldBuildRoadOnTile(currentTile)) {
             if (currTileIndex == pathToDest.size - 1) { // The last tile in the path is unbuildable or has a road.
                 stopAndCleanAutomation(unit)
                 unit.civ.addNotification("Connect road completed!", MapUnitAction(unit), NotificationCategory.Units, unit.name)
@@ -115,7 +115,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         }
 
         // We need to check current movement again after we've (potentially) moved
-        if (unit.currentMovement > 0) {
+        if (unit.hasMovement()) {
             // Repair pillaged roads first
             if (currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged){
                 currentTile.setRepaired()

@@ -543,7 +543,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
                 enterCityOrInfoPopup()
             } else {
                 moveButtonDown()
-                if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) && belongsToViewingCiv())
+                if ((unitTable.selectedUnit == null || !unitTable.selectedUnit!!.hasMovement()) && belongsToViewingCiv())
                     unitTable.citySelected(city)
             }
         }
