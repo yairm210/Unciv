@@ -308,7 +308,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return false
     }
 
-    fun getMaxMovement(): Int {
+    fun getMaxMovement(ignoreOtherUnit: Boolean = false): Int {
         var movement =
                 if (isEmbarked()) 2
                 else baseUnit.movement
@@ -321,11 +321,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // Hakkapeliitta movement boost
         // For every double-stacked tile, check if our cohabitant can boost our speed
         // (a test `count() > 1` is no optimization - two iterations of a sequence instead of one)
-        for (boostingUnit in currentTile.getUnits()) {
-            if (boostingUnit == this) continue
-            if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
-                            .none { matchesFilter(it.params[0]) }) continue
-            movement = movement.coerceAtLeast(boostingUnit.getMaxMovement())
+        if (!ignoreOtherUnit) { // if both units can boost the other, we avoid an endless loop
+            for (boostingUnit in currentTile.getUnits()) {
+                if (boostingUnit == this) continue
+                if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
+                        .none { matchesFilter(it.params[0]) }
+                ) continue
+                movement = movement.coerceAtLeast(boostingUnit.getMaxMovement(true))
+            }
         }
 
         return movement
