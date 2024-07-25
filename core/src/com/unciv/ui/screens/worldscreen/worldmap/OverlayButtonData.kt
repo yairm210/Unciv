@@ -63,7 +63,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, I
         unitIcon.y = buttonSize - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
-        val unitsThatCanMove = unitToTurnsToDestination.keys.filter { it.currentMovement > 0 }
+        val unitsThatCanMove = unitToTurnsToDestination.keys.filter { it.hasMovement() }
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {

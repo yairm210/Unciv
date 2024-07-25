@@ -971,7 +971,6 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitGainXP -> {
                 if (unit == null) return null
-                if (!unit.baseUnit.isMilitary) return null
                 return {
                     unit.promotions.XP += unique.params[0].toInt()
                     if (notification != null)
@@ -979,20 +978,21 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-            UniqueType.OneTimeUnitUpgrade -> {
+            UniqueType.OneTimeUnitGainMovement, UniqueType.OneTimeUnitLoseMovement -> {
                 if (unit == null) return null
-                val upgradeAction = UnitActionsUpgrade.getFreeUpgradeAction(unit)
-                if (upgradeAction.none()) return null
                 return {
-                    (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
-                    if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                    val movementToUse =
+                        if (unique.type == UniqueType.OneTimeUnitLoseMovement) unique.params[0].toFloat()
+                        else -unique.params[0].toFloat()
+                    unit.useMovementPoints(movementToUse)
                     true
                 }
             }
-            UniqueType.OneTimeUnitSpecialUpgrade -> {
+            UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade -> {
                 if (unit == null) return null
-                val upgradeAction = UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
+                val upgradeAction =
+                    if (unique.type == UniqueType.OneTimeUnitSpecialUpgrade) UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
+                    else UnitActionsUpgrade.getFreeUpgradeAction(unit)
                 if (upgradeAction.none()) return null
                 return {
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()

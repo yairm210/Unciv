@@ -71,7 +71,7 @@ object Battle {
          * so we expended all of our movement points! */
         if (attacker.hasUnique(UniqueType.MustSetUp)
                 && !attacker.unit.isSetUpForSiege()
-                && attacker.unit.currentMovement > 0f
+                && attacker.unit.hasMovement()
         ) {
             attacker.unit.action = UnitActionType.SetUp.value
             attacker.unit.useMovementPoints(1f)
@@ -89,7 +89,7 @@ object Battle {
                 }
             }
         }
-        return (attacker.unit.currentMovement > 0f)
+        return (attacker.unit.hasMovement())
     }
 
     /**

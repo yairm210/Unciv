@@ -101,7 +101,7 @@ class WorkerAutomation(
 
             // If there's move still left, perform action
             // Unit may stop due to Enemy Unit within walking range during doAction() call
-            if (unit.currentMovement > 0 && reachedTile == tileToWork) {
+            if (unit.hasMovement() && reachedTile == tileToWork) {
                 if (reachedTile.isPillaged()) {
                     debug("WorkerAutomation: $unit -> repairs $reachedTile")
                     UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()

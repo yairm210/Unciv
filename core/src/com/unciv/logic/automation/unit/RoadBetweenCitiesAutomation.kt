@@ -238,9 +238,9 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
                     unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first)
                 }?.first ?: continue // Apparently we can't reach any of these tiles at all
 
-            if (bestTile != currentTile && unit.currentMovement > 0)
+            if (bestTile != currentTile && unit.hasMovement())
                 unit.movement.headTowards(bestTile)
-            if (unit.currentMovement > 0 && bestTile == currentTile
+            if (unit.hasMovement() && bestTile == currentTile
                     && currentTile.improvementInProgress != bestRoadAvailable.name) {
                 val improvement = bestRoadAvailable.improvement(civInfo.gameInfo.ruleset)!!
                 bestTile.startWorkingOnImprovement(improvement, civInfo, unit)

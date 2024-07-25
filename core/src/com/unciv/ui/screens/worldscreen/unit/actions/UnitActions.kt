@@ -242,7 +242,7 @@ object UnitActions {
                             worldScreen.switchToNextUnit()
                     }.open()
                 }
-            }.takeIf { unit.currentMovement > 0 }
+            }.takeIf { unit.hasMovement() }
         ))
     }
 
@@ -253,7 +253,7 @@ object UnitActions {
             useFrequency = 150f, // We want to show the player that they can promote
             action = {
                 UncivGame.Current.pushScreen(PromotionPickerScreen(unit))
-            }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 }
+            }.takeIf { unit.hasMovement() && unit.attacksThisTurn == 0 }
         ))
     }
 
@@ -262,7 +262,7 @@ object UnitActions {
         if (unit.isExploring()) return
         yield(UnitAction(UnitActionType.Explore, 5f) {
             unit.action = UnitActionType.Explore.value
-            if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
+            if (unit.hasMovement()) UnitAutomation.automatedExplore(unit)
         })
     }
 
@@ -279,7 +279,7 @@ object UnitActions {
             return
         }
 
-        if (!unit.canFortify() || unit.currentMovement == 0f) return
+        if (!unit.canFortify() || !unit.hasMovement()) return
 
         yield(UnitAction(UnitActionType.Fortify,
             action = { unit.fortify() }.takeIf { !unit.isFortified() || unit.isFortifyingUntilHealed() },
@@ -295,7 +295,7 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addSleepActions(unit: MapUnit, tile: Tile) {
-        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
+        if (unit.isFortified() || unit.canFortify() || !unit.hasMovement()) return
         if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
 
         yield(UnitAction(UnitActionType.Sleep,
@@ -333,7 +333,7 @@ object UnitActions {
         // Transported units can't be gifted
         if (unit.isTransported) return@sequence
 
-        if (unit.currentMovement <= 0) {
+        if (!unit.hasMovement()) {
             yield(UnitAction(UnitActionType.GiftUnit, 1f, action = null))
             return@sequence
         }
@@ -372,7 +372,7 @@ object UnitActions {
             action = {
                 unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
-            }.takeIf { unit.currentMovement > 0 }
+            }.takeIf { unit.hasMovement() }
         ))
     }
 

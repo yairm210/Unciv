@@ -85,8 +85,7 @@ object AirUnitAutomation {
                 || (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ)) }
             }.minByOrNull { it.aerialDistanceTo(unit.getTile()) } ?: return false
         AirInterception.airSweep(MapUnitCombatant(unit),targetTile)
-        if (unit.currentMovement > 0) return false
-        return true
+        return !unit.hasMovement()
     }
 
     fun automateBomber(unit: MapUnit) {

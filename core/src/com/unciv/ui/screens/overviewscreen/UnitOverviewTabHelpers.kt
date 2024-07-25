@@ -46,7 +46,7 @@ open class UnitOverviewTabHelpers {
     private fun getWorkerActionText(unit: MapUnit): String? = when {
         // See UnitTurnManager.endTurn, if..workOnImprovement or UnitGroup.getActionImage: similar logic
         !unit.cache.hasUniqueToBuildImprovements -> null
-        unit.currentMovement == 0f -> null
+        !unit.hasMovement() -> null
         unit.currentTile.improvementInProgress == null -> null
         !unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) -> null
         else -> unit.currentTile.improvementInProgress
@@ -142,7 +142,7 @@ open class UnitOverviewTabHelpers {
         if (!showPromoteStar) return
         table.add(
             ImageGetter.getImage("OtherIcons/Star").apply {
-                color = if (canEnable && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
+                color = if (canEnable && unit.hasMovement() && unit.attacksThisTurn == 0)
                     Color.GOLDENROD
                 else Color.GOLDENROD.darken(0.25f)
             }

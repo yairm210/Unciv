@@ -303,7 +303,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     /**
      * Calculates the success chance of a coup in this city state.
      */
-    fun getCoupChanceOfSuccess(includeUnkownFactors: Boolean): Float {
+    fun getCoupChanceOfSuccess(includeunknownFactors: Boolean): Float {
         val cityState = getCity().civ
         var successPercentage = 50f
 
@@ -315,7 +315,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         successPercentage -= influenceDifference / 2f
 
         // If we are viewing the success chance we don't want to reveal that there is a defending spy
-        val defendingSpy = if (includeUnkownFactors) 
+        val defendingSpy = if (includeunknownFactors) 
             cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
 

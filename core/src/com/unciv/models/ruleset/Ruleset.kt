@@ -150,13 +150,13 @@ class Ruleset {
     private inline fun <reified T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>(items.size)
         for (item in items) {
-            val name = try { item.name }
+            val itemName = try { item.name }
             catch (ex: Exception) {
                 throw Exception("${T::class.simpleName} is missing a name!")
             }
 
-            hashMap[item.name] = item
-            (item as? IRulesetObject)?.originRuleset = name
+            hashMap[itemName] = item
+            (item as? IRulesetObject)?.originRuleset = name // RULESET name
         }
         return hashMap
     }
