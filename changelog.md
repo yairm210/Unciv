@@ -1,3 +1,22 @@
+## 4.12.13
+
+Special nuke animation, to make it feel more momentous
+
+Better repeatable unique randomization
+
+Modding:
+- mapUnitFilter no longer errors for correct values
+- Better display of "object is missing a name" errors
+- Fix endless loop when many units can transfer movement to each other
+
+By tuvus:
+- Made Gold Gifting moddable 
+- Make AI difficulty moddable 
+
+Repair Qingmin holiday  - By SomeTroglodyte
+
+Civilopedia Updates: Trade Routes and Air Combat  - By itanasi
+
 ## 4.12.12
 
 Terrain civilopedia displays improvements that can be placed

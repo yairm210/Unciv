@@ -46,7 +46,7 @@ object UnitActionsFromUniques {
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
 
-        if (unit.currentMovement <= 0 || !tile.canBeSettled())
+        if (!unit.hasMovement() || !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
         val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
@@ -126,7 +126,7 @@ object UnitActionsFromUniques {
             action = {
                 unit.action = UnitActionType.SetUp.value
                 unit.useMovementPoints(1f)
-            }.takeIf { unit.currentMovement > 0 && !isSetUp })
+            }.takeIf { unit.hasMovement() && !isSetUp })
         )
     }
 
@@ -204,7 +204,7 @@ object UnitActionsFromUniques {
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
             val unitAction = fun (): (()->Unit)? {
-                if (unit.currentMovement == 0f) return null
+                if (!unit.hasMovement()) return null
                 val triggerFunction = UniqueTriggerActivation.getTriggerFunction(unique, unit.civ, unit = unit, tile = unit.currentTile)
                     ?: return null
                 return { // This is the *action* that will be triggered!
@@ -256,7 +256,7 @@ object UnitActionsFromUniques {
             action = {
                 tile.setImprovement(improvementName, unit.civ, unit)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
-            }.takeIf { unit.currentMovement > 0 })
+            }.takeIf { unit.hasMovement() })
     }
 
     // Not internal: Used in SpecificUnitAutomation
@@ -294,7 +294,7 @@ object UnitActionsFromUniques {
                         UnitActionModifiers.activateSideEffects(unit, unique)
                     }.takeIf {
                         resourcesAvailable
-                            && unit.currentMovement > 0f
+                            && unit.hasMovement()
                             && tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
@@ -401,7 +401,7 @@ object UnitActionsFromUniques {
     internal fun getBuildingImprovementsActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         if (!unit.cache.hasUniqueToBuildImprovements) return emptySequence()
 
-        val couldConstruct = unit.currentMovement > 0
+        val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter()
             && unit.civ.gameInfo.ruleset.tileImprovements.values.any {
             ImprovementPickerScreen.canReport(
@@ -447,7 +447,7 @@ object UnitActionsFromUniques {
         if (tile.isCityCenter()) return null
         if (!tile.isPillaged()) return null
 
-        val couldConstruct = unit.currentMovement > 0
+        val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
             && !tile.isEnemyTerritory(unit.civ)
 

@@ -67,7 +67,6 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     }
 
     init {
-
         isTransform = false
 
         image = getMainImage()
@@ -80,7 +79,6 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
 
         this.addActor(background)
         this.addActor(image)
-
     }
 
     /** Inner image */

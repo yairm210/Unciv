@@ -305,7 +305,7 @@ class WorldMapHolder(
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action =
                                 "moveTo ${targetTile.position.x.toInt()},${targetTile.position.y.toInt()}"
-                    if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+                    if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
                     worldScreen.shouldUpdate = true
 
@@ -320,7 +320,7 @@ class WorldMapHolder(
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
 
-                    if (UncivGame.Current.settings.autoUnitCycle && selectedUnit.currentMovement == 0f)
+                    if (UncivGame.Current.settings.autoUnitCycle && selectedUnit.hasMovement())
                         worldScreen.switchToNextUnit()
 
                 } catch (ex: Exception) {
@@ -378,7 +378,7 @@ class WorldMapHolder(
         // Play something like a swish-swoosh
         SoundPlayer.play(UncivSound.Swap)
 
-        if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+        if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
@@ -500,7 +500,7 @@ class WorldMapHolder(
         for (unit in unitList) {
             val unitIconGroup = UnitIconGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
             unitIconGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (unit.currentMovement == 0f) unitIconGroup.color.a = 0.66f
+            if (!unit.hasMovement()) unitIconGroup.color.a = 0.66f
             val clickableCircle = ClickableCircle(68f)
             clickableCircle.touchable = Touchable.enabled
             clickableCircle.onClick {

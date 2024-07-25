@@ -59,7 +59,7 @@ class PromotionPickerScreen private constructor(
     private val canChangeState = GUI.isAllowedChangeState()
     private val canPromoteNow = canChangeState &&
             unit.promotions.canBePromoted() &&
-            unit.currentMovement > 0 && unit.attacksThisTurn == 0
+            unit.hasMovement() && unit.attacksThisTurn == 0
 
     // Logic
     private val tree = PromotionTree(unit)

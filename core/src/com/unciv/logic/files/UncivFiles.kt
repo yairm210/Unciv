@@ -379,10 +379,11 @@ class UncivFiles(
 
         /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
         fun gameInfoFromString(gameData: String): GameInfo {
+            val fixedData = gameData.trim().replace("\r", "").replace("\n", "")
             val unzippedJson = try {
-                Gzip.unzip(gameData.trim())
-            } catch (_: Exception) {
-                gameData.trim()
+                Gzip.unzip(fixedData)
+            } catch (ex: Exception) {
+                fixedData
             }
             val gameInfo = try {
                 json().fromJson(GameInfo::class.java, unzippedJson)

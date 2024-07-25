@@ -49,7 +49,7 @@ class UnitUpgradeMenu(
         unit.civ.units.getCivUnits()
             .filter {
                 it.baseUnit.name == unit.baseUnit.name
-                    && it.currentMovement > 0f
+                    && it.hasMovement()
                     && it.currentTile.getOwner() == unit.civ
                     && !it.isEmbarked()
                     && it.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = true)
