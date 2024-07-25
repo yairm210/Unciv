@@ -149,7 +149,7 @@ open class Stats(
         food *= 14
         production *= 12
         gold *= 6 // 2 gold worth about 1 production
-        science *= 7
+        science *= 9
         culture *= 8
         happiness *= 10 // base
         faith *= 7

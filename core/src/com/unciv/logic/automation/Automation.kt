@@ -39,7 +39,7 @@ object Automation {
             gpp = specialistInfo.greatPersonPoints.sumValues().toFloat()
         }
         gpp = gpp * (100 + city.currentGPPBonus) / 100
-        rank += gpp * 1 // GPP weight
+        rank += gpp * 3 // GPP weight
         return rank
     }
 
@@ -61,7 +61,6 @@ object Automation {
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
-            yieldStats.science *= 1.5f // we want to be working scientists
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
@@ -94,10 +93,10 @@ object Automation {
             }
         }
 
-        if (city.population.population < 5) {
+        if (city.population.population < 10) {
             // "small city" - we care more about food and less about global problems like gold science and culture
-            // Food already handled above. Science/Culture have low weights in Stats already
-            yieldStats.gold /= 2
+            // Food already handled above. Gold/Culture have low weights in Stats already
+            yieldStats.science /= 2
         }
 
         if (city.civ.stats.statsForNextTurn.gold < 0) {
