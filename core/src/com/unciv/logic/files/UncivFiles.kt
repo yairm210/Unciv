@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.CompatibilityVersion
 import com.unciv.logic.GameInfo
@@ -379,17 +378,6 @@ class UncivFiles(
                 return field
             }
 
-        /** Specialized function to access settings before Gdx is initialized.
-         *
-         * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
-         */
-        fun getSettingsForPlatformLaunchers(base: String = "."): GameSettings {
-            // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
-            // In fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(base + File.separator + SETTINGS_FILE_NAME)
-            return if (file.exists()) json().fromJsonFile(GameSettings::class.java, file)
-            else GameSettings().apply { isFreshlyCreated = true }
-        }
 
         /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
         fun gameInfoFromString(gameData: String): GameInfo {
