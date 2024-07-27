@@ -1,3 +1,23 @@
+## 4.12.14
+
+Add CLI argument to specify the data directory
+
+Added CLI arg to specify the data directory. Tests for save/load, downloading mods, creating maps, show success
+
+- Desktop: Allow specifying data directory (for "local" files, in GDX terms) separate from installed files directory (What GDX terms "internal").
+
+fixed broken build
+
+Added helper function MapUnit.hasMovement()
+
+New unit triggers to gain/lose movement points
+
+AI citizen focus change  - By EmperorPinguin
+
+Correct spelling of 'Svannah' to 'Savannah' across project.  - By aaronjfeingold
+
+Fix AUR deploy step  - By Thyrum
+
 ## 4.12.13
 
 Special nuke animation, to make it feel more momentous
