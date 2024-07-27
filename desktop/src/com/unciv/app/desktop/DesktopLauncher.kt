@@ -4,11 +4,9 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
-import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
-import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.GameSettings.WindowState
 import com.unciv.models.ruleset.Ruleset
@@ -78,15 +76,14 @@ internal object DesktopLauncher {
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 
-        val settingsFileLocation = if (customDataDir == null) SETTINGS_FILE_NAME
-        else customDataDir + File.separator + SETTINGS_FILE_NAME
+        val settingsDirectory = customDataDir ?: "."
 
-        val settings = getSettingsForPlatformLaunchers(settingsFileLocation)
+        val settings = UncivFiles.getSettingsForPlatformLaunchers(settingsDirectory)
         if (settings.isFreshlyCreated) {
             settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
             settings.windowState = WindowState(maximumWindowBounds)
 
-            FileHandle(settingsFileLocation).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
+            FileHandle(settingsDirectory + File.separator + SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
         }
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they
@@ -106,15 +103,5 @@ internal object DesktopLauncher {
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
         HardenGdxAudio(DesktopGame(config, customDataDir), config)
         exitProcess(0)
-    }
-
-    /** Specialized function to access settings before Gdx is initialized.
-     */
-    private fun getSettingsForPlatformLaunchers(settingsFileLocation: String): GameSettings {
-        // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
-        // In fact, at this point Gdx.app or Gdx.files are null but this still works.
-        val file = FileHandle(settingsFileLocation)
-        return if (file.exists()) json().fromJsonFile(GameSettings::class.java, file)
-        else GameSettings().apply { isFreshlyCreated = true }
     }
 }
