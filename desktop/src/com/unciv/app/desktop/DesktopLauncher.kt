@@ -91,8 +91,12 @@ internal object DesktopLauncher {
             UiElementDocsWriter().write()
         }
 
+
+        val customDataDirPrefix="--data-dir="
+        val customDataDir = arg.find { it.startsWith(customDataDirPrefix) }?.removePrefix(customDataDirPrefix)
+
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
-        HardenGdxAudio(DesktopGame(config, null), config)
+        HardenGdxAudio(DesktopGame(config, customDataDir), config)
         exitProcess(0)
     }
 }
