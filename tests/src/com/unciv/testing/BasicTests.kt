@@ -1,6 +1,7 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.testing
 
+import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
@@ -39,7 +40,7 @@ class BasicTests {
     @Test
     fun gamePngExists() {
         Assert.assertTrue("This test will only pass when the game.png exists",
-                UncivGame.Current.files.getDataFolder().list().any { it.name().endsWith(".png") })
+                Gdx.files.local("").list().any { it.name().endsWith(".png") })
     }
 
     @Test

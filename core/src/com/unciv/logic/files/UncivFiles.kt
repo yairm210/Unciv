@@ -42,7 +42,7 @@ class UncivFiles(
     private val files: Files,
 
     /** If not null, this is the path to the directory in which to store the local files - mods, saves, maps, etc */
-    val customDataDirectory: String?
+    val customDataDirectory: String? = null
 ) {
     init {
         debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s",

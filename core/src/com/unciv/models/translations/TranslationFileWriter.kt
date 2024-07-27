@@ -1,5 +1,6 @@
 package com.unciv.models.translations
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
@@ -259,7 +260,7 @@ object TranslationFileWriter {
 
     // used for unit test only
     fun getGeneratedStringsSize(): Int {
-        return GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons/Civ V - Vanilla")).values.sumOf {
+        return GenerateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf {
             // exclude empty lines
             it.count { line: String -> !line.startsWith(specialNewLineCode) }
         }
