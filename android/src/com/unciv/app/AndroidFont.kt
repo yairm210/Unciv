@@ -10,8 +10,8 @@ import android.graphics.fonts.FontStyle
 import android.graphics.fonts.SystemFonts
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
+import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
