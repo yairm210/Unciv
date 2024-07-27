@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.GithubAPI
 import com.unciv.models.metadata.BaseRuleset
@@ -53,7 +54,7 @@ internal class ModInfoAndActionPane : Table() {
     fun update(mod: Ruleset) {
         val modName = mod.name
         val modOptions = mod.modOptions  // The ModOptions as enriched by us with GitHub metadata when originally downloaded
-        isBuiltin = modOptions.modUrl.isEmpty() && BaseRuleset.values().any { it.fullName == modName }
+        isBuiltin = modOptions.modUrl.isEmpty() && BaseRuleset.entries.any { it.fullName == modName }
         enableVisualCheckBox = ModCompatibility.isAudioVisualMod(mod)
         update(
             modName, modOptions.modUrl, modOptions.defaultBranch,
@@ -159,7 +160,7 @@ internal class ModInfoAndActionPane : Table() {
 
     private fun addLocalPreviewImage(modName: String) {
         // No concurrency, order of magnitude 20ms
-        val modFolder = Gdx.files.local("mods/$modName")
+        val modFolder = UncivGame.Current.files.getModFolder(modName)
         val previewFile = modFolder.child("preview.jpg").takeIf { it.exists() }
             ?: modFolder.child("preview.png").takeIf { it.exists() }
             ?: return

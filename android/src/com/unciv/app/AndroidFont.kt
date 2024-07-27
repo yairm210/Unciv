@@ -66,7 +66,7 @@ class AndroidFont : FontImplementation {
 
     private fun createTypefaceCustom(path: String): Typeface {
         return try {
-            Typeface.createFromFile(Gdx.files.local(path).file())
+            Typeface.createFromFile(UncivGame.Current.files.getLocalFile(path).file())
         } catch (e: Exception) {
             Log.error("Failed to create typeface, falling back to default", e)
             // Falling back to default

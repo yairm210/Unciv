@@ -1,7 +1,6 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.testing
 
-import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
@@ -40,7 +39,7 @@ class BasicTests {
     @Test
     fun gamePngExists() {
         Assert.assertTrue("This test will only pass when the game.png exists",
-                Gdx.files.local("").list().any { it.name().endsWith(".png") })
+                UncivGame.Current.files.getDataFolder().list().any { it.name().endsWith(".png") })
     }
 
     @Test
@@ -91,7 +90,7 @@ class BasicTests {
 
     @Test
     fun baseRulesetHasNoBugs() {
-        for (baseRuleset in BaseRuleset.values()) {
+        for (baseRuleset in BaseRuleset.entries) {
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.checkModLinks()
             if (modCheck.isNotOK())
@@ -103,7 +102,7 @@ class BasicTests {
     @Test
     fun uniqueTypesHaveNoUnknownParameters() {
         var noUnknownParameters = true
-        for (uniqueType in UniqueType.values()) {
+        for (uniqueType in UniqueType.entries) {
             if (uniqueType.getDeprecationAnnotation()!=null) continue
             for (entry in uniqueType.parameterTypeMap.withIndex()) {
                 for (paramType in entry.value) {
@@ -121,7 +120,7 @@ class BasicTests {
     @Test
     fun allUniqueTypesHaveAtLeastOneTarget() {
         var allOK = true
-        for (uniqueType in UniqueType.values()) {
+        for (uniqueType in UniqueType.entries) {
             if (uniqueType.targetTypes.isEmpty()) {
                 debug("%s has no targets.", uniqueType.name)
                 allOK = false
@@ -136,7 +135,7 @@ class BasicTests {
         var allOK = true
         for (unit in units) {
             for (unique in unit.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                if (!UniqueType.entries.any { it.placeholderText == unique.getPlaceholderText() }) {
                     debug("%s: %s", unit.name, unique)
                     allOK = false
                 }
@@ -151,7 +150,7 @@ class BasicTests {
         var allOK = true
         for (building in buildings) {
             for (unique in building.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                if (!UniqueType.entries.any { it.placeholderText == unique.getPlaceholderText() }) {
                     debug("%s: %s", building.name, unique)
                     allOK = false
                 }
@@ -166,7 +165,7 @@ class BasicTests {
         var allOK = true
         for (promotion in promotions) {
             for (unique in promotion.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                if (!UniqueType.entries.any { it.placeholderText == unique.getPlaceholderText() }) {
                     debug("%s: %s", promotion.name, unique)
                     allOK = false
                 }
@@ -181,7 +180,7 @@ class BasicTests {
         var allOK = true
         for (policy in policies) {
             for (unique in policy.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                if (!UniqueType.entries.any { it.placeholderText == unique.getPlaceholderText() }) {
                     println("${policy.name}: $unique")
                     allOK = false
                 }
@@ -197,7 +196,7 @@ class BasicTests {
         var allOK = true
         for (belief in beliefs) {
             for (unique in belief.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                if (!UniqueType.entries.any { it.placeholderText == unique.getPlaceholderText() }) {
                     println("${belief.name}: $unique")
                     allOK = false
                 }
@@ -212,7 +211,7 @@ class BasicTests {
         var allOK = true
         for (era in eras) {
             for (unique in era.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                if (!UniqueType.entries.any { it.placeholderText == unique.getPlaceholderText() }) {
                     println("${era.name}: $unique")
                     allOK = false
                 }
@@ -227,7 +226,7 @@ class BasicTests {
         var allOK = true
         for (reward in ruinRewards) {
             for (unique in reward.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                if (!UniqueType.entries.any { it.placeholderText == unique.getPlaceholderText() }) {
                     println("${reward.name}: $unique")
                     allOK = false
                 }
@@ -239,7 +238,7 @@ class BasicTests {
     @Test
     fun allDeprecatedUniqueTypesHaveReplacewithThatMatchesOtherType() {
         var allOK = true
-        for (uniqueType in UniqueType.values()) {
+        for (uniqueType in UniqueType.entries) {
             val deprecationAnnotation = uniqueType.getDeprecationAnnotation() ?: continue
 
             val uniquesToCheck = deprecationAnnotation.replaceWith.expression.split("\", \"", Constants.uniqueOrDelimiter)
@@ -308,17 +307,17 @@ class BasicTests {
 
     private fun statMathRunner(iterations: Int): Stats {
         val random = Random(42)
-        val statCount = Stat.values().size
+        val statCount = Stat.entries.size
         val stats = Stats()
 
         repeat(iterations) {
             val value: Float = random.nextDouble(-10.0, 10.0).toFloat()
             stats.add( Stats(gold = value) )
             stats.forEach {
-                val stat = Stat.values()[(it.key.ordinal + random.nextInt(1,statCount)).rem(statCount)]
+                val stat = Stat.entries[(it.key.ordinal + random.nextInt(1,statCount)).rem(statCount)]
                 stats.add(stat, -it.value)
             }
-            val stat = Stat.values()[random.nextInt(statCount)]
+            val stat = Stat.entries[random.nextInt(statCount)]
             stats.add(stat, stats.times(4)[stat])
             stats.timesInPlace(0.8f)
             if (abs(stats.values.maxOrNull()!!) > 1000000f)

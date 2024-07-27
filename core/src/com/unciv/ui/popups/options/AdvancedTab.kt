@@ -168,7 +168,7 @@ class AdvancedTab(
             fonts.add(FontFamilyData.default)
 
             // Add mods fonts
-            val modsDir = Gdx.files.local("mods/")
+            val modsDir = UncivGame.Current.files.getModsFolder()
             for (mod in modsDir.list()) {
 
                 // Not a dir, continue

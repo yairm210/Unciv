@@ -1,7 +1,7 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
+import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
@@ -44,7 +44,7 @@ class DesktopFont : FontImplementation {
         try
         {
             // Try to create and register new font
-            val fontFile = Gdx.files.local(path).file()
+            val fontFile = UncivGame.Current.files.getLocalFile(path).file()
             val ge = GraphicsEnvironment.getLocalGraphicsEnvironment()
             font = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(size.toFloat())
             ge.registerFont(font)

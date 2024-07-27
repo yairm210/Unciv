@@ -102,7 +102,7 @@ object TileSetCache : HashMap<String, TileSet>() {
      *  Available before initialization finishes.
      */
     fun getAvailableTilesets(imageGetterTilesets: Sequence<String>): Set<String> {
-        val modTilesetConfigFiles = Gdx.files.local("mods").list().asSequence()
+        val modTilesetConfigFiles = UncivGame.Current.files.getModsFolder().list().asSequence()
             .filter { it.isDirectory && !it.name().startsWith('.') }
             .flatMap { it.child("jsons/TileSets").list().asSequence() }
 

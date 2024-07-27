@@ -60,6 +60,7 @@ import kotlin.reflect.KClass
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
     var deepLinkedMultiplayerGame: String? = null
+    override var customDataDirectory: String? = null
 
     /** The game currently in progress */
     var gameInfo: GameInfo? = null
@@ -93,10 +94,10 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             DebugUtils.VISIBLE_MAP = false
         }
         Current = this
-        files = UncivFiles(Gdx.files)
+        files = UncivFiles(Gdx.files, customDataDirectory)
         Concurrency.run {
             // Delete temporary files created when downloading mods
-            val tempFiles = Gdx.files.local("mods").list().filter { !it.isDirectory && it.name().startsWith("temp-") }
+            val tempFiles = files.getLocalFile("mods").list().filter { !it.isDirectory && it.name().startsWith("temp-") }
             for (file in tempFiles) file.delete()
         }
 

@@ -92,7 +92,7 @@ internal object DesktopLauncher {
         }
 
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
-        HardenGdxAudio(DesktopGame(config), config)
+        HardenGdxAudio(DesktopGame(config, null), config)
         exitProcess(0)
     }
 }

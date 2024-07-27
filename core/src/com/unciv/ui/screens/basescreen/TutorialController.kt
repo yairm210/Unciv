@@ -40,7 +40,7 @@ class TutorialController(screen: BaseScreen) {
             val mods = UncivGame.Current.gameInfo?.ruleset?.mods
                 ?: return@sequence
             val files = mods.asSequence()
-                .map { Gdx.files.local("mods/$it/jsons/Tutorials.json") }
+                .map { UncivGame.Current.files.getLocalFile("mods/$it/jsons/Tutorials.json") }
             yieldAll(files.filter { it.exists() })
         }
     }

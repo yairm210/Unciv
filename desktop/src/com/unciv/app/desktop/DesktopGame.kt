@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.unciv.UncivGame
 
-class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
+class DesktopGame(config: Lwjgl3ApplicationConfiguration, override var customDataDirectory: String?) : UncivGame() {
 
     private var discordUpdater = DiscordUpdater()
     private val windowListener = UncivWindowListener()
@@ -48,5 +48,4 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
         discordUpdater.stopUpdates()
         super.dispose()
     }
-
 }

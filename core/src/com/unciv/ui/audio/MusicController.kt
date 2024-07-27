@@ -53,7 +53,7 @@ class MusicController {
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
                 Gdx.files.external(path)
-            else Gdx.files.local(path)
+            else UncivGame.Current.files.getLocalFile(path)
 
         // These are replaced when we _know_ we're attached to Gdx.audio.update
         private var needOwnTimer = true
@@ -62,9 +62,9 @@ class MusicController {
     }
 
     init {
-        val oldFallbackFile = Gdx.files.local(musicFallbackLocation.removePrefix("/"))
+        val oldFallbackFile = UncivGame.Current.files.getLocalFile(musicFallbackLocation.removePrefix("/"))
         if (oldFallbackFile.exists()) {
-            val newFallbackFile = Gdx.files.local(musicFallbackLocalName)
+            val newFallbackFile = UncivGame.Current.files.getLocalFile(musicFallbackLocalName)
             if (!newFallbackFile.exists())
                 oldFallbackFile.moveTo(newFallbackFile)
         }
@@ -82,7 +82,7 @@ class MusicController {
             else if (mod.isEmpty()) track else "$mod: $track"
 
         companion object {
-            /** Parse a path - must be relative to `Gdx.files.local` */
+            /** Parse a path - must be relative to `UncivGame.Current.files.getLocalFile` */
             fun parse(fileName: String): MusicTrackInfo {
                 if (fileName.isEmpty())
                     return MusicTrackInfo("", "", "")
