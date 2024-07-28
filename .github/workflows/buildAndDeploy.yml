@@ -243,12 +243,18 @@ jobs:
         shell: bash
         run: |
           UNCIV_VERSION=${{ github.ref_name }} wix build .github/workflows/unciv.wxs
-        
+
+
+      - name: Show folders
+        run: |
+          dir
+          dir .github/workflows/wix-msi-files
+
       - name: Upload MSI
         uses: actions/upload-artifact@v4
         with:
           name: Unciv-MSI
-          path: Unciv.msi
+          path: .github/workflows/Unciv.msi
           if-no-files-found: error
 
   upload-to-itch:
