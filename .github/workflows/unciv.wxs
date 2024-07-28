@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- See the file's history at https://github.com/yairm210/unciv-wix-tests -->
+<?define Name = "Unciv" ?>
+<?define InstallFolder = "Unciv" ?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <Package Language="1033"
+             Manufacturer="Yair Morgenstern"
+             Name="$(var.Name)"
+             Version="$(env.UNCIV_VERSION).0"
+            UpgradeCode="74d42802-054a-4869-a703-658c361fe94c">
+             <!-- MSI versions require a 4-part, so we add a ".0" to the end of every version -->
+        <Icon Id="icon.ico" SourceFile="extraImages/Icons/Unciv.ico"/>
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." Schedule="afterInstallInitialize" />
+
+        <!-- Pack all the files into the MSI instead of spreading this over .cab files -->
+        <MediaTemplate CompressionLevel="high" EmbedCab="yes" />
+
+        <DirectoryRef Id="INSTALLFOLDER">
+          <Component Id="Unciv" Guid="70aab056-7fbd-4a7a-9cbb-2275ee064f06">
+            <File Id="UncivExe"
+                  KeyPath="yes"
+                  Checksum="yes"
+                  Source="files/Unciv.exe">
+            </File>
+          </Component>
+        </DirectoryRef>
+    
+        <ComponentGroup Id="UncivFiles" Directory="INSTALLFOLDER">
+            <Files Include="files\**" />
+        </ComponentGroup>
+
+        <Component Id="UncivShortcuts" Directory="INSTALLFOLDER" Guid="0eac8b63-1cab-4645-b0cb-ad7535f0e9ce">
+          <Shortcut Id="StartMenuShortcut"
+                    Name="$(var.Name)"
+                    Target="[#UncivExe]"
+                    Arguments="--data-dir=%APPDATA%\$(var.InstallFolder)"
+                    Icon="icon.ico"
+                    Directory="ApplicationProgramsFolder"
+                    WorkingDirectory="INSTALLFOLDER" />
+          <RemoveFolder Id="CleanupStartMenuShortcut"
+                        Directory="ApplicationProgramsFolder"
+                        On="uninstall" />
+          <RemoveFolder Id="CleanupAppData"
+                        Directory="APPDATAFOLDER"
+                        On="uninstall" />
+          <RegistryValue Root="HKCU" Key="Software\YairMorgenstern\Unciv" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        </Component>
+    
+        <Feature Id="ProductFeature" Title="$(var.Name)" Level="1" ConfigurableDirectory="INSTALLFOLDER">
+            <ComponentGroupRef Id="UncivFiles" />
+            <ComponentRef Id="Unciv" />
+            <ComponentRef Id="UncivShortcuts" />
+        </Feature>
+    
+
+        <StandardDirectory Id="ProgramFilesFolder">
+            <Directory Id="INSTALLFOLDER" Name="$(var.InstallFolder)" />
+        </StandardDirectory>
+
+        <StandardDirectory Id="AppDataFolder">
+            <Directory Id="APPDATAFOLDER" Name="$(var.InstallFolder)" />
+        </StandardDirectory>
+
+        <StandardDirectory Id="ProgramMenuFolder">
+          <Directory Id="ApplicationProgramsFolder" Name="$(var.InstallFolder)" />
+        </StandardDirectory>
+
+    </Package>
+</Wix>
