@@ -20,12 +20,15 @@
             <File Id="UncivExe"
                   KeyPath="yes"
                   Checksum="yes"
-                  Source="wix-msi-files/Unciv.exe">
+                  Source=".github/workflows/wix-msi-files/Unciv.exe">
+                  <!-- Annoyingly the relative locations are not the same.0
+                   THIS source is relative to the current working dir.... -->
             </File>
           </Component>
         </DirectoryRef>
     
         <ComponentGroup Id="UncivFiles" Directory="INSTALLFOLDER">
+            <!-- But THIS source is relative to the exs file location!!! -->
             <Files Include="wix-msi-files\**" />
         </ComponentGroup>
 
