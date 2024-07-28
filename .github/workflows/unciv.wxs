@@ -20,13 +20,13 @@
             <File Id="UncivExe"
                   KeyPath="yes"
                   Checksum="yes"
-                  Source="files/Unciv.exe">
+                  Source="wix-msi-files/Unciv.exe">
             </File>
           </Component>
         </DirectoryRef>
     
         <ComponentGroup Id="UncivFiles" Directory="INSTALLFOLDER">
-            <Files Include="files\**" />
+            <Files Include="wix-msi-files\**" />
         </ComponentGroup>
 
         <Component Id="UncivShortcuts" Directory="INSTALLFOLDER" Guid="0eac8b63-1cab-4645-b0cb-ad7535f0e9ce">

@@ -232,8 +232,9 @@ jobs:
 
       - name: Unzip unciv file
         run: |
-           tar -xf Unciv-Windows64.zip -C files
-           dir files
+          mkdir wix-msi-files
+          tar -xf Unciv-Windows64.zip -C wix-msi-files
+          dir wix-msi-files
         
       - name: Install WiX
         run: dotnet tool install --global wix
