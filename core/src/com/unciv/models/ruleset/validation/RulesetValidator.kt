@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.validation
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
@@ -151,7 +152,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (mapSelectUniques.size > 1)
             lines.add("Specifying more than one map as preselection makes no sense", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
         if (mapSelectUniques.isNotEmpty()) {
-            val mapsFolder = Gdx.files.local("mods").child(ruleset.name).child("maps")
+            val mapsFolder = UncivGame.Current.files.getModFolder(ruleset.name).child("maps")
             if (mapsFolder.exists()) {
                 val maps = mapsFolder.list().map { it.name().lowercase() }
                 for (unique in mapSelectUniques) {

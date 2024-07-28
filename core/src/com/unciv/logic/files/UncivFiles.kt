@@ -40,7 +40,10 @@ class UncivFiles(
      * This is necessary because the Android turn check background worker does not hold any reference to the actual [com.badlogic.gdx.Application],
      * which is normally responsible for keeping the [Gdx] static variables from being garbage collected.
      */
-    private val files: Files
+    private val files: Files,
+
+    /** If not null, this is the path to the directory in which to store the local files - mods, saves, maps, etc */
+    val customDataDirectory: String? = null
 ) {
     init {
         debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s",
@@ -50,6 +53,17 @@ class UncivFiles(
     val autosaves = Autosaves(this)
 
     //region Helpers
+
+    fun getLocalFile(fileName: String): FileHandle {
+        return if (customDataDirectory == null) files.local(fileName)
+        else files.absolute(customDataDirectory + File.separator + fileName)
+    }
+
+    fun getModsFolder() = getLocalFile("mods")
+    fun getModFolder(modName: String) = getModsFolder().child(modName)
+
+    /** The folder that holds data that the game changes while running - all the mods, maps, save files, etc */
+    fun getDataFolder() = getLocalFile("")
 
     fun getSave(gameName: String): FileHandle {
         return getSave(SAVE_FILES_FOLDER, gameName)
@@ -62,7 +76,7 @@ class UncivFiles(
         debug("Getting save %s from folder %s, preferExternal: %s",
             gameName, saveFolder, preferExternalStorage, files.externalStoragePath)
         val location = "${saveFolder}/$gameName"
-        val localFile = files.local(location)
+        val localFile = getLocalFile(location)
         val externalFile = files.external(location)
 
         val toReturn = if (files.isExternalStorageAvailable && (
@@ -88,7 +102,7 @@ class UncivFiles(
 
     fun pathToFileHandler(path: String): FileHandle {
         return if (preferExternalStorage && files.isExternalStorageAvailable) files.external(path)
-        else files.local(path)
+        else getLocalFile(path)
     }
 
 
@@ -106,9 +120,9 @@ class UncivFiles(
 
     private fun getSaves(saveFolder: String): Sequence<FileHandle> {
         debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
-        val localFiles = files.local(saveFolder).list().asSequence()
+        val localFiles = getLocalFile(saveFolder).list().asSequence()
 
-        val externalFiles = if (files.isExternalStorageAvailable && files.local("").file().absolutePath != files.external("").file().absolutePath) {
+        val externalFiles = if (files.isExternalStorageAvailable && getDataFolder().file().absolutePath != files.external("").file().absolutePath) {
             files.external(saveFolder).list().asSequence()
         } else {
             emptySequence()
@@ -205,7 +219,7 @@ class UncivFiles(
         onSaved: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val saveLocation = game.customSaveLocation ?: Gdx.files.local(gameName).path()
+        val saveLocation = game.customSaveLocation ?: UncivGame.Current.files.getLocalFile(gameName).path()
 
         try {
             val data = gameInfoToString(game)
@@ -286,7 +300,7 @@ class UncivFiles(
 
     private fun getGeneralSettingsFile(): FileHandle {
         return if (UncivGame.Current.isConsoleMode) FileHandle(SETTINGS_FILE_NAME)
-        else files.local(SETTINGS_FILE_NAME)
+        else getLocalFile(SETTINGS_FILE_NAME)
     }
 
     fun getGeneralSettings(): GameSettings {
@@ -367,12 +381,12 @@ class UncivFiles(
 
         /** Specialized function to access settings before Gdx is initialized.
          *
-         * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
+         * @param baseDirectory Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
          */
-        fun getSettingsForPlatformLaunchers(base: String = "."): GameSettings {
+        fun getSettingsForPlatformLaunchers(baseDirectory: String): GameSettings {
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(base + File.separator + SETTINGS_FILE_NAME)
+            val file = FileHandle(baseDirectory + File.separator + SETTINGS_FILE_NAME)
             return if (file.exists()) json().fromJsonFile(GameSettings::class.java, file)
             else GameSettings().apply { isFreshlyCreated = true }
         }

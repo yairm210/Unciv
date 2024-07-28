@@ -2,6 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -72,7 +73,7 @@ object TranslationFileWriter {
 
             // See #5168 for some background on this
             for ((modName, modTranslations) in translations.modsWithTranslations) {
-                val modFolder = Gdx.files.local("mods").child(modName)
+                val modFolder = UncivGame.Current.files.getModFolder(modName)
                 val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations)
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
             }
@@ -86,7 +87,7 @@ object TranslationFileWriter {
 
     private fun getFileHandle(modFolder: FileHandle?, fileLocation: String) =
             if (modFolder != null) modFolder.child(fileLocation)
-            else Gdx.files.local(fileLocation)
+            else UncivGame.Current.files.getLocalFile(fileLocation)
 
     /**
      * Writes new language files per Mod or for BaseRuleset - only each language that exists in [translations].
@@ -108,7 +109,7 @@ object TranslationFileWriter {
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
             linesToTranslate += "\n\n#################### Lines from Unique Types #######################\n"
-            for (uniqueType in UniqueType.values()) {
+            for (uniqueType in UniqueType.entries) {
                 val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
                 if (deprecationAnnotation != null) continue
                 if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
@@ -116,37 +117,37 @@ object TranslationFileWriter {
                 linesToTranslate += "${uniqueType.getTranslatable()} = "
             }
 
-            for (uniqueParameterType in UniqueParameterType.values()) {
+            for (uniqueParameterType in UniqueParameterType.entries) {
                 val strings = uniqueParameterType.getTranslationWriterStringsForOutput()
                 if (strings.isEmpty()) continue
                 linesToTranslate += "\n######### ${uniqueParameterType.displayName} ###########\n"
                 linesToTranslate.addAll(strings.map { "$it = " })
             }
 
-            for (uniqueTarget in UniqueTarget.values())
+            for (uniqueTarget in UniqueTarget.entries)
                 linesToTranslate += "$uniqueTarget = "
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
-            for (spyAction in SpyAction.values())
+            for (spyAction in SpyAction.entries)
                 linesToTranslate += "${spyAction.displayString} = "
 
             linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
-            for (diplomaticModifier in DiplomaticModifiers.values())
+            for (diplomaticModifier in DiplomaticModifiers.entries)
                 linesToTranslate += "${diplomaticModifier.text} = "
 
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
             for (bindingLabel in KeyboardBinding.getTranslationEntries())
                 linesToTranslate += "$bindingLabel = "
 
-            for (baseRuleset in BaseRuleset.values()) {
+            for (baseRuleset in BaseRuleset.entries) {
                 val generatedStringsFromBaseRuleset =
-                        GenerateStringsFromJSONs(Gdx.files.local("jsons/${baseRuleset.fullName}"))
+                        GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons/${baseRuleset.fullName}"))
                 for (entry in generatedStringsFromBaseRuleset)
                     fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
             }
 
             // Tutorials reside one level above the base rulesets - if they were per-ruleset the following lines would be unnecessary
-            val tutorialStrings = GenerateStringsFromJSONs(Gdx.files.local("jsons")) { it.name == "Tutorials.json" }
+            val tutorialStrings = GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons")) { it.name == "Tutorials.json" }
             fileNameToGeneratedStrings["Tutorials"] = tutorialStrings.values.first()
         } else {
             fileNameToGeneratedStrings.putAll(GenerateStringsFromJSONs(modFolder.child("jsons")))

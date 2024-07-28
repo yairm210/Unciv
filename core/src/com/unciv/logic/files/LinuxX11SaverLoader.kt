@@ -23,7 +23,7 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
             val startLocation =
                 if (suggestedLocation.startsWith(File.separator)) Gdx.files.absolute(suggestedLocation)
                 else if (Gdx.files.external(suggestedLocation).parent().exists()) Gdx.files.external(suggestedLocation)
-                else Gdx.files.local(suggestedLocation)
+                else UncivGame.Current.files.getLocalFile(suggestedLocation)
             FileChooser.createSaveDialog(stage, "Save game", startLocation) {
                 success, file ->
                 if (!success)

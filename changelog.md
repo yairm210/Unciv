@@ -1,3 +1,13 @@
+## 4.12.14
+
+Add CLI argument to specify the data directory - this will allow native install on Windows, hopefully
+
+Modding: New unit triggers to gain/lose movement points
+
+AI citizen focus improvements - By EmperorPinguin
+
+Correct spelling of 'Svannah' to 'Savannah' across project.  - By aaronjfeingold
+
 ## 4.12.13
 
 Special nuke animation, to make it feel more momentous

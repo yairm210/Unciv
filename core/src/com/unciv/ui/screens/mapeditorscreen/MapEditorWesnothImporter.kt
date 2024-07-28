@@ -1,8 +1,8 @@
 package com.unciv.ui.screens.mapeditorscreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.FileChooser
@@ -55,7 +55,7 @@ class MapEditorWesnothImporter(private val editorScreen: MapEditorScreen) : Disp
         json().fromJson(
             linkedMapOf<String,ArrayList<String>>()::class.java,
             arrayListOf<String>()::class.java,  // else we get Gdx.Array despite the class above stating ArrayList
-            Gdx.files.local("jsons/WesnothImportMappings.json")
+            UncivGame.Current.files.getLocalFile("jsons/WesnothImportMappings.json")
         )
     }
 

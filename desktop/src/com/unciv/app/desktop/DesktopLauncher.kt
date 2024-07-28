@@ -18,6 +18,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
+import java.io.File
 import kotlin.system.exitProcess
 
 internal object DesktopLauncher {
@@ -42,6 +43,9 @@ internal object DesktopLauncher {
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
         }
+
+        val customDataDirPrefix="--data-dir="
+        val customDataDir = arg.find { it.startsWith(customDataDirPrefix) }?.removePrefix(customDataDirPrefix)
 
         // Setup Desktop logging
         Log.backend = DesktopLogBackend()
@@ -72,11 +76,14 @@ internal object DesktopLauncher {
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 
-        val settings = UncivFiles.getSettingsForPlatformLaunchers()
+        val settingsDirectory = customDataDir ?: "."
+
+        val settings = UncivFiles.getSettingsForPlatformLaunchers(settingsDirectory)
         if (settings.isFreshlyCreated) {
             settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
             settings.windowState = WindowState(maximumWindowBounds)
-            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
+
+            FileHandle(settingsDirectory + File.separator + SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
         }
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they
@@ -91,8 +98,10 @@ internal object DesktopLauncher {
             UiElementDocsWriter().write()
         }
 
+
+
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
-        HardenGdxAudio(DesktopGame(config), config)
+        HardenGdxAudio(DesktopGame(config, customDataDir), config)
         exitProcess(0)
     }
 }

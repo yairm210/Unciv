@@ -10,8 +10,8 @@ import android.graphics.fonts.FontStyle
 import android.graphics.fonts.SystemFonts
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
+import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
@@ -66,7 +66,7 @@ class AndroidFont : FontImplementation {
 
     private fun createTypefaceCustom(path: String): Typeface {
         return try {
-            Typeface.createFromFile(Gdx.files.local(path).file())
+            Typeface.createFromFile(UncivGame.Current.files.getLocalFile(path).file())
         } catch (e: Exception) {
             Log.error("Failed to create typeface, falling back to default", e)
             // Falling back to default

@@ -138,9 +138,9 @@ object SoundPlayer {
     private fun getFile(sound: UncivSound): FileHandle? {
         val fileName = sound.fileName
         for (modFolder in getFolders()) {
-            for (extension in SupportedExtensions.values()) {
+            for (extension in SupportedExtensions.entries) {
                 val path = "${modFolder}sounds$separator$fileName.${extension.name}"
-                val localFile = Gdx.files.local(path)
+                val localFile = UncivGame.Current.files.getLocalFile(path)
                 if (localFile.exists()) return localFile
                 val internalFile = Gdx.files.internal(path)
                 if (internalFile.exists()) return internalFile
