@@ -231,10 +231,10 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Unzip unciv file
-        run: |
-          mkdir wix-msi-files
-          tar -xf Unciv-Windows64.zip -C wix-msi-files
-          dir wix-msi-files
+        run: | # The relative folders in wxs files are relative to the file itself
+          mkdir .github/workflows/wix-msi-files
+          tar -xf Unciv-Windows64.zip -C .github/workflows/wix-msi-files
+          dir .github/workflows/wix-msi-files
         
       - name: Install WiX
         run: dotnet tool install --global wix
