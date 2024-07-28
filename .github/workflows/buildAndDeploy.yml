@@ -272,7 +272,7 @@ jobs:
           ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{ github.ref_name }}
 
   upload-github-release-and-post-to-discord:
-    needs: [get-release-body, android-build, packr-build]
+    needs: [get-release-body, android-build, packr-build, build-msi]
     runs-on: ubuntu-latest
     steps:
 
