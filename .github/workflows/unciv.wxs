@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- See the file's history at https://github.com/yairm210/unciv-wix-tests -->
 <?define Name = "Unciv" ?>
-<?define InstallFolder = "Unciv" ?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
     <Package Language="1033"
              Manufacturer="Yair Morgenstern"
@@ -36,7 +35,7 @@
           <Shortcut Id="StartMenuShortcut"
                     Name="$(var.Name)"
                     Target="[#UncivExe]"
-                    Arguments="--data-dir=%APPDATA%\$(var.InstallFolder)"
+                    Arguments="--data-dir=[AppDataFolder][ProductName]"
                     Icon="icon.ico"
                     Directory="ApplicationProgramsFolder"
                     WorkingDirectory="INSTALLFOLDER" />
@@ -56,16 +55,16 @@
         </Feature>
     
 
-        <StandardDirectory Id="ProgramFilesFolder">
-            <Directory Id="INSTALLFOLDER" Name="$(var.InstallFolder)" />
+        <StandardDirectory Id="ProgramFiles64Folder">
+            <Directory Id="INSTALLFOLDER" Name="$(var.Name)" />
         </StandardDirectory>
 
         <StandardDirectory Id="AppDataFolder">
-            <Directory Id="APPDATAFOLDER" Name="$(var.InstallFolder)" />
+            <Directory Id="APPDATAFOLDER" Name="$(var.Name)" />
         </StandardDirectory>
 
         <StandardDirectory Id="ProgramMenuFolder">
-          <Directory Id="ApplicationProgramsFolder" Name="$(var.InstallFolder)" />
+          <Directory Id="ApplicationProgramsFolder" Name="$(var.Name)" />
         </StandardDirectory>
 
     </Package>
