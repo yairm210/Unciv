@@ -113,7 +113,7 @@ interface IMediaFinder {
     //////////////////////////////////////////// Internal helpers
 
     fun getModMediaFolder(modName: String): FileHandle =
-        Gdx.files.local("mods").child(modName).child(mediaSubFolderName)
+        UncivGame.Current.files.getModFolder(modName).child(mediaSubFolderName)
 
     private fun FileHandle.directoryExists() = when {
         type() != Files.FileType.Internal -> exists() && isDirectory

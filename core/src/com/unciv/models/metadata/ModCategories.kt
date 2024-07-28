@@ -1,11 +1,11 @@
 package com.unciv.models.metadata
 
 import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.github.GithubAPI
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.logic.github.Github
-import com.unciv.models.translations.tr
 
 
 class ModCategories : ArrayList<ModCategories.Category>() {
@@ -61,7 +61,7 @@ class ModCategories : ArrayList<ModCategories.Category>() {
         val json = json()
         val compact = json.toJson(this, ModCategories::class.java, Category::class.java)
         val verbose = json.prettyPrint(compact)
-        Gdx.files.local(fileLocation).writeString(verbose, false, Charsets.UTF_8.name())
+        UncivGame.Current.files.getLocalFile(fileLocation).writeString(verbose, false, Charsets.UTF_8.name())
     }
 
     fun fromSelectBox(selectBox: TranslatedSelectBox): Category {

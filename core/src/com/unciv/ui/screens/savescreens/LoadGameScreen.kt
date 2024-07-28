@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.PlatformSaverLoader
@@ -176,7 +177,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
             errorLabel.isVisible = false
             loadFromCustomLocationButton.setText(Constants.loading.tr())
             loadFromCustomLocationButton.disable()
-            Concurrency.run(Companion.loadFromCustomLocation) {
+            Concurrency.run(loadFromCustomLocation) {
                 game.files.loadGameFromCustomLocation(
                     {
                         Concurrency.run { game.loadGame(it, callFromLoadScreen = true) }
@@ -265,7 +266,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                         ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")
                     val modFolder = Github.downloadAndExtract(
                         repo,
-                        Gdx.files.local("mods")
+                        UncivGame.Current.files.getModsFolder()
                     )
                         ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
                     Github.rewriteModOptions(repo, modFolder)

@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.BaseRuleset
@@ -41,7 +42,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
         val errorLines = ArrayList<String>()
         if (!noMods) {
             val modsHandles = if (consoleMode) FileHandle("mods").list()
-                else Gdx.files.local("mods").list()
+                else UncivGame.Current.files.getModsFolder().list()
 
             for (modFolder in modsHandles) {
                 if (modFolder.name().startsWith('.')) continue

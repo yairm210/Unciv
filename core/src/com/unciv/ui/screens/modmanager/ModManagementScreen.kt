@@ -481,7 +481,7 @@ class ModManagementScreen private constructor(
             try {
                 val modFolder = Github.downloadAndExtract(
                     repo,
-                    Gdx.files.local("mods")
+                    UncivGame.Current.files.getModsFolder()
                 )
                     ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)

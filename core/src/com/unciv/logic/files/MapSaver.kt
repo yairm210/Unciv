@@ -1,7 +1,7 @@
 package com.unciv.logic.files
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
@@ -12,7 +12,7 @@ object MapSaver {
     const val mapsFolder = "maps"
     var saveZipped = true
 
-    private fun getMap(mapName: String) = Gdx.files.local("$mapsFolder/$mapName")
+    private fun getMap(mapName: String) = UncivGame.Current.files.getLocalFile("$mapsFolder/$mapName")
 
     fun mapFromSavedString(mapString: String): TileMap {
         val unzippedJson = try {
@@ -36,7 +36,7 @@ object MapSaver {
         return mapFromSavedString(mapFile.readString(Charsets.UTF_8.name()))
     }
 
-    fun getMaps(): Array<FileHandle> = Gdx.files.local(mapsFolder).list()
+    fun getMaps(): Array<FileHandle> = UncivGame.Current.files.getLocalFile(mapsFolder).list()
 
     private fun mapFromJson(json: String): TileMap = json().fromJson(TileMap::class.java, json)
 

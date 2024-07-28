@@ -1,6 +1,6 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.logic.files.PlatformSaverLoader
 import java.awt.Component
 import java.awt.EventQueue
@@ -57,7 +57,7 @@ class DesktopSaverLoader : PlatformSaverLoader {
             try {
                 val fileChooser = JFileChooser().apply fileChooser@{
                     if (suggestedLocation == null) {
-                        currentDirectory = Gdx.files.local("").file()
+                        currentDirectory = UncivGame.Current.files.getDataFolder().file()
                     } else {
                         selectedFile = File(suggestedLocation)
                     }
