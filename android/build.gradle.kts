@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
