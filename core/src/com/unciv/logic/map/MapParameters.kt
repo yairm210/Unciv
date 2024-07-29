@@ -41,12 +41,12 @@ object MapType {
 class MapParameters : IsPartOfGameInfoSerialization {
     var name = ""
     var type = MapType.pangaea
-    var shape = MapShape.hexagonal
+    var shape = MapShape.rectangular
     var mapSize = MapSize.Medium
     var mapResources = MapResourceSetting.default.label
     var noRuins = false
     var noNaturalWonders = false
-    var worldWrap = false
+    var worldWrap = true
     var strategicBalance = false
     var legendaryStart = false
 
