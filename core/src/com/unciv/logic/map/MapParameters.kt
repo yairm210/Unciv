@@ -7,9 +7,9 @@ import com.unciv.models.metadata.BaseRuleset
 
 
 object MapShape {
+    const val rectangular = "Rectangular"
     const val hexagonal = "Hexagonal"
     const val flatEarth = "Flat Earth Hexagonal"
-    const val rectangular = "Rectangular"
 }
 
 object MapGeneratedMainType {

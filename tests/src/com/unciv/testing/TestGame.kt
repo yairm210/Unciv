@@ -85,7 +85,7 @@ class TestGame {
      * Removes all existing tiles. All new tiles have terrain [baseTerrain]
      */
     fun makeHexagonalMap(newRadius: Int, baseTerrain: String = Constants.desert) {
-        val newTileMap = TileMap(newRadius, ruleset, tileMap.mapParameters.worldWrap)
+        val newTileMap = TileMap(newRadius, ruleset, false)
         newTileMap.mapParameters.mapSize = MapSize(newRadius)
 
         for (row in tileMap.tileMatrix)
