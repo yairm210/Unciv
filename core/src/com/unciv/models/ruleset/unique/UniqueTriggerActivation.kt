@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
@@ -932,7 +933,7 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.SellBuilding -> {
+            UniqueType.OneTimeSellBuilding -> {
                 val applicableCities =
                     if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
@@ -1044,6 +1045,49 @@ object UniqueTriggerActivation {
                     TileNormalizer.normalizeToRuleset(tile, ruleset)
                     tile.getUnits().filter { !it.movement.canPassThrough(tile) }.toList()
                         .forEach { it.movement.teleportToClosestMoveableTile() }
+                    true
+                }
+            }
+
+            UniqueType.OneTimeTakeOverTilesInRadius -> {
+                if (tile == null) return null
+                if (civInfo.cities.isEmpty()) return null
+                val tileFilter = unique.params[0]
+                val radius = unique.params[1].toInt()
+                if (radius < 0) return null
+                val tilesToTakeOver = tile.getTilesInDistance(radius)
+                    .filter { !it.isCityCenter() && it.matchesFilter(tileFilter) }.toList()
+                if (tilesToTakeOver.none()) return null
+
+                /** Lower is better */
+                fun cityPriority(city: City) = city.getCenterTile().aerialDistanceTo(tile) + (if (city.isBeingRazed) 5 else 0)
+
+                val citiesWithAdjacentTiles = tilesToTakeOver.asSequence()
+                    .flatMap { it.neighbors + it }
+                    .map { it.owningCity }
+                    .filterNotNull()
+                    .filter { it.civ == civInfo }
+                    .toSet()
+
+                val cityToAddTo = citiesWithAdjacentTiles.minByOrNull { cityPriority(it) }
+                    ?: civInfo.cities.minBy { cityPriority(it) }
+
+                return {
+                    val civsToNotify = mutableSetOf<Civilization>()
+                    for (tileToTakeOver in tilesToTakeOver) {
+                        val otherCiv = tileToTakeOver.getOwner()
+                        if (otherCiv != null) {
+                            // decrease relations for -10 pt/tile
+                            otherCiv.getDiplomacyManagerOrMeet(civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                            civsToNotify.add(otherCiv)
+                        }
+                        cityToAddTo.expansion.takeOwnership(tileToTakeOver)
+                    }
+
+                    for (otherCiv in civsToNotify)
+                        otherCiv.addNotification("Your territory has been stolen by [$civInfo]!",
+                            tile.position, NotificationCategory.Cities, civInfo.civName, NotificationIcon.War)
+
                     true
                 }
             }
