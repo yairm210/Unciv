@@ -403,6 +403,8 @@ class WorkerAutomation(
 
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
 
+        var isResourceImprovedByNewImprovement = tile.resource != null && tile.tileResource.isImprovedBy(improvementName)
+
         if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
             val removedObject = improvementName.replace(Constants.remove, "")
@@ -417,8 +419,13 @@ class WorkerAutomation(
                 if (removedImprovement != null)
                     newTile.removeImprovement()
                 val wantedFinalImprovement = chooseImprovement(unit, newTile, localUniqueCache)
-                if (wantedFinalImprovement != null)
-                    stats.add(newTile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, newTile.getCity(), localUniqueCache))
+                if (wantedFinalImprovement != null){
+                    val statDiff = newTile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, newTile.getCity(), localUniqueCache)
+                    stats.add(statDiff)
+                    // Take into account that the resource might be improved by the *final* improvement
+                    isResourceImprovedByNewImprovement = newTile.resource != null && newTile.tileResource.isImprovedBy(wantedFinalImprovement.name)
+                }
+
             }
         }
 
@@ -434,7 +441,7 @@ class WorkerAutomation(
             if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
                 value -= (tile.resourceAmount / 2).coerceIn(1,2)
             }
-            if (tile.tileResource.isImprovedBy(improvementName)) {
+            if (isResourceImprovedByNewImprovement) {
                 value += (tile.resourceAmount / 2).coerceIn(1,2)
             }
         }
