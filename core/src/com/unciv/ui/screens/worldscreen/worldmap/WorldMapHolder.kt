@@ -320,7 +320,7 @@ class WorldMapHolder(
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
 
-                    if (UncivGame.Current.settings.autoUnitCycle && selectedUnit.hasMovement())
+                    if (UncivGame.Current.settings.autoUnitCycle && !selectedUnit.hasMovement())
                         worldScreen.switchToNextUnit()
 
                 } catch (ex: Exception) {
