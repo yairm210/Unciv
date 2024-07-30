@@ -212,7 +212,12 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue
-            return json().fromJson(GithubAPI.RepoSearch::class.java, inputStream.bufferedReader().readText())
+            val text = inputStream.bufferedReader().readText()
+            try {
+                return json().fromJson(GithubAPI.RepoSearch::class.java, text)
+            } catch (_: Throwable) {
+                throw Exception("Failed to parse Github response as json - $text")
+            }
         }
         return null
     }

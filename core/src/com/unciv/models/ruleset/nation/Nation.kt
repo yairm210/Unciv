@@ -162,7 +162,7 @@ class Nation : RulesetObject() {
             val bonuses = uniqueMap.getAllUniques().filterNot { it.isHiddenToUsers() }
             if (bonuses.none()) return
             textList += FormattedLine()
-            textList += FormattedLine("{$header:} ")
+            textList += FormattedLine("{$header} ")
             for (unique in bonuses) {
                 textList += FormattedLine(unique, indent = 1)
                 if (unique.type == UniqueType.CityStateUniqueLuxury) showResources = true
