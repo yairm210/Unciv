@@ -20,14 +20,14 @@ object ReligionAutomation {
 
     // region faith spending
 
-    fun spendFaithOnReligion(civInfo: Civilization) {
+    fun spendFaithOnReligion(civInfo: Civilization, city: City) {
         if (civInfo.cities.isEmpty()) return
 
         // Save for great prophet
         if (civInfo.religionManager.religionState != ReligionState.EnhancedReligion
             && (civInfo.religionManager.remainingFoundableReligions() != 0 || civInfo.religionManager.religionState > ReligionState.Pantheon)
         ) {
-            buyGreatProphetInAnyCity(civInfo)
+            buyGreatProphetInAnyCity(civInfo, City)
             return
         }
         if (civInfo.religionManager.remainingFoundableReligions() == 0 ) {
@@ -197,7 +197,7 @@ object ReligionAutomation {
         cityToBuy.cityConstructions.purchaseConstruction(inquisitorConstruction, -1, true, Stat.Faith)
     }
 
-    private fun buyGreatPerson(civInfo: Civilization) {
+    private fun buyGreatPerson(civInfo: Civilization, city: City) {
         val greatPersonUnit = civInfo.gameInfo.ruleset.units.values.filter {
             it.hasUnique(UniqueType.GreatPerson) && !it.hasUnique(UniqueType.MayFoundReligion) //we want to exclude great prophets from the list
         }
@@ -210,7 +210,8 @@ object ReligionAutomation {
             ?: return
 
         val validCitiesToBuy = civInfo.cities.filter {
-            (greatPersonConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
+            city.isCapital()
+                && (greatPersonConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
                 && greatPersonConstruction.isPurchasable(it.cityConstructions)
                 && greatPersonConstruction.canBePurchasedWithStat(it, Stat.Faith)
         }
