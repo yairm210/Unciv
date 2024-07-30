@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -54,6 +55,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      */
     var instanceName: String? = null
 
+    /** Should not be changed directly - instead use [useMovementPoints] */
     var currentMovement: Float = 0f
     var health: Int = 100
     var id: Int = Constants.NO_ID
@@ -204,7 +206,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         get() = baseUnit.type
 
     fun getMovementString(): String =
-            DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
+        (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
     fun getTile(): Tile = currentTile
 
@@ -243,11 +245,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
     /**
-     * @param includeOtherEscortUnit determines whether or not this method will also check if it's other escort unit is idle if it has one
+     * @param includeOtherEscortUnit determines whether this method will also check if it's other escort unit is idle if it has one
      * Leave it as default unless you know what [isIdle] does.
      */
     fun isIdle(includeOtherEscortUnit: Boolean = true): Boolean {
-        if (currentMovement == 0f) return false
+        if (!hasMovement()) return false
         val tile = getTile()
         if (tile.improvementInProgress != null &&
                 canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
@@ -307,7 +309,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return false
     }
 
-    fun getMaxMovement(): Int {
+    fun hasMovement() = currentMovement > 0
+
+    fun getMaxMovement(ignoreOtherUnit: Boolean = false): Int {
         var movement =
                 if (isEmbarked()) 2
                 else baseUnit.movement
@@ -320,11 +324,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // Hakkapeliitta movement boost
         // For every double-stacked tile, check if our cohabitant can boost our speed
         // (a test `count() > 1` is no optimization - two iterations of a sequence instead of one)
-        for (boostingUnit in currentTile.getUnits()) {
-            if (boostingUnit == this) continue
-            if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
-                            .none { matchesFilter(it.params[0]) }) continue
-            movement = movement.coerceAtLeast(boostingUnit.getMaxMovement())
+        if (!ignoreOtherUnit) { // if both units can boost the other, we avoid an endless loop
+            for (boostingUnit in currentTile.getUnits()) {
+                if (boostingUnit == this) continue
+                if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
+                        .none { matchesFilter(it.params[0]) }
+                ) continue
+                movement = movement.coerceAtLeast(boostingUnit.getMaxMovement(true))
+            }
         }
 
         return movement
@@ -359,7 +366,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun canAttack(): Boolean {
-        if (currentMovement == 0f) return false
+        if (!hasMovement()) return false
         if (isCivilian()) return false
         return attacksThisTurn < maxAttacksPerTurn()
     }
@@ -478,7 +485,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
         // Air Units can only Intercept if they didn't move this turn
-        if (baseUnit.isAirUnit() && currentMovement == 0f) return false
+        if (baseUnit.isAirUnit() && !hasMovement()) return false
         val maxAttacksPerTurn = 1 +
                 getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
                         .sumOf { it.params[0].toInt() }
@@ -697,10 +704,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Can accept a negative number to gain movement points */
     fun useMovementPoints(amount: Float) {
         turnsFortified = 0
         currentMovement -= amount
         if (currentMovement < 0) currentMovement = 0f
+        if (amount < 0) {
+            val maxMovement = getMaxMovement().toFloat()
+            if (currentMovement > maxMovement) currentMovement = maxMovement
+        }
     }
 
     fun fortify() {
@@ -717,8 +729,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun doAction() {
         if (action == null && !isAutomated()) return
-        if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
-        if (isEscorting() && getOtherEscortUnit()!!.currentMovement == 0f) return
+        if (!hasMovement()) return  // We've already done stuff this turn, and can't do any more stuff
+        if (isEscorting() && !getOtherEscortUnit()!!.hasMovement()) return
 
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
                 .filter { it.militaryUnit != null && civ.isAtWarWith(it.militaryUnit!!.civ) }
@@ -745,7 +757,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 return
             }
             if (gotTo.position == destinationTile.position) action = null
-            if (currentMovement > 0) doAction()
+            if (hasMovement()) doAction()
             return
         }
 
@@ -892,7 +904,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits  // not moving civilians
+        if (baseUnit.movesLikeAirUnits){
+            if (!tile.isCityCenter()) isTransported = true
+            else {
+                val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }
+                // Tile units includes us, we were just added
+                isTransported = currentUntransportedUnits > tile.getCity()!!.getMaxAirUnits()
+            }
+        }
         moveThroughTile(tile)
         cache.updateUniques()
     }

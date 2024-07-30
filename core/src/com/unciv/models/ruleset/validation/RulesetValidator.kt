@@ -3,15 +3,12 @@ package com.unciv.models.ruleset.validation
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
@@ -58,8 +55,8 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         // Tileset tests - e.g. json configs complete and parseable
         checkTilesetSanity(lines)  // relies on textureNamesCache
-
         checkCivilopediaText(lines)  // relies on textureNamesCache
+        checkFiles(lines)
 
         return lines
     }
@@ -104,9 +101,36 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         checkCivilopediaText(lines)
+        checkFiles(lines)
 
         return lines
     }
+
+
+    private fun checkFiles(lines: RulesetErrorList) {
+        val folder = ruleset.folderLocation ?: return
+        for (child in folder.list()){
+            if (child.name().endsWith("json") && !child.name().startsWith("Atlas"))
+                lines.add("File ${child.name()} is located in the root folder - it should be moved to a 'jsons' folder")
+        }
+        val jsonFolder = folder.child("jsons")
+        if (jsonFolder.exists()) {
+            for (file in jsonFolder.list("json")) {
+                if (file.name() !in RulesetFile.entries.map { it.filename }) {
+                    var text = "File ${file.name()} is in the jsons folder but is not a recognized ruleset file"
+                    val similarFilenames = RulesetFile.entries.map { it.filename }.filter {
+                        getRelativeTextDistance(
+                            it,
+                            file.name()
+                        ) <= RulesetCache.uniqueMisspellingThreshold
+                    }
+                    if (similarFilenames.isNotEmpty()) text += "\nPossible misspelling of: "+similarFilenames.joinToString("/")
+                    lines.add(text, RulesetErrorSeverity.OK)
+                }
+            }
+        }
+    }
+
 
     private fun addModOptionsErrors(lines: RulesetErrorList, tryFixUnknownUniques: Boolean) {
         // Basic Unique validation (type, target, parameters) should always run.
@@ -128,7 +152,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (mapSelectUniques.size > 1)
             lines.add("Specifying more than one map as preselection makes no sense", RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null)
         if (mapSelectUniques.isNotEmpty()) {
-            val mapsFolder = Gdx.files.local("mods").child(ruleset.name).child("maps")
+            val mapsFolder = UncivGame.Current.files.getModFolder(ruleset.name).child("maps")
             if (mapsFolder.exists()) {
                 val maps = mapsFolder.list().map { it.name().lowercase() }
                 for (unique in mapSelectUniques) {
@@ -192,12 +216,19 @@ class RulesetValidator(val ruleset: Ruleset) {
                         "Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!",
                         RulesetErrorSeverity.Warning, sourceObject = null
                     )
-            for (milestone in victoryType.milestoneObjects)
+            for (milestone in victoryType.milestoneObjects) {
                 if (milestone.type == null)
                     lines.add(
-                        "Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!",
+                        "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that is of an unknown type!",
                         RulesetErrorSeverity.Error, sourceObject = null
                     )
+                if (milestone.type in listOf(MilestoneType.BuiltBuilding, MilestoneType.BuildingBuiltGlobally)
+                    && milestone.params[0] !in ruleset.buildings)
+                    lines.add(
+                        "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that references an unknown building ${milestone.params[0]}!",
+                        RulesetErrorSeverity.Error,
+                    )
+            }
             for (victory in ruleset.victories.values)
                 if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
                     lines.add(
@@ -442,7 +473,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
                 && !improvement.hasUnique(UniqueType.Unbuildable)
                 && !improvement.name.startsWith(Constants.remove)
-                && improvement.name !in RoadStatus.values().map { it.removeAction }
+                && improvement.name !in RoadStatus.entries.map { it.removeAction }
                 && improvement.name != Constants.cancelImprovementOrder
             ) {
                 lines.add(

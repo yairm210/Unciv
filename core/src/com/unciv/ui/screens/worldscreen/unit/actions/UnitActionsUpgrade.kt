@@ -64,7 +64,7 @@ object UnitActionsUpgrade {
                 }.takeIf {
                     isFree || (
                         unit.civ.gold >= goldCostOfUpgrade
-                            && unit.currentMovement > 0
+                            && unit.hasMovement()
                             && unitTile.getOwner() == civInfo
                             && !unit.isEmbarked()
                             && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)

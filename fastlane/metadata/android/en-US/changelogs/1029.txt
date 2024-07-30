@@ -1,0 +1,7 @@
+Add CLI argument to specify the data directory - this will allow native install on Windows, hopefully
+
+Modding: New unit triggers to gain/lose movement points
+
+AI citizen focus improvements - By EmperorPinguin
+
+Correct spelling of 'Svannah' to 'Savannah' across project.  - By aaronjfeingold

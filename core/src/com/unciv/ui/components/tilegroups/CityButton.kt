@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -154,7 +155,7 @@ class AirUnitTable(city: City, numberOfUnits: Int, size: Float=14f) : BorderedTa
         aircraftImage.setSize(size, size)
 
         add(aircraftImage)
-        add(numberOfUnits.toString().toLabel(textColor, size.toInt()))
+        add(numberOfUnits.tr().toLabel(textColor, size.toInt()))
     }
 
 }
@@ -251,7 +252,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
     private fun addCityPopNumber(city: City) {
         val textColor = city.civ.nation.getInnerColor()
-        val popLabel = city.population.population.toString()
+        val popLabel = city.population.population.tr()
             .toLabel(fontColor = textColor, fontSize = 18, alignment = Align.center)
         add(popLabel).minWidth(26f)
     }
@@ -274,11 +275,11 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         val turnLabelText = when {
             city.isGrowing() -> {
                 val turnsToGrowth = city.population.getNumTurnsToNewPopulation()
-                if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString() else Fonts.infinity.toString()
+                if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.tr() else Fonts.infinity.toString()
             }
             city.isStarving() -> {
                 val turnsToStarvation = city.population.getNumTurnsToStarvation()
-                if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else Fonts.infinity.toString()
+                if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.tr() else Fonts.infinity.toString()
             }
             else -> "-"
         }
@@ -351,7 +352,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
             if (cityCurrentConstruction !is PerpetualConstruction) {
                 val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
                 if (turnsToConstruction < 100)
-                    turns = turnsToConstruction.toString()
+                    turns = turnsToConstruction.tr()
                 percentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
                         (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ, cityConstructions.city).toFloat()
                 nextTurnPercentage = (cityConstructions.getWorkDone(cityCurrentConstruction.name) + city.cityStats.currentCityStats.production) /
@@ -542,7 +543,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
                 enterCityOrInfoPopup()
             } else {
                 moveButtonDown()
-                if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) && belongsToViewingCiv())
+                if ((unitTable.selectedUnit == null || !unitTable.selectedUnit!!.hasMovement()) && belongsToViewingCiv())
                     unitTable.citySelected(city)
             }
         }

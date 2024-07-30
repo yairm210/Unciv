@@ -148,11 +148,11 @@ open class Stats(
     fun applyRankingWeights() {
         food *= 14
         production *= 12
-        gold *= 8 // 3 gold worth about 2 production
-        science *= 7
-        culture *= 6
+        gold *= 6 // 2 gold worth about 1 production
+        science *= 9
+        culture *= 8
         happiness *= 10 // base
-        faith *= 5
+        faith *= 7
     }
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
@@ -161,19 +161,19 @@ open class Stats(
      */
     override fun toString(): String {
         return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr()
+            (if (it.value > 0) "+" else "") + it.value.toInt().tr() + " " + it.key.toString().tr()
         }
     }
 
     /** Since notifications are translated on the fly, when saving stats there we need to do so in English */
     fun toStringForNotifications() = this.joinToString {
-        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString()
+        (if (it.value > 0) "+" else "") + it.value.toInt().tr() + " " + it.key.toString()
     }
 
     // For display in diplomacy window
     fun toStringWithDecimals(): String {
         return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.toString().removeSuffix(".0") + " " + it.key.toString().tr()
+            (if (it.value > 0) "+" else "") + it.value.tr().removeSuffix(".0") + " " + it.key.toString().tr()
         }
     }
 
@@ -181,7 +181,7 @@ open class Stats(
     // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed (e.g., in notification text)
     fun toStringWithoutIcons(): String {
         return this.joinToString {
-            it.value.toInt().toString() + " " + it.key.name.tr().substring(startIndex = 1)
+            it.value.toInt().tr() + " " + it.key.name.tr().substring(startIndex = 1)
         }
     }
 

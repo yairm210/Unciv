@@ -82,31 +82,30 @@ object Automation {
             else
                 yieldStats.food /= 2
         } else if (!city.avoidGrowth) {
-            // NoFocus or Food/Growth Focus. Target +2 Food Surplus
-            if (surplusFood < 2)
-                yieldStats.food *= 8
-            else if (city.population.population < 5)
-                yieldStats.food *= 3
+            // NoFocus or Food/Growth Focus. Target +10 Food Surplus when happy
+            if (surplusFood < 0)
+                yieldStats.food *= 8 // Starving, need Food, get to 0
+            else if (surplusFood < 10 && city.civ.getHappiness() > -1)
+                yieldStats.food *= 2
+            else if (city.civ.getHappiness() < 0) {
+                // 75% of excess food is wasted when in negative happiness
+                yieldStats.food /= 4
+            }
         }
 
-        if (city.population.population < 5) {
+        if (city.population.population < 10) {
             // "small city" - we care more about food and less about global problems like gold science and culture
-            // Food already handled above. Science/Culture have low weights in Stats already
-            yieldStats.gold /= 2 // it's barely worth anything at this point
-        } else {
-            if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
-                yieldStats.gold *= 2 // We have a global problem
+            // Food already handled above. Gold/Culture have low weights in Stats already
+            yieldStats.science /= 2
+        }
 
-            if (city.tiles.size < 12)
-                yieldStats.culture *= 2
-
-            if (city.civ.getHappiness() < 0)
-                yieldStats.happiness *= 2
-            }
+        if (city.civ.stats.statsForNextTurn.gold < 0) {
+            // We have a global problem, we need to deal with it before it leads to science loss
+            yieldStats.gold *= 2
+        }
 
         if (city.civ.getHappiness() < 0) {
-            // 75% of excess food is wasted when in negative happiness
-            yieldStats.food /= 4
+            yieldStats.happiness *= 2
         }
 
         if (allTechsAreResearched) {
@@ -115,7 +114,7 @@ object Automation {
         }
 
         if (city.cityConstructions.getCurrentConstruction() is PerpetualConstruction) {
-            // With 4:1 conversion of production to gold, production is overvalued by a factor (12*4)/8 = 6
+            // With 4:1 conversion of production to science, production is overvalued by a factor (12*4)/7 = 6.9
             yieldStats.production /= 6
         }
 

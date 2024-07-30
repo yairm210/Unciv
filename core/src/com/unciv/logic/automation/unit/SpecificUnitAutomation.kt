@@ -57,7 +57,7 @@ object SpecificUnitAutomation {
         // if there is a good tile to steal - go there
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
-            if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
+            if (unit.hasMovement() && unit.currentTile == tileToSteal)
                 UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
@@ -97,7 +97,7 @@ object SpecificUnitAutomation {
             return
         }
         unit.movement.headTowards(tileForCitadel)
-        if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
+        if (unit.hasMovement() && unit.currentTile == tileForCitadel)
             UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile)
                 .firstOrNull()?.action?.invoke()
     }
@@ -118,7 +118,7 @@ object SpecificUnitAutomation {
         if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesInfo.tileRankMap.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
             val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
-            val allUnsettledSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+            val allUnsettledSettlers = unit.civ.units.getCivUnits().filter { it.hasMovement() && it.baseUnit == unit.baseUnit }
 
             // Don't settle immediately if we only have one settler, look for a better location
             val bestSettlerInRange = allUnsettledSettlers.maxByOrNull {
@@ -186,13 +186,13 @@ object SpecificUnitAutomation {
 
         val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, bestCityLocation)
         if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
-            if (unit.currentMovement > 0 && !unit.civ.isOneCityChallenger()) // therefore, city within 3 tiles
+            if (unit.hasMovement() && !unit.civ.isOneCityChallenger()) // therefore, city within 3 tiles
                 throw Exception("City within distance")
             return
         }
 
         unit.movement.headTowards(bestCityLocation)
-        if (unit.getTile() == bestCityLocation && unit.currentMovement > 0)
+        if (unit.getTile() == bestCityLocation && unit.hasMovement())
             foundCityAction.action.invoke()
     }
 
@@ -247,7 +247,6 @@ object SpecificUnitAutomation {
             }
 
             // if we got here, we're pretty close, start looking!
-            val localUniqueCache = LocalUniqueCache()
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,

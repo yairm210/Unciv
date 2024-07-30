@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -98,7 +99,7 @@ object BattleUnitCapture {
         val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(defenderTile.position, defender.getName()) ?: return false
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
-        attacker.getCivInfo().addNotification("An enemy [${defender.getName()}] has joined us!", addedUnit.getTile().position, NotificationCategory.War, defender.getName())
+        attacker.getCivInfo().addNotification("An enemy [${defender.getName()}] has joined us!", MapUnitAction(addedUnit), NotificationCategory.War, defender.getName())
 
         defender.getCivInfo().addNotification(
             "An enemy [${attacker.getName()}] has captured our [${defender.getName()}]",

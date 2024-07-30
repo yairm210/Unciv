@@ -13,7 +13,7 @@ import com.unciv.ui.components.tilegroups.layers.TileLayerFeatures
 import com.unciv.ui.components.tilegroups.layers.TileLayerMisc
 import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
 import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitArt
+import com.unciv.ui.components.tilegroups.layers.TileLayerUnitSprite
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import kotlin.math.max
@@ -106,7 +106,7 @@ class TileGroupMap<T: TileGroup>(
         val featureLayers = ArrayList<TileLayerFeatures>()
         val borderLayers = ArrayList<TileLayerBorders>()
         val miscLayers = ArrayList<TileLayerMisc>()
-        val pixelUnitLayers = ArrayList<TileLayerUnitArt>()
+        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>()
         val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>()
         val unitLayers = ArrayList<TileLayerUnitFlag>()
         val cityButtonLayers = ArrayList<TileLayerCityButton>()

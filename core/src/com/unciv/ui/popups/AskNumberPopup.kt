@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
@@ -74,10 +75,10 @@ class AskNumberPopup(
             val int = input.toIntOrNull() ?: return input
 
             if (bounds.first > int) {
-                return bounds.first.toString()
+                return bounds.first.tr()
             }
             if (bounds.last < int)
-                return bounds.last.toString()
+                return bounds.last.tr()
 
             return input
         }
@@ -96,7 +97,7 @@ class AskNumberPopup(
                 ).apply {
                     onClick {
                         if (isValidInt(nameField.text))
-                            nameField.text = clampInBounds((nameField.text.toInt() + value).toString())
+                            nameField.text = clampInBounds((nameField.text.toInt() + value).tr())
                     }
                 }
             ).pad(5f)

@@ -76,7 +76,7 @@ object ImageGetter {
         // These are from the mods
         val visualMods = UncivGame.Current.settings.visualMods + ruleset.mods
         for (mod in visualMods) {
-            loadModAtlases(mod, Gdx.files.local("mods/$mod"))
+            loadModAtlases(mod, UncivGame.Current.files.getModFolder(mod))
         }
 
         TileSetCache.assembleTileSetConfigs(ruleset.mods)
@@ -183,8 +183,14 @@ object ImageGetter {
      *  @return `null` if no match found.
      */
     fun findExternalImage(name: String): FileHandle? {
-        val folders = ruleset.mods.asSequence().map { Gdx.files.local("mods/$it/ExtraImages") } +
-            sequenceOf(Gdx.files.internal("ExtraImages"))
+        val folders = try { // For CI mod checker, we can't access "local" files
+            // since Gdx files are not set up
+            ruleset.mods.asSequence().map { UncivGame.Current.files.getLocalFile("mods/$it/ExtraImages") } +
+                    sequenceOf(Gdx.files.internal("ExtraImages"))
+        } catch (e: Exception) {
+            debug("Error loading mods: $e")
+            sequenceOf()
+        }
         val extensions = sequenceOf("", ".png", ".jpg")
         return folders.flatMap { folder ->
             extensions.map { folder.child(name + it) }

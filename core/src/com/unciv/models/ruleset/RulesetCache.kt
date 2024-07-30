@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.BaseRuleset
@@ -26,7 +27,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
     fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false): List<String> {
         val newRulesets = HashMap<String, Ruleset>()
 
-        for (ruleset in BaseRuleset.values()) {
+        for (ruleset in BaseRuleset.entries) {
             val fileName = "jsons/${ruleset.fullName}"
             val fileHandle =
                 if (consoleMode) FileHandle(fileName)
@@ -41,7 +42,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
         val errorLines = ArrayList<String>()
         if (!noMods) {
             val modsHandles = if (consoleMode) FileHandle("mods").list()
-                else Gdx.files.local("mods").list()
+                else UncivGame.Current.files.getModsFolder().list()
 
             for (modFolder in modsHandles) {
                 if (modFolder.name().startsWith('.')) continue
@@ -99,9 +100,9 @@ object RulesetCache : HashMap<String, Ruleset>() {
         return baseRulesets.sortedWith(
             compareBy(
                 { ruleset ->
-                    BaseRuleset.values()
+                    BaseRuleset.entries
                         .firstOrNull { br -> br.fullName == ruleset }?.ordinal
-                        ?: BaseRuleset.values().size
+                        ?: BaseRuleset.entries.size
                 },
                 { it }
             )

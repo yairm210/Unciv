@@ -314,7 +314,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     //region pure functions
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
-        // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
+        if (gameInfo.ruleset.difficulties.containsKey(gameInfo.getDifficulty().aiDifficultyLevel)) {
+            return gameInfo.ruleset.difficulties[gameInfo.getDifficulty().aiDifficultyLevel]!!
+        }
         val chieftainDifficulty = gameInfo.ruleset.difficulties["Chieftain"]
         if (chieftainDifficulty != null) return chieftainDifficulty
         return gameInfo.ruleset.difficulties.values.first()
@@ -887,10 +889,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        if (notifications.lastOrNull()?.let { it.text == text && it.category == category && it.icons == notificationIcons.toList() } == true) {
-            Log.debug("Duplicate notification \"%s\"", text)
-            return
-        }
         notifications.add(Notification(text, notificationIcons, actions, category))
     }
     // endregion
@@ -980,7 +978,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         // Slight "Easter egg": see #11486: In the rare case a City-state loses their last city but it's not their original capital, the notification names the Nation which confuses players.
         // Rename the newly conquered city when the conquering Nation's first-city name is equal to the nation name (meaning Babylon too) and the civ has lost that...
         val currentCapital = getCapital()
-        if (currentCapital != null && currentCapital.isOriginalCapital && civName == currentCapital.name)
+        if (isCityState && currentCapital != null && currentCapital.isOriginalCapital && civName == currentCapital.name)
             newCapital.name = "New [${civName}]\n(formerly known as [${newCapital.name}])"
 
         moveCapitalTo(newCapital, oldCapital)

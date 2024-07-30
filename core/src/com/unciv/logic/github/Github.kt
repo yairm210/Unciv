@@ -69,13 +69,13 @@ object Github {
 
     /**
      * Download a mod and extract, deleting any pre-existing version.
-     * @param folderFileHandle Destination handle of mods folder - also controls Android internal/external
+     * @param modsFolder Destination handle of mods folder - also controls Android internal/external
      * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone
      * @return FileHandle for the downloaded Mod's folder or null if download failed
      */
     fun downloadAndExtract(
         repo: GithubAPI.Repo,
-        folderFileHandle: FileHandle
+        modsFolder: FileHandle
     ): FileHandle? {
         var modNameFromFileName = repo.name
 
@@ -102,7 +102,7 @@ object Github {
         } ?: return null
 
         // Download to temporary zip
-        val tempZipFileHandle = folderFileHandle.child("$tempName.zip")
+        val tempZipFileHandle = modsFolder.child("$tempName.zip")
         tempZipFileHandle.write(inputStream, false)
 
         // prepare temp unpacking folder
@@ -122,7 +122,7 @@ object Github {
         // modName can be "$repoName-$defaultBranch"
         val finalDestinationName = modName.replace("-$defaultBranch", "").repoNameToFolderName()
         // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
-        val finalDestination = folderFileHandle.child(finalDestinationName)
+        val finalDestination = modsFolder.child(finalDestinationName)
 
         // prevent mixing new content with old
         var tempBackup: FileHandle? = null
@@ -212,7 +212,12 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue
-            return json().fromJson(GithubAPI.RepoSearch::class.java, inputStream.bufferedReader().readText())
+            val text = inputStream.bufferedReader().readText()
+            try {
+                return json().fromJson(GithubAPI.RepoSearch::class.java, text)
+            } catch (_: Throwable) {
+                throw Exception("Failed to parse Github response as json - $text")
+            }
         }
         return null
     }

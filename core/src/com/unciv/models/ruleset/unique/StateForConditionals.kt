@@ -106,10 +106,10 @@ data class StateForConditionals(
         fun CombatAction?.hash() = this?.name?.hashCode() ?: 0
         fun Region?.hash() = this?.rect?.hashCode() ?: 0
 
-        var result = civInfo.hash()
-        result = 31 * result + city.hash()
-        result = 31 * result + unit.hash()
-        result = 31 * result + tile.hash()
+        var result = relevantCiv.hash()
+        result = 31 * result + relevantCity.hash()
+        result = 31 * result + relevantUnit.hash()
+        result = 31 * result + relevantTile.hash()
         result = 31 * result + ourCombatant.hash()
         result = 31 * result + theirCombatant.hash()
         result = 31 * result + attackedTile.hash()

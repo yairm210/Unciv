@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
@@ -108,24 +109,29 @@ class MayaLongCountAction : NotificationAction {
     }
 }
 
-/** A notification action that shows and selects units on the map.
+/** A notification action that shows **and selects** things on the map.
  *
- *  Saves and serializes only the location. Activation will select the tile which will select any unit
- *  on it or cycle through selections if this NotificationAction is the only one on the Notification.
+ *  Saves and serializes only the location and optionally a MapUnit id.
+ *  When an id is present, activation will select that unit if it is still in the given position - otherwise, it will behave like LocationAction.
+ *  Without id, activation will select the tile which will select any unit on it or cycle through selections if this NotificationAction is the only one on the Notification.
  *  When the unit has been moved away, activation still shows the tile and not the unit.
- *
- *  As MapUnits do not have any persistent ID differentiating them from other units of same Civ and BaseUnit,
- *  this cannot be done significantly better. Should someone add a persisted UUID to MapUnit, please change this too.
+ *  Activation without unit id also works for cities, selecting them - so a bombard is one click less.
  */
-class MapUnitAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
-    constructor(unit: MapUnit) : this(unit.currentTile.position)
+class MapUnitAction(
+    private val location: Vector2 = Vector2.Zero,
+    private val id: Int = Constants.NO_ID
+) : NotificationAction {
+    constructor(unit: MapUnit) : this(unit.currentTile.position, unit.id)
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
+        val selectUnit = id == Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
+        val unit = if (selectUnit) null else
+            worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
+        worldScreen.mapHolder.setCenterPosition(location, selectUnit = selectUnit, forceSelectUnit = unit)
     }
     companion object {
         // Convenience shortcut as it makes replacing LocationAction calls easier (see above)
-        operator fun invoke(locations: Iterable<Vector2>): Sequence<MapUnitAction> =
-            locations.asSequence().map { MapUnitAction(it) }
+        operator fun invoke(units: Iterable<MapUnit>): Sequence<MapUnitAction> =
+            units.asSequence().map { MapUnitAction(it) }
     }
 }
 

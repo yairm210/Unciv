@@ -100,7 +100,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
 
         val nextTurnStats = civInfo.stats.statsForNextTurn
         val goldPerTurn = " (" + rateLabel(nextTurnStats.gold) + ")"
-        goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
+        goldLabel.setText(civInfo.gold.tr() + goldPerTurn)
 
         scienceLabel.setText(rateLabel(nextTurnStats.science))
 
@@ -117,8 +117,9 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
-        faithLabel.setText(civInfo.religionManager.storedFaith.toString() +
-            " (" + rateLabel(nextTurnStats.faith) + ")")
+        faithLabel.setText(
+            civInfo.religionManager.storedFaith.tr() + " (" + rateLabel(nextTurnStats.faith) + ")"
+        )
 
         scaleTo(worldScreen.stage.width)
     }
@@ -130,19 +131,19 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         cultureString += when {
             turnsToNextPolicy <= 0f -> " (!)" // Can choose policy right now
             nextTurnStats.culture <= 0 -> " (${Fonts.infinity})" // when you start the game, you're not producing any culture
-            else -> " (" + ceil(turnsToNextPolicy).toInt() + ")"
+            else -> " (" + ceil(turnsToNextPolicy).toInt().tr() + ")"
         }
         return cultureString
     }
 
     private fun getHappinessText(civInfo: Civilization): String {
-        var happinessText = civInfo.getHappiness().toString()
+        var happinessText = civInfo.getHappiness().tr()
         val goldenAges = civInfo.goldenAges
         happinessText +=
             if (goldenAges.isGoldenAge())
                 "    {GOLDEN AGE}(${goldenAges.turnsLeftForCurrentGoldenAge})".tr()
             else
-                " (${goldenAges.storedHappiness}/${goldenAges.happinessRequiredForNextGoldenAge()})"
+                " (${goldenAges.storedHappiness.tr()}/${goldenAges.happinessRequiredForNextGoldenAge().tr()})"
         return happinessText
     }
 }

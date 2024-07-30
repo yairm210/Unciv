@@ -90,7 +90,7 @@ class VictoryScreen(
         splitPane.setFirstWidget(tabs)
         val iconSize = Constants.headingFontSize.toFloat()
 
-        for (tab in VictoryTabs.values()) {
+        for (tab in VictoryTabs.entries) {
             val tabHidden = tab.isHidden(playerCiv)
             if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed()))
                 continue
@@ -129,7 +129,7 @@ class VictoryScreen(
             align(Align.right)
             addActor("{Game Speed}: {${gameInfo.gameParameters.speed}}".toLabel())
             if ("Time" in gameInfo.gameParameters.victoryTypes)
-                addActor("{Max Turns}: ${gameInfo.gameParameters.maxTurns}".toLabel())
+                addActor("{Max Turns}: ${gameInfo.gameParameters.maxTurns.tr()}".toLabel())
             pack()
         }
         val difficultyLabel = "{Difficulty}: {${gameInfo.difficulty}}".toLabel()

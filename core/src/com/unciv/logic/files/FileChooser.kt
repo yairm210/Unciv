@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
@@ -88,7 +89,7 @@ open class FileChooser(
 
     // operational
     private val maxHeight = stageToShowOn.height * 0.6f
-    private val absoluteLocalPath = Gdx.files.local("").file().absoluteFile.canonicalPath
+    private val absoluteLocalPath = UncivGame.Current.files.getDataFolder().file().absoluteFile.canonicalPath
     private val absoluteExternalPath = if (Gdx.files.isExternalStorageAvailable)
             Gdx.files.external("").file().absoluteFile.canonicalPath
         else "/\\/\\/"  // impossible placeholder
@@ -204,7 +205,7 @@ open class FileChooser(
         if (file.type() != Files.FileType.Absolute) return file
         val path = file.path()
         if (path.startsWith(absoluteLocalPath))
-            return Gdx.files.local(path.removePrefix(absoluteLocalPath).removePrefix(File.separator))
+            return UncivGame.Current.files.getLocalFile(path.removePrefix(absoluteLocalPath).removePrefix(File.separator))
         if (path.startsWith(absoluteExternalPath))
             return Gdx.files.external(path.removePrefix(absoluteExternalPath).removePrefix(File.separator))
         return file

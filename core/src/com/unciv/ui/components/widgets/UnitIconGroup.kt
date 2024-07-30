@@ -77,7 +77,8 @@ private class FlagBackground(drawable: TextureRegionDrawable, size: Float) : Ima
 
 }
 
-class UnitGroup(val unit: MapUnit, val size: Float) : Group() {
+/** Displays the unit's icon and action */
+class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
     var actionGroup: Group? = null
 
     private val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civ.nation.getInnerColor())
@@ -209,7 +210,7 @@ class UnitGroup(val unit: MapUnit, val size: Float) : Group() {
         // Unit base icon is faded out only if out of moves
         // Foreign unit icons are never faded!
         val shouldBeFaded = (unit.owner == GUI.getSelectedPlayer().civName
-                && unit.currentMovement == 0f && GUI.getSettings().unitIconOpacity == 1f)
+                && !unit.hasMovement() && GUI.getSettings().unitIconOpacity == 1f)
         val alpha = if (shouldBeFaded) opacity * 0.5f else opacity
         flagIcon.color.a = alpha
         flagBg.color.a = alpha

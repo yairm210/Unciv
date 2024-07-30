@@ -7,6 +7,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -100,7 +101,7 @@ class WorkerAutomation(
 
             // If there's move still left, perform action
             // Unit may stop due to Enemy Unit within walking range during doAction() call
-            if (unit.currentMovement > 0 && reachedTile == tileToWork) {
+            if (unit.hasMovement() && reachedTile == tileToWork) {
                 if (reachedTile.isPillaged()) {
                     debug("WorkerAutomation: $unit -> repairs $reachedTile")
                     UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
@@ -163,7 +164,7 @@ class WorkerAutomation(
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())
-        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
+        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", MapUnitAction(unit), NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
 
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState)
@@ -187,6 +188,7 @@ class WorkerAutomation(
                         || (unit.isMilitary() && (it.militaryUnit == null || !it.militaryUnit!!.cache.hasUniqueToBuildImprovements)))
                 && (it.owningCity == null || it.getOwner() == civInfo)
                 && !it.isCityCenter()
+                && it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) != true
                 && getBasePriority(it, unit) > 1
             }
 
@@ -401,6 +403,8 @@ class WorkerAutomation(
 
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
 
+        var isResourceImprovedByNewImprovement = tile.resource != null && tile.tileResource.isImprovedBy(improvementName)
+
         if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
             val removedObject = improvementName.replace(Constants.remove, "")
@@ -415,8 +419,13 @@ class WorkerAutomation(
                 if (removedImprovement != null)
                     newTile.removeImprovement()
                 val wantedFinalImprovement = chooseImprovement(unit, newTile, localUniqueCache)
-                if (wantedFinalImprovement != null)
-                    stats.add(newTile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, newTile.getCity(), localUniqueCache))
+                if (wantedFinalImprovement != null){
+                    val statDiff = newTile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, newTile.getCity(), localUniqueCache)
+                    stats.add(statDiff)
+                    // Take into account that the resource might be improved by the *final* improvement
+                    isResourceImprovedByNewImprovement = newTile.resource != null && newTile.tileResource.isImprovedBy(wantedFinalImprovement.name)
+                }
+
             }
         }
 
@@ -432,7 +441,7 @@ class WorkerAutomation(
             if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
                 value -= (tile.resourceAmount / 2).coerceIn(1,2)
             }
-            if (tile.tileResource.isImprovedBy(improvementName)) {
+            if (isResourceImprovedByNewImprovement) {
                 value += (tile.resourceAmount / 2).coerceIn(1,2)
             }
         }

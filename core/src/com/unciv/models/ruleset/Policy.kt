@@ -56,7 +56,7 @@ open class Policy : RulesetObject() {
                     || it.type == UniqueType.OnlyAvailable
                     || it.type == UniqueType.OneTimeGlobalAlert
             }
-            .joinToString("\n") { "• ${it.text.tr()}" }
+            .joinToString("\n") { "• ${it.getDisplayText().tr()}" }
     }
 
     override fun makeLink() = "Policy/$name"

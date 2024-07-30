@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -59,6 +60,7 @@ import kotlin.reflect.KClass
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
     var deepLinkedMultiplayerGame: String? = null
+    override var customDataDirectory: String? = null
 
     /** The game currently in progress */
     var gameInfo: GameInfo? = null
@@ -92,7 +94,12 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             DebugUtils.VISIBLE_MAP = false
         }
         Current = this
-        files = UncivFiles(Gdx.files)
+        files = UncivFiles(Gdx.files, customDataDirectory)
+        Concurrency.run {
+            // Delete temporary files created when downloading mods
+            val tempFiles = files.getLocalFile("mods").list().filter { !it.isDirectory && it.name().startsWith("temp-") }
+            for (file in tempFiles) file.delete()
+        }
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
@@ -193,7 +200,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             throw UncivShowableException("You are not allowed to spectate!")
         }
 
-        initializeResources(prevGameInfo, newGameInfo)
+        initializeResources(newGameInfo)
 
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
         val worldScreenRestoreState = if (!callFromLoadScreen && isLoadingSameGame) worldScreen!!.getRestoreState() else null
@@ -232,16 +239,12 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 
     /** The new game info may have different mods or rulesets, which may use different resources that need to be loaded. */
-    private suspend fun initializeResources(prevGameInfo: GameInfo?, newGameInfo: GameInfo) {
-        if (prevGameInfo == null
-                || prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset
-                || prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods) {
-            withGLContext {
-                ImageGetter.setNewRuleset(newGameInfo.ruleset)
-            }
-            val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
-            musicController.setModList(fullModList)
+    private suspend fun initializeResources(newGameInfo: GameInfo) {
+        withGLContext {
+            ImageGetter.setNewRuleset(newGameInfo.ruleset)
         }
+        val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
+        musicController.setModList(fullModList)
     }
 
     /** Re-creates the current [worldScreen], if there is any. */
@@ -479,7 +482,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.12.8", 1019)
+        val VERSION = Version("4.12.14", 1029)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
@@ -499,7 +502,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // used by json serialization
         constructor() : this("", -1)
-        fun toNiceString() = "$text (Build $number)"
+        fun toNiceString() = "$text (Build ${number.tr()})"
     }
 }
 

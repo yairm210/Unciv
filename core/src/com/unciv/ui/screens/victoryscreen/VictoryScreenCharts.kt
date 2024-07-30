@@ -25,7 +25,7 @@ class VictoryScreenCharts(
     private var selectedCiv = worldScreen.selectedCiv
     private val viewingCiv = worldScreen.viewingCiv
 
-    private val rankingTypeSelect = TranslatedSelectBox(RankingType.values().map { it.label }, rankingType.name, skin)
+    private val rankingTypeSelect = TranslatedSelectBox(RankingType.entries.map { it.label }, rankingType.name)
     private val civButtonsTable = Table()
     private val civButtonsScroll = AutoScrollPane(civButtonsTable)
     private val controlsColumn = Table()
@@ -56,7 +56,7 @@ class VictoryScreenCharts(
         lineChart.addListener(onChartClick)
 
         rankingTypeSelect.onChange {
-            rankingType = RankingType.values()
+            rankingType = RankingType.entries
                 .firstOrNull { it.label == rankingTypeSelect.selected.value }
                 ?: RankingType.Score
             update()

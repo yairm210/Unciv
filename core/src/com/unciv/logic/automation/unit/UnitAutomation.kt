@@ -12,6 +12,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -40,7 +41,7 @@ object UnitAutomation {
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
-        if (tryGoToRuinAndEncampment(unit) && (unit.currentMovement == 0f || unit.isDestroyed)) return true
+        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
 
         val explorableTilesThisTurn =
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
@@ -215,7 +216,7 @@ object UnitAutomation {
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
-        if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
+        if (tryGoToRuinAndEncampment(unit) && !unit.hasMovement()) return
 
         if (tryUpgradeUnit(unit)) return
 
@@ -349,7 +350,7 @@ object UnitAutomation {
         // Try pillage improvements until healed
         while(tryPillageImprovement(unit, false)) {
             // If we are fully healed and can still do things, lets keep on going by returning false
-            if (unit.currentMovement == 0f || unit.health == 100) return unit.currentMovement == 0f
+            if (!unit.hasMovement() || unit.health == 100) return !unit.hasMovement()
         }
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
@@ -514,7 +515,7 @@ object UnitAutomation {
 
         val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreparationFlag(it) }.toSet()
         val closeCities = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ in hostileCivs }
-        val closestDistance = closeCities.minOfOrNull { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) } 
+        val closestDistance = closeCities.minOfOrNull { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) }
             ?: return false
         val citiesToDefend = closeCities.filter { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) <= closestDistance + 2 }
             .map { it.first }
@@ -565,7 +566,7 @@ object UnitAutomation {
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
         }
-        return unit.currentMovement == 0f
+        return !unit.hasMovement()
     }
 
 
@@ -713,10 +714,10 @@ object UnitAutomation {
     /** This is what a unit with the 'explore' action does.
     It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
-        if (tryGoToRuinAndEncampment(unit) && (unit.currentMovement == 0f || unit.isDestroyed)) return
+        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
-        unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
+        unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", MapUnitAction(unit), NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
 

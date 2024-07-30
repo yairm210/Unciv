@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.roundToInt
 import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
@@ -33,8 +34,8 @@ enum class RelationshipLevel(val color: Color) {
     Ally(Color.CHARTREUSE)           // HSV(90,100,100)
     ;
     operator fun plus(delta: Int): RelationshipLevel {
-        val newOrdinal = (ordinal + delta).coerceIn(0, values().size - 1)
-        return values()[newOrdinal]
+        val newOrdinal = (ordinal + delta).coerceIn(0, entries.size - 1)
+        return entries[newOrdinal]
     }
 }
 
@@ -110,7 +111,7 @@ enum class DiplomaticModifiers(val text: String) {
     BelieveSameReligion("We believe in the same religion");
 
     companion object{
-        private val valuesAsMap = DiplomaticModifiers.values().associateBy { it.name }
+        private val valuesAsMap = entries.associateBy { it.name }
         fun safeValueOf(name: String) = valuesAsMap[name]
     }
 }
@@ -391,7 +392,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
 
-    fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
+    fun canDeclareWar() = !civInfo.isDefeated() && !otherCiv().isDefeated()
+            && turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
     fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
 
@@ -556,15 +558,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     internal fun setFriendshipBasedModifier() {
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies)
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
-        for (thirdCiv in getCommonKnownCivs()
-                .filter { it.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
+        val civsOtherCivHasDeclaredFriendshipWith = getCommonKnownCivs()
+            .filter { it.getDiplomacyManager(otherCiv())!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
 
-            val relationshipLevel = otherCiv().getDiplomacyManager(thirdCiv)!!.relationshipIgnoreAfraid()
-            val modifierType = when (relationshipLevel) {
+        for (thirdCiv in civsOtherCivHasDeclaredFriendshipWith) {
+            // What do we (A) think about the otherCiv() (B) being friends with the third Civ (C)?
+            val ourRelationshipWithThirdCiv = civInfo.getDiplomacyManager(thirdCiv)!!.relationshipIgnoreAfraid()
+
+            val modifierType = when (ourRelationshipWithThirdCiv) {
                 RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.DeclaredFriendshipWithOurEnemies
                 else -> DiplomaticModifiers.DeclaredFriendshipWithOurAllies
             }
-            val modifierValue = when (relationshipLevel) {
+            val modifierValue = when (ourRelationshipWithThirdCiv) {
                 RelationshipLevel.Unforgivable -> -15f
                 RelationshipLevel.Enemy -> -5f
                 RelationshipLevel.Friend -> 5f
@@ -686,18 +691,24 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Resolves adding gifts with negative gold values.
+     * Resolves the otherCiv giving gifts to this civ with negative gold values.
      * Prioritises reducing gifts given to the other civ before increasing our gift value.
      * Does not take the gold from either civ's stockpile
      * @param gold the amount of gold without inflation, can be negative
+     * @param isPureGift should be true if the gift was one-sided, or false if it wasn't
      */
-    fun giftGold(gold: Int) {
+    fun giftGold(gold: Int, isPureGift: Boolean) {
+        val currentGold = if (isPureGift)
+            (gold * civInfo.gameInfo.ruleset.modOptions.constants.goldGiftMultiplier).roundToInt()
+        else
+            (gold * civInfo.gameInfo.ruleset.modOptions.constants.goldGiftTradeMultiplier).roundToInt()
+
         val otherGold = otherCivDiplomacy().getGoldGifts()
-        if (otherGold > gold) {
-            otherCivDiplomacy().recieveGoldGifts(-gold)
+        if (otherGold > currentGold) {
+            otherCivDiplomacy().recieveGoldGifts(-currentGold)
         } else {
             otherCivDiplomacy().removeModifier(DiplomaticModifiers.GaveUsGifts)
-            recieveGoldGifts(gold - otherGold)
+            recieveGoldGifts(currentGold - otherGold)
         }
     }
 

@@ -202,9 +202,9 @@ class CivilopediaScreen(
 
         // do not confuse with IConstruction.shouldBeDisplayed - that one tests all prerequisites for building
         fun shouldBeDisplayed(obj: ICivilopediaText) =
-            obj is IHasUniques && !obj.isHiddenFromCivilopedia(game.gameInfo, ruleset)
+            obj !is IHasUniques || !obj.isHiddenFromCivilopedia(game.gameInfo, ruleset)
 
-        for (loopCategory in CivilopediaCategories.values()) {
+        for (loopCategory in CivilopediaCategories.entries) {
             if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 loopCategory.getCategoryIterator(ruleset, tutorialController)

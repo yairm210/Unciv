@@ -1,9 +1,12 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
@@ -18,14 +21,10 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.extensions.addBorderAllowOpacity
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UnitGroup
+import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
@@ -123,7 +122,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getIcon(combatant: ICombatant) =
-        if (combatant is MapUnitCombatant) UnitGroup(combatant.unit,25f)
+        if (combatant is MapUnitCombatant) UnitIconGroup(combatant.unit,25f)
         else ImageGetter.getNationPortrait(combatant.getCivInfo().nation, 25f)
 
     private val quarterScreen = worldScreen.stage.width / 4
@@ -164,8 +163,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !(defender is MapUnitCombatant && defender.unit.isEmbarked()))
                 Fonts.rangedStrength
             else Fonts.strength // use strength icon if attacker is melee, defender is melee, defender is a city, or defender is embarked
-        add(attacker.getAttackingStrength().toString() + attackIcon)
-        add(defender.getDefendingStrength(attacker.isRanged()).toString() + defenceIcon).row()
+        add(attacker.getAttackingStrength().tr() + attackIcon)
+        add(defender.getDefendingStrength(attacker.isRanged()).tr() + defenceIcon).row()
 
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender, tileToAttackFrom).map {
@@ -188,8 +187,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             addSeparator()
             val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender, tileToAttackFrom).roundToInt()
             val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender, tileToAttackFrom).roundToInt()
-            add(attackerStrength.toString() + attackIcon)
-            add(defenderStrength.toString() + attackIcon).row()
+            add(attackerStrength.tr() + attackIcon)
+            add(defenderStrength.tr() + attackIcon).row()
         }
 
         // from Battle.addXp(), check for can't gain more XP from Barbarians
@@ -348,6 +347,27 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         else {
             attackButton.onClick(attacker.getAttackSound()) {
                 Nuke.NUKE(attacker, targetTile)
+
+                val nukeCircle = ImageGetter.getCircle()
+                nukeCircle.setSize(10f)
+                nukeCircle.setOrigin(Align.center)
+                nukeCircle.addAction(Actions.sequence(
+                    Actions.fadeOut(0f),
+                    Actions.parallel(
+                        Actions.fadeIn(1f, Interpolation.pow2In),
+                        Actions.scaleTo(200f, 200f, 1f, Interpolation.linear),
+                    ),
+                    Actions.delay(1f),
+                    Actions.fadeOut(1f, Interpolation.pow2Out),
+                    Actions.removeActor()
+                    )
+                )
+                val targetTileGroup = worldScreen.mapHolder.tileGroups[targetTile]!!
+                nukeCircle.x = targetTileGroup.x
+                nukeCircle.y = targetTileGroup.y
+                targetTileGroup.parent.addActor(nukeCircle)
+
+
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }
@@ -378,7 +398,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         addSeparator().pad(0f)
 
         val attackIcon = Fonts.rangedStrength
-        add(attacker.getAttackingStrength().toString() + attackIcon)
+        add(attacker.getAttackingStrength().tr() + attackIcon)
         add("???$attackIcon").row()
 
         val attackerModifiers =

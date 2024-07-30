@@ -1,3 +1,109 @@
+## 4.12.14
+
+Add CLI argument to specify the data directory - this will allow native install on Windows, hopefully
+
+Modding: New unit triggers to gain/lose movement points
+
+AI citizen focus improvements - By EmperorPinguin
+
+Correct spelling of 'Svannah' to 'Savannah' across project.  - By aaronjfeingold
+
+## 4.12.13
+
+Special nuke animation, to make it feel more momentous
+
+Better repeatable unique randomization
+
+Modding:
+- mapUnitFilter no longer errors for correct values
+- Better display of "object is missing a name" errors
+- Fix endless loop when many units can transfer movement to each other
+
+By tuvus:
+- Made Gold Gifting moddable 
+- Make AI difficulty moddable 
+
+Repair Qingmin holiday  - By SomeTroglodyte
+
+Civilopedia Updates: Trade Routes and Air Combat  - By itanasi
+
+## 4.12.12
+
+Terrain civilopedia displays improvements that can be placed
+
+Fixed paradrop to areas outside of movement range
+
+Fix number translation removing 0 digits from strings like "1,023"
+
+Modding:
+
+- Catch & fix unknown json filenames
+- Added autoreplace for deprecated modifiers
+- "counted unit actions" can handle different parameters of same unique
+
+AI can no longer buy wonders
+
+Gift gold fix  - By tuvus
+
+Fix parameter mapping for UnitSupplyPerPop  - By SomeTroglodyte
+
+## 4.12.11
+
+Modding: Added unique builder screen, accessible from mod checker :D
+
+Fixed Workboat construction automation ignoring existing workboat in city
+
+Fixed air unit movement on map
+
+Fixed icons in Wonder location "near city" for cities with nation names
+
+Rome/Babylon capital takeover no longer renames like city states
+
+By tuvus:
+- Animations now show escort units 
+- Escort movement fix 
+
+More Numbers Translations Coverage  - By touhidurrr
+
+Correct the colors of the flag of Ukraine  - By kostia1st
+
+## 4.12.10
+
+UNIT MOVEMENT ANIMATION!
+
+New uniques:
+- "Can only start games from the starting era" mod option
+- "if [buildingFilter] is not constructed" unique
+
+AI no longer declares war against defeated civs
+
+Unified AI and Human gold purchase logic
+
+Ruleset validation: Catch "building required for victory milestone but does not exist" errors
+
+"Will not be replaced by automated units" unique fix
+
+Fix cases where Numbers Translations does not work properly  - By touhidurrr
+
+## 4.12.9
+
+Solved edge-case missing images bug
+
+Hidden conditionals are hidden in more places
+
+Duplicate notifications are all shown
+
+Fixed infinite air units in cities
+
+Friendship-based modifiers calculated correctly
+
+By SomeTroglodyte:
+- UX: Notifications for map units select better when tapped 
+- Fix GlobalPoliticsOverviewTable table layout after switching back from diagram 
+
+By SpacedOutChicken:
+- Correct Unique parameters doc to display terrain quality 
+
 ## 4.12.8
 
 Performance improvements

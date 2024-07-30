@@ -283,7 +283,7 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
 // Used to match continous digits 0, 12, 1232 etc
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-val digitsRegex = Regex("""\d+""")
+val digitsRegex = Regex("""\d""")
 
 object TranslationActiveModsCache {
     private var cachedHash = Int.MIN_VALUE
@@ -477,7 +477,9 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean)
 
     val translation = UncivGame.Current.translations.getText(
         this, language, TranslationActiveModsCache.activeMods
-    ).replace(digitsRegex) { it.value.toLong().tr(language) }
+    ).replace(digitsRegex) {
+        it.value.toLong().tr(language)
+    }
 
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation

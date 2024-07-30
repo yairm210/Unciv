@@ -20,7 +20,12 @@ object Conditionals {
         if (conditional.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
             return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers
 
-        val stateBasedRandom by lazy { Random(state.hashCode() * 31 + (state.gameInfo?.turns?.hashCode() ?: 0)) }
+        val stateBasedRandom by lazy {
+            var seed = state.gameInfo?.turns?.hashCode() ?: 0
+            seed = seed * 31 + (unique?.hashCode() ?: 0)
+            seed = seed * 31 + state.hashCode()
+            Random(seed)
+        }
 
         /** Helper to simplify conditional tests requiring gameInfo */
         fun checkOnGameInfo(predicate: (GameInfo.() -> Boolean)): Boolean {
@@ -171,6 +176,8 @@ object Conditionals {
 
             UniqueType.ConditionalBuildingBuilt ->
                 checkOnCiv { cities.any { it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }
+            UniqueType.ConditionalBuildingNotBuilt ->
+                checkOnCiv { cities.none { it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }
             UniqueType.ConditionalBuildingBuiltAll ->
                 checkOnCiv { cities.filter { it.matchesFilter(conditional.params[1]) }.all {
                   it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }

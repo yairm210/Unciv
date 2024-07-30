@@ -99,8 +99,8 @@ object UnitActionModifiers {
                         unit.consume()
                         continue
                     }
-                    val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
-                    unit.abilityToTimesUsed[actionUnique.placeholderText] = usagesSoFar + 1
+                    val usagesSoFar = unit.abilityToTimesUsed[actionUnique.text.removeConditionals()] ?: 0
+                    unit.abilityToTimesUsed[actionUnique.text.removeConditionals()] = usagesSoFar + 1
                 }
                 UniqueType.UnitActionStatsCost -> {
                     // do Stat costs, either Civ-wide or local city
@@ -125,7 +125,7 @@ object UnitActionModifiers {
     /** Returns 'null' if usages are not limited */
     private fun usagesLeft(unit: MapUnit, actionUnique: Unique): Int?{
         val usagesTotal = getMaxUsages(unit, actionUnique) ?: return null
-        val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
+        val usagesSoFar = unit.abilityToTimesUsed[actionUnique.text.removeConditionals()] ?: 0
         return usagesTotal - usagesSoFar
     }
 
@@ -173,7 +173,11 @@ object UnitActionModifiers {
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
             || actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed } && usagesLeft(unit, actionUnique) == 1
         ) effects += Fonts.death.toString()
-        else effects += getMovementPointsToUse(unit, actionUnique, defaultAllMovement).toString() + Fonts.movement
+        else effects += getMovementPointsToUse(
+            unit,
+            actionUnique,
+            defaultAllMovement
+        ).tr() + Fonts.movement
 
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"

@@ -16,6 +16,7 @@ class Terrain : RulesetStatsObject() {
 
     lateinit var type: TerrainType
 
+    /** For terrain features - indicates the stats of this terrain override those of all previous layers */
     var overrideStats = false
 
     /** If true, nothing can be built here - not even resource improvements */
@@ -93,6 +94,15 @@ class Terrain : RulesetStatsObject() {
                 occursOn.forEach {
                     textList += FormattedLine(it, link="Terrain/$it", indent=1)
                 }
+            }
+        }
+
+        val improvementsThatCanBePlacedHere = ruleset.tileImprovements.values
+            .filter { it.terrainsCanBeBuiltOn.contains(name) }
+        if (improvementsThatCanBePlacedHere.isNotEmpty()){
+            textList += FormattedLine("{Tile Improvements}:")
+            for (improvement in improvementsThatCanBePlacedHere){
+                textList += FormattedLine(improvement.name, improvement.makeLink(), indent=1)
             }
         }
 
