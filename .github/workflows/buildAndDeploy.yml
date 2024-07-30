@@ -215,6 +215,48 @@ jobs:
             deploy/Unciv-Windows64.zip
             deploy/Unciv-Linux64.zip
 
+  build-msi:
+    needs: packr-build
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4 # For the icon
+      
+      - name: Download packed zips
+        uses: actions/download-artifact@v4
+        with:
+          name: UncivDeploymentZips
+      
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Unzip unciv file
+        run: | 
+          mkdir .github/workflows/wix-msi-files
+          tar -xf Unciv-Windows64.zip -C .github/workflows/wix-msi-files
+          dir .github/workflows/wix-msi-files
+        
+      - name: Install WiX
+        run: dotnet tool install --global wix
+        
+      - name: Build WiX on Windows
+        shell: bash
+        run: |
+          UNCIV_VERSION=${{ github.ref_name }} wix build .github/workflows/unciv.wxs
+
+
+      - name: Show folders
+        run: |
+          dir
+          dir .github/workflows/wix-msi-files
+
+      - name: Upload MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unciv-MSI
+          path: .github/workflows/Unciv.msi
+          if-no-files-found: error
+
   upload-to-itch:
     runs-on: ubuntu-latest
     needs: [packr-build]
@@ -238,7 +280,7 @@ jobs:
           ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{ github.ref_name }}
 
   upload-github-release-and-post-to-discord:
-    needs: [get-release-body, android-build, packr-build]
+    needs: [get-release-body, android-build, packr-build, build-msi]
     runs-on: ubuntu-latest
     steps:
 
@@ -254,6 +296,7 @@ jobs:
           mv UncivDeploymentZips/Unciv-Linux64.zip deploy
           mv UncivAPK/Unciv-signed.apk deploy
           mv UncivServer/UncivServer.jar deploy
+          mv Unciv-MSI/Unciv.msi deploy
 
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
