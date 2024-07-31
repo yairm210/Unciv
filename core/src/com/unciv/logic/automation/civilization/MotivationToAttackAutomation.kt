@@ -272,8 +272,17 @@ object MotivationToAttackAutomation {
         return theirAlliesValue
     }
 
-    private fun getCombatStrengthModifier(civInfo: Civilization, ourCombatStrength: Float, theirCombatStrength: Float): Float {
-        val combatStrengthRatio = ourCombatStrength / theirCombatStrength
+    private fun getCombatStrengthModifier(civInfo: Civilization, targetCiv: Civilization, ourCombatStrength: Float, theirCombatStrength: Float): Float {
+        var combatStrengthRatio = ourCombatStrength / theirCombatStrength
+
+        // At higher difficulty levels the AI gets a unit production boost.
+        // In that case while we may have more units than them, we don't nessesarily want to be more aggressive.
+        // This is to reduce the amount that the AI targets players at these higher levels somewhat.
+        if (civInfo.isAI() && targetCiv.isHuman() && combatStrengthRatio > 1) {
+            val ourCombatModifiers = civInfo.gameInfo.getDifficulty().aiUnitCostModifier
+            val theirCombatModifiers = civInfo.gameInfo.getDifficulty().unitCostModifier
+            combatStrengthRatio *= ourCombatModifiers / theirCombatModifiers
+        }
         val combatStrengthModifier = when {
             combatStrengthRatio > 5f -> 20f
             combatStrengthRatio > 4f -> 15f
