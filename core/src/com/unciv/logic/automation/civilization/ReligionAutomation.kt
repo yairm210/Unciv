@@ -30,7 +30,7 @@ object ReligionAutomation {
             buyGreatProphetInAnyCity(civInfo)
             return
         }
-        if (civInfo.religionManager.remainingFoundableReligions() == 0 ) {
+        if (civInfo.religionManager.remainingFoundableReligions() == 0 && civInfo.religionManager.religionState != ReligionState.FoundingReligion) {
             buyGreatPerson(civInfo)
             return
         }
