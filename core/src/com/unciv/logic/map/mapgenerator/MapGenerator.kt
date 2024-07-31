@@ -417,7 +417,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val humidityRandom = randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1)
             val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
 
-            val expectedTemperature = if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+            val expectedTemperature = if (tileMap.mapParameters.shape == MapShape.flatEarth) {
                 // Flat Earth uses radius because North is center of map
                 val radius = getTileRadius(tile, tileMap)
                 val radiusTemperature = getTemperatureAtRadius(radius)
@@ -589,7 +589,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                     0f, 1f))
             }.toList()
 
-        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+        if (tileMap.mapParameters.shape == MapShape.flatEarth) {
             spawnFlatEarthIceWalls(tileMap, iceEquivalents)
         }
 
