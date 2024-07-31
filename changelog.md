@@ -1,3 +1,39 @@
+## 4.12.15
+
+Resolves  - Validate mod folder names and catch misspellings
+
+Resolves  kudos @SomeTroglodyte
+
+Automated workers prioritize replacing features to get to lux/strategic resources
+
+Fixed tests, since "1 radius with world wrap" does not fit 1-radius map tests
+
+Changed 'default map' parameters to rectangular + world wrap
+
+Fixed "when friends" / "when allies" translations
+
+Improvement Unique converted to trigger - "Gain control over [tileFilter] tiles in a [amount]-tile radius"
+
+Resolves  - kudos @vincemolnar
+
+@touhidurrr changes
+
+Correct dir placement...?
+
+Correct dir placement...?
+
+Correct dir placement
+
+Create 'wix-msi-files' dir
+
+build-msi needs packr-build
+
+Github upload needs to wait for MSI to build
+
+Add MSI to release
+
+Show text for json parse errors from github search
+
 ## 4.12.14
 
 Add CLI argument to specify the data directory - this will allow native install on Windows, hopefully
