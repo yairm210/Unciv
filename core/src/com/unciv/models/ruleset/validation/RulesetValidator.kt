@@ -22,6 +22,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
+import com.unciv.ui.images.Portrait
 
 class RulesetValidator(val ruleset: Ruleset) {
 
@@ -56,7 +57,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         // Tileset tests - e.g. json configs complete and parseable
         checkTilesetSanity(lines)  // relies on textureNamesCache
         checkCivilopediaText(lines)  // relies on textureNamesCache
-        checkFiles(lines)
+        checkFileNames(lines)
 
         return lines
     }
@@ -101,30 +102,65 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         checkCivilopediaText(lines)
-        checkFiles(lines)
+        checkFileNames(lines)
 
         return lines
     }
 
 
-    private fun checkFiles(lines: RulesetErrorList) {
+    private fun checkFileNames(lines: RulesetErrorList) {
         val folder = ruleset.folderLocation ?: return
         for (child in folder.list()){
             if (child.name().endsWith("json") && !child.name().startsWith("Atlas"))
                 lines.add("File ${child.name()} is located in the root folder - it should be moved to a 'jsons' folder")
         }
+
+        fun getPossibleMisspellings(originalText: String, possibleMisspellings: List<String>): List<String> {
+            return possibleMisspellings.filter {
+                getRelativeTextDistance(
+                    it,
+                    originalText
+                ) <= RulesetCache.uniqueMisspellingThreshold
+            }
+        }
+
+        val knownFolderNames = listOf("jsons", "maps", "sounds", "Images", "fonts")
+        for (child in folder.list()){
+            if (child.isDirectory && child.name() !in knownFolderNames){
+                val possibleMisspellings = getPossibleMisspellings(child.name(), knownFolderNames)
+                if (possibleMisspellings.isNotEmpty())
+                    lines.add("Folder \"${child.name()}\" is probably a misspelling of "+possibleMisspellings.joinToString("/"),
+                        RulesetErrorSeverity.OK)
+            }
+        }
+
+        val knownImageFolders = Portrait.Type.entries.map { it.directory }.flatMap { listOf(it+"Icons", it+"Portraits") } +
+                // Not portrait-able (yet?)
+                listOf("CityStateIcons", "PolicyBranchIcons", "PolicyIcons", "OtherIcons", "EmojiIcons", "StatIcons", "TileIcons", "TileSets")
+        val imageFolders = folder.list().filter { it.name().startsWith("Images") }
+        for (imageFolder in imageFolders){
+            for (child in imageFolder.list()){
+                if (!child.isDirectory) {
+                    lines.add("File \"$imageFolder/${child.name()}\" is misplaced - Images folders should not contain any files directly - only subfolders",
+                        RulesetErrorSeverity.OK)
+                } else if (child.name() !in knownImageFolders){
+                    val possibleMisspellings = getPossibleMisspellings(child.name(), knownImageFolders)
+                    if (possibleMisspellings.isNotEmpty())
+                        lines.add("Folder \"$imageFolder/${child.name()}\" is probably a misspelling of "+
+                                possibleMisspellings.joinToString("/"),
+                            RulesetErrorSeverity.OK)
+                }
+            }
+        }
+
+
         val jsonFolder = folder.child("jsons")
         if (jsonFolder.exists()) {
             for (file in jsonFolder.list("json")) {
                 if (file.name() !in RulesetFile.entries.map { it.filename }) {
                     var text = "File ${file.name()} is in the jsons folder but is not a recognized ruleset file"
-                    val similarFilenames = RulesetFile.entries.map { it.filename }.filter {
-                        getRelativeTextDistance(
-                            it,
-                            file.name()
-                        ) <= RulesetCache.uniqueMisspellingThreshold
-                    }
-                    if (similarFilenames.isNotEmpty()) text += "\nPossible misspelling of: "+similarFilenames.joinToString("/")
+                    val possibleMisspellings = getPossibleMisspellings(file.name(), RulesetFile.entries.map { it.filename })
+                    if (possibleMisspellings.isNotEmpty()) text += "\nPossible misspelling of: "+possibleMisspellings.joinToString("/")
                     lines.add(text, RulesetErrorSeverity.OK)
                 }
             }
