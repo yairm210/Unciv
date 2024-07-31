@@ -314,7 +314,7 @@ class WorkerAutomation(
 
     /**
      * Determine the improvement appropriate to a given tile and worker
-     * Returns null if
+     * Returns null if none is worth it
      * */
     private fun chooseImprovement(unit: MapUnit, tile: Tile, localUniqueCache: LocalUniqueCache): TileImprovement? {
         // You can keep working on half-built improvements, even if they're unique to another civ
