@@ -484,28 +484,31 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 .flatMap { it.uniqueObjects }
 
         for (unique in allUniques) {
+            if (unique.hasTriggerConditional()) continue
             when (unique.type) {
                 UniqueType.Strength -> {
-                    if (unique.params[0].toInt() <= 0) continue
-                    if (unique.conditionals.any { it.type == UniqueType.ConditionalVsUnits }) { // Bonus vs some units - a quarter of the bonus
-                        power *= (unique.params[0].toInt() / 4f).toPercent()
-                    } else if (
+                    val bonus = unique.params[0].toInt()
+                    if (bonus == 0) continue
+                    val weightModifier = unique.conditionals.firstOrNull { it.type == UniqueType.AIForceCalculationWeight }
+                    val weight = when {
+                        unique.conditionals.none { it.type != null && UniqueTarget.MetaModifier !in it.type.targetTypes } -> 1f
+                        weightModifier != null -> weightModifier.params[0].toFloat() * 0.01f
+                        // @Deprecated("Use UniqueType.AIForceCalculationWeight explicitly")
+                        unique.conditionals.any { it.type == UniqueType.ConditionalVsUnits } -> 0.25f // Bonus vs some units - a quarter of the bonus
                         unique.conditionals.any {
                             it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
                                 || it.type == UniqueType.ConditionalAttacking // Attack - half the bonus
                                 || it.type == UniqueType.ConditionalDefending // Defense - half the bonus
                                 || it.type == UniqueType.ConditionalFightingInTiles
-                        } // Bonus in terrain or feature - half the bonus
-                    ) {
-                        power *= (unique.params[0].toInt() / 2f).toPercent()
-                    } else {
-                        power *= (unique.params[0].toInt()).toPercent() // Static bonus
+                        } -> 0.5f  // Bonus in terrain or feature - half the bonus
+                        else -> continue
                     }
+                    power *= (bonus * weight).toPercent()
                 }
+
                 UniqueType.StrengthNearCapital ->
                     if (unique.params[0].toInt() > 0)
                         power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
-
                 UniqueType.MayParadrop // Paradrop - 25% bonus
                     -> power += power / 4
                 UniqueType.MustSetUp // Must set up - 20 % penalty

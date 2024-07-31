@@ -927,6 +927,9 @@ enum class UniqueType(
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
     MarkTutorialComplete("Mark tutorial [comment] complete", UniqueTarget.Event, flags = UniqueFlag.setOfHiddenNoConditionals),
 
+    AIForceCalculationWeight("Weight for AI force calculation = [relativeAmount]%", UniqueTarget.MetaModifier, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "Applicable only to the \"[relativeAmount]% Strength\" unique in a base unit definition. Determines how much of the bonus to apply when evaluating force, which is done without respecting conditionals. Defaults to 100% when no conditionals are present, to 0% otherwise."),
+
     // Declarative Mod compatibility (see [ModCompatibility]):
     // Note there is currently no display for these, but UniqueFlag.HiddenToUsers is not set.
     // That means we auto-template and ask our translators for a translation that is currently unused.
