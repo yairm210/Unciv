@@ -355,7 +355,7 @@ object ReligionAutomation {
                     15f * if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f else 1f
                 UniqueType.StatsWhenSpreading ->
                     unique.params[0].toFloat() / 5f
-                UniqueType.StatsWhenAdoptingReligion, UniqueType.StatsWhenAdoptingReligionSpeed ->
+                UniqueType.StatsWhenAdoptingReligion ->
                     unique.stats.values.sum() / 50f
                 UniqueType.RestingPointOfCityStatesFollowingReligionChange ->
                     if (civInfo.wantsToFocusOn(Victory.Focus.CityStates))
@@ -366,8 +366,6 @@ object ReligionAutomation {
                     unique.stats.values.sum()
                 UniqueType.StatsFromGlobalFollowers ->
                     4f * (unique.stats.values.sum() / unique.params[1].toFloat())
-                UniqueType.ProvidesStatsWheneverGreatPersonExpended ->
-                    unique.stats.values.sum() / 2f
                 UniqueType.Strength ->
                     unique.params[0].toFloat() / 4f
                 UniqueType.ReligionSpreadDistance ->
@@ -451,7 +449,7 @@ object ReligionAutomation {
         // belief less than make the game crash. The `continue`s should only be reached whenever
         // there are not enough beliefs to choose, but there should be, as otherwise we could
         // not have used a great prophet to found/enhance our religion.
-        for (belief in BeliefType.values()) {
+        for (belief in BeliefType.entries) {
             if (belief == BeliefType.None) continue
             repeat(beliefsToChoose[belief]) {
                 chosenBeliefs.add(
