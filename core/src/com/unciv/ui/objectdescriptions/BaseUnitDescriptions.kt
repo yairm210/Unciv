@@ -98,7 +98,7 @@ object BaseUnitDescriptions {
         }
 
         if (baseUnit.interceptRange > 0) {
-            textList += FormattedLine("Air Intercept Range: ${baseUnit.interceptRange}")
+            textList += FormattedLine("Air Intercept Range: [${baseUnit.interceptRange}]")
         }
 
         if (baseUnit.replacementTextForUniques.isNotEmpty()) {
