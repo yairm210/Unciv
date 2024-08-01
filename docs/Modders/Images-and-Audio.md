@@ -16,7 +16,7 @@ If you're developing your mod on an Android version of Unciv (not recommended!) 
 - Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there). This uses the packing methods [documented here](https://libgdx.com/wiki/tools/texture-packer).
 - You can ask someone in the Discord server to help you out.
 - You can use external tools, [e.g. gdx-texture-packer-gui](https://github.com/crashinvaders/gdx-texture-packer-gui). Utmost care needs to be taken that the files can be discovered by Unciv and internal relative paths are correct.
-- The Unciv repo itself has a feature that can pack images on github runners - documentation still needs to be done.
+- The Unciv repo itself has a feature that can pack images on github runners
 
 ### Multiple texture atlases
 
@@ -57,6 +57,24 @@ To get these changed defaults, start with the following as base for your custom 
 Due to certain circumstances, please make sure names and paths that will be mapped in an atlas use **only ascii**. Not all parts of the loader enforce strict UTF-8 usage, sorry.
 Symptoms if you fail to heed this: mod works on a Chinese Windows box but not on a western one or vice-versa, or mod works on a Chinese Windows box but not a Chinese Linux box or vice-versa, or mod works on a Chinese Windows box with default settings but not on the same box with "Use unicode UTF-8 for worldwide language support" turned on.
 This does not technically apply to the atlas name itself when multiple atlases are used (the xyz part in "Images.xyz"), but we nevertheless recommend the same rule for consistency.
+
+### Autoupdate GitHub action
+
+This is an automation pipeline that you can add to your Github mod to get automatic smaller PNGs, unique auto-updates and pack your atlases!
+On every commit, and once per day, it will: try to shrink PNGs (this is lossless, the pixel data remains the same but the file takes less space), try to autoupdate deprecated uniques and generate new game.png and game.atlas.
+This will create a PR to your repo, which you can choose to accept - or not.
+
+**How to activate it:**
+- In your Github page go to "actions" tab
+- Suggested for this repo > Simple workflow > "Configure"
+- Copy the text of the [autoupdate.yml](https://github.com/yairm210/Unciv-IV-mod/blob/master/.github/workflows/autoupdate.yml) ("copy raw file") to the new file in your repo
+- Change the file name to "autoupdate.yml"
+- "Commit changes" (green button, top-right) > "Commit changes"
+
+Notes:
+- The main branch should be named 'master'
+- Open Settings > Actions > General
+   Under "Workflow permissions" select "Read and write permissions" and "Allow GitHub Actions to create and approve pull requests"
 
 ## Permanent audiovisual mods
 
