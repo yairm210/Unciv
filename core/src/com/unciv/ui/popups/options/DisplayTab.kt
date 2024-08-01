@@ -2,15 +2,21 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.Value
 import com.badlogic.gdx.utils.Array
 import com.unciv.GUI
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
@@ -33,6 +39,10 @@ internal class DisplayTab (
 ) : Table(BaseScreen.skin) {
     private val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
     private val settings by optionsPopup::settings
+
+    private val animationLevelSelectBox: TranslatedSelectBox
+    private lateinit var animationOptionsCell: Cell<Actor?>
+    private val animationExpertOptions by lazy { AnimationExpertOptions() }
 
     init {
         pad(10f)
@@ -91,7 +101,7 @@ internal class DisplayTab (
 
         addUnitIconAlphaSlider()
 
-        addAnimationOptions()
+        animationLevelSelectBox = addAnimationOptions()
     }
 
 
@@ -294,21 +304,66 @@ internal class DisplayTab (
         }
     }
 
-    private fun addAnimationOptions() {
+    private fun addAnimationOptions(): TranslatedSelectBox {
         addSeparator()
-        add("Performance".toLabel(fontSize = 24)).colspan(2).row()
+        add("Animations".toLabel(fontSize = 24)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering == true) {
-            settings.continuousRendering = it
-            Gdx.graphics.isContinuousRendering = it
+        add("Animation level".toLabel()).left().fillX()
+        val options = GameSettings.AnimationLevels.entries.map { it.name } + "Expert"
+        val current = GameSettings.AnimationLevels.entries
+            .firstOrNull { settings.enabledAnimations == it.animations }?.name ?: "Expert"
+        val selectBox = TranslatedSelectBox(options, current)
+        selectBox.onChange { onAnimationLevelChange() }
+        add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+        animationOptionsCell = add().colspan(2).growX()
+        row()
+        if (current == "Expert") showAnimationExpertOptions()
+        return selectBox
+    }
+
+    private fun onAnimationLevelChange() {
+        val level = GameSettings.AnimationLevels.entries.firstOrNull { it.name == animationLevelSelectBox.selected.value }
+            ?: return showAnimationExpertOptions()
+        hideAnimationExpertOptions()
+        settings.enabledAnimations.setLevel(level)
+    }
+
+    private fun showAnimationExpertOptions() {
+        animationExpertOptions.update()
+        animationOptionsCell.setActor(animationExpertOptions)
+        // reset cell height to automatic if hideAnimationExpertOptions set it to Fixed.0
+        animationOptionsCell.prefHeight(Value.prefHeight)
+        animationOptionsCell.minHeight(Value.minHeight)
+        animationOptionsCell.maxHeight(Value.maxHeight)
+        invalidate()
+    }
+
+    private fun hideAnimationExpertOptions() {
+        animationOptionsCell.setActor(null)
+        animationOptionsCell.height(0f)
+        invalidate()
+    }
+
+    private inner class AnimationExpertOptions : Table(skin) {
+        val options = hashMapOf<GameSettings.Animations, CheckBox>()
+
+        init {
+            defaults().padBottom(5f)
+            for (anim in GameSettings.Animations.entries) {
+                val checkBox = anim.label.toCheckBox {
+                    settings.enabledAnimations[anim] = it
+                }
+                add(checkBox).left().row()
+                options[anim] = checkBox
+            }
         }
 
-        val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
-        val continuousRenderingLabel = WrappableLabel(
-            continuousRenderingDescription,
-            optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
-        )
-        continuousRenderingLabel.wrap = true
-        add(continuousRenderingLabel).colspan(2).padTop(10f).row()
+        fun update() {
+            for ((anim, checkBox) in options) {
+                checkBox.setProgrammaticChangeEvents(false)
+                checkBox.isChecked = anim in settings.enabledAnimations
+                checkBox.setProgrammaticChangeEvents(true)
+            }
+        }
     }
 }

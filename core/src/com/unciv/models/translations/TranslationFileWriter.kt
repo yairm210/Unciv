@@ -8,6 +8,7 @@ import com.unciv.json.json
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.SpyAction
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.LocaleCode
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Building
@@ -138,6 +139,10 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
             for (bindingLabel in KeyboardBinding.getTranslationEntries())
                 linesToTranslate += "$bindingLabel = "
+
+            linesToTranslate += "\n\n#################### Lines from animation settings #######################\n"
+            for (animation in GameSettings.Animations.entries)
+                linesToTranslate += "${animation.label} = "
 
             for (baseRuleset in BaseRuleset.entries) {
                 val generatedStringsFromBaseRuleset =

@@ -2,6 +2,7 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.UncivGame
@@ -184,14 +185,14 @@ class OptionsPopup(
         }
     }
 
-    internal fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
+    internal fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)): CheckBox {
         val checkbox = text.toCheckBox(initialState) {
             action(it)
-            val worldScreen = GUI.getWorldScreenIfActive()
-            if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
+            if (updateWorld) GUI.setUpdateWorldOnNextRender()
         }
         if (newRow) table.add(checkbox).colspan(2).left().row()
         else table.add(checkbox).left()
+        return checkbox
     }
 
     internal fun addCheckbox(
