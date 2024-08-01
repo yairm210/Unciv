@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.addToCenter
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -216,7 +217,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
         flagBg.color.a = alpha
         flagSelection.color.a = opacity
 
-        if (GUI.getSettings().continuousRendering) {
+        if (GameSettings.Animations.SelectedUnit in GUI.getSettings().enabledAnimations) {
             flagSelection.color.a = opacity
             flagSelection.addAction(
                 Actions.repeat(

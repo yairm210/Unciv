@@ -25,6 +25,7 @@ import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
@@ -273,7 +274,8 @@ class WorldMapHolder(
             var pathToTile: List<Tile>? = null
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-                if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop())
+                if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop() &&
+                        GameSettings.Animations.MovementPath in worldScreen.game.settings.enabledAnimations)
                     pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
             } catch (ex: Exception) {
                 when (ex) {

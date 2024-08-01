@@ -89,7 +89,7 @@ fun displayTab(
     addSeparator()
     add("Performance".toLabel(fontSize = 24)).colspan(2).row()
 
-    optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
+    optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering == true) {
         settings.continuousRendering = it
         Gdx.graphics.isContinuousRendering = it
     }

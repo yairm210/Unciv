@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTime::class)
-
 package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
@@ -13,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.GUI
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.onChange
@@ -21,7 +20,6 @@ import com.unciv.ui.components.widgets.LoadingImage.Style
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.absoluteValue
-import kotlin.time.ExperimentalTime
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
@@ -48,7 +46,7 @@ class LoadingImage(
     private val circle: Image?
     private val idleIcon: Image?
     private val loadingIcon: Image
-    var animated = GUI.getSettings().continuousRendering
+    var animated = GameSettings.Animations.Loading in GUI.getSettings().enabledAnimations
     private var loadingStarted: TimeMark? = null
     //endregion
 

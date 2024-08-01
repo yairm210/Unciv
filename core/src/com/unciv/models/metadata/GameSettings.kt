@@ -3,6 +3,8 @@ package com.unciv.models.metadata
 import com.badlogic.gdx.Application.ApplicationType
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Base64Coder
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
@@ -19,7 +21,9 @@ import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
+import java.util.EnumSet
 import java.util.Locale
+import kotlin.enums.EnumEntries
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
@@ -79,7 +83,11 @@ class GameSettings {
     var unitIconOpacity = 1f // default corresponds to fully opaque
     val showPixelUnits: Boolean get() = unitSet != null
     var showPixelImprovements: Boolean = true
-    var continuousRendering = false
+
+    @Deprecated("Since 4.12.15", ReplaceWith("GameSettings.Animations.X in enabledAnimations"))
+    var continuousRendering: Boolean? = null
+    val enabledAnimations = EnabledAnimations()
+
     var orderTradeOffersByAmount = true
     var confirmNextTurn = false
     var windowState = WindowState()
@@ -318,6 +326,69 @@ class GameSettings {
         Ukrainian("uk", "UA"),
         Vietnamese("vi", "VN"),
         Zulu("zu", "ZA")
+    }
+
+    enum class Animations(val label: String) {
+        Expanders("Expander arrows"),
+        Loading("Loading animation"),
+        SelectedUnit("Selected unit flag"),
+        HealthBar("Battle healthbar damage"),
+        AttackSprite("Attack unit sprite"),
+        FlashDamageRed("Flash damaged unit red"),
+        DamageNumbers("Damage numbers"),
+        WLTKFireworks("WLTK fireworks"),
+        NukeExplosion("Nuke explosion"),
+        MovementPath("Unit movement")
+    }
+
+    /** Wrapper for a `EnumSet<Animations>` set to allow Json serialization as json-array */
+    // Would be nice to make this a `MutableSet<Animations> by set` but then Gdx ignores the Serializable interface, as it erroneously tests ClassReflection.isAssignableFrom(Collection.class) first
+    class EnabledAnimations() : Json.Serializable {
+        private val set: EnumSet<Animations> = EnumSet.noneOf(Animations::class.java)
+
+        constructor(entries: EnumEntries<Animations>) : this() { set.addAll(entries) }
+        constructor(entries: Array<out Animations>) : this() { set.addAll(entries) }
+
+        fun setLevel(from: AnimationLevels) {
+            set.clear()
+            set.addAll(from.animations.set)
+        }
+        operator fun get(entry: Animations) = entry in set
+        operator fun set(entry: Animations, value: Boolean) {
+            if (value) set += entry else set -= entry
+        }
+        operator fun contains(entry: Animations) = entry in set
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is EnabledAnimations) return false
+            return set == other.set
+        }
+        override fun hashCode() = set.hashCode()
+
+        override fun write(json: Json) {
+            json.writeArrayStart("items")
+            for (entry in set) json.writeValue(entry.name)
+            json.writeArrayEnd()
+        }
+        override fun read(json: Json, jsonData: JsonValue) {
+            val array = jsonData.get("items")
+            if (array?.isArray != true) return
+            var child = array.child
+            while (child != null) {
+                set.add(json.readValue(Animations::class.java, null, child))
+                child = child.next
+            }
+        }
+
+        companion object {
+            fun of(vararg entries: Animations) = EnabledAnimations(entries)
+        }
+    }
+
+    enum class AnimationLevels(val animations: EnabledAnimations) {
+        None(EnabledAnimations()),
+        Some(EnabledAnimations.of(Animations.Expanders, Animations.Loading, Animations.HealthBar, Animations.SelectedUnit, Animations.DamageNumbers, Animations.FlashDamageRed)),
+        All(EnabledAnimations(Animations.entries))
     }
 
     //endregion

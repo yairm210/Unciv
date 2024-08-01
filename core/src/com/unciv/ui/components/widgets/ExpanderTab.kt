@@ -9,7 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
+import com.unciv.GUI
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -108,7 +109,7 @@ class ExpanderTab(
     private fun update(noAnimation: Boolean = false) {
         if (persistenceID != null)
             persistedStates[persistenceID] = isOpen
-        if (noAnimation || !UncivGame.Current.settings.continuousRendering) {
+        if (noAnimation || GameSettings.Animations.Expanders !in GUI.getSettings().enabledAnimations) {
             contentWrapper.clear()
             if (isOpen) contentWrapper.add(innerTable)
             headerIcon.rotation = if (isOpen) 90f else 180f
