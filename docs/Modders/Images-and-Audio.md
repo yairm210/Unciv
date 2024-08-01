@@ -58,24 +58,6 @@ Due to certain circumstances, please make sure names and paths that will be mapp
 Symptoms if you fail to heed this: mod works on a Chinese Windows box but not on a western one or vice-versa, or mod works on a Chinese Windows box but not a Chinese Linux box or vice-versa, or mod works on a Chinese Windows box with default settings but not on the same box with "Use unicode UTF-8 for worldwide language support" turned on.
 This does not technically apply to the atlas name itself when multiple atlases are used (the xyz part in "Images.xyz"), but we nevertheless recommend the same rule for consistency.
 
-### Autoupdate GitHub action
-
-This is an automation pipeline that you can add to your Github mod to get automatic smaller PNGs, unique auto-updates and pack your atlases!
-On every commit, and once per day, it will: try to shrink PNGs (this is lossless, the pixel data remains the same but the file takes less space), try to autoupdate deprecated uniques and generate new game.png and game.atlas.
-This will create a PR to your repo, which you can choose to accept - or not.
-
-**How to activate it:**
-- In your Github page go to "actions" tab
-- Suggested for this repo > Simple workflow > "Configure"
-- Copy the text of the [autoupdate.yml](https://github.com/yairm210/Unciv-IV-mod/blob/master/.github/workflows/autoupdate.yml) ("copy raw file") to the new file in your repo
-- Change the file name to "autoupdate.yml"
-- "Commit changes" (green button, top-right) > "Commit changes"
-
-Notes:
-- The main branch should be named 'master'
-- Open Settings > Actions > General
-   Under "Workflow permissions" select "Read and write permissions" and "Allow GitHub Actions to create and approve pull requests"
-
 ## Permanent audiovisual mods
 
 The following chapters describe possibilities that will work while a mod is ***active***.
