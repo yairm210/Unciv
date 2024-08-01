@@ -181,13 +181,16 @@ object UnitActionsFromUniques {
                         unit.civ.goldenAges.calculateGoldenAgeLength(
                             unique.params[0].toInt()).tr())
                     }
-                UniqueType.OneTimeGainStatSpeed -> {
-                    val stat = unique.params[1]
-                    val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
-                        ?: unit.civ.gameInfo.speed.modifier
-                    UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
-                        (unique.params[0].toInt() * modifier).toInt().tr(), stat
-                    )
+                UniqueType.OneTimeGainStat -> {
+                    if (unique.conditionals.any { it.type == UniqueType.ModifiedByGameSpeed }) {
+                        val stat = unique.params[1]
+                        val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
+                            ?: unit.civ.gameInfo.speed.modifier
+                        UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
+                            (unique.params[0].toInt() * modifier).toInt().tr(), stat
+                        )
+                    }
+                    else unique.text.removeConditionals()
                 }
                 UniqueType.OneTimeGainStatRange -> {
                     val stat = unique.params[2]
