@@ -635,33 +635,6 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.OneTimeGainStatSpeed -> {
-                val stat = Stat.safeValueOf(unique.params[1]) ?: return null
-
-                if (stat !in Stat.statsWithCivWideField
-                    || unique.params[0].toIntOrNull() == null
-                ) return null
-
-                return {
-                    val statAmount = (unique.params[0].toInt() * (civInfo.gameInfo.speed.statCostModifiers[stat]!!)).roundToInt()
-                    val stats = Stats().add(stat, statAmount.toFloat())
-                    civInfo.addStats(stats)
-
-                    val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
-                        notification.fillPlaceholders(statAmount.tr())
-                    else notification
-
-                    val notificationText = getNotificationText(
-                        filledNotification, triggerNotificationText,
-                        "Gained [${stats.toStringForNotifications()}]"
-                    )
-
-                    if (notificationText != null)
-                        civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
-                    true
-                }
-            }
-
             UniqueType.OneTimeGainStatRange -> {
                 val stat = Stat.safeValueOf(unique.params[2]) ?: return null
 
@@ -1056,7 +1029,9 @@ object UniqueTriggerActivation {
                 val radius = unique.params[1].toInt()
                 if (radius < 0) return null
                 val tilesToTakeOver = tile.getTilesInDistance(radius)
-                    .filter { !it.isCityCenter() && it.matchesFilter(tileFilter) }.toList()
+                    .filter {
+                        !it.isCityCenter() && it.matchesFilter(tileFilter) && it.getOwner() != civInfo
+                    }.toList()
                 if (tilesToTakeOver.none()) return null
 
                 /** Lower is better */
