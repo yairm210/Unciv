@@ -237,6 +237,7 @@ class ResourcesOverviewTab(
             row()
         }
 
+        if (rows == 0) return // can happen when opening overview on turn 0 before founding a city
         equalizeColumns(fixedContent, this)
         overviewScreen.resizePage(this)  // Without the height is miscalculated - shouldn't be
     }
