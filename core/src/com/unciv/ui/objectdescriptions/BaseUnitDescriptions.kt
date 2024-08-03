@@ -97,6 +97,10 @@ object BaseUnitDescriptions {
             textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
         }
 
+        if (baseUnit.interceptRange > 0) {
+            textList += FormattedLine("Air Intercept Range: [${baseUnit.interceptRange}]")
+        }
+
         if (baseUnit.replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine(baseUnit.replacementTextForUniques)
