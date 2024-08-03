@@ -1,23 +1,12 @@
 ## 4.12.16
 
-Fix for games saved during 4.12.15
-
-4.12.15-patch2
+Fixed world wrap for games saved during 4.12.15
 
 'gain control over tiles' trigger leaves your tiles alone 
 
-chore: retire deprecated uniques
-
-"<in tiles adjacent to [tileFilter]>" -> "<in tiles adjacent to [tileFilter] tiles>"
-
-4.12.15-patch1
-
-Solved defaults changing *existing games* due to no serialization of defaults in json. 
-
 By SomeTroglodyte:
-- Fix rare crash opening overview on turn 0 
-- Make right arrow glyph moddable 
 - Fix new improvements becoming visible on non-observed tiles 
+- Fix rare crash opening overview on turn 0 
 - Console command to change difficulty 
 
 AI is less motivated to declare war at higher difficulty levels  - By tuvus
@@ -25,8 +14,6 @@ AI is less motivated to declare war at higher difficulty levels  - By tuvus
 By itanasi:
 - Civilopedia Entries: Food, Production, Science, and Gold 
 - Add Air Intercept Range to Civilopedia card 
-
-Clarify which entities are for Portraits  - By Caballero-Arepa
 
 ## 4.12.15
 
