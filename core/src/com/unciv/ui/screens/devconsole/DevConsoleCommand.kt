@@ -91,6 +91,7 @@ internal class ConsoleCommandRoot : ConsoleCommandNode {
         "history" to ConsoleAction("history") { console, _ ->
             console.showHistory()
             DevConsoleResponse.hint("") // Trick console into staying open
-        }
+        },
+        "game" to ConsoleGameCommands()
     )
 }
