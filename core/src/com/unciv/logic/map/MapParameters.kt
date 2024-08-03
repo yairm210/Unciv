@@ -41,11 +41,13 @@ object MapType {
 class MapParameters : IsPartOfGameInfoSerialization {
     var name = ""
     var type = MapType.pangaea
+    // DO NOT CHANGE DEFAULTS since that changes all existing games to new default!
     var shape = MapShape.hexagonal
     var mapSize = MapSize.Medium
     var mapResources = MapResourceSetting.default.label
     var noRuins = false
     var noNaturalWonders = false
+    // DO NOT CHANGE DEFAULTS since that changes all existing games to new default!
     var worldWrap = false
     var strategicBalance = false
     var legendaryStart = false
