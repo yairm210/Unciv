@@ -350,7 +350,7 @@ object TranslationFileWriter {
                 return // We don't need to translate this at all, not user-visible
 
             val stringToTranslate = string.removeConditionals()
-            for (conditional in unique.conditionals) {
+            for (conditional in unique.modifiers) {
                 submitString(conditional.text, conditional)
             }
 

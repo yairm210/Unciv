@@ -27,9 +27,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (firstStatParam == null) Stats() // So badly-defined stats don't crash the entire game
         else Stats.parse(firstStatParam)
     }
-    val conditionals: List<Unique> = text.getConditionals()
+    val modifiers: List<Unique> = text.getConditionals()
 
-    val isTimedTriggerable = conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
+    val isTimedTriggerable = modifiers.any { it.type == UniqueType.ConditionalTimedUnique }
 
     val isTriggerable = type != null && (
         type.targetTypes.contains(UniqueTarget.Triggerable)
@@ -38,16 +38,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         )
 
     /** Includes conditional params */
-    val allParams = params + conditionals.flatMap { it.params }
+    val allParams = params + modifiers.flatMap { it.params }
 
-    val isLocalEffect = params.contains("in this city") || conditionals.any { it.type == UniqueType.ConditionalInThisCity }
+    val isLocalEffect = params.contains("in this city") || modifiers.any { it.type == UniqueType.ConditionalInThisCity }
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
-    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || conditionals.any { it.type == UniqueType.ModifierHiddenFromUsers }
-    fun isModifiedByGameSpeed() = conditionals.any { it.type == UniqueType.ModifiedByGameSpeed }
+    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || modifiers.any { it.type == UniqueType.ModifierHiddenFromUsers }
+    fun isModifiedByGameSpeed() = modifiers.any { it.type == UniqueType.ModifiedByGameSpeed }
     fun hasTriggerConditional(): Boolean {
-        if (conditionals.none()) return false
-        return conditionals.any { conditional ->
+        if (modifiers.none()) return false
+        return modifiers.any { conditional ->
             conditional.type?.targetTypes?.any {
                 it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier)
             }
@@ -63,21 +63,21 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
         if (isTimedTriggerable) return true
-        for (condition in conditionals) {
-            if (!Conditionals.conditionalApplies(this, condition, state)) return false
+        for (modifier in modifiers) {
+            if (!Conditionals.conditionalApplies(this, modifier, state)) return false
         }
         return true
     }
 
     private fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
-        val forEveryConditionals = conditionals.filter { it.type == UniqueType.ForEveryCountable }
-        val forEveryAmountConditionals = conditionals.filter { it.type == UniqueType.ForEveryAmountCountable }
+        val forEveryModifiers = modifiers.filter { it.type == UniqueType.ForEveryCountable }
+        val forEveryAmountModifiers = modifiers.filter { it.type == UniqueType.ForEveryAmountCountable }
         var amount = 1
-        for (conditional in forEveryConditionals) { // multiple multipliers DO multiply.
+        for (conditional in forEveryModifiers) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
             if (multiplier != null) amount *= multiplier
         }
-        for (conditional in forEveryAmountConditionals) { // multiple multipliers DO multiply.
+        for (conditional in forEveryAmountModifiers) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
             val perEvery = conditional.params[0].toInt()
             if (multiplier != null) amount *= multiplier / perEvery
@@ -178,8 +178,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
-    fun getDisplayText(): String = if (conditionals.none { it.isHiddenToUsers() }) text
-        else text.removeConditionals() + " " + conditionals.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
+    fun getDisplayText(): String = if (modifiers.none { it.isHiddenToUsers() }) text
+        else text.removeConditionals() + " " + modifiers.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
 }
 
 /** Used to cache results of getMatchingUniques
@@ -275,7 +275,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         return getAllUniques().filter { unique ->
-            unique.conditionals.any { it.type == trigger }
+            unique.modifiers.any { it.type == trigger }
             && unique.conditionalsApply(stateForConditionals)
         }.flatMap { it.getMultiplied(stateForConditionals) }
     }
@@ -285,7 +285,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
-        val turnsText = uniqueObject.conditionals.first { it.type == UniqueType.ConditionalTimedUnique }.text
+        val turnsText = uniqueObject.modifiers.first { it.type == UniqueType.ConditionalTimedUnique }.text
         unique = uniqueObject.text.replaceFirst("<$turnsText>", "").trim()
         sourceObjectType = uniqueObject.sourceObjectType
         sourceObjectName = uniqueObject.sourceObjectName

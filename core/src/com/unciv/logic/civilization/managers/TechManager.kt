@@ -309,7 +309,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && newTech.matchesFilter(it.params[0]) })
+            if (unique.modifiers.any {it.type == UniqueType.TriggerUponResearch && newTech.matchesFilter(it.params[0]) })
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
@@ -456,7 +456,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             val eraNames = erasPassed.map { it.name }.toHashSet()
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
                 for (eraName in eraNames)
-                    if (unique.conditionals.any { it.type == UniqueType.TriggerUponEnteringEra && it.params[0] == eraName })
+                    if (unique.modifiers.any { it.type == UniqueType.TriggerUponEnteringEra && it.params[0] == eraName })
                         UniqueTriggerActivation.triggerUnique(
                             unique,
                             civInfo,

@@ -345,7 +345,7 @@ class MapRegions (val ruleset: Ruleset) {
         // Do a second pass for fallback civs, choosing the region most similar to the desired type
         for (civ in positiveBiasFallbackCivs) {
             val startRegion = getFallbackRegion(civBiases[civ]!!.first(), unpickedRegions)
-            logAssignRegion(true, BiasTypes.PositiveFallback, civ, startRegion)
+            logAssignRegion(true, PositiveFallback, civ, startRegion)
             assignCivToRegion(civ, startRegion)
             unpickedRegions.remove(startRegion)
         }
@@ -622,8 +622,7 @@ class MapRegions (val ruleset: Ruleset) {
                 1 -> {
                     val foodScore = firstRingFoodScores[totalFood]
                     val prodScore = firstRingProdScores[totalProd]
-                    totalScore += foodScore + prodScore + totalRivers
-                    + (totalGood * 2) - (totalJunk * 3)
+                    totalScore += foodScore + prodScore + totalRivers + (totalGood * 2) - (totalJunk * 3)
                 }
                 2 -> {
                     val foodScore = if (totalFood > 10) secondRingFoodScores.last()
@@ -632,8 +631,7 @@ class MapRegions (val ruleset: Ruleset) {
                     else (totalFood + 1) / 2 // Can't use all that production without food
                     val prodScore = if (effectiveTotalProd > 5) secondRingProdScores.last()
                     else secondRingProdScores[effectiveTotalProd]
-                    totalScore += foodScore + prodScore + totalRivers
-                    + (totalGood * 2) - (totalJunk * 3)
+                    totalScore += foodScore + prodScore + totalRivers+ (totalGood * 2) - (totalJunk * 3)
                 }
                 else -> {
                     totalScore += totalFood + totalProd + totalGood + totalRivers - (totalJunk * 2)
@@ -711,7 +709,7 @@ class MapRegions (val ruleset: Ruleset) {
                 unique.type == UniqueType.ResourceWeighting ||
                 unique.type == UniqueType.MinorDepositWeighting }) {
                 // Weed out some clearly impossible rules straight away to save time later
-                if (rule.conditionals.any { conditional ->
+                if (rule.modifiers.any { conditional ->
                         (conditional.type == UniqueType.ConditionalOnWaterMaps && !usingArchipelagoRegions) ||
                         (conditional.type == UniqueType.ConditionalInRegionOfType && regions.none { region -> region.type == conditional.params[0] }) ||
                         (conditional.type == UniqueType.ConditionalInRegionExceptOfType && regions.all { region -> region.type == conditional.params[0] })
@@ -918,7 +916,7 @@ fun getRegionPriority(terrain: Terrain?): Int? {
 /** @return a fake unique with the same conditionals, but sorted alphabetically.
  *  Used to save some memory and time when building resource lists. */
 internal fun anonymizeUnique(unique: Unique) = Unique(
-    "RULE" + unique.conditionals.sortedBy { it.text }.joinToString(prefix = " ", separator = " ") { "<" + it.text + ">" })
+    "RULE" + unique.modifiers.sortedBy { it.text }.joinToString(prefix = " ", separator = " ") { "<" + it.text + ">" })
 
 internal fun isWaterOnlyResource(resource: TileResource, ruleset: Ruleset) = resource.terrainsCanBeFoundOn
     .all { terrainName -> ruleset.terrains[terrainName]!!.type == TerrainType.Water }

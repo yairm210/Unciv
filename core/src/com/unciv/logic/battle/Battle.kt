@@ -179,7 +179,7 @@ object Battle {
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
                 ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
-                if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
+                if (unique.modifiers.any { it.type == UniqueType.TriggerUponDefeatingUnit
                                 && enemy.unit.matchesFilter(it.params[0]) })
                     UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
@@ -334,12 +334,12 @@ object Battle {
 
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
-                if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
+                if (unique.modifiers.any { it.params[0].toInt() <= defenderDamageDealt })
                     UniqueTriggerActivation.triggerUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
 
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
-                if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
+                if (unique.modifiers.any { it.params[0].toInt() <= attackerDamageDealt })
                     UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)

@@ -106,9 +106,9 @@ open class Policy : RulesetObject() {
         }
 
         fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.modifiers.any {
                     it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
-                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.conditionals.any {
+                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.modifiers.any {
                     it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
                 }}
 
@@ -125,9 +125,9 @@ open class Policy : RulesetObject() {
 
 
         fun isDisabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.modifiers.any {
                     it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
-                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.conditionals.any {
+                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.modifiers.any {
                     it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
                 } }
 
