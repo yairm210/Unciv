@@ -30,7 +30,7 @@ android {
         namespace = BuildConfig.identifier
         applicationId = BuildConfig.identifier
         minSdk = 21
-        targetSdk = 33 // See #5044
+        targetSdk = 34 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
