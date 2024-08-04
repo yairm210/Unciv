@@ -238,9 +238,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
             if (this@BaseUnit.matchesFilter(unique.params[0])) {
-                val hasHappinessCondition = unique.modifiers.any {
-                    it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
-                }
+                val hasHappinessCondition = unique.hasModifier(UniqueType.ConditionalBelowHappiness)
+                        || unique.hasModifier(UniqueType.ConditionalBetweenHappiness)
                 if (hasHappinessCondition)
                     yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.getDisplayText()))
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
@@ -487,7 +486,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             when (unique.type) {
                 UniqueType.Strength -> {
                     if (unique.params[0].toInt() <= 0) continue
-                    if (unique.modifiers.any { it.type == UniqueType.ConditionalVsUnits }) { // Bonus vs some units - a quarter of the bonus
+                    if (unique.hasModifier(UniqueType.ConditionalVsUnits)) { // Bonus vs some units - a quarter of the bonus
                         power *= (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
                         unique.modifiers.any {

@@ -309,7 +309,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
-            if (unique.modifiers.any {it.type == UniqueType.TriggerUponResearch && newTech.matchesFilter(it.params[0]) })
+            if (unique.getModifiers(UniqueType.TriggerUponResearch).any { newTech.matchesFilter(it.params[0]) })
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 

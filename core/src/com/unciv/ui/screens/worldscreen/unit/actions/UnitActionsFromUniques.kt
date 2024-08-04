@@ -170,7 +170,7 @@ object UnitActionsFromUniques {
             // not a unit action
             if (unique.modifiers.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
             // extends an existing unit action
-            if (unique.modifiers.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
+            if (unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes)) continue
             if (!unique.isTriggerable) continue
             if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
@@ -182,7 +182,7 @@ object UnitActionsFromUniques {
                             unique.params[0].toInt()).tr())
                     }
                 UniqueType.OneTimeGainStat -> {
-                    if (unique.modifiers.any { it.type == UniqueType.ModifiedByGameSpeed }) {
+                    if (unique.hasModifier(UniqueType.ModifiedByGameSpeed)) {
                         val stat = unique.params[1]
                         val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
                             ?: unit.civ.gameInfo.speed.modifier
