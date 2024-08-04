@@ -330,20 +330,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
         } else buildingStats.food *= 3
 
-        if (buildingStats.gold < 0 && civInfo.stats.statsForNextTurn.gold < 10) {
-            buildingStats.gold *= 2 // We have a gold problem and this isn't helping
+        if (civInfo.stats.statsForNextTurn.gold < 10) {
+            buildingStats.gold *= 2 // We have a gold problem and need to adjust build queue accordingly
         }
 
-        if (civInfo.getHappiness() < 5)
+        if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
             buildingStats.happiness * 3
-        else if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
-            buildingStats.happiness * 2
 
-        if (city.cityStats.currentCityStats.culture < 1) {
+        if (city.cityStats.currentCityStats.culture < 2) {
             buildingStats.culture *= 2 // We need to start growing borders
-        }
-        else if (city.tiles.size < 12 && city.population.population < 5) {
-            buildingStats.culture *= 2
         }
 
         for (stat in Stat.entries) {
