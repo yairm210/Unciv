@@ -126,7 +126,7 @@ class Ruleset {
     val allHappinessLevelsThatAffectUniques by lazy {
         sequence {
             for (unique in this@Ruleset.allUniques())
-                for (conditional in unique.conditionals){
+                for (conditional in unique.modifiers){
                     if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
                     if (conditional.type == UniqueType.ConditionalBetweenHappiness){
                         yield(conditional.params[0].toInt())
@@ -475,7 +475,7 @@ class Ruleset {
     internal fun updateBuildingCosts() {
         for (building in buildings.values) {
             if (building.cost != -1) continue
-            if (building.getMatchingUniques(UniqueType.Unbuildable).any { it.conditionals.isEmpty() }) continue
+            if (building.getMatchingUniques(UniqueType.Unbuildable).any { it.modifiers.isEmpty() }) continue
             val column = building.techColumn(this) ?: continue
             building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
         }

@@ -77,7 +77,7 @@ class Era : RulesetObject() {
                 )
                 .map { unique -> obj to unique }
             }.filter { (_, unique) ->
-                unique.conditionals.any {
+                unique.modifiers.any {
                     it.type in eraConditionals
                 }
             }.map { it.first }.distinct()

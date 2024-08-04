@@ -90,6 +90,7 @@ enum class DiplomaticModifiers(val text: String) {
     StealingTerritory("You have stolen our lands!"),
     DestroyedProtectedMinor("You destroyed City-States that were under our protection!"),
     AttackedProtectedMinor("You attacked City-States that were under our protection!"),
+    AttackedAlliedMinor("You attacked our allied City-States!"),
     BulliedProtectedMinor("You demanded tribute from City-States that were under our protection!"),
     SidedWithProtectedMinor("You sided with a City-State over us"),
     SpiedOnUs("You spied on us!"),
@@ -395,7 +396,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun canDeclareWar() = !civInfo.isDefeated() && !otherCiv().isDefeated()
             && turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
-    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
+    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) =
+        DeclareWar.declareWar(this, declareWarReason)
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0

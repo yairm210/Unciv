@@ -101,7 +101,7 @@ class WorldMapHolder(
 
 
     internal fun addTiles() {
-        val tileSetStrings = TileSetStrings()
+        val tileSetStrings = TileSetStrings(worldScreen.gameInfo.ruleset, worldScreen.game.settings)
         currentTileSetStrings = tileSetStrings
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)

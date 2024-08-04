@@ -69,7 +69,9 @@ class EditorMapHolder(
 
     private fun addTiles(stage: Stage) {
 
-        val tileSetStrings = TileSetStrings()
+        val tileSetStrings =
+            if (editorScreen != null) TileSetStrings(editorScreen.ruleset, editorScreen.game.settings)
+            else TileSetStrings()
         val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
 
         tileGroupMap = TileGroupMap(this, daTileGroups, continuousScrollingX)

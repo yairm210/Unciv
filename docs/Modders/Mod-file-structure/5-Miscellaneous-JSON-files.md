@@ -153,15 +153,17 @@ Incompatibility filtering works so far between extension and base mods, but feel
 
 The file can have the following attributes, not including the values Unciv sets automatically:
 
-| Attribute         | Type    |       | Notes                                                                                                                                                                                  |
-|-------------------|---------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| isBaseRuleset     | Boolean | false | Replaces vanilla ruleset if true                                                                                                                                                       |
-| uniques           | List    | empty | Mod-wide specials, [see here](../../uniques.md#modoptions-uniques)                                                                                                                     |
-| techsToRemove     | List    | empty | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)         |
-| buildingsToRemove | List    | empty | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove     | List    | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                                |
-| nationsToRemove   | List    | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                    |
-| constants         | Object  | empty | See [ModConstants](#modconstants)                                                                                                                                                      |
+| Attribute         | Type    | default | Notes                                                                                                                                                                                  |
+|-------------------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| isBaseRuleset     | Boolean | false   | Replaces vanilla ruleset if true                                                                                                                                                       |
+| uniques           | List    | empty   | Mod-wide specials, [see here](../../uniques.md#modoptions-uniques)                                                                                                                     |
+| techsToRemove     | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)         |
+| buildingsToRemove | List    | empty   | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove     | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                                |
+| nationsToRemove   | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                    |
+| constants         | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                      |
+| tileset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
+| unitset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
 
 The values normally set automatically from github metadata are:
 

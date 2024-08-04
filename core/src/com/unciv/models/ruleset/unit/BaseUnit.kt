@@ -238,7 +238,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
             if (this@BaseUnit.matchesFilter(unique.params[0])) {
-                val hasHappinessCondition = unique.conditionals.any {
+                val hasHappinessCondition = unique.modifiers.any {
                     it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
                 }
                 if (hasHappinessCondition)
@@ -261,7 +261,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
      * [UniqueType.ConditionalBuildingBuiltAll]
      */
     private fun notMetRejections(unique: Unique, civ: Civilization, city: City?, built: Boolean=false): Sequence<RejectionReason> = sequence {
-        for (conditional in unique.conditionals) {
+        for (conditional in unique.modifiers) {
             // We yield a rejection only when conditionals are NOT met
             if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, city)))
                 continue
@@ -444,7 +444,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isProbablySiegeUnit() = isRanged()
             && getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals)
                 .any { it.params[0].toInt() > 0
-                    && it.conditionals.any { conditional -> conditional.type == UniqueType.ConditionalVsCity }
+                    && it.modifiers.any { conditional -> conditional.type == UniqueType.ConditionalVsCity }
                 }
 
     fun getForceEvaluation(): Int {
@@ -487,10 +487,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             when (unique.type) {
                 UniqueType.Strength -> {
                     if (unique.params[0].toInt() <= 0) continue
-                    if (unique.conditionals.any { it.type == UniqueType.ConditionalVsUnits }) { // Bonus vs some units - a quarter of the bonus
+                    if (unique.modifiers.any { it.type == UniqueType.ConditionalVsUnits }) { // Bonus vs some units - a quarter of the bonus
                         power *= (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
-                        unique.conditionals.any {
+                        unique.modifiers.any {
                             it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
                                 || it.type == UniqueType.ConditionalAttacking // Attack - half the bonus
                                 || it.type == UniqueType.ConditionalDefending // Defense - half the bonus

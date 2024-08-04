@@ -245,7 +245,7 @@ object ReligionAutomation {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleset
         for (unique in belief.uniqueObjects) {
-            val modifier = 0.5f.pow(unique.conditionals.size)
+            val modifier = 0.5f.pow(unique.modifiers.size)
             // Multiply by 3/10 if has an obsoleted era
             // Multiply by 2 if enough pop/followers (best implemented with conditionals, so left open for now)
             // If obsoleted, continue
@@ -329,7 +329,7 @@ object ReligionAutomation {
 
         for (unique in belief.uniqueObjects) {
             val modifier =
-                if (unique.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent()?.name }) 1/2f
+                if (unique.modifiers.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent()?.name }) 1/2f
                 else 1f
             // Some city-filters are modified by personality (non-enemy foreign cities)
             score += modifier * when (unique.type) {

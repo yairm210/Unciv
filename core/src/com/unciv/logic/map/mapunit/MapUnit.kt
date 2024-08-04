@@ -285,7 +285,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this)
     ): Sequence<Unique> {
         return getUniques().filter { unique ->
-            unique.conditionals.any { it.type == trigger }
+            unique.modifiers.any { it.type == trigger }
                     && unique.conditionalsApply(stateForConditionals)
         }
     }
@@ -689,7 +689,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     // Include tile in the state for correct RNG seeding
                     val state = StateForConditionals(civInfo = civ, unit = this, tile = tile)
                     for (unique in unfilteredTriggeredUniques) {
-                        if (unique.conditionals.any {
+                        if (unique.modifiers.any {
                                     it.type == UniqueType.TriggerUponDiscoveringTile
                                             && tile.matchesFilter(it.params[0], civ)
                                 } && unique.conditionalsApply(state)
@@ -815,7 +815,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponExpendingUnit))
-            if (unique.conditionals.any { it.type == UniqueType.TriggerUponExpendingUnit && matchesFilter(it.params[0]) })
+            if (unique.modifiers.any { it.type == UniqueType.TriggerUponExpendingUnit && matchesFilter(it.params[0]) })
                 UniqueTriggerActivation.triggerUnique(unique, this,
                     triggerNotificationText = "due to expending our [${this.name}]")
         destroy()

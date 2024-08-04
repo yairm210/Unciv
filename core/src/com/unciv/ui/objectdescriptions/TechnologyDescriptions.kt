@@ -334,7 +334,7 @@ object TechnologyDescriptions {
     /** Tests whether a Unique means bonus Stats enabled by [techName] */
     private fun Unique.isImprovementStatsEnabledByTech(techName: String) =
             (type == UniqueType.Stats || type == UniqueType.ImprovementStatsOnTile) &&
-                    conditionals.any {
+                    modifiers.any {
                         it.type == UniqueType.ConditionalTech && it.params[0] == techName
                     }
 
@@ -345,7 +345,7 @@ object TechnologyDescriptions {
 
     /** Tests whether a Unique is enabled or disabled by [techName] */
     private fun Unique.isRelatedToTech(techName: String) =
-            conditionals.any {
+            modifiers.any {
                 it.isTechConditional() && it.params[0] == techName
             }
 

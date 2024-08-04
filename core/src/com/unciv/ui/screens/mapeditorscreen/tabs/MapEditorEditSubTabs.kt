@@ -225,7 +225,7 @@ class MapEditorEditImprovementsTab(
             getImprovements(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
         ) {
-            val road = RoadStatus.values().firstOrNull { r -> r.name == it }
+            val road = RoadStatus.entries.firstOrNull { r -> r.name == it }
             if (road != null)
                 editTab.setBrush(BrushHandlerType.Road, it, "Improvement/$it") { tile ->
                     tile.roadStatus = if (tile.roadStatus == road) RoadStatus.None else road
@@ -256,7 +256,7 @@ class MapEditorEditImprovementsTab(
 
     companion object {
         private fun TileImprovement.group() = when {
-            RoadStatus.values().any { it.name == name } -> 2
+            RoadStatus.entries.any { it.name == name } -> 2
             "Great Improvement" in uniques -> 3
             uniqueTo != null -> 4
             "Unpillagable" in uniques -> 5
@@ -304,7 +304,7 @@ class MapEditorEditStartsTab(
                 val icon = "Nation/$it"
                 val pediaLink = if (it == Constants.spectator) "" else icon
                 val isMajorCiv = ruleset.nations[it]?.isMajorCiv ?: false
-                val selectedUsage = if (isMajorCiv) TileMap.StartingLocation.Usage.values()[usageOptionGroup.checkedIndex]
+                val selectedUsage = if (isMajorCiv) TileMap.StartingLocation.Usage.entries[usageOptionGroup.checkedIndex]
                     else TileMap.StartingLocation.Usage.Normal
                 editTab.setBrush(BrushHandlerType.Direct, it.spectatorToAnyCiv(), icon, pediaLink) { tile ->
                     // toggle the starting location here, note this allows
@@ -332,7 +332,7 @@ class MapEditorEditStartsTab(
         table.defaults().pad(5f)
         table.add("Use for new game \"Select players\" button:".toLabel()).colspan(3).row()
         val defaultUsage = TileMap.StartingLocation.Usage.default
-        for (usage in TileMap.StartingLocation.Usage.values()) {
+        for (usage in TileMap.StartingLocation.Usage.entries) {
             val checkBox = CheckBox(usage.label.tr(), skin)
             table.add(checkBox)
             usageOptionGroup.add(checkBox)
@@ -447,7 +447,7 @@ class MapEditorEditRiversTab(
     private fun Tile.makeTileGroup(): TileGroup {
         ruleset = this@MapEditorEditRiversTab.ruleset
         setTerrainTransients()
-        return TileGroup(this, TileSetStrings(), iconSize * 36f/54f).apply {
+        return TileGroup(this, TileSetStrings(ruleset, UncivGame.Current.settings), iconSize * 36f/54f).apply {
             isForceVisible = true
             isForMapEditorIcon = true
             update()

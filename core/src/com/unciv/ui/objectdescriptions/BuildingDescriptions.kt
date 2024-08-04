@@ -88,7 +88,7 @@ object BuildingDescriptions {
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
         for (unique in building.uniqueObjects) {
             if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.CanOnlyBeBuiltWhen)
-                for (conditional in unique.conditionals) {
+                for (conditional in unique.modifiers) {
                     if (conditional.type == UniqueType.ConditionalBuildingBuiltAll) {
                         missingCityText(conditional.params[0], city, conditional.params[1], lines)
                     }

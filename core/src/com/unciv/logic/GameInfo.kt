@@ -660,11 +660,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val tilesWithLowestRow = tileMap.tileList.groupBy { it.getRow() }.minBy { it.key }.value
         if (tilesWithLowestRow.size > 2) tileMap.mapParameters.shape = MapShape.rectangular
 
-        // Set all to worldwrap if we have a good number of columns for it
-        // TODO REMOVE THIS SOON since this means default rectangle maps are world-wrap-ified!
-        val columns = tileMap.tileList.groupBy { it.getColumn() }.size
-        tileMap.mapParameters.worldWrap = columns % 2 == 0
-
         if (currentPlayer == "") currentPlayer =
             if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() }.civName // For MP, spectator doesn't get a 'turn'
             else civilizations.first { it.isHuman()  }.civName // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
