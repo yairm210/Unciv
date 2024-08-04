@@ -150,8 +150,8 @@ object RulesetCache : HashMap<String, Ruleset>() {
                 newRuleset.modOptions.uniques = ArrayList()
                 newRuleset.modOptions.isBaseRuleset = true
                 // Default tileset and unitset are according to base ruleset
-                newRuleset.modOptions.defaultTileset = mod.modOptions.defaultTileset
-                newRuleset.modOptions.defaultUnitset = mod.modOptions.defaultUnitset
+                newRuleset.modOptions.tileset = mod.modOptions.tileset
+                newRuleset.modOptions.unitset = mod.modOptions.unitset
             }
             newRuleset.add(mod)
             newRuleset.mods += mod.name

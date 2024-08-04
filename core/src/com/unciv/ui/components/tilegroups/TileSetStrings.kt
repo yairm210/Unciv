@@ -34,8 +34,8 @@ class TileSetStrings(
 ) {
 
     constructor(ruleset: Ruleset, settings: GameSettings) : this(
-        ruleset.modOptions.defaultTileset ?: settings.tileSet,
-        ruleset.modOptions.defaultUnitset ?: settings.unitSet
+        ruleset.modOptions.tileset ?: settings.tileSet,
+        ruleset.modOptions.unitset ?: settings.unitSet
     )
 
 
