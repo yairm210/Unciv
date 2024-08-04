@@ -587,8 +587,10 @@ enum class UniqueType(
     /////// Resource uniques
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
-    Stockpiled("Stockpiled", UniqueTarget.Resource),
-    CityResource("City-level resource", UniqueTarget.Resource),
+    Stockpiled("Stockpiled", UniqueTarget.Resource,
+        docDescription = "This resource is accumulated each turn, rather than having a set of producers and consumers at a given moment." +
+                "The current stockpiled amount can be affected with trigger uniques."),
+    CityResource("City-level resource", UniqueTarget.Resource, docDescription = "This resource is calculated on a per-city level rather than a per-civ level"),
     CannotBeTraded("Cannot be traded", UniqueTarget.Resource),
     NotShownOnWorldScreen("Not shown on world screen", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
