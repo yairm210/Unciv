@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getConditionals
+import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
@@ -27,9 +27,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (firstStatParam == null) Stats() // So badly-defined stats don't crash the entire game
         else Stats.parse(firstStatParam)
     }
-    val modifiers: List<Unique> = text.getConditionals()
+    val modifiers: List<Unique> = text.getModifiers()
 
-    val isTimedTriggerable = modifiers.any { it.type == UniqueType.ConditionalTimedUnique }
+    val isTimedTriggerable = hasModifier(UniqueType.ConditionalTimedUnique)
 
     val isTriggerable = type != null && (
         type.targetTypes.contains(UniqueTarget.Triggerable)
@@ -40,11 +40,14 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     /** Includes conditional params */
     val allParams = params + modifiers.flatMap { it.params }
 
-    val isLocalEffect = params.contains("in this city") || modifiers.any { it.type == UniqueType.ConditionalInThisCity }
+    val isLocalEffect = params.contains("in this city") || hasModifier(UniqueType.ConditionalInThisCity)
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
-    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || modifiers.any { it.type == UniqueType.ModifierHiddenFromUsers }
-    fun isModifiedByGameSpeed() = modifiers.any { it.type == UniqueType.ModifiedByGameSpeed }
+    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
+
+    fun getModifiers(type: UniqueType) = modifiers.filter { it.type == type }
+    fun hasModifier(type: UniqueType) = getModifiers(type).any()
+    fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false
         return modifiers.any { conditional ->
@@ -70,8 +73,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     private fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
-        val forEveryModifiers = modifiers.filter { it.type == UniqueType.ForEveryCountable }
-        val forEveryAmountModifiers = modifiers.filter { it.type == UniqueType.ForEveryAmountCountable }
+        val forEveryModifiers = getModifiers(UniqueType.ForEveryCountable)
+        val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
         var amount = 1
         for (conditional in forEveryModifiers) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
@@ -275,8 +278,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         return getAllUniques().filter { unique ->
-            unique.modifiers.any { it.type == trigger }
-            && unique.conditionalsApply(stateForConditionals)
+            unique.hasModifier(trigger) && unique.conditionalsApply(stateForConditionals)
         }.flatMap { it.getMultiplied(stateForConditionals) }
     }
 }
@@ -285,7 +287,7 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
-        val turnsText = uniqueObject.modifiers.first { it.type == UniqueType.ConditionalTimedUnique }.text
+        val turnsText = uniqueObject.getModifiers(UniqueType.ConditionalTimedUnique).first().text
         unique = uniqueObject.text.replaceFirst("<$turnsText>", "").trim()
         sourceObjectType = uniqueObject.sourceObjectType
         sourceObjectName = uniqueObject.sourceObjectName

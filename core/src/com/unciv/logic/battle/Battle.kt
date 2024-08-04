@@ -179,8 +179,7 @@ object Battle {
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
                 ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
-                if (unique.modifiers.any { it.type == UniqueType.TriggerUponDefeatingUnit
-                                && enemy.unit.matchesFilter(it.params[0]) })
+                if (unique.getModifiers(UniqueType.TriggerUponDefeatingUnit).any { enemy.unit.matchesFilter(it.params[0]) })
                     UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
 

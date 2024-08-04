@@ -329,7 +329,7 @@ object ReligionAutomation {
 
         for (unique in belief.uniqueObjects) {
             val modifier =
-                if (unique.modifiers.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent()?.name }) 1/2f
+                if (unique.getModifiers(UniqueType.ConditionalOurUnit).any { it.params[0] == civInfo.religionManager.getGreatProphetEquivalent()?.name }) 1/2f
                 else 1f
             // Some city-filters are modified by personality (non-enemy foreign cities)
             score += modifier * when (unique.type) {

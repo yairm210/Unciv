@@ -106,11 +106,11 @@ open class Policy : RulesetObject() {
         }
 
         fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { it.modifiers.any {
-                    it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
-                } } || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any { it.modifiers.any {
-                    it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
-                }}
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any {
+                    it.getModifiers(UniqueType.ConditionalAfterPolicyOrBelief).any { it.params[0] == name } }
+                || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any {
+                    it.getModifiers(UniqueType.ConditionalBeforePolicyOrBelief).any { it.params[0] == name }
+                }
 
         val enabledBuildings = ruleset.buildings.values.filter { isEnabledByPolicy(it) }
         val enabledUnits = ruleset.units.values.filter { isEnabledByPolicy(it) }

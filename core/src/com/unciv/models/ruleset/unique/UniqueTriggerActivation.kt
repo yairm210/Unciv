@@ -91,7 +91,7 @@ object UniqueTriggerActivation {
             city?: tile?.getCity()
         }
 
-        val timingConditional = unique.modifiers.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }
+        val timingConditional = unique.getModifiers(UniqueType.ConditionalTimedUnique).firstOrNull()
         if (timingConditional != null) {
             return {
                 civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
