@@ -137,6 +137,7 @@ object Fonts {
     // Taken into account when limiting FontRulesetIcons codepoints (it respects the private area ending at U+F8FF)
     const val sortUpArrow = '￪'         // U+FFEA 'half wide upward arrow'
     const val sortDownArrow = '￬'       // U+FFEC 'half wide downward arrow'
+    const val rightArrow = '→'          // U+2192, e.g. Battle table or event-based tutorials
     //endregion
 
     val allSymbols = mapOf(
@@ -165,6 +166,7 @@ object Fonts {
         status to "EmojiIcons/SortedByStatus",
         sortUpArrow to "EmojiIcons/SortedAscending",
         sortDownArrow to "EmojiIcons/SortedDescending",
+        rightArrow to "EmojiIcons/RightArrow",
         *MayaCalendar.allSymbols
     )
     //endregion

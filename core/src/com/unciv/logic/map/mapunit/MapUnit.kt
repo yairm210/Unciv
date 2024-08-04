@@ -24,7 +24,6 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
 import java.text.DecimalFormat
@@ -815,37 +814,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
-        addStatsPerGreatPersonUsage()
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponExpendingUnit))
             if (unique.conditionals.any { it.type == UniqueType.TriggerUponExpendingUnit && matchesFilter(it.params[0]) })
                 UniqueTriggerActivation.triggerUnique(unique, this,
                     triggerNotificationText = "due to expending our [${this.name}]")
         destroy()
-    }
-
-    private fun addStatsPerGreatPersonUsage() {
-        if (!isGreatPerson()) return
-
-        val gainedStats = Stats()
-        for (unique in civ.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
-            gainedStats.gold += (100 * civ.gameInfo.speed.goldCostModifier).toInt()
-        }
-        val speedModifiers = civ.gameInfo.speed.statCostModifiers
-        for (unique in civ.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
-            val uniqueStats = unique.stats.clone()
-            for ((stat, value) in uniqueStats) {
-                uniqueStats[stat] = value * speedModifiers[stat]!!
-            }
-            gainedStats.add(uniqueStats)
-        }
-
-        if (gainedStats.isEmpty()) return
-
-        for (stat in gainedStats)
-            civ.addStat(stat.key, stat.value.toInt())
-
-        civ.addNotification("By expending your [$name] you gained [${gainedStats.toStringForNotifications()}]!",
-                getTile().position, NotificationCategory.Units, name)
     }
 
     fun removeFromTile() = currentTile.removeUnit(this)

@@ -112,9 +112,13 @@ class UniqueValidator(val ruleset: Ruleset) {
 
     val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
         UniqueType.DoubleResourceProduced, UniqueType.StrategicResourcesIncrease)
-    val resourceConditionals = setOf(UniqueType.ConditionalWithResource, UniqueType.ConditionalWithoutResource,
-        UniqueType.ConditionalWhenBetweenStatResource, UniqueType.ConditionalWhenAboveAmountStatResource, UniqueType.ConditionalWhenBelowAmountStatResource,
-        UniqueType.ConditionalWhenAboveAmountStatResourceSpeed, UniqueType.ConditionalWhenBelowAmountStatResourceSpeed, UniqueType.ConditionalWhenBetweenStatResourceSpeed)
+    val resourceConditionals = setOf(
+        UniqueType.ConditionalWithResource,
+        UniqueType.ConditionalWithoutResource,
+        UniqueType.ConditionalWhenBetweenStatResource,
+        UniqueType.ConditionalWhenAboveAmountStatResource,
+        UniqueType.ConditionalWhenBelowAmountStatResource,
+    )
 
     private fun addConditionalErrors(
         conditional: Unique,

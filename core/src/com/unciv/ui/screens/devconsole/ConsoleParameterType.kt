@@ -35,6 +35,7 @@ internal enum class ConsoleParameterType(
     techName( { ruleset.technologies.keys } ),
     cityName( { civilizations.flatMap { civ -> civ.cities.map { it.name } } } ),
     triggeredUniqueTemplate( { UniqueType.values().filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
+    difficulty( { ruleset.difficulties.keys } )
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()
