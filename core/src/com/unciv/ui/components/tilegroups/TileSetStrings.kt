@@ -4,6 +4,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.GameSettings
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.ImageAttempter
@@ -30,6 +32,13 @@ class TileSetStrings(
     unitSet: String? = UncivGame.Current.settings.unitSet,
     fallbackDepth: Int = 1
 ) {
+
+    constructor(ruleset: Ruleset, settings: GameSettings) : this(
+        ruleset.modOptions.defaultTileset ?: settings.tileSet,
+        ruleset.modOptions.defaultUnitset ?: settings.unitSet
+    )
+
+
     /** Separator used to mark variants, e.g. nation style or era specific */
     val tag = "-"
 
@@ -48,7 +57,7 @@ class TileSetStrings(
     val unexploredTile by lazy { orFallback { tileSetLocation + "UnexploredTile" } }
     val crosshair by lazy { orFallback { getString(tileSetLocation, "Crosshair") } }
     val highlight by lazy { orFallback { getString(tileSetLocation, "Highlight") } }
-    val roadsMap = RoadStatus.values()
+    val roadsMap = RoadStatus.entries
         .filterNot { it == RoadStatus.None }
         .associateWith { tileSetLocation + it.name }
     val naturalWonder = tileSetLocation + "Tiles/NaturalWonder"

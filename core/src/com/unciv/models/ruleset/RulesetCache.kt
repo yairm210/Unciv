@@ -149,6 +149,9 @@ object RulesetCache : HashMap<String, Ruleset>() {
                 // This is so we don't keep using the base ruleset's uniques *by reference* and add to in ad infinitum
                 newRuleset.modOptions.uniques = ArrayList()
                 newRuleset.modOptions.isBaseRuleset = true
+                // Default tileset and unitset are according to base ruleset
+                newRuleset.modOptions.defaultTileset = mod.modOptions.defaultTileset
+                newRuleset.modOptions.defaultUnitset = mod.modOptions.defaultUnitset
             }
             newRuleset.add(mod)
             newRuleset.mods += mod.name

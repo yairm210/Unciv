@@ -14,6 +14,8 @@ class ModOptions : IHasUniques {
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
     val constants = ModConstants()
+    var defaultUnitset: String? = null
+    var defaultTileset: String? = null
     //endregion
 
     //region Metadata, automatic
