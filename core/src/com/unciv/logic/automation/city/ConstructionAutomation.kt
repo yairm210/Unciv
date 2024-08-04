@@ -254,6 +254,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addSpaceshipPartChoice() {
+        if (!cityIsOverAverageProduction) return // don't waste time building them in low-production cities
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
             ?: return
@@ -327,9 +328,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         if (surplusFood < 0) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
-        } else if (city.population.population < 5) {
-            buildingStats.food *= 3
-        }
+        } else buildingStats.food *= 3
 
         if (buildingStats.gold < 0 && civInfo.stats.statsForNextTurn.gold < 10) {
             buildingStats.gold *= 2 // We have a gold problem and this isn't helping
