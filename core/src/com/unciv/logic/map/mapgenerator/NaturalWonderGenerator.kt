@@ -193,11 +193,10 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 val state = StateForConditionals(tile = tile)
                 for (unique in conversionUniques) {
                     if (!unique.conditionalsApply(state)) continue
-                    val index = if (unique.type == UniqueType.NaturalWonderConvertNeighborsExcept) {
+                    val convertTo = if (unique.type == UniqueType.NaturalWonderConvertNeighborsExcept) {
                         if (tile.matchesWonderFilter(unique.params[0])) continue
-                        1
-                    } else 0
-                    val convertTo = unique.params[index]
+                        unique.params[1]
+                    } else unique.params[0]
                     if (tile.baseTerrain == convertTo || convertTo in tile.terrainFeatures) continue
                     if (convertTo == Constants.lakes && tile.isCoastalTile()) continue
                     val terrainObject = location.ruleset.terrains[convertTo] ?: continue
