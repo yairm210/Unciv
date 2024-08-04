@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getConditionals
+import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
@@ -27,7 +27,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (firstStatParam == null) Stats() // So badly-defined stats don't crash the entire game
         else Stats.parse(firstStatParam)
     }
-    val modifiers: List<Unique> = text.getConditionals()
+    val modifiers: List<Unique> = text.getModifiers()
 
     val isTimedTriggerable = hasModifier(UniqueType.ConditionalTimedUnique)
 
