@@ -86,12 +86,12 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
         }
 
-        for (conditional in unique.conditionals) {
+        for (conditional in unique.modifiers) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
         }
 
         if (unique.type in MapUnitCache.UnitMovementUniques
-                && unique.conditionals.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] !in Constants.all }
+                && unique.modifiers.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] !in Constants.all }
             )
             // (Stay silent if the only conditional is `<for [All] units>` - as in G&K Denmark)
             // Not necessarily even a problem, but yes something mod maker should be aware of
@@ -112,9 +112,13 @@ class UniqueValidator(val ruleset: Ruleset) {
 
     val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
         UniqueType.DoubleResourceProduced, UniqueType.StrategicResourcesIncrease)
-    val resourceConditionals = setOf(UniqueType.ConditionalWithResource, UniqueType.ConditionalWithoutResource,
-        UniqueType.ConditionalWhenBetweenStatResource, UniqueType.ConditionalWhenAboveAmountStatResource, UniqueType.ConditionalWhenBelowAmountStatResource,
-        UniqueType.ConditionalWhenAboveAmountStatResourceSpeed, UniqueType.ConditionalWhenBelowAmountStatResourceSpeed, UniqueType.ConditionalWhenBetweenStatResourceSpeed)
+    val resourceConditionals = setOf(
+        UniqueType.ConditionalWithResource,
+        UniqueType.ConditionalWithoutResource,
+        UniqueType.ConditionalWhenBetweenStatResource,
+        UniqueType.ConditionalWhenAboveAmountStatResource,
+        UniqueType.ConditionalWhenBelowAmountStatResource,
+    )
 
     private fun addConditionalErrors(
         conditional: Unique,
@@ -278,7 +282,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
         // Isolate this decision, to allow easy change of approach
         // This says: Must have no conditionals or parameters, and is used in any "filtering" parameter of another Unique
-        if (unique.conditionals.isNotEmpty() || unique.params.isNotEmpty()) return false
+        if (unique.modifiers.isNotEmpty() || unique.params.isNotEmpty()) return false
         return unique.text in allUniqueParameters // referenced at least once from elsewhere
     }
 
@@ -304,8 +308,8 @@ class UniqueValidator(val ruleset: Ruleset) {
                     "$prefix looks like it may be a misspelling of:\n" +
                         similarUniques.joinToString("\n") { uniqueType ->
                             var text = "\"${uniqueType.text}"
-                            if (unique.conditionals.isNotEmpty())
-                                text += " " + unique.conditionals.joinToString(" ") { "<${it.text}>" }
+                            if (unique.modifiers.isNotEmpty())
+                                text += " " + unique.modifiers.joinToString(" ") { "<${it.text}>" }
                             text += "\""
                             if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
                             return@joinToString text

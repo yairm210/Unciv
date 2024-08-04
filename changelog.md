@@ -1,3 +1,35 @@
+## 4.12.16
+
+Fixed world wrap for games saved during 4.12.15
+
+'gain control over tiles' trigger leaves your tiles alone 
+
+By SomeTroglodyte:
+- Fix new improvements becoming visible on non-observed tiles 
+- Fix rare crash opening overview on turn 0 
+- Console command to change difficulty 
+
+AI is less motivated to declare war at higher difficulty levels  - By tuvus
+
+By itanasi:
+- Civilopedia Entries: Food, Production, Science, and Gold 
+- Add Air Intercept Range to Civilopedia card 
+
+## 4.12.15
+
+Modding:
+- Validate mod folder names and catch misspellings
+- Improvement Unique converted to trigger - "Gain control over [tileFilter] tiles in a [amount]-tile radius"
+- Resolved map type generation errors kudos @SomeTroglodyte
+
+Automated workers prioritize replacing features to get to lux/strategic resources
+
+Changed 'default map' parameters to rectangular + world wrap
+
+Fixed "when friends" / "when allies" translations
+
+Resolved 'move to next unit' problems - kudos @vincemolnar
+
 ## 4.12.14
 
 Add CLI argument to specify the data directory - this will allow native install on Windows, hopefully

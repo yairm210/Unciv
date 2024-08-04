@@ -19,6 +19,7 @@ enum class AlertType : IsPartOfGameInfoSerialization {
     DiplomaticMarriage,
     BulliedProtectedMinor,
     AttackedProtectedMinor,
+    AttackedAllyMinor,
     RecapturedCivilian,
     GameHasBeenWon,
     Event

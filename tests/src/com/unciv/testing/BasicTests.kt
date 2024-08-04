@@ -256,7 +256,7 @@ class BasicTests {
                     debug("%s's deprecation text references itself!", uniqueType.name)
                     allOK = false
                 }
-                for (conditional in replacementTextUnique.conditionals) {
+                for (conditional in replacementTextUnique.modifiers) {
                     if (conditional.type == null) {
                         debug("%s's deprecation text contains conditional \"%s\" which does not match any existing type!", uniqueType.name, conditional.text)
                         allOK = false

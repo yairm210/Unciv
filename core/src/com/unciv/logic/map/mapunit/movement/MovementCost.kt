@@ -123,7 +123,7 @@ object MovementCost {
         stateForConditionals: StateForConditionals
     ): Boolean {
         if (doubleMovement.terrainTarget != target) return false
-        if (doubleMovement.unique.conditionals.isNotEmpty()
+        if (doubleMovement.unique.modifiers.isNotEmpty()
             && !doubleMovement.unique.conditionalsApply(stateForConditionals)) return false
 
         return true

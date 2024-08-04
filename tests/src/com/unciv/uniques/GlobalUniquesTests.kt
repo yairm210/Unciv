@@ -608,7 +608,7 @@ class GlobalUniquesTests {
         val tile = game.getTile(Vector2.Zero)
         val city = game.addCity(civInfo, tile, true)
         val unit = game.addUnit("Great Engineer", civInfo, tile)
-        val building = game.createBuilding("[+250 Gold] whenever a Great Person is expended")
+        val building = game.createBuilding("Gain [250] [Gold] <upon expending a [Great Person] unit>")
         city.cityConstructions.addBuilding(building)
 
         civInfo.addGold(-civInfo.gold) // reset gold just to be sure

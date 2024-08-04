@@ -195,7 +195,7 @@ class FormattedLine (
             val ruleSet = getCurrentRuleset()
             if (allObjectNamesCategoryMap == null || rulesetCachedInNameMap !== ruleSet)
                 allObjectNamesCategoryMap = initNamesCategoryMap(ruleSet)
-            for (parameter in unique.params + unique.conditionals.flatMap { it.params }) {
+            for (parameter in unique.params + unique.modifiers.flatMap { it.params }) {
                 val category = allObjectNamesCategoryMap!![parameter] ?: continue
                 return category.name + "/" + parameter
             }

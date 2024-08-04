@@ -12,10 +12,10 @@ class GlobalUniques: RulesetObject() {
 
     companion object {
         fun getUniqueSourceDescription(unique: Unique): String {
-            if (unique.conditionals.none())
+            if (unique.modifiers.none())
                 return "Global Effect"
 
-            return when (unique.conditionals.first().type) {
+            return when (unique.modifiers.first().type) {
                 UniqueType.ConditionalGoldenAge -> "Golden Age"
                 UniqueType.ConditionalHappy -> "Happiness"
                 UniqueType.ConditionalBetweenHappiness, UniqueType.ConditionalBelowHappiness -> "Unhappiness"

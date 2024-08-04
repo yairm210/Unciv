@@ -127,15 +127,6 @@ object Conditionals {
             UniqueType.ConditionalWhenBetweenStatResource ->
                 checkResourceOrStatAmount(conditional.params[2], conditional.params[0].toFloat(), conditional.params[1].toFloat(), unique?.isModifiedByGameSpeed() == true)
                     { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
-            UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(conditional.params[1], conditional.params[0].toFloat(), Float.MAX_VALUE, true)
-                    { current, lowerLimit, _ -> current > lowerLimit }
-            UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(conditional.params[1], Float.MIN_VALUE, conditional.params[0].toFloat(), true)
-                    { current, _, upperLimit -> current < upperLimit }
-            UniqueType.ConditionalWhenBetweenStatResourceSpeed ->
-                checkResourceOrStatAmount(conditional.params[2], conditional.params[0].toFloat(), conditional.params[1].toFloat(), true)
-                    { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
             UniqueType.ConditionalBetweenHappiness ->

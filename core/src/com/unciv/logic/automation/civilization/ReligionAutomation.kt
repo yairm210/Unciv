@@ -273,7 +273,7 @@ object ReligionAutomation {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleset
         for (unique in belief.uniqueObjects) {
-            val modifier = 0.5f.pow(unique.conditionals.size)
+            val modifier = 0.5f.pow(unique.modifiers.size)
             // Multiply by 3/10 if has an obsoleted era
             // Multiply by 2 if enough pop/followers (best implemented with conditionals, so left open for now)
             // If obsoleted, continue
@@ -357,7 +357,7 @@ object ReligionAutomation {
 
         for (unique in belief.uniqueObjects) {
             val modifier =
-                if (unique.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent()?.name }) 1/2f
+                if (unique.getModifiers(UniqueType.ConditionalOurUnit).any { it.params[0] == civInfo.religionManager.getGreatProphetEquivalent()?.name }) 1/2f
                 else 1f
             // Some city-filters are modified by personality (non-enemy foreign cities)
             score += modifier * when (unique.type) {
@@ -383,7 +383,7 @@ object ReligionAutomation {
                     15f * if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f else 1f
                 UniqueType.StatsWhenSpreading ->
                     unique.params[0].toFloat() / 5f
-                UniqueType.StatsWhenAdoptingReligion, UniqueType.StatsWhenAdoptingReligionSpeed ->
+                UniqueType.StatsWhenAdoptingReligion ->
                     unique.stats.values.sum() / 50f
                 UniqueType.RestingPointOfCityStatesFollowingReligionChange ->
                     if (civInfo.wantsToFocusOn(Victory.Focus.CityStates))
@@ -394,8 +394,6 @@ object ReligionAutomation {
                     unique.stats.values.sum()
                 UniqueType.StatsFromGlobalFollowers ->
                     4f * (unique.stats.values.sum() / unique.params[1].toFloat())
-                UniqueType.ProvidesStatsWheneverGreatPersonExpended ->
-                    unique.stats.values.sum() / 2f
                 UniqueType.Strength ->
                     unique.params[0].toFloat() / 4f
                 UniqueType.ReligionSpreadDistance ->
@@ -479,7 +477,7 @@ object ReligionAutomation {
         // belief less than make the game crash. The `continue`s should only be reached whenever
         // there are not enough beliefs to choose, but there should be, as otherwise we could
         // not have used a great prophet to found/enhance our religion.
-        for (belief in BeliefType.values()) {
+        for (belief in BeliefType.entries) {
             if (belief == BeliefType.None) continue
             repeat(beliefsToChoose[belief]) {
                 chosenBeliefs.add(

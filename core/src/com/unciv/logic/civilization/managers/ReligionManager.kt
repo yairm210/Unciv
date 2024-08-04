@@ -322,7 +322,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         // Counter of the number of available beliefs of each type
         val availableBeliefs = Counter<BeliefType>()
-        for (type in BeliefType.values()) {
+        for (type in BeliefType.entries) {
             if (type == BeliefType.None) continue
             availableBeliefs[type] = numberOfBeliefsAvailable(type)
         }
@@ -398,7 +398,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
             for (belief in beliefs)
-                if (unique.conditionals.any {it.type == UniqueType.TriggerUponAdoptingPolicyOrBelief && it.params[0] == belief.name})
+                if (unique.getModifiers(UniqueType.TriggerUponAdoptingPolicyOrBelief).any { it.params[0] == belief.name})
                     UniqueTriggerActivation.triggerUnique(unique, civInfo,
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
