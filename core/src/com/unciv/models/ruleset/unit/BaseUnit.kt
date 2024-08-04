@@ -442,9 +442,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isProbablySiegeUnit() = isRanged()
             && getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals)
-                .any { it.params[0].toInt() > 0
-                    && it.modifiers.any { conditional -> conditional.type == UniqueType.ConditionalVsCity }
-                }
+                .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
 
     fun getForceEvaluation(): Int {
         if (cachedForceEvaluation < 0) evaluateForce()
