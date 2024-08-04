@@ -30,6 +30,7 @@ object ReligionAutomation {
             buyGreatProphetInAnyCity(civInfo)
             return
         }
+        
         if (civInfo.religionManager.remainingFoundableReligions() == 0 && civInfo.religionManager.religionState != ReligionState.FoundingReligion) {
             buyGreatPerson(civInfo)
             return
@@ -38,7 +39,6 @@ object ReligionAutomation {
         // We don't have a religion and no more change of getting it :(
         if (civInfo.religionManager.religionState <= ReligionState.Pantheon) {
             tryBuyAnyReligiousBuilding(civInfo)
-            // Todo: buy Great People post industrial era
             return
         }
 
