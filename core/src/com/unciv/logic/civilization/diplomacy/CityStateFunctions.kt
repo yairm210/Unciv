@@ -44,7 +44,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
         // CS Personality
-        civInfo.cityStatePersonality = CityStatePersonality.values().random()
+        civInfo.cityStatePersonality = CityStatePersonality.entries.toTypedArray().random()
 
         // Mercantile bonus resources
 
@@ -57,7 +57,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             val possibleUnits = ruleset.units.values.filter {
                 return@filter !it.availableInEra(ruleset, startingEra) // Not from the start era or before
                     && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
-                    && ruleset.unitTypes[it.unitType]!!.isLandUnit() && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
+                    && ruleset.unitTypes[it.unitType]!!.isLandUnit()
+                    && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
             }
             if (possibleUnits.isNotEmpty())
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
@@ -150,6 +151,10 @@ class CityStateFunctions(val civInfo: Civilization) {
         fun randomGiftableUnit() =
                 city.cityConstructions.getConstructableUnits()
                 .filter { !it.isCivilian() && it.isLandUnit && it.uniqueTo == null }
+                // Does not make us go over any resource quota
+                .filter { it.getResourceRequirementsPerTurn(StateForConditionals(civInfo = receivingCiv)).none {
+                    it.value > 0 && receivingCiv.getResourceAmount(it.key) < it.value
+                } }
                 .toList().randomOrNull()
         val militaryUnit = giftableUniqueUnit() // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
             ?: randomGiftableUnit() // Otherwise pick at random
