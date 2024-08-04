@@ -44,7 +44,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
         // CS Personality
-        civInfo.cityStatePersonality = CityStatePersonality.entries.toTypedArray().random()
+        civInfo.cityStatePersonality = CityStatePersonality.entries.random()
 
         // Mercantile bonus resources
 
@@ -672,6 +672,25 @@ class CityStateFunctions(val civInfo: Civilization) {
                         AlertType.AttackedProtectedMinor,
                     attacker.civName + "@" + civInfo.civName)
                 )   // we need to pass both civs as argument, hence the horrible chimera
+        }
+
+        // Even if we aren't *technically* protectors, we *can* still be pissed you attacked our allies*
+        val allyCivName = civInfo.getAllyCiv()
+        val allyCiv = if (allyCivName != null) civInfo.gameInfo.getCivilization(allyCivName) else null
+        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs()){
+            val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
+            // Less than if we were protectors
+            allyDiplomacy.addModifier(DiplomaticModifiers.AttackedAlliedMinor, -10f)
+
+            if (allyCiv.playerType != PlayerType.Human)   // Humans can have their own emotions
+                attacker.addNotification("[${allyCiv.civName}] is upset that you attacked [${civInfo.civName}], whom they are allied with!",
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, allyCiv.civName)
+            else    // Let humans choose who to side with
+                allyCiv.popupAlerts.add(
+                    PopupAlert(
+                        AlertType.AttackedAllyMinor,
+                        attacker.civName + "@" + civInfo.civName)
+                )
         }
 
         // Set up war with major pseudo-quest
