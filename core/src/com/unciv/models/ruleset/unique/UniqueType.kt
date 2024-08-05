@@ -397,7 +397,7 @@ enum class UniqueType(
 
     // Missiles
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
-    IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit),
+    IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit, UniqueTarget.Global),
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
 
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
