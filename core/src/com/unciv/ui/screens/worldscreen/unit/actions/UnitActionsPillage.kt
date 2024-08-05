@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
@@ -118,7 +117,7 @@ object UnitActionsPillage {
     fun canPillage(unit: MapUnit, tile: Tile): Boolean {
         if (unit.isTransported) return false
         if (!tile.canPillageTile()) return false
-        if (unit.hasUnique(UniqueType.CannotPillage)) return false
+        if (unit.hasUnique(UniqueType.CannotPillage, checkCivInfoUniques = true)) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner == null || unit.civ.isAtWarWith(tileOwner)

@@ -159,7 +159,7 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
+                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
             // Barbarians can't capture cities
             if (attacker.unit.civ.isBarbarian) {
                 defender.takeDamage(-1) // Back to 2 HP
