@@ -804,14 +804,11 @@ class RulesetValidator(val ruleset: Ruleset) {
         // The special casing in evaluateForce and this check should eventually disappear as this combo can be considered @Deprecated
         for (unique in unit.getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals)) {
             if (unique.hasTriggerConditional()) continue
-            if (unique.conditionals.any { it.type == UniqueType.AIForceCalculationWeight }) continue
-            if (unique.conditionals.none {
-                it.type == UniqueType.ConditionalVsCity
-                || it.type == UniqueType.ConditionalAttacking
-                || it.type == UniqueType.ConditionalDefending
-                || it.type == UniqueType.ConditionalFightingInTiles
-                || it.type == UniqueType.ConditionalVsUnits
-            }) continue
+            if (!unique.hasModifier(
+                    UniqueType.ConditionalVsCity, UniqueType.ConditionalAttacking, UniqueType.ConditionalDefending,
+                    UniqueType.ConditionalFightingInTiles, UniqueType.ConditionalVsUnits
+            )) continue
+            if (unique.hasModifier(UniqueType.AIForceCalculationWeight)) continue
             lines.add("${unit.name} has a Strength unique with a conditional that should state an AI force evaluation weight, but the modifier is missing.",
                 RulesetErrorSeverity.WarningOptionsOnly, unit, unique)
         }

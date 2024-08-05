@@ -488,17 +488,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     if (bonus == 0) continue
                     val weightModifier = unique.getModifiers(UniqueType.AIForceCalculationWeight).firstOrNull()
                     val weight = when {
-                        unique.modifiers.none { it.type != null && UniqueTarget.MetaModifier !in it.type.targetTypes } -> 1f
+                        unique.modifiers.none { it.type != null && UniqueTarget.MetaModifier !in it.type.targetTypes } -> 1f // No actual conditionals (excluding metamodifiers) - full weight
                         weightModifier != null -> weightModifier.params[0].toFloat() * 0.01f
                         // @Deprecated("Use UniqueType.AIForceCalculationWeight explicitly")
                         unique.hasModifier(UniqueType.ConditionalVsUnits) -> 0.25f // Bonus vs some units - a quarter of the bonus
-                        unique.modifiers.any {
-                            it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
-                                || it.type == UniqueType.ConditionalAttacking // Attack - half the bonus
-                                || it.type == UniqueType.ConditionalDefending // Defense - half the bonus
-                                || it.type == UniqueType.ConditionalFightingInTiles
-                        } -> 0.5f  // Bonus in terrain or feature - half the bonus
-                        else -> continue
+                        unique.hasModifier(
+                            UniqueType.ConditionalVsCity, // City Attack - half the bonus
+                            UniqueType.ConditionalAttacking, // Attack - half the bonus
+                            UniqueType.ConditionalDefending, // Defense - half the bonus
+                            UniqueType.ConditionalFightingInTiles // Bonus in terrain or feature - half the bonus
+                        ) -> 0.5f
+                        else -> continue // Default to zero bonus to avoid overmultiplication of many mutually exclusive and individually unlikely
                     }
                     power *= (bonus * weight).toPercent()
                 }

@@ -46,7 +46,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
 
     fun getModifiers(type: UniqueType) = modifiers.asSequence().filter { it.type == type }
+    fun getModifiers(vararg types: UniqueType) = modifiers.asSequence().filter { it.type in types }
     fun hasModifier(type: UniqueType) = getModifiers(type).any()
+    fun hasModifier(vararg types: UniqueType) = getModifiers(*types).any()
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
     fun hasTriggerConditional(): Boolean {
         if (modifiers.isEmpty()) return false
