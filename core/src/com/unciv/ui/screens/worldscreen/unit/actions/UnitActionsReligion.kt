@@ -18,7 +18,7 @@ object UnitActionsReligion {
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayFoundReligion)
             .firstOrNull() ?: return emptySequence()
 
-        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+        val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
 
@@ -47,7 +47,7 @@ object UnitActionsReligion {
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayEnhanceReligion)
             .firstOrNull() ?: return emptySequence()
 
-        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+        val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
 

@@ -61,7 +61,7 @@ class MapLandmassGenerator(
             MapType.smallContinents -> createSmallContinents()
         }
 
-        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+        if (tileMap.mapParameters.shape == MapShape.flatEarth) {
             generateFlatEarthExtraWater()
         }
     }
@@ -130,7 +130,7 @@ class MapLandmassGenerator(
             for (tile in tileMap.values) {
                 val maxdim = max(tileMap.maxLatitude, tileMap.maxLongitude)
                 var ratio = maxdim / 32.0 // change scale depending on map size so that average number of continents stay the same
-                if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) {
+                if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth) {
                     ratio *= 0.5 // In hexagonal type map for some reason it tends to make a single continent like pangaea if we don't diminish the scale
                 }
 
@@ -205,7 +205,7 @@ class MapLandmassGenerator(
     private fun createContinentAndIslands() {
         val isNorth = randomness.RNG.nextDouble() < 0.5
         val isLatitude =
-                if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) randomness.RNG.nextDouble() > 0.5f
+                if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth) randomness.RNG.nextDouble() > 0.5f
                 else if (tileMap.mapParameters.mapSize.height > tileMap.mapParameters.mapSize.width) true
                 else if (tileMap.mapParameters.mapSize.width > tileMap.mapParameters.mapSize.height) false
                 else randomness.RNG.nextDouble() > 0.5f
@@ -220,7 +220,7 @@ class MapLandmassGenerator(
 
     private fun createTwoContinents() {
         val isLatitude =
-                if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) randomness.RNG.nextDouble() > 0.5f
+                if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth) randomness.RNG.nextDouble() > 0.5f
                 else if (tileMap.mapParameters.mapSize.height > tileMap.mapParameters.mapSize.width) true
                 else if (tileMap.mapParameters.mapSize.width > tileMap.mapParameters.mapSize.height) false
                 else randomness.RNG.nextDouble() > 0.5f
@@ -236,7 +236,7 @@ class MapLandmassGenerator(
     private fun createThreeContinents() {
         val isNorth = randomness.RNG.nextDouble() < 0.5
         // On flat earth maps we can randomly do East or West instead of North or South
-        val isEastWest = tileMap.mapParameters.shape === MapShape.flatEarth && randomness.RNG.nextDouble() > 0.5
+        val isEastWest = tileMap.mapParameters.shape == MapShape.flatEarth && randomness.RNG.nextDouble() > 0.5
 
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
@@ -334,7 +334,7 @@ class MapLandmassGenerator(
         var latitudeFactor = abs(tile.latitude) / tileMap.maxLatitude
 
         // 3rd continent should use only half the map width, or if flat earth, only a third
-        val sizeReductionFactor = if (tileMap.mapParameters.shape === MapShape.flatEarth) 3f else 2f
+        val sizeReductionFactor = if (tileMap.mapParameters.shape == MapShape.flatEarth) 3f else 2f
 
         // We then pick one side to be merged into one centered continent instead of two cornered.
         if (isEastWest) {
@@ -398,7 +398,7 @@ class MapLandmassGenerator(
 
         val xdistanceratio = abs(x) / maxX
         val ydistanceratio = abs(y) / maxY
-        if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) {
+        if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth) {
             val startdropoffratio = 0.8 // distance from center at which we start decreasing elevation linearly
             val xdrsquared = xdistanceratio * xdistanceratio
             val ydrsquared = ydistanceratio * ydistanceratio

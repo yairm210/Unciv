@@ -24,9 +24,9 @@ object BattleDamage {
             UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.getSourceNameForUser()}])"
         }.tr()
-        if (unique.conditionals.isEmpty()) return source
+        if (unique.modifiers.isEmpty()) return source
 
-        val conditionalsText = unique.conditionals.joinToString { it.text.tr() }
+        val conditionalsText = unique.modifiers.joinToString { it.text.tr() }
         return "$source - $conditionalsText"
     }
 

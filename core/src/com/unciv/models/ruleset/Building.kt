@@ -110,7 +110,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.AllStatsPercentFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
-            for (stat in Stat.values()) {
+            for (stat in Stat.entries) {
                 stats.add(stat, unique.params[0].toFloat())
             }
         }
@@ -410,7 +410,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
      */
     private fun notMetRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
         val civ = cityConstructions.city.civ
-        for (conditional in unique.conditionals) {
+        for (conditional in unique.modifiers) {
             // We yield a rejection only when conditionals are NOT met
             if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
                 continue

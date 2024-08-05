@@ -89,7 +89,7 @@ object Suppression {
             suppressions += sourceObject.getMatchingUniques(UniqueType.SuppressWarnings, StateForConditionals.IgnoreConditionals).map { getWildcardFilter(it) }
         // Allow suppressing from modifiers in the same Unique
         if (sourceUnique != null)
-            suppressions += sourceUnique.conditionals.filter { it.type == UniqueType.SuppressWarnings }.map { getWildcardFilter(it) }
+            suppressions += sourceUnique.getModifiers(UniqueType.SuppressWarnings).map { getWildcardFilter(it) }
 
         for (filter in suppressions)
             if (matchesFilter(error, filter)) return true

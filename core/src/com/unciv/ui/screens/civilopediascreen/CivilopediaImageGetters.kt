@@ -3,6 +3,7 @@ package com.unciv.ui.screens.civilopediascreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
@@ -43,7 +44,7 @@ internal object CivilopediaImageGetters {
                 tile.baseTerrain = terrain.name
         }
         tile.setTerrainTransients()
-        val group = TileGroup(tile, TileSetStrings(), imageSize * 36f / 54f)  // TileGroup normally spills out of its bounding box
+        val group = TileGroup(tile, TileSetStrings(ruleset, UncivGame.Current.settings), imageSize * 36f / 54f)  // TileGroup normally spills out of its bounding box
         group.isForceVisible = true
         group.isForMapEditorIcon = true
         group.update()
@@ -91,7 +92,7 @@ internal object CivilopediaImageGetters {
         ImageGetter.getReligionPortrait(name, size)
     }
     val unitType = { name: String, size: Float ->
-        val path = UnitMovementType.values().firstOrNull { "Domain: [${it.name}]" == name }
+        val path = UnitMovementType.entries.firstOrNull { "Domain: [${it.name}]" == name }
             ?.let {"UnitTypeIcons/Domain${it.name}" }
             ?: "UnitTypeIcons/$name"
         if (ImageGetter.imageExists(path)) ImageGetter.getImage(path).apply { setSize(size) }

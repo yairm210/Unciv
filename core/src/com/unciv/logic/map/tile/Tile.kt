@@ -321,7 +321,15 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         else ruleset.tileImprovements[getUnpillagedRoad().name]
     }
 
-    fun getShownImprovement(viewingCiv: Civilization?): String? = viewingCiv?.getLastSeenImprovement(position) ?: improvement
+    /**
+     *  Improvement to display, accounting for knowledge about a Tile possibly getting stale when a human player is no longer actively watching it.
+     *  Relies on a Civilization's lastSeenImprovement always being up to date while the civ can see the Tile.
+     *  @param viewingCiv `null` means civ-agnostic and thus always showing the actual improvement
+     *  @return The improvement name, or `null` if no improvement should be shown
+     */
+    fun getShownImprovement(viewingCiv: Civilization?): String? =
+        if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator()) improvement
+        else viewingCiv.getLastSeenImprovement(position)
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}

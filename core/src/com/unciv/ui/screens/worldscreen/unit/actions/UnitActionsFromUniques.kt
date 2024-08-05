@@ -49,7 +49,7 @@ object UnitActionsFromUniques {
         if (!unit.hasMovement() || !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
-        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+        val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
         val foundAction = {
@@ -168,9 +168,9 @@ object UnitActionsFromUniques {
     internal fun getTriggerUniqueActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getUniques()) {
             // not a unit action
-            if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
+            if (unique.modifiers.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
             // extends an existing unit action
-            if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
+            if (unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes)) continue
             if (!unique.isTriggerable) continue
             if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
@@ -181,13 +181,16 @@ object UnitActionsFromUniques {
                         unit.civ.goldenAges.calculateGoldenAgeLength(
                             unique.params[0].toInt()).tr())
                     }
-                UniqueType.OneTimeGainStatSpeed -> {
-                    val stat = unique.params[1]
-                    val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
-                        ?: unit.civ.gameInfo.speed.modifier
-                    UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
-                        (unique.params[0].toInt() * modifier).toInt().tr(), stat
-                    )
+                UniqueType.OneTimeGainStat -> {
+                    if (unique.hasModifier(UniqueType.ModifiedByGameSpeed)) {
+                        val stat = unique.params[1]
+                        val modifier = unit.civ.gameInfo.speed.statCostModifiers[Stat.safeValueOf(stat)]
+                            ?: unit.civ.gameInfo.speed.modifier
+                        UniqueType.OneTimeGainStat.placeholderText.fillPlaceholders(
+                            (unique.params[0].toInt() * modifier).toInt().tr(), stat
+                        )
+                    }
+                    else unique.text.removeConditionals()
                 }
                 UniqueType.OneTimeGainStatRange -> {
                     val stat = unique.params[2]

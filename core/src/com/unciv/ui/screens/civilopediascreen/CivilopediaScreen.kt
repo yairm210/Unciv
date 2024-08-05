@@ -124,7 +124,9 @@ class CivilopediaScreen(
                 compareBy<CivilopediaEntry>{ it.sortBy }
                     .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
                         // In order for the extra icons on Happiness and Faith to not affect sort order
-                        it.name.tr(true).replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
+                        it.name.tr(true).replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"")
+                            .replace(Fonts.food.toString(),"").replace(Fonts.production.toString(),"")
+                            .replace(Fonts.gold.toString(),"").replace(Fonts.science.toString(),"")})
 
         var currentY = -1f
 

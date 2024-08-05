@@ -1,0 +1,12 @@
+Modding:
+- Validate mod folder names and catch misspellings
+- Improvement Unique converted to trigger - "Gain control over [tileFilter] tiles in a [amount]-tile radius"
+- Resolved map type generation errors kudos @SomeTroglodyte
+
+Automated workers prioritize replacing features to get to lux/strategic resources
+
+Changed 'default map' parameters to rectangular + world wrap
+
+Fixed "when friends" / "when allies" translations
+
+Resolved 'move to next unit' problems - kudos @vincemolnar

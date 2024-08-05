@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
 
 class GameSetupInfo(
     val gameParameters: GameParameters = GameParameters(),
@@ -26,6 +27,8 @@ class GameSetupInfo(
         fun fromSettings(defaultDifficulty: String? = null) = UncivGame.Current.settings.run {
             if (lastGameSetup == null) GameSetupInfo().apply {
                 if (defaultDifficulty != null) gameParameters.difficulty = defaultDifficulty
+                mapParameters.shape = MapShape.rectangular
+                mapParameters.worldWrap = true
             }
             else GameSetupInfo(lastGameSetup!!).apply {
                 mapParameters.reseed()

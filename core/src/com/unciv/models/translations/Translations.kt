@@ -380,10 +380,10 @@ private fun String.translateConditionals(hideIcons: Boolean, language: String): 
 
     var translatedBaseUnique = this.removeConditionals().tr(hideIcons)
 
-    val conditionals = this.getConditionals().map { it.placeholderText }
+    val conditionals = this.getModifiers().map { it.placeholderText }
     val conditionsWithTranslation: LinkedHashMap<String, String> = linkedMapOf()
 
-    for (conditional in this.getConditionals())
+    for (conditional in this.getModifiers())
         conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr(hideIcons)
 
     val translatedConditionals: MutableList<String> = mutableListOf()
@@ -546,7 +546,7 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return filledString
 }
 
-fun String.getConditionals(): List<Unique> {
+fun String.getModifiers(): List<Unique> {
     if (!this.contains('<')) return emptyList()
     return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
 }

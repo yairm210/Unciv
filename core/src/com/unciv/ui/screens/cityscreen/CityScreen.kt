@@ -337,7 +337,7 @@ class CityScreen(
 
     private fun addTiles() {
         val viewRange = max(city.getExpandRange(), city.getWorkRange())
-        val tileSetStrings = TileSetStrings()
+        val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
         val cityTileGroups = city.getCenterTile().getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it) }
                 .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
