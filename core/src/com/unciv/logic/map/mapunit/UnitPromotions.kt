@@ -137,4 +137,10 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         toReturn.unit = unit
         return toReturn
     }
+
+    // For json serialization, to not serialize an empty object
+    override fun equals(other: Any?): Boolean {
+        if (other !is UnitPromotions) return false
+        return XP == other.XP && promotions == other.promotions && numberOfPromotions == other.numberOfPromotions
+    }
 }

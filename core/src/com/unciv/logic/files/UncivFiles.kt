@@ -428,14 +428,7 @@ class UncivFiles(
             game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
 
             if (updateChecksum) game.checksum = game.calculateChecksum()
-            var plainJson = json().toJson(game)
-
-            val removeableStrings = listOf(
-                ",\"history\":{}", // empty history object in tile
-                ",\"promotions\":{}", // empty promotions object in unit
-            )
-            for (removableString in removeableStrings)
-                plainJson = plainJson.replace(removableString,"")
+            val plainJson = json().toJson(game)
 
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
