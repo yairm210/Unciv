@@ -2,6 +2,7 @@ package com.unciv.json
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonWriter
 import com.badlogic.gdx.utils.SerializationException
@@ -22,6 +23,7 @@ fun json() = Json(JsonWriter.OutputType.json).apply {
 
     setSerializer(Duration::class.java, DurationSerializer())
     setSerializer(KeyCharAndCode::class.java, KeyCharAndCode.Serializer())
+    setSerializer(Vector2::class.java, Vector2Serializer())
 }
 
 /**
