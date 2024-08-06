@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeForTranslationWriter
 import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
@@ -366,10 +367,19 @@ enum class UniqueParameterType(
             staticKnownValues + ruleset.terrains.keys
     },
 
-    /** Used by [NaturalWonderGenerator.trySpawnOnSuitableLocation][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator.trySpawnOnSuitableLocation], only tests base terrain */
+    /** Used by [NaturalWonderGenerator][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator], only tests base terrain */
     BaseTerrain("baseTerrain", Constants.grassland, "The name of any terrain that is a base terrain according to the json file") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             ruleset.terrains.filter { it.value.type.isBaseTerrain }.keys
+    },
+    /** Used by [UniqueType.NaturalWonderConvertNeighbors], only tests base terrain.
+     *  - See [NaturalWonderGenerator.trySpawnOnSuitableLocation][com.unciv.logic.map.mapgenerator.NaturalWonderGenerator.trySpawnOnSuitableLocation] */
+    TerrainFeature("terrainFeature", Constants.hill, "The name of any terrain that is a terrain feature according to the json file") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueParameterErrorSeverity? {
+            if (ruleset.terrains[parameterText]?.type == TerrainType.TerrainFeature) return null
+            return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+        }
     },
 
     /** Used by: [UniqueType.LandUnitsCrossTerrainAfterUnitGained] (CivilizationInfo.addUnit),

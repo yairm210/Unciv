@@ -6,6 +6,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.debug
@@ -13,10 +14,6 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
-
-    private val allTerrainFeatures = ruleset.terrains.values
-        .filter { it.type == TerrainType.TerrainFeature }
-        .map { it.name }.toSet()
 
     private val blockedTiles = HashSet<Tile>()
 
@@ -64,7 +61,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         }
         chosenWonders.sortBy { wonderCandidateTiles[it]!!.size }
         for (wonder in chosenWonders) {
-            if (trySpawnOnSuitableLocation(wonderCandidateTiles[wonder]!!.filter { it !in blockedTiles }.toList(), wonder))
+            if (trySpawnOnSuitableLocation(wonderCandidateTiles[wonder]!!.filter { it !in blockedTiles }, wonder))
                 spawned.add(wonder)
         }
 
@@ -180,59 +177,78 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
     companion object {
         fun placeNaturalWonder(wonder: Terrain, location: Tile) {
-            clearTile(location)
             location.naturalWonder = wonder.name
-            if (wonder.turnsInto != null)
+            if (wonder.turnsInto != null) {
+                clearTile(location)
                 location.baseTerrain = wonder.turnsInto!!
-
-            var convertNeighborsExcept: String? = null
-            var convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighbors).firstOrNull()
-            var convertNeighborsTo = convertUnique?.params?.get(0)
-            if (convertNeighborsTo == null) {
-                convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighborsExcept).firstOrNull()
-                convertNeighborsExcept = convertUnique?.params?.get(0)
-                convertNeighborsTo = convertUnique?.params?.get(1)
+            } else {
+                clearTile(location, wonder.occursOn)
             }
 
-            if (convertNeighborsTo != null) {
-                for (tile in location.neighbors) {
-                    if (tile.baseTerrain == convertNeighborsTo) continue
-                    if (tile.baseTerrain == convertNeighborsExcept) continue
-                    if (convertNeighborsTo == Constants.coast) {
-                        for (neighbor in tile.neighbors) {
-                            // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
-                            // We just turn the lake tiles into this kind of tile.
-                            if (neighbor.baseTerrain == Constants.lakes) {
-                                neighbor.baseTerrain = tile.baseTerrain
-                                neighbor.setTerrainTransients()
-                            }
-                        }
-                        location.setConnectedByRiver(tile, false)
+            val conversionUniques = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighbors, StateForConditionals.IgnoreConditionals) +
+                wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighborsExcept, StateForConditionals.IgnoreConditionals)
+            if (conversionUniques.none()) return
+
+            for (tile in location.neighbors) {
+                val state = StateForConditionals(tile = tile)
+                for (unique in conversionUniques) {
+                    if (!unique.conditionalsApply(state)) continue
+                    val convertTo = if (unique.type == UniqueType.NaturalWonderConvertNeighborsExcept) {
+                        if (tile.matchesWonderFilter(unique.params[0])) continue
+                        unique.params[1]
+                    } else unique.params[0]
+                    if (tile.baseTerrain == convertTo || convertTo in tile.terrainFeatures) continue
+                    if (convertTo == Constants.lakes && tile.isCoastalTile()) continue
+                    val terrainObject = location.ruleset.terrains[convertTo] ?: continue
+                    if (terrainObject.type == TerrainType.TerrainFeature && tile.baseTerrain !in terrainObject.occursOn) continue
+                    if (convertTo == Constants.coast)
+                        removeLakesNextToFutureCoast(location, tile)
+                    if (terrainObject.type.isBaseTerrain) {
+                        clearTile(tile)
+                        tile.baseTerrain = convertTo
                     }
-                    tile.baseTerrain = convertNeighborsTo
-                    clearTile(tile)
+                    if (terrainObject.type == TerrainType.TerrainFeature) {
+                        clearTile(tile, tile.terrainFeatures)
+                        tile.addTerrainFeature(convertTo)
+                    }
                 }
             }
         }
 
-        private fun clearTile(tile: Tile) {
-            tile.setTerrainFeatures(listOf())
+        // location is being converted to a NW, tile is a neighbor to be converted to coast: Ensure that coast won't show invalid rivers or coast touching lakes
+        private fun removeLakesNextToFutureCoast(location: Tile, tile: Tile) {
+            for (neighbor in tile.neighbors) {
+                // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
+                // We just turn the lake tiles into this kind of tile.
+                if (neighbor.baseTerrain == Constants.lakes) {
+                    clearTile(neighbor)
+                    neighbor.baseTerrain = tile.baseTerrain
+                    neighbor.setTerrainTransients()
+                }
+            }
+            location.setConnectedByRiver(tile, false)
+        }
+
+        /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */
+        private fun Tile.matchesWonderFilter(filter: String) = when (filter) {
+            "Elevated" -> baseTerrain == Constants.mountain || isHill()
+            "Water" -> isWater
+            "Land" -> isLand
+            Constants.hill -> isHill()
+            naturalWonder -> true
+            lastTerrain.name -> true
+            else -> baseTerrain == filter
+        }
+
+        private fun clearTile(tile: Tile, exceptFeatures: List<String> = listOf()) {
+            if (tile.terrainFeatures.isNotEmpty() && exceptFeatures != tile.terrainFeatures)
+                tile.setTerrainFeatures(tile.terrainFeatures.filter { it in exceptFeatures })
             tile.resource = null
-            tile.improvement = null
+            tile.removeImprovement()
             tile.setTerrainTransients()
         }
     }
 
-    /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */
-    private fun Tile.matchesWonderFilter(filter: String) = when (filter) {
-        "Elevated" -> baseTerrain == Constants.mountain || isHill()
-        "Water" -> isWater
-        "Land" -> isLand
-        Constants.hill -> isHill()
-        naturalWonder -> true
-        in allTerrainFeatures -> lastTerrain.name == filter
-        else -> baseTerrain == filter
-    }
 
     /*
     Barringer Crater: Must be in tundra or desert; cannot be adjacent to grassland; can be adjacent to a maximum

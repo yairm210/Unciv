@@ -10,9 +10,13 @@ object TileNormalizer {
         if (tile.naturalWonder != null && !ruleset.terrains.containsKey(tile.naturalWonder))
             tile.naturalWonder = null
         if (tile.naturalWonder != null) {
-            if (tile.getNaturalWonder().turnsInto != null)
-                tile.baseTerrain = tile.getNaturalWonder().turnsInto!!
-            tile.setTerrainFeatures(listOf())
+            val wonderTerrain = tile.getNaturalWonder()
+            if (wonderTerrain.turnsInto != null) {
+                tile.baseTerrain = wonderTerrain.turnsInto!!
+                tile.removeTerrainFeatures()
+            } else {
+                tile.setTerrainFeatures(tile.terrainFeatures.filter { it in wonderTerrain.occursOn })
+            }
             tile.resource = null
             tile.clearImprovement()
         }

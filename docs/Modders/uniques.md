@@ -2155,13 +2155,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Neighboring tiles will convert to [baseTerrain]"
+??? example  "Neighboring tiles will convert to [baseTerrain/terrainFeature]"
+	Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.
 	Example: "Neighboring tiles will convert to [Grassland]"
 
 	Applicable to: Terrain
 
-??? example  "Neighboring tiles except [baseTerrain] will convert to [baseTerrain]"
-	Example: "Neighboring tiles except [Grassland] will convert to [Grassland]"
+??? example  "Neighboring tiles except [simpleTerrain] will convert to [baseTerrain/terrainFeature]"
+	Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.
+	Example: "Neighboring tiles except [Elevated] will convert to [Grassland]"
 
 	Applicable to: Terrain
 
@@ -3304,6 +3306,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
 *[stockpiledResource]: The name of any stockpiled resource.
 *[tech]: The name of any tech.
+*[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
 *[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
