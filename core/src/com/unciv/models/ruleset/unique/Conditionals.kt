@@ -6,6 +6,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
 import kotlin.random.Random
 
@@ -302,6 +303,11 @@ object Conditionals {
                     first, second, third ->
                     first in second..third
                 }
+
+            UniqueType.ConditionalModEnabled -> checkOnGameInfo {
+                val filter = conditional.params[0]
+                (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }
+            }
 
             else -> false
         }
