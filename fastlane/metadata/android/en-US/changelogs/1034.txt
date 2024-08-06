@@ -1,0 +1,35 @@
+
+
+"Unable to capture cities" and "Unable to pillage tiles" are now global too
+
+.
+
+"Ranged attacks may be performed over obstacles" can be a national unique
+
+Added translation lines
+
+Resolves  - recognize Tutorials.json file in ruleset validation
+
+"Unavailable" promotions are unavailable in UI as well
+
+chore: more modifier cleanups
+
+Android target SDK to 34
+
+String.getConditionals() -> String.getModifiers()
+
+getModifiers(uniqueType) and hasModifier(uniqueType) helper functions
+
+Unique.conditionals -> unique.modifiers
+
+Add doc descriptions to city and stockpiled resource uniques
+
+Resolves  - Can go to war with no warmongering penalties if allied or protected city-states have been attacked
+
+City states no longer gift units that push us over resource limits - 
+
+the word 'default' is misleading since it's an overrider
+
+Allow default unitset and tileset for base ruleset mods
+
+Enhance modding freedom for Natural Wonders  - By SomeTroglodyte
