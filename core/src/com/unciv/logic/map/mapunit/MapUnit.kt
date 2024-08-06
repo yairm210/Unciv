@@ -404,7 +404,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         isCivilian() -> false
         baseUnit.movesLikeAirUnits -> false
         isEmbarked() -> false
-        hasUnique(UniqueType.NoDefensiveTerrainBonus) -> false
+        hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) -> false
         ignoreAlreadyFortified -> true
         isFortified() -> false
         else -> true
