@@ -1076,8 +1076,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     override fun write(json: Json) {
         json.writeFields(this)
         // Compatibility code for the case an improvementQueue-using game is loaded by an older version: Write fake fields
-        json.writeValue("improvementInProgress", improvementInProgress, String::class.java)
-        json.writeValue("turnsToImprovement", turnsToImprovement, Int::class.java)
+        if (improvementInProgress != null) json.writeValue("improvementInProgress", improvementInProgress, String::class.java)
+        if (turnsToImprovement != 0) json.writeValue("turnsToImprovement", turnsToImprovement, Int::class.java)
     }
 
     override fun read(json: Json, jsonData: JsonValue) {
