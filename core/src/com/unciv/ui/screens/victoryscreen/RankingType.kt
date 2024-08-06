@@ -19,7 +19,7 @@ enum class RankingType(
     Force({ ImageGetter.getImage("OtherIcons/Shield") }, "F"),
     Happiness("H"),
     Technologies({ ImageGetter.getStatIcon("Science") }, "W"),
-    Culture("A")
+    Culture("A"),
     ;
     val label = label ?: name
     constructor(getImage: () -> Image?, idForSerialization: String) : this(null, getImage, idForSerialization)
@@ -27,6 +27,6 @@ enum class RankingType(
 
     companion object {
         fun fromIdForSerialization(s: String): RankingType? =
-                values().firstOrNull { it.idForSerialization == s }
+                entries.firstOrNull { it.idForSerialization == s }
     }
 }
