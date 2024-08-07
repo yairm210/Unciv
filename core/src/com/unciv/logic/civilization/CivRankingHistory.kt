@@ -26,44 +26,46 @@ class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(), IsPartOfGameInf
     /** Implement Json.Serializable
      *  - Output looked like this: `statsHistory:{0:{S:50,G:120,...},1:{S:55,G:80,...}}`
      *    (but now we have turned off simplifed json, so it's properly quoted)
-     *  - New format looks like this: `statsHistory:{0:"50,120,...",1:"55,80,..."}`
+     *  - New format looks like this: `statsHistory:{0:"S50G120,...",1:"S55G80,..."}`
      */
     override fun write(json: Json) {
         for ((turn, rankings) in this) {
 
             // Old format - deprecated 4.12.18
-            json.writeObjectStart(turn.toString())
-            for ((rankingType, score) in rankings) {
-                json.writeValue(rankingType.idForSerialization.toString(), score)
-            }
-            json.writeObjectEnd()
+//            json.writeObjectStart(turn.toString())
+//            for ((rankingType, score) in rankings) {
+//                json.writeValue(rankingType.idForSerialization.toString(), score)
+//            }
+//            json.writeObjectEnd()
 
             // New format (disabled)
-//            val rankingsString = rankings.entries.sortedBy { it.key }
-//                .map { it.value }.joinToString(",")
-//            json.writeValue(turn.toString(), rankingsString)
+            val rankingsString = rankings.entries
+                .joinToString("") { it.key.idForSerialization.toString() + it.value }
+            json.writeValue(turn.toString(), rankingsString)
         }
     }
 
+    private val nonDigit = Regex("\\D")
     override fun read(json: Json, jsonData: JsonValue) {
         for (entry in jsonData) {
             val turn = entry.name.toInt()
             val rankings = mutableMapOf<RankingType, Int>()
 
             if (entry.isString){
-                val numbers = entry.asString().split(",").map { it.toInt() }
-                // The numbers are ordered by RankingType.
-                // By iterating on the RankingType instead of the numbers, we can ensure "future safety" -
-                //   new RankingTypes can be added and older versions will just throw the extra numbers away
-                for ((index, rankingType) in RankingType.entries.withIndex()) {
-                    // getOrNull is a safety mechanism, so we can add new RankingTypes and still parse existing games
-                    rankings[rankingType] = numbers.getOrNull(index) ?: continue
+                // split into key-value pairs by adding a space before every non-digit, and splitting by spaces
+                val pairs = entry.asString().replace(nonDigit, " $0").split(" ")
+                    .filter { it.isNotEmpty() } // remove empty entries
+
+                for (pair in pairs) {
+                    val rankingType = RankingType.fromIdForSerialization(pair[0]) ?: continue
+                    val value = pair.substring(1).toIntOrNull() ?: continue
+                    rankings[rankingType] = value
                 }
                 // New format
             } else {
                 // Old format
                 for (rankingEntry in entry) {
-                    if (entry.size != 1) continue
+                    if (rankingEntry.name.length != 1) continue
                     val rankingType = RankingType.fromIdForSerialization(rankingEntry.name[0])
                         ?: continue  // Silently drop unknown ranking types.
                     rankings[rankingType] = rankingEntry.asInt()
