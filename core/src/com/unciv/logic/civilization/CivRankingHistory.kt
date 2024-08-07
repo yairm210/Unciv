@@ -45,7 +45,7 @@ class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(), IsPartOfGameInf
         }
     }
 
-    private val nonDigit = Regex("\\D")
+    private val nonNumber = Regex("[^\\d-]") // Rankings can be negative, so we can't just \D :(
     override fun read(json: Json, jsonData: JsonValue) {
         for (entry in jsonData) {
             val turn = entry.name.toInt()
@@ -53,7 +53,7 @@ class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(), IsPartOfGameInf
 
             if (entry.isString){
                 // split into key-value pairs by adding a space before every non-digit, and splitting by spaces
-                val pairs = entry.asString().replace(nonDigit, " $0").split(" ")
+                val pairs = entry.asString().replace(nonNumber, " $0").split(" ")
                     .filter { it.isNotEmpty() } // remove empty entries
 
                 for (pair in pairs) {
