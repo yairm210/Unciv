@@ -1,15 +1,11 @@
 package com.unciv.logic
 
 object MultiFilter {
-    // Chars are for startsWith and endsWith performance
-    private const val andPrefixChar = '{'
-    private const val andPrefix = andPrefixChar.toString()
+    private const val andPrefix = "{"
     private const val andSeparator = "} {"
-    private const val andSuffixChar = '}'
-    private const val andSuffix = andSuffixChar.toString()
+    private const val andSuffix = "}"
     private const val notPrefix = "non-["
-    private const val notSuffixChar = ']'
-    private const val notSuffix = notSuffixChar.toString()
+    private const val notSuffix = "]"
 
     /**
      *  Implements `and` and `not` logic on top of a [filterFunction].
@@ -26,10 +22,10 @@ object MultiFilter {
         filterFunction: (String) -> Boolean,
         forUniqueValidityTests: Boolean = false
     ): Boolean {
-        if (isAndFilter(input))
-            return input.removeSurrounding(andPrefix, andSuffix).splitToSequence(andSeparator)
+        if (input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator))
+            return input.removeSurrounding(andPrefix, andSuffix).split(andSeparator)
                 .all { multiFilter(it, filterFunction, forUniqueValidityTests) }
-        if (isNotFilter(input)) {
+        if (input.hasSurrounding(notPrefix, notSuffix)) {
             //same as `return multiFilter() == forUniqueValidityTests`, but clearer
             val internalResult = multiFilter(input.removeSurrounding(notPrefix, notSuffix), filterFunction, forUniqueValidityTests)
             return if (forUniqueValidityTests) internalResult else !internalResult
@@ -37,20 +33,18 @@ object MultiFilter {
         return filterFunction(input)
     }
 
-    private fun isAndFilter(input: String) = input.startsWith(andPrefixChar)
-            && input.endsWith(andSuffixChar)
-            && input.contains(andSeparator)
-
-    private fun isNotFilter(input: String) = input.endsWith(notSuffixChar) && input.startsWith(notSuffix)
-
     fun getAllSingleFilters(input: String): Sequence<String> = when {
-        isAndFilter(input) ->
+        input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator) ->
+            // Resolve "AND" filters
             input.removeSurrounding(andPrefix, andSuffix)
                 .splitToSequence(andSeparator)
                 .flatMap { getAllSingleFilters(it) }
-        isNotFilter(input) ->
+        input.hasSurrounding(notPrefix, notSuffix) ->
             // Simply remove "non" syntax
             getAllSingleFilters(input.removeSurrounding(notPrefix, notSuffix))
         else -> sequenceOf(input)
     }
+
+    fun String.hasSurrounding(prefix: String, suffix: String) =
+        startsWith(prefix) && endsWith(suffix)
 }
