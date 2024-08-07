@@ -19,7 +19,7 @@ import com.unciv.logic.multiplayer.ServerFeatureSet
  * @see UncivGame.settings.multiplayer.server
  */
 @Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
-class OnlineMultiplayerServer(
+class MultiplayerServer(
     val fileStorageIdentifier: String? = null,
     private var authenticationHeader: Map<String, String>? = null
 ) {
@@ -34,7 +34,7 @@ class OnlineMultiplayerServer(
 
         return if (getServerUrl() == Constants.dropboxMultiplayerServer) DropBox
         else UncivServerFileStorage.apply {
-            serverUrl = this@OnlineMultiplayerServer.getServerUrl()
+            serverUrl = this@MultiplayerServer.getServerUrl()
             this.authHeader = authHeader
         }
     }

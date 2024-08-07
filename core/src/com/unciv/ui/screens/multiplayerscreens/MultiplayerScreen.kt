@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
-import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
@@ -27,7 +27,7 @@ import com.unciv.utils.launchOnGLThread
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class MultiplayerScreen : PickerScreen() {
-    private var selectedGame: OnlineMultiplayerGame? = null
+    private var selectedGame: MultiplayerGame? = null
 
     private val copyGameIdButton = createCopyGameIdButton()
     private val resignButton = createResignButton()
@@ -127,7 +127,7 @@ class MultiplayerScreen : PickerScreen() {
      * Helper function to decrease indentation
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun resign(onlineMultiplayerGame: OnlineMultiplayerGame) {
+    private fun resign(multiplayerGame: MultiplayerGame) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel(Constants.working).row()
@@ -135,7 +135,7 @@ class MultiplayerScreen : PickerScreen() {
 
         Concurrency.runOnNonDaemonThreadPool("Resign") {
             try {
-                val resignSuccess = game.onlineMultiplayer.resign(onlineMultiplayerGame)
+                val resignSuccess = game.onlineMultiplayer.resign(multiplayerGame)
 
                 launchOnGLThread {
                     if (resignSuccess) {
@@ -151,7 +151,7 @@ class MultiplayerScreen : PickerScreen() {
                 if (ex is MultiplayerAuthException) {
                     launchOnGLThread {
                         AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) resign(onlineMultiplayerGame)
+                            if (success) resign(multiplayerGame)
                         }.open(true)
                     }
                     return@runOnNonDaemonThreadPool

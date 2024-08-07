@@ -11,7 +11,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
@@ -67,7 +67,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
-    lateinit var onlineMultiplayer: OnlineMultiplayer
+    lateinit var onlineMultiplayer: Multiplayer
     lateinit var files: UncivFiles
 
     var isTutorialTaskCollapsed = false
@@ -120,7 +120,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         installAudioHooks()
 
-        onlineMultiplayer = OnlineMultiplayer()
+        onlineMultiplayer = Multiplayer()
 
         Concurrency.run {
             // Check if the server is available in case the feature set has changed

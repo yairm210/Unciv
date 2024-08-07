@@ -12,7 +12,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
@@ -115,7 +115,7 @@ class NewGameScreen(
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             if (!checkConnectionToMultiplayerServer()) {
                 val noInternetConnectionPopup = Popup(this)
-                val label = if (OnlineMultiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!" else "Couldn't connect to Dropbox!"
+                val label = if (Multiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!" else "Couldn't connect to Dropbox!"
                 noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
                 noInternetConnectionPopup.addCloseButton()
                 noInternetConnectionPopup.open()
@@ -279,7 +279,7 @@ class NewGameScreen(
     private fun checkConnectionToMultiplayerServer(): Boolean {
         return try {
             val multiplayerServer = UncivGame.Current.settings.multiplayer.server
-            val u =  URL(if (OnlineMultiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
+            val u =  URL(if (Multiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
             val con = u.openConnection()
             con.connectTimeout = 3000
             con.connect()

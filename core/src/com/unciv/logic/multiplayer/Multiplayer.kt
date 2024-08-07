@@ -10,7 +10,7 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
+import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Concurrency
@@ -38,9 +38,9 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
  *
  * See the file of [com.unciv.logic.multiplayer.HasMultiplayerGameName] for all available [EventBus] events.
  */
-class OnlineMultiplayer {
+class Multiplayer {
     /** Handles SERVER DATA only */
-    val multiplayerServer = OnlineMultiplayerServer()
+    val multiplayerServer = MultiplayerServer()
     /** Handles LOCAL FILES only */
     val multiplayerFiles = MultiplayerFiles()
 
@@ -49,7 +49,7 @@ class OnlineMultiplayer {
     private val lastAllGamesRefresh: AtomicReference<Instant?> = AtomicReference()
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
-    val games: Set<OnlineMultiplayerGame> get() = multiplayerFiles.savedGames.values.toSet()
+    val games: Set<MultiplayerGame> get() = multiplayerFiles.savedGames.values.toSet()
     val multiplayerGameUpdater: Job
 
     init {
@@ -79,7 +79,7 @@ class OnlineMultiplayer {
         }.launchIn(CoroutineScope(Dispatcher.DAEMON))
     }
 
-    private fun getCurrentGame(): OnlineMultiplayerGame? {
+    private fun getCurrentGame(): MultiplayerGame? {
         val gameInfo = UncivGame.Current.gameInfo
         return if (gameInfo != null && gameInfo.gameParameters.isOnlineMultiplayer) {
             multiplayerFiles.getGameByGameId(gameInfo.gameId)
@@ -93,7 +93,7 @@ class OnlineMultiplayer {
      *
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      */
-    fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<OnlineMultiplayerGame> = listOf()) {
+    fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<MultiplayerGame> = listOf()) {
         Concurrency.run("Update all multiplayer games") {
             val fileThrottleInterval = if (forceUpdate) Duration.ZERO else FILE_UPDATE_THROTTLE_PERIOD
             // An exception only happens here if the files can't be listed, should basically never happen
@@ -146,7 +146,7 @@ class OnlineMultiplayer {
      * @throws MultiplayerAuthException if the authentication failed
      * @return false if it's not the user's turn and thus resigning did not happen
      */
-    suspend fun resign(game: OnlineMultiplayerGame): Boolean {
+    suspend fun resign(game: MultiplayerGame): Boolean {
         val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
@@ -181,7 +181,7 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
      */
-    suspend fun loadGame(game: OnlineMultiplayerGame) {
+    suspend fun loadGame(game: MultiplayerGame) {
         val preview = game.preview ?: throw game.error!!
         loadGame(preview.gameId)
     }

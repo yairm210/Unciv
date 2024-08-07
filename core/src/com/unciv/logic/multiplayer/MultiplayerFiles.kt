@@ -12,7 +12,7 @@ import java.util.*
 /** Files that are stored locally */
 class MultiplayerFiles {
     internal val files = UncivGame.Current.files
-    internal val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
+    internal val savedGames: MutableMap<FileHandle, MultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
     internal fun updateSavesFromFiles() {
         val saves = files.getMultiplayerSaves()
@@ -31,8 +31,8 @@ class MultiplayerFiles {
     /**
      * Deletes the game from disk, does not delete it remotely.
      */
-    fun deleteGame(onlineMultiplayerGame: OnlineMultiplayerGame) {
-        deleteGame(onlineMultiplayerGame.fileHandle)
+    fun deleteGame(multiplayerGame: MultiplayerGame) {
+        deleteGame(multiplayerGame.fileHandle)
     }
 
     private fun deleteGame(fileHandle: FileHandle) {
@@ -56,15 +56,15 @@ class MultiplayerFiles {
 
     private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview? = null) {
         debug("Adding game %s", fileHandle.name())
-        val game = OnlineMultiplayerGame(fileHandle, preview, if (preview != null) Instant.now() else null)
+        val game = MultiplayerGame(fileHandle, preview, if (preview != null) Instant.now() else null)
         savedGames[fileHandle] = game
     }
 
-    fun getGameByName(name: String): OnlineMultiplayerGame? {
+    fun getGameByName(name: String): MultiplayerGame? {
         return savedGames.values.firstOrNull { it.name == name }
     }
 
-    fun getGameByGameId(gameId: String): OnlineMultiplayerGame? {
+    fun getGameByGameId(gameId: String): MultiplayerGame? {
         return savedGames.values.firstOrNull { it.preview?.gameId == gameId }
     }
 
@@ -72,14 +72,14 @@ class MultiplayerFiles {
     /**
      * Fires [MultiplayerGameNameChanged]
      */
-    fun changeGameName(game: OnlineMultiplayerGame, newName: String, onException: (Exception?)->Unit) {
+    fun changeGameName(game: MultiplayerGame, newName: String, onException: (Exception?)->Unit) {
         debug("Changing name of game %s to", game.name, newName)
         val oldPreview = game.preview ?: throw game.error!!
         val oldLastUpdate = game.getLastUpdate()
         val oldName = game.name
 
         val newFileHandle = files.saveGame(oldPreview, newName, onException)
-        val newGame = OnlineMultiplayerGame(newFileHandle, oldPreview, oldLastUpdate)
+        val newGame = MultiplayerGame(newFileHandle, oldPreview, oldLastUpdate)
         savedGames[newFileHandle] = newGame
 
         savedGames.remove(game.fileHandle)
