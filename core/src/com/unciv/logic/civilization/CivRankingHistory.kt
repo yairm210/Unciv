@@ -32,16 +32,16 @@ class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(), IsPartOfGameInf
         for ((turn, rankings) in this) {
 
             // Old format - deprecated 4.12.18
-//            json.writeObjectStart(turn.toString())
-//            for ((rankingType, score) in rankings) {
-//                json.writeValue(rankingType.idForSerialization.toString(), score)
-//            }
-//            json.writeObjectEnd()
+            json.writeObjectStart(turn.toString())
+            for ((rankingType, score) in rankings) {
+                json.writeValue(rankingType.idForSerialization.toString(), score)
+            }
+            json.writeObjectEnd()
 
             // New format (disabled)
-            val rankingsString = rankings.entries
-                .joinToString("") { it.key.idForSerialization.toString() + it.value }
-            json.writeValue(turn.toString(), rankingsString)
+//            val rankingsString = rankings.entries
+//                .joinToString("") { it.key.idForSerialization.toString() + it.value }
+//            json.writeValue(turn.toString(), rankingsString)
         }
     }
 
