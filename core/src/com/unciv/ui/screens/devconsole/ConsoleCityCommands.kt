@@ -36,7 +36,7 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
 
         "setname" to ConsoleAction("city setname <\"name\">") { console, params ->
             val city = console.getSelectedCity()
-            city.name = params[0].toString()
+            city.name = params[0].originalUnquoted()
             DevConsoleResponse.OK
         },
 
