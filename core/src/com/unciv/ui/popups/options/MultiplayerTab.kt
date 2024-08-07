@@ -106,12 +106,12 @@ private fun addMultiplayerServerOptions(
 
     val connectionToServerButton = "Check connection to server".toTextButton()
 
-    val textToShowForMultiplayerAddress = if (OnlineMultiplayer.usesCustomServer()) {
+    val textToShowForOnlineMultiplayerAddress = if (OnlineMultiplayer.usesCustomServer()) {
         settings.multiplayer.server
     } else {
         "https://"
     }
-    val multiplayerServerTextField = UncivTextField("Server address", textToShowForMultiplayerAddress)
+    val multiplayerServerTextField = UncivTextField("Server address", textToShowForOnlineMultiplayerAddress)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()

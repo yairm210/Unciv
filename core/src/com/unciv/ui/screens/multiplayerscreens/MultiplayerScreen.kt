@@ -127,7 +127,7 @@ class MultiplayerScreen : PickerScreen() {
      * Helper function to decrease indentation
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun resign(multiplayerGame: OnlineMultiplayerGame) {
+    private fun resign(onlineMultiplayerGame: OnlineMultiplayerGame) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel(Constants.working).row()
@@ -135,7 +135,7 @@ class MultiplayerScreen : PickerScreen() {
 
         Concurrency.runOnNonDaemonThreadPool("Resign") {
             try {
-                val resignSuccess = game.onlineMultiplayer.resign(multiplayerGame)
+                val resignSuccess = game.onlineMultiplayer.resign(onlineMultiplayerGame)
 
                 launchOnGLThread {
                     if (resignSuccess) {
@@ -151,7 +151,7 @@ class MultiplayerScreen : PickerScreen() {
                 if (ex is MultiplayerAuthException) {
                     launchOnGLThread {
                         AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) resign(multiplayerGame)
+                            if (success) resign(onlineMultiplayerGame)
                         }.open(true)
                     }
                     return@runOnNonDaemonThreadPool
@@ -174,7 +174,7 @@ class MultiplayerScreen : PickerScreen() {
                     "Delete save",
             ) {
                 try {
-                    game.onlineMultiplayer.deleteGame(selectedGame!!)
+                    game.onlineMultiplayer.multiplayerFiles.deleteGame(selectedGame!!)
                     onGameDeleted(selectedGame!!.name)
                 } catch (ex: Exception) {
                     Log.error("Could not delete game!", ex)
@@ -196,7 +196,7 @@ class MultiplayerScreen : PickerScreen() {
 
                 val saveNewNameFunction = {
                     val newName = textField.text.trim()
-                    game.onlineMultiplayer.changeGameName(selectedGame!!, newName) {
+                    game.onlineMultiplayer.multiplayerFiles.changeGameName(selectedGame!!, newName) {
                         if (it != null) reuseWith("Could not save game!", true)
                     }
                     gameList.update()
@@ -289,7 +289,7 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     fun selectGame(name: String) {
-        val multiplayerGame = game.onlineMultiplayer.getGameByName(name)
+        val multiplayerGame = game.onlineMultiplayer.multiplayerFiles.getGameByName(name)
         if (multiplayerGame == null) {
             // Should never happen
             unselectGame()

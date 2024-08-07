@@ -329,7 +329,7 @@ class WorldScreen(
         try {
             debug("loadLatestMultiplayerState current game: gameId: %s, turn: %s, curCiv: %s",
                 gameInfo.gameId, gameInfo.turns, gameInfo.currentPlayer)
-            val latestGame = game.onlineMultiplayer.downloadGame(gameInfo.gameId)
+            val latestGame = game.onlineMultiplayer.multiplayerServer.downloadGame(gameInfo.gameId)
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
             if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
@@ -697,7 +697,8 @@ class WorldScreen(
     private fun updateMultiplayerStatusButton() {
         if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
-            statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
+            statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this,
+                game.onlineMultiplayer.multiplayerFiles.getGameByGameId(gameInfo.gameId))
         } else {
             if (statusButtons.multiplayerStatusButton == null) return
             statusButtons.multiplayerStatusButton = null

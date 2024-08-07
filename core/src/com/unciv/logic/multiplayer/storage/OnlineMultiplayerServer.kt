@@ -16,7 +16,7 @@ import com.unciv.logic.multiplayer.ServerFeatureSet
  *
  * @param fileStorageIdentifier must be given if UncivGame.Current might not be initialized
  * @see FileStorage
- * @see UncivGame.Current.settings.multiplayerServer
+ * @see UncivGame.settings.multiplayer.server
  */
 @Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
 class OnlineMultiplayerServer(
@@ -140,6 +140,17 @@ class OnlineMultiplayerServer(
         val gameInfo = UncivFiles.gameInfoFromString(zippedGameInfo)
         gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.server
         return gameInfo
+    }
+
+
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerFileNotFoundException if the file can't be found
+     */
+    suspend fun downloadGame(gameId: String): GameInfo {
+        val latestGame = tryDownloadGame(gameId)
+        latestGame.isUpToDate = true
+        return latestGame
     }
 
     /**

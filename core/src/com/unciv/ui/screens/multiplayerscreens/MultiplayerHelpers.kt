@@ -35,16 +35,16 @@ object MultiplayerHelpers {
         }
     }
 
-    fun buildDescriptionText(multiplayerGame: OnlineMultiplayerGame): StringBuilder {
+    fun buildDescriptionText(onlineMultiplayerGame: OnlineMultiplayerGame): StringBuilder {
         val descriptionText = StringBuilder()
-        val ex = multiplayerGame.error
+        val ex = onlineMultiplayerGame.error
         if (ex != null) {
             val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Error while refreshing:")
             descriptionText.appendLine(message)
         }
-        val lastUpdate = multiplayerGame.getLastUpdate()
+        val lastUpdate = onlineMultiplayerGame.getLastUpdate()
         descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
-        val preview = multiplayerGame.preview
+        val preview = onlineMultiplayerGame.preview
         if (preview?.currentPlayer != null) {
             val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
             descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
