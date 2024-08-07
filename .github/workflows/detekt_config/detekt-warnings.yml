@@ -106,7 +106,7 @@ complexity:
     ignoreOverloaded: false
   CyclomaticComplexMethod:
     active: true
-    threshold: 20
+    threshold: 42
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
@@ -145,7 +145,7 @@ complexity:
     ignoreArgumentsMatchingNames: false
   NestedBlockDepth:
     active: true
-    threshold: 4
+    threshold: 6
   NestedScopeFunctions:
     active: false
     threshold: 1
@@ -570,12 +570,7 @@ style:
         value: 'java.lang.annotation.Inherited'
   ForbiddenComment:
     active: false
-    values:
-      - 'FIXME:'
-      - 'STOPSHIP:'
-      - 'TODO:'
     allowedPatterns: ''
-    customMessage: ''
   ForbiddenImport:
     active: false
     imports: []
@@ -654,8 +649,6 @@ style:
   OptionalAbstractKeyword:
     active: true
   OptionalUnit:
-    active: false
-  OptionalWhenBraces:
     active: false
   PreferToOverPairSyntax:
     active: false

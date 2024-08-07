@@ -49,7 +49,7 @@ class TileResource : RulesetStatsObject() {
     fun getImprovements(): Set<String> {
         if (improvementsInitialized) return allImprovements
         val ruleset = this.ruleset
-            ?: throw IllegalStateException("No ruleset on TileResource when initializing improvements")
+            ?: error("No ruleset on TileResource when initializing improvements")
         if (improvement != null) allImprovements += improvement!!
         allImprovements.addAll(improvedBy)
         for (improvement in ruleset.tileImprovements.values) {

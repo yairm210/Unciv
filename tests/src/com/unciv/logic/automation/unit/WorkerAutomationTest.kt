@@ -101,7 +101,7 @@ internal class WorkerAutomationTest {
             "Farm", currentTile.improvementInProgress)
         assertTrue(currentTile.turnsToImprovement > 0)
     }
-    
+
     @Test
     fun `should prioritise better tiles`() {
         // Add the needed tech to construct the improvements below
@@ -146,7 +146,7 @@ internal class WorkerAutomationTest {
         }
         city.reassignAllPopulation()
         val worker = testGame.addUnit("Worker", civInfo, centerTile)
-        for(i in 0..37) {
+        repeat(38) {
             worker.currentMovement = 2f
             for (unit in civInfo.units.getCivUnits()) {
                 // Disband any workers that may have been built in this time period
@@ -158,7 +158,7 @@ internal class WorkerAutomationTest {
             civInfo.addGold(-civInfo.gold)
             civInfo.policies.freePolicies = 0
             civInfo.addStat(Stat.Science, - 100000)
-            
+
             NextTurnAutomation.automateCivMoves(civInfo)
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
@@ -169,13 +169,13 @@ internal class WorkerAutomationTest {
                 city.population.addPopulation( 1 - city.population.population)
         }
 
-        var finishedCount = 0      
+        var finishedCount = 0
         var inProgressCount = 0
         for (tile in centerTile.getTilesInDistance(3)) {
             if (tile.improvement != null && !tile.isCityCenter()) finishedCount++
             if (tile.turnsToImprovement != 0) inProgressCount++
         }
-        
+
         val maxShouldBeInProgress = 1
         assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
             inProgressCount <= maxShouldBeInProgress)
@@ -207,7 +207,7 @@ internal class WorkerAutomationTest {
             city.reassignAllPopulation()
         }
         val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
-        for(i in 0..37) {
+        repeat(38) {
             worker.currentMovement = 2f
             for (unit in civInfo.units.getCivUnits()) {
                 // Disband any workers that may have been built in this time period
@@ -219,7 +219,7 @@ internal class WorkerAutomationTest {
             civInfo.addGold(-civInfo.gold)
             civInfo.policies.freePolicies = 0
             civInfo.addStat(Stat.Science, - 100000)
-            
+
             NextTurnAutomation.automateCivMoves(civInfo)
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
@@ -244,7 +244,7 @@ internal class WorkerAutomationTest {
         }
 
         // This could be wrong for a few reasons, here are a few hints:
-        // If workers prioritize tiles that have a polulation working on them and the working population 
+        // If workers prioritize tiles that have a polulation working on them and the working population
         // swiches each turn, the worker will try and build multiple improvements at once.
         val maxShouldBeInProgress = 1
         assertTrue("Worker improvements in progress was greater than $maxShouldBeInProgress, actual: $inProgressCount",
@@ -281,7 +281,7 @@ internal class WorkerAutomationTest {
             city.cityConstructions.addBuilding("Stock Exchange")
         }
         val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
-        for(i in 0..24) {
+        repeat(25) {
             worker.currentMovement = 2f
             for (unit in civInfo.units.getCivUnits()) {
                 // Disband any workers that may have been built in this time period

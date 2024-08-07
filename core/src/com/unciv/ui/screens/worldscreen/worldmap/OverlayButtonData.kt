@@ -24,14 +24,14 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 
 /** Interface for creating floating "action" buttons on tiles */
-interface OverlayButtonData{
+interface OverlayButtonData {
     fun createButton(worldMapHolder: WorldMapHolder): Actor
 }
 
-const val buttonSize = 60f
-const val smallerCircleSizes = 25f
+private const val buttonSize = 60f
+private const val smallerCircleSizes = 25f
 
-class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tile: Tile) :
+class MoveHereOverlayButtonData(private val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tile: Tile) :
     OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getMoveHereButton(worldMapHolder)
@@ -81,7 +81,7 @@ class SwapWithOverlayButtonData(val unit: MapUnit, val tile: Tile) : OverlayButt
         return getSwapWithButton(worldMapHolder)
     }
 
-    fun getSwapWithButton(worldMapHolder: WorldMapHolder): Group {
+    private fun getSwapWithButton(worldMapHolder: WorldMapHolder): Group {
         val swapWithButton = Group()
         swapWithButton.setSize(buttonSize, buttonSize)
         swapWithButton.addActor(ImageGetter.getCircle(size = buttonSize))

@@ -103,7 +103,7 @@ object ImageGetter {
                     debug("Loading %s = %s", extraAtlas, file.path())
                     tempAtlas = TextureAtlas(file)  // load if not
                     atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     debug("Could not load file $file")
                     continue
                 }

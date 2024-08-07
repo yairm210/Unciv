@@ -50,7 +50,7 @@ private class UncivServerRunner : CliktCommand() {
         help = "Enable Authentication"
     ).flag("-no-auth", default = false)
 
-     private val IdentifyOperators by option(
+     private val identifyOperators by option(
         "-i", "-Identify",
         envvar = "UncivServerIdentify",
         help = "Display each operation archive request IP to assist management personnel"
@@ -132,14 +132,14 @@ private class UncivServerRunner : CliktCommand() {
                 }
                 put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
-                    
-                    // If IdentifyOperators is enabled a Operator IP is displayed
-                    if (IdentifyOperators) {
+
+                    // If identifyOperators is enabled a Operator IP is displayed
+                    if (identifyOperators) {
                         log.info("Receiving file: ${fileName} --Operation sourced from ${call.request.local.remoteHost}")
                     }else{
                         log.info("Receiving file: ${fileName}")
                     }
-                     
+
                     val file = File(fileFolderName, fileName)
 
                     if (!validateGameAccess(file, call.request.headers["Authorization"])) {
@@ -156,19 +156,19 @@ private class UncivServerRunner : CliktCommand() {
                 }
                 get("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
-                    
-                    // If IdentifyOperators is enabled a Operator IP is displayed
-                    if (IdentifyOperators) {
+
+                    // If identifyOperators is enabled a Operator IP is displayed
+                    if (identifyOperators) {
                         log.info("File requested: ${fileName} --Operation sourced from ${call.request.local.remoteHost}")
                     }else{
                         log.info("File requested: $fileName")
                     }
-                     
+
                     val file = File(fileFolderName, fileName)
                     if (!file.exists()) {
-                        
-                        // If IdentifyOperators is enabled a Operator IP is displayed
-                        if (IdentifyOperators) {
+
+                        // If identifyOperators is enabled a Operator IP is displayed
+                        if (identifyOperators) {
                             log.info("File ${fileName} not found --Operation sourced from ${call.request.local.remoteHost}")
                         }else{
                             log.info("File $fileName not found")
