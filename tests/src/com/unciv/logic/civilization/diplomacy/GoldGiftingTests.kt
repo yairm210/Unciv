@@ -120,7 +120,7 @@ class GoldGiftingTests {
         tradeOffer.acceptTrade()
         bDiplomacy.nextTurn()
         val tradeOffer2 = TradeLogic(a,b)
-        tradeOffer2.currentTrade.theirOffers.add(TradeOffer("Gold", TradeOfferType.Gold, 900))
+        tradeOffer2.currentTrade.theirOffers.add(TradeOffer("Gold", TradeOfferType.Gold, 900, testGame.gameInfo.speed))
         assertTrue(TradeEvaluation().getTradeAcceptability(tradeOffer.currentTrade.reverse(), b,a,false) > 0)
         tradeOffer2.acceptTrade()
         assertTrue(bDiplomacy.getGoldGifts() >= 0) // Must not be negative
