@@ -277,8 +277,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Respects map edges and world wrap. */
     fun getIfTileExistsOrNull(x: Int, y: Int): Tile? {
-        if (contains(x, y))
-            return get(x, y)
+        val tile = getOrNull(x, y)
+        if (tile != null) return tile
 
         if (!mapParameters.worldWrap)
             return null
@@ -287,14 +287,15 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         if (mapParameters.shape == MapShape.rectangular)
             radius = mapParameters.mapSize.width / 2
 
-        //tile is outside of the map
-        if (contains(x + radius, y - radius)) { //tile is on right side
-            //get tile wrapped around from right to left
-            return get(x + radius, y - radius)
-        } else if (contains(x - radius, y + radius)) { //tile is on left side
-            //get tile wrapped around from left to right
-            return get(x - radius, y + radius)
-        }
+        // Maybe tile is "outside of the map" in world wrap.
+
+        // A. Get tile wrapped around from right to left
+        val rightSideTile = getOrNull(x + radius, y - radius)
+        if (rightSideTile != null) return rightSideTile
+
+        // B. Get tile wrapped around from left to right
+        val leftSideTile = getOrNull(x - radius, y + radius)
+        if (leftSideTile != null) return leftSideTile
 
         return null
     }

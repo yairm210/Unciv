@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.files.IMediaFinder
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.metadata.GameSettings
@@ -106,12 +106,12 @@ private fun addMultiplayerServerOptions(
 
     val connectionToServerButton = "Check connection to server".toTextButton()
 
-    val textToShowForMultiplayerAddress = if (OnlineMultiplayer.usesCustomServer()) {
+    val textToShowForOnlineMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
         settings.multiplayer.server
     } else {
         "https://"
     }
-    val multiplayerServerTextField = UncivTextField("Server address", textToShowForMultiplayerAddress)
+    val multiplayerServerTextField = UncivTextField("Server address", textToShowForOnlineMultiplayerAddress)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()
@@ -124,7 +124,7 @@ private fun addMultiplayerServerOptions(
         // we can't trim on 'fixTextFieldUrlOnType' for reasons
         settings.multiplayer.server = multiplayerServerTextField.text.trimEnd('/')
 
-        val isCustomServer = OnlineMultiplayer.usesCustomServer()
+        val isCustomServer = Multiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
 
         for (refreshSelect in toUpdate) refreshSelect.update(isCustomServer)
@@ -326,7 +326,7 @@ private class RefreshSelect(
 private fun getInitialOptions(extraCustomServerOptions: List<SelectItem<Duration>>, dropboxOptions: List<SelectItem<Duration>>): Iterable<SelectItem<Duration>> {
     val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
     val dropboxItems = dropboxOptions.toGdxArray()
-    return if (OnlineMultiplayer.usesCustomServer()) customServerItems else dropboxItems
+    return if (Multiplayer.usesCustomServer()) customServerItems else dropboxItems
 }
 
 private fun fixTextFieldUrlOnType(textField: TextField) {
