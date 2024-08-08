@@ -46,7 +46,6 @@ class MultiplayerScreen : PickerScreen() {
     private val friendsListButton = createFriendsListButton()
     private val refreshButton = createRefreshButton()
 
-    private val rightSideTable = createRightSideTable()
     val gameList = GameList(::selectGame)
 
     init {
@@ -90,28 +89,23 @@ class MultiplayerScreen : PickerScreen() {
         }
     }
 
-    private fun createRightSideTable(): Table {
-        val table = Table()
-        table.defaults().uniformX()
-        table.defaults().fillX()
-        table.defaults().pad(10f)
+    private fun getGeneralActionsTable(): Table {
+        val generalActions = Table().apply { defaults().pad(10f) }
+        generalActions.add(copyUserIdButton).row()
+        generalActions.add(addGameButton).row()
+        generalActions.add(friendsListButton).row()
+        generalActions.add(refreshButton).row()
+        return generalActions
+    }
 
+    private fun getGameSpecificActionsTable(): Table {
         val gameSpecificActions = Table().apply { defaults().pad(10f) }
         gameSpecificActions.add(copyGameIdButton).row()
         gameSpecificActions.add(renameButton).row()
         gameSpecificActions.add(resignButton).row()
         gameSpecificActions.add(forceResignButton).row()
         gameSpecificActions.add(deleteButton).row()
-        table.add(gameSpecificActions)
-
-        val generalActions = Table().apply { defaults().pad(10f) }
-        generalActions.add(copyUserIdButton).row()
-        generalActions.add(addGameButton).row()
-        generalActions.add(friendsListButton).row()
-        generalActions.add(refreshButton).row()
-        table.add(generalActions)
-
-        return table
+        return gameSpecificActions
     }
 
     private fun createRefreshButton(): TextButton {
@@ -283,7 +277,8 @@ class MultiplayerScreen : PickerScreen() {
     private fun createMainContent(): Table {
         val mainTable = Table()
         mainTable.add(ScrollPane(gameList).apply { setScrollingDisabled(true, false) }).center()
-        mainTable.add(rightSideTable)
+        mainTable.add(getGameSpecificActionsTable())
+        mainTable.add(getGeneralActionsTable())
         return mainTable
     }
 
