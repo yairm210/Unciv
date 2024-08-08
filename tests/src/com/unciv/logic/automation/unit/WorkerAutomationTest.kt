@@ -50,7 +50,8 @@ internal class WorkerAutomationTest {
 
         // Assert
         assertEquals("Worker should have replaced already existing improvement 'Farm' with 'Mine' to enable 'Iron' resource",
-            "Mine", currentTile.improvementInProgress)
+            "Mine", currentTile.improvementInProgress
+        )
         assertTrue(currentTile.turnsToImprovement > 0)
     }
 
@@ -74,7 +75,8 @@ internal class WorkerAutomationTest {
         workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
 
         assertEquals("Worker should begun removing the forest to clear a luxury resource but didn't",
-            "Remove Forest", currentTile.improvementInProgress)
+            "Remove Forest", currentTile.improvementInProgress
+        )
         assertTrue(currentTile.turnsToImprovement > 0)
     }
 
@@ -98,7 +100,8 @@ internal class WorkerAutomationTest {
 
         // Assert
         assertEquals("Worker should be buliding a farm under 'Iron' resource because it can't see it and has nothing else to do",
-            "Farm", currentTile.improvementInProgress)
+            "Farm", currentTile.improvementInProgress
+        )
         assertTrue(currentTile.turnsToImprovement > 0)
     }
     
@@ -124,7 +127,8 @@ internal class WorkerAutomationTest {
         workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
 
         assertEquals("Worker should be buliding a mine on the Gold Ore luxury resource",
-            "Mine", currentTile.improvementInProgress)
+            "Mine", currentTile.improvementInProgress
+        )
         assertTrue(currentTile.turnsToImprovement > 0)
     }
 
@@ -340,7 +344,8 @@ internal class WorkerAutomationTest {
 
         // Assert
         assertEquals("Worker should try to repair the mine",
-            "Repair", currentTile.improvementInProgress)
+            "Repair", currentTile.improvementInProgress
+        )
         assertTrue(currentTile.turnsToImprovement > 0)
     }
 
