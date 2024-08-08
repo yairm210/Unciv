@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.disable
@@ -64,14 +65,29 @@ class MultiplayerScreen : PickerScreen() {
         pickerPane.topTable.background = skinStrings.getUiBackground("MultiplayerScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
     }
 
-    fun onGameDeleted(gameName:String){
+    private fun onGameDeleted(gameName:String){
         if (selectedGame?.name == gameName) unselectGame()
         gameList.update()
     }
 
     private fun setupRightSideButton() {
         rightSideButton.setText("Join game".tr())
-        rightSideButton.onClick { MultiplayerHelpers.loadMultiplayerGame(this, selectedGame!!) }
+        rightSideButton.onClick {
+            val missingMods = selectedGame!!.preview!!.gameParameters.getModsAndBaseRuleset()
+                .filter { !RulesetCache.containsKey(it) }
+            if (missingMods.isEmpty()) return@onClick MultiplayerHelpers.loadMultiplayerGame(this, selectedGame!!)
+
+            // Download missing mods
+            Concurrency.runOnNonDaemonThreadPool(LoadGameScreen.downloadMissingMods) {
+                LoadGameScreen.loadMissingMods(missingMods, onModDownloaded = {
+                    Concurrency.runOnGLThread { ToastPopup("[$it] Downloaded!", this@MultiplayerScreen) }
+                },
+                onCompleted = {
+                    RulesetCache.loadRulesets()
+                    Concurrency.runOnGLThread { MultiplayerHelpers.loadMultiplayerGame(this@MultiplayerScreen, selectedGame!!) }
+                })
+            }
+        }
     }
 
     private fun createRightSideTable(): Table {
@@ -98,13 +114,13 @@ class MultiplayerScreen : PickerScreen() {
         return table
     }
 
-    fun createRefreshButton(): TextButton {
+    private fun createRefreshButton(): TextButton {
         val btn = "Refresh list".toTextButton()
         btn.onClick { game.onlineMultiplayer.requestUpdate() }
         return btn
     }
 
-    fun createAddGameButton(): TextButton {
+    private fun createAddGameButton(): TextButton {
         val btn = "Add multiplayer game".toTextButton()
         btn.onClick {
             game.pushScreen(AddMultiplayerGameScreen(this))
@@ -112,7 +128,7 @@ class MultiplayerScreen : PickerScreen() {
         return btn
     }
 
-    fun createResignButton(): TextButton {
+    private fun createResignButton(): TextButton {
         val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
         val resignButton = "Resign".toTextButton(negativeButtonStyle).apply { disable() }
         resignButton.onClick {
@@ -128,7 +144,7 @@ class MultiplayerScreen : PickerScreen() {
         return resignButton
     }
 
-    fun createForceResignButton(): TextButton {
+    private fun createForceResignButton(): TextButton {
         val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
         val resignButton = "Force current player to resign".toTextButton(negativeButtonStyle).apply { isVisible = false }
         resignButton.onClick {
@@ -184,7 +200,7 @@ class MultiplayerScreen : PickerScreen() {
         }
     }
 
-    fun createDeleteButton(): TextButton {
+    private fun createDeleteButton(): TextButton {
         val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
         val deleteButton = "Delete save".toTextButton(negativeButtonStyle).apply { disable() }
         deleteButton.onClick {
@@ -206,7 +222,7 @@ class MultiplayerScreen : PickerScreen() {
         return deleteButton
     }
 
-    fun createRenameButton(): TextButton {
+    private fun createRenameButton(): TextButton {
         val btn = "Rename".toTextButton().apply { disable() }
         btn.onClick {
             Popup(this).apply {
@@ -235,7 +251,7 @@ class MultiplayerScreen : PickerScreen() {
         return btn
     }
 
-    fun createCopyGameIdButton(): TextButton {
+    private fun createCopyGameIdButton(): TextButton {
         val btn = "Copy game ID".toTextButton().apply { disable() }
         btn.onClick {
             val gameInfo = selectedGame?.preview
@@ -247,7 +263,7 @@ class MultiplayerScreen : PickerScreen() {
         return btn
     }
 
-    fun createFriendsListButton(): TextButton {
+    private fun createFriendsListButton(): TextButton {
         val btn = "Friends list".toTextButton()
         btn.onClick {
             game.pushScreen(ViewFriendsListScreen())
@@ -306,7 +322,7 @@ class MultiplayerScreen : PickerScreen() {
         descriptionLabel.setText("")
     }
 
-    fun selectGame(name: String) {
+    private fun selectGame(name: String) {
         val multiplayerGame = game.onlineMultiplayer.multiplayerFiles.getGameByName(name)
         if (multiplayerGame == null) {
             // Should never happen
