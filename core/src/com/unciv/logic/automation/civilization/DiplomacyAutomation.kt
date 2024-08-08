@@ -125,8 +125,8 @@ object DiplomacyAutomation {
             if ((1..10).random() < 7) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement))
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
 
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             } else {
@@ -168,8 +168,8 @@ object DiplomacyAutomation {
             if ((1..10).random() <= 5 * civInfo.getPersonality().modifierFocus(PersonalityValue.Science, .3f)) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv)
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost, civInfo.gameInfo.speed))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost, civInfo.gameInfo.speed))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
@@ -192,8 +192,8 @@ object DiplomacyAutomation {
             if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty))
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
 
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             } else {
@@ -293,17 +293,19 @@ object DiplomacyAutomation {
     internal fun offerPeaceTreaty(civInfo: Civilization) {
         if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
 
-        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
+        val enemiesCiv = civInfo.diplomacy.asSequence()
+            .filter { it.value.diplomaticStatus == DiplomaticStatus.War }
             .map { it.value.otherCiv() }
             .filterNot {
                 it == civInfo || it.isBarbarian || it.cities.isEmpty()
-                    || it.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.DeclaredWar)
-                    || civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclaredWar)
+                        || it.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.DeclaredWar)
+                        || civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclaredWar)
             }.filter { !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedPeace) }
             // Don't allow AIs to offer peace to city states allied with their enemies
             .filterNot { it.isCityState && it.getAllyCiv() != null && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv()!!)) }
             // ignore civs that we have already offered peace this turn as a counteroffer to another civ's peace offer
             .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
+            .toList()
 
         for (enemy in enemiesCiv) {
             if (hasAtLeastMotivationToAttack(civInfo, enemy, 10f) >= 10) {
@@ -319,8 +321,8 @@ object DiplomacyAutomation {
             // pay for peace
             val tradeLogic = TradeLogic(civInfo, enemy)
 
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
 
             if (enemy.isMajorCiv()) {
                 var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
@@ -330,13 +332,13 @@ object DiplomacyAutomation {
                         moneyWeNeedToPay = civInfo.gold  // As much as possible
                     }
                     tradeLogic.currentTrade.ourOffers.add(
-                        TradeOffer("Gold".tr(), TradeOfferType.Gold, moneyWeNeedToPay)
+                        TradeOffer("Gold".tr(), TradeOfferType.Gold, moneyWeNeedToPay, civInfo.gameInfo.speed)
                     )
                 } else if (moneyWeNeedToPay < -100) {
                     val moneyTheyNeedToPay = abs(moneyWeNeedToPay).coerceAtMost(enemy.gold)
                     if (moneyTheyNeedToPay > 0) {
                         tradeLogic.currentTrade.theirOffers.add(
-                            TradeOffer("Gold".tr(), TradeOfferType.Gold, moneyTheyNeedToPay)
+                            TradeOffer("Gold".tr(), TradeOfferType.Gold, moneyTheyNeedToPay, civInfo.gameInfo.speed)
                         )
                     }
                 }
@@ -363,7 +365,7 @@ object DiplomacyAutomation {
 
             val tradeLogic = TradeLogic(civInfo, civToAsk)
             // TODO: add gold offer here
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(enemyCiv.civName, TradeOfferType.WarDeclaration))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(enemyCiv.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
             civToAsk.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
     }
