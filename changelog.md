@@ -1,3 +1,51 @@
+## 4.12.18
+
+Added support for new historyranking serialization - saved ~10% of save file size 
+
+Use custom Vector2 serialization - reduces total file size by 4% 
+
+lint
+
+Fix tests please work
+
+fix tests
+
+Fix tests
+
+Fix tests
+
+Fix tests
+
+Add descriptor (you, friend name, or unknown) to current turn for mp games
+
+Auto-download missing mods when joining multiplayer game
+
+Allow Spectator to force-resign any human in multiplayer, and allow anyone to do so if player is inactive for 48h
+
+Send speed for all trade offers, instead of using static - allows for 'next turn' without setting UncivGame.current
+
+Multiplayer: Disable resign button on games where it's not your turn
+
+doc: Free buildings cannot be self-removing
+
+Fixed city console rename to set exact text (not quoted/lowercased)
+
+chore: Renamed OnlineMultiplayer -> Multiplayer. That's the default MP, local MP is called 'hotseat'.
+
+Extracted File functions from OnlineMultiplayer to separate class, for separation of concerns between *local files* and *online data*
+
+minor perf: Map getTile does one lookup instead of two
+
+Removed empty objects from json serialization with equality instead of post-hoc string replace - kudos @SomeTroglodyte
+
+Conditional that tests if a mod is enabled - by @SomeTroglodyte
+
+Remove another 15% of unnecessary save file size
+
+Remove default values that were serialized per tile - reduced 12.5% of file size!
+
+Minor changes
+
 ## 4.12.17
 
 Modding:
