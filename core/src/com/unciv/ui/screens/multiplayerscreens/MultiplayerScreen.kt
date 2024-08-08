@@ -256,16 +256,12 @@ class MultiplayerScreen : PickerScreen() {
         val helpButton = "Help".toTextButton()
         helpButton.onClick {
             val helpPopup = Popup(this)
-            helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.")
-                .row()
-            helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.")
-                .row()
+            helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
+            helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
             helpPopup.row()
 
-            helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.")
-                .row()
-            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add multiplayer game' button")
-                .row()
+            helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.").row()
+            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add multiplayer game' button").row()
             helpPopup.row()
 
             helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn").row()
@@ -298,12 +294,17 @@ class MultiplayerScreen : PickerScreen() {
 
         selectedGame = multiplayerGame
 
-        for (button in gameSpecificButtons)
-            button.enable()
+        for (button in gameSpecificButtons) button.enable()
         if (multiplayerGame.preview != null) {
             copyGameIdButton.enable()
         } else {
             copyGameIdButton.disable()
+        }
+
+        if (multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.userId) {
+            resignButton.enable()
+        } else {
+            resignButton.disable()
         }
 
         rightSideButton.enable()
