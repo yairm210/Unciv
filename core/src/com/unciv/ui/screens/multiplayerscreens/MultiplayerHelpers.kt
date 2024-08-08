@@ -47,7 +47,17 @@ object MultiplayerHelpers {
         val preview = multiplayerGame.preview
         if (preview?.currentPlayer != null) {
             val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
-            descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+            val currentPlayer = preview.getCurrentPlayerCiv()
+            val playerDescriptor = if (currentPlayer.playerId == UncivGame.Current.settings.multiplayer.userId) {
+                "You"
+            } else {
+                val friend = UncivGame.Current.settings.multiplayer.friendList
+                    .firstOrNull{ it.playerID == currentPlayer.playerId }
+                friend?.name ?: "Unknown"
+            }
+            val playerText = "{${preview.currentPlayer}}{ }({$playerDescriptor})"
+
+            descriptionText.appendLine("Current Turn: [$playerText] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
         }
         return descriptionText
     }
