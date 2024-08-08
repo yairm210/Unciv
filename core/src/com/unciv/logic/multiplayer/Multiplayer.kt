@@ -146,17 +146,16 @@ class Multiplayer {
      * @throws MultiplayerAuthException if the authentication failed
      * @return false if it's not the user's turn and thus resigning did not happen
      */
-    suspend fun resign(game: MultiplayerGame): Boolean {
+    suspend fun resignCurrentPlayer(game: MultiplayerGame): Boolean {
         val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
+        if (gameInfo.currentTurnStartTime != preview.currentTurnStartTime)
+            return false // Game was updated since we tried
+
         val playerCiv = gameInfo.getCurrentPlayerCivilization()
 
-        if (!gameInfo.isUsersTurn()) {
-            return false
-        }
-
-        //Set own civ info to AI
+        //Set civ info to AI
         playerCiv.playerType = PlayerType.AI
         playerCiv.playerId = ""
 

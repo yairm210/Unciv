@@ -10,6 +10,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
@@ -24,6 +25,8 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import java.time.Duration
+import java.time.Instant
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class MultiplayerScreen : PickerScreen() {
@@ -31,8 +34,10 @@ class MultiplayerScreen : PickerScreen() {
 
     private val copyGameIdButton = createCopyGameIdButton()
     private val resignButton = createResignButton()
+    private val forceResignButton = createForceResignButton()
     private val deleteButton = createDeleteButton()
     private val renameButton = createRenameButton()
+
     private val gameSpecificButtons = listOf(copyGameIdButton, resignButton, deleteButton, renameButton)
 
     private val addGameButton = createAddGameButton()
@@ -51,7 +56,6 @@ class MultiplayerScreen : PickerScreen() {
         topTable.add(createMainContent()).row()
 
         setupHelpButton()
-
         setupRightSideButton()
 
         game.onlineMultiplayer.requestUpdate()
@@ -80,6 +84,7 @@ class MultiplayerScreen : PickerScreen() {
         gameSpecificActions.add(copyGameIdButton).row()
         gameSpecificActions.add(renameButton).row()
         gameSpecificActions.add(resignButton).row()
+        gameSpecificActions.add(forceResignButton).row()
         gameSpecificActions.add(deleteButton).row()
         table.add(gameSpecificActions)
 
@@ -116,7 +121,23 @@ class MultiplayerScreen : PickerScreen() {
                     "Are you sure you want to resign?",
                     "Resign",
             ) {
-                resign(selectedGame!!)
+                resignCurrentPlayer(selectedGame!!)
+            }
+            askPopup.open()
+        }
+        return resignButton
+    }
+
+    fun createForceResignButton(): TextButton {
+        val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
+        val resignButton = "Force current player to resign".toTextButton(negativeButtonStyle).apply { isVisible = false }
+        resignButton.onClick {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to force the current player to resign?",
+                "Yes",
+            ) {
+                resignCurrentPlayer(selectedGame!!)
             }
             askPopup.open()
         }
@@ -124,10 +145,9 @@ class MultiplayerScreen : PickerScreen() {
     }
 
     /**
-     * Helper function to decrease indentation
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun resign(multiplayerGame: MultiplayerGame) {
+    private fun resignCurrentPlayer(multiplayerGame: MultiplayerGame) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel(Constants.working).row()
@@ -135,7 +155,7 @@ class MultiplayerScreen : PickerScreen() {
 
         Concurrency.runOnNonDaemonThreadPool("Resign") {
             try {
-                val resignSuccess = game.onlineMultiplayer.resign(multiplayerGame)
+                val resignSuccess = game.onlineMultiplayer.resignCurrentPlayer(multiplayerGame)
 
                 launchOnGLThread {
                     if (resignSuccess) {
@@ -151,7 +171,7 @@ class MultiplayerScreen : PickerScreen() {
                 if (ex is MultiplayerAuthException) {
                     launchOnGLThread {
                         AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) resign(multiplayerGame)
+                            if (success) resignCurrentPlayer(multiplayerGame)
                         }.open(true)
                     }
                     return@runOnNonDaemonThreadPool
@@ -281,6 +301,8 @@ class MultiplayerScreen : PickerScreen() {
         rightSideButton.disable()
         for (button in gameSpecificButtons)
             button.disable()
+        forceResignButton.isVisible = false
+
         descriptionLabel.setText("")
     }
 
@@ -301,10 +323,15 @@ class MultiplayerScreen : PickerScreen() {
             copyGameIdButton.disable()
         }
 
-        if (multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.userId) {
-            resignButton.enable()
+        resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.userId
+
+        if (resignButton.isEnabled || multiplayerGame.preview == null){
+            forceResignButton.isVisible = false
         } else {
-            resignButton.disable()
+            val durationInactive = Duration.between(Instant.ofEpochMilli(multiplayerGame.preview!!.currentTurnStartTime), Instant.now())
+            forceResignButton.isVisible =
+                multiplayerGame.preview?.getPlayerCiv(game.settings.multiplayer.userId)?.civName == Constants.spectator
+                    || durationInactive > Duration.ofDays(2)
         }
 
         rightSideButton.enable()
