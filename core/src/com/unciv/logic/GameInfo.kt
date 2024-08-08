@@ -786,6 +786,8 @@ class GameInfoPreview() {
     }
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
+    fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
 }
 
 /** Class to use when parsing jsons if you only want the serialization [version]. */

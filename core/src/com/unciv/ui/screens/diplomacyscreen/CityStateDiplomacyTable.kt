@@ -32,7 +32,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
-import kotlin.reflect.typeOf
 
 class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
@@ -250,16 +249,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             ) {
                 val tradeLogic = TradeLogic(viewingCiv, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(
-                    TradeOffer(
-                        Constants.peaceTreaty,
-                        TradeOfferType.Treaty
-                    )
+                    TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = viewingCiv.gameInfo.speed)
                 )
                 tradeLogic.currentTrade.theirOffers.add(
-                    TradeOffer(
-                        Constants.peaceTreaty,
-                        TradeOfferType.Treaty
-                    )
+                    TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = viewingCiv.gameInfo.speed)
                 )
                 tradeLogic.acceptTrade()
                 diplomacyScreen.updateLeftSideTable(otherCiv)
