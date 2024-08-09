@@ -24,7 +24,7 @@ class StatusButtons(
                 addActorAt(0, button)
             }
         }
-    
+
 
     init {
         space(10f)
