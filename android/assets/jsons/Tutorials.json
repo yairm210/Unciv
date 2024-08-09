@@ -11,12 +11,20 @@
   // Civilopedia only, because players said this was too wall-of-text
   {
     "name": "New Game",
-    "steps": [
-      "Your first mission is to found your capital city.\nThis is actually an important task because your capital city will probably be your most prosperous.\nMany game bonuses apply only to your capital city and it will probably be the center of your empire.",
-      "How do you know a spot is appropriate?\nThat’s not an easy question to answer, but looking for and building next to luxury resources is a good rule of thumb.\nLuxury resources are tiles that have things like gems, cotton, or silk (indicated by a smiley next to the resource icon)\nThese resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as iron. Cities cannot be built within 3 tiles of existing cities, which is another thing to watch out for!",
-      "However, cities don’t have a set area that they can work - more on that later!\nThis means you don’t have to settle cities right next to resources.\nLet’s say, for example, that you want access to some iron – but the resource is right next to a desert.\nYou don’t have to settle your city next to the desert. You can settle a few tiles away in more prosperous lands.\nYour city will grow and eventually gain access to the resource.\nYou only need to settle right next to resources if you need them immediately – \n   which might be the case now and then, but you’ll usually have the luxury of time."    ,
-      "The first thing coming out of your city should be either a Scout or Warrior.\nI generally prefer the Warrior because it can be used for defense and because it can be upgraded\n  to the Swordsman unit later in the game for a relatively modest sum of gold.\nScouts can be effective, however, if you seem to be located in an area of dense forest and hills.\nScouts don’t suffer a movement penalty in this terrain.\nIf you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.\nFast expanding is absolutely critical in most games of this type."
-    ]
+    "civilopediaText": [
+    { "text": "Your first mission is to found your capital city.\n   This is actually an important task because your capital city will probably be your most prosperous.\n   Many game bonuses apply only to your capital city and it will probably be the center of your empire." },
+    { "text": "How do you know a spot is appropriate?\n   That’s not an easy question to answer, but looking for and building next to Luxury resources is a good rule of thumb.\n   Luxury resources are tiles that have things like Gems, Cotton, or Silk (discerned by the icon with yellow background).\n 
+  These resources make your civilization ⌣happy.\n   You should also keep an eye out for resources needed to build units, such as Iron." },
+    { "text": "Cities cannot be built within 3 tiles of existing City Centers, which is another thing to watch out for!" },
+    {},
+    { "text": "However, cities don’t have a set area that they can work - more on that later!\n   This means you don’t have to settle cities right next to resources." },
+    { "text": "Let’s say, for example, that you want access to some Iron – but the resource is right next to a Desert.\n   You don’t have to settle your city next to the Desert. You can settle a few tiles away in more prosperous lands.\n   Your city will grow and eventually gain access to the resource.\n   You only need to settle right next to resources if you need them immediately – \n   which might be the case now and then, but you’ll usually have the luxury of time." },
+    {},
+    { "text": "The first thing coming out of your city should be either a Scout or Warrior.\n   I generally prefer the Warrior because it is good for defense, and it can be upgraded to the Swordsman unit later in the game for a relatively modest sum of ¤Gold." },
+    { "text": "Scouts can be effective, however, if you seem to be located in an area of dense forest and hills.\n   Scouts don’t suffer a movement penalty in this terrain." },
+    {},
+    { "text": "If you’re a veteran of the 4x strategy genre your first Warrior or Scout could be followed by a Settler.\n   Fast expanding is absolutely critical in most games of this type." },
+     ],
   },
   {
     "name": "Slow Start",
