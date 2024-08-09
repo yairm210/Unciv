@@ -196,7 +196,7 @@
 		"rangedStrength": 10,
 		"cost": 56,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Water] units>"],
+		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Water] units> <Weight for AI force calculation = [25]%>"],
 		"upgradesTo": "Galleass",
 		"obsoleteTech": "Astronomy",
 		"attackSound": "arrow"
@@ -283,7 +283,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
+		"uniques": ["[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -297,7 +297,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
+		"uniques": ["[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -311,7 +311,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
+		"uniques": ["[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>"],
 		"promotions":["[Persian Immortal] ability"],
 		"attackSound": "metalhit"
 	},
@@ -326,7 +326,8 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["[+300]% Strength <vs cities> <when attacking>", "No defensive terrain bonus", "[-33]% Strength <when defending>",
+		"uniques": ["[+300]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>", "No defensive terrain bonus",
+            "[-33]% Strength <when defending> <Weight for AI force calculation = [50]%>",
 		"[-1] Sight", "Can only attack [City] units"],
 		"promotions":  ["Cover I"],
 		"attackSound": "throw"
@@ -357,7 +358,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
+		"uniques": ["[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "metalhit"
 	},
 
@@ -372,7 +373,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>" ],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>" ],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -389,7 +390,7 @@
 		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals I"],
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking>"],
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -405,7 +406,7 @@
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals II"],
-		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking>",
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>",
 			"[-10]% Strength for enemy [Military] units in adjacent [All] tiles"],
 		"hurryCostModifier": 20,
 		"attackSound": "elephant"
@@ -422,7 +423,7 @@
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking", "[-25]% Strength <vs cities> <when attacking>"],
+		"uniques": ["Can move after attacking", "[-25]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -436,7 +437,7 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>", "No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>", "No defensive terrain bonus",
 			"Must set up to ranged attack", "[-1] Sight", "Never appears as a Barbarian unit"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
@@ -453,7 +454,7 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>", "No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>", "No defensive terrain bonus",
 			"Must set up to ranged attack", "[-1] Sight"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
@@ -539,7 +540,7 @@
 		"strength": 16,
 		"cost": 90,
 		"requiredTech": "Civil Service",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
+		"uniques": ["[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>"],
 		"upgradesTo": "Lancer",
 		"obsoleteTech": "Metallurgy",
 		"attackSound": "metalhit"
@@ -553,7 +554,7 @@
 		"strength": 16,
 		"cost": 45,
 		"requiredTech": "Civil Service",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>", "Can move immediately once bought" ],
+		"uniques": ["[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>", "Can move immediately once bought" ],
 		"upgradesTo": "Lancer",
 		"obsoleteTech": "Metallurgy",
 		"attackSound": "metalhit"
@@ -582,7 +583,8 @@
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus",
+            "[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -631,7 +633,8 @@
 		"requiredTech": "Chivalry",
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[+50]% Strength <vs [Mounted] units>","[-33]% Strength <vs cities> <when attacking>"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>",
+            "[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>"],
 		"attackSound": "elephant"
 	},
 	{
@@ -721,7 +724,8 @@
 		"requiredTech": "Physics",
 		"obsoleteTech": "Chemistry",
 		"upgradesTo": "Cannon",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus","Must set up to ranged attack","[-1] Sight","Never appears as a Barbarian unit"],
+		"uniques": ["[+200]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>",
+            "No defensive terrain bonus","Must set up to ranged attack","[-1] Sight","Never appears as a Barbarian unit"],
 		"attackSound": "throw"
 	},
 	{
@@ -879,7 +883,7 @@
 		"requiredTech": "Gunpowder",
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
+		"uniques": ["[+50]% Strength <vs [Mounted] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "shot"
 	},
 	{
@@ -945,7 +949,8 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","Never appears as a Barbarian unit"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus",
+            "[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>","Never appears as a Barbarian unit"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -961,7 +966,7 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>",
 			"[+1] Sight"],
 		"promotions": ["[Sipahi] ability","Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
@@ -978,7 +983,7 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>"],
 		"promotions": ["[Hakkapeliitta] ability","Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -994,7 +999,8 @@
 		"requiredTech": "Chemistry",
 		"upgradesTo": "Artillery",
 		"obsoleteTech": "Dynamite",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus","Must set up to ranged attack","[-1] Sight","Never appears as a Barbarian unit"],
+		"uniques": ["[+200]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>",
+            "No defensive terrain bonus","Must set up to ranged attack","[-1] Sight","Never appears as a Barbarian unit"],
 		"attackSound": "cannon"
 	},
 
@@ -1076,7 +1082,8 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus",
+            "[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -1091,7 +1098,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>"],
 		"promotions": ["[Cossack] ability"],
 		"attackSound": "horse"
 	},
@@ -1107,7 +1114,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>",
 			"[+1] Sight"],
 		"promotions": ["[Hussar] ability"],
 		"attackSound": "horse"
@@ -1122,7 +1129,7 @@
 		"requiredResource": "Coal",
 		"upgradesTo": "Destroyer",
 		"obsoleteTech": "Combustion",
-		"uniques": ["[+33]% Strength <vs cities>","Double movement in [Coast]", "Never appears as a Barbarian unit"],
+		"uniques": ["[+33]% Strength <vs cities> <Weight for AI force calculation = [50]%>","Double movement in [Coast]", "Never appears as a Barbarian unit"],
 		"attackSound": "shipguns"
 	},
 	{
@@ -1135,7 +1142,7 @@
 		"cost": 320,
 		"requiredTech": "Dynamite",
 		"upgradesTo": "Rocket Artillery",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>","No defensive terrain bonus",
 			"Must set up to ranged attack","[-1] Sight", "Never appears as a Barbarian unit"],
 		"promotions": ["Indirect Fire"],
 		"attackSound": "artillery"
@@ -1152,7 +1159,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["[+75]% Strength <when attacking>", "Can only attack [Water] tiles", "Never appears as a Barbarian unit"],
+		"uniques": ["[+75]% Strength <when attacking> <Weight for AI force calculation = [50]%>", "Can only attack [Water] tiles", "Never appears as a Barbarian unit"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1177,7 +1184,7 @@
 		"requiredTech": "Replaceable Parts",
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
-		"uniques": ["[+20]% Strength <when fighting in [Foreign Land] tiles>"],
+		"uniques": ["[+20]% Strength <when fighting in [Foreign Land] tiles> <Weight for AI force calculation = [50]%>"],
 		"attackSound": "shot"
 	},
 	{
@@ -1193,7 +1200,8 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Fighter",
 		"obsoleteTech": "Radar",
-		"uniques": ["[50]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
+		"uniques": ["[50]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units> <Weight for AI force calculation = [25]%>",
+            "[+150]% Strength <vs [Helicopter] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1268,7 +1276,8 @@
 		"requiredTech": "Ballistics",
 		"upgradesTo": "Mobile SAM",
 		"obsoleteTech": "Rocketry",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Air] units>", "[+150]% Strength <vs [Helicopter] units>", "Never appears as a Barbarian unit"],
+		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Air] units> <Weight for AI force calculation = [25]%>",
+            "[+150]% Strength <vs [Helicopter] units> <Weight for AI force calculation = [25]%>", "Never appears as a Barbarian unit"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1293,7 +1302,7 @@
 		"cost": 375,
 		"requiredTech": "Combustion",
 		"uniques": ["Can see invisible [Submarine] units", "[40]% chance to intercept air attacks",
-			"Withdraws before melee combat <with [80]% chance>", "[+100]% Strength <vs [Submarine] units>"],
+			"Withdraws before melee combat <with [80]% chance>", "[+100]% Strength <vs [Submarine] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "shipguns"
 	},
 
@@ -1322,7 +1331,8 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
+		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units> <Weight for AI force calculation = [25]%>",
+            "[+150]% Strength <vs [Helicopter] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1338,7 +1348,8 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
+		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units> <Weight for AI force calculation = [25]%>",
+            "[+150]% Strength <vs [Helicopter] units> <Weight for AI force calculation = [25]%>"],
 		"promotions": ["[Zero] ability"],
 		"attackSound": "machinegun"
 	},
@@ -1417,7 +1428,7 @@
 		"cost": 300,
 		"requiredTech": "Combined Arms",
 		"upgradesTo": "Helicopter Gunship",
-		"uniques": ["[+100]% Strength <vs [Armored] units>", "Never appears as a Barbarian unit"],
+		"uniques": ["[+100]% Strength <vs [Armored] units> <Weight for AI force calculation = [25]%>", "Never appears as a Barbarian unit"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1447,7 +1458,7 @@
 		"cost": 425,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Aluminum",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking> <Weight for AI force calculation = [50]%>","No defensive terrain bonus",
 			"[-1] Sight", "Never appears as a Barbarian unit"],
 		"promotions": ["Indirect Fire"],
 		"attackSound": "artillery"
@@ -1460,8 +1471,8 @@
 		"strength": 65,
 		"cost": 425,
 		"requiredTech": "Rocketry",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Air] units>",
-			"[+150]% Strength <vs [Helicopter] units>", "Never appears as a Barbarian unit"],
+		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Air] units> <Weight for AI force calculation = [25]%>",
+			"[+150]% Strength <vs [Helicopter] units> <Weight for AI force calculation = [25]%>", "Never appears as a Barbarian unit"],
 		"attackSound": "missile"
 	},
 	{
@@ -1499,7 +1510,7 @@
 		"cost": 425,
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
-		"uniques": ["[+100]% Strength <vs [Armored] units>", "No defensive terrain bonus", "Can move after attacking",
+		"uniques": ["[+100]% Strength <vs [Armored] units> <Weight for AI force calculation = [25]%>", "No defensive terrain bonus", "Can move after attacking",
 			"All tiles cost 1 movement", "Ignores Zone of Control", "Unable to capture cities", "Never appears as a Barbarian unit"],
 		"attackSound": "machinegun"
 	},
@@ -1514,7 +1525,8 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["[+75]% Strength <when attacking>", "Can only attack [Water] tiles", "[+1] Sight", "Can carry [2] [Missile] units", "Never appears as a Barbarian unit"],
+		"uniques": ["[+75]% Strength <when attacking> <Weight for AI force calculation = [50]%>",
+            "Can only attack [Water] tiles", "[+1] Sight", "Can carry [2] [Missile] units", "Never appears as a Barbarian unit"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1538,7 +1550,7 @@
 		"cost": 425,
 		"requiredTech": "Robotics",
 		"uniques": ["[100]% chance to intercept air attacks", "Can see invisible [Submarine] units",
-			"Can carry [3] [Missile] units", "[+100]% Strength <vs [Submarine] units>", "Never appears as a Barbarian unit"],
+			"Can carry [3] [Missile] units", "[+100]% Strength <vs [Submarine] units> <Weight for AI force calculation = [25]%>", "Never appears as a Barbarian unit"],
 		"promotions": ["Indirect Fire"],
 		"attackSound": "shipguns"
 	},
@@ -1565,7 +1577,8 @@
 		"cost": 425,
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
+		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units> <Weight for AI force calculation = [25]%>",
+            "[+150]% Strength <vs [Helicopter] units> <Weight for AI force calculation = [25]%>"],
 		"attackSound": "jetgun"
 	},
 	{
@@ -1705,7 +1718,8 @@
 		"cost": 750,
 		"requiredTech": "Advanced Ballistics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [3] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable",
+            "Can be added to [The Spaceship] in the Capital", "Limited to [3] per Civilization"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1715,7 +1729,8 @@
 		"cost": 750,
 		"requiredTech": "Satellites",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable",
+            "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1725,7 +1740,8 @@
 		"cost": 750,
 		"requiredTech": "Particle Physics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable",
+            "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1735,7 +1751,8 @@
 		"cost": 750,
 		"requiredTech": "Nanotechnology",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable",
+            "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
 		// costs 1500 in BNW
 	}
 ]

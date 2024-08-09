@@ -481,28 +481,31 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 .flatMap { it.uniqueObjects }
 
         for (unique in allUniques) {
+            if (unique.hasTriggerConditional()) continue
             when (unique.type) {
                 UniqueType.Strength -> {
-                    if (unique.params[0].toInt() <= 0) continue
-                    if (unique.hasModifier(UniqueType.ConditionalVsUnits)) { // Bonus vs some units - a quarter of the bonus
-                        power *= (unique.params[0].toInt() / 4f).toPercent()
-                    } else if (
-                        unique.modifiers.any {
-                            it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
-                                || it.type == UniqueType.ConditionalAttacking // Attack - half the bonus
-                                || it.type == UniqueType.ConditionalDefending // Defense - half the bonus
-                                || it.type == UniqueType.ConditionalFightingInTiles
-                        } // Bonus in terrain or feature - half the bonus
-                    ) {
-                        power *= (unique.params[0].toInt() / 2f).toPercent()
-                    } else {
-                        power *= (unique.params[0].toInt()).toPercent() // Static bonus
+                    val bonus = unique.params[0].toInt()
+                    if (bonus == 0) continue
+                    val weightModifier = unique.getModifiers(UniqueType.AIForceCalculationWeight).firstOrNull()
+                    val weight = when {
+                        unique.modifiers.none { it.type != null && UniqueTarget.MetaModifier !in it.type.targetTypes } -> 1f // No actual conditionals (excluding metamodifiers) - full weight
+                        weightModifier != null -> weightModifier.params[0].toFloat() * 0.01f
+                        // @Deprecated("Use UniqueType.AIForceCalculationWeight explicitly")
+                        unique.hasModifier(UniqueType.ConditionalVsUnits) -> 0.25f // Bonus vs some units - a quarter of the bonus
+                        unique.hasModifier(
+                            UniqueType.ConditionalVsCity, // City Attack - half the bonus
+                            UniqueType.ConditionalAttacking, // Attack - half the bonus
+                            UniqueType.ConditionalDefending, // Defense - half the bonus
+                            UniqueType.ConditionalFightingInTiles // Bonus in terrain or feature - half the bonus
+                        ) -> 0.5f
+                        else -> continue // Default to zero bonus to avoid overmultiplication of many mutually exclusive and individually unlikely
                     }
+                    power *= (bonus * weight).toPercent()
                 }
+
                 UniqueType.StrengthNearCapital ->
                     if (unique.params[0].toInt() > 0)
                         power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
-
                 UniqueType.MayParadrop // Paradrop - 25% bonus
                     -> power += power / 4
                 UniqueType.MustSetUp // Must set up - 20 % penalty
