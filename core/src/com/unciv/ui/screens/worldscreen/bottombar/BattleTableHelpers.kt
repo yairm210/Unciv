@@ -14,10 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
+import com.unciv.GUI
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.widgets.ShadowedLabel
@@ -149,6 +150,12 @@ object BattleTableHelpers {
         attacker: ICombatant, damageToAttacker: Int,
         defender: ICombatant, damageToDefender: Int
     ) {
+        val enabledAnimations = GUI.getSettings().enabledAnimations
+        val enableDamageNumbers = GameSettings.Animations.DamageNumbers in enabledAnimations
+        val enableAttackAnimation = GameSettings.Animations.AttackSprite in enabledAnimations // Move and sprite anim
+        val enableFlashRed = GameSettings.Animations.FlashDamageRed in enabledAnimations
+        if (!enableAttackAnimation && !enableDamageNumbers && !enableFlashRed) return
+
         fun getMapActorsForCombatant(combatant: ICombatant): Sequence<Actor> =
                 sequence {
                     val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
@@ -179,31 +186,43 @@ object BattleTableHelpers {
         val hideDefenderDamage = defender.isDefeated() &&
                 attacker.getTile().position == defender.getTile().position
 
-        stage.addAction(
+        val flashRedAction = if (enableFlashRed)
             Actions.sequence(
-                MoveActorsAction(actorsToMove, attackVectorWorldCoords),
-                Actions.run {
-                    createDamageLabel(damageToAttacker, attackerGroup)
-                    if (!hideDefenderDamage)
-                        createDamageLabel(damageToDefender, defenderGroup)
-                },
-                Actions.parallel( // While the unit is moving back to its normal position, we flash the damages on both units
-                    MoveActorsAction(actorsToMove, attackVectorWorldCoords.cpy().scl(-1f)),
-                    AttackAnimationAction(attacker,
-                        if (damageToDefender != 0) getMapActorsForCombatant(defender).toList() else listOf(),
-                        mapHolder.currentTileSetStrings
-                    ),
-                    AttackAnimationAction(
-                        defender,
-                        if (damageToAttacker != 0) getMapActorsForCombatant(attacker).toList() else listOf(),
-                        mapHolder.currentTileSetStrings
-                    ),
-                    Actions.sequence(
-                        FlashRedAction(0f,1f, actorsToFlashRed),
-                        FlashRedAction(1f,0f, actorsToFlashRed)
-                    )
+                FlashRedAction(0f,1f, actorsToFlashRed),
+                FlashRedAction(1f,0f, actorsToFlashRed)
+            )
+            else null
+        val moveToAction = if (enableAttackAnimation) MoveActorsAction(actorsToMove, attackVectorWorldCoords) else null
+        val combinedAttackAnimation = if (enableAttackAnimation)
+            Actions.parallel( // While the unit is moving back to its normal position, we flash the damages on both units
+                MoveActorsAction(actorsToMove, attackVectorWorldCoords.cpy().scl(-1f)),
+                AttackAnimationAction(attacker,
+                    if (damageToDefender != 0) getMapActorsForCombatant(defender).toList() else listOf(),
+                    mapHolder.currentTileSetStrings
+                ),
+                AttackAnimationAction(defender,
+                    if (damageToAttacker != 0) getMapActorsForCombatant(attacker).toList() else listOf(),
+                    mapHolder.currentTileSetStrings
                 )
-        ))
+            )
+            else null
+        val damageNumbersAction = if (enableDamageNumbers)
+            Actions.run {
+                createDamageLabel(damageToAttacker, attackerGroup)
+                if (!hideDefenderDamage)
+                    createDamageLabel(damageToDefender, defenderGroup)
+            }
+            else null
+        val lastStep = when {
+            enableAttackAnimation && enableFlashRed ->
+                Actions.parallel(combinedAttackAnimation, flashRedAction)
+            enableAttackAnimation -> combinedAttackAnimation
+            enableFlashRed -> flashRedAction
+            else -> null
+        }
+        val finalAction = Actions.action(SequenceAction::class.java)
+        for (action in listOfNotNull(moveToAction, damageNumbersAction, lastStep)) finalAction.addAction(action)
+        stage.addAction(finalAction)
     }
 
     private fun createDamageLabel(damage: Int, target: Actor) {
@@ -226,7 +245,7 @@ object BattleTableHelpers {
         }
 
         val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
-        if (UncivGame.Current.settings.continuousRendering) {
+        if (GameSettings.Animations.HealthBar in GUI.getSettings().enabledAnimations) {
             damagedHealth.addAction(Actions.forever(Actions.sequence(
                 Actions.color(Color.BLACK, 0.7f),
                 Actions.color(Color.FIREBRICK, 0.7f)

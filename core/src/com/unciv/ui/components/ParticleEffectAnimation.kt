@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.images.ImageGetter
 
 /** Hosts one template ParticleEffect and any number of clones, and each can travel linearly over part of its lifetime.
@@ -28,7 +29,8 @@ abstract class ParticleEffectAnimation : Disposable {
         const val defaultAtlasName = "ConstructionIcons"
 
         fun isEnabled(game: UncivGame, atlasName: String = defaultAtlasName) =
-            game.settings.continuousRendering && ImageGetter.getSpecificAtlas(atlasName) != null
+            GameSettings.Animations.WLTKFireworks in game.settings.enabledAnimations &&
+            ImageGetter.getSpecificAtlas(atlasName) != null
 
         private val halfPoint = Vector2(0.5f, 0.5f)
     }

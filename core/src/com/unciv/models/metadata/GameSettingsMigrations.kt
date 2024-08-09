@@ -8,8 +8,12 @@ private const val CURRENT_VERSION = 2
 fun GameSettings.doMigrations(json: JsonValue) {
     if (version == null) {
         migrateMultiplayerSettings(json)
-        version = 1
     }
+    if (continuousRendering != null) {
+        enabledAnimations.setLevel(if (continuousRendering!!) GameSettings.AnimationLevels.All else GameSettings.AnimationLevels.None)
+        continuousRendering = null
+    }
+    version = CURRENT_VERSION
 }
 
 fun GameSettings.isMigrationNecessary(): Boolean {

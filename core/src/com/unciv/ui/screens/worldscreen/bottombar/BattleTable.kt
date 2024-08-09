@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
@@ -18,6 +19,7 @@ import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
@@ -348,6 +350,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             attackButton.onClick(attacker.getAttackSound()) {
                 Nuke.NUKE(attacker, targetTile)
 
+                if (GameSettings.Animations.NukeExplosion !in GUI.getSettings().enabledAnimations) return@onClick
                 val nukeCircle = ImageGetter.getCircle()
                 nukeCircle.setSize(10f)
                 nukeCircle.setOrigin(Align.center)
