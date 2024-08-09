@@ -12,6 +12,8 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.HolidayDates
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.AutoUpdater
+import com.unciv.logic.github.GraphQLResult
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -29,12 +31,14 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.activate
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopupWithDetails
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
@@ -59,7 +63,12 @@ import kotlinx.coroutines.Job
 import kotlin.math.min
 
 
-class MainMenuScreen: BaseScreen(), RecreateOnResize {
+class MainMenuScreen private constructor(
+    noAutoUpdate: Boolean,
+    oldAutoUpdater: AutoUpdater?
+): BaseScreen(), RecreateOnResize {
+    constructor(noAutoUpdate: Boolean = false) : this(noAutoUpdate, null)
+
     private val backgroundStack = Stack()
     private val singleColumn = isCrampedPortrait()
 
@@ -69,41 +78,13 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private var backgroundMapGenerationJob: Job? = null
     private var backgroundMapExists = false
 
+    private val modsButton: MainMenuButton
+    internal var autoUpdater: AutoUpdater?
+
     companion object {
         const val mapFadeTime = 1.3f
         const val mapFirstFadeTime = 0.3f
         const val mapReplaceDelay = 20f
-    }
-
-    /** Create one **Main Menu Button** including onClick/key binding
-     *  @param text      The text to display on the button
-     *  @param icon      The path of the icon to display on the button
-     *  @param binding   keyboard binding
-     *  @param function  Action to invoke when the button is activated
-     */
-    private fun getMenuButton(
-        text: String,
-        icon: String,
-        binding: KeyboardBinding,
-        function: () -> Unit
-    ): Table {
-        val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = skinStrings.getUiBackground(
-            "MainMenuScreen/MenuButton",
-            skinStrings.roundedEdgeRectangleShape,
-            skinStrings.skinConfig.baseColor
-        )
-        table.add(ImageGetter.getImage(icon)).size(50f).padRight(20f)
-        table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
-
-        table.touchable = Touchable.enabled
-        table.onActivation(binding = binding) {
-            stopBackgroundMapGeneration()
-            function()
-        }
-
-        table.pack()
-        return table
     }
 
     init {
@@ -113,6 +94,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         backgroundStack.add(BackgroundActor(background, Align.center))
         stage.addActor(backgroundStack)
         backgroundStack.setFillParent(true)
+
+        // Start update query early
+        autoUpdater = oldAutoUpdater ?: if (noAutoUpdate) null else AutoUpdater.createAndStart(::onAutoUpdateResult)
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
@@ -139,42 +123,42 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
         if (game.files.autosaves.autosaveExists()) {
-            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", KeyboardBinding.Resume)
+            val resumeTable = MainMenuButton(this, "Resume","OtherIcons/Resume", KeyboardBinding.Resume)
                 { resumeGame() }
             column1.add(resumeTable).row()
         }
 
-        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", KeyboardBinding.Quickstart)
+        val quickstartTable = MainMenuButton(this, "Quickstart", "OtherIcons/Quickstart", KeyboardBinding.Quickstart)
             { quickstartNewGame() }
         column1.add(quickstartTable).row()
 
-        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
+        val newGameButton = MainMenuButton(this, "Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
             { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
-        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
+        val loadGameTable = MainMenuButton(this, "Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
             { game.pushScreen(LoadGameScreen()) }
         column1.add(loadGameTable).row()
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
+        val multiplayerTable = MainMenuButton(this, "Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
             { game.pushScreen(MultiplayerScreen()) }
         column2.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
+        val mapEditorScreenTable = MainMenuButton(this, "Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
             { game.pushScreen(MapEditorScreen()) }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
+        modsButton = MainMenuButton(this, "Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
             { game.pushScreen(ModManagementScreen()) }
-        column2.add(modsTable).row()
+        column2.add(modsButton).row()
 
         if (game.files.getScenarioFiles().any()){
-            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Scenarios", KeyboardBinding.Scenarios)
+            val scenarioTable = MainMenuButton(this, "Scenarios", "OtherIcons/Scenarios", KeyboardBinding.Scenarios)
             { game.pushScreen(ScenarioScreen()) }
             column2.add(scenarioTable).row()
         }
 
-        val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
+        val optionsTable = MainMenuButton(this, "Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
             { openOptionsPopup() }
         optionsTable.onLongPress { openOptionsPopup(withDebug = true) }
         column2.add(optionsTable).row()
@@ -197,6 +181,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             }
             game.popScreen()
         }
+
+        showLoadingOnModButton()
 
         val helpButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
@@ -267,13 +253,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
     }
 
-    private fun stopBackgroundMapGeneration() {
+    internal fun stopBackgroundMapGeneration() {
         backgroundStack.clearActions()
         val currentJob = backgroundMapGenerationJob
-            ?: return
         backgroundMapGenerationJob = null
-        if (currentJob.isCancelled) return
-        currentJob.cancel()
+        currentJob?.run { if (!isCancelled) cancel() }
     }
 
     private fun resumeGame() {
@@ -337,6 +321,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
     }
 
+
     override fun getCivilopediaRuleset(): Ruleset {
         if (easterEggRuleset != null) return easterEggRuleset!!
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
@@ -356,9 +341,100 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
     override fun recreate(): BaseScreen {
         stopBackgroundMapGeneration()
-        return MainMenuScreen()
+        return MainMenuScreen(true, autoUpdater)
     }
 
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
+
+    private fun showLoadingOnModButton() {
+        if (autoUpdater == null) return
+        modsButton.disable()
+        modsButton.showLoading {
+            autoUpdater?.cancelCheck()
+            hideLoading(final = false)
+        }
+    }
+
+    private fun onAutoUpdateResult(needsUpdate: Boolean) {
+        if (autoUpdater?.hasErrors() == true) showAutoUpdateAPIErrors()
+        if (needsUpdate) {
+            modsButton.hideLoading(final = false)
+            modsButton.setActivationHandler(::askToAutoUpdate)
+            modsButton.setText("Update Mods")
+        } else {
+            modsButton.hideLoading()
+            autoUpdater = null
+        }
+        modsButton.enable()
+    }
+
+    private fun showAutoUpdateAPIErrors() {
+        val errors = autoUpdater!!.filterIsInstance<GraphQLResult.CheckForUpdatesResult.Error>()
+        val hash = errors.hashCode()
+        if (hash == game.settings.autoupdateDismissedErrorHash) return
+        ConfirmPopupWithDetails(stage,
+            "Error(s) fetching mod update information:",
+            errors.asSequence(),
+            "Ignore", false, Constants.close
+        ) {
+            game.settings.autoupdateDismissedErrorHash = hash
+            game.settings.save()
+        }
+    }
+
+    private fun askToAutoUpdate() {
+        modsButton.disable()
+        modsButton.revertActivationHandler()
+        if (autoUpdater == null) return
+        // This is a simple approach. We could display much more info, and maybe do so a little more colourful...
+        ConfirmPopupWithDetails(stage,
+            "Do you want to update the following Mods:",
+            autoUpdater!!.getUpdatableRepositories().map { it.displayName },
+            Constants.yes, true, Constants.no,
+            cancelAction = ::skipAutoUpdate,
+            confirmAction = ::startAutoUpdate
+        )
+    }
+
+    private fun startAutoUpdate() {
+        modsButton.showLoading {
+            autoUpdater?.cancelUpdate()
+            hideLoading()
+        }
+        autoUpdater!!.doUpdate(::onAutoUpdateFinished, ::onAutoUpdateProgress, ::onAutoUpdateToast)
+    }
+
+    private fun skipAutoUpdate() {
+        modsButton.enable()
+        modsButton.activate()
+    }
+
+    private fun onAutoUpdateToast(message: String) {
+        ToastPopup(message, this)
+    }
+
+    private fun onAutoUpdateProgress(percent: Int) {
+        // kludge: A ProgressBar would be prettier - but that Widget isn't PR'ed yet
+        modsButton.setText("$percent%")
+    }
+
+    private fun onAutoUpdateFinished(successes: Int, total: Int) {
+        modsButton.hideLoading()
+        val message = when (successes) {
+            total -> "[$successes] Mods successfully updated!"
+            0 -> "Sorry, updating Mods has failed!"
+            else -> "[$successes] out of [$total] outdated Mods updated."
+        }
+        ToastPopup(message, this)
+        modsButton.revertActivationHandler()
+        modsButton.setText("Mods")
+        modsButton.enable()
+    }
+
+    fun restartAutoUpdate() {
+        autoUpdater?.cancel()
+        autoUpdater = AutoUpdater.createAndStart(::onAutoUpdateResult)
+        showLoadingOnModButton()
+    }
 }
