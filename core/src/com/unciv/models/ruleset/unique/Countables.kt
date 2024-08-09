@@ -33,6 +33,9 @@ object Countables {
             return civInfo.cities.sumOf { it.cityConstructions.getBuiltBuildings()
                 .count { it.matchesFilter(placeholderParameters[0]) } }
 
+        if (countable.equalsPlaceholderText("[] Tiles"))
+            return gameInfo.tileMap.tileList.count { it.matchesFilter(placeholderParameters[0]) }
+
         if (gameInfo.ruleset.tileResources.containsKey(countable))
             return stateForConditionals.getResourceAmount(countable)
 
