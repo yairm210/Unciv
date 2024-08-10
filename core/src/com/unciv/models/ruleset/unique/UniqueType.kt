@@ -654,8 +654,6 @@ enum class UniqueType(
 
 
     /////// general conditionals
-    ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional,
-        docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before turn number [amount]", UniqueTarget.Conditional),
@@ -895,6 +893,10 @@ enum class UniqueType(
     //endregion
 
     ///////////////////////////////////////////// region 90 META /////////////////////////////////////////////
+
+    ConditionalTimedUnique("for [amount] turns", UniqueTarget.MetaModifier,
+        docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
+    
     HiddenWithoutReligion("Hidden when religion is disabled",
         UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
         flags = UniqueFlag.setOfHiddenToUsers),

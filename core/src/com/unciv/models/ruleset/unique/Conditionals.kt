@@ -103,9 +103,6 @@ object Conditionals {
         }
 
         return when (conditional.type) {
-            // These are 'what to do' and not 'when to do' conditionals
-            UniqueType.ConditionalTimedUnique -> true
-
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < conditional.params[0].toFloat() / 100f
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % conditional.params[0].toInt() == 0 }
             UniqueType.ConditionalBeforeTurns, UniqueType.ConditionalBeforeTurnsOld -> checkOnGameInfo { turns < conditional.params[0].toInt() }
