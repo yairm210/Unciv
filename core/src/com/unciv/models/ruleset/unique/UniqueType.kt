@@ -923,6 +923,8 @@ enum class UniqueType(
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
     MarkTutorialComplete("Mark tutorial [comment] complete", UniqueTarget.Event, flags = UniqueFlag.setOfHiddenNoConditionals),
+    AiDecisonWeight("[Amount] weight for AI decisions", UniqueTarget.Event,
+        docDescription = "Used as a modifier for determining the weight of AI decisions, can be used in combination with conditionals."),
 
     // Declarative Mod compatibility (see [ModCompatibility]):
     // Note there is currently no display for these, but UniqueFlag.HiddenToUsers is not set.

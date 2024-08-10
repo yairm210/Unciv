@@ -51,6 +51,9 @@ class EventChoice : ICivilopediaText {
 
     var conditions = ArrayList<String>()
     val conditionObjects by lazy { conditions.map { Unique(it) } }
+    
+    var modifiers = ArrayList<String>()
+    val modifierObjects by lazy { modifiers.map { Unique(it) } }
 
     fun matchesConditions(stateForConditionals: StateForConditionals) =
         conditionObjects.all { Conditionals.conditionalApplies(null, it, stateForConditionals) }
