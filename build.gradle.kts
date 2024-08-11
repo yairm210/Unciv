@@ -3,6 +3,7 @@ import com.unciv.build.BuildConfig.coroutinesVersion
 import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
+import com.unciv.build.BuildConfig.roboVMVersion
 
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
@@ -25,6 +26,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("com.android.tools.build:gradle:8.2.2")
+        classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
     }
 }
 
@@ -111,6 +113,18 @@ project(":android") {
     }
 }
 
+project(":ios") {
+    apply(plugin = "kotlin")
+    apply(plugin = "robovm")
+
+    dependencies {
+        "implementation"(project(":core"))
+        "implementation"("com.mobidevelop.robovm:robovm-rt:$roboVMVersion")
+        "implementation"("com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion")
+        "implementation"("com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion")
+        "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios")
+    }
+}
 
 project(":core") {
     apply(plugin = "kotlin")

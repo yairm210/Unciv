@@ -10,6 +10,7 @@ object BuildConfig {
     const val gdxVersion = "1.12.1"
     const val ktorVersion = "2.3.12"
     const val coroutinesVersion = "1.8.1"
+    const val roboVMVersion = "2.3.1"
 
     const val identifier = "com.unciv.app"
 }
