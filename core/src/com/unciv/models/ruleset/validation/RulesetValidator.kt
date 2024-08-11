@@ -331,12 +331,24 @@ class RulesetValidator(val ruleset: Ruleset) {
                 for (prereq in policy.requires!!)
                     if (!ruleset.policies.containsKey(prereq))
                         lines.add("${policy.name} requires policy $prereq which does not exist!", sourceObject = policy)
+
             uniqueValidator.checkUniques(policy, lines, true, tryFixUnknownUniques)
         }
 
-        for (branch in ruleset.policyBranches.values)
+        for (branch in ruleset.policyBranches.values) {
             if (branch.era !in ruleset.eras)
                 lines.add("${branch.name} requires era ${branch.era} which does not exist!", sourceObject = branch)
+
+            val policyLocations = HashMap<String, Policy>()
+            for (policy in branch.policies) {
+                val policyLocation = "${policy.row}/${policy.column}"
+                val existingPolicyInLocation = policyLocations[policyLocation]
+
+                if (existingPolicyInLocation == null) policyLocations[policyLocation] = policy
+                else lines.add("Policies ${policy.name} and ${existingPolicyInLocation.name} in branch ${branch.name}" +
+                        " are both located at column ${policy.column} row ${policy.row}!", sourceObject = policy)
+            }
+        }
 
 
         for (policy in ruleset.policyBranches.values.flatMap { it.policies + it })
