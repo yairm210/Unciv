@@ -178,9 +178,10 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     companion object {
         fun placeNaturalWonder(wonder: Terrain, location: Tile) {
             location.naturalWonder = wonder.name
-            if (wonder.turnsInto != null) {
+            val turnsIntoObject = location.ruleset.terrains[wonder.turnsInto]
+            if (turnsIntoObject != null) {
                 clearTile(location)
-                location.baseTerrain = wonder.turnsInto!!
+                location.setBaseTerrain(turnsIntoObject)
             } else {
                 clearTile(location, wonder.occursOn)
             }
@@ -205,7 +206,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                         removeLakesNextToFutureCoast(location, tile)
                     if (terrainObject.type.isBaseTerrain) {
                         clearTile(tile)
-                        tile.baseTerrain = convertTo
+                        tile.setBaseTerrain(terrainObject)
                     }
                     if (terrainObject.type == TerrainType.TerrainFeature) {
                         clearTile(tile, tile.terrainFeatures)
