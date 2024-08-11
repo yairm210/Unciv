@@ -23,6 +23,7 @@ import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
+/** Settings that apply across all games, stored in GameSettings.json */
 class GameSettings {
 
     /** Allows panning the map by moving the pointer to the screen edges */
