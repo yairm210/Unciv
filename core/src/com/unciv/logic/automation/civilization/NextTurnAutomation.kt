@@ -32,14 +32,16 @@ import kotlin.random.Random
 object NextTurnAutomation {
 
     /** Top-level AI turn task list */
-    fun automateCivMoves(civInfo: Civilization) {
+    fun automateCivMoves(civInfo: Civilization,
+                         /** set false for 'forced' automation, such as skip turn */
+                         tradeAndChangeState: Boolean = true) {
         if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
         if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
         respondToPopupAlerts(civInfo)
-        TradeAutomation.respondToTradeRequests(civInfo)
+        TradeAutomation.respondToTradeRequests(civInfo, tradeAndChangeState)
 
-        if (civInfo.isMajorCiv()) {
+        if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
                 DiplomacyAutomation.declareWar(civInfo)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
@@ -56,21 +58,21 @@ object NextTurnAutomation {
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
             freeUpSpaceResources(civInfo)
-        } else {
+        } else if (civInfo.isCityState) {
             civInfo.cityStateFunctions.getFreeTechForCityState()
             civInfo.cityStateFunctions.updateDiplomaticRelationshipForCityState()
         }
 
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
-        UseGoldAutomation.useGold(civInfo)
-        if (!civInfo.isCityState) {
+        if (tradeAndChangeState) UseGoldAutomation.useGold(civInfo)
+        if (tradeAndChangeState && !civInfo.isCityState) {
             protectCityStates(civInfo)
             bullyCityStates(civInfo)
         }
         automateUnits(civInfo)  // this is the most expensive part
 
-        if (civInfo.isMajorCiv()) {
+        if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (civInfo.gameInfo.isReligionEnabled()) {
                 // Can only be done now, as the prophet first has to decide to found/enhance a religion
                 ReligionAutomation.chooseReligiousBeliefs(civInfo)
@@ -82,7 +84,8 @@ object NextTurnAutomation {
         }
 
         automateCities(civInfo)  // second most expensive
-        trainSettler(civInfo)
+        if (tradeAndChangeState) trainSettler(civInfo)
+        // I'm not sure what will happen if we *don't* vote when we can, so automate vote even when forced automation
         tryVoteForDiplomaticVictory(civInfo)
     }
 
