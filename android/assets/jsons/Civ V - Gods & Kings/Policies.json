@@ -4,7 +4,7 @@
         "era": "Ancient era",
         "priorities": {
             "Neutral": 5,
-            "Cultural": 10,
+            "Cultural": 5,
             "Diplomatic": 5,
             "Domination": 5,
             "Scientific": 5
@@ -141,7 +141,7 @@
             "Neutral": 5,
             "Cultural": 5,
             "Diplomatic": 5,
-            "Domination": 10,
+            "Domination": 5,
             "Scientific": 5
         },
         "uniques": [
@@ -476,7 +476,7 @@
         "name": "Freedom",
         "era": "Industrial era",
         "priorities": {
-            "Neutral": 10,
+            "Neutral": 5,
             "Cultural": 10,
             "Diplomatic": 5,
             "Domination": 5,
@@ -538,7 +538,7 @@
         "name": "Autocracy",
         "era": "Industrial era",
         "priorities": {
-            "Neutral": 10,
+            "Neutral": 5,
             "Cultural": 5,
             "Diplomatic": 5,
             "Domination": 10,
