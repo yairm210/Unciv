@@ -335,7 +335,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
 
         if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
-            buildingStats.happiness * 3
+            buildingStats.happiness * 4
 
         if (city.cityStats.currentCityStats.culture < 2) {
             buildingStats.culture *= 2 // We need to start growing borders
