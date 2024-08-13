@@ -4,7 +4,7 @@
         "era": "Ancient era",
         "priorities": {
             "Neutral": 0,
-            "Cultural": 0,
+            "Cultural": 5,
             "Diplomatic": 0,
             "Domination": 0,
             "Scientific": 0
@@ -211,7 +211,7 @@
         "era": "Classical era",
         "priorities": {
             "Neutral": 0,
-            "Cultural": 5,
+            "Cultural": 0,
             "Diplomatic": 0,
             "Domination": 0,
             "Scientific": 0
