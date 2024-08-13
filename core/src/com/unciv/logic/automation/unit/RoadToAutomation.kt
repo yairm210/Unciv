@@ -84,7 +84,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         if (unit.hasMovement() && !shouldBuildRoadOnTile(currentTile)) {
             if (currTileIndex == pathToDest.size - 1) { // The last tile in the path is unbuildable or has a road.
                 stopAndCleanAutomation(unit)
-                unit.civ.addNotification("Connect road completed!", MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                unit.civ.addNotification("Connect road completed", MapUnitAction(unit), NotificationCategory.Units, unit.name)
                 return
             }
 

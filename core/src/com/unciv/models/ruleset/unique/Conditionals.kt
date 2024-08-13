@@ -6,6 +6,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
 import kotlin.random.Random
 
@@ -102,9 +103,6 @@ object Conditionals {
         }
 
         return when (conditional.type) {
-            // These are 'what to do' and not 'when to do' conditionals
-            UniqueType.ConditionalTimedUnique -> true
-
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < conditional.params[0].toFloat() / 100f
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % conditional.params[0].toInt() == 0 }
             UniqueType.ConditionalBeforeTurns, UniqueType.ConditionalBeforeTurnsOld -> checkOnGameInfo { turns < conditional.params[0].toInt() }
@@ -302,6 +300,11 @@ object Conditionals {
                     first, second, third ->
                     first in second..third
                 }
+
+            UniqueType.ConditionalModEnabled -> checkOnGameInfo {
+                val filter = conditional.params[0]
+                (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }
+            }
 
             else -> false
         }

@@ -42,6 +42,9 @@ enum class RulesetFile(val filename: String,
     Policies("Policies.json", { policies.values.asSequence() }),
     Techs("Techs.json", { technologies.values.asSequence() }),
     Terrains("Terrains.json", { terrains.values.asSequence() }),
+    /** Tutorials are special and are read in [com.unciv.ui.screens.basescreen.TutorialController.loadTutorialsFromJson]
+     * This is here for completion's sake and to remove ruleset validation error */
+    Tutorials("Tutorials.json"),
     TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
     TileResources("TileResources.json", { tileResources.values.asSequence() }),
     Specialists("Specialists.json"),

@@ -1,3 +1,33 @@
+## 4.12.18
+
+Reduced (uncompressed) save file size by 15%, with 15% pending later versions
+
+Multiplayer improvements:
+- Add descriptor (you/friend name/unknown) to current player
+- Auto-download missing mods when joining multiplayer game
+- Can force-resign any human, if 'admin' spectator or player is inactive for 48h
+- Disable resign button on games where it's not your turn
+
+Fixed city console rename to set exact text (not quoted/lowercased)
+
+Conditional that tests if a mod is enabled - by @SomeTroglodyte
+
+## 4.12.17
+
+Modding:
+- More unit uniques applicable globally
+- Recognize Tutorials.json file in ruleset validation
+
+"Unavailable" promotions are unavailable in UI as well
+
+Can go to war with no warmongering penalties if allied or protected city-states have been attacked
+
+City states no longer gift units that push us over resource limits 
+
+Allow unitset and tileset overrides for base ruleset mods
+
+Enhance modding freedom for Natural Wonders  - By SomeTroglodyte
+
 ## 4.12.16
 
 Fixed world wrap for games saved during 4.12.15

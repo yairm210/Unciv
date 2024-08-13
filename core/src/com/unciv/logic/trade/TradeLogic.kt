@@ -21,20 +21,21 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         val offers = TradeOffersList()
         if (civInfo.isCityState && otherCivilization.isCityState) return offers
         if (civInfo.isAtWarWith(otherCivilization))
-            offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
+            offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
 
         if (!otherCivilization.getDiplomacyManager(civInfo)!!.hasOpenBorders
                 && !otherCivilization.isCityState
                 && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
                 && otherCivilization.hasUnique(UniqueType.EnablesOpenBorders)) {
-            offers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement))
+            offers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
         }
 
         if (civInfo.diplomacyFunctions.canSignResearchAgreementNoCostWith(otherCivilization))
-            offers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, civInfo.diplomacyFunctions.getResearchAgreementCost(otherCivilization)))
+            offers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty,
+                civInfo.diplomacyFunctions.getResearchAgreementCost(otherCivilization), civInfo.gameInfo.speed))
 
         if (civInfo.diplomacyFunctions.canSignDefensivePactWith(otherCivilization))
-            offers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty))
+            offers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
 
         for (entry in civInfo.getCivResourcesWithOriginsForTrade()
             .filterNot { it.resource.resourceType == ResourceType.Bonus }
@@ -42,17 +43,17 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         ) {
             val resourceTradeOfferType = if (entry.resource.resourceType == ResourceType.Luxury) TradeOfferType.Luxury_Resource
             else TradeOfferType.Strategic_Resource
-            offers.add(TradeOffer(entry.resource.name, resourceTradeOfferType, entry.amount))
+            offers.add(TradeOffer(entry.resource.name, resourceTradeOfferType, entry.amount, speed = civInfo.gameInfo.speed))
         }
 
-        offers.add(TradeOffer("Gold", TradeOfferType.Gold, civInfo.gold))
-        offers.add(TradeOffer("Gold per turn", TradeOfferType.Gold_Per_Turn, civInfo.stats.statsForNextTurn.gold.toInt()))
+        offers.add(TradeOffer("Gold", TradeOfferType.Gold, civInfo.gold, speed = civInfo.gameInfo.speed))
+        offers.add(TradeOffer("Gold per turn", TradeOfferType.Gold_Per_Turn, civInfo.stats.statsForNextTurn.gold.toInt(), civInfo.gameInfo.speed))
 
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
                 && !civInfo.isCityState && !otherCivilization.isCityState
         ) {
             for (city in civInfo.cities.filterNot { it.isCapital() || it.isInResistance() })
-                offers.add(TradeOffer(city.id, TradeOfferType.City))
+                offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
         }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
@@ -62,7 +63,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
-                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.Introduction))
+                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.Introduction, speed = civInfo.gameInfo.speed))
             }
         }
 
@@ -73,7 +74,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it)!!.canDeclareWar() }
             for (thirdCiv in civsWeArentAtWarWith) {
-                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.WarDeclaration))
+                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
             }
         }
 

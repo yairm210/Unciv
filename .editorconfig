@@ -7,7 +7,7 @@ indent_style = space
 indent_size = 4
 insert_final_newline = true
 ij_any_keep_indents_on_empty_lines = false
-trim_trailing_whitespace = true
+trim_trailing_whitespace = false
 
 [*.{kt,kts}]
 ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
@@ -65,7 +65,6 @@ ij_json_spaces_within_brackets = false
 ij_json_wrap_long_lines = false
 
 [*.properties]
-trim_trailing_whitespace = false
 ij_properties_align_group_field_declarations = false
 ij_properties_keep_blank_lines = true
 ij_properties_key_value_delimiter = equals

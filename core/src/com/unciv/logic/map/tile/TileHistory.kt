@@ -31,7 +31,7 @@ class TileHistory(
 
             companion object {
                 fun deserialize(s: String): CityCenterType =
-                        values().firstOrNull { it.serializedRepresentation == s } ?: None
+                        entries.firstOrNull { it.serializedRepresentation == s } ?: None
             }
         }
 
@@ -91,4 +91,13 @@ class TileHistory(
 
     @VisibleForTesting
     override fun iterator() = history.iterator()
+
+    // For json serialization, to not serialize an empty object
+    override fun equals(other: Any?): Boolean {
+        if (other !is TileHistory) return false
+        if (history == other.history) return true
+        return history.size == other.history.size && history.entries.all { (turn, state) ->
+            state == other.history[turn]
+        }
+    }
 }

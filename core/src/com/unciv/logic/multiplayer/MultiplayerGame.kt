@@ -8,7 +8,7 @@ import com.unciv.logic.multiplayer.GameUpdateResult.Type.CHANGED
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.FAILURE
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
+import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.debug
@@ -25,7 +25,7 @@ private const val DROPBOX_THROTTLE_PERIOD = 8L
 /** @see getUpdateThrottleInterval */
 private const val CUSTOM_SERVER_THROTTLE_PERIOD = 1L
 
-class OnlineMultiplayerGame(
+class MultiplayerGame(
     val fileHandle: FileHandle,
     var preview: GameInfoPreview? = null,
     lastOnlineUpdate: Instant? = null
@@ -107,7 +107,7 @@ class OnlineMultiplayerGame(
     private suspend fun update(): GameUpdateResult {
         val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
         val serverIdentifier = curPreview.gameParameters.multiplayerServerUrl
-        val newPreview = OnlineMultiplayerServer(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
+        val newPreview = MultiplayerServer(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
         UncivGame.Current.files.saveGame(newPreview, fileHandle)
         preview = newPreview
@@ -138,7 +138,7 @@ class OnlineMultiplayerGame(
         SoundPlayer.play(sound)
     }
 
-    override fun equals(other: Any?): Boolean = other is OnlineMultiplayerGame && fileHandle == other.fileHandle
+    override fun equals(other: Any?): Boolean = other is MultiplayerGame && fileHandle == other.fileHandle
     override fun hashCode(): Int = fileHandle.hashCode()
 }
 
@@ -157,5 +157,5 @@ private class GameUpdateResult private constructor(
  * How often games can be checked for remote updates. More attempted checks within this time period will do nothing.
  */
 private fun getUpdateThrottleInterval(): Duration {
-    return Duration.ofSeconds(if (OnlineMultiplayer.usesCustomServer()) CUSTOM_SERVER_THROTTLE_PERIOD else DROPBOX_THROTTLE_PERIOD)
+    return Duration.ofSeconds(if (Multiplayer.usesCustomServer()) CUSTOM_SERVER_THROTTLE_PERIOD else DROPBOX_THROTTLE_PERIOD)
 }

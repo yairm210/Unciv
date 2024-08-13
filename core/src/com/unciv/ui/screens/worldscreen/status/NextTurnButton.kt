@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.status
 
-import com.unciv.GUI
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -14,14 +13,12 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.Concurrency
 
 class NextTurnButton(
     private val worldScreen: WorldScreen
 ) : IconTextButton("", null, 30) {
     private var nextTurnAction = NextTurnAction.Default
     init {
-//         label.setFontSize(30)
         labelCell.pad(10f)
         onActivation { nextTurnAction.action(worldScreen) }
         onRightClick { NextTurnMenu(stage, this, this, worldScreen) }
@@ -62,5 +59,5 @@ class NextTurnButton(
 
     private fun getNextTurnAction(worldScreen: WorldScreen) =
         // Guaranteed to return a non-null NextTurnAction because the last isChoice always returns true
-        NextTurnAction.values().first { it.isChoice(worldScreen) }
+        NextTurnAction.entries.first { it.isChoice(worldScreen) }
 }

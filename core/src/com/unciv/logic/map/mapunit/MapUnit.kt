@@ -68,6 +68,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var escorting: Boolean = false
 
     var automatedRoadConnectionDestination: Vector2? = null
+    // Temp disable, since this data broke saves
+    @Transient
     var automatedRoadConnectionPath: List<Vector2>? = null
 
     var attacksThisTurn = 0
@@ -404,7 +406,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         isCivilian() -> false
         baseUnit.movesLikeAirUnits -> false
         isEmbarked() -> false
-        hasUnique(UniqueType.NoDefensiveTerrainBonus) -> false
+        hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) -> false
         ignoreAlreadyFortified -> true
         isFortified() -> false
         else -> true

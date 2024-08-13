@@ -1,6 +1,7 @@
 import {Octokit} from "@octokit/rest";
 import fs from "fs";
-// To be run from the main Unciv repo directory
+
+// To be run from the root of the Unciv repo (node .github/workflows/incrementVersionAndChangelog.mjs)
 // Summarizes and adds the summary to the changelog.md file
 // Meant to be run from a Github action as part of the preparation for version rollout
 
@@ -65,8 +66,7 @@ async function parseCommits() {
         }
     );
 
-    Object.entries(ownerToCommits).forEach(entry => {
-        const [author, commits] = entry;
+    Object.entries(ownerToCommits).forEach((author,commits) => {
         if (commits.length === 1) {
             commitSummary += "\n\n" + commits[0] + " - By " + author;
         } else {

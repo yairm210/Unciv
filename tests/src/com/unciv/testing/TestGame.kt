@@ -136,6 +136,7 @@ class TestGame {
         civInfo.gameInfo = gameInfo
         civInfo.setNameForUnitTests(nation.name)
         if (isPlayer) civInfo.playerType = PlayerType.Human
+        gameInfo.civilizations.add(civInfo)
         civInfo.setTransients()
 
         // Add 1 tech to the player so the era is computed correctly
@@ -143,7 +144,6 @@ class TestGame {
         if (cityStateType != null) {
             civInfo.cityStateFunctions.initCityState(ruleset, "Ancient era", emptyList())
         }
-        gameInfo.civilizations.add(civInfo)
         return civInfo
     }
 

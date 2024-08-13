@@ -343,9 +343,7 @@ object TechnologyDescriptions {
 
     /** Tests whether a Unique is enabled or disabled by [techName] */
     private fun Unique.isRelatedToTech(techName: String) =
-            modifiers.any {
-                it.isTechConditional() && it.params[0] == techName
-            }
+            modifiers.any { it.isTechConditional() && it.params[0] == techName }
 
     /** Used by [getAffectedImprovements] only */
     private data class ImprovementAndUnique(val improvement: TileImprovement, val unique: Unique) {
