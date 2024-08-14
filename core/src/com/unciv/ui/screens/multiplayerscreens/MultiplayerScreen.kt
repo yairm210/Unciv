@@ -36,6 +36,7 @@ class MultiplayerScreen : PickerScreen() {
     private val copyGameIdButton = createCopyGameIdButton()
     private val resignButton = createResignButton()
     private val forceResignButton = createForceResignButton()
+    private val skipTurnButton = createSkipTurnButton()
     private val deleteButton = createDeleteButton()
     private val renameButton = createRenameButton()
 
@@ -102,6 +103,7 @@ class MultiplayerScreen : PickerScreen() {
         val gameSpecificActions = Table().apply { defaults().pad(10f) }
         gameSpecificActions.add(copyGameIdButton).row()
         gameSpecificActions.add(renameButton).row()
+        gameSpecificActions.add(skipTurnButton).row()
         gameSpecificActions.add(resignButton).row()
         gameSpecificActions.add(forceResignButton).row()
         gameSpecificActions.add(deleteButton).row()
@@ -154,6 +156,22 @@ class MultiplayerScreen : PickerScreen() {
         return resignButton
     }
 
+    private fun createSkipTurnButton(): TextButton {
+        val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
+        val skipTurnButton = "Skip turn of current player".toTextButton(negativeButtonStyle).apply { isVisible = false }
+        skipTurnButton.onClick {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to skip the turn of the current player?",
+                "Yes",
+            ) {
+                skipCurrentPlayerTurn(selectedGame!!)
+            }
+            askPopup.open()
+        }
+        return skipTurnButton
+    }
+
     /**
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
@@ -170,7 +188,45 @@ class MultiplayerScreen : PickerScreen() {
                 launchOnGLThread {
                     if (resignSuccess) {
                         popup.close()
-                        game.popScreen()
+                    } else {
+                        popup.reuseWith("You can only resign if it's your turn", true)
+                    }
+                }
+            } catch (ex: Exception) {
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+
+                if (ex is MultiplayerAuthException) {
+                    launchOnGLThread {
+                        AuthPopup(this@MultiplayerScreen) { success ->
+                            if (success) resignCurrentPlayer(multiplayerGame)
+                        }.open(true)
+                    }
+                    return@runOnNonDaemonThreadPool
+                }
+
+                launchOnGLThread {
+                    popup.reuseWith(message, true)
+                }
+            }
+        }
+    }
+
+    /**
+     * Turns the current playerCiv into an AI civ and uploads the game afterwards.
+     */
+    private fun skipCurrentPlayerTurn(multiplayerGame: MultiplayerGame) {
+        //Create a popup
+        val popup = Popup(this)
+        popup.addGoodSizedLabel(Constants.working).row()
+        popup.open()
+
+        Concurrency.runOnNonDaemonThreadPool("Skip turn") {
+            try {
+                val skipTurnSuccess = game.onlineMultiplayer.skipCurrentPlayerTurn(multiplayerGame)
+
+                launchOnGLThread {
+                    if (skipTurnSuccess) {
+                        popup.close()
                     } else {
                         popup.reuseWith("You can only resign if it's your turn", true)
                     }
@@ -336,14 +392,17 @@ class MultiplayerScreen : PickerScreen() {
 
         resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.userId
 
-        if (resignButton.isEnabled || multiplayerGame.preview == null){
+        val preview = multiplayerGame.preview
+        if (resignButton.isEnabled || preview == null){
             forceResignButton.isVisible = false
         } else {
-            val durationInactive = Duration.between(Instant.ofEpochMilli(multiplayerGame.preview!!.currentTurnStartTime), Instant.now())
+            val durationInactive = Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now())
             forceResignButton.isVisible =
-                multiplayerGame.preview?.getPlayerCiv(game.settings.multiplayer.userId)?.civName == Constants.spectator
+                preview.getPlayerCiv(game.settings.multiplayer.userId)?.civName == Constants.spectator
                     || durationInactive > Duration.ofDays(2)
         }
+        skipTurnButton.isVisible = preview != null && preview.gameParameters.minutesUntilSkipTurn <=
+                (Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now()).toMinutes())
 
         rightSideButton.enable()
 

@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
@@ -168,6 +169,25 @@ class Multiplayer {
             civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI",
                 NotificationCategory.General, playerCiv.civName)
         }
+
+        val newPreview = gameInfo.asPreview()
+        multiplayerFiles.files.saveGame(newPreview, game.fileHandle)
+        multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
+        game.doManualUpdate(newPreview)
+        return true
+    }
+
+    /** Returns false if game was not up to date */
+    suspend fun skipCurrentPlayerTurn(game: MultiplayerGame): Boolean {
+        val preview = game.preview ?: throw game.error!!
+        // download to work with the latest game state
+        val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
+        if (gameInfo.currentTurnStartTime != preview.currentTurnStartTime)
+            return false // Game was updated since we tried
+
+        val playerCiv = gameInfo.getCurrentPlayerCivilization()
+        NextTurnAutomation.automateCivMoves(playerCiv)
+        gameInfo.nextTurn()
 
         val newPreview = gameInfo.asPreview()
         multiplayerFiles.files.saveGame(newPreview, game.fileHandle)
