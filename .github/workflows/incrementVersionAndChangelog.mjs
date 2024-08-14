@@ -58,7 +58,7 @@ async function parseCommits() {
             if (commitMessage.startsWith("Merge ") || commitMessage.startsWith("Update ")) return;
             commitMessage = commitMessage.replace(/\(\#\d+\)/, "").replace(/\#\d+/, ""); // match PR auto-text, like (#2345) or just #2345
             if (author !== "yairm210") {
-                if (typeof ownerToCommits[author] === "undefined") ownerToCommits[author] = [];
+                if (!(author in ownerToCommits)) ownerToCommits[author] = [];
                 ownerToCommits[author].push(commitMessage);
             } else {
                 commitSummary += "\n\n" + commitMessage;
@@ -66,14 +66,14 @@ async function parseCommits() {
         }
     );
 
-    Object.entries(ownerToCommits).forEach((author,index, commits) => {
+    for (const [author, commits] of Object.entries(ownerToCommits)) {
         if (commits.length === 1) {
             commitSummary += "\n\n" + commits[0] + " - By " + author;
         } else {
             commitSummary += "\n\nBy " + author + ":";
             commits.forEach(commitMessage => { commitSummary += "\n- " + commitMessage });
         }
-    })
+    }
     console.log(commitSummary);
     return [nextVersionString, commitSummary];
 }
