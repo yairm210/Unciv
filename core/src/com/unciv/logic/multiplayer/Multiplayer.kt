@@ -186,7 +186,7 @@ class Multiplayer {
             return false // Game was updated since we tried
 
         val playerCiv = gameInfo.getCurrentPlayerCivilization()
-        NextTurnAutomation.automateCivMoves(playerCiv)
+        NextTurnAutomation.automateCivMoves(playerCiv, false)
         gameInfo.nextTurn()
 
         val newPreview = gameInfo.asPreview()
