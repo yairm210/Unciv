@@ -312,7 +312,8 @@ object TechnologyDescriptions {
         return ruleset.buildings.values.asSequence()
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
-                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
+                && (it.uniqueTo != null && civInfo?.matchesFilter(it.uniqueTo!!) == true
+                        || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
                 && !it.isHiddenFromCivilopedia(ruleset)
             }
     }

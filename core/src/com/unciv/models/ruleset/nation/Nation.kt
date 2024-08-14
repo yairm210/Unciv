@@ -192,7 +192,8 @@ class Nation : RulesetObject() {
 
     private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != name) continue
+            if (building.uniqueTo == null) continue
+            if (!matchesFilter(building.uniqueTo!!)) continue
             if (building.isHiddenFromCivilopedia(ruleset)) continue
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${building.name}} -", link = building.makeLink()))

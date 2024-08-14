@@ -71,7 +71,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         }
 
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo == civInfo.civName) {
+            if (building.uniqueTo != null && civInfo.matchesFilter(building.uniqueTo!!)) {
                 uniqueBuildings.add(building)
             }
         }
