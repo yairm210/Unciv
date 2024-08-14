@@ -105,6 +105,7 @@ object NextTurnAutomation {
     }
     private fun respondToPopupAlerts(civInfo: Civilization) {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
+
             if (popupAlert.type == AlertType.DemandToStopSettlingCitiesNear) {  // we're called upon to make a decision
                 val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
@@ -112,6 +113,16 @@ object NextTurnAutomation {
                     diploManager.agreeNotToSettleNear()
                 else diploManager.refuseDemandNotToSettleNear()
             }
+
+            if (popupAlert.type == AlertType.DemandToStopSpreadingReligion) {
+                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
+                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
+                    || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
+                    diploManager.agreeNotToSpreadReligionTo()
+                else diploManager.refuseNotToSpreadReligionTo()
+            }
+
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
@@ -123,7 +134,6 @@ object NextTurnAutomation {
                     diploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
                     requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
                 }
-
             }
         }
 
@@ -534,6 +544,8 @@ object NextTurnAutomation {
             val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
             if (diploManager.hasFlag(DiplomacyFlags.SettledCitiesNearUs))
                 onCitySettledNearBorders(civInfo, otherCiv)
+            if (diploManager.hasFlag(DiplomacyFlags.SpreadReligionInOurCities))
+                onReligionSpreadInOurCity(civInfo, otherCiv)
         }
     }
 
@@ -555,6 +567,25 @@ object NextTurnAutomation {
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
+    }
+
+    private fun onReligionSpreadInOurCity(civInfo: Civilization, otherCiv: Civilization){
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
+        when {
+            diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSpreadingReligion) -> {}
+            diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) -> {
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.ReligionSpreadDespiteOurPromise, civInfo.civName))
+                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
+                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs, -20f)
+                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSpreadReligion)
+            }
+            else -> {
+                val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
+                if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSpreadingReligion, civInfo.civName))
+            }
+        }
+        diplomacyManager.removeFlag(DiplomacyFlags.SpreadReligionInOurCities)
     }
 
     fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {

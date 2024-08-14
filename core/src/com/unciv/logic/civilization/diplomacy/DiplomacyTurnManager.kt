@@ -189,6 +189,9 @@ object DiplomacyTurnManager {
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
                     }
+                    DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
+                        addModifier(DiplomaticModifiers.FulfilledPromiseToNotSpreadReligion, 10f)
+                    }
                     DiplomacyFlags.RecentlyAttacked.name -> {
                         civInfo.cityStateFunctions.askForUnitGifts(otherCiv())
                     }
@@ -282,6 +285,7 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.BetrayedDefensivePact, 1 / 16f) // That's an outrageous thing to do
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs, 1 / 8f)
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
