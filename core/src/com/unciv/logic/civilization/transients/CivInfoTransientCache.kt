@@ -77,7 +77,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         }
 
         for (improvement in ruleset.tileImprovements.values)
-            if (improvement.uniqueTo == civInfo.civName)
+            if (improvement.uniqueTo != null && civInfo.matchesFilter(improvement.uniqueTo!!))
                 uniqueImprovements.add(improvement)
 
         for (unit in ruleset.units.values) {

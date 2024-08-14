@@ -42,7 +42,7 @@ object TechnologyDescriptions {
 
         lineList.addAll(
             getAffectedImprovements(name, ruleset)
-            .filter { it.improvement.uniqueTo == null || it.improvement.uniqueTo == viewingCiv.civName }
+            .filter { it.improvement.uniqueTo == null || viewingCiv.matchesFilter(it.improvement.uniqueTo!!) }
             .map { it.getText() }
         )
 
@@ -79,7 +79,7 @@ object TechnologyDescriptions {
 
         val tileImprovements = ruleset.tileImprovements.values.asSequence()
             .filter { it.techRequired == name }
-            .filter { it.uniqueTo == null || it.uniqueTo == viewingCiv.civName }
+            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
             .toList()
         if (tileImprovements.isNotEmpty())
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
@@ -93,7 +93,6 @@ object TechnologyDescriptions {
     fun getTechEnabledIcons(tech: Technology, viewingCiv: Civilization, techIconSize: Float) = sequence {
         val ruleset = viewingCiv.gameInfo.ruleset
         val techName = tech.name
-        val civName = viewingCiv.civName
 
         for (unit in getEnabledUnits(techName, ruleset, viewingCiv)) {
             yield(ImageGetter.getConstructionPortrait(unit.name, techIconSize))
@@ -131,14 +130,14 @@ object TechnologyDescriptions {
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.techRequired == techName }
-            .filter { it.uniqueTo == null || it.uniqueTo == civName }
+            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
         ) {
             yield(ImageGetter.getImprovementPortrait(improvement.name, techIconSize))
         }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
-            .filter { it.uniqueTo == null || it.uniqueTo == civName }
+            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
         ) {
             yield(ImageGetter.getUniquePortrait(improvement.name, techIconSize))
         }
@@ -284,7 +283,7 @@ object TechnologyDescriptions {
                     getFilteredBuildings(ruleset, civInfo) { true }
                     + ruleset.tileResources.values.asSequence()
                     + ruleset.tileImprovements.values.filter {
-                        it.uniqueTo == null || it.uniqueTo == civInfo?.civName
+                        it.uniqueTo == null || civInfo?.matchesFilter(it.uniqueTo!!) == true
                     }
             ).filter { obj: RulesetStatsObject ->
                 obj.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0] == techName }
