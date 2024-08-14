@@ -1,36 +1,14 @@
 ## 4.12.19
 
-Object.entries() apparently had a breaking change
+Multiplayer: Add button to skip current player after 24h inactivity 
 
-Multiplayer 'skip turn' uses new limited automation
+Strategic balance applies only to major civs, as per Civ V
 
-Resolves  - Strategic balance applies only to major civs, as per Civ V
-
-Multiplayer: Add button to skip current player if he's taking too long 
-
-"Skip turn" automation 
-
-Resolved  - automated settlers take conditionals on settling locations into account
-
-chore: minor docs
+Automated settlers take conditionals on settling locations into account
 
 Modding: Added ruleset validation that 2 policies in the same branch do not have the same position
 
-Resolved  - "Land to water" natural wonders do not cause ruins on water tiles
-
-"Timed unique" is definitely a meta-modifier and not a conditional
-
-4.12.18-patch1
-
-Fix automatedRoadConnectionPath serialization errors 
-
-By SomeTroglodyte,Deprecate `NaturalWonderConvertNeighborsExcept` :
-- SomeTroglodyte,Deprecate `NaturalWonderConvertNeighborsExcept` 
-- Ouaz,Fix untranslatable 
-
-By Ouaz,Fix untranslatable :
-- SomeTroglodyte,Deprecate `NaturalWonderConvertNeighborsExcept` 
-- Ouaz,Fix untranslatable 
+"Land to water" natural wonders do not cause ruins on water tiles
 
 ## 4.12.18
 
