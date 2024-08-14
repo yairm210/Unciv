@@ -31,7 +31,7 @@ object ReligionAutomation {
             return
         }
         
-        if (civInfo.religionManager.remainingFoundableReligions() == 0 && civInfo.religionManager.religionState != ReligionState.FoundingReligion) {
+        if (civInfo.religionManager.remainingFoundableReligions() == 0 && civInfo.religionManager.religionState == ReligionState.Pantheon) {
             buyGreatPerson(civInfo)
             return
         }
