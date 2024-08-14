@@ -66,7 +66,7 @@ async function parseCommits() {
         }
     );
 
-    Object.entries(ownerToCommits).forEach((author,commits) => {
+    Object.entries(ownerToCommits).forEach((author,index, commits) => {
         if (commits.length === 1) {
             commitSummary += "\n\n" + commits[0] + " - By " + author;
         } else {
