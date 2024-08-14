@@ -81,7 +81,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 uniqueImprovements.add(improvement)
 
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo == civInfo.civName) {
+            if (unit.uniqueTo != null && civInfo.matchesFilter(unit.uniqueTo!!)) {
                 uniqueUnits.add(unit)
             }
         }

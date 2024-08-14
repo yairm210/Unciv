@@ -327,7 +327,8 @@ object TechnologyDescriptions {
         return ruleset.units.values.asSequence()
             .filter {
                 it.requiredTechs().contains(techName)
-                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
+                && (it.uniqueTo != null && civInfo?.matchesFilter(it.uniqueTo!!) == true ||
+                        it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
                 && !it.isHiddenFromCivilopedia(ruleset)
             }
     }

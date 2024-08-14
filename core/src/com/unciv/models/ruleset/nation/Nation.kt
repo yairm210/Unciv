@@ -212,7 +212,8 @@ class Nation : RulesetObject() {
 
     private fun getUniqueUnitsText(ruleset: Ruleset) = sequence {
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != name || unit.isHiddenFromCivilopedia(ruleset)) continue
+            if (unit.isHiddenFromCivilopedia(ruleset)) continue
+            if (unit.uniqueTo != null && !matchesFilter(unit.uniqueTo!!)) continue
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${unit.name}} -", link = "Unit/${unit.name}"))
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
