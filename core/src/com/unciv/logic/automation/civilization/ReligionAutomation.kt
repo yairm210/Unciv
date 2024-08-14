@@ -211,9 +211,8 @@ object ReligionAutomation {
 
         val validCitiesToBuy = civInfo.cities.filter {
             (greatPersonConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
-                && greatPersonConstruction.isPurchasable(it.cityConstructions)
-                && greatPersonConstruction.canBePurchasedWithStat(it, Stat.Faith)
         }
+        
         if (validCitiesToBuy.isEmpty()) return
 
         val cityToBuy = validCitiesToBuy.first()
