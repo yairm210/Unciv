@@ -312,7 +312,7 @@ object TechnologyDescriptions {
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
                 && (it.uniqueTo != null && civInfo?.matchesFilter(it.uniqueTo!!) == true
-                        || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
+                        || it.uniqueTo == null && (civInfo == null || civInfo.getEquivalentBuilding(it) == it))
                 && !it.isHiddenFromCivilopedia(ruleset)
             }
     }
@@ -327,7 +327,7 @@ object TechnologyDescriptions {
             .filter {
                 it.requiredTechs().contains(techName)
                 && (it.uniqueTo != null && civInfo?.matchesFilter(it.uniqueTo!!) == true ||
-                        it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
+                        it.uniqueTo == null && (civInfo == null || civInfo.getEquivalentUnit(it) == it))
                 && !it.isHiddenFromCivilopedia(ruleset)
             }
     }
