@@ -164,7 +164,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
-        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && civ.matchesFilter(it.uniqueTo!!) }
         return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 

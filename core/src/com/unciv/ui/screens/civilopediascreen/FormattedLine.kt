@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.UncivShowableException
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -329,16 +328,16 @@ class FormattedLine (
 
     private fun renderExtraImage(labelWidth: Float): Table {
         val table = Table(BaseScreen.skin)
-        fun getExtraImage(): Image {
+        fun getExtraImage(): Image? {
             if (ImageGetter.imageExists(extraImage))
                 return if (centered) ImageGetter.getDrawable(extraImage).cropToContent()
                     else ImageGetter.getImage(extraImage)
             val externalImage = ImageGetter.findExternalImage(extraImage)
-                ?: throw UncivShowableException("Extra image '[$extraImage]' not found") // logged in catch below
+                ?: return null
             return ImageGetter.getExternalImage(externalImage)
         }
         try {
-            val image = getExtraImage()
+            val image = getExtraImage() ?: return table
             // limit larger cordinate to a given max size
             val maxSize = if (imageSize.isNaN()) labelWidth else imageSize
             val (width, height) = if (image.width > image.height)

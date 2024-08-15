@@ -9,10 +9,12 @@ import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.fonts.FontRulesetIcons.getPixmapFromActor
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
+import com.unciv.ui.screens.civilopediascreen.CivilopediaImageGetters
 import kotlin.math.ceil
 
 /** Map all or most Ruleset icons as Actors to unused Char codepoints,
@@ -72,6 +74,17 @@ object FontRulesetIcons {
             if (!ImageGetter.imageExists(fileLocation)) continue
             addChar(policy.name, ImageGetter.getImage(fileLocation).apply { setSize(Fonts.ORIGINAL_FONT_SIZE) })
         }
+        
+        for (terrain in ruleset.terrains.values) {
+            // These ensure that the font icons are correctly sized - tilegroup rendering works differently than others, to account for clickability vs rendered areas
+            val tileGroup = CivilopediaImageGetters.terrainImage(terrain, ruleset, Fonts.ORIGINAL_FONT_SIZE)
+            tileGroup.width *= 1.5f
+            tileGroup.height *= 1.5f
+            for (layer in tileGroup.children) layer.center(tileGroup)
+
+            addChar(terrain.name, tileGroup)
+        }
+        
     }
 
     private val frameBuffer by lazy {

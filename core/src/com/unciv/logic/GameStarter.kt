@@ -343,10 +343,10 @@ object GameStarter {
         }
 
         val usedCivNames = chosenPlayers.map { it.chosenCiv }.toSet()
-        val (usedMajorCivs, unusedMajorCivs) = ruleset.nations.asSequence()
+        val usedMajorCivs = ruleset.nations.asSequence()
             .filter { it.value.isMajorCiv }
             .map { it.key }
-            .partition { it in usedCivNames }
+            .filter { it in usedCivNames }
 
         for (player in chosenPlayers) {
             val civ = Civilization(player.chosenCiv)
@@ -356,7 +356,7 @@ object GameStarter {
                     civ.playerId = player.playerId
                 }
                 else ->
-                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs))
+                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
                         continue
             }
             gameInfo.civilizations.add(civ)

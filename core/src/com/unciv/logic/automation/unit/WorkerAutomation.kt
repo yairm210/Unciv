@@ -321,7 +321,7 @@ class WorkerAutomation(
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress!!]
 
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
-            (it.value.uniqueTo == null || it.value.uniqueTo == unit.civ.civName)
+            (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!))
                     && unit.canBuildImprovement(it.value, tile)
                     && tile.improvementFunctions.canBuildImprovement(it.value, civInfo)
         }

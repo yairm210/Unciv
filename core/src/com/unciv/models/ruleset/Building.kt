@@ -342,7 +342,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        if (uniqueTo != null && uniqueTo != civ.civName)
+        if (uniqueTo != null && !civ.matchesFilter(uniqueTo!!))
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
 
         if (civ.cache.uniqueBuildings.any { it.replaces == name })
