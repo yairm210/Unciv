@@ -1,3 +1,15 @@
+## 4.12.19
+
+Multiplayer: Add button to skip current player after 24h inactivity 
+
+Strategic balance applies only to major civs, as per Civ V
+
+Automated settlers take conditionals on settling locations into account
+
+Modding: Added ruleset validation that 2 policies in the same branch do not have the same position
+
+"Land to water" natural wonders do not cause ruins on water tiles
+
 ## 4.12.18
 
 Reduced (uncompressed) save file size by 15%, with 15% pending later versions

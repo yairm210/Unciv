@@ -206,7 +206,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (civ.tech.isResearched(obsoleteTech))
                 yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
-        if (uniqueTo != null && uniqueTo != civ.civName)
+        if (uniqueTo != null && !civ.matchesFilter(uniqueTo!!))
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))

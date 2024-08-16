@@ -92,6 +92,8 @@ class AlertPopup(
             AlertType.BorderConflict -> addBorderConflict()
             AlertType.DemandToStopSettlingCitiesNear -> addDemandToStopSettlingCitiesNear()
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> addCitySettledNearOtherCivDespiteOurPromise()
+            AlertType.DemandToStopSpreadingReligion -> addDemandToStopSpreadingReligion()
+            AlertType.ReligionSpreadDespiteOurPromise -> addReligionSpreadDespiteOurPromise()
             AlertType.WonderBuilt -> addWonderBuilt()
             AlertType.TechResearched -> addTechResearched()
             AlertType.GoldenAge -> addGoldenAge()
@@ -239,6 +241,26 @@ class AlertPopup(
         addCloseButton("We shall do as we please.", KeyboardBinding.Cancel) {
             playerDiploManager.refuseDemandNotToSettleNear()
         }
+    }
+
+    private fun addDemandToStopSpreadingReligion() {
+        val otherciv = getCiv(popupAlert.value)
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
+        addLeaderName(otherciv)
+        addGoodSizedLabel("Please don't spread religion to us.").row()
+        addCloseButton("Very well, we shall spread our faith elsewhere.", KeyboardBinding.Confirm) {
+            playerDiploManager.agreeNotToSpreadReligionTo()
+        }.row()
+        addCloseButton("We shall do as we please.", KeyboardBinding.Cancel) {
+            playerDiploManager.refuseNotToSpreadReligionTo()
+        }
+    }
+
+    private fun addReligionSpreadDespiteOurPromise() {
+        val otherciv = getCiv(popupAlert.value)
+        addLeaderName(otherciv)
+        addGoodSizedLabel("We noticed you have continued spreading your faith, despite your promise. This will have....consequences.").row()
+        addCloseButton("Very well.")
     }
 
     private fun addDiplomaticMarriage() {
