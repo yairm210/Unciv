@@ -79,8 +79,8 @@ object Automation {
             // Focus on non-food/growth
             if (surplusFood < 0)
                 yieldStats.food *= 8 // Starving, need Food, get to 0
-            else
-                yieldStats.food /= 2
+            else if (city.civ.getHappiness() < 1)
+                yieldStats.food /= 4
         } else if (!city.avoidGrowth) {
             // NoFocus or Food/Growth Focus. Target +10 Food Surplus when happy
             if (surplusFood < 0)

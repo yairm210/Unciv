@@ -677,7 +677,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.CropYield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.Growth -> stats.statsForNextTurn.food.roundToInt()
                 RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }

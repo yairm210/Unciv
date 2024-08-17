@@ -248,13 +248,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val numberOfWorkersWeWant = if (cities <= 5) cities else 5 + (cities - 5 / 2)
 
         if (workers < numberOfWorkersWeWant) {
-            var modifier = numberOfWorkersWeWant / (workers + 0.4f) // The worse our worker to city ratio is, the more desperate we are
-            if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
+            val modifier = numberOfWorkersWeWant / (workers + 0.4f) // The worse our worker to city ratio is, the more desperate we are
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
         }
     }
 
     private fun addSpaceshipPartChoice() {
+        if (!cityIsOverAverageProduction) return // don't waste time building them in low-production cities
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
             ?: return
@@ -328,24 +328,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         if (surplusFood < 0) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
-        } else if (city.population.population < 5) {
-            buildingStats.food *= 3
+        } else buildingStats.food *= 3
+
+        if (civInfo.stats.statsForNextTurn.gold < 10) {
+            buildingStats.gold *= 2 // We have a gold problem and need to adjust build queue accordingly
         }
 
-        if (buildingStats.gold < 0 && civInfo.stats.statsForNextTurn.gold < 10) {
-            buildingStats.gold *= 2 // We have a gold problem and this isn't helping
-        }
+        if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
+            buildingStats.happiness * 5
 
-        if (civInfo.getHappiness() < 5)
-            buildingStats.happiness * 3
-        else if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
-            buildingStats.happiness * 2
-
-        if (city.cityStats.currentCityStats.culture < 1) {
+        if (city.cityStats.currentCityStats.culture < 2) {
             buildingStats.culture *= 2 // We need to start growing borders
-        }
-        else if (city.tiles.size < 12 && city.population.population < 5) {
-            buildingStats.culture *= 2
         }
 
         for (stat in Stat.entries) {

@@ -146,7 +146,7 @@ object CivilianUnitAutomation {
     private fun isLateGame(civ: Civilization): Boolean {
         val researchCompletePercent =
             (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
-        return researchCompletePercent >= 0.8f
+        return researchCompletePercent >= 0.7f
     }
 
     /** Returns whether the civilian spends its turn hiding and not moving */
