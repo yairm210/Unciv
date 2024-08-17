@@ -1,3 +1,29 @@
+## 4.13.0
+
+Revert "perf: Compute 'missing from minimum' stats only when necessary"
+
+perf: Compute 'missing from minimum' stats only when necessary
+
+Fixed Civilopedia not showing non-unique buildings and units on techs
+
+UI: Show terrain icons in text
+
+UI: Fade in newly-explored tiles
+
+Improvement uniqueTo can apply to civ *filters*
+
+Unit uniqueTo can apply to civ *filters*
+
+Building uniqueTo can apply to civ *filters*
+
+Fixed tests
+
+Added "don't spread religion to us" demand
+
+Hopefully fixed commit parsing
+
+AI changes  - By EmperorPinguin
+
 ## 4.12.19
 
 Multiplayer: Add button to skip current player after 24h inactivity 
