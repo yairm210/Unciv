@@ -118,14 +118,11 @@ class TileStatFunctions(val tile: Tile) {
         if (road != null) listOfStats.add(road.name to roadStats)
         if (improvement != null) listOfStats.add(improvement.name to improvementStats)
 
-        if (minimumStats != Stats.ZERO) {
-            val statsFromMinimum = missingFromMinimum(listOfStats.toStats(), minimumStats)
-            listOfStats.add("Minimum" to statsFromMinimum)
-        }
+        val statsFromMinimum = missingFromMinimum(listOfStats.toStats(), minimumStats)
+        listOfStats.add("Minimum" to statsFromMinimum)
 
-        if (observingCiv != null && observingCiv.goldenAges.isGoldenAge()
-            && listOfStats.toStats().gold != 0f
-        )
+        if (observingCiv != null &&
+            listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
             listOfStats.add("Golden Age" to Stats(gold = 1f))
 
         // To ensure that the original stats (in uniques, terrains, etc) are not modified in getTileStats, we clone them all
@@ -136,7 +133,7 @@ class TileStatFunctions(val tile: Tile) {
     private fun missingFromMinimum(current: Stats, minimumStats: Stats): Stats {
         // Note: Not `for ((stat, value) in other)` - that would skip zero values
         val missingStats = Stats()
-        for (stat in Stat.entries) {
+        for (stat in Stat.values()) {
             if (current[stat] < minimumStats[stat])
                 missingStats[stat] = minimumStats[stat] - current[stat]
         }
@@ -206,7 +203,7 @@ class TileStatFunctions(val tile: Tile) {
             val cachedAllStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
                 city, UniqueType.AllStatsPercentFromObject, stateForConditionals)
             for (unique in cachedAllStatPercentFromObjectCityUniques) {
-                for (stat in Stat.entries)
+                for (stat in Stat.values())
                     addStats(unique.params[1], stat, unique.params[0].toFloat())
             }
 
@@ -220,7 +217,7 @@ class TileStatFunctions(val tile: Tile) {
             val cachedAllStatPercentFromObjectCivUniques = uniqueCache.forCivGetMatchingUniques(
                 observingCiv, UniqueType.AllStatsPercentFromObject, stateForConditionals)
             for (unique in cachedAllStatPercentFromObjectCivUniques) {
-                for (stat in Stat.entries)
+                for (stat in Stat.values())
                     addStats(unique.params[1], stat, unique.params[0].toFloat())
             }
         }
