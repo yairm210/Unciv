@@ -1,4 +1,4 @@
-## 4.12.20
+## 4.13.0
 
 Revert "perf: Compute 'missing from minimum' stats only when necessary"
 

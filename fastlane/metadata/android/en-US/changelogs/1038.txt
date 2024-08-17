@@ -1,5 +1,3 @@
-
-
 Revert "perf: Compute 'missing from minimum' stats only when necessary"
 
 perf: Compute 'missing from minimum' stats only when necessary
