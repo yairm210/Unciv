@@ -213,7 +213,7 @@ class Nation : RulesetObject() {
     private fun getUniqueUnitsText(ruleset: Ruleset) = sequence {
         for (unit in ruleset.units.values) {
             if (unit.isHiddenFromCivilopedia(ruleset)) continue
-            if (unit.uniqueTo != null && !matchesFilter(unit.uniqueTo!!)) continue
+            if (unit.uniqueTo == null || !matchesFilter(unit.uniqueTo!!)) continue
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${unit.name}} -", link = "Unit/${unit.name}"))
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
@@ -239,7 +239,8 @@ class Nation : RulesetObject() {
 
     private fun getUniqueImprovementsText(ruleset: Ruleset) = sequence {
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.uniqueTo != name || improvement.isHiddenFromCivilopedia(ruleset)) continue
+            if (improvement.isHiddenFromCivilopedia(ruleset)) continue
+            if (improvement.uniqueTo == null || !matchesFilter(improvement.uniqueTo!!)) continue
 
             yield(FormattedLine(separator = true))
             yield(FormattedLine(improvement.name, link = "Improvement/${improvement.name}"))
