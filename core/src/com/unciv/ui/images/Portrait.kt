@@ -157,54 +157,38 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
         }
     }
 
-    override fun getDefaultInnerBackgroundTint(): Color {
-        return ruleset.tileResources[imageName]?.resourceType?.getColor() ?: Color.WHITE
-    }
+    override fun getDefaultInnerBackgroundTint(): Color =
+        ruleset.tileResources[imageName]?.resourceType?.getColor() ?: Color.WHITE
 }
 
 class PortraitTech(name: String, size: Float) : Portrait(Type.Tech, name, size) {
-    override fun getDefaultOuterBackgroundTint(): Color {
-        return getDefaultImageTint()
-    }
-    override fun getDefaultImageTint(): Color {
-        return ruleset.eras[ruleset.technologies[imageName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
-    }
+    override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
+    override fun getDefaultImageTint(): Color =
+        ruleset.eras[ruleset.technologies[imageName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
 }
 
 class PortraitUnit(name: String, size: Float) : Portrait(Type.Unit, name, size) {
-    override fun getDefaultImageTint(): Color {
-        return Color.BLACK
-    }
+    override fun getDefaultImageTint(): Color = Color.BLACK
 }
 
 class PortraitBuilding(name: String, size: Float) : Portrait(Type.Building, name, size) {
-    override fun getDefaultImageTint(): Color {
-        return Color.BLACK
-    }
+    override fun getDefaultImageTint(): Color = Color.BLACK
 }
 
 class PortraitUnavailableWonderForTechTree(name: String, size: Float) : Portrait(Type.Building, name, size) {
-    override fun getDefaultOuterBackgroundTint(): Color {
-        return Color.RED
-    }
+    override fun getDefaultOuterBackgroundTint(): Color = Color.RED
 }
 
 class PortraitUnique(name: String, size: Float) : Portrait(Type.Unique, name, size) {
-    override fun getDefaultImageTint(): Color {
-        return Color.BLACK
-    }
+    override fun getDefaultImageTint(): Color = Color.BLACK
 }
 
 class PortraitReligion(name: String, size: Float) : Portrait(Type.Religion, name, size) {
-    override fun getDefaultImageTint(): Color {
-        return Color.BLACK
-    }
+    override fun getDefaultImageTint(): Color = Color.BLACK
 }
 
 class PortraitUnitAction(name: String, size: Float) : Portrait(Type.UnitAction, name, size) {
-    override fun getDefaultImageTint(): Color {
-        return Color.BLACK
-    }
+    override fun getDefaultImageTint(): Color = Color.BLACK
 }
 
 class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false) : Portrait(Type.Improvement, name, size) {
@@ -252,17 +236,12 @@ class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, si
         }
     }
 
-    override fun getDefaultInnerBackgroundTint(): Color {
-        return ruleset.nations[imageName]?.getOuterColor() ?: Color.BLACK
-    }
+    override fun getDefaultInnerBackgroundTint(): Color = 
+        ruleset.nations[imageName]?.getOuterColor() ?: Color.BLACK
 
-    override fun getDefaultOuterBackgroundTint(): Color {
-        return getDefaultImageTint()
-    }
+    override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
 
-    override fun getDefaultImageTint(): Color {
-        return ruleset.nations[imageName]?.getInnerColor() ?: Color.WHITE
-    }
+    override fun getDefaultImageTint(): Color = ruleset.nations[imageName]?.getInnerColor() ?: Color.WHITE
 
 }
 
@@ -302,16 +281,8 @@ class PortraitPromotion(name: String, size: Float) : Portrait(Type.Promotion, na
         }
     }
 
-    override fun getDefaultImageTint(): Color {
-        return colorFromRGB(255, 226, 0)
-    }
-
-    override fun getDefaultOuterBackgroundTint(): Color {
-        return getDefaultImageTint()
-    }
-
-    override fun getDefaultInnerBackgroundTint(): Color {
-        return colorFromRGB(0, 12, 49)
-    }
+    override fun getDefaultImageTint(): Color = colorFromRGB(255, 226, 0)
+    override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
+    override fun getDefaultInnerBackgroundTint(): Color = colorFromRGB(0, 12, 49)
 
 }
