@@ -223,7 +223,6 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
 class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, size, size*0.1f) {
 
     override fun getDefaultImage(): Image {
-
         val nation = ruleset.nations[imageName]
         val isCityState = nation != null && nation.isCityState
         val pathCityState = "NationIcons/CityState"
@@ -240,7 +239,6 @@ class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, si
         ruleset.nations[imageName]?.getOuterColor() ?: Color.BLACK
 
     override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
-
     override fun getDefaultImageTint(): Color = ruleset.nations[imageName]?.getInnerColor() ?: Color.WHITE
 
 }
@@ -280,9 +278,15 @@ class PortraitPromotion(name: String, size: Float) : Portrait(Type.Promotion, na
             else -> ImageGetter.getImage(pathIconFallback)
         }
     }
-
-    override fun getDefaultImageTint(): Color = colorFromRGB(255, 226, 0)
+    
+    override fun getDefaultImageTint(): Color = ruleset.unitPromotions[imageName]?.innerColorObject
+        ?: defaultInnerColor
     override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
-    override fun getDefaultInnerBackgroundTint(): Color = colorFromRGB(0, 12, 49)
+    override fun getDefaultInnerBackgroundTint(): Color = ruleset.unitPromotions[imageName]?.outerColorObject
+        ?: defaultOuterColor
 
+    companion object {
+        val defaultInnerColor = colorFromRGB(255, 226, 0)
+        val defaultOuterColor = colorFromRGB(0, 12, 49)
+    }
 }

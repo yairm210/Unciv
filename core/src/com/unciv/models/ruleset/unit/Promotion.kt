@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -14,6 +15,11 @@ class Promotion : RulesetObject() {
     var prerequisites = listOf<String>()
 
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
+
+    var innerColor: List<Int>? = null
+    val innerColorObject by lazy { if (innerColor == null) null else colorFromRGB(innerColor!!)}
+    var outerColor: List<Int>? = null
+    val outerColorObject by lazy { if (outerColor == null) null else colorFromRGB(outerColor!!)}
 
     /** Used as **column** hint in the current [PromotionPickerScreen]
      *  This is no longer a direct position, it is used to sort before an automatic distribution.

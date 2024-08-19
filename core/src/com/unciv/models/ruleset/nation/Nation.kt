@@ -257,9 +257,7 @@ class Nation : RulesetObject() {
             }
         }
     }
-
-    fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
-
+    
     fun matchesFilter(filter: String): Boolean {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }
