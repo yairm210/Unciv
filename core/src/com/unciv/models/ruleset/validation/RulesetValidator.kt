@@ -23,6 +23,7 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
 import com.unciv.ui.images.Portrait
+import com.unciv.ui.images.PortraitPromotion
 
 class RulesetValidator(val ruleset: Ruleset) {
 
@@ -644,7 +645,8 @@ class RulesetValidator(val ruleset: Ruleset) {
     ) {
         for (promotion in ruleset.unitPromotions.values) {
             uniqueValidator.checkUniques(promotion, lines, false, tryFixUnknownUniques)
-
+            checkContrasts(promotion.innerColorObject ?: PortraitPromotion.defaultInnerColor,
+                promotion.outerColorObject ?: PortraitPromotion.defaultOuterColor, promotion, lines)
             addPromotionErrorRulesetInvariant(promotion, lines)
         }
     }
@@ -673,10 +675,20 @@ class RulesetValidator(val ruleset: Ruleset) {
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
 
-        // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
-        val constrastRatio = nation.getContrastRatio()
-        if (constrastRatio < 3) {
-            val (newInnerColor, newOuterColor) = getSuggestedColors(nation)
+        checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
+    }
+    
+    
+
+    private fun checkContrasts(
+        innerColor: Color,
+        outerColor: Color,
+        nation: RulesetObject,
+        lines: RulesetErrorList
+    ) {
+        val constrastRatio = getContrastRatio(innerColor, outerColor)
+        if (constrastRatio < 3) { // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
+            val (newInnerColor, newOuterColor) = getSuggestedColors(innerColor, outerColor)
 
             var text = "${nation.name}'s colors do not contrast enough - it is unreadable!"
             text += "\nSuggested colors: "
@@ -687,11 +699,12 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
+
     data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
-    private fun getSuggestedColors(nation: Nation): SuggestedColors {
-        val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())
-        val outerColorLuminance = getRelativeLuminance(nation.getOuterColor())
+    private fun getSuggestedColors(innerColor: Color, outerColor: Color): SuggestedColors {
+        val innerColorLuminance = getRelativeLuminance(innerColor)
+        val outerColorLuminance = getRelativeLuminance(outerColor)
 
         val innerLerpColor: Color
         val outerLerpColor: Color
@@ -706,12 +719,12 @@ class RulesetValidator(val ruleset: Ruleset) {
 
 
         for (i in 1..10) {
-            val newInnerColor = nation.getInnerColor().cpy().lerp(innerLerpColor, 0.05f * i)
-            val newOuterColor = nation.getOuterColor().cpy().lerp(outerLerpColor, 0.05f * i)
+            val newInnerColor = innerColor.cpy().lerp(innerLerpColor, 0.05f * i)
+            val newOuterColor = outerColor.cpy().lerp(outerLerpColor, 0.05f * i)
 
             if (getContrastRatio(newInnerColor, newOuterColor) > 3) return SuggestedColors(newInnerColor, newOuterColor)
         }
-        throw Exception("Error getting suggested colors for nation "+nation.name)
+        throw Exception("Error getting suggested colors")
     }
 
     private fun addBuildingErrorsRulesetInvariant(

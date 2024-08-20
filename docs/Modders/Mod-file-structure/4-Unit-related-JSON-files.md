@@ -53,6 +53,8 @@ Each promotion has the following structure:
 | unitTypes       | List of Strings | empty    | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson)                                                                                                                                                                              |
 | uniques         | List of Strings | empty    | List of [unique abilities](../../uniques.md) this promotion grants to the units                                                                                                                                                                                               |
 | civilopediaText | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                                                                                                                 |
+| innerColor      | List            | empty    | Color of the *icon*                                                                                                                                                                                                                                                           |
+| outerColor      | List            | empty    | Color of the *background*                                                                                                                                                                                                                                                     |
 
 ## UnitTypes.json
 

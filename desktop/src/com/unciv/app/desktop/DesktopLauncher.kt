@@ -64,7 +64,7 @@ internal object DesktopLauncher {
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
 
-        val isRunFromJAR = true//DesktopLauncher.javaClass.`package`.specificationVersion != null
+        val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
         ImagePacker.packImages(isRunFromJAR)
 
         val config = Lwjgl3ApplicationConfiguration()
