@@ -4,6 +4,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.unit.EspionageAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.battle.*
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
@@ -15,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
@@ -417,7 +419,58 @@ object NextTurnAutomation {
     private fun automateUnits(civInfo: Civilization) {
         val isAtWar = civInfo.isAtWar()
         val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
+        
+        val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
+            .flatMap { it.cities }
+            .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
+        
+        for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
+        
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+    }
+    
+    /** All units will continue after this to the regular automation, so units not moved in this function will still move */
+    fun automateCityConquer(civInfo: Civilization, city: City){
+        fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
+            .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo }.toList()
+        
+        
+        fun attackIfPossible(unit: MapUnit, tile: Tile){
+            val attackableTile = TargetHelper.getAttackableEnemies(unit,
+                unit.movement.getDistanceToTiles(), listOf(tile)).firstOrNull()
+            if (attackableTile != null)
+                Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
+        }
+        
+        // Air units should do their thing before any of this
+        for (unit in ourUnitsInRange(7).filter { it.baseUnit.isAirUnit() })
+            UnitAutomation.automateUnitMoves(unit)
+        
+        // First off, any siege unit that can attack the city, should
+        val seigeUnits = ourUnitsInRange(4).filter { it.baseUnit.isProbablySiegeUnit() }
+        for (unit in seigeUnits) {
+            if (!unit.hasUnique(UniqueType.MustSetUp) || unit.isSetUpForSiege())
+                attackIfPossible(unit, city.getCenterTile())
+        }
+        
+        // Melee units should focus on getting rid of enemy units that threaten the siege units
+        // If there are no units, this means attacking the city
+        val meleeUnits = ourUnitsInRange(5).filter { it.baseUnit.isMelee() }
+        for (unit in meleeUnits.sortedByDescending { it.baseUnit.getForceEvaluation() }) {
+            // We're so close, full speed ahead!
+            if (city.health < city.getMaxHealth() / 5) attackIfPossible(unit, city.getCenterTile())
+            
+            val tilesToTarget = city.getCenterTile().getTilesInDistance(4).toList()
+            
+            val attackableEnemies = TargetHelper.getAttackableEnemies(unit,
+                unit.movement.getDistanceToTiles(), tilesToTarget)
+            if (attackableEnemies.isEmpty()) continue
+            val enemyWeWillDamageMost = attackableEnemies.maxBy { 
+                BattleDamage.calculateDamageToDefender(MapUnitCombatant(unit), it.combatant!!, it.tileToAttackFrom, 0.5f)
+            }
+            
+            Battle.moveAndAttack(MapUnitCombatant(unit), enemyWeWillDamageMost)
+        }
     }
 
     /** Returns the priority of the unit, a lower value is higher priority **/

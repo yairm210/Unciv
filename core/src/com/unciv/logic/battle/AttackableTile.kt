@@ -6,6 +6,5 @@ class AttackableTile(
     val tileToAttackFrom: Tile,
     val tileToAttack: Tile,
     val movementLeftAfterMovingToAttackTile: Float,
-    /** This is only for debug purposes */
     val combatant: ICombatant?
 )
