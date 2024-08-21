@@ -237,9 +237,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit gains the [promotion] status for [positiveAmount] turn(s)"
+??? example  "[unitTriggerTarget] gains the [promotion] status for [positiveAmount] turn(s)"
 	Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns.
-	Example: "This Unit gains the [Shock I] status for [3] turn(s)"
+	Example: "[This Unit] gains the [Shock I] status for [3] turn(s)"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] loses the [promotion] status"
+	Example: "[This Unit] loses the [Shock I] status"
 
 	Applicable to: UnitTriggerable
 
@@ -3341,6 +3346,7 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
+*[unitTriggerTarget]: `This Unit` or `Target Unit`.
 *[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.
