@@ -1,3 +1,33 @@
+## 4.13.1
+
+chore: remove test unique
+
+Temporary unit statuses! Can be applied with "This Unit gains the [promotion] status for [positiveAmount] turn(s)" trigger unique
+
+When selecting a unit, show only arrows relevant to selected unit
+
+Better AI conquering of cities
+
+Fixed unique documentation not updating
+
+Added unit promotions json schema
+
+Allowed specifying custom colors for unit promotions
+
+chore: shortened Portrait functions
+
+chore: shortened imagegetter functions
+
+"ok" warnings now colored in 'accept mod errors' popup
+
+Discourage spreading religion to civs we've promised to not do so
+
+4.13.0-patch1
+
+Fixed uniqueTo check in nation unique units display 
+
+4.13.0 changelog
+
 ## 4.13.0
 
 Fixed Civilopedia not showing non-unique buildings and units on techs
