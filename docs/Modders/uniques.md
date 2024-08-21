@@ -9,6 +9,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Uniques that have immediate, one-time effects. These can be added to techs to trigger when researched, to policies to trigger when adopted, to eras to trigger when reached, to buildings to trigger when built. Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event.They can also be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
 ??? example  "Gain a free [buildingName] [cityFilter]"
+	Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building
 	Example: "Gain a free [Library] [in all cities]"
 
 	Applicable to: Triggerable, Global
@@ -135,6 +136,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Gain control over [tileFilter] tiles in a [amount]-tile radius"
+	Example: "Gain control over [Farm] tiles in a [3]-tile radius"
+
+	Applicable to: Triggerable
+
 ??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
@@ -218,6 +224,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "This Unit loses the [promotion] promotion"
 	Example: "This Unit loses the [Shock I] promotion"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit gains [amount] movement"
+	Example: "This Unit gains [3] movement"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit loses [amount] movement"
+	Example: "This Unit loses [3] movement"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit gains the [promotion] status for [positiveAmount] turn(s)"
+	Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns.
+	Example: "This Unit gains the [Shock I] status for [3] turn(s)"
 
 	Applicable to: UnitTriggerable
 
@@ -536,6 +558,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "Gain a free [buildingName] [cityFilter]"
+	Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building
 	Example: "Gain a free [Library] [in all cities]"
 
 	Applicable to: Triggerable, Global
@@ -885,6 +908,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "Ranged attacks may be performed over obstacles"
+	Applicable to: Global, Unit
+
 ??? example  "No defensive terrain bonus"
 	Applicable to: Global, Unit
 
@@ -892,6 +918,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "No damage penalty for wounded units"
+	Applicable to: Global, Unit
+
+??? example  "Unable to capture cities"
+	Applicable to: Global, Unit
+
+??? example  "Unable to pillage tiles"
 	Applicable to: Global, Unit
 
 ??? example  "No movement cost to pillage"
@@ -1784,7 +1816,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Ranged attacks may be performed over obstacles"
-	Applicable to: Unit
+	Applicable to: Global, Unit
 
 ??? example  "Nuclear weapon of Strength [amount]"
 	Example: "Nuclear weapon of Strength [3]"
@@ -1807,10 +1839,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Unable to capture cities"
-	Applicable to: Unit
+	Applicable to: Global, Unit
 
 ??? example  "Unable to pillage tiles"
-	Applicable to: Unit
+	Applicable to: Global, Unit
 
 ??? example  "No movement cost to pillage"
 	Applicable to: Global, Unit
@@ -2157,13 +2189,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Neighboring tiles will convert to [baseTerrain/terrainFeature]"
 	Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.
+If your mod renames Coast or Lakes, do not use this with one of these as parameter, as the code preventing artifacts won't work.
 	Example: "Neighboring tiles will convert to [Grassland]"
-
-	Applicable to: Terrain
-
-??? example  "Neighboring tiles except [simpleTerrain] will convert to [baseTerrain/terrainFeature]"
-	Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.
-	Example: "Neighboring tiles except [Elevated] will convert to [Grassland]"
 
 	Applicable to: Terrain
 
@@ -2434,9 +2461,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a random bonus when entered"
 	Applicable to: Improvement
 
-??? example  "Constructing it will take over the tiles around it and assign them to your closest city"
-	Applicable to: Improvement
-
 ??? example  "Unpillagable"
 	Applicable to: Improvement
 
@@ -2497,9 +2521,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Stockpiled"
+	This resource is accumulated each turn, rather than having a set of producers and consumers at a given moment.The current stockpiled amount can be affected with trigger uniques.
 	Applicable to: Resource
 
 ??? example  "City-level resource"
+	This resource is calculated on a per-city level rather than a per-civ level
 	Applicable to: Resource
 
 ??? example  "Cannot be traded"
@@ -2684,12 +2710,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 !!! note ""
 
     Modifiers that can be added to other uniques to limit when they will be active
-
-??? example  "&lt;for [amount] turns&gt;"
-	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
-	Example: "&lt;for [3] turns&gt;"
-
-	Applicable to: Conditional
 
 ??? example  "&lt;with [amount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
@@ -2952,11 +2972,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;for units with [promotion]&gt;"
+	Also applies to units with temporary status
 	Example: "&lt;for units with [Shock I]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for units without [promotion]&gt;"
+	Also applies to units with temporary status
 	Example: "&lt;for units without [Shock I]&gt;"
 
 	Applicable to: Conditional
@@ -3024,18 +3046,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;in tiles adjacent to [tileFilter]&gt;"
-	Example: "&lt;in tiles adjacent to [Farm]&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;in tiles not adjacent to [tileFilter]&gt;"
-	Example: "&lt;in tiles not adjacent to [Farm]&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;within [amount] tiles of a [tileFilter]&gt;"
 	Example: "&lt;within [3] tiles of a [Farm]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in tiles adjacent to [tileFilter] tiles&gt;"
+	Example: "&lt;in tiles adjacent to [Farm] tiles&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in tiles not adjacent to [tileFilter] tiles&gt;"
+	Example: "&lt;in tiles not adjacent to [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
@@ -3074,6 +3096,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
 	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if [modFilter] is enabled&gt;"
+	Example: "&lt;if [DeCiv Redux] is enabled&gt;"
 
 	Applicable to: Conditional
 
@@ -3253,6 +3280,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 !!! note ""
 
     Modifiers that can be added to other uniques changing user experience, not their behavior
+
+??? example  "&lt;for [amount] turns&gt;"
+	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
+	Example: "&lt;for [3] turns&gt;"
+
+	Applicable to: MetaModifier
 
 ??? example  "&lt;hidden from users&gt;"
 	Applicable to: MetaModifier

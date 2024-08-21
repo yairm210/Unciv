@@ -962,6 +962,14 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            UniqueType.OneTimeUnitGainStatus -> {
+                if (unit == null) return null
+                if (unique.params[0] !in unit.civ.gameInfo.ruleset.unitPromotions) return null
+                return {
+                    unit.setStatus(unique.params[0], unique.params[1].toInt())
+                    true
+                }
+            }
             UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade -> {
                 if (unit == null) return null
                 val upgradeAction =

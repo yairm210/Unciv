@@ -6,18 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.getCloseButton
-import com.unciv.ui.components.extensions.isShiftKeyPressed
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitIconGroup
@@ -65,7 +62,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
-    private var selectedUnitHasChanged = false
+    var selectedUnitHasChanged = false
     val separator: Actor
 
     var selectedSpy: Spy? = null
@@ -287,6 +284,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
                 for (promotion in selectedUnit!!.promotions.getPromotions(true))
                     promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name)).padBottom(2f)
+                
+                for (status in selectedUnit!!.statuses) {
+                    val group = ImageGetter.getPromotionPortrait(status.name)
+                    val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8).surroundWithCircle(15f, color = Color.BLACK)
+                    group.addActor(turnsLeft)
+                    turnsLeft.setPosition(group.width, 0f, Align.bottomRight)
+                    promotionsTable.add(group).padBottom(2f)
+                }
 
                 // Since Clear also clears the listeners, we need to re-add them every time
                 promotionsTable.onClick {
