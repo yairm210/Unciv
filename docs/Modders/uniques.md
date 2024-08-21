@@ -196,44 +196,48 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
-??? example  "Heal this unit by [positiveAmount] HP"
-	Example: "Heal this unit by [3] HP"
+??? example  "[unitTriggerTarget] heals [positiveAmount] HP"
+	Example: "[This Unit] heals [3] HP"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit takes [positiveAmount] damage"
-	Example: "This Unit takes [3] damage"
+??? example  "[unitTriggerTarget] takes [positiveAmount] damage"
+	Example: "[This Unit] takes [3] damage"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit gains [amount] XP"
-	Example: "This Unit gains [3] XP"
+??? example  "[unitTriggerTarget] gains [amount] XP"
+	Example: "[This Unit] gains [3] XP"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit upgrades for free"
-	Applicable to: UnitTriggerable
-
-??? example  "This Unit upgrades for free including special upgrades"
-	Applicable to: UnitTriggerable
-
-??? example  "This Unit gains the [promotion] promotion"
-	Example: "This Unit gains the [Shock I] promotion"
+??? example  "[unitTriggerTarget] upgrades for free"
+	Example: "[This Unit] upgrades for free"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit loses the [promotion] promotion"
-	Example: "This Unit loses the [Shock I] promotion"
+??? example  "[unitTriggerTarget] upgrades for free including special upgrades"
+	Example: "[This Unit] upgrades for free including special upgrades"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit gains [amount] movement"
-	Example: "This Unit gains [3] movement"
+??? example  "[unitTriggerTarget] gains the [promotion] promotion"
+	Example: "[This Unit] gains the [Shock I] promotion"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit loses [amount] movement"
-	Example: "This Unit loses [3] movement"
+??? example  "[unitTriggerTarget] loses the [promotion] promotion"
+	Example: "[This Unit] loses the [Shock I] promotion"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] gains [amount] movement"
+	Example: "[This Unit] gains [3] movement"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] loses [amount] movement"
+	Example: "[This Unit] loses [3] movement"
 
 	Applicable to: UnitTriggerable
 

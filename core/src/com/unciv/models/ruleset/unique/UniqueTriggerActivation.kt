@@ -924,40 +924,46 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.OneTimeUnitHeal -> {
+            UniqueType.OneTimeUnitHeal, UniqueType.OneTimeUnitHealOld -> {
                 if (unit == null) return null
                 if (unit.health == 100) return null
                 return {
-                    unit.healBy(unique.params[0].toInt())
+                    val paramOffset = if (unique.type == UniqueType.OneTimeUnitHealOld) 0 else 1
+                    unit.healBy(unique.params[0 + paramOffset].toInt())
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
                     true
                 }
             }
-            UniqueType.OneTimeUnitDamage -> {
+            UniqueType.OneTimeUnitDamage, UniqueType.OneTimeUnitDamageOld -> {
                 if (unit == null) return null
                 return {
-                    unit.takeDamage(unique.params[0].toInt())
+                    val paramOffset = if (unique.type == UniqueType.OneTimeUnitDamageOld) 0 else 1
+                    unit.takeDamage(unique.params[paramOffset].toInt())
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
                     true
                 }
             }
-            UniqueType.OneTimeUnitGainXP -> {
+            UniqueType.OneTimeUnitGainXP, UniqueType.OneTimeUnitGainXPOld -> {
                 if (unit == null) return null
                 return {
-                    unit.promotions.XP += unique.params[0].toInt()
+                    val paramOffset = if (unique.type == UniqueType.OneTimeUnitGainXPOld) 0 else 1
+                    unit.promotions.XP += unique.params[paramOffset].toInt()
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
-            UniqueType.OneTimeUnitGainMovement, UniqueType.OneTimeUnitLoseMovement -> {
+            UniqueType.OneTimeUnitGainMovement, UniqueType.OneTimeUnitLoseMovement,
+                UniqueType.OneTimeUnitGainMovementOld, UniqueType.OneTimeUnitLoseMovementOld -> {
                 if (unit == null) return null
                 return {
+                    val offset = if (unique.type == UniqueType.OneTimeUnitGainMovementOld || unique.type == UniqueType.OneTimeUnitLoseMovementOld) 0 else 1
                     val movementToUse =
-                        if (unique.type == UniqueType.OneTimeUnitLoseMovement) unique.params[0].toFloat()
-                        else -unique.params[0].toFloat()
+                        if (unique.type == UniqueType.OneTimeUnitLoseMovement || unique.type == UniqueType.OneTimeUnitLoseMovementOld)
+                            unique.params[offset].toFloat()
+                        else -unique.params[offset].toFloat()
                     unit.useMovementPoints(movementToUse)
                     true
                 }
@@ -978,23 +984,27 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-            UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade -> {
+            UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade,
+            UniqueType.OneTimeUnitUpgradeOld, UniqueType.OneTimeUnitSpecialUpgradeOld -> {
                 if (unit == null) return null
                 val upgradeAction =
-                    if (unique.type == UniqueType.OneTimeUnitSpecialUpgrade) UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
+                    if (unique.type == UniqueType.OneTimeUnitSpecialUpgrade || unique.type == UniqueType.OneTimeUnitSpecialUpgradeOld)
+                        UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
                     else UnitActionsUpgrade.getFreeUpgradeAction(unit)
                 if (upgradeAction.none()) return null
                 return {
+                    
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
                     true
                 }
             }
-            UniqueType.OneTimeUnitGainPromotion -> {
+            UniqueType.OneTimeUnitGainPromotion, UniqueType.OneTimeUnitGainPromotionOld -> {
                 if (unit == null) return null
+                val offset = if (unique.type == UniqueType.OneTimeUnitGainPromotionOld) 0 else 1
                 val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
-                    .firstOrNull { it == unique.params[0] }
+                    .firstOrNull { it == unique.params[offset] }
                     ?: return null
                 return {
                     unit.promotions.addPromotion(promotion, true)
@@ -1003,10 +1013,11 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-            UniqueType.OneTimeUnitRemovePromotion -> {
+            UniqueType.OneTimeUnitRemovePromotion, UniqueType.OneTimeUnitRemovePromotionOld -> {
                 if (unit == null) return null
+                val offset = if (unique.type == UniqueType.OneTimeUnitRemovePromotionOld) 0 else 1
                 val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
-                    .firstOrNull { it == unique.params[0]}
+                    .firstOrNull { it == unique.params[offset]}
                     ?: return null
                 return {
                     unit.promotions.removePromotion(promotion)

@@ -561,8 +561,8 @@ enum class UniqueParameterType(
     },
 
 
-    UnitTriggerTarget("unitTriggerTarget", "This Unit", "`This Unit` or `Target Unit`") {
-        override val staticKnownValues = setOf("This Unit", "Target Unit")
+    UnitTriggerTarget("unitTriggerTarget", Constants.thisUnit, "`${Constants.thisUnit}` or `${Constants.targetUnit}`") {
+        override val staticKnownValues = setOf(Constants.thisUnit, Constants.targetUnit)
     },
 
     /** Mod declarative compatibility: Define Mod relations by their name. */
