@@ -964,9 +964,9 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitGainStatus -> {
                 if (unit == null) return null
-                if (unique.params[0] !in unit.civ.gameInfo.ruleset.unitPromotions) return null
+                if (unique.params[1] !in unit.civ.gameInfo.ruleset.unitPromotions) return null
                 return {
-                    unit.setStatus(unique.params[0], unique.params[1].toInt())
+                    unit.setStatus(unique.params[1], unique.params[2].toInt())
                     true
                 }
             }
