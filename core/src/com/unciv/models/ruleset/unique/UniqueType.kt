@@ -828,6 +828,23 @@ enum class UniqueType(
     OneTimeSpiesLevelUp("Promotes all spies [amount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainSpy("Gain an extra spy", UniqueTarget.Triggerable),  // used in Wonders
 
+
+    SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
+    FreePromotion("This Promotion is free", UniqueTarget.Promotion),
+
+    OneTimeChangeTerrain("Turn this tile into a [terrainName] tile", UniqueTarget.Triggerable),
+
+
+    UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable,
+        docDescription = "Works only with promotions that are valid for the unit's type - or for promotions that do not specify any."),  // Not used in Vanilla
+    FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
+    FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
+    TriggerEvent("Triggers a [event] event", UniqueTarget.Triggerable),
+    
+    //endregion
+    
+    ///////////////////////////////////////// region 09 UNIT TRIGGERABLES /////////////////////////////////////////
+    
     OneTimeUnitHeal("Heal this unit by [positiveAmount] HP", UniqueTarget.UnitTriggerable),
     OneTimeUnitDamage("This Unit takes [positiveAmount] damage", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.UnitTriggerable),
@@ -840,18 +857,7 @@ enum class UniqueType(
     OneTimeUnitGainStatus("[unitTriggerTarget] gains the [promotion] status for [positiveAmount] turn(s)", UniqueTarget.UnitTriggerable,
         docDescription = "Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. " +
                 "Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns."),
-    SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
-    FreePromotion("This Promotion is free", UniqueTarget.Promotion),
-
-    OneTimeChangeTerrain("Turn this tile into a [terrainName] tile", UniqueTarget.Triggerable),
-
-
-    UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable,
-        docDescription = "Works only with promotions that are valid for the unit's type - or for promotions that do not specify any."),  // Not used in Vanilla
-    FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
-    FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
-    TriggerEvent("Triggers a [event] event", UniqueTarget.Triggerable),
-
+    OneTimeUnitLoseStatus("[unitTriggerTarget] loses the [promotion] status", UniqueTarget.UnitTriggerable),
     //endregion
 
 
