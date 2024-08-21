@@ -737,8 +737,8 @@ enum class UniqueType(
     /////// unit conditionals
     ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalOurUnitOnUnit("when [mapUnitFilter]", UniqueTarget.Conditional), // Same but for the unit itself
-    ConditionalUnitWithPromotion("for units with [promotion]", UniqueTarget.Conditional),
-    ConditionalUnitWithoutPromotion("for units without [promotion]", UniqueTarget.Conditional),
+    ConditionalUnitWithPromotion("for units with [promotion]", UniqueTarget.Conditional, docDescription = "Also applies to units with temporary status"),
+    ConditionalUnitWithoutPromotion("for units without [promotion]", UniqueTarget.Conditional, docDescription = "Also applies to units with temporary status"),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsCombatant("vs [combatantFilter]", UniqueTarget.Conditional),
@@ -837,6 +837,9 @@ enum class UniqueType(
     OneTimeUnitRemovePromotion("This Unit loses the [promotion] promotion", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainMovement("This Unit gains [amount] movement", UniqueTarget.UnitTriggerable),
     OneTimeUnitLoseMovement("This Unit loses [amount] movement", UniqueTarget.UnitTriggerable),
+    OneTimeUnitGainStatus("This Unit gains the [promotion] status for [positiveAmount] turn(s)", UniqueTarget.UnitTriggerable,
+        docDescription = "Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. " +
+                "Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns."),
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
     FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 

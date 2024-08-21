@@ -808,6 +808,7 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Infantry",
+		"uniques": ["This Unit gains the [Morale] status for [2] turn(s) <for [1] movement> <for units without [Morale]>"],
 		"attackSound": "shot"
 	},
 	{

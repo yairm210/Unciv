@@ -237,6 +237,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "This Unit gains the [promotion] status for [positiveAmount] turn(s)"
+	Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns.
+	Example: "This Unit gains the [Shock I] status for [3] turn(s)"
+
+	Applicable to: UnitTriggerable
+
 ## Global uniques
 !!! note ""
 
@@ -2966,11 +2972,13 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Conditional
 
 ??? example  "&lt;for units with [promotion]&gt;"
+	Also applies to units with temporary status
 	Example: "&lt;for units with [Shock I]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for units without [promotion]&gt;"
+	Also applies to units with temporary status
 	Example: "&lt;for units without [Shock I]&gt;"
 
 	Applicable to: Conditional

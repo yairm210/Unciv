@@ -166,5 +166,11 @@ class UnitTurnManager(val unit: MapUnit) {
 
         unit.addMovementMemory()
         unit.attacksSinceTurnStart.clear()
+        
+        for (status in unit.statuses.toList()){
+            status.turnsLeft--
+            if (status.turnsLeft <= 0) unit.statuses.remove(status)
+        }
+        unit.updateUniques()
     }
 }
