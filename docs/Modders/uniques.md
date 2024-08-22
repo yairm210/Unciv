@@ -196,50 +196,59 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
-??? example  "Heal this unit by [positiveAmount] HP"
-	Example: "Heal this unit by [3] HP"
+??? example  "[unitTriggerTarget] heals [positiveAmount] HP"
+	Example: "[This Unit] heals [3] HP"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit takes [positiveAmount] damage"
-	Example: "This Unit takes [3] damage"
+??? example  "[unitTriggerTarget] takes [positiveAmount] damage"
+	Example: "[This Unit] takes [3] damage"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit gains [amount] XP"
-	Example: "This Unit gains [3] XP"
+??? example  "[unitTriggerTarget] gains [amount] XP"
+	Example: "[This Unit] gains [3] XP"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit upgrades for free"
-	Applicable to: UnitTriggerable
-
-??? example  "This Unit upgrades for free including special upgrades"
-	Applicable to: UnitTriggerable
-
-??? example  "This Unit gains the [promotion] promotion"
-	Example: "This Unit gains the [Shock I] promotion"
+??? example  "[unitTriggerTarget] upgrades for free"
+	Example: "[This Unit] upgrades for free"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit loses the [promotion] promotion"
-	Example: "This Unit loses the [Shock I] promotion"
+??? example  "[unitTriggerTarget] upgrades for free including special upgrades"
+	Example: "[This Unit] upgrades for free including special upgrades"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit gains [amount] movement"
-	Example: "This Unit gains [3] movement"
+??? example  "[unitTriggerTarget] gains the [promotion] promotion"
+	Example: "[This Unit] gains the [Shock I] promotion"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit loses [amount] movement"
-	Example: "This Unit loses [3] movement"
+??? example  "[unitTriggerTarget] loses the [promotion] promotion"
+	Example: "[This Unit] loses the [Shock I] promotion"
 
 	Applicable to: UnitTriggerable
 
-??? example  "This Unit gains the [promotion] status for [positiveAmount] turn(s)"
+??? example  "[unitTriggerTarget] gains [amount] movement"
+	Example: "[This Unit] gains [3] movement"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] loses [amount] movement"
+	Example: "[This Unit] loses [3] movement"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] gains the [promotion] status for [positiveAmount] turn(s)"
 	Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns.
-	Example: "This Unit gains the [Shock I] status for [3] turn(s)"
+	Example: "[This Unit] gains the [Shock I] status for [3] turn(s)"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] loses the [promotion] status"
+	Example: "[This Unit] loses the [Shock I] status"
 
 	Applicable to: UnitTriggerable
 
@@ -3193,6 +3202,12 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
+??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
+	Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'
+	Example: "&lt;upon damaging a [Wounded] unit&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
@@ -3341,6 +3356,7 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
+*[unitTriggerTarget]: `This Unit` or `Target Unit`.
 *[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.

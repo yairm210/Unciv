@@ -183,6 +183,22 @@ object Battle {
                     UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
 
+        fun triggerDamageUniquesForUnit(triggeringUnit: MapUnitCombatant, enemy: MapUnitCombatant, combatAction: CombatAction){
+            val stateForConditionals = StateForConditionals(civInfo = triggeringUnit.getCivInfo(),
+                ourCombatant = triggeringUnit, theirCombatant = enemy, tile = attackedTile, combatAction = combatAction)
+
+            for (unique in triggeringUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDamagingUnit, stateForConditionals)){
+                if (unique.getModifiers(UniqueType.TriggerUponDamagingUnit).none { enemy.matchesFilter(it.params[0]) })
+                    continue
+
+                if (unique.params[0] == Constants.targetUnit){
+                    UniqueTriggerActivation.triggerUnique(unique, enemy.unit, triggerNotificationText = "due to our [${enemy.getName()}] being damaged by a [${triggeringUnit.getName()}]")
+                } else {
+                    UniqueTriggerActivation.triggerUnique(unique, triggeringUnit.unit, triggerNotificationText = "due to our [${triggeringUnit.getName()}] damaging a [${enemy.getName()}]")
+                }
+            }
+        }
+        
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
@@ -198,6 +214,11 @@ object Battle {
 
             if (defender is MapUnitCombatant) triggerVictoryUniques(defender, attacker)
             triggerDefeatUniques(attacker, defender, attackedTile)
+        }
+        
+        if (attacker is MapUnitCombatant && defender is MapUnitCombatant){
+            triggerDamageUniquesForUnit(attacker, defender, CombatAction.Attack)
+            if (!attacker.isRanged()) triggerDamageUniquesForUnit(defender, attacker, CombatAction.Defend)
         }
 
         if (attacker is MapUnitCombatant) {

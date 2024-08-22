@@ -1,3 +1,19 @@
+## 4.13.1
+
+Unit statuses, which are temporary promotions!
+- Can be applied with "This Unit gains the [promotion] status for [positiveAmount] turn(s)"
+- Can be removed with "This Unit loses the [promotion] status"
+
+When selecting a unit, show only arrows relevant to selected unit
+
+Better AI conquering of cities
+
+Allowed specifying custom colors for unit promotions
+
+"ok" warnings now colored in 'accept mod errors' popup
+
+Discourage spreading religion by AI to civs they've promised to not do so
+
 ## 4.13.0
 
 Fixed Civilopedia not showing non-unique buildings and units on techs

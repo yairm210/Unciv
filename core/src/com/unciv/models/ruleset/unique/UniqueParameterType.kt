@@ -560,6 +560,11 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf("Cost", "Strength")
     },
 
+
+    UnitTriggerTarget("unitTriggerTarget", Constants.thisUnit, "`${Constants.thisUnit}` or `${Constants.targetUnit}`") {
+        override val staticKnownValues = setOf(Constants.thisUnit, Constants.targetUnit)
+    },
+
     /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter",
         "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter",
