@@ -984,6 +984,13 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            UniqueType.OneTimeUnitDestroyed -> {
+                if (unit == null) return null
+                return {
+                    unit.destroy()
+                    true
+                }
+            }
             UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade,
             UniqueType.OneTimeUnitUpgradeOld, UniqueType.OneTimeUnitSpecialUpgradeOld -> {
                 if (unit == null) return null
