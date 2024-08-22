@@ -1039,6 +1039,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         status.turnsLeft = turns
         status.setTransients(this)
         statuses.add(status)
+        updateUniques()
     }
 
 

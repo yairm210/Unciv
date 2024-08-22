@@ -3202,6 +3202,12 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
+??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
+	Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'
+	Example: "&lt;upon damaging a [Wounded] unit&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
