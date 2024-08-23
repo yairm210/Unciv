@@ -252,6 +252,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "[unitTriggerTarget] is destroyed"
+	Example: "[This Unit] is destroyed"
+
+	Applicable to: UnitTriggerable
+
 ## Global uniques
 !!! note ""
 
