@@ -1,3 +1,25 @@
+## 4.13.2
+
+Removed "continuous rendering" setting, should always be false since Actions 'override' this and all our animations use Actions
+
+Resolved  - City overview updates when entering a city via it, changing info, and exiting
+
+Fixed "don't settle cities" demand button triggering "stop spreading religion" demand as well
+
+Modding: "Costs [amount] [stockpiledResource]" construction accepts conditionals
+
+test: Added test to ensure stockpiled resources are consumed when starting work on "Costs [amount] [stockpiledResource]" construction
+
+Skipping turns for a game now correctly updates the MP screen
+
+Added "[unitTriggerTarget] is destroyed" unit triggerable
+
+Added "upon damaging a [mapUnitFilter] unit" which can trigger a unique on the *enemy* unit!
+
+All unit trigger uniques start with a targetting parameter
+
+AI worker improvements  - By EmperorPinguin
+
 ## 4.13.1
 
 Unit statuses, which are temporary promotions!
