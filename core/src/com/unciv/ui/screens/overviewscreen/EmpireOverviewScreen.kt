@@ -36,16 +36,16 @@ class EmpireOverviewScreen(
     init {
         val selectCategory = defaultCategory
             //TODO replace with `?: persistState.last` in a future update
-            ?: EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage }
+            ?: EmpireOverviewCategories.entries.firstOrNull { it.name == game.settings.lastOverviewPage }
         val iconSize = Constants.defaultFontSize.toFloat()
 
         tabbedPager = TabbedPager(
             stage.width, stage.width,
             centerAreaHeight, centerAreaHeight,
             separatorColor = Color.WHITE,
-            capacity = EmpireOverviewCategories.values().size)
+            capacity = EmpireOverviewCategories.entries.size)
 
-        for (category in EmpireOverviewCategories.values()) {
+        for (category in EmpireOverviewCategories.entries) {
             val tabState = category.testState(viewingPlayer)
             if (tabState == EmpireOverviewTabState.Hidden) continue
             val icon = if (category.iconName.isEmpty()) null else ImageGetter.getImage(category.iconName)
@@ -78,7 +78,7 @@ class EmpireOverviewScreen(
         tabbedPager.selectPage(-1)  // trigger deselect on _old_ instance so the tabs can persist their stuff
         return EmpireOverviewScreen(viewingPlayer,
             //TODO replace with `persistState.last)` in a future update
-            EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage })
+            EmpireOverviewCategories.entries.firstOrNull { it.name == game.settings.lastOverviewPage })
     }
 
     fun resizePage(tab: EmpireOverviewTab) {
@@ -111,7 +111,7 @@ class EmpireOverviewScreen(
         // This is called by UncivGame.popScreen - e.g. after City Tab opened a City and the user closes that CityScreen...
         // Notify the current tab via its IPageExtensions.activated entry point so it can refresh if needed
         val index = tabbedPager.activePage
-        val category = EmpireOverviewCategories.values().getOrNull(index - 1) ?: return
+        val category = EmpireOverviewCategories.entries.getOrNull(index) ?: return
         pageObjects[category]?.activated(index, "", tabbedPager) // Fake caption marks this as popScreen-triggered
     }
 }
