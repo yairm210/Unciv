@@ -1,5 +1,3 @@
-
-
 Removed "continuous rendering" setting, should always be false since Actions 'override' this and all our animations use Actions
 
 Resolved  - City overview updates when entering a city via it, changing info, and exiting
