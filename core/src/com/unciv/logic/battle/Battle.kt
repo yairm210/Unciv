@@ -124,24 +124,15 @@ object Battle {
         } else interceptDamage = DamageDealt.None
 
         // Withdraw from melee ability
-        if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
-            val withdrawChance =
-                if (defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, stateForConditionals = StateForConditionals(
+        if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
+            && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, stateForConditionals = StateForConditionals(
                         civInfo = defender.getCivInfo(),
                         ourCombatant = defender,
                         theirCombatant = attacker,
                         tile = attackedTile
                     ))
-                ) 100
-
-                else 100 - defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-                    .fold(100) { probabilityToWithdraw, unique ->
-                        probabilityToWithdraw * (100 - unique.params[0].toInt()) / 100
-                    }
-
-            if (withdrawChance != 0 && doWithdrawFromMeleeAbility(attacker, defender, withdrawChance))
-                return DamageDealt.None
-        }
+            && doWithdrawFromMeleeAbility(attacker, defender)) return DamageDealt.None
+        
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
@@ -645,15 +636,9 @@ object Battle {
         }
     }
 
-    private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant, withdrawChance: Int): Boolean {
-        if (withdrawChance == 0) return false
+    private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
         if (defender.unit.isEmbarked()) return false
         if (defender.unit.cache.cannotMove) return false
-
-        // This is where the chance comes into play
-        if (Random( // 'randomness' is consistent for turn and tile, to avoid save-scumming
-                attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode().toLong()
-            ).nextInt(100) > withdrawChance) return false
 
         // Promotions have no effect as per what I could find in available documentation
         val fromTile = defender.getTile()

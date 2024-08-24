@@ -105,8 +105,8 @@ object Conditionals {
         return when (conditional.type) {
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < conditional.params[0].toFloat() / 100f
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % conditional.params[0].toInt() == 0 }
-            UniqueType.ConditionalBeforeTurns, UniqueType.ConditionalBeforeTurnsOld -> checkOnGameInfo { turns < conditional.params[0].toInt() }
-            UniqueType.ConditionalAfterTurns, UniqueType.ConditionalAfterTurnsOld -> checkOnGameInfo { turns >= conditional.params[0].toInt() }
+            UniqueType.ConditionalBeforeTurns -> checkOnGameInfo { turns < conditional.params[0].toInt() }
+            UniqueType.ConditionalAfterTurns -> checkOnGameInfo { turns >= conditional.params[0].toInt() }
             UniqueType.ConditionalTutorialsEnabled -> UncivGame.Current.settings.showTutorials
             UniqueType.ConditionalTutorialCompleted -> conditional.params[0] in UncivGame.Current.settings.tutorialTasksCompleted
 
@@ -289,7 +289,7 @@ object Conditionals {
                         first, second -> first != second
                 }
 
-            UniqueType.ConditionalCountableMoreThan, UniqueType.ConditionalCountableGreaterThan ->
+            UniqueType.ConditionalCountableMoreThan ->
                 compareCountables(conditional.params[0], conditional.params[1]) {
                         first, second -> first > second
                 }
