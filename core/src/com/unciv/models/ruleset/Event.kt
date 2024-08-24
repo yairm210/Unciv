@@ -13,7 +13,7 @@ import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
 
 class Event : RulesetObject() {
-    enum class Presentation { None, Alert, Floating }
+    enum class Presentation { /** Does not display a popup, choice chosen randomly */ None, Alert, Floating }
     val presentation = Presentation.Alert
     var text = ""
 
