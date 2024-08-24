@@ -80,6 +80,7 @@ class GameSettings {
     var unitIconOpacity = 1f // default corresponds to fully opaque
     val showPixelUnits: Boolean get() = unitSet != null
     var showPixelImprovements: Boolean = true
+    var continuousRendering = false
     var orderTradeOffersByAmount = true
     var confirmNextTurn = false
     var windowState = WindowState()
