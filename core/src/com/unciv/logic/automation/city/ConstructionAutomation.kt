@@ -165,6 +165,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
+        // There is a risk however, that these cities run out of things to build, and start to construct nothing
         if (civInfo.stats.getUnitSupplyDeficit() > 0) return // we don't want more units if it's already hurting our empire
         // todo: add worker disbandment and consumption of great persons if under attack & short on unit supply
         if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(7, cities * 5))) return
@@ -244,8 +245,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             }.filterBuildable()
         if (workerEquivalents.none()) return // for mods with no worker units
 
-        // Dedicate a worker for the first 5 cities, from then on only build another worker for every 2 cities.
-        val numberOfWorkersWeWant = if (cities <= 5) cities else 5 + (cities - 5 / 2)
+        // Dedicate 1.5 workers for the first 5 cities, from then on only build one worker for every city.
+        val numberOfWorkersWeWant = if (cities <= 5) (cities * 1.5f) else 7.5f + ((cities - 5))
 
         if (workers < numberOfWorkersWeWant) {
             val modifier = numberOfWorkersWeWant / (workers + 0.4f) // The worse our worker to city ratio is, the more desperate we are
@@ -266,7 +267,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val localUniqueCache = LocalUniqueCache()
         for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
-            // We shouldn't try to build wonders in undeveloped empires
+            // We shouldn't try to build wonders in undeveloped cities and empires
+            if (building.isWonder && !cityIsOverAverageProduction)
             if (building.isWonder && civInfo.cities.size < 3) continue
             addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building, localUniqueCache))
         }
