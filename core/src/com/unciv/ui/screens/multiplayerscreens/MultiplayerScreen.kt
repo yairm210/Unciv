@@ -222,14 +222,15 @@ class MultiplayerScreen : PickerScreen() {
 
         Concurrency.runOnNonDaemonThreadPool("Skip turn") {
             try {
-                val skipTurnSuccess = game.onlineMultiplayer.skipCurrentPlayerTurn(multiplayerGame)
+                val skipTurnErrorMessage = game.onlineMultiplayer.skipCurrentPlayerTurn(multiplayerGame)
 
                 launchOnGLThread {
-                    if (skipTurnSuccess) {
+                    if (skipTurnErrorMessage == null) {
                         popup.close()
                     } else {
-                        popup.reuseWith("You can only resign if it's your turn", true)
+                        popup.reuseWith(skipTurnErrorMessage, true)
                     }
+                    gameList.update()
                 }
             } catch (ex: Exception) {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)

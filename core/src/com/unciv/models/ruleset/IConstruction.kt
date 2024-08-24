@@ -24,7 +24,7 @@ interface IConstruction : INamed {
     fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals? = null): Counter<String>
     fun requiredResources(stateForConditionals: StateForConditionals? = null): Set<String>
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
-    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
+    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals) = sequenceOf<Unique>()
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
@@ -102,8 +102,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
 
-    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType): Sequence<Unique> =
-            getMatchingUniques(uniqueType)
+    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> =
+            getMatchingUniques(uniqueType, stateForConditionals)
 
     override fun requiredResources(stateForConditionals: StateForConditionals?): Set<String> {
         return getResourceRequirementsPerTurn(stateForConditionals).keys +
