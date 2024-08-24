@@ -2,7 +2,6 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -13,14 +12,12 @@ import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivSlider
-import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -85,22 +82,6 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
-
-    addSeparator()
-    add("Performance".toLabel(fontSize = 24)).colspan(2).row()
-
-    optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
-        settings.continuousRendering = it
-        Gdx.graphics.isContinuousRendering = it
-    }
-
-    val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
-    val continuousRenderingLabel = WrappableLabel(
-        continuousRenderingDescription,
-        optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
-    )
-    continuousRenderingLabel.wrap = true
-    add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 }
 
 private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
