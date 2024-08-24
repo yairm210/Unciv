@@ -528,9 +528,6 @@ object NextTurnAutomation {
         if (civInfo.isCityState) return
         if (civInfo.isOneCityChallenger()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3 &&
-            civInfo.getPersonality().isNeutralPersonality)
-            return
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 

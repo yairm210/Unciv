@@ -470,16 +470,16 @@ object Automation {
 
     fun rankStatsValue(stats: Stats, civInfo: Civilization): Float {
         var rank = 0.0f
-        rank += if (stats.food <= 2)
-                    (stats.food * 1.2f) //food get more value to keep city growing
-                else
-                    (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
+        rank += stats.food * 1.2f //food get more value to keep city growing
 
         rank += if (civInfo.gold < 0 && civInfo.stats.statsForNextTurn.gold <= 0)
-                    stats.gold
+                    stats.gold //build more gold infrastructure if in serious gold problems
+        // This could lead to oscilliatory behaviour however: gold problem -> build trade post -> no gold problem -> replace trade posts -> gold problem
                 else
-                    stats.gold / 3 // 3 gold is much worse than 2 production
-
+                    stats.gold / 3 // Gold is valued less than is the case for citizen assignment,
+        //otherwise the AI would replace tiles with trade posts upon entering a golden age,
+        //and replace the trade post again when the golden age ends.
+        // We need a way to take golden age gold into account before the GA actually takes place
         rank += stats.happiness
         rank += stats.production
         rank += stats.science

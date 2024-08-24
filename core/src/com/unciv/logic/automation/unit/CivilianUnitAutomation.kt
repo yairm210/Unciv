@@ -102,9 +102,8 @@ object CivilianUnitAutomation {
                 return
         }
 
-        // Great engineer -> Try to speed up wonder construction if late game
-        if (isLateGame &&
-            (unit.hasUnique(UniqueType.CanSpeedupConstruction)
+        // Great engineer -> Try to speed up wonder construction
+        if ((unit.hasUnique(UniqueType.CanSpeedupConstruction)
                 || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction))) {
             val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
             if (wonderCanBeSpedUpEventually)
