@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -528,8 +529,21 @@ class AlertPopup(
 
     /** Returns if event was triggered correctly */
     private fun addEvent(): Boolean {
-        val event = gameInfo.ruleset.events[popupAlert.value] ?: return false
-        val render = RenderEvent(event, worldScreen) { close() }
+        // The event string is in the format "eventName" + (Constants.stringSplitCharacter + "unitId=1234")?
+        // We explicitly specify that this is a unitId, to enable us to add other context info in the future - for example city id
+        val splitString = popupAlert.value.split(Constants.stringSplitCharacter)
+        val eventName = splitString[0]
+        var unit: MapUnit? = null
+        for (i in 1 until splitString.size) {
+            if (splitString[i].startsWith("unitId=")){
+                val unitId = splitString[i].substringAfter("unitId=").toInt()
+                unit = viewingCiv.units.getUnitById(unitId)
+            }
+        }
+        
+        
+        val event = gameInfo.ruleset.events[eventName] ?: return false
+        val render = RenderEvent(event, worldScreen, unit) { close() }
         if (!render.isValid) return false
         add(render).pad(0f).row()
         return true

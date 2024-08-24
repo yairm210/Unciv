@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -55,11 +56,11 @@ class EventChoice : ICivilopediaText {
     fun matchesConditions(stateForConditionals: StateForConditionals) =
         conditionObjects.all { Conditionals.conditionalApplies(null, it, stateForConditionals) }
 
-    fun triggerChoice(civ: Civilization): Boolean {
+    fun triggerChoice(civ: Civilization, unit: MapUnit? = null): Boolean {
         var success = false
-        val stateForConditionals = StateForConditionals(civ)
+        val stateForConditionals = StateForConditionals(civ, unit = unit)
         for (unique in triggeredUniqueObjects.flatMap { it.getMultiplied(stateForConditionals) })
-            if (UniqueTriggerActivation.triggerUnique(unique, civ)) success = true
+            if (UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit)) success = true
         return success
     }
 }
