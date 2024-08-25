@@ -517,7 +517,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 val hasResourceWithFilter =
                         tileResource.name == filter
                                 || tileResource.hasUnique(filter)
-                                || tileResource.resourceType.name + " resource" == filter
+                                || filter.removeSuffix(" resource") == tileResource.resourceType.name
                 if (!hasResourceWithFilter) return false
 
                 // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
