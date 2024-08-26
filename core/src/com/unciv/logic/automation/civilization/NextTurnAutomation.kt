@@ -423,6 +423,7 @@ object NextTurnAutomation {
         val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
             .flatMap { it.cities }
             .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
+            .toList()
         
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
         
