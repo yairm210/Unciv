@@ -1,3 +1,23 @@
+## 4.13.3
+
+Resolved  - Cities can be conquered in the middle of automation, so we need to "finalize" the sequence before iterating
+
+memperf: remove instead of adding, so in cases where there's no suffix we don't allocate any memory for no reason
+
+Natural wonders uniques generalized to work for terrain feature as well
+
+Added deserialization of unit-context events, so in the future we can add the serialization and have unit-context events :D
+
+docs: Better event documentation for presentation
+
+Fixed test
+
+Resolved  - dev console displays enum options correctly on exception
+
+Dammit changelog
+
+chore: deprecated old uniques
+
 ## 4.13.2
 
 Added "upon damaging a [mapUnitFilter] unit" which can trigger a unique on the *enemy* unit -
