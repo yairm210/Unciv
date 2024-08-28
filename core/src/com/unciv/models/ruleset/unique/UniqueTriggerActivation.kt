@@ -119,10 +119,15 @@ object UniqueTriggerActivation {
                 val choices = event.getMatchingChoices(stateForConditionals)
                     ?: return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
-                    choices.randomOrNull()?.triggerChoice(civInfo) ?: false
+                    choices.randomOrNull()?.triggerChoice(civInfo, unit) ?: false
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
-                    civInfo.popupAlerts.add(PopupAlert(AlertType.Event, event.name))
+                    /** See [AlertPopup.addEvent] for the deserializing of this string to the context */
+                    var eventText = event.name
+                    // Todo later version: Uncomment this to enable events with unit triggers
+                    // if (unit != null) eventText += Constants.stringSplitCharacter + "unitId=" + unit.id
+                     
+                    civInfo.popupAlerts.add(PopupAlert(AlertType.Event, eventText))
                     true
                 }
                 // if (event.presentation == Event.Presentation.Floating) return { //todo: Park them in a Queue in GameInfo???

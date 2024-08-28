@@ -542,6 +542,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                             tile.temperature!! < it.params[0].toDouble() || tile.temperature!! > it.params[1].toDouble()
                                     || tile.humidity!! < it.params[2].toDouble() || tile.humidity!! > it.params[3].toDouble()
                         }
+                            && NaturalWonderGenerator.fitsTerrainUniques(vegetationTerrain, tile)
                 }
                 if (possibleVegetation.isEmpty()) continue
                 val randomVegetation = possibleVegetation.random(randomness.RNG)
@@ -559,8 +560,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
-                val possibleFeatures = rareFeatures.filter { it.occursOn.contains(tile.baseTerrain)
-                        && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
+                val possibleFeatures = rareFeatures.filter {
+                    it.occursOn.contains(tile.baseTerrain)
+                            && (!tile.isHill() || it.occursOn.contains(Constants.hill))
+                            && NaturalWonderGenerator.fitsTerrainUniques(it, tile)
+                }
                 if (possibleFeatures.any())
                     tile.addTerrainFeature(possibleFeatures.random(randomness.RNG).name)
             }
@@ -609,8 +613,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
             val candidates = iceEquivalents
                 .filter {
-                    it.matches(temperature, 1.0) &&
-                    tile.lastTerrain.name in it.terrain.occursOn
+                    it.matches(temperature, 1.0)
+                            && tile.lastTerrain.name in it.terrain.occursOn
+                            && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
                 }.map { it.terrain.name }
             when (candidates.size) {
                 1 -> tile.addTerrainFeature(candidates.first())

@@ -6,6 +6,7 @@
       "properties": {
           "name": { "type": "string" },
           "text": { "type": "string" },
+          "presentation": { "enum": ["None", "Alert", "Floating"] },
           "choices": {
               "type": "array",
               "items": {

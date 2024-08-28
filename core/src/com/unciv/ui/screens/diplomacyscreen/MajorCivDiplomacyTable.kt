@@ -239,8 +239,8 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
         val dontSpreadReligionButton = "Please don't spread your religion to us.".toTextButton()
         if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSpreadingReligion && it.value == viewingCiv.civName })
-            dontSettleCitiesButton.disable()
-        dontSettleCitiesButton.onClick {
+            dontSpreadReligionButton.disable()
+        dontSpreadReligionButton.onClick {
             otherCiv.popupAlerts.add(
                 PopupAlert(
                     AlertType.DemandToStopSpreadingReligion,

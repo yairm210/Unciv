@@ -1,3 +1,30 @@
+## 4.13.3
+
+Fixed 'conquer city' automation crash
+
+Minor memory performance improvements
+
+Natural wonders uniques generalized to work for terrain feature as well
+
+Prep work for unit-based Events :)
+
+Dev console displays enum options correctly when given incorrect options
+
+## 4.13.2
+
+Added "upon damaging a [mapUnitFilter] unit" which can trigger a unique on the *enemy* unit -
+All unit trigger uniques start with a targetting parameter to reflect this
+
+Added "[unitTriggerTarget] is destroyed" unit triggerable
+
+City overview updates when entering & exiting city
+
+Fixed "don't settle cities" demand triggering "stop spreading religion" demand
+
+Skipping turns for a game updates the MP screen
+
+AI worker improvements - By EmperorPinguin
+
 ## 4.13.1
 
 Unit statuses, which are temporary promotions!
