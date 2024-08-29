@@ -690,6 +690,17 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             ) {
                 city.civ.civConstructions.boughtItemsWithIncreasingPrice.add(construction.name, 1)
             }
+            
+            // Consume stockpiled resources - usually consumed when construction starts, but not when bought
+            if (getWorkDone(construction.name) == 0){ // we didn't pay the resources when we started building
+                val costUniques = construction.getMatchingUniques(UniqueType.CostsResources, conditionalState)
+
+                for (unique in costUniques) {
+                    val amount = unique.params[0].toInt()
+                    val resourceName = unique.params[1]
+                    city.civ.resourceStockpiles.add(resourceName, -amount)
+                }
+            }
         }
 
         if (queuePosition in 0 until constructionQueue.size)
