@@ -202,6 +202,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (requiredTech: String in requiredTechs())
             if (!civ.tech.isResearched(requiredTech))
                 yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
+        
         for (obsoleteTech: String in techsAtWhichNoLongerAvailable())
             if (civ.tech.isResearched(obsoleteTech))
                 yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
@@ -233,6 +234,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
                     yield(RejectionReasonType.ConsumesResources.toInstance(message))
                 }
+            }
+
+            for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+                val amount = unique.params[0].toInt()
+                val resourceName = unique.params[1]
+                val availableResources = city?.getAvailableResourceAmount(resourceName) ?: civ.getResourceAmount(resourceName)
+                if (availableResources < amount)
+                    yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(amount - availableResources)))
             }
         }
 

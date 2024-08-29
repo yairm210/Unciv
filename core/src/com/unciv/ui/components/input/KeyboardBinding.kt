@@ -124,7 +124,6 @@ enum class KeyboardBinding(
     Repair(Category.UnitActions, Constants.repair, 'r'),
     Create(Category.UnitActions, 'i'),
     HurryResearch(Category.UnitActions, 'g'),
-    StartGoldenAge(Category.UnitActions, 'g'),
     HurryWonder(Category.UnitActions, 'g'),
     HurryBuilding(Category.UnitActions,"Hurry Construction", 'g'),
     ConductTradeMission(Category.UnitActions, 'g'),
@@ -263,8 +262,8 @@ enum class KeyboardBinding(
 
     companion object {
         fun getTranslationEntries() = (
-                Category.values().asSequence().map { it.label }
-                + values().asSequence().map { it.label }.filterNot { it.contains('[') }
+                Category.entries.asSequence().map { it.label }
+                + entries.asSequence().map { it.label }.filterNot { it.contains('[') }
                 + sequenceOf("[stat] Focus")
             )
     }
