@@ -60,7 +60,7 @@ class GameSettings {
     var unitSet: String? = Constants.defaultUnitset
     var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
-    var autoAssignCityProduction: Boolean = true
+    var autoAssignCityProduction: Boolean = false
 
     /** This set of construction names has two effects:
      *  * Matching constructions are no longer candidates for [autoAssignCityProduction]
