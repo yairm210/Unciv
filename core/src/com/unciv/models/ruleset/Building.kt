@@ -259,6 +259,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
         val civ = cityConstructions.city.civ
+        val stateForConditionals = StateForConditionals(civ, cityConstructions.city)
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
@@ -276,7 +277,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             // EXCEPT for [UniqueType.OnlyAvailable] and [UniqueType.CanOnlyBeBuiltInCertainCities]
             // since they trigger (reject) only if conditionals ARE NOT met
             if (unique.type != UniqueType.OnlyAvailable && unique.type != UniqueType.CanOnlyBeBuiltWhen &&
-                !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
+                !unique.conditionalsApply(stateForConditionals)) continue
 
             when (unique.type) {
                 // for buildings that are created as side effects of other things, and not directly built,
@@ -380,13 +381,19 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn(
-            StateForConditionals(cityConstructions.city.civ, cityConstructions.city))
-        ) {
+        for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn(stateForConditionals)) {
             val availableAmount = cityConstructions.city.getAvailableResourceAmount(resourceName)
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
+        }
+        
+        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+            val amount = unique.params[0].toInt()
+            val resourceName = unique.params[1]
+            val availableResources = cityConstructions.city.getAvailableResourceAmount(resourceName)
+            if (availableResources < amount)
+                yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(amount - availableResources)))
         }
 
         if (requiredNearbyImprovedResources != null) {

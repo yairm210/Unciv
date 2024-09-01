@@ -1,3 +1,17 @@
+## 4.13.4
+
+Resolved  - removed last remaining 'golden age' (keyboard binding)
+
+Don't allow constructing stockpiled-resource-requiring constructions when lacking the resources
+
+Consume stockpiled resources when purchasing constructions that require them
+
+Better console documentation for objects with spaces
+
+Don't show "ok" ruleset validations when starting a new game
+
+tryRetreat bugfix  - By EmperorPinguin
+
 ## 4.13.3
 
 Fixed 'conquer city' automation crash

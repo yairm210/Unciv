@@ -304,4 +304,17 @@ class ResourceTests {
         game.gameInfo.nextTurn()
         assert(civInfo.getCivResourcesByName()[resource.name] == 1) // 1 was consumed because production started
     }
+
+    @Test
+    fun constructionsRequiringStockpiledResourcesUnconstructableWithoutThem() {
+        // given
+        val resource = game.createResource(UniqueType.Stockpiled.text)
+        val consumingBuilding = game.createBuilding("Costs [1] [${resource.name}]")
+        assert(!consumingBuilding.isBuildable(city.cityConstructions))
+
+
+        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
+        city.cityConstructions.addBuilding(building)
+        assert(consumingBuilding.isBuildable(city.cityConstructions))
+    }
 }
