@@ -358,7 +358,7 @@ class CityStats(val city: City) {
             if (tile.isBlockaded() && city.isWorked(tile)) {
                 city.workedTiles.remove(tile.position)
                 city.lockedTiles.remove(tile.position)
-                city.updateCitizens = true
+                city.reassignPopulation = true
                 continue
             }
             val tileStats = tile.stats.getTileStats(city, city.civ, localUniqueCache)

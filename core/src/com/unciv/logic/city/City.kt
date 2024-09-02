@@ -82,7 +82,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
-    var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
+    var reassignPopulation = false  // flag so that on startTurn() we reassign population
 
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
@@ -139,7 +139,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.isOriginalCapital = isOriginalCapital
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.demandedResource = demandedResource
-        toReturn.updateCitizens = updateCitizens
+        toReturn.reassignPopulation = reassignPopulation
         toReturn.cityAIFocus = cityAIFocus
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
@@ -315,7 +315,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
         if (!manualSpecialists)
             population.specialistAllocations.clear()
-        updateCitizens = false
+        reassignPopulation = false
         population.autoAssignPopulation()
     }
 
@@ -327,7 +327,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun reassignPopulationDeferred() {
         // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
         if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
-        else updateCitizens = true
+        else reassignPopulation = true
     }
 
     fun destroyCity(overrideSafeties: Boolean = false) {

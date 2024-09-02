@@ -34,7 +34,7 @@ class CityTurnManager(val city: City) {
         if (city.isPuppet) {
             city.setCityFocus(CityFocus.GoldFocus)
             city.reassignAllPopulation()
-        } else if (city.updateCitizens) {
+        } else if (city.reassignPopulation) {
             city.reassignPopulation()  // includes cityStats.update
         } else
             city.cityStats.update()
@@ -77,7 +77,7 @@ class CityTurnManager(val city: City) {
                         demandNewResource()
                     }
                     CityFlags.Resistance.name -> {
-                        city.updateCitizens = true
+                        city.reassignPopulation = true
                         city.civ.addNotification(
                             "The resistance in [${city.name}] has ended!",
                             CityAction.withLocation(city), NotificationCategory.General, "StatIcons/Resistance")
