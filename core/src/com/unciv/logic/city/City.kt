@@ -82,7 +82,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
-    var reassignPopulation = false  // flag so that on startTurn() we reassign population
+    var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
 
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
@@ -139,7 +139,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.isOriginalCapital = isOriginalCapital
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.demandedResource = demandedResource
-        toReturn.reassignPopulation = reassignPopulation
+        toReturn.shouldReassignPopulation = shouldReassignPopulation
         toReturn.cityAIFocus = cityAIFocus
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
@@ -315,19 +315,19 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
         if (!manualSpecialists)
             population.specialistAllocations.clear()
-        reassignPopulation = false
+        shouldReassignPopulation = false
         population.autoAssignPopulation()
     }
 
     /** Apply worked tiles optimization (aka CityFocus) -
      *  immediately for a human player whoes turn it is (interactive),
      *  or deferred to the next startTurn while nextTurn is running (for AI)
-     *  @see reassignPopulation
+     *  @see shouldReassignPopulation
      */
     fun reassignPopulationDeferred() {
         // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
         if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
-        else reassignPopulation = true
+        else shouldReassignPopulation = true
     }
 
     fun destroyCity(overrideSafeties: Boolean = false) {

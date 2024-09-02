@@ -134,7 +134,7 @@ class CityConquestFunctions(val city: City) {
     fun annexCity() {
         city.isPuppet = false
         city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
-        if (!city.isInResistance()) city.reassignPopulation = true
+        if (!city.isInResistance()) city.shouldReassignPopulation = true
         city.setCityFocus(CityFocus.NoFocus)
         city.cityStats.update()
         GUI.setUpdateWorldOnNextRender()
