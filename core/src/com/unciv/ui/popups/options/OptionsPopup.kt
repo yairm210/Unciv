@@ -38,6 +38,7 @@ class OptionsPopup(
 
     val game = screen.game
     val settings = screen.game.settings
+    private val oldGithubToken = settings.githubAccessToken
     val tabs: TabbedPager
     val selectBoxMinWidth: Float
     private val tabMinWidth: Float
@@ -138,6 +139,13 @@ class OptionsPopup(
 
         pack() // Needed to show the background.
         center(screen.stage)
+
+        closeListeners.add {
+            val mainMenu = UncivGame.Current.screen as? MainMenuScreen
+            if (settings.githubAccessToken != oldGithubToken && mainMenu != null) {
+                mainMenu.restartAutoUpdate()
+            }
+        }
     }
 
     override fun setVisible(visible: Boolean) {
@@ -159,7 +167,7 @@ class OptionsPopup(
                 UncivGame.Current.reloadWorldscreen()
             } else if (screen is MainMenuScreen) {
                 withGLContext {
-                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen())
+                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen(true))
                 }
             }
             withGLContext {

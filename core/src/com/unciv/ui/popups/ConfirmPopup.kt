@@ -34,10 +34,8 @@ open class ConfirmPopup(
         action: () -> Unit
     ) : this(screen.stage, question, confirmText, isConfirmPositive, restoreDefault, action)
 
-    /** The [Label][com.badlogic.gdx.scenes.scene2d.ui.Label] created for parameter `question` for optional layout tweaking */
-    private val promptLabel = question.toLabel()
-
     init {
+        val promptLabel = question.toLabel()
         promptLabel.setAlignment(Align.center)
         add(promptLabel).colspan(2).row()
         addCloseButton(Constants.cancel, KeyboardBinding.Cancel, action = restoreDefault)
