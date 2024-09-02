@@ -139,7 +139,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             settings.tileSet = Constants.defaultTileset
         }
 
-        Gdx.graphics.isContinuousRendering = settings.continuousRendering
+        Gdx.graphics.isContinuousRendering = false
 
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
