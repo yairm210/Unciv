@@ -21,7 +21,7 @@ class UnitTurnManager(val unit: MapUnit) {
         ) {
             val tile = unit.getTile()
             if (tile.doWorkerTurn(unit))
-                tile.getCity()?.updateCitizens = true
+                tile.getCity()?.shouldReassignPopulation = true
         }
 
         if (!unit.hasUnitMovedThisTurn() && unit.isFortified() && unit.turnsFortified < 2) {

@@ -297,7 +297,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun cheapestStatBuilding(stat: Stat): Building? {
         return city.getRuleset().buildings.values
-            .filter { !it.isAnyWonder() && it.isStatRelated(stat) &&
+            .filter { !it.isAnyWonder() && it.isStatRelated(stat, city) &&
                 (it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name)) }
             .minByOrNull { it.cost }
     }
@@ -539,17 +539,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             civ.cache.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
-        if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)
+        if (building.isStatRelated(Stat.Science, city) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)
             && city.isCapital())
             civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
 
-        // Happiness is global, so it could affect all cities
-        if (building.isStatRelated(Stat.Happiness)) {
-            for (city in civ.cities) {
-                city.reassignPopulationDeferred()
-            }
-        }
-        else city.reassignPopulationDeferred()
+        val previousHappiness = civ.getHappiness()
+        // can cause civ happiness update: reassignPopulationDeferred -> reassignPopulation -> cityStats.update -> civ.updateHappiness
+        city.reassignPopulationDeferred()
+        val newHappiness = civ.getHappiness()
+        
+        /** Same check as [com.unciv.logic.civilization.Civilization.updateStatsForNextTurn] - 
+         *   but that triggers *stat calculation* whereas this is for *population assignment* */
+        if (previousHappiness != newHappiness && city.civ.gameInfo.ruleset.allHappinessLevelsThatAffectUniques
+                .any { newHappiness < it != previousHappiness < it})
+            city.civ.cities.filter { it != city }.forEach { it.reassignPopulationDeferred() }
 
         if (tryAddFreeBuildings)
             city.civ.civConstructions.tryAddFreeBuildings()
