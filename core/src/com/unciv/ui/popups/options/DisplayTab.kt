@@ -23,10 +23,11 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skin
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
+import com.unciv.utils.ScreenOrientation
 
 /**
  *  @param onChange Callback for _major_ changes, OptionsPopup will rebuild itself and the WorldScreen
@@ -34,7 +35,7 @@ import com.unciv.utils.ScreenMode
 fun displayTab(
     optionsPopup: OptionsPopup,
     onChange: () -> Unit,
-) = Table(BaseScreen.skin).apply {
+) = Table(skin).apply {
     pad(10f)
     defaults().pad(2.5f)
 
@@ -42,8 +43,9 @@ fun displayTab(
 
     add("Screen".toLabel(fontSize = 24)).colspan(2).row()
 
-    addScreenModeSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
     addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+    addScreenOrientationSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+    addScreenModeSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
 
 
     if (Gdx.app.type == Application.ApplicationType.Desktop) {
@@ -203,6 +205,24 @@ private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectB
         settings.screenSize = ScreenSize.valueOf(screenSizeSelectBox.selected.value)
         onResolutionChange()
     }
+}
+
+private fun addScreenOrientationSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onOrientationChange: () -> Unit){
+    if (!Display.hasOrientation()) return
+    
+    table.add("Screen orientation".toLabel()).left().fillX()
+
+    val selectBox = SelectBox<ScreenOrientation>(skin)
+    selectBox.items = Array(ScreenOrientation.entries.toTypedArray())
+    selectBox.selected = settings.displayOrientation
+    selectBox.onChange {
+        val orientation = selectBox.selected
+        settings.displayOrientation = orientation
+        Display.setOrientation(orientation)
+        onOrientationChange()
+    }
+
+    table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onTilesetChange: () -> Unit) {
