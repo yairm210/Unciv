@@ -41,10 +41,14 @@ class EventChoice : ICivilopediaText, RulesetObject() {
     /** Keyboard support - not user-rebindable, mod control only. Will be [parsed][KeyCharAndCode.parse], so Gdx key names will work. */
     val keyShortcut = ""
     
+    @Deprecated("as of 4.13.4", ReplaceWith("uniques"))
     var triggeredUniques = ArrayList<String>()
+    @Deprecated("as of 4.13.4", ReplaceWith("uniqueObjects"))
     val triggeredUniqueObjects by lazy { triggeredUniques.map { Unique(it) } }
 
+    @Deprecated("as of 4.13.4", ReplaceWith("uniques"))
     var conditions = ArrayList<String>()
+    @Deprecated("as of 4.13.4", ReplaceWith("uniqueObjects"))
     val conditionObjects by lazy { conditions.map { Unique(it) } }
 
     fun matchesConditions(stateForConditionals: StateForConditionals): Boolean {
