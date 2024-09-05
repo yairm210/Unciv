@@ -35,7 +35,7 @@ class Event : RulesetObject() {
 
 class EventChoice : ICivilopediaText, RulesetObject() {
     var text = ""
-    override fun getUniqueTarget() = UniqueTarget.Event
+    override fun getUniqueTarget() = UniqueTarget.EventChoice
     override fun makeLink() = ""
 
     /** Keyboard support - not user-rebindable, mod control only. Will be [parsed][KeyCharAndCode.parse], so Gdx key names will work. */
