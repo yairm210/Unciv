@@ -3,7 +3,6 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
@@ -22,6 +21,7 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 
@@ -185,9 +185,13 @@ object UnitAutomation {
             val availablePromotions = unit.promotions.getAvailablePromotions()
                 .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
             if (availablePromotions.none()) break
-            unit.promotions.addPromotion(
-                availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList().randomOrNull()?.name
-                    ?: availablePromotions.toList().random().name)
+            val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
+            val stateForConditionals = StateForConditionals(unit)
+            
+            val chosenPromotion = if (freePromotions.isNotEmpty()) freePromotions.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+            else availablePromotions.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+            
+            unit.promotions.addPromotion(chosenPromotion.name)
         }
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war

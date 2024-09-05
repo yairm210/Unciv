@@ -34,7 +34,6 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
-import com.unciv.utils.ScreenOrientation
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,9 +53,6 @@ class AdvancedTab(
 
         addAutosaveTurnsSelectBox()
         addSeparator(Color.GRAY)
-
-        if (Display.hasOrientation())
-            addOrientationSelectBox()
 
         if (Display.hasCutout())
             addCutoutCheckbox()
@@ -96,21 +92,6 @@ class AdvancedTab(
         }
     }
 
-    private fun addOrientationSelectBox() {
-        add("Screen orientation".toLabel()).left().fillX()
-
-        val selectBox = SelectBox<ScreenOrientation>(skin)
-        selectBox.items = Array(ScreenOrientation.entries.toTypedArray())
-        selectBox.selected = settings.displayOrientation
-        selectBox.onChange {
-            val orientation = selectBox.selected
-            settings.displayOrientation = orientation
-            Display.setOrientation(orientation)
-            optionsPopup.reopenAfterDisplayLayoutChange()
-        }
-
-        add(selectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f).row()
-    }
 
     private fun addAutosaveTurnsSelectBox() {
         add("Turns between autosaves".toLabel()).left().fillX()
