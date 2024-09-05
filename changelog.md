@@ -1,22 +1,14 @@
 ## 4.13.5
 
-Resolves , resolves #12103 - Apply 'AI choice weight' to event decisions, accepting conditionals
-
-Make event choices ruleset objects, with standard "uniques" field
-
-Added "AI choice weight" for techs policies and promotions, events pending since there's work to do - 
+Modding:
+- Make event choices ruleset objects, with standard "uniques" field
+- Added "AI choice weight" for event choices, techs, policies and promotions 
 
 Moved screen orientation setting from advanced tab to display tab
 
-Resolved  - only trigger population reassignment on new buildings when it really changes something
+Performance: only trigger population reassignment on new buildings when it really changes something
 
-On second thoughts let's not have a field and function named the same
-
-Better naming for "reassign population". Not safe-renamed because even if the data is lost for one turn on existing games it's no biggie.
-
-Actually *use* the new parameter
-
-Better stat-related check for buildings - 
+Better stat-related checks for buildings in cities 
 
 ## 4.13.4
 

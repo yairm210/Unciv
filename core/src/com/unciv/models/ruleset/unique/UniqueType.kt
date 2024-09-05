@@ -277,10 +277,11 @@ enum class UniqueType(
      */
     OnlyAvailable("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
-        UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief, UniqueTarget.Event,
+        UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief, UniqueTarget.Event, UniqueTarget.EventChoice,
         docDescription = "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen"),
     Unavailable("Unavailable", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
-        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins, UniqueTarget.Event,
+        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
+        UniqueTarget.Event, UniqueTarget.EventChoice,
         docDescription = "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\"."),
 
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),

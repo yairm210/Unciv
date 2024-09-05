@@ -185,6 +185,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Mark tutorial [comment] complete"
+	Example: "Mark tutorial [comment] complete"
+
+	Applicable to: Triggerable
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
@@ -1077,6 +1082,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
 
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, Promotion
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
@@ -1094,6 +1104,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
@@ -2151,6 +2166,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "This Promotion is free"
 	Applicable to: Promotion
 
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, Promotion
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
 
@@ -2714,11 +2734,6 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
-
-??? example  "Mark tutorial [comment] complete"
-	Example: "Mark tutorial [comment] complete"
-
-	Applicable to: Event
 
 ## Conditional uniques
 !!! note ""
