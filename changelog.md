@@ -1,3 +1,27 @@
+## 4.13.5
+
+Modding:
+- Make event choices ruleset objects, with standard "uniques" field
+- Added "AI choice weight" for event choices, techs, policies and promotions 
+
+Moved screen orientation setting from advanced tab to display tab
+
+Performance: only trigger population reassignment on new buildings when it really changes something
+
+Better stat-related checks for buildings in cities 
+
+## 4.13.4
+
+Don't allow constructing stockpiled-resource-requiring constructions when lacking the resources
+
+Consume stockpiled resources when purchasing constructions that require them
+
+Don't show "ok" ruleset validations when starting a new game
+
+Set "auto assign city production" to false for new players
+
+Automated units retreat from Barbarians when not at war - By EmperorPinguin
+
 ## 4.13.3
 
 Fixed 'conquer city' automation crash

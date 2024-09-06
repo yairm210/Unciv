@@ -33,6 +33,7 @@ import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -119,7 +120,8 @@ object UniqueTriggerActivation {
                 val choices = event.getMatchingChoices(stateForConditionals)
                     ?: return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
-                    choices.randomOrNull()?.triggerChoice(civInfo, unit) ?: false
+                    val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                    choice.triggerChoice(civInfo, unit)
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
                     /** See [AlertPopup.addEvent] for the deserializing of this string to the context */

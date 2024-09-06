@@ -28,6 +28,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.random.Random
 
@@ -258,12 +259,15 @@ object NextTurnAutomation {
                 .groupBy { it.cost }
             return researchableTechs.toSortedMap().values.toList()
         }
+
+        val stateForConditionals = StateForConditionals(civInfo)
         while(civInfo.tech.freeTechs > 0) {
             val costs = getGroupedResearchableTechs()
             if (costs.isEmpty()) return
 
             val mostExpensiveTechs = costs[costs.size - 1]
-            civInfo.tech.getFreeTechnology(mostExpensiveTechs.random().name)
+            val chosenTech = mostExpensiveTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+            civInfo.tech.getFreeTechnology(chosenTech.name)
         }
         if (civInfo.tech.techsToResearch.isEmpty()) {
             val costs = getGroupedResearchableTechs()
@@ -273,11 +277,11 @@ object NextTurnAutomation {
             //Do not consider advanced techs if only one tech left in cheapest group
             val techToResearch: Technology =
                 if (cheapestTechs.size == 1 || costs.size == 1) {
-                    cheapestTechs.random()
+                    cheapestTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
                 } else {
                     //Choose randomly between cheapest and second cheapest group
                     val techsAdvanced = costs[1]
-                    (cheapestTechs + techsAdvanced).random()
+                    (cheapestTechs + techsAdvanced).randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
                 }
 
             civInfo.tech.techsToResearch.add(techToResearch.name)
@@ -344,7 +348,8 @@ object NextTurnAutomation {
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
-                else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }.random()
+                else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }
+                    .randomWeighted { it.getWeightForAiDecision(StateForConditionals(civInfo)) }
 
             civInfo.policies.adopt(policyToAdopt)
         }

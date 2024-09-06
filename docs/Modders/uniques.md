@@ -185,6 +185,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Mark tutorial [comment] complete"
+	Example: "Mark tutorial [comment] complete"
+
+	Applicable to: Triggerable
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
@@ -1068,14 +1073,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
+
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
@@ -1089,11 +1099,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## Policy uniques
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
@@ -1126,7 +1141,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
@@ -1364,7 +1379,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion"
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
@@ -1421,11 +1436,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Excess Food converted to Production when under construction"
 	Applicable to: Building, Unit
@@ -1639,11 +1654,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Excess Food converted to Production when under construction"
 	Applicable to: Building, Unit
@@ -2139,17 +2154,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## Promotion uniques
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
 ??? example  "This Promotion is free"
 	Applicable to: Promotion
+
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
@@ -2379,11 +2399,11 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Must be next to [tileFilter]"
 	Example: "Must be next to [Farm]"
@@ -2589,11 +2609,11 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 ## Ruins uniques
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Free [unit] found in the ruins"
 	Example: "Free [Musketman] found in the ruins"
@@ -2709,16 +2729,20 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 ## Event uniques
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
-??? example  "Mark tutorial [comment] complete"
-	Example: "Mark tutorial [comment] complete"
+## EventChoice uniques
+??? example  "Only available"
+	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
-	Applicable to: Event
+??? example  "Unavailable"
+	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ## Conditional uniques
 !!! note ""
