@@ -104,6 +104,7 @@ object Fonts {
     const val rangedStrength = '‡'      // U+2021 'double dagger'
     const val movement = '➡'            // U+27A1 'black rightwards arrow'
     const val range = '…'               // U+2026 'horizontal ellipsis'
+    const val health = '♡'              // U+2661 'white heart suit'
     const val production = '⚙'          // U+2699 'gear'
     const val gold = '¤'                // U+00A4 'currency sign'
     const val food = '⁂'                // U+2042 'asterism' (to avoid 🍏 U+1F34F 'green apple' needing 2 symbols in utf-16 and 4 in utf-8)
@@ -137,6 +138,7 @@ object Fonts {
     // Taken into account when limiting FontRulesetIcons codepoints (it respects the private area ending at U+F8FF)
     const val sortUpArrow = '￪'         // U+FFEA 'half wide upward arrow'
     const val sortDownArrow = '￬'       // U+FFEC 'half wide downward arrow'
+    const val rightArrow = '→'          // U+2192, e.g. Battle table or event-based tutorials
     //endregion
 
     val allSymbols = mapOf(
@@ -165,6 +167,7 @@ object Fonts {
         status to "EmojiIcons/SortedByStatus",
         sortUpArrow to "EmojiIcons/SortedAscending",
         sortDownArrow to "EmojiIcons/SortedDescending",
+        rightArrow to "EmojiIcons/RightArrow",
         *MayaCalendar.allSymbols
     )
     //endregion

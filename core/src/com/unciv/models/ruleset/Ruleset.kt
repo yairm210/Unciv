@@ -42,6 +42,9 @@ enum class RulesetFile(val filename: String,
     Policies("Policies.json", { policies.values.asSequence() }),
     Techs("Techs.json", { technologies.values.asSequence() }),
     Terrains("Terrains.json", { terrains.values.asSequence() }),
+    /** Tutorials are special and are read in [com.unciv.ui.screens.basescreen.TutorialController.loadTutorialsFromJson]
+     * This is here for completion's sake and to remove ruleset validation error */
+    Tutorials("Tutorials.json"),
     TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
     TileResources("TileResources.json", { tileResources.values.asSequence() }),
     Specialists("Specialists.json"),
@@ -52,9 +55,7 @@ enum class RulesetFile(val filename: String,
     CityStateTypes("CityStateTypes.json", getUniques =
         { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } }),
     Personalities("Personalities.json", { personalities.values.asSequence() }),
-    Events("Events.json", {events.values.asSequence()},
-        { events.values.asSequence().flatMap { it.uniqueObjects } +
-                events.values.asSequence().flatMap { it.choices.flatMap { it.triggeredUniqueObjects } }}),
+    Events("Events.json", {events.values.asSequence() + events.values.flatMap { it.choices }}),
     GlobalUniques("GlobalUniques.json", { sequenceOf(globalUniques) }),
     ModOptions("ModOptions.json", getUniques = { modOptions.uniqueObjects.asSequence() }),
     Speeds("Speeds.json", { speeds.values.asSequence() }),
@@ -126,7 +127,7 @@ class Ruleset {
     val allHappinessLevelsThatAffectUniques by lazy {
         sequence {
             for (unique in this@Ruleset.allUniques())
-                for (conditional in unique.conditionals){
+                for (conditional in unique.modifiers){
                     if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
                     if (conditional.type == UniqueType.ConditionalBetweenHappiness){
                         yield(conditional.params[0].toInt())
@@ -475,7 +476,7 @@ class Ruleset {
     internal fun updateBuildingCosts() {
         for (building in buildings.values) {
             if (building.cost != -1) continue
-            if (building.getMatchingUniques(UniqueType.Unbuildable).any { it.conditionals.isEmpty() }) continue
+            if (building.getMatchingUniques(UniqueType.Unbuildable).any { it.modifiers.isEmpty() }) continue
             val column = building.techColumn(this) ?: continue
             building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
         }

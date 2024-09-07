@@ -22,6 +22,8 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
+import com.unciv.ui.images.Portrait
+import com.unciv.ui.images.PortraitPromotion
 
 class RulesetValidator(val ruleset: Ruleset) {
 
@@ -56,7 +58,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         // Tileset tests - e.g. json configs complete and parseable
         checkTilesetSanity(lines)  // relies on textureNamesCache
         checkCivilopediaText(lines)  // relies on textureNamesCache
-        checkFiles(lines)
+        checkFileNames(lines)
 
         return lines
     }
@@ -101,30 +103,65 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         checkCivilopediaText(lines)
-        checkFiles(lines)
+        checkFileNames(lines)
 
         return lines
     }
 
 
-    private fun checkFiles(lines: RulesetErrorList) {
+    private fun checkFileNames(lines: RulesetErrorList) {
         val folder = ruleset.folderLocation ?: return
         for (child in folder.list()){
             if (child.name().endsWith("json") && !child.name().startsWith("Atlas"))
                 lines.add("File ${child.name()} is located in the root folder - it should be moved to a 'jsons' folder")
         }
+
+        fun getPossibleMisspellings(originalText: String, possibleMisspellings: List<String>): List<String> {
+            return possibleMisspellings.filter {
+                getRelativeTextDistance(
+                    it,
+                    originalText
+                ) <= RulesetCache.uniqueMisspellingThreshold
+            }
+        }
+
+        val knownFolderNames = listOf("jsons", "maps", "sounds", "Images", "fonts")
+        for (child in folder.list()){
+            if (child.isDirectory && child.name() !in knownFolderNames){
+                val possibleMisspellings = getPossibleMisspellings(child.name(), knownFolderNames)
+                if (possibleMisspellings.isNotEmpty())
+                    lines.add("Folder \"${child.name()}\" is probably a misspelling of "+possibleMisspellings.joinToString("/"),
+                        RulesetErrorSeverity.OK)
+            }
+        }
+
+        val knownImageFolders = Portrait.Type.entries.map { it.directory }.flatMap { listOf(it+"Icons", it+"Portraits") } +
+                // Not portrait-able (yet?)
+                listOf("CityStateIcons", "PolicyBranchIcons", "PolicyIcons", "OtherIcons", "EmojiIcons", "StatIcons", "TileIcons", "TileSets")
+        val imageFolders = folder.list().filter { it.name().startsWith("Images") }
+        for (imageFolder in imageFolders){
+            for (child in imageFolder.list()){
+                if (!child.isDirectory) {
+                    lines.add("File \"$imageFolder/${child.name()}\" is misplaced - Images folders should not contain any files directly - only subfolders",
+                        RulesetErrorSeverity.OK)
+                } else if (child.name() !in knownImageFolders){
+                    val possibleMisspellings = getPossibleMisspellings(child.name(), knownImageFolders)
+                    if (possibleMisspellings.isNotEmpty())
+                        lines.add("Folder \"$imageFolder/${child.name()}\" is probably a misspelling of "+
+                                possibleMisspellings.joinToString("/"),
+                            RulesetErrorSeverity.OK)
+                }
+            }
+        }
+
+
         val jsonFolder = folder.child("jsons")
         if (jsonFolder.exists()) {
             for (file in jsonFolder.list("json")) {
                 if (file.name() !in RulesetFile.entries.map { it.filename }) {
                     var text = "File ${file.name()} is in the jsons folder but is not a recognized ruleset file"
-                    val similarFilenames = RulesetFile.entries.map { it.filename }.filter {
-                        getRelativeTextDistance(
-                            it,
-                            file.name()
-                        ) <= RulesetCache.uniqueMisspellingThreshold
-                    }
-                    if (similarFilenames.isNotEmpty()) text += "\nPossible misspelling of: "+similarFilenames.joinToString("/")
+                    val possibleMisspellings = getPossibleMisspellings(file.name(), RulesetFile.entries.map { it.filename })
+                    if (possibleMisspellings.isNotEmpty()) text += "\nPossible misspelling of: "+possibleMisspellings.joinToString("/")
                     lines.add(text, RulesetErrorSeverity.OK)
                 }
             }
@@ -201,8 +238,21 @@ class RulesetValidator(val ruleset: Ruleset) {
         // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
+                
                 for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
                     lines += uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, true)
+                
+                if (choice.conditions.isNotEmpty())
+                    lines.add("Event choice 'conditions' field is deprecated, " +
+                            "please replace with 'Only available' or 'Not availble' uniques in 'uniques' field", 
+                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
+                
+                if (choice.triggeredUniques.isNotEmpty())
+                    lines.add("Event choice 'triggered uniques' field is deprecated, " +
+                            "please place the triggers in the 'uniques' field",
+                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
+                
+                uniqueValidator.checkUniques(choice, lines, true, tryFixUnknownUniques)
             }
         }
     }
@@ -295,12 +345,24 @@ class RulesetValidator(val ruleset: Ruleset) {
                 for (prereq in policy.requires!!)
                     if (!ruleset.policies.containsKey(prereq))
                         lines.add("${policy.name} requires policy $prereq which does not exist!", sourceObject = policy)
+
             uniqueValidator.checkUniques(policy, lines, true, tryFixUnknownUniques)
         }
 
-        for (branch in ruleset.policyBranches.values)
+        for (branch in ruleset.policyBranches.values) {
             if (branch.era !in ruleset.eras)
                 lines.add("${branch.name} requires era ${branch.era} which does not exist!", sourceObject = branch)
+
+            val policyLocations = HashMap<String, Policy>()
+            for (policy in branch.policies) {
+                val policyLocation = "${policy.row}/${policy.column}"
+                val existingPolicyInLocation = policyLocations[policyLocation]
+
+                if (existingPolicyInLocation == null) policyLocations[policyLocation] = policy
+                else lines.add("Policies ${policy.name} and ${existingPolicyInLocation.name} in branch ${branch.name}" +
+                        " are both located at column ${policy.column} row ${policy.row}!", sourceObject = policy)
+            }
+        }
 
 
         for (policy in ruleset.policyBranches.values.flatMap { it.policies + it })
@@ -443,9 +505,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 else if (baseTerrain.type == TerrainType.NaturalWonder)
                     lines.add("${terrain.name} occurs on natural wonder $baseTerrainName: Unsupported.", RulesetErrorSeverity.WarningOptionsOnly, terrain)
             }
-            if (terrain.type == TerrainType.NaturalWonder) {
-                if (terrain.turnsInto == null)
-                    lines.add("Natural Wonder ${terrain.name} is missing the turnsInto attribute!", sourceObject = terrain)
+            if (terrain.type == TerrainType.NaturalWonder && terrain.turnsInto != null) {
                 val baseTerrain = ruleset.terrains[terrain.turnsInto]
                 if (baseTerrain == null)
                     lines.add("${terrain.name} turns into terrain ${terrain.turnsInto} which does not exist!", sourceObject = terrain)
@@ -598,7 +658,8 @@ class RulesetValidator(val ruleset: Ruleset) {
     ) {
         for (promotion in ruleset.unitPromotions.values) {
             uniqueValidator.checkUniques(promotion, lines, false, tryFixUnknownUniques)
-
+            checkContrasts(promotion.innerColorObject ?: PortraitPromotion.defaultInnerColor,
+                promotion.outerColorObject ?: PortraitPromotion.defaultOuterColor, promotion, lines)
             addPromotionErrorRulesetInvariant(promotion, lines)
         }
     }
@@ -627,10 +688,20 @@ class RulesetValidator(val ruleset: Ruleset) {
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
 
-        // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
-        val constrastRatio = nation.getContrastRatio()
-        if (constrastRatio < 3) {
-            val (newInnerColor, newOuterColor) = getSuggestedColors(nation)
+        checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
+    }
+    
+    
+
+    private fun checkContrasts(
+        innerColor: Color,
+        outerColor: Color,
+        nation: RulesetObject,
+        lines: RulesetErrorList
+    ) {
+        val constrastRatio = getContrastRatio(innerColor, outerColor)
+        if (constrastRatio < 3) { // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
+            val (newInnerColor, newOuterColor) = getSuggestedColors(innerColor, outerColor)
 
             var text = "${nation.name}'s colors do not contrast enough - it is unreadable!"
             text += "\nSuggested colors: "
@@ -641,11 +712,12 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
+
     data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
-    private fun getSuggestedColors(nation: Nation): SuggestedColors {
-        val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())
-        val outerColorLuminance = getRelativeLuminance(nation.getOuterColor())
+    private fun getSuggestedColors(innerColor: Color, outerColor: Color): SuggestedColors {
+        val innerColorLuminance = getRelativeLuminance(innerColor)
+        val outerColorLuminance = getRelativeLuminance(outerColor)
 
         val innerLerpColor: Color
         val outerLerpColor: Color
@@ -660,12 +732,12 @@ class RulesetValidator(val ruleset: Ruleset) {
 
 
         for (i in 1..10) {
-            val newInnerColor = nation.getInnerColor().cpy().lerp(innerLerpColor, 0.05f * i)
-            val newOuterColor = nation.getOuterColor().cpy().lerp(outerLerpColor, 0.05f * i)
+            val newInnerColor = innerColor.cpy().lerp(innerLerpColor, 0.05f * i)
+            val newOuterColor = outerColor.cpy().lerp(outerLerpColor, 0.05f * i)
 
             if (getContrastRatio(newInnerColor, newOuterColor) > 3) return SuggestedColors(newInnerColor, newOuterColor)
         }
-        throw Exception("Error getting suggested colors for nation "+nation.name)
+        throw Exception("Error getting suggested colors")
     }
 
     private fun addBuildingErrorsRulesetInvariant(
@@ -704,8 +776,8 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (techColumn.columnNumber < 0)
                 lines.add("Tech Column number ${techColumn.columnNumber} is negative", sourceObject = null)
 
-            val buildingsWithoutAssignedCost = ruleset.buildings.values.filter {
-                it.cost == -1 && techColumn.techs.map { it.name }.contains(it.requiredTech) }.toList()
+            val buildingsWithoutAssignedCost = ruleset.buildings.values.filter { building ->
+                building.cost == -1 && techColumn.techs.map { it.name }.contains(building.requiredTech) }.toList()
 
 
             val nonWondersWithoutAssignedCost = buildingsWithoutAssignedCost.filter { !it.isAnyWonder() }

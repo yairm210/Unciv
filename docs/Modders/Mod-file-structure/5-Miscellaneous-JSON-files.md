@@ -118,12 +118,14 @@ The code below is an example of a valid "turns" definition and it specifies that
 
 Events allow users to choose between options of triggers to activate.
 
-| Attribute       | Type                 | Default  | Notes                                                                         |
-|-----------------|----------------------|----------|-------------------------------------------------------------------------------|
-| name            | String               | Required | Used for triggering via "Triggers a [event] event" unique                     |
-| text            | String               | None     | Flavor text displayed to user                                                 |
-| civilopediaText | List                 | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
-| choices         | List of EventChoices |          | User can choose to trigger one of the viable choices                          |
+| Attribute       | Type                                | Default  | Notes                                                                                                                    |
+|-----------------|-------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------|
+| name            | String                              | Required | Used for triggering via "Triggers a [event] event" unique                                                                |
+| text            | String                              | None     | Flavor text displayed to user                                                                                            |
+| presentation    | One of: "None", "Alert", "Floating" | Alert    | "Alert" indicates a regular popup, "None" means the choice is made randomly, "Floating" is for tutorial-style indicators |
+| civilopediaText | List                                | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                            |
+| choices         | List of EventChoices                |          | User can choose to trigger one of the viable choices                                                                     |
+
 
 You can use text and/or civilopediaText, if both are present both are shown (but why would you?)
 
@@ -153,15 +155,17 @@ Incompatibility filtering works so far between extension and base mods, but feel
 
 The file can have the following attributes, not including the values Unciv sets automatically:
 
-| Attribute         | Type    |       | Notes                                                                                                                                                                                  |
-|-------------------|---------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| isBaseRuleset     | Boolean | false | Replaces vanilla ruleset if true                                                                                                                                                       |
-| uniques           | List    | empty | Mod-wide specials, [see here](../../uniques.md#modoptions-uniques)                                                                                                                     |
-| techsToRemove     | List    | empty | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)         |
-| buildingsToRemove | List    | empty | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove     | List    | empty | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                                |
-| nationsToRemove   | List    | empty | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                    |
-| constants         | Object  | empty | See [ModConstants](#modconstants)                                                                                                                                                      |
+| Attribute         | Type    | default | Notes                                                                                                                                                                                  |
+|-------------------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| isBaseRuleset     | Boolean | false   | Replaces vanilla ruleset if true                                                                                                                                                       |
+| uniques           | List    | empty   | Mod-wide specials, [see here](../../uniques.md#modoptions-uniques)                                                                                                                     |
+| techsToRemove     | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)         |
+| buildingsToRemove | List    | empty   | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove     | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                                |
+| nationsToRemove   | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                    |
+| constants         | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                      |
+| tileset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
+| unitset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
 
 The values normally set automatically from github metadata are:
 

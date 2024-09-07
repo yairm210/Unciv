@@ -18,13 +18,13 @@ object UnitActionModifiers {
 
     fun getUsableUnitActionUniques(unit: MapUnit, actionUniqueType: UniqueType) =
         unit.getMatchingUniques(actionUniqueType)
-            .filter { unique -> unique.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
             .filter { canUse(unit, it) }
 
     private fun getMovementPointsToUse(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false): Int {
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionMovementCostAll })
+        if (actionUnique.hasModifier(UniqueType.UnitActionMovementCostAll))
             return unit.getMaxMovement()
-        val movementCost = actionUnique.conditionals
+        val movementCost = actionUnique.modifiers
             .filter { it.type == UniqueType.UnitActionMovementCost || it.type == UniqueType.UnitActionMovementCostRequired }
             .maxOfOrNull { it.params[0].toInt() }
 
@@ -34,10 +34,9 @@ object UnitActionModifiers {
     }
 
     private fun getMovementPointsRequired(actionUnique: Unique): Int {
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionMovementCostAll })
+        if (actionUnique.hasModifier(UniqueType.UnitActionMovementCostAll))
             return 1
-        val movementCostRequired = actionUnique.conditionals
-            .filter { it.type == UniqueType.UnitActionMovementCostRequired }
+        val movementCostRequired = actionUnique.getModifiers(UniqueType.UnitActionMovementCostRequired)
             .minOfOrNull { it.params[0].toInt() }
         return movementCostRequired ?: 1
     }
@@ -47,7 +46,7 @@ object UnitActionModifiers {
      * @return Boolean
      */
     private fun canSpendStatsCost(unit: MapUnit, actionUnique: Unique): Boolean {
-        for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost }) {
+        for (conditional in actionUnique.getModifiers(UniqueType.UnitActionStatsCost)) {
             for ((stat, value) in conditional.stats) {
                 if (unit.getClosestCity() != null) {
                     if (!unit.getClosestCity()!!.hasStatToBuy(stat, value.toInt())) {
@@ -64,7 +63,7 @@ object UnitActionModifiers {
     }
 
     private fun canSpendStockpileCost(unit: MapUnit, actionUnique: Unique): Boolean {
-        for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost }) {
+        for (conditional in actionUnique.getModifiers(UniqueType.UnitActionStockpileCost)) {
             val amount = conditional.params[0].toInt()
             val resourceName = conditional.params[1]
             if (unit.civ.getResourceAmount(resourceName) < amount) {
@@ -90,12 +89,12 @@ object UnitActionModifiers {
         val movementCost = getMovementPointsToUse(unit, actionUnique, defaultAllMovement)
         unit.useMovementPoints(movementCost.toFloat())
 
-        for (conditional in actionUnique.conditionals) {
+        for (conditional in actionUnique.modifiers) {
             when (conditional.type) {
                 UniqueType.UnitActionConsumeUnit -> unit.consume()
                 UniqueType.UnitActionLimitedTimes, UniqueType.UnitActionOnce -> {
                     if (usagesLeft(unit, actionUnique) == 1
-                        && actionUnique.conditionals.any { it.type== UniqueType.UnitActionAfterWhichConsumed }) {
+                        && actionUnique.hasModifier(UniqueType.UnitActionAfterWhichConsumed)) {
                         unit.consume()
                         continue
                     }
@@ -132,14 +131,13 @@ object UnitActionModifiers {
     private fun getMaxUsages(unit: MapUnit, actionUnique: Unique): Int? {
         val extraTimes = unit.getMatchingUniques(actionUnique.type!!)
             .filter { it.text.removeConditionals() == actionUnique.text.removeConditionals() }
-            .flatMap { unique -> unique.conditionals.filter { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .flatMap { unique -> unique.getModifiers(UniqueType.UnitActionExtraLimitedTimes) }
             .sumOf { it.params[0].toInt() }
 
-        val times = actionUnique.conditionals
-            .filter { it.type == UniqueType.UnitActionLimitedTimes }
+        val times = actionUnique.getModifiers(UniqueType.UnitActionLimitedTimes)
             .maxOfOrNull { it.params[0].toInt() }
         if (times != null) return times + extraTimes
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionOnce }) return 1 + extraTimes
+        if (actionUnique.hasModifier(UniqueType.UnitActionOnce)) return 1 + extraTimes
 
         return null
     }
@@ -156,22 +154,22 @@ object UnitActionModifiers {
         val maxUsages = getMaxUsages(unit, actionUnique)
         if (maxUsages!=null) effects += "${usagesLeft(unit, actionUnique)}/$maxUsages"
 
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionStatsCost}) {
+        if (actionUnique.hasModifier(UniqueType.UnitActionStatsCost)) {
             val statCost = Stats()
-            for (conditional in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStatsCost })
+            for (conditional in actionUnique.getModifiers(UniqueType.UnitActionStatsCost))
                 statCost.add(conditional.stats)
             effects += statCost.toStringOnlyIcons(false)
         }
 
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionStockpileCost }) {
+        if (actionUnique.hasModifier(UniqueType.UnitActionStockpileCost)) {
             var stockpileString = ""
-            for (conditionals in actionUnique.conditionals.filter { it.type == UniqueType.UnitActionStockpileCost })
+            for (conditionals in actionUnique.getModifiers(UniqueType.UnitActionStockpileCost))
                 stockpileString += " ${conditionals.params[0].toInt()} {${conditionals.params[1]}}"
             effects += stockpileString.removePrefix(" ") // drop leading space
         }
 
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
-            || actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed } && usagesLeft(unit, actionUnique) == 1
+        if (actionUnique.hasModifier(UniqueType.UnitActionConsumeUnit)
+            || actionUnique.hasModifier(UniqueType.UnitActionAfterWhichConsumed) && usagesLeft(unit, actionUnique) == 1
         ) effects += Fonts.death.toString()
         else effects += getMovementPointsToUse(
             unit,

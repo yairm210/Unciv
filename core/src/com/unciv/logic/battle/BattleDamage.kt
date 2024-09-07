@@ -24,9 +24,9 @@ object BattleDamage {
             UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.getSourceNameForUser()}])"
         }.tr()
-        if (unique.conditionals.isEmpty()) return source
+        if (unique.modifiers.isEmpty()) return source
 
-        val conditionalsText = unique.conditionals.joinToString { it.text.tr() }
+        val conditionalsText = unique.modifiers.joinToString { it.text.tr() }
         return "$source - $conditionalsText"
     }
 
@@ -242,7 +242,6 @@ object BattleDamage {
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant
-            || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
             || combatant.unit.hasUnique(UniqueType.NoDamagePenaltyWoundedUnits, checkCivInfoUniques = true)
         ) 1f
         // Each 3 points of health reduces damage dealt by 1%

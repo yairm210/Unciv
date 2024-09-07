@@ -1,11 +1,13 @@
 [Desktop Entry]
-Comment=Open-source Android/Desktop remake of Civ V
 Exec=Unciv
-GenericName=4X Game
 Icon=unciv
 Name=Unciv
 NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
-Categories=Game
+Categories=Game;StrategyGame;
+Comment=Turn-based historical strategy game, open source remake of Civ V
+Comment[fr]=Jeu de stratégie au tour par tour historique, recréation libre de Civ V
+Keywords=Game;Civilization;Strategy;Turn-Based
+Keywords[fr]=Jeu;Civilization;Civilisation;Stratégie;Tour-par-tour

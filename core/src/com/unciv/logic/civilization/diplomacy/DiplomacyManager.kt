@@ -52,19 +52,27 @@ enum class DiplomacyFlags {
     DeclinedJoinWarOffer,
     ResearchAgreement,
     BorderConflict,
+
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
     IgnoreThemSettlingNearUs,
+
+    SpreadReligionInOurCities,
+    AgreedToNotSpreadReligion,
+    IgnoreThemSpreadingReligion,
+
     ProvideMilitaryUnit,
     MarriageCooldown,
     NotifiedAfraid,
     RecentlyPledgedProtection,
     RecentlyWithdrewProtection,
     AngerFreeIntrusion,
+
     RememberDestroyedProtectedMinor,
     RememberAttackedProtectedMinor,
     RememberBulliedProtectedMinor,
     RememberSidedWithProtectedMinor,
+
     Denunciation,
     WaryOf,
     Bullied,
@@ -84,12 +92,15 @@ enum class DiplomaticModifiers(val text: String) {
     Denunciation("You have publicly denounced us!"),
     DenouncedOurAllies("You have denounced our allies"),
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
+    RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
     BetrayedPromiseToNotSettleCitiesNearUs("You betrayed your promise to not settle cities near us"),
+    BetrayedPromiseToNotSpreadReligionToUs("You betrayed your promise to not spread your religion to us"),
     UnacceptableDemands("Your arrogant demands are in bad taste"),
     UsedNuclearWeapons("Your use of nuclear weapons is disgusting!"),
     StealingTerritory("You have stolen our lands!"),
     DestroyedProtectedMinor("You destroyed City-States that were under our protection!"),
     AttackedProtectedMinor("You attacked City-States that were under our protection!"),
+    AttackedAlliedMinor("You attacked our allied City-States!"),
     BulliedProtectedMinor("You demanded tribute from City-States that were under our protection!"),
     SidedWithProtectedMinor("You sided with a City-State over us"),
     SpiedOnUs("You spied on us!"),
@@ -105,6 +116,7 @@ enum class DiplomaticModifiers(val text: String) {
     DenouncedOurEnemies("You have denounced our enemies"),
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
+    FulfilledPromiseToNotSpreadReligion("You fulfilled your promise to stop spreading religion to us!"),
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
@@ -395,7 +407,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun canDeclareWar() = !civInfo.isDefeated() && !otherCiv().isDefeated()
             && turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
-    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) = DeclareWar.declareWar(this, declareWarReason)
+    fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) =
+        DeclareWar.declareWar(this, declareWarReason)
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0
@@ -480,8 +493,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
                 // Make the peace treaty so that the civ can't declare war immedietly
                 val tradeLogic = TradeLogic(thirdCiv, otherCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty))
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
                 thirdCivDiplo.trades.add(tradeLogic.currentTrade)
                 thirdCivDiplo.otherCivDiplomacy().trades.add(tradeLogic.currentTrade.reverse())
             }
@@ -674,6 +687,21 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, -15f)
         otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+    }
+
+    fun agreeNotToSpreadReligionTo() {
+        otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSpreadReligion, 100)
+        addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
+        otherCiv().addNotification("[${civInfo.civName}] agreed to stop spreading religion to us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+    }
+
+    fun refuseNotToSpreadReligionTo() {
+        addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
+        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSpreadReligionToUs, -15f)
+        otherCiv().addNotification("[${civInfo.civName}] refused to stop spreading religion to us!",
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }
 

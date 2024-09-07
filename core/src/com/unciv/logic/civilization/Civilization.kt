@@ -58,7 +58,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
-import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
 import kotlin.math.max
 import kotlin.math.min
@@ -561,6 +560,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
 
+    @Transient
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
@@ -677,7 +677,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.CropYield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.Growth -> stats.statsForNextTurn.food.roundToInt()
                 RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }

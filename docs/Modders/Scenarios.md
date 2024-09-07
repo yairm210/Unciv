@@ -24,6 +24,13 @@ On mobile:
 
 To see available commands, click enter. This works for subcommands as well (e.g. when you entered `tile`).
 
+Object names (units buildings civs etc) are case-insensitive.
+
+Unit and building names with spaces in them, like "Great General", can be inputted in 2 ways:
+
+- **"great general"** - with quotation marks around them
+- **great-general**  - with dashes instead of spaces
+
 The console has autocompletion:
 
 * Enter a partial command, subcommand or argument and hit Tab...

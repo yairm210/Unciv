@@ -448,7 +448,7 @@
 		"occursOn": ["Grassland"],
 		"uniques": ["Must be adjacent to [1] to [5] [Coast] tiles",
 			"Must be adjacent to [1] [Mountain] tiles",
-			"Neighboring tiles except [Mountain] will convert to [Coast]"],
+            "Neighboring tiles will convert to [Coast] <in tiles without [Mountain]>"],
 		"turnsInto": "Mountain",
 		"impassable": true,
 		"unbuildable": true,

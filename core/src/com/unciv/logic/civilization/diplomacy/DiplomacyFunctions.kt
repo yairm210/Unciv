@@ -149,7 +149,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun canPassThroughTiles(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true
         if (otherCiv.isBarbarian) return true
-        if (civInfo.isBarbarian && civInfo.gameInfo.turns >= civInfo.gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
+        if (civInfo.isBarbarian && civInfo.gameInfo.turns >= civInfo.gameInfo.getDifficulty().turnBarbariansCanEnterPlayerTiles)
             return true
         val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))

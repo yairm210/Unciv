@@ -10,8 +10,8 @@ class RankingTypeTests {
 
     @Test
     fun checkIdForSerializationUniqueness() {
-        val uniqueIds = HashSet<String>()
-        for (rankingType in RankingType.values()) {
+        val uniqueIds = HashSet<Char>()
+        for (rankingType in RankingType.entries) {
             val id = rankingType.idForSerialization
             Assert.assertTrue(
                 "Id $id for RankingType $rankingType is not unique",

@@ -429,6 +429,7 @@ class UncivFiles(
 
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
+
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
 

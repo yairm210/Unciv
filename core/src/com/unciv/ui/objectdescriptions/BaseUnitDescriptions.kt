@@ -97,6 +97,10 @@ object BaseUnitDescriptions {
             textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
         }
 
+        if (baseUnit.interceptRange > 0) {
+            textList += FormattedLine("Air Intercept Range: [${baseUnit.interceptRange}]")
+        }
+
         if (baseUnit.replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine(baseUnit.replacementTextForUniques)
@@ -132,7 +136,7 @@ object BaseUnitDescriptions {
         val canUpgradeFrom = ruleset.units
             .filterValues {
                 (it.upgradesTo == baseUnit.name || it.upgradesTo != null && it.upgradesTo == baseUnit.replaces)
-                        && (it.uniqueTo == baseUnit.uniqueTo || it.uniqueTo == null)
+                        && (it.uniqueTo == null || it.uniqueTo == baseUnit.uniqueTo)
             }.keys
         if (canUpgradeFrom.isNotEmpty()) {
             if (canUpgradeFrom.size == 1)

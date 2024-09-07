@@ -25,7 +25,7 @@ abstract class EmpireOverviewTab (
         if (caption.isEmpty()) return // called from EmpireOverviewScreen.resume()
         //TODO remove line in a future update
         overviewScreen.game.settings.lastOverviewPage = caption
-        overviewScreen.persistState.last = EmpireOverviewCategories.values()[index]  // Change this if categories are ever reordered or filtered
+        overviewScreen.persistState.last = EmpireOverviewCategories.entries.toTypedArray()[index]  // Change this if categories are ever reordered or filtered
     }
 
     /** Override if the tab can _select_ something specific.

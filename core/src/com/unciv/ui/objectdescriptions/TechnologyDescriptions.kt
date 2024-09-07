@@ -42,7 +42,7 @@ object TechnologyDescriptions {
 
         lineList.addAll(
             getAffectedImprovements(name, ruleset)
-            .filter { it.improvement.uniqueTo == null || it.improvement.uniqueTo == viewingCiv.civName }
+            .filter { it.improvement.uniqueTo == null || viewingCiv.matchesFilter(it.improvement.uniqueTo!!) }
             .map { it.getText() }
         )
 
@@ -79,7 +79,7 @@ object TechnologyDescriptions {
 
         val tileImprovements = ruleset.tileImprovements.values.asSequence()
             .filter { it.techRequired == name }
-            .filter { it.uniqueTo == null || it.uniqueTo == viewingCiv.civName }
+            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
             .toList()
         if (tileImprovements.isNotEmpty())
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
@@ -93,7 +93,6 @@ object TechnologyDescriptions {
     fun getTechEnabledIcons(tech: Technology, viewingCiv: Civilization, techIconSize: Float) = sequence {
         val ruleset = viewingCiv.gameInfo.ruleset
         val techName = tech.name
-        val civName = viewingCiv.civName
 
         for (unit in getEnabledUnits(techName, ruleset, viewingCiv)) {
             yield(ImageGetter.getConstructionPortrait(unit.name, techIconSize))
@@ -131,14 +130,14 @@ object TechnologyDescriptions {
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.techRequired == techName }
-            .filter { it.uniqueTo == null || it.uniqueTo == civName }
+            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
         ) {
             yield(ImageGetter.getImprovementPortrait(improvement.name, techIconSize))
         }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
-            .filter { it.uniqueTo == null || it.uniqueTo == civName }
+            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
         ) {
             yield(ImageGetter.getUniquePortrait(improvement.name, techIconSize))
         }
@@ -284,7 +283,7 @@ object TechnologyDescriptions {
                     getFilteredBuildings(ruleset, civInfo) { true }
                     + ruleset.tileResources.values.asSequence()
                     + ruleset.tileImprovements.values.filter {
-                        it.uniqueTo == null || it.uniqueTo == civInfo?.civName
+                        it.uniqueTo == null || civInfo?.matchesFilter(it.uniqueTo!!) == true
                     }
             ).filter { obj: RulesetStatsObject ->
                 obj.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0] == techName }
@@ -312,7 +311,8 @@ object TechnologyDescriptions {
         return ruleset.buildings.values.asSequence()
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
-                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
+                && (it.uniqueTo != null && civInfo?.matchesFilter(it.uniqueTo!!) == true
+                        || it.uniqueTo == null && (civInfo == null || civInfo.getEquivalentBuilding(it) == it))
                 && !it.isHiddenFromCivilopedia(ruleset)
             }
     }
@@ -326,7 +326,8 @@ object TechnologyDescriptions {
         return ruleset.units.values.asSequence()
             .filter {
                 it.requiredTechs().contains(techName)
-                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
+                && (it.uniqueTo != null && civInfo?.matchesFilter(it.uniqueTo!!) == true ||
+                        it.uniqueTo == null && (civInfo == null || civInfo.getEquivalentUnit(it) == it))
                 && !it.isHiddenFromCivilopedia(ruleset)
             }
     }
@@ -334,9 +335,7 @@ object TechnologyDescriptions {
     /** Tests whether a Unique means bonus Stats enabled by [techName] */
     private fun Unique.isImprovementStatsEnabledByTech(techName: String) =
             (type == UniqueType.Stats || type == UniqueType.ImprovementStatsOnTile) &&
-                    conditionals.any {
-                        it.type == UniqueType.ConditionalTech && it.params[0] == techName
-                    }
+                    getModifiers(UniqueType.ConditionalTech).any { it.params[0] == techName }
 
     /** Tests whether a Unique Conditional is enabling or disabling its parent by a tech */
     private fun Unique.isTechConditional() =
@@ -345,9 +344,7 @@ object TechnologyDescriptions {
 
     /** Tests whether a Unique is enabled or disabled by [techName] */
     private fun Unique.isRelatedToTech(techName: String) =
-            conditionals.any {
-                it.isTechConditional() && it.params[0] == techName
-            }
+            modifiers.any { it.isTechConditional() && it.params[0] == techName }
 
     /** Used by [getAffectedImprovements] only */
     private data class ImprovementAndUnique(val improvement: TileImprovement, val unique: Unique) {

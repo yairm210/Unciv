@@ -38,10 +38,10 @@ import kotlinx.serialization.json.Json
  *   - https://github.com/hopfenspace/runciv
  *
  * A particular server may implement multiple interfaces simultaneously.
- * There's a server version check in the constructor of [OnlineMultiplayer]
+ * There's a server version check in the constructor of [Multiplayer]
  * which handles API auto-detection. The precedence of various APIs is
  * determined by that function:
- * @see [OnlineMultiplayer.determineServerAPI]
+ * @see [Multiplayer.determineServerAPI]
  */
 enum class ApiVersion {
     APIv0, APIv1, APIv2;

@@ -1,3 +1,157 @@
+## 4.13.5
+
+Modding:
+- Make event choices ruleset objects, with standard "uniques" field
+- Added "AI choice weight" for event choices, techs, policies and promotions 
+
+Moved screen orientation setting from advanced tab to display tab
+
+Performance: only trigger population reassignment on new buildings when it really changes something
+
+Better stat-related checks for buildings in cities 
+
+## 4.13.4
+
+Don't allow constructing stockpiled-resource-requiring constructions when lacking the resources
+
+Consume stockpiled resources when purchasing constructions that require them
+
+Don't show "ok" ruleset validations when starting a new game
+
+Set "auto assign city production" to false for new players
+
+Automated units retreat from Barbarians when not at war - By EmperorPinguin
+
+## 4.13.3
+
+Fixed 'conquer city' automation crash
+
+Minor memory performance improvements
+
+Natural wonders uniques generalized to work for terrain feature as well
+
+Prep work for unit-based Events :)
+
+Dev console displays enum options correctly when given incorrect options
+
+## 4.13.2
+
+Added "upon damaging a [mapUnitFilter] unit" which can trigger a unique on the *enemy* unit -
+All unit trigger uniques start with a targetting parameter to reflect this
+
+Added "[unitTriggerTarget] is destroyed" unit triggerable
+
+City overview updates when entering & exiting city
+
+Fixed "don't settle cities" demand triggering "stop spreading religion" demand
+
+Skipping turns for a game updates the MP screen
+
+AI worker improvements - By EmperorPinguin
+
+## 4.13.1
+
+Unit statuses, which are temporary promotions!
+- Can be applied with "This Unit gains the [promotion] status for [positiveAmount] turn(s)"
+- Can be removed with "This Unit loses the [promotion] status"
+
+When selecting a unit, show only arrows relevant to selected unit
+
+Better AI conquering of cities
+
+Allowed specifying custom colors for unit promotions
+
+"ok" warnings now colored in 'accept mod errors' popup
+
+Discourage spreading religion by AI to civs they've promised to not do so
+
+## 4.13.0
+
+Fixed Civilopedia not showing non-unique buildings and units on techs
+
+UI: Show terrain icons in text
+UI: Fade in newly-explored tiles
+
+Added "don't spread religion to us" demand
+
+Modding: Improvement, Unit and Building 'uniqueTo' field can apply to civ *filters*
+
+AI changes  - By EmperorPinguin
+
+## 4.12.19
+
+Multiplayer: Add button to skip current player after 24h inactivity 
+
+Strategic balance applies only to major civs, as per Civ V
+
+Automated settlers take conditionals on settling locations into account
+
+Modding: Added ruleset validation that 2 policies in the same branch do not have the same position
+
+"Land to water" natural wonders do not cause ruins on water tiles
+
+## 4.12.18
+
+Reduced (uncompressed) save file size by 15%, with 15% pending later versions
+
+Multiplayer improvements:
+- Add descriptor (you/friend name/unknown) to current player
+- Auto-download missing mods when joining multiplayer game
+- Can force-resign any human, if 'admin' spectator or player is inactive for 48h
+- Disable resign button on games where it's not your turn
+
+Fixed city console rename to set exact text (not quoted/lowercased)
+
+Conditional that tests if a mod is enabled - by @SomeTroglodyte
+
+## 4.12.17
+
+Modding:
+- More unit uniques applicable globally
+- Recognize Tutorials.json file in ruleset validation
+
+"Unavailable" promotions are unavailable in UI as well
+
+Can go to war with no warmongering penalties if allied or protected city-states have been attacked
+
+City states no longer gift units that push us over resource limits 
+
+Allow unitset and tileset overrides for base ruleset mods
+
+Enhance modding freedom for Natural Wonders  - By SomeTroglodyte
+
+## 4.12.16
+
+Fixed world wrap for games saved during 4.12.15
+
+'gain control over tiles' trigger leaves your tiles alone 
+
+By SomeTroglodyte:
+- Fix new improvements becoming visible on non-observed tiles 
+- Fix rare crash opening overview on turn 0 
+- Console command to change difficulty 
+
+AI is less motivated to declare war at higher difficulty levels  - By tuvus
+
+By itanasi:
+- Civilopedia Entries: Food, Production, Science, and Gold 
+- Add Air Intercept Range to Civilopedia card 
+
+## 4.12.15
+
+Modding:
+- Validate mod folder names and catch misspellings
+- Improvement Unique converted to trigger - "Gain control over [tileFilter] tiles in a [amount]-tile radius"
+- Resolved map type generation errors kudos @SomeTroglodyte
+
+Automated workers prioritize replacing features to get to lux/strategic resources
+
+Changed 'default map' parameters to rectangular + world wrap
+
+Fixed "when friends" / "when allies" translations
+
+Resolved 'move to next unit' problems - kudos @vincemolnar
+
 ## 4.12.14
 
 Add CLI argument to specify the data directory - this will allow native install on Windows, hopefully

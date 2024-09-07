@@ -6,6 +6,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
 import kotlin.random.Random
 
@@ -102,13 +103,10 @@ object Conditionals {
         }
 
         return when (conditional.type) {
-            // These are 'what to do' and not 'when to do' conditionals
-            UniqueType.ConditionalTimedUnique -> true
-
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < conditional.params[0].toFloat() / 100f
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % conditional.params[0].toInt() == 0 }
-            UniqueType.ConditionalBeforeTurns, UniqueType.ConditionalBeforeTurnsOld -> checkOnGameInfo { turns < conditional.params[0].toInt() }
-            UniqueType.ConditionalAfterTurns, UniqueType.ConditionalAfterTurnsOld -> checkOnGameInfo { turns >= conditional.params[0].toInt() }
+            UniqueType.ConditionalBeforeTurns -> checkOnGameInfo { turns < conditional.params[0].toInt() }
+            UniqueType.ConditionalAfterTurns -> checkOnGameInfo { turns >= conditional.params[0].toInt() }
             UniqueType.ConditionalTutorialsEnabled -> UncivGame.Current.settings.showTutorials
             UniqueType.ConditionalTutorialCompleted -> conditional.params[0] in UncivGame.Current.settings.tutorialTasksCompleted
 
@@ -126,15 +124,6 @@ object Conditionals {
                     { current, _, upperLimit -> current < upperLimit }
             UniqueType.ConditionalWhenBetweenStatResource ->
                 checkResourceOrStatAmount(conditional.params[2], conditional.params[0].toFloat(), conditional.params[1].toFloat(), unique?.isModifiedByGameSpeed() == true)
-                    { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
-            UniqueType.ConditionalWhenAboveAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(conditional.params[1], conditional.params[0].toFloat(), Float.MAX_VALUE, true)
-                    { current, lowerLimit, _ -> current > lowerLimit }
-            UniqueType.ConditionalWhenBelowAmountStatResourceSpeed ->
-                checkResourceOrStatAmount(conditional.params[1], Float.MIN_VALUE, conditional.params[0].toFloat(), true)
-                    { current, _, upperLimit -> current < upperLimit }
-            UniqueType.ConditionalWhenBetweenStatResourceSpeed ->
-                checkResourceOrStatAmount(conditional.params[2], conditional.params[0].toFloat(), conditional.params[1].toFloat(), true)
                     { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
@@ -213,8 +202,12 @@ object Conditionals {
             UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 state.relevantUnit?.matchesFilter(conditional.params[0]) == true
-            UniqueType.ConditionalUnitWithPromotion -> state.relevantUnit?.promotions?.promotions?.contains(conditional.params[0]) == true
-            UniqueType.ConditionalUnitWithoutPromotion -> state.relevantUnit?.promotions?.promotions?.contains(conditional.params[0]) == false
+            UniqueType.ConditionalUnitWithPromotion -> state.relevantUnit != null &&
+                    (state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
+                    || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
+            UniqueType.ConditionalUnitWithoutPromotion -> state.relevantUnit != null &&
+                    !(state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
+                            || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalAboveHP -> state.relevantUnit != null && state.relevantUnit!!.health > conditional.params[0].toInt()
@@ -296,7 +289,7 @@ object Conditionals {
                         first, second -> first != second
                 }
 
-            UniqueType.ConditionalCountableMoreThan, UniqueType.ConditionalCountableGreaterThan ->
+            UniqueType.ConditionalCountableMoreThan ->
                 compareCountables(conditional.params[0], conditional.params[1]) {
                         first, second -> first > second
                 }
@@ -311,6 +304,11 @@ object Conditionals {
                     first, second, third ->
                     first in second..third
                 }
+
+            UniqueType.ConditionalModEnabled -> checkOnGameInfo {
+                val filter = conditional.params[0]
+                (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }
+            }
 
             else -> false
         }

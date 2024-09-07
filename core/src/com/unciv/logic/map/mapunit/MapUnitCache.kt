@@ -77,7 +77,8 @@ class MapUnitCache(private val mapUnit: MapUnit) {
         canMoveOnWater = mapUnit.hasUnique(UniqueType.CanMoveOnWater)
 
         doubleMovementInTerrain.clear()
-        for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain, stateForConditionals = StateForConditionals.IgnoreConditionals)) {
+        for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain,
+                stateForConditionals = StateForConditionals.IgnoreConditionals, true)) {
             val param = unique.params[0]
             val terrain = mapUnit.civ.gameInfo.ruleset.terrains[param]
             doubleMovementInTerrain[param] = DoubleMovement(unique = unique,

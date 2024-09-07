@@ -104,14 +104,17 @@ class PromotionTree(val unit: MapUnit) {
         }
 
         // Determine unreachable / disabled nodes
-        val state = StateForConditionals(unit.civ, unit = unit, tile = unit.getTile())
+        val state = StateForConditionals(unit.civ, unit = unit)
         for (node in nodes.values) {
             // defensive - I don't know how to provoke the situation, but if it ever occurs, disallow choosing that promotion
             if (node.promotion.prerequisites.isNotEmpty() && node.parents.isEmpty())
                 node.unreachable = true
+
+            // Slight copy from UnitPromotions.isAvailable
             if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(state) })
                 node.unreachable = true
+            if (node.promotion.hasUnique(UniqueType.Unavailable, state)) node.unreachable = true
         }
 
         // Calculate depth and distanceToAdopted - nonrecursively, shallows first.

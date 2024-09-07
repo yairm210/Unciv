@@ -23,6 +23,7 @@ import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
+/** Settings that apply across all games, stored in GameSettings.json */
 class GameSettings {
 
     /** Allows panning the map by moving the pointer to the screen edges */
@@ -59,7 +60,7 @@ class GameSettings {
     var unitSet: String? = Constants.defaultUnitset
     var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
-    var autoAssignCityProduction: Boolean = true
+    var autoAssignCityProduction: Boolean = false
 
     /** This set of construction names has two effects:
      *  * Matching constructions are no longer candidates for [autoAssignCityProduction]

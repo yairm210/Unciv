@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
@@ -18,7 +19,7 @@ object UnitActionsReligion {
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayFoundReligion)
             .firstOrNull() ?: return emptySequence()
 
-        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+        val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
 
@@ -47,7 +48,7 @@ object UnitActionsReligion {
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayEnhanceReligion)
             .firstOrNull() ?: return emptySequence()
 
-        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+        val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
 
@@ -101,6 +102,10 @@ object UnitActionsReligion {
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
 
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
+
+                if (city.civ != unit.civ) city.civ.getDiplomacyManager(unit.civ)!!
+                    .setFlag(DiplomacyFlags.SpreadReligionInOurCities, 30)
+
             }.takeIf { unit.civ.religionManager.maySpreadReligionNow(unit)
                 && UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}
         ))

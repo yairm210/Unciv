@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "prerequisites": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "unitTypes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          
+          "row": { "type": "integer", "minimum": 0,
+              "description": "Used as **column** hint in the promotion picker screen. Not a direct position, it is used to sort before an automatic distribution."
+          },
+          "column": { "type": "integer", "minimum": 0,
+              "description": "Used as **row** hint in the promotion picker screen. Not a direct position, it is used to sort before an automatic distribution."
+          },
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
+          
+          "outerColor": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/color.json" },
+          "innerColor": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/color.json" }
+      },
+      "required": [
+          "name"
+      ],
+      "additionalProperties": false
+  }
+}

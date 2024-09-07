@@ -358,7 +358,7 @@ class CityStats(val city: City) {
             if (tile.isBlockaded() && city.isWorked(tile)) {
                 city.workedTiles.remove(tile.position)
                 city.lockedTiles.remove(tile.position)
-                city.updateCitizens = true
+                city.shouldReassignPopulation = true
                 continue
             }
             val tileStats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
@@ -468,7 +468,7 @@ class CityStats(val city: City) {
 
         if (DebugUtils.SUPERCHARGED) {
             val stats = Stats()
-            for (stat in Stat.values()) stats[stat] = 10000f
+            for (stat in Stat.entries) stats[stat] = 10000f
             newStatsBonusTree.addStats(stats, "Supercharged")
         }
 

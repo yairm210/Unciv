@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.stats.INamed
+import com.unciv.ui.components.extensions.toPercent
 
 /**
  * Common interface for all 'ruleset objects' that have Uniques, like BaseUnit, Nation, etc.
@@ -59,7 +60,7 @@ interface IHasUniques : INamed {
         return availabilityUniques()
                 // Currently an OnlyAvailableWhen can have multiple conditionals, implicitly a conjunction.
                 // Therefore, if any of its several conditionals is a ConditionalTech, then that tech is required.
-                .flatMap { it.conditionals }
+                .flatMap { it.modifiers }
                 .filter{ it.type == UniqueType.ConditionalTech }
                 .map { it.params[0] }
     }
@@ -87,6 +88,13 @@ interface IHasUniques : INamed {
         // But it's unlikely to make any significant difference.
         // Currently this is only used in CityStateFunctions.kt.
         return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
+    }
+    
+    fun getWeightForAiDecision(stateForConditionals: StateForConditionals): Float {
+        var weight = 1f
+        for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, stateForConditionals))
+            weight *= unique.params[0].toPercent()
+        return weight
     }
 
     /**

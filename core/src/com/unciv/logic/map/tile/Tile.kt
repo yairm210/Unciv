@@ -321,7 +321,15 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         else ruleset.tileImprovements[getUnpillagedRoad().name]
     }
 
-    fun getShownImprovement(viewingCiv: Civilization?): String? = viewingCiv?.getLastSeenImprovement(position) ?: improvement
+    /**
+     *  Improvement to display, accounting for knowledge about a Tile possibly getting stale when a human player is no longer actively watching it.
+     *  Relies on a Civilization's lastSeenImprovement always being up to date while the civ can see the Tile.
+     *  @param viewingCiv `null` means civ-agnostic and thus always showing the actual improvement
+     *  @return The improvement name, or `null` if no improvement should be shown
+     */
+    fun getShownImprovement(viewingCiv: Civilization?): String? =
+        if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator()) improvement
+        else viewingCiv.getLastSeenImprovement(position)
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
@@ -509,7 +517,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 val hasResourceWithFilter =
                         tileResource.name == filter
                                 || tileResource.hasUnique(filter)
-                                || tileResource.resourceType.name + " resource" == filter
+                                || filter.removeSuffix(" resource") == tileResource.resourceType.name
                 if (!hasResourceWithFilter) return false
 
                 // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
@@ -1068,8 +1076,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     override fun write(json: Json) {
         json.writeFields(this)
         // Compatibility code for the case an improvementQueue-using game is loaded by an older version: Write fake fields
-        json.writeValue("improvementInProgress", improvementInProgress, String::class.java)
-        json.writeValue("turnsToImprovement", turnsToImprovement, Int::class.java)
+        if (improvementInProgress != null) json.writeValue("improvementInProgress", improvementInProgress, String::class.java)
+        if (turnsToImprovement != 0) json.writeValue("turnsToImprovement", turnsToImprovement, Int::class.java)
     }
 
     override fun read(json: Json, jsonData: JsonValue) {

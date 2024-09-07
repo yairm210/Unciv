@@ -192,7 +192,8 @@ class Nation : RulesetObject() {
 
     private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != name) continue
+            if (building.uniqueTo == null) continue
+            if (!matchesFilter(building.uniqueTo!!)) continue
             if (building.isHiddenFromCivilopedia(ruleset)) continue
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${building.name}} -", link = building.makeLink()))
@@ -211,7 +212,8 @@ class Nation : RulesetObject() {
 
     private fun getUniqueUnitsText(ruleset: Ruleset) = sequence {
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != name || unit.isHiddenFromCivilopedia(ruleset)) continue
+            if (unit.isHiddenFromCivilopedia(ruleset)) continue
+            if (unit.uniqueTo == null || !matchesFilter(unit.uniqueTo!!)) continue
             yield(FormattedLine(separator = true))
             yield(FormattedLine("{${unit.name}} -", link = "Unit/${unit.name}"))
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
@@ -237,7 +239,8 @@ class Nation : RulesetObject() {
 
     private fun getUniqueImprovementsText(ruleset: Ruleset) = sequence {
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.uniqueTo != name || improvement.isHiddenFromCivilopedia(ruleset)) continue
+            if (improvement.isHiddenFromCivilopedia(ruleset)) continue
+            if (improvement.uniqueTo == null || !matchesFilter(improvement.uniqueTo!!)) continue
 
             yield(FormattedLine(separator = true))
             yield(FormattedLine(improvement.name, link = "Improvement/${improvement.name}"))
@@ -254,9 +257,7 @@ class Nation : RulesetObject() {
             }
         }
     }
-
-    fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
-
+    
     fun matchesFilter(filter: String): Boolean {
         return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
     }

@@ -2,6 +2,7 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -103,7 +104,9 @@ open class TileGroup(
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
         layerOverlay.hideGoodCityLocationIndicator()
-
+        
+        val wasPreviouslyVisible = layerTerrain.isVisible
+        
         // Show all layers by default
         setAllLayersVisible(true)
 
@@ -127,6 +130,14 @@ open class TileGroup(
         layerUnitArt.update(viewingCiv, localUniqueCache)
         layerUnitFlag.update(viewingCiv, localUniqueCache)
         layerCityButton.update(viewingCiv, localUniqueCache)
+        
+        if (!wasPreviouslyVisible){ // newly revealed tile!
+            layerTerrain.parent.addAction( 
+                Actions.sequence(
+                    Actions.targeting(layerTerrain, Actions.alpha(0f)),
+                    Actions.targeting(layerTerrain, Actions.fadeIn(0.5f)),
+                ))
+        }
     }
 
     private fun removeMissingModReferences() {

@@ -29,6 +29,7 @@ import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.map.CityDistanceData
+import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
@@ -652,6 +653,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         tileMap.setTransients(ruleset)
 
+        // Temporary - All games saved in 4.12.15 turned into 'hexagonal non world wrapped'
+        // Here we attempt to fix that
+
+        // How do we recognize a rectangle? By having many tiles at the lowest edge
+        val tilesWithLowestRow = tileMap.tileList.groupBy { it.getRow() }.minBy { it.key }.value
+        if (tilesWithLowestRow.size > 2) tileMap.mapParameters.shape = MapShape.rectangular
+
         if (currentPlayer == "") currentPlayer =
             if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() }.civName // For MP, spectator doesn't get a 'turn'
             else civilizations.first { it.isHuman()  }.civName // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
@@ -778,6 +786,8 @@ class GameInfoPreview() {
     }
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
+    fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
 }
 
 /** Class to use when parsing jsons if you only want the serialization [version]. */

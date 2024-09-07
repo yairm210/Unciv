@@ -101,7 +101,7 @@ class WorldMapHolder(
 
 
     internal fun addTiles() {
-        val tileSetStrings = TileSetStrings()
+        val tileSetStrings = TileSetStrings(worldScreen.gameInfo.ruleset, worldScreen.game.settings)
         currentTileSetStrings = tileSetStrings
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
@@ -553,8 +553,10 @@ class WorldMapHolder(
      * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
     internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
+        val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
         for (unit in pastVisibleUnits) {
             if (unit.movementMemories.isEmpty()) continue
+            if (selectedUnit != null && selectedUnit != unit) continue // When selecting a unit, show only arrows of that unit
             val stepIter = unit.movementMemories.iterator()
             var previous = stepIter.next()
             while (stepIter.hasNext()) {
@@ -571,6 +573,9 @@ class WorldMapHolder(
             addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
         }
         for ((from, to) in visibleAttacks) {
+            if (selectedUnit != null
+                && selectedUnit.currentTile.position != from
+                && selectedUnit.currentTile.position != to) continue
             addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
         }
     }

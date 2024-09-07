@@ -40,17 +40,17 @@ object MotivationToAttackAutomation {
 
         val modifiers: MutableList<Pair<String, Float>> = mutableListOf()
 
-        // If our personality is to declare war more then we should have a higher base motivation (a negative number closer to 0) 
+        // If our personality is to declare war more then we should have a higher base motivation (a negative number closer to 0)
         modifiers.add(Pair("Base motivation", -(15f * personality.inverseModifierFocus(PersonalityValue.DeclareWar, 0.5f))))
 
-        modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
+        modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, targetCiv, ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
         modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != targetCiv } * 20f))
         modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3f))
 
         modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(targetCiv, civInfo, baseForce, ourCombatStrength)))
 
-        if (civInfo.threatManager.getNeighboringCivilizations().none { it != targetCiv && it.isMajorCiv() 
+        if (civInfo.threatManager.getNeighboringCivilizations().none { it != targetCiv && it.isMajorCiv()
                         && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Friend) })
             modifiers.add(Pair("No other threats", 10f))
 
@@ -77,11 +77,11 @@ object MotivationToAttackAutomation {
         } * personality.inverseModifierFocus(PersonalityValue.Aggressive, 0.2f)))
 
         // Defensive civs want to deal with potential nearby cities to protect themselves
-        if (minTargetCityDistance < 6) 
+        if (minTargetCityDistance < 6)
             modifiers.add(Pair("Close cities", 5f * personality.inverseModifierFocus(PersonalityValue.Aggressive, 1f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
-            modifiers.add(Pair("Research Agreement", -5f * personality.modifierFocus(PersonalityValue.Loyal, .2f) 
+            modifiers.add(Pair("Research Agreement", -5f * personality.modifierFocus(PersonalityValue.Loyal, .2f)
                 * personality.scaledFocus(PersonalityValue.Science) * personality.modifierFocus(PersonalityValue.Commerce, .3f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
@@ -183,7 +183,7 @@ object MotivationToAttackAutomation {
                 alliedWarMotivation += 2f
 
             if (thirdCiv.isAtWarWith(otherCiv)) {
-                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15f 
+                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15f
                 else if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 5f
                 else 2f
             }
@@ -193,9 +193,9 @@ object MotivationToAttackAutomation {
 
     private fun getRelationshipModifier(diplomacyManager: DiplomacyManager): Float {
         val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
-            RelationshipLevel.Unforgivable -> 15f
-            RelationshipLevel.Enemy -> 10f
-            RelationshipLevel.Competitor -> 5f
+            RelationshipLevel.Unforgivable -> 10f
+            RelationshipLevel.Enemy -> 5f
+            RelationshipLevel.Competitor -> 2f
             RelationshipLevel.Favorable -> -2f
             RelationshipLevel.Friend -> -5f
             RelationshipLevel.Ally -> -10f // this is so that ally + DoF is not too unbalanced -
@@ -226,13 +226,13 @@ object MotivationToAttackAutomation {
 
         val productionRatio = civInfo.getStatForRanking(RankingType.Production).toFloat() / otherCiv.getStatForRanking(RankingType.Production).toFloat()
         val productionRatioModifier = when {
-            productionRatio > 2f -> 15f
-            productionRatio > 1.5f -> 7f
+            productionRatio > 2f -> 10f
+            productionRatio > 1.5f -> 5f
             productionRatio > 1.2 -> 3f
             productionRatio > .8f -> 0f
             productionRatio > .5f -> -5f
             productionRatio > .25f -> -10f
-            else -> -10f
+            else -> -15f
         }
         return productionRatioModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Production, .2f)
     }
@@ -272,8 +272,17 @@ object MotivationToAttackAutomation {
         return theirAlliesValue
     }
 
-    private fun getCombatStrengthModifier(civInfo: Civilization, ourCombatStrength: Float, theirCombatStrength: Float): Float {
-        val combatStrengthRatio = ourCombatStrength / theirCombatStrength
+    private fun getCombatStrengthModifier(civInfo: Civilization, targetCiv: Civilization, ourCombatStrength: Float, theirCombatStrength: Float): Float {
+        var combatStrengthRatio = ourCombatStrength / theirCombatStrength
+
+        // At higher difficulty levels the AI gets a unit production boost.
+        // In that case while we may have more units than them, we don't nessesarily want to be more aggressive.
+        // This is to reduce the amount that the AI targets players at these higher levels somewhat.
+        if (civInfo.isAI() && targetCiv.isHuman() && combatStrengthRatio > 1) {
+            val ourCombatModifiers = civInfo.gameInfo.getDifficulty().aiUnitCostModifier
+            val theirCombatModifiers = civInfo.gameInfo.getDifficulty().unitCostModifier
+            combatStrengthRatio *= ourCombatModifiers / theirCombatModifiers
+        }
         val combatStrengthModifier = when {
             combatStrengthRatio > 5f -> 20f
             combatStrengthRatio > 4f -> 15f
@@ -302,10 +311,10 @@ object MotivationToAttackAutomation {
 
     /**
      * Checks the routes of attack against [otherCiv] using [targetCitiesWithOurCity].
-     * 
+     *
      * The more routes of attack and shorter the path the higher a motivation will be returned.
      * Sea attack routes are less valuable
-     * 
+     *
      * @return The motivation ranging from -30 to around +10
      */
     private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Float {
@@ -357,8 +366,8 @@ object MotivationToAttackAutomation {
             if (reachableEnemyCities.isEmpty()) return -50f // Can't even reach the enemy city, no point in war.
             val minAttackDistance = reachableEnemyCities.minOf { reachableEnemyCitiesBfs.getPathTo(it.getCenterTile()).count() }
 
-            // Longer attack paths are worse, but if the attack path is too far away we shouldn't completely discard the possibility 
-            attackPathModifiers -= (minAttackDistance - 10).coerceIn(0, 30) 
+            // Longer attack paths are worse, but if the attack path is too far away we shouldn't completely discard the possibility
+            attackPathModifiers -= (minAttackDistance - 10).coerceIn(0, 30)
         }
         return attackPathModifiers
     }

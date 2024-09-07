@@ -37,7 +37,7 @@ object UniqueAutoUpdater {
             .filter { it.getDeprecationAnnotation() != null }
 
         val deprecatedConditionals = allUniques
-            .flatMap { it.conditionals }
+            .flatMap { it.modifiers }
             .filter { it.getDeprecationAnnotation() != null }
 
         for (deprecatedUnique in deprecatedUniques + deprecatedConditionals) {
@@ -48,7 +48,7 @@ object UniqueAutoUpdater {
             while (Unique(uniqueReplacementText).getDeprecationAnnotation() != null)
                 uniqueReplacementText = Unique(uniqueReplacementText).getReplacementText(mod)
 
-            for (conditional in deprecatedUnique.conditionals)
+            for (conditional in deprecatedUnique.modifiers)
                 uniqueReplacementText += " <${conditional.text}>"
             val replacementUnique = Unique(uniqueReplacementText)
 

@@ -56,7 +56,10 @@ class TileImprovementConstructionTests {
             tile.setTransients()
 
             if (improvement.uniqueTo != null) {
-                civInfo.setNameForUnitTests(improvement.uniqueTo!!)
+                civInfo = testGame.addCiv(improvement.uniqueTo!!)
+                for (tech in testGame.ruleset.technologies.values)
+                    civInfo.tech.addTechnology(tech.name)
+                city.civ = civInfo
             }
 
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
@@ -92,7 +95,12 @@ class TileImprovementConstructionTests {
 
         for (improvement in testGame.ruleset.tileImprovements.values) {
             if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
-            civInfo.setNameForUnitTests(improvement.uniqueTo ?: "OtherCiv")
+            if (improvement.uniqueTo != null) {
+                civInfo = testGame.addCiv(improvement.uniqueTo!!)
+                for (tech in testGame.ruleset.technologies.values)
+                    civInfo.tech.addTechnology(tech.name)
+                city.civ = civInfo
+            }
             val canBeBuilt = coastalTile.improvementFunctions.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
         }

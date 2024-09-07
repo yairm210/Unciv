@@ -112,12 +112,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         if (newMajorityReligion in religionsAtSomePointAdopted) return
 
         val religionOwningCiv = newMajorityReligionObject.getFounder()
-        if (religionOwningCiv.hasUnique(UniqueType.StatsWhenAdoptingReligionSpeed) || religionOwningCiv.hasUnique(UniqueType.StatsWhenAdoptingReligion)) {
+        if (religionOwningCiv.hasUnique(UniqueType.StatsWhenAdoptingReligion)) {
             val statsGranted =
-                (
-                    religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligionSpeed)
-                    + religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligion)
-                ).map { it.stats.times(if (!it.isModifiedByGameSpeed()) 1f else city.civ.gameInfo.speed.modifier) }
+                religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligion).map { it.stats.times(if (!it.isModifiedByGameSpeed()) 1f else city.civ.gameInfo.speed.modifier) }
                 .reduce { acc, stats -> acc + stats }
 
             for ((key, value) in statsGranted)

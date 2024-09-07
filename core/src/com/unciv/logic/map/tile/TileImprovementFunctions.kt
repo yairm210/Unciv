@@ -44,14 +44,14 @@ class TileImprovementFunctions(val tile: Tile) {
     fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: Civilization): Sequence<ImprovementBuildingProblem> = sequence {
         val stateForConditionals = StateForConditionals(civInfo, tile = tile)
 
-        if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
+        if (improvement.uniqueTo != null && !civInfo.matchesFilter(improvement.uniqueTo!!))
             yield(ImprovementBuildingProblem.WrongCiv)
         if (civInfo.cache.uniqueImprovements.any { it.replaces == improvement.name })
             yield(ImprovementBuildingProblem.Replaced)
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
             yield(ImprovementBuildingProblem.MissingTech)
         if (improvement.getMatchingUniques(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)
-                .any { it.conditionals.isEmpty() })
+                .any { it.modifiers.isEmpty() })
             yield(ImprovementBuildingProblem.Unbuildable)
         else if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(ImprovementBuildingProblem.ConditionallyUnbuildable)
@@ -133,12 +133,12 @@ class TileImprovementFunctions(val tile: Tile) {
             // Can only cancel if there is actually an improvement being built
             improvement.name == Constants.cancelImprovementOrder -> (tile.improvementInProgress != null)
             // Can only remove roads if that road is actually there
-            RoadStatus.values().any { it.removeAction == improvement.name } -> tile.roadStatus.removeAction == improvement.name
+            RoadStatus.entries.any { it.removeAction == improvement.name } -> tile.roadStatus.removeAction == improvement.name
             // Can only remove features or improvement if that feature/improvement is actually there
             improvement.name.startsWith(Constants.remove) -> tile.terrainFeatures.any { Constants.remove + it == improvement.name }
                 || Constants.remove + tile.improvement == improvement.name
             // Can only build roads if on land and they are better than the current road
-            RoadStatus.values().any { it.name == improvement.name } -> !tile.isWater
+            RoadStatus.entries.any { it.name == improvement.name } -> !tile.isWater
                     && RoadStatus.valueOf(improvement.name) > tile.roadStatus
 
             // Then we check if there is any reason to not allow this improvement to be built
@@ -289,7 +289,7 @@ class TileImprovementFunctions(val tile: Tile) {
             && !currentTileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
         ) tile.removeImprovement()
 
-        if (RoadStatus.values().any { improvementName == it.removeAction }) {
+        if (RoadStatus.entries.any { improvementName == it.removeAction }) {
             tile.removeRoad()
         }
         else if (tile.improvement == removedFeatureName) tile.removeImprovement()

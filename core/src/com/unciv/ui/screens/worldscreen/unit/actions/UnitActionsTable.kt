@@ -181,5 +181,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (!UncivGame.Current.settings.autoUnitCycle) return
         if (unit.isDestroyed || unitAction.type.isSkippingToNextUnit && (unit.isMoving() && !unit.hasMovement() || !unit.isMoving()))
             worldScreen.switchToNextUnit()
+        else worldScreen.bottomUnitTable.selectedUnitHasChanged = true
     }
 }

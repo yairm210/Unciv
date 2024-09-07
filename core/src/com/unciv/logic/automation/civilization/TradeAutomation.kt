@@ -17,10 +17,11 @@ import kotlin.math.min
 object TradeAutomation {
 
 
-    fun respondToTradeRequests(civInfo: Civilization) {
+    fun respondToTradeRequests(civInfo: Civilization, tradeAndChangeState: Boolean) {
         for (tradeRequest in civInfo.tradeRequests.toList()) {
             val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
-            if (!TradeEvaluation().isTradeValid(tradeRequest.trade, civInfo, otherCiv))
+            // Treat 'no trade' state as if all trades are invalid - thus AIs will not update its "turns to offer"
+            if (!tradeAndChangeState || !TradeEvaluation().isTradeValid(tradeRequest.trade, civInfo, otherCiv))
                 continue
 
             val tradeLogic = TradeLogic(civInfo, otherCiv)

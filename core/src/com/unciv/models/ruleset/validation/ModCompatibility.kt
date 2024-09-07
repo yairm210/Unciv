@@ -56,7 +56,7 @@ object ModCompatibility {
             && mod.name.isNotBlank()
             && !mod.modOptions.hasUnique(UniqueType.ModIsAudioVisualOnly)
 
-    private fun modNameFilter(modName: String, filter: String): Boolean {
+    fun modNameFilter(modName: String, filter: String): Boolean {
         if (modName == filter) return true
         if (filter.length < 3 || !filter.startsWith('*') || !filter.endsWith('*')) return false
         val partialName = filter.substring(1, filter.length - 1).lowercase()

@@ -121,6 +121,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         if (promotion.name in promotions) return false
         if (unit.type.name !in promotion.unitTypes) return false
         if (promotion.prerequisites.isNotEmpty() && promotion.prerequisites.none { it in promotions }) return false
+
         val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
         if (promotion.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
@@ -135,5 +136,11 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         toReturn.numberOfPromotions = numberOfPromotions
         toReturn.unit = unit
         return toReturn
+    }
+
+    // For json serialization, to not serialize an empty object
+    override fun equals(other: Any?): Boolean {
+        if (other !is UnitPromotions) return false
+        return XP == other.XP && promotions == other.promotions && numberOfPromotions == other.numberOfPromotions
     }
 }
