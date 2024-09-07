@@ -1,20 +1,10 @@
 ## 4.13.6
 
-perf: Don't update city stats at *end turn* when unassigning extra population (won't affect anything until next turn where we'll recalc anyway)
+Performance improvements!
 
-chore: rename hasUnique(String) -> hasTagUnique(String)
+AI prioritizes unit upgrades over purchasing new constructions
 
-perf: Unique mapping overhaul - don't multiply when checking 'has unique', prep for EnumMap for typed uniques
-
-Moved AI unit upgrade into "use gold" function, so it is prioritized *over* purchasing new constructions
-
-Resolved  - units are not added to cities in resistance if non-resistant cities are available
-
-Updated Events json schema
-
-Docker build doesn't like linking version numbers of plugins
-
-Improve desktop file for Linux desktop  - By MayeulC
+Units are not added to cities in resistance if non-resistant cities are available
 
 ## 4.13.5
 
