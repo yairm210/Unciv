@@ -222,8 +222,6 @@ object UnitAutomation {
 
         if (tryGoToRuinAndEncampment(unit) && !unit.hasMovement()) return
 
-        if (tryUpgradeUnit(unit)) return
-
         if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // If there are no enemies nearby and we can heal here, wait until we are at full health
