@@ -96,8 +96,8 @@ class Nation : RulesetObject() {
         innerColorObject = if (innerColor == null) Color.BLACK
                            else colorFromRGB(innerColor!!)
 
-        forestsAndJunglesAreRoads = uniqueMap.containsKey(UniqueType.ForestsAndJunglesAreRoads.placeholderText)
-        ignoreHillMovementCost = uniqueMap.containsKey(UniqueType.IgnoreHillMovementCost.placeholderText)
+        forestsAndJunglesAreRoads = uniqueMap.hasUnique(UniqueType.ForestsAndJunglesAreRoads)
+        ignoreHillMovementCost = uniqueMap.hasUnique(UniqueType.IgnoreHillMovementCost)
     }
 
 

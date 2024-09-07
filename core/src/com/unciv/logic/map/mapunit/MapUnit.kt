@@ -276,7 +276,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
-    fun getUniques(): Sequence<Unique> = tempUniquesMap.values.asSequence().flatten()
+    fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
 
     fun getMatchingUniques(
             uniqueType: UniqueType,
@@ -577,7 +577,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
                 if (civ.matchesFilter(filter)) return true
-                if (tempUniquesMap.containsKey(filter)) return true
+                if (tempUniquesMap.hasTagUnique(filter)) return true
                 if (promotions.promotions.contains(filter)) return true
                 return false
             }
