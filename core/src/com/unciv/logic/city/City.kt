@@ -411,8 +411,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         hasSoldBuildingThisTurn = true
 
         population.unassignExtraPopulation() // If the building provided specialists, release them to other work
-        population.autoAssignPopulation()
-        cityStats.update()
+        population.autoAssignPopulation() // also updates city stats
         civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
 
