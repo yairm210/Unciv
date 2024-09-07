@@ -232,7 +232,7 @@ class WorkerAutomation(
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.hasFalloutEquivalent()) priority += 1
-            if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique("Provides a one-time Production bonus to the closest city when cut down")) priority += 1 // removing our forests is good for tempo
+            if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) priority += 1 // removing our forests is good for tempo
             if (tile.terrainHasUnique(UniqueType.FreshWater)) priority += 1 // we want our farms up when unlocking Civil Service
         }
         // give a minor priority to tiles that we could expand onto
@@ -421,7 +421,7 @@ class WorkerAutomation(
                     stats.add(statDiff)
                     // Take into account that the resource might be improved by the *final* improvement
                     isResourceImprovedByNewImprovement = newTile.resource != null && newTile.tileResource.isImprovedBy(wantedFinalImprovement.name)
-                if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique("Provides a one-time Production bonus to the closest city when cut down"))
+                if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved))
                     stats.add(Stat.Production, 0.5f) //We're gaining tempo by chopping the forest, adding an imaginary yield per turn is a way to correct for this
                 }
 

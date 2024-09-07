@@ -120,8 +120,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return super<RulesetObject>.hasUnique(uniqueType, state) || ::ruleset.isInitialized && type.hasUnique(uniqueType, state)
     }
 
-    override fun hasUnique(tagUnique: String): Boolean {
-        return super<RulesetObject>.hasUnique(tagUnique) || ::ruleset.isInitialized && type.hasUnique(tagUnique) 
+    override fun hasTagUnique(tagUnique: String): Boolean {
+        return super<RulesetObject>.hasTagUnique(tagUnique) || ::ruleset.isInitialized && type.hasTagUnique(tagUnique) 
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */

@@ -42,7 +42,7 @@ interface IHasUniques : INamed {
     fun hasUnique(uniqueType: UniqueType, state: StateForConditionals? = null) =
         uniqueMap.hasMatchingUnique(uniqueType, state ?: StateForConditionals.EmptyState)
 
-    fun hasUnique(tagUnique: String) =
+    fun hasTagUnique(tagUnique: String) =
         uniqueMap.hasTagUnique(tagUnique)
     
     fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals)
