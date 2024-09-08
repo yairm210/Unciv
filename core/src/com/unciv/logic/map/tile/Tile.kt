@@ -516,7 +516,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 val resourceObject = tileResource
                 val hasResourceWithFilter =
                         tileResource.name == filter
-                                || tileResource.hasUnique(filter)
+                                || tileResource.hasTagUnique(filter)
                                 || filter.removeSuffix(" resource") == tileResource.resourceType.name
                 if (!hasResourceWithFilter) return false
 

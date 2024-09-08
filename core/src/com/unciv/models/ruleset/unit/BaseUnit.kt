@@ -86,7 +86,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         super<INonPerpetualConstruction>.isHiddenBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
-    fun getUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<String> {
+    fun getUpgradeUnits(stateForConditionals: StateForConditionals = StateForConditionals.EmptyState): Sequence<String> {
         return sequence {
             yieldIfNotNull(upgradesTo)
             for (unique in getMatchingUniques(UniqueType.CanUpgrade, stateForConditionals))
@@ -94,7 +94,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun getRulesetUpgradeUnits(stateForConditionals: StateForConditionals? = null): Sequence<BaseUnit> {
+    fun getRulesetUpgradeUnits(stateForConditionals: StateForConditionals = StateForConditionals.EmptyState): Sequence<BaseUnit> {
         return sequence {
             for (unit in getUpgradeUnits(stateForConditionals))
                 yieldIfNotNull(ruleset.units[unit])
@@ -115,18 +115,27 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return unit
     }
 
+    
+    override fun hasUnique(uniqueType: UniqueType, state: StateForConditionals?): Boolean {
+        return super<RulesetObject>.hasUnique(uniqueType, state) || ::ruleset.isInitialized && type.hasUnique(uniqueType, state)
+    }
+
+    override fun hasTagUnique(tagUnique: String): Boolean {
+        return super<RulesetObject>.hasTagUnique(tagUnique) || ::ruleset.isInitialized && type.hasTagUnique(tagUnique) 
+    }
+
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
-    override fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals?): Sequence<Unique> {
-        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueType, stateForConditionals)
+    override fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals): Sequence<Unique> {
+        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueType, state)
         if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
             return ourUniques
         }
-        val typeUniques = type.getMatchingUniques(uniqueType, stateForConditionals)
+        val typeUniques = type.getMatchingUniques(uniqueType, state)
         // Memory optimization - very rarely do we actually get uniques from both sources,
         //   and sequence addition is expensive relative to the rare case that we'll actually need it
         if (ourUniques.none()) return typeUniques
         if (typeUniques.none()) return ourUniques
-        return ourUniques + type.getMatchingUniques(uniqueType, stateForConditionals)
+        return ourUniques + type.getMatchingUniques(uniqueType, state)
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
@@ -138,15 +147,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             return false
         if (costFunctions.canBePurchasedWithStat(city, stat)) return true
         return super.canBePurchasedWithStat(city, stat)
-    }
-
-    /** Whenever we call .hasUniques() or .getMatchingUniques(), we also want to return the uniques from the unit type
-     * All of the IHasUniques functions converge to getMatchingUniques, so overriding this one function gives us all of them */
-    override fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals?): Sequence<Unique> {
-        val baseUnitMatchingUniques = super<RulesetObject>.getMatchingUniques(uniqueTemplate, stateForConditionals)
-        return if (::ruleset.isInitialized) baseUnitMatchingUniques +
-                type.getMatchingUniques(uniqueTemplate, stateForConditionals)
-        else baseUnitMatchingUniques // for e.g. Mod Checker, we may check a BaseUnit's uniques without initializing ruleset
     }
 
     override fun getBaseBuyCost(city: City, stat: Stat): Float? {
@@ -413,7 +413,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     // "military units" --> "Military", using invariant locale
                     && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
                 ) return true
-                return uniqueMap.contains(filter)
+                return uniqueMap.hasTagUnique(filter)
             }
         }
     }
@@ -431,10 +431,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
-    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?): Counter<String> {
+    override fun getResourceRequirementsPerTurn(state: StateForConditionals?): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals))
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: StateForConditionals.EmptyState))
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
     }

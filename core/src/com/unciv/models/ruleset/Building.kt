@@ -536,10 +536,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?): Counter<String> {
+    override fun getResourceRequirementsPerTurn(state: StateForConditionals?): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals))
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, 
+            state ?: StateForConditionals.EmptyState))
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
     }

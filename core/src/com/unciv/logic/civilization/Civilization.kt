@@ -536,7 +536,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
 
         yieldAll(getCivResourceSupply().asSequence()
-            .filter { it.amount > 0 }
+            .filter { it.amount > 0 && it.resource.uniques.isNotEmpty() }
             .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
         )
 

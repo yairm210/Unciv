@@ -18,7 +18,7 @@ interface IHasUniques : INamed {
     // Every implementation should override these with the same `by lazy (::thingsProvider)`
     // AND every implementation should annotate these with `@delegate:Transient`
     val uniqueObjects: List<Unique>
-    val uniqueMap: Map<String, List<Unique>>
+    val uniqueMap: UniqueMap
 
     fun uniqueObjectsProvider(): List<Unique> {
         if (uniques.isEmpty()) return emptyList()
@@ -36,24 +36,15 @@ interface IHasUniques : INamed {
      * */
     fun getUniqueTarget(): UniqueTarget
 
-    fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
-        val matchingUniques = uniqueMap[uniqueTemplate]
-            ?: return emptySequence()
+    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
+        uniqueMap.getMatchingUniques(uniqueType, state)
+    
+    fun hasUnique(uniqueType: UniqueType, state: StateForConditionals? = null) =
+        uniqueMap.hasMatchingUnique(uniqueType, state ?: StateForConditionals.EmptyState)
 
-        val actualStateForConditionals = stateForConditionals ?: StateForConditionals()
-        val uniques = matchingUniques.asSequence().filter { it.conditionalsApply(actualStateForConditionals) }
-        return uniques.flatMap { it.getMultiplied(actualStateForConditionals) }
-    }
-
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
-        getMatchingUniques(uniqueType.placeholderText, stateForConditionals)
-
-    fun hasUnique(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) =
-        getMatchingUniques(uniqueTemplate, stateForConditionals).any()
-
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
-        getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
-
+    fun hasTagUnique(tagUnique: String) =
+        uniqueMap.hasTagUnique(tagUnique)
+    
     fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals)
 
     fun techsRequiredByUniques(): Sequence<String> {

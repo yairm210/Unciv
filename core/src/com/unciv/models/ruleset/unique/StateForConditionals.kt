@@ -92,6 +92,7 @@ data class StateForConditionals(
 
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
+        val EmptyState = StateForConditionals()
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */

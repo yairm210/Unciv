@@ -49,13 +49,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
 
+        val state = StateForConditionals(civInfo)
         val buildingsToRequiredResources = ruleset.buildings.values
                 .filter { civInfo.getEquivalentBuilding(it) == it }
-                .associateWith { it.requiredResources() }
+                .associateWith { it.requiredResources(state) }
 
         val unitsToRequiredResources = ruleset.units.values
                 .filter { civInfo.getEquivalentUnit(it) == it }
-                .associateWith { it.requiredResources() }
+                .associateWith { it.requiredResources(state) }
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
             val applicableBuildings = buildingsToRequiredResources.filter { it.value.contains(resource) }.map { it.key }

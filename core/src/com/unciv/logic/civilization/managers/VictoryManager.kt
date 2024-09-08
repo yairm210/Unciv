@@ -47,7 +47,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
     fun getUNBuildingAndOwnerNames(): Pair<String?, String?> = getVotingCivs()
             .flatMap { civ -> civ.cities.asSequence()
                 .flatMap { it.cityConstructions.getBuiltBuildings() }
-                .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, stateForConditionals = StateForConditionals.IgnoreConditionals) }
+                .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, StateForConditionals.IgnoreConditionals) }
                 .map { it.name to civ.civName }
             }.firstOrNull() ?: (null to null)
 

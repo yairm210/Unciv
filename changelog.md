@@ -1,3 +1,11 @@
+## 4.13.6
+
+Performance improvements!
+
+AI prioritizes unit upgrades over purchasing new constructions
+
+Units are not added to cities in resistance if non-resistant cities are available
+
 ## 4.13.5
 
 Modding:

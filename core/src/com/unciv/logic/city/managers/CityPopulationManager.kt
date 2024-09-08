@@ -131,6 +131,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {
             unassignExtraPopulation()
+            city.cityStats.update()
         } else {
             autoAssignPopulation()
         }
@@ -267,8 +268,6 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 }
             }
         }
-
-        city.cityStats.update()
     }
 
     fun getMaxSpecialists(): Counter<String> {

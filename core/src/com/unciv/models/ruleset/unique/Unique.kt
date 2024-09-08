@@ -241,10 +241,12 @@ class LocalUniqueCache(val cache: Boolean = true) {
     }
 }
 
-class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
+class UniqueMap() {
     //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
     // For now, we can have both map types "side by side" each serving their own purpose,
     // and gradually this one will be deprecated in favor of the other
+    
+    private val innerUniqueMap =  HashMap<String, ArrayList<Unique>>()
 
     constructor(uniques: Sequence<Unique>) : this() {
         addUniques(uniques.asIterable())
@@ -252,9 +254,9 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
-        val existingArrayList = get(unique.placeholderText)
+        val existingArrayList = innerUniqueMap[unique.placeholderText]
         if (existingArrayList != null) existingArrayList.add(unique)
-        else this[unique.placeholderText] = arrayListOf(unique)
+        else innerUniqueMap[unique.placeholderText] = arrayListOf(unique)
     }
 
     /** Calls [addUnique] on each item from [uniques] */
@@ -263,18 +265,32 @@ class UniqueMap() : HashMap<String, ArrayList<Unique>>() {
     }
 
     fun removeUnique(unique: Unique) {
-        val existingArrayList = get(unique.placeholderText)
+        val existingArrayList = innerUniqueMap[unique.placeholderText]
         existingArrayList?.remove(unique)
     }
+    
+    fun clear() = innerUniqueMap.clear()
+    
+    // Pure functions
+    
+    fun hasUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
+        getUniques(uniqueType).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
+    
+    fun hasTagUnique(tagUnique: String) =
+        innerUniqueMap.containsKey(tagUnique)
 
     fun getUniques(uniqueType: UniqueType) =
-        this[uniqueType.placeholderText]?.asSequence() ?: emptySequence()
+        innerUniqueMap[uniqueType.placeholderText]?.asSequence() ?: emptySequence()
 
-    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
-        .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
-        .flatMap { it.getMultiplied(state) }
+    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
+        getUniques(uniqueType)
+            .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
+            .flatMap { it.getMultiplied(state) }
+    
+    fun hasMatchingUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
+        getUniques(uniqueType).any { it.conditionalsApply(state) }
 
-    fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
+    fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         return getAllUniques().filter { unique ->
