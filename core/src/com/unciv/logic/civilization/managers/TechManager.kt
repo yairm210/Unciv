@@ -57,6 +57,8 @@ class TechManager : IsPartOfGameInfoSerialization {
     var movementSpeedOnRoads = 1f
     @Transient
     var roadsConnectAcrossRivers = false
+    @Transient
+    var allTechsAreResearched = false
 
     var freeTechs = 0
     // For calculating score
@@ -171,8 +173,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return tech.prerequisites.all { isResearched(it) }
     }
 
-    fun allTechsAreResearched() = civInfo.gameInfo.ruleset.technologies.values
-        .all { isResearched(it.name) || !canBeResearched(it.name)}
+    fun allTechsAreResearched() = allTechsAreResearched
 
     //endregion
 
@@ -524,6 +525,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
             RoadStatus.Road.movementImproved else RoadStatus.Road.movement
         roadsConnectAcrossRivers = civInfo.hasUnique(UniqueType.RoadsConnectAcrossRivers)
+        allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values
+            .all { isResearched(it.name) || !canBeResearched(it.name)}
     }
 
     fun getBestRoadAvailable(): RoadStatus {
