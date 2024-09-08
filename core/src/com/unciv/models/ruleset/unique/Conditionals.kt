@@ -12,6 +12,13 @@ import kotlin.random.Random
 
 object Conditionals {
 
+    private fun getStateBasedRandom(state: StateForConditionals, unique: Unique?): Float {
+        var seed = state.gameInfo?.turns?.hashCode() ?: 0
+        seed = seed * 31 + (unique?.hashCode() ?: 0)
+        seed = seed * 31 + state.hashCode()
+        return Random(seed).nextFloat()
+    }
+    
     fun conditionalApplies(
         unique: Unique?,
         conditional: Unique,
@@ -20,13 +27,6 @@ object Conditionals {
 
         if (conditional.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
             return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers
-
-        val stateBasedRandom by lazy {
-            var seed = state.gameInfo?.turns?.hashCode() ?: 0
-            seed = seed * 31 + (unique?.hashCode() ?: 0)
-            seed = seed * 31 + state.hashCode()
-            Random(seed)
-        }
 
         /** Helper to simplify conditional tests requiring gameInfo */
         fun checkOnGameInfo(predicate: (GameInfo.() -> Boolean)): Boolean {
@@ -103,7 +103,7 @@ object Conditionals {
         }
 
         return when (conditional.type) {
-            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < conditional.params[0].toFloat() / 100f
+            UniqueType.ConditionalChance -> getStateBasedRandom(state, unique) < conditional.params[0].toFloat() / 100f
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % conditional.params[0].toInt() == 0 }
             UniqueType.ConditionalBeforeTurns -> checkOnGameInfo { turns < conditional.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnGameInfo { turns >= conditional.params[0].toInt() }
