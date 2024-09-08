@@ -641,6 +641,14 @@
             {"text":"Unassigned Citizens\nIn Civilization V, unassigned citizens are considered specialists, and subject to the same type of bonuses (e.g. Korea's ability). It can be worthwhile to leave citizens unassigned, instead of being assigned to a tile. Not applicable to Unciv."},
             {},
             {"text":"Settler Construction\nIn Civilization V, cities can't starve when constructing settlers, so you can assign all citizens to production tiles and none to food tiles. In Unciv, citizens keep consuming two food per turn."},
+            {},
+            {"text":"Water Melee Attack\nAs result of a Discord poll, Water Melee units can attack military land units on the shore, unlike in Civilization V."},
+            {},
+            {"text":"Tile improvements\nIn Civilzation V, workers start working on an improvement-under-construction at the beginning of movement. Unciv changes this, to allow players to assign workers to tiles, and then reconsider and change improvement or move them elsewhere."},
+            {},
+            {"text":"Forest and Jungle Visibility\nIn Unciv, forests and jungles are visible 1 tile outside visibility range. In Civilization V, this is the behaviour of hills and mountains, but not of forests and jungles, yet jungle and forest can block hills, and hill + forest can block mountain, indicating they're on the same elevation. This is considered to be a bug in the otherwise well-structured visibility logic in Civilization V."},
+
+
         ]
     }
 ]
