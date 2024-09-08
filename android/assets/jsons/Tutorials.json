@@ -1,44 +1,76 @@
 [
   // Each entry is a tutorial, but the tutorial may be spread over separate paragraphs.
 
-  {
-    "name": "Introduction",
-    "steps": [
-      "Welcome to Unciv!\nBecause this is a complex game, there are basic tasks to help familiarize you with the game.\nThese are completely optional, and you're welcome to explore the game on your own!"
-    ]
-  },
-
+    {
+        "name": "Civilopedia",
+        "civilopediaText": [
+            {"text":"Welcome to the Civilopedia!","header":4,"color": "#fa0"},
+            {"text":"Here you can find information - general help, rules, and what makes up the game world."},
+            {},
+            {"text":"How to find information","header":4},
+            {"text":"Select categories with the buttons on top of the screen. Also up there is the button to leave Civilopedia and go back to where you were before.","starred":true,"color":"#666"},
+            {"text":"Each category has a list of entries on the left of the screen, sorted alphabetically (with few exceptions). Clicking an entry will update the center pane were you are currently reading this.","starred":true,"color":"#666"},
+            {"text":"Lines can link to other Civilopedia entries, they are marked with a chain link symbol like this one. You can click anywhere on the line to follow the link.", "link":"Tutorial/New Game"},
+            {"text":"The current category is special - all articles on general concepts are here. It is called 'Tutorials' because you can revisit these here, too.","starred":true,"color":"#666"},
+            {},
+            {"text":"What information can I find","header":4},
+            {"text":"The data shown is not dependent on your current game's situation, e.g. bonuses for the nation you are playing or difficulty modifiers will not affect the numbers."},
+            {"text":"However, it will reflect the mods you are playing! The combination of base ruleset and extension mods you select define the rules of a game, what objects exist and how they interact, and the Civilopedia mirrors these rules."},
+            {"text":"If you opened the Civilopedia from the main menu, the \"Ruleset\" will be that of the last game you started."},
+            {},
+            {"text":"Keyboard","header":4},
+            {"text":"Letters can select categories, and when there are multiple categories matching the same letter, you can press that repeatedly to cycle between these.","starred":true,"color":"#666"},
+            {"text":"The arrow keys allow navigation as well - left/right for categories, up/down for entries.","starred":true,"color":"#666"}
+        ]
+    },
   // Civilopedia only, because players said this was too wall-of-text
   {
     "name": "New Game",
     "civilopediaText": [
-    { "text": "Your first mission is to found your capital city.\n   This is actually an important task because your capital city will probably be your most prosperous.\n   Many game bonuses apply only to your capital city and it will probably be the center of your empire." },
-    { "text": "How do you know a spot is appropriate?\n   That’s not an easy question to answer, but looking for and building next to Luxury resources is a good rule of thumb.\n   Luxury resources are tiles that have things like Gems, Cotton, or Silk (discerned by the icon with yellow background).\n 
-  These resources make your civilization ⌣happy.\n   You should also keep an eye out for resources needed to build units, such as Iron." },
-    { "text": "Cities cannot be built within 3 tiles of existing City Centers, which is another thing to watch out for!" },
+    { "text": "Welcome to Unciv!\nBecause this is a complex game, there are basic tasks to help familiarize you with the game.\nThese are completely optional, and you're welcome to explore the game on your own!" },
+    { "separator": true },
+    { "text": "Your first mission is to found your capital city."},
+    {"text": "This is actually an important task because your capital city will probably be your most prosperous.\n   Many game bonuses apply only to your capital city and it will probably be the center of your empire." },
+        {},
+    { "text": "How do you know a spot is appropriate?\n   Luckily, the game has already chosen a good location for you. You can settle in this place, or maybe move a turn to found on a Hill (for Production and defence) or next to a Mountain (to gain access to the Observatory building later on)." },
     {},
-    { "text": "However, cities don’t have a set area that they can work - more on that later!\n   This means you don’t have to settle cities right next to resources." },
-    { "text": "Let’s say, for example, that you want access to some Iron – but the resource is right next to a Desert.\n   You don’t have to settle your city next to the Desert. You can settle a few tiles away in more prosperous lands.\n   Your city will grow and eventually gain access to the resource.\n   You only need to settle right next to resources if you need them immediately – \n   which might be the case now and then, but you’ll usually have the luxury of time." },
+    { "text": "You'll likely want more cities later on. For these cities, you must go and find a good place. Looking for and founding on or near Luxury resources is a good rule of thumb." },
+    { "text": "Luxury resources are tiles that have things like Gems, Cotton, or Silk (indicated by a yellow background of the resource icon). These resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as Iron. Cities cannot be built within 3 tiles of existing cities, which is another thing to watch out for!" },
     {},
-    { "text": "The first thing coming out of your city should be either a Scout or Warrior.\n   I generally prefer the Warrior because it is good for defense, and it can be upgraded to the Swordsman unit later in the game for a relatively modest sum of ¤Gold." },
-    { "text": "Scouts can be effective, however, if you seem to be located in an area of dense forest and hills.\n   Scouts don’t suffer a movement penalty in this terrain." },
-    {},
-    { "text": "If you’re a veteran of the 4x strategy genre your first Warrior or Scout could be followed by a Settler.\n   Fast expanding is absolutely critical in most games of this type." },
-     ],
+    { "text": "However, cities don’t have a set area that they can work. This means you don’t have to settle cities right on or next to resources.\n   Let’s say, for example, that you want access to some Iron – but the resource is in a desert area. You don’t have to settle your city in the desert. You can settle a few tiles away in more prosperous lands. Your city will grow and eventually gain access to the resource. You only need to settle right on top of resources if you need them immediately." },
+        {},
+    { "text": "The first thing coming out of your city depends on the strategy you want to follow, but the 'classic' build order is to build first two Scouts, the a Shrine, and three Settlers, and adopt Tradition, to explore the map quickly (Scouts ignore terrain cost), and to get an early Pantheon (if you're playing with religion enabled)." },
+    {"text": "But feel free to experiment with your own build orders!", "color": "#fa0"},
+     ]
   },
   {
-    "name": "Slow Start",
-    "steps": [
-      "In your first couple of turns, you will have very little options, but as your civilization grows, so do the number of things requiring your attention."
-    ],
-    "uniques": ["Will not be displayed in Civilopedia"]
-  },
-  {
-    "name": "Culture and Policies",
-    "steps": [
-      "Each turn, the culture you gain from all your cities is added to your Civilization's culture.\nWhen you have enough culture, you may pick a Social Policy, each one giving you a certain bonus."	,
-      "The policies are organized into branches, with each branch providing a bonus ability when all policies in the branch have been adopted."    ,
-      "With each policy adopted, and with each city built,\n  the cost of adopting another policy rises - so choose wisely!"
+    "name": "Culture",
+    "civilopediaText": [
+        { "text": "Culture (represented by this ♪ icon) is the measurement of the political progress a Civilization has achieved.\n   Although not essential, ♪Culture plays a big role in the development of your nation, and it cannot be ignored, mainly for policies, as they provide great boosts to your empire." },
+        { "text": "You can see your ♪Culture yields in different ways:\n - At the top bar - displaying your output, and turns left to adopt a new policy in brackets\n - At Overview/Cities - to see a ranking of the cities that produce it\n - At Overview/Statistics - to see a detailed report of Culture sources.\n - Inside each individual city" },
+            {},
+        {"text":"What can I use Culture for?","header":4},
+            {},
+        {"text":"Social Policies","header":2, "starred": true,},
+        {"text": "Policies are pivotal for the growth of your empire, as their many effects can condition your way of playing and improve your location and situation. They are often a great source of Culture and Happiness, and certain trees focus on certain aspects of the game, such as ¤Gold or ☮Faith."
+            {},
+        { "text": "Each turn, the ♪Culture you gain from all sources is added to your Civilization's global culture." },
+        { "text": "When you have enough ♪Culture, you may pick a Social Policy, each one giving you a certain bonus.\n   The policies are organized into branches, with each branch providing a bonus ability when all policies in the branch have been adopted.", "link": "Policies" },
+        { "text": "With each Policy adopted, and with each city built, the cost of adopting another Policy rises - so choose wisely!" },
+        { "text": "It's advised to pick only one tree and complete it before moving on to the next one, as usually the branch completion bonus is more beneficial, aside from making it harder to complete it later on." },
+            {},
+        {"text":"City Expansion","header":2, "starred": true,},
+        {"text": "Every city has a desire for expansion, and ♪Culture is the natural way they do so.\n   Each tile has a certain ♪Culture cost, and once you get the required ♪Culture, the city will expand, and the cost increases each time it does so. Only the Culture produced in the specific city will be counted for border expansion."},
+        {"text": "Certain policies and wonders increase the expansion rate."},
+        /*{"text": "See: Cities" "link": "Tutorials/Cities"},*/
+            {},
+        {"text":"Cultural Victory","header":2, "starred": true,},
+        {"text": "This is the refined path to victory, by leading the world in social progress and artistic prowess."},
+        {"text": "You are required to complete 5 Policy trees, any of your choosing, that is, 30 policies in total are needed to unlock the Project Utopia wonder. Once you construct it, you have achieved victory!"},
+        {"text": "Beware of your neighbors, as they'll become jealous and seriously consider stabbing you to prevent your wonderful victory..."},
+            {},
+        {"text":"How can get Culture?","header":4},
+        {"text": "There are plenty of ways to gain Culture:\n - Buildings - The main source of ♪Culture\n - Specialists - Artist Specialists, who may also spawn a Great Artist\n - Wonders - Many World Wonders provide it\n - City-States - Cultured type CSs export Culture when befriended\n - Policies - The other major source of Culture\n - And many more, like Ruins, Improvements, etc."
     ]
   },
   {
@@ -545,28 +577,6 @@
         ]
     },
     {
-        "name": "Civilopedia",
-        "civilopediaText": [
-            {"text":"Welcome to the Civilopedia!","header":4,"color": "#fa0"},
-            {"text":"Here you can find information - general help, rules, and what makes up the game world."},
-            {},
-            {"text":"How to find information","header":4},
-            {"text":"Select categories with the buttons on top of the screen. Also up there is the button to leave Civilopedia and go back to where you were before.","starred":true,"color":"#666"},
-            {"text":"Each category has a list of entries on the left of the screen, sorted alphabetically (with few exceptions). Clicking an entry will update the center pane were you are currently reading this.","starred":true,"color":"#666"},
-            {"text":"Lines can link to other Civilopedia entries, they are marked with a chain link symbol like this one. You can click anywhere on the line to follow the link.", "link":"Tutorial/Introduction"},
-            {"text":"The current category is special - all articles on general concepts are here. It is called 'Tutorials' because you can revisit these here, too.","starred":true,"color":"#666"},
-            {},
-            {"text":"What information can I find","header":4},
-            {"text":"The data shown is not dependent on your current game's situation, e.g. bonuses for the nation you are playing or difficulty modifiers will not affect the numbers."},
-            {"text":"However, it will reflect the mods you are playing! The combination of base ruleset and extension mods you select define the rules of a game, what objects exist and how they interact, and the Civilopedia mirrors these rules."},
-            {"text":"If you opened the Civilopedia from the main menu, the \"Ruleset\" will be that of the last game you started."},
-            {},
-            {"text":"Keyboard","header":4},
-            {"text":"Letters can select categories, and when there are multiple categories matching the same letter, you can press that repeatedly to cycle between these.","starred":true,"color":"#666"},
-            {"text":"The arrow keys allow navigation as well - left/right for categories, up/down for entries.","starred":true,"color":"#666"}
-        ]
-    },
-    {
         "name": "UI Tips",
         "civilopediaText": [
             {},
@@ -623,5 +633,20 @@
             {"text":"External links support right-click or long press to copy the link to the clipboard instead of launching the browser."},
             {"text":"Example: The 'Open Github page' button on the Mod management screen."}
         ]
-    }
+    },
+    
+/* Obsolete
+  {
+    "name": "Introduction",
+    "steps": [
+      "Welcome to Unciv!\nBecause this is a complex game, there are basic tasks to help familiarize you with the game.\nThese are completely optional, and you're welcome to explore the game on your own!"
+    ]
+  },
+  {
+    "name": "Slow Start",
+    "steps": [
+      "In your first couple of turns, you will have very little options, but as your civilization grows, so do the number of things requiring your attention."
+    ],
+    "uniques": ["Will not be displayed in Civilopedia"]
+  },*/
 ]
