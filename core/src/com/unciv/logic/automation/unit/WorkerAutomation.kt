@@ -76,8 +76,8 @@ class WorkerAutomation(
         // Must be called before any getPriority checks to guarantee the local road cache is processed
         val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
         // Shortcut, we are working a suitable tile, and we're better off minimizing worker-turns by finishing everything on this tile
-        if (!dangerousTiles.contains(currentTile) && getFullPriority(unit.getTile(), unit, localUniqueCache) >= 2
-            && currentTile.improvementInProgress != null) {
+        if (currentTile.improvementInProgress != null && !dangerousTiles.contains(currentTile)
+            && getFullPriority(unit.getTile(), unit, localUniqueCache) >= 2) {
             return
         }
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)

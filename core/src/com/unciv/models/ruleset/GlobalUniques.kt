@@ -12,7 +12,7 @@ class GlobalUniques: RulesetObject() {
 
     companion object {
         fun getUniqueSourceDescription(unique: Unique): String {
-            if (unique.modifiers.none())
+            if (unique.modifiers.isEmpty())
                 return "Global Effect"
 
             return when (unique.modifiers.first().type) {

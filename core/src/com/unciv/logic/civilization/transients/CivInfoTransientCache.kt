@@ -15,10 +15,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
@@ -359,8 +356,16 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
 
+        val summarizedResourceSupply = newDetailedCivResources.sumByResource("All")
+
+        val newResourceUniqueMap = UniqueMap()
+        for (resource in civInfo.summarizedCivResourceSupply)
+            if (resource.amount > 0)
+                newResourceUniqueMap.addUniques(resource.resource.uniqueObjects)
+        
         civInfo.detailedCivResources = newDetailedCivResources
-        civInfo.summarizedCivResourceSupply = newDetailedCivResources.sumByResource("All")
+        civInfo.summarizedCivResourceSupply = summarizedResourceSupply
+        civInfo.civResourcesUniqueMap = newResourceUniqueMap
 
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }

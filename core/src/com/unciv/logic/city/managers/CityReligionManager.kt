@@ -320,8 +320,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         }
 
         // Founder beliefs of this religion
-        if (getMajorityReligion() != null) {
-            for (unique in getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
+        val majorityReligion = getMajorityReligion()
+        if (majorityReligion != null) {
+            for (unique in majorityReligion.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
                 if (pressuredCity.matchesFilter(unique.params[1]))
                     pressure *= unique.params[0].toPercent()
         }

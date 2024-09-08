@@ -28,6 +28,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         else Stats.parse(firstStatParam)
     }
     val modifiers: List<Unique> = text.getModifiers()
+    val modifiersMap: Map<UniqueType, List<Unique>> = modifiers.filterNot { it.type == null }.groupBy { it.type!! }
 
     val isTimedTriggerable = hasModifier(UniqueType.ConditionalTimedUnique)
 
@@ -45,8 +46,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
     fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
 
-    fun getModifiers(type: UniqueType) = modifiers.asSequence().filter { it.type == type }
-    fun hasModifier(type: UniqueType) = getModifiers(type).any()
+    fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
+    fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false

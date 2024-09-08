@@ -36,7 +36,7 @@ object TargetHelper {
 
             val tilesInAttackRange =
                 if (unit.baseUnit.isMelee()) reachableTile.neighbors
-                else if (unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true) || unit.baseUnit.movesLikeAirUnits)
+                else if (unit.baseUnit.movesLikeAirUnits || unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true))
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
 
