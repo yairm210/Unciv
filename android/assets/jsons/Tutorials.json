@@ -621,7 +621,7 @@
             {"text":"External links support right-click or long press to copy the link to the clipboard instead of launching the browser."},
             {"text":"Example: The 'Open Github page' button on the Mod management screen."}
         ],
-        "name": "Differences vs Civilization V",
+        "name": "Differences from Civilization V",
         "civilopediaText": [
             {},
             {"text":"Production Focus\nIn Civilization V, the Food yield in a city is calculated first, then population grows by consuming stored food (growth), then production is calculated, and so on one by one the other stats are calculated. Thus, citizens can produce yields in the same turn as they are born and the city focus is set to Production to assign citizen into a hill, to manually assign them to a grwoth tile on the next turn. Alternatively, you can set city focus to Gold (e.g. with Cerro de Potosi), Faith (e.g. with Mount Sinai) or whatever gains the most yields. In Unciv, citizens only start producing yields on the next turn, so you can ignore this whole concept"},
