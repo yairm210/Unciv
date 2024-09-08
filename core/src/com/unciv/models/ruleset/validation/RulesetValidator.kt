@@ -836,6 +836,18 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
+        // See BaseUnit.evaluateForce: Legacy code assigns a weight not 1 or 0 for certain conditionals, but these weights should be expressed explicitly instead
+        // The special casing in evaluateForce and this check should eventually disappear as this combo can be considered @Deprecated
+        for (unique in unit.getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals)) {
+            if (unique.hasTriggerConditional()) continue
+            if (!unique.hasModifier(
+                    UniqueType.ConditionalVsCity, UniqueType.ConditionalAttacking, UniqueType.ConditionalDefending,
+                    UniqueType.ConditionalFightingInTiles, UniqueType.ConditionalVsUnits
+            )) continue
+            if (unique.hasModifier(UniqueType.AIForceCalculationWeight)) continue
+            lines.add("${unit.name} has a Strength unique with a conditional that should state an AI force evaluation weight, but the modifier is missing.",
+                RulesetErrorSeverity.WarningOptionsOnly, unit, unique)
+        }
     }
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
