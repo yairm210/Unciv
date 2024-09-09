@@ -399,11 +399,14 @@ class MultiplayerScreen : PickerScreen() {
         } else {
             val durationInactive = Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now())
             forceResignButton.isVisible =
-                preview.getPlayerCiv(game.settings.multiplayer.userId)?.civName == Constants.spectator
-                    || durationInactive > Duration.ofDays(2)
+                game.settings.multiplayer.userId in preview.civilizations.map { it.playerId } &&
+                        preview.getPlayerCiv(game.settings.multiplayer.userId)?.civName == Constants.spectator
+                            || durationInactive > Duration.ofDays(2)
         }
-        skipTurnButton.isVisible = preview != null && preview.gameParameters.minutesUntilSkipTurn <=
-                (Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now()).toMinutes())
+        skipTurnButton.isVisible = preview != null
+                && game.settings.multiplayer.userId in preview.civilizations.map { it.playerId }
+                && preview.gameParameters.minutesUntilSkipTurn <= 
+                    Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now()).toMinutes()
 
         rightSideButton.enable()
 
