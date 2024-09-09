@@ -514,22 +514,6 @@
 		"promotions": ["[Mohawk Warrior] ability"],
 		"attackSound": "metalhit"
 	},
-	/*
-	{
-		"name": "Swordsman",
-		"unitType": "Sword",
-		"movement": 2,
-		"strength": 14,
-		"cost": 75,
-		"requiredTech": "Iron Working",
-		"upgradesTo": "Longswordsman",
-		"obsoleteTech": "Gunpowder",
-		"requiredResource": "Iron",
-		"hurryCostModifier": 20,
-		"attackSound": "metalhit"
-		// Barbarian unique Swordsman. Has same icon and name but slightly different 3d texture
-	},
-	*/
 
 	// Medieval Era
 	{
