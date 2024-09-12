@@ -1,17 +1,7 @@
-
-
-AI is displeased when you become the new ally of a city-state it was the ally of
-
-Resolve  - kick/skip turn in mutliplayer only active if the game contains the current player ID
+Performance improvements!
 
 Added Barbarian image variants for AbsoluteUnits by Pelo
 
-extremely minor perfs
+AI is displeased when you become the new ally of a city-state it was the ally of
 
-perf: 'all techs are researched' now cached per civ
-
-perf: Map modifiers by type for fast lookup
-
-perf: minor memory perf
-
-perf: Save resource uniques when resources change, so we only need one lookup for all resources for uniques
+kick/skip turn in mutliplayer only active if the game contains the current player ID
