@@ -316,6 +316,10 @@ class CityStateFunctions(val civInfo: Civilization) {
                     NotificationCategory.Diplomacy, civInfo.civName,
                     NotificationIcon.Diplomacy
                 )
+                if (newAllyName != null && oldAllyCiv.knows(newAllyName)){
+                    val diplomacyManager = oldAllyCiv.getDiplomacyManager(newAllyName)!!
+                    diplomacyManager.addModifier(DiplomaticModifiers.StoleOurAlly, -10f)
+                }
                 oldAllyCiv.cache.updateViewableTiles()
                 oldAllyCiv.cache.updateCivResources()
             }
