@@ -1,3 +1,13 @@
+## 4.13.7
+
+Performance improvements!
+
+Added Barbarian image variants for AbsoluteUnits by Pelo
+
+AI is displeased when you become the new ally of a city-state it was the ally of
+
+kick/skip turn in mutliplayer only active if the game contains the current player ID
+
 ## 4.13.6
 
 Performance improvements!
