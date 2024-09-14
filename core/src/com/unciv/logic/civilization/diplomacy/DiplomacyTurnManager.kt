@@ -292,6 +292,7 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
         revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
         revertToZero(DiplomaticModifiers.SpiedOnUs, 1 / 4f)
+        revertToZero(DiplomaticModifiers.StoleOurAlly, 1 / 2f) // Fair enough, don't like it but not directly against us per se
 
         // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)

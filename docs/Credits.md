@@ -17,7 +17,7 @@ Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://c
 
 Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
 
-Units for the [AbsoluteUnits unitset](https://github.com/letstalkaboutdune/AbsoluteUnits) are made by [letstalkaboutdune](https://github.com/letstalkaboutdune) and are licensed under Creative Commons Attribution 4.0 International
+Unless otherwise specified, units for the [AbsoluteUnits unitset](https://github.com/letstalkaboutdune/AbsoluteUnits) are made by [letstalkaboutdune](https://github.com/letstalkaboutdune) and are licensed under Creative Commons Attribution 4.0 International
 
 Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 
@@ -164,6 +164,20 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [General](https://thenounproject.com/icon/general-933566) By anbileru adaleru for Great General
 -   [Religion](https://thenounproject.com/icon/preach-53064) by Bruno Gätjens González adapted for Missionary
 -   [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
+
+### Units - extra AbsoluteUnits tileset images
+
+Barbarian variants by Pelo, made for [Playable Barbarians](https://github.com/Jaba583/Playable-Barbarians):
+
+- Frigate-Barbarians
+- Horse Archer-Barbarians.png
+- Lancer-Barbarians
+- Longswordsman-Barbarians
+- Pikeman-Barbarians
+- Rider-Barbarians
+- Swordsman-Barbarians
+- Trireme-Barbarians
+
 
 ### Resources
 
