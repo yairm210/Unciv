@@ -64,17 +64,18 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
 
-    fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
+    fun conditionalsApply(state: StateForConditionals): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
         if (isTimedTriggerable) return true
+        if (modifiers.isEmpty()) return true
         for (modifier in modifiers) {
             if (!Conditionals.conditionalApplies(this, modifier, state)) return false
         }
         return true
     }
 
-    private fun getUniqueMultiplier(stateForConditionals: StateForConditionals = StateForConditionals()): Int {
+    private fun getUniqueMultiplier(stateForConditionals: StateForConditionals): Int {
         val forEveryModifiers = getModifiers(UniqueType.ForEveryCountable)
         val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
         var amount = 1
@@ -92,7 +93,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     /** Multiplies the unique according to the multiplication conditionals */
-    fun getMultiplied(stateForConditionals: StateForConditionals = StateForConditionals()): Sequence<Unique> {
+    fun getMultiplied(stateForConditionals: StateForConditionals): Sequence<Unique> {
         val multiplier = getUniqueMultiplier(stateForConditionals)
         return EndlessSequenceOf(this).take(multiplier)
     }
