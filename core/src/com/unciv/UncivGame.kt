@@ -245,7 +245,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         }
         val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
         musicController.setModList(fullModList)
-        settings.tileSet
     }
 
     /** Re-creates the current [worldScreen], if there is any. */
