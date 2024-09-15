@@ -37,6 +37,7 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
                 val promotions = console.getSelectedUnit().promotions.promotions
                 val options = console.gameInfo.ruleset.unitPromotions.keys.asSequence()
                     .filter { it !in promotions }
+                    .map { it.replace("[","").replace("]","") }
                     .asIterable()
                 return getAutocompleteString(params.lastOrNull().orEmpty(), options, console)
             }
