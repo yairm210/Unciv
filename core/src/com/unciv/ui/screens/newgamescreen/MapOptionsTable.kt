@@ -1,11 +1,54 @@
 package com.unciv.ui.screens.newgamescreen
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
+import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.map.MapGeneratedMainType
+import com.unciv.logic.map.MapParameters
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
+
+class ScenarioSelectTable(newGameScreen: NewGameScreen, mapParameters: MapParameters) : Table() {
+    
+    data class ScenarioData(val name:String, val file: FileHandle){
+        var preview: GameInfoPreview? = null
+    }
+    
+    val scenarios = HashMap<String, ScenarioData>()
+    lateinit var selectedScenario: ScenarioData
+    
+    init {
+        // TODO make this async so it's not slow
+        val scenarioFiles = newGameScreen.game.files.getScenarioFiles()
+        for ((file, ruleset) in scenarioFiles)
+            scenarios[file.name()] = ScenarioData(file.name(), file)
+        
+        val scenarioSelectBox = TranslatedSelectBox(scenarios.keys, scenarios.keys.first())
+        
+        fun selectScenario(){
+            val scenario = scenarios[scenarioSelectBox.selected.value]!!
+            val preload = if (scenario.preview != null) scenario.preview!! else {
+                val preview = newGameScreen.game.files.loadGamePreviewFromFile(scenario.file)
+                scenario.preview = preview
+                preview
+            }
+            newGameScreen.gameSetupInfo.gameParameters.players = preload.gameParameters.players
+                .apply { removeAll { it.chosenCiv == Constants.spectator } }
+            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = preload.gameParameters.baseRuleset
+            newGameScreen.gameSetupInfo.gameParameters.mods = preload.gameParameters.mods
+            newGameScreen.tryUpdateRuleset(true)
+            newGameScreen.playerPickerTable.update()
+            selectedScenario = scenario
+        }
+        
+        scenarioSelectBox.onChange { selectScenario() }
+        add(scenarioSelectBox)
+        selectScenario()
+    }
+}
 
 class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
 
@@ -14,6 +57,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
     internal val generatedMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.generated)
     private val randomMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.randomGenerated)
     private val savedMapOptionsTable = MapFileSelectTable(newGameScreen, mapParameters)
+    private val scenarioOptionsTable = ScenarioSelectTable(newGameScreen, mapParameters)
     internal val mapTypeSelectBox: TranslatedSelectBox
 
     init {
@@ -23,6 +67,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
 
         val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
         if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
+        if (newGameScreen.game.files.getScenarioFiles().any()) mapTypes.add(MapGeneratedMainType.scenario)
 
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated)
 
@@ -46,6 +91,11 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
                     mapTypeSpecificTable.add(randomMapOptionsTable)
                     newGameScreen.unlockTables()
                 }
+                MapGeneratedMainType.scenario -> {
+                    mapParameters.name = ""
+                    mapTypeSpecificTable.add(scenarioOptionsTable)
+                    newGameScreen.lockTables()
+                }
             }
             newGameScreen.gameSetupInfo.gameParameters.godMode = false
             newGameScreen.updateTables()
@@ -61,6 +111,11 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
         mapTypeSelectWrapper.add(mapTypeSelectBox).right()
         add(mapTypeSelectWrapper).pad(10f).fillX().row()
         add(mapTypeSpecificTable).row()
+    }
+    
+    fun getSelectedScenario(): ScenarioSelectTable.ScenarioData? {
+        if (mapTypeSelectBox.selected.value != MapGeneratedMainType.scenario) return null
+        return scenarioOptionsTable.selectedScenario
     }
 
     internal fun cancelBackgroundJobs() = savedMapOptionsTable.cancelBackgroundJobs()
