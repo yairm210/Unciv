@@ -276,8 +276,8 @@ class CityScreen(
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
 
-            if (fireworks == null || tileGroup.tile.position != city.location) continue
-            fireworks.setActorBounds(tileGroup)
+            if (fireworks != null && tileGroup.tile.position == city.location)
+                fireworks.setActorBounds(tileGroup)
         }
     }
 
@@ -340,7 +340,7 @@ class CityScreen(
         val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
         val cityTileGroups = city.getCenterTile().getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
+                .map { CityTileGroup(city, it, tileSetStrings, false) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
