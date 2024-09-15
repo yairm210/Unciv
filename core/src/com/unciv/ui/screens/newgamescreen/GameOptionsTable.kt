@@ -172,7 +172,7 @@ class GameOptionsTable(
             { gameParameters.nuclearWeaponsEnabled = it }
 
     private fun Table.addIsOnlineMultiplayerCheckbox() =
-            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
+            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer, lockable = false)
             { shouldUseMultiplayer ->
                 gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
                 updatePlayerPickerTable("")
