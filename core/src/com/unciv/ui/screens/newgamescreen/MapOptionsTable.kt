@@ -6,12 +6,14 @@ import com.unciv.Constants
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 
-class ScenarioSelectTable(newGameScreen: NewGameScreen, mapParameters: MapParameters) : Table() {
+class ScenarioSelectTable(val newGameScreen: NewGameScreen, mapParameters: MapParameters) : Table() {
     
     data class ScenarioData(val name:String, val file: FileHandle){
         var preview: GameInfoPreview? = null
@@ -19,34 +21,46 @@ class ScenarioSelectTable(newGameScreen: NewGameScreen, mapParameters: MapParame
     
     val scenarios = HashMap<String, ScenarioData>()
     lateinit var selectedScenario: ScenarioData
+    var scenarioSelectBox: TranslatedSelectBox? = null
     
     init {
-        // TODO make this async so it's not slow
-        val scenarioFiles = newGameScreen.game.files.getScenarioFiles()
+        // Only the first so it's fast
+        val firstScenarioFile = newGameScreen.game.files.getScenarioFiles().firstOrNull()
+        if (firstScenarioFile != null) {
+            createScenarioSelectBox(listOf(firstScenarioFile))
+            Concurrency.run {
+                val scenarioFiles = newGameScreen.game.files.getScenarioFiles().toList()
+                Concurrency.runOnGLThread {
+                    createScenarioSelectBox(scenarioFiles)
+                }
+            }
+        }
+    }
+
+    private fun createScenarioSelectBox(scenarioFiles: List<Pair<FileHandle, Ruleset>>) {
         for ((file, ruleset) in scenarioFiles)
             scenarios[file.name()] = ScenarioData(file.name(), file)
-        
-        val scenarioSelectBox = TranslatedSelectBox(scenarios.keys, scenarios.keys.first())
-        
-        fun selectScenario(){
-            val scenario = scenarios[scenarioSelectBox.selected.value]!!
-            val preload = if (scenario.preview != null) scenario.preview!! else {
-                val preview = newGameScreen.game.files.loadGamePreviewFromFile(scenario.file)
-                scenario.preview = preview
-                preview
-            }
-            newGameScreen.gameSetupInfo.gameParameters.players = preload.gameParameters.players
-                .apply { removeAll { it.chosenCiv == Constants.spectator } }
-            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = preload.gameParameters.baseRuleset
-            newGameScreen.gameSetupInfo.gameParameters.mods = preload.gameParameters.mods
-            newGameScreen.tryUpdateRuleset(true)
-            newGameScreen.playerPickerTable.update()
-            selectedScenario = scenario
-        }
-        
-        scenarioSelectBox.onChange { selectScenario() }
+
+        scenarioSelectBox = TranslatedSelectBox(scenarios.keys.sorted(), scenarios.keys.first())
+        scenarioSelectBox!!.onChange { selectScenario() }
+        clear()
         add(scenarioSelectBox)
-        selectScenario()
+    }
+
+    fun selectScenario(){
+        val scenario = scenarios[scenarioSelectBox!!.selected.value]!!
+        val preload = if (scenario.preview != null) scenario.preview!! else {
+            val preview = newGameScreen.game.files.loadGamePreviewFromFile(scenario.file)
+            scenario.preview = preview
+            preview
+        }
+        newGameScreen.gameSetupInfo.gameParameters.players = preload.gameParameters.players
+            .apply { removeAll { it.chosenCiv == Constants.spectator } }
+        newGameScreen.gameSetupInfo.gameParameters.baseRuleset = preload.gameParameters.baseRuleset
+        newGameScreen.gameSetupInfo.gameParameters.mods = preload.gameParameters.mods
+        newGameScreen.tryUpdateRuleset(true)
+        newGameScreen.playerPickerTable.update()
+        selectedScenario = scenario
     }
 }
 
@@ -94,6 +108,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
                 MapGeneratedMainType.scenario -> {
                     mapParameters.name = ""
                     mapTypeSpecificTable.add(scenarioOptionsTable)
+                    scenarioOptionsTable.selectScenario()
                     newGameScreen.lockTables()
                 }
             }
