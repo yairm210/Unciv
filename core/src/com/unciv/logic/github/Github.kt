@@ -150,7 +150,7 @@ object Github {
     }
 
     private fun isValidModFolder(dir: FileHandle): Boolean {
-        val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*")
+        val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
             .map { Regex(it, RegexOption.IGNORE_CASE) }
         val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license")
             .map { Regex(it, RegexOption.IGNORE_CASE) }
