@@ -284,8 +284,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
                     val tileWeAreChecking = tilesToCheck.removeFirst()
-                    for (vector in tileWeAreChecking.neighbors
-                        .filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
+                    for (vector in tileWeAreChecking.neighbors){
+                        if (tilesInArea.contains(vector)) continue
+                        if (!waterTiles.contains(vector)) continue
                         tilesInArea += vector
                         tilesToCheck += vector
                         waterTiles -= vector

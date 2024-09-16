@@ -112,7 +112,10 @@ class TileGroupMap<T: TileGroup>(
         val cityButtonLayers = ArrayList<TileLayerCityButton>()
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
-        for (group in tileGroups.sortedByDescending { it.tile.position.x + it.tile.position.y }) {
+        //  So instead we group by and then sort on the groups
+        // Profiling is a bit iffy if this is actually better but...probably?
+        for (group in tileGroups.groupBy { it.tile.position.x + it.tile.position.y }
+            .entries.sortedByDescending { it.key }.flatMap { it.value }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
             baseLayers.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
             featureLayers.add(group.layerFeatures.apply { setPosition(group.x, group.y) })

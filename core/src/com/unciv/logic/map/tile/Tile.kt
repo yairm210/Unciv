@@ -155,7 +155,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         private set
 
     @Transient
-    var terrainUniqueMap = UniqueMap()
+    var terrainUniqueMap = UniqueMap.EMPTY
         private set
 
     @Transient

@@ -316,6 +316,10 @@ open class UniqueMap() {
             unique.hasModifier(trigger) && unique.conditionalsApply(stateForConditionals)
         }.flatMap { it.getMultiplied(stateForConditionals) }
     }
+    
+    companion object{
+        val EMPTY = UniqueMap()
+    }
 }
 
 class TemporaryUnique() : IsPartOfGameInfoSerialization {

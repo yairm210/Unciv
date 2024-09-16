@@ -1,9 +1,5 @@
 ## 4.13.8
 
-Average speed: 28.0 turns/s
-Average game duration: 10.714975s
-Total time: 7m 8.599s
-
 Allowed starting Scenarios, including Multiplayer, through the "New Game" screen! :D
 
 WLTK + continuous rendering no longer cause city tiles to be dimmed
