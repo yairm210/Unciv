@@ -12,6 +12,7 @@ import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
+import java.util.EnumMap
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -243,22 +244,27 @@ class LocalUniqueCache(val cache: Boolean = true) {
     }
 }
 
-class UniqueMap() {
-    //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
-    // For now, we can have both map types "side by side" each serving their own purpose,
-    // and gradually this one will be deprecated in favor of the other
-    
-    private val innerUniqueMap =  HashMap<String, ArrayList<Unique>>()
+open class UniqueMap() {
+    protected val innerUniqueMap =  HashMap<String, ArrayList<Unique>>()
+
+    // *shares* the list of uniques with the other map, to save on memory and allocations
+    // This is a memory/speed tradeoff, since there are *600 unique types*,
+    // 750 including deprecated, and EnumMap creates a N-sized array where N is the number of objects in the enum
+    val typedUniqueMap = EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.java)
 
     constructor(uniques: Sequence<Unique>) : this() {
         addUniques(uniques.asIterable())
     }
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
-    fun addUnique(unique: Unique) {
+    open fun addUnique(unique: Unique) {
         val existingArrayList = innerUniqueMap[unique.placeholderText]
         if (existingArrayList != null) existingArrayList.add(unique)
         else innerUniqueMap[unique.placeholderText] = arrayListOf(unique)
+        
+        if (unique.type == null) return
+        if (typedUniqueMap[unique.type] != null) return
+        typedUniqueMap[unique.type] = innerUniqueMap[unique.placeholderText]
     }
 
     /** Calls [addUnique] on each item from [uniques] */
@@ -271,7 +277,10 @@ class UniqueMap() {
         existingArrayList?.remove(unique)
     }
     
-    fun clear() = innerUniqueMap.clear()
+    fun clear() {
+        innerUniqueMap.clear()
+        typedUniqueMap.clear()
+    }
     
     // Pure functions
     
@@ -281,13 +290,21 @@ class UniqueMap() {
     fun hasTagUnique(tagUnique: String) =
         innerUniqueMap.containsKey(tagUnique)
 
-    fun getUniques(uniqueType: UniqueType) =
-        innerUniqueMap[uniqueType.placeholderText]?.asSequence() ?: emptySequence()
+    // 160ms vs 1000-1250ms/30s
+    fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
+        ?.asSequence()
+        ?: emptySequence()
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
         getUniques(uniqueType)
-            .filter { it.conditionalsApply(state) && !it.isTimedTriggerable }
-            .flatMap { it.getMultiplied(state) }
+            // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
+            .flatMap {
+                when {
+                    it.isTimedTriggerable -> emptySequence()
+                    !it.conditionalsApply(state) -> emptySequence()
+                    else -> it.getMultiplied(state)
+                }
+            }
     
     fun hasMatchingUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
         getUniques(uniqueType).any { it.conditionalsApply(state) }
@@ -300,7 +317,6 @@ class UniqueMap() {
         }.flatMap { it.getMultiplied(stateForConditionals) }
     }
 }
-
 
 class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
