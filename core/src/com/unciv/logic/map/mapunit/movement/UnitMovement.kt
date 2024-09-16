@@ -43,6 +43,8 @@ class UnitMovement(val unit: MapUnit) {
 
         // If I can't move my only option is to stay...
         if (unitMovement == 0f || unit.cache.cannotMove) return distanceToTiles
+        // If our escort can't move, ditto
+        if (includeOtherEscortUnit && unit.getOtherEscortUnit()?.currentMovement == 0f) return distanceToTiles
 
         var tilesToCheck = listOf(unitTile)
 
