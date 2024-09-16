@@ -69,8 +69,7 @@ class UnitMovement(val unit: MapUnit) {
                         }
                     }
 
-                    val currentBestPath = distanceToTiles[neighbor]
-                    if (currentBestPath == null || currentBestPath.totalDistance > totalDistanceToTile) { // this is the new best path
+                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
                         val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
                             minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
                         else unitMovement
