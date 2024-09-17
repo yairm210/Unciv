@@ -1,32 +1,10 @@
 ## 4.13.9
 
-More memory perf improvements
+Significant memory improvements - should allow for much larger maps on memory-constrained devices!
 
-SIGNIFICANTLY decreased memory usage by only initializing overlay images when required
+CPU performance improvements 
 
-Tile.terrainUniqueMap doesn't need to have an initial value set - this is a bogus value that just takes init time and memory (and a lot of memory at that)
-
-Reapply "perf: minor speedup in distance to tiles"
-
-Solve self-introduced bug in unit movement. Thank G-d (literaly) for ConsoleLauncher, may his name (G-d's) be blessed
-
-perf: Decrease getUniques(uniqueType) by adding a EnumMap to store uniques by type, with basically zero lookup time :star:
-
-Revert "perf: minor speedup in distance to tiles"
-
-perf: minor speedup in distance to tiles
-
-Resolved  - escorted unit cannot move if its escort cannot move
-
-4.13.8-patch1
-
-Fix broken start new game 
-
-perf: Decrease great general bonus calculation time
-
-perf: Decrease getUniques(uniqueType) by adding a EnumMap to store uniques by type, with basically zero lookup time :star:
-
-Fix missing brackets  - By Ouaz
+Solved rare automation crashes with escorted units
 
 ## 4.13.8
 
