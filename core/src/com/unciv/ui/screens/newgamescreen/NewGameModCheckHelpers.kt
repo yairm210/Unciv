@@ -16,7 +16,8 @@ fun RulesetErrorList.showWarnOrErrorToast(screen: BaseScreen) {
     if (!isWarnUser()) return
     val headerText =
         if (isError()) "The mod combination you selected is «RED»incorrectly defined!«»"
-        else "{The mod combination you selected «GOLD»has problems«».}\n{You can play it, but «GOLDENROD»don't expect everything to work!«»}"
+        else "{The mod combination you selected «GOLD»has problems«».}\n" +
+                "{You can play it, but «GOLDENROD»don't expect everything to work!«»}"
     val toastMessage = headerText.tr() + "\n\n{" + getErrorText() + "}"
     for (oldToast in screen.popups.filterIsInstance<ToastPopup>()) { oldToast.close() }
     ToastPopup(toastMessage, screen, 5000L)

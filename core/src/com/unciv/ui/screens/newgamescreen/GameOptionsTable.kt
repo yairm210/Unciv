@@ -374,7 +374,7 @@ class GameOptionsTable(
             if (newBaseRuleset == previousSelection) return null
 
             // Check if this mod is well-defined
-            val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
+            val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.getErrorList()
             if (baseRulesetErrors.isError()) {
                 baseRulesetErrors.showWarnOrErrorToast(previousScreen as BaseScreen)
                 return previousSelection
@@ -386,7 +386,7 @@ class GameOptionsTable(
             onChooseMod(newBaseRuleset)
 
             // Check if the ruleset in its entirety is still well-defined
-            val modLinkErrors = ruleset.checkModLinks()
+            val modLinkErrors = ruleset.getErrorList()
             if (modLinkErrors.isError()) {
                 modCheckboxes.disableAllCheckboxes()  // also clears gameParameters.mods
                 reloadRuleset()
