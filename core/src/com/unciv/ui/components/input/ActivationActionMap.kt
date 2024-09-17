@@ -3,11 +3,12 @@ package com.unciv.ui.components.input
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.utils.Concurrency
+import java.util.EnumMap
 
 typealias ActivationAction = () -> Unit
 
 // The delegation inheritance is only done to reduce the signature and limit clients to *our* add functions
-internal class ActivationActionMap : MutableMap<ActivationTypes, ActivationActionMap.ActivationActionList> by LinkedHashMap() {
+internal class ActivationActionMap : MutableMap<ActivationTypes, ActivationActionMap.ActivationActionList> by EnumMap(ActivationTypes::class.java) {
     // todo Old listener said "happens if there's a double (or more) click function but no single click" -
     //      means when we register a single-click but the listener *only* reports a double, the registered single-click action is invoked.
 

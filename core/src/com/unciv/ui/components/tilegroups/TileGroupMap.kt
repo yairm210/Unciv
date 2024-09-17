@@ -102,14 +102,16 @@ class TileGroupMap<T: TileGroup>(
         drawTopX = topX - bottomX
         drawBottomX = bottomX - bottomX
 
-        val baseLayers = ArrayList<TileLayerTerrain>()
-        val featureLayers = ArrayList<TileLayerFeatures>()
-        val borderLayers = ArrayList<TileLayerBorders>()
-        val miscLayers = ArrayList<TileLayerMisc>()
-        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>()
-        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>()
-        val unitLayers = ArrayList<TileLayerUnitFlag>()
-        val cityButtonLayers = ArrayList<TileLayerCityButton>()
+        val numberOfTilegroups = tileGroups.count()
+        
+        val baseLayers = ArrayList<TileLayerTerrain>(numberOfTilegroups)
+        val featureLayers = ArrayList<TileLayerFeatures>(numberOfTilegroups)
+        val borderLayers = ArrayList<TileLayerBorders>(numberOfTilegroups)
+        val miscLayers = ArrayList<TileLayerMisc>(numberOfTilegroups)
+        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>(numberOfTilegroups)
+        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>(numberOfTilegroups)
+        val unitLayers = ArrayList<TileLayerUnitFlag>(numberOfTilegroups)
+        val cityButtonLayers = ArrayList<TileLayerCityButton>(numberOfTilegroups)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         //  So instead we group by and then sort on the groups
