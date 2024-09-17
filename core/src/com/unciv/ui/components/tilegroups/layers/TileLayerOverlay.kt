@@ -42,7 +42,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             addActor(crosshair)
             determineVisibility()
         }
-        crosshair!!.color.a = alpha
+        crosshair?.color?.a = alpha
     }
 
     fun hideCrosshair() {
@@ -58,7 +58,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             addActor(highlight)
             determineVisibility()
         }
-        highlight!!.color = color.cpy().apply { a = alpha }
+        highlight?.color = color.cpy().apply { a = alpha }
     }
 
     fun hideHighlight() {
