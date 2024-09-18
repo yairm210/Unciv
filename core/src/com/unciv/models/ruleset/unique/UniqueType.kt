@@ -414,7 +414,7 @@ enum class UniqueType(
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
     TransferMovement("Transfer Movement to [mapUnitFilter]", UniqueTarget.Unit),
-    MoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
+    CanMoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
 
     // Healing
     HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit, UniqueTarget.Global),
