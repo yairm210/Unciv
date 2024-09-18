@@ -385,10 +385,13 @@ class MultiplayerScreen : PickerScreen() {
         selectedGame = multiplayerGame
 
         for (button in gameSpecificButtons) button.enable()
+        
         if (multiplayerGame.preview != null) {
             copyGameIdButton.enable()
+            rightSideButton.enable()
         } else {
             copyGameIdButton.disable()
+            rightSideButton.disable()
         }
 
         resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.userId
@@ -407,9 +410,7 @@ class MultiplayerScreen : PickerScreen() {
                 && game.settings.multiplayer.userId in preview.civilizations.map { it.playerId }
                 && preview.gameParameters.minutesUntilSkipTurn <= 
                     Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now()).toMinutes()
-
-        rightSideButton.enable()
-
+        
         descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))
     }
 }
