@@ -1,3 +1,25 @@
+## 4.13.9
+
+Significant memory improvements - should allow for much larger maps on memory-constrained devices!
+
+CPU performance improvements 
+
+Solved rare automation crashes with escorted units
+
+## 4.13.8
+
+Allowed starting Scenarios, including Multiplayer, through the "New Game" screen! :D
+
+WLTK + continuous rendering no longer cause city tiles to be dimmed
+
+Fixed Scenario mods being undownloadable and needing to restart game to access Scenario picker
+
+Added Barbarian Musketman and Worker variants for AbsoluteUnits
+
+Images are restored to ruleset correctly when resuming open game screen
+
+BNW unit sprites for HexaRealm - By GeneralWadaling
+
 ## 4.13.7
 
 Performance improvements!

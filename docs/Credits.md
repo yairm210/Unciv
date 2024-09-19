@@ -177,6 +177,11 @@ Barbarian variants by Pelo, made for [Playable Barbarians](https://github.com/Ja
 - Rider-Barbarians
 - Swordsman-Barbarians
 - Trireme-Barbarians
+- Musketman-Barbarians
+
+## By Basil
+
+- Worker-Barbarians
 
 
 ### Resources

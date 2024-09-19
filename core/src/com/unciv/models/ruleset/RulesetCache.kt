@@ -55,7 +55,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
                     newRulesets[modRuleset.name] = modRuleset
                     debug("Mod loaded successfully: %s", modRuleset.name)
                     if (Log.shouldLog()) {
-                        val modLinksErrors = modRuleset.checkModLinks()
+                        val modLinksErrors = modRuleset.getErrorList()
                         // For extension mods which use references to base ruleset objects, the parameter type
                         // errors are irrelevant - the checker ran without a base ruleset
                         val logFilter: (RulesetError) -> Boolean =
@@ -163,7 +163,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
     }
 
     /**
-     * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
+     * Runs [Ruleset.getErrorList] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
      */
     fun checkCombinedModLinks(
         mods: LinkedHashSet<String>,
@@ -173,7 +173,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
         return try {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-            newRuleset.checkModLinks(tryFixUnknownUniques)
+            newRuleset.getErrorList(tryFixUnknownUniques)
         } catch (ex: UncivShowableException) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error

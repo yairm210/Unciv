@@ -76,7 +76,7 @@ internal class CliInput(
     override fun equals(other: Any?): Boolean = when {
         this === other -> true
         other is CliInput -> compareTo(other) == 0
-        other is String -> compareTo(other, method) == 0
+        other is String -> compareTo(other.replace("[","").replace("]",""), method) == 0
         else -> false
     }
 

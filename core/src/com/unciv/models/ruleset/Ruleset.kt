@@ -509,5 +509,5 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
-    fun checkModLinks(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
+    fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
 }

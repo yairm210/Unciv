@@ -155,7 +155,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         private set
 
     @Transient
-    var terrainUniqueMap = UniqueMap()
+    var terrainUniqueMap = UniqueMap.EMPTY
         private set
 
     @Transient
@@ -826,8 +826,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
     }
 
-    fun removeTerrainFeature(terrainFeature: String) =
-        setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
+    fun removeTerrainFeature(terrainFeature: String) {
+        if (terrainFeature in terrainFeatures)
+            setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
+    }
 
     fun removeTerrainFeatures() =
         setTerrainFeatures(listOf())

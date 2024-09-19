@@ -102,17 +102,22 @@ class TileGroupMap<T: TileGroup>(
         drawTopX = topX - bottomX
         drawBottomX = bottomX - bottomX
 
-        val baseLayers = ArrayList<TileLayerTerrain>()
-        val featureLayers = ArrayList<TileLayerFeatures>()
-        val borderLayers = ArrayList<TileLayerBorders>()
-        val miscLayers = ArrayList<TileLayerMisc>()
-        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>()
-        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>()
-        val unitLayers = ArrayList<TileLayerUnitFlag>()
-        val cityButtonLayers = ArrayList<TileLayerCityButton>()
+        val numberOfTilegroups = tileGroups.count()
+        
+        val baseLayers = ArrayList<TileLayerTerrain>(numberOfTilegroups)
+        val featureLayers = ArrayList<TileLayerFeatures>(numberOfTilegroups)
+        val borderLayers = ArrayList<TileLayerBorders>(numberOfTilegroups)
+        val miscLayers = ArrayList<TileLayerMisc>(numberOfTilegroups)
+        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>(numberOfTilegroups)
+        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>(numberOfTilegroups)
+        val unitLayers = ArrayList<TileLayerUnitFlag>(numberOfTilegroups)
+        val cityButtonLayers = ArrayList<TileLayerCityButton>(numberOfTilegroups)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
-        for (group in tileGroups.sortedByDescending { it.tile.position.x + it.tile.position.y }) {
+        //  So instead we group by and then sort on the groups
+        // Profiling is a bit iffy if this is actually better but...probably?
+        for (group in tileGroups.groupBy { it.tile.position.x + it.tile.position.y }
+            .entries.sortedByDescending { it.key }.flatMap { it.value }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
             baseLayers.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
             featureLayers.add(group.layerFeatures.apply { setPosition(group.x, group.y) })

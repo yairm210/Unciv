@@ -139,7 +139,11 @@ class ModManagementScreen private constructor(
             if (game.settings.tileSet !in tileSets) {
                 game.settings.tileSet = tileSets.first()
             }
-            game.popScreen()
+            val screen = game.popScreen()
+            
+            // We want to immediately display/hide Scenario button based on changes
+            if (screen is MainMenuScreen)
+                screen.game.replaceCurrentScreen(MainMenuScreen())
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 

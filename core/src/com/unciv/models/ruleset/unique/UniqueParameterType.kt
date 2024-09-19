@@ -618,8 +618,8 @@ enum class UniqueParameterType(
      *  - [getErrorSeverity] takes precedence and chooses whether to call this or not.
      *  - This means [getErrorSeverity] or [isKnownValue] ***must*** be overridden or else the UniqueParameterType is never valid.
      */
-    open fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean = knownValuesCache.getOrPut(ruleset) { getKnownValuesForAutocomplete(ruleset) }.contains(parameterText)
-    open val knownValuesCache: HashMap<Ruleset, Set<String>> = HashMap()
+    open fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean =
+        getKnownValuesForAutocomplete(ruleset).contains(parameterText)
 
     /** This returns the known values *for autocomplete* -
      *  there may be 'known values' not in this set, for example uniques.

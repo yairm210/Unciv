@@ -319,7 +319,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
+        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.CanMoveImmediatelyOnceBought))
             unit.currentMovement = 0f
 
         addConstructionBonuses(unit, cityConstructions)
