@@ -47,11 +47,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.TemporaryUnique
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.getMatchingUniques
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -119,6 +115,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     var summarizedCivResourceSupply = ResourceSupplyList()
+    
+    @Transient
+    var civResourcesUniqueMap = UniqueMap()
 
     @Transient
     val cityStateFunctions = CityStateFunctions(this)
@@ -535,11 +534,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
 
-        yieldAll(getCivResourceSupply().asSequence()
-            .filter { it.amount > 0 }
-            .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
-        )
-
+        yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(gameInfo.ruleset.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
@@ -677,7 +672,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.CropYield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.Growth -> stats.statsForNextTurn.food.roundToInt()
                 RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }

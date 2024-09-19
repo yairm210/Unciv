@@ -20,11 +20,11 @@ interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
-     * Uses [stateForConditionals] to determine which civ or city this is built for*/
-    fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals? = null): Counter<String>
-    fun requiredResources(stateForConditionals: StateForConditionals? = null): Set<String>
+     * Uses [state] to determine which civ or city this is built for*/
+    fun getResourceRequirementsPerTurn(state: StateForConditionals? = null): Counter<String>
+    fun requiredResources(state: StateForConditionals = StateForConditionals.EmptyState): Set<String>
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
-    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
+    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals) = sequenceOf<Unique>()
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
@@ -102,12 +102,12 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
 
-    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType): Sequence<Unique> =
-            getMatchingUniques(uniqueType)
+    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> =
+            getMatchingUniques(uniqueType, stateForConditionals)
 
-    override fun requiredResources(stateForConditionals: StateForConditionals?): Set<String> {
-        return getResourceRequirementsPerTurn(stateForConditionals).keys +
-                getMatchingUniques(UniqueType.CostsResources, stateForConditionals).map { it.params[1] }
+    override fun requiredResources(state: StateForConditionals): Set<String> {
+        return getResourceRequirementsPerTurn(state).keys +
+                getMatchingUniques(UniqueType.CostsResources, state).map { it.params[1] }
     }
 }
 
@@ -256,9 +256,9 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun getResourceRequirementsPerTurn(stateForConditionals: StateForConditionals?) = Counter.ZERO
+    override fun getResourceRequirementsPerTurn(state: StateForConditionals?) = Counter.ZERO
 
-    override fun requiredResources(stateForConditionals: StateForConditionals?): Set<String> = emptySet()
+    override fun requiredResources(state: StateForConditionals): Set<String> = emptySet()
 }
 
 open class PerpetualStatConversion(val stat: Stat) :

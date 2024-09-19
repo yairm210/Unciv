@@ -20,7 +20,7 @@ object GreatGeneralImplementation {
     }
 
     /**
-     * Determine the "Great General" bonus for [unit] by searching for units carrying the [UniqueType.StrengthBonusInRadius] in the vicinity.
+     * Determine the "Great General" bonus for [ourUnitCombatant] by searching for units carrying the [UniqueType.StrengthBonusInRadius] in the vicinity.
      *
      * Used by [BattleDamage.getGeneralModifiers].
      *
@@ -89,16 +89,20 @@ object GreatGeneralImplementation {
         // rank tiles and find best
         val unitBonusRadius = generalBonusData.maxOfOrNull { it.radius }
             ?: return null
+        
+        val militaryUnitToHasAttackableEnemies = HashMap<MapUnit, Boolean>()
 
         return militaryUnitTilesInDistance
             .maxByOrNull { unitTile ->
-                unitTile.getTilesInDistance(unitBonusRadius).sumOf { auraTile ->
-                    val militaryUnit = auraTile.militaryUnit
+                unitTile.getTilesInDistance(unitBonusRadius).sumOf { affectedTile ->
+                    val militaryUnit = affectedTile.militaryUnit
                     if (militaryUnit == null || militaryUnit.civ != general.civ || militaryUnit.isEmbarked()) 0
-                    else if (TargetHelper.getAttackableEnemies(militaryUnit, militaryUnit.movement.getDistanceToTiles()).isEmpty()) 0
+                    else if (militaryUnitToHasAttackableEnemies.getOrPut(militaryUnit) {
+                            TargetHelper.getAttackableEnemies(militaryUnit, militaryUnit.movement.getDistanceToTiles()).isEmpty()
+                        }) 0
                     else generalBonusData.firstOrNull {
                         // "Military" as commented above only a small optimization
-                        auraTile.aerialDistanceTo(unitTile) <= it.radius
+                        affectedTile.aerialDistanceTo(unitTile) <= it.radius
                                 && (it.filter == "Military" || militaryUnit.matchesFilter(it.filter))
                     }?.bonus ?: 0
                 }

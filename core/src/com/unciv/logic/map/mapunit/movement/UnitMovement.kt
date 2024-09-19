@@ -43,6 +43,9 @@ class UnitMovement(val unit: MapUnit) {
 
         // If I can't move my only option is to stay...
         if (unitMovement == 0f || unit.cache.cannotMove) return distanceToTiles
+        // If our escort can't move, ditto
+        if (includeOtherEscortUnit && unit.isEscorting()
+            && unit.getOtherEscortUnit()?.currentMovement == 0f) return distanceToTiles
 
         var tilesToCheck = listOf(unitTile)
 
@@ -67,7 +70,8 @@ class UnitMovement(val unit: MapUnit) {
                         }
                     }
 
-                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
+                    val currentBestPath = distanceToTiles[neighbor]
+                    if (currentBestPath == null || currentBestPath.totalDistance > totalDistanceToTile) { // this is the new best path
                         val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
                             minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
                         else unitMovement
@@ -701,10 +705,10 @@ class UnitMovement(val unit: MapUnit) {
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
-        val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
-        if (cacheResults != null) {
-            return cacheResults
-        }
+//        val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
+//        if (cacheResults != null) {
+//            return cacheResults
+//        }
         val distanceToTiles = getDistanceToTilesAtPosition(
             unit.currentTile.position,
             unit.currentMovement,

@@ -30,11 +30,15 @@ object ReligionAutomation {
             buyGreatProphetInAnyCity(civInfo)
             return
         }
+        
+        if (civInfo.religionManager.remainingFoundableReligions() == 0 && civInfo.religionManager.religionState == ReligionState.Pantheon) {
+            buyGreatPerson(civInfo)
+            return
+        }
 
         // We don't have a religion and no more change of getting it :(
         if (civInfo.religionManager.religionState <= ReligionState.Pantheon) {
             tryBuyAnyReligiousBuilding(civInfo)
-            // Todo: buy Great People post industrial era
             return
         }
 
@@ -191,6 +195,29 @@ object ReligionAutomation {
             .minByOrNull { it.getCenterTile().aerialDistanceTo(city.getCenterTile()) } ?: return
 
         cityToBuy.cityConstructions.purchaseConstruction(inquisitorConstruction, -1, true, Stat.Faith)
+    }
+
+    private fun buyGreatPerson(civInfo: Civilization) {
+        val greatPersonUnit = civInfo.gameInfo.ruleset.units.values.filter {
+            it.hasUnique(UniqueType.GreatPerson) && !it.hasUnique(UniqueType.MayFoundReligion) //we want to exclude great prophets from the list
+        }
+        val greatPersonConstruction = greatPersonUnit
+            // Get list of cities it can be built in
+            .associateBy({unit -> unit}) { unit -> civInfo.cities.filter { unit.isPurchasable(it.cityConstructions) && unit.canBePurchasedWithStat(it, Stat.Faith) } }
+            .filter { it.value.isNotEmpty() }
+            // And from that list determine the cheapest price
+            .minByOrNull { it.value.minOf { city -> it.key.getStatBuyCost(city, Stat.Faith)!!  }}?.key
+            ?: return
+
+        val validCitiesToBuy = civInfo.cities.filter {
+            (greatPersonConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
+        }
+        
+        if (validCitiesToBuy.isEmpty()) return
+
+        val cityToBuy = validCitiesToBuy.first()
+
+        cityToBuy.cityConstructions.purchaseConstruction(greatPersonConstruction, -1, true, Stat.Faith)
     }
 
     // endregion

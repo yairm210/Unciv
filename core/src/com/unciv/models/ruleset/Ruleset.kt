@@ -55,9 +55,7 @@ enum class RulesetFile(val filename: String,
     CityStateTypes("CityStateTypes.json", getUniques =
         { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } }),
     Personalities("Personalities.json", { personalities.values.asSequence() }),
-    Events("Events.json", {events.values.asSequence()},
-        { events.values.asSequence().flatMap { it.uniqueObjects } +
-                events.values.asSequence().flatMap { it.choices.flatMap { it.triggeredUniqueObjects } }}),
+    Events("Events.json", {events.values.asSequence() + events.values.flatMap { it.choices }}),
     GlobalUniques("GlobalUniques.json", { sequenceOf(globalUniques) }),
     ModOptions("ModOptions.json", getUniques = { modOptions.uniqueObjects.asSequence() }),
     Speeds("Speeds.json", { speeds.values.asSequence() }),
@@ -511,5 +509,5 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
-    fun checkModLinks(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
+    fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
 }

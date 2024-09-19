@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -19,6 +20,7 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 class RenderEvent(
     event: Event,
     val worldScreen: WorldScreen,
+    val unit: MapUnit? = null,
     val onChoice: (EventChoice) -> Unit
 ) : Table() {
     private val gameInfo get() = worldScreen.gameInfo
@@ -31,7 +33,7 @@ class RenderEvent(
     init {
         defaults().fillX().center().pad(5f)
 
-        val stateForConditionals = StateForConditionals(gameInfo.currentPlayerCiv)
+        val stateForConditionals = StateForConditionals(gameInfo.currentPlayerCiv, unit = unit)
         val choices = event.getMatchingChoices(stateForConditionals)
         isValid = choices != null
         if (isValid) {
@@ -56,7 +58,7 @@ class RenderEvent(
         val button = choice.text.toTextButton()
         button.onActivation {
             onChoice(choice)
-            choice.triggerChoice(gameInfo.currentPlayerCiv)
+            choice.triggerChoice(gameInfo.currentPlayerCiv, unit)
         }
         val key = KeyCharAndCode.parse(choice.keyShortcut)
         if (key != KeyCharAndCode.UNKNOWN) {
@@ -68,8 +70,11 @@ class RenderEvent(
         val lines = (
             choice.civilopediaText.asSequence()
                 + choice.triggeredUniqueObjects.asSequence()
-                .filterNot { it.isHiddenToUsers() }
-                .map { FormattedLine(it) }
+                    .filterNot { it.isHiddenToUsers() }
+                    .map { FormattedLine(it) }
+                + choice.uniqueObjects.filter { it.isTriggerable }
+                    .filterNot { it.isHiddenToUsers() }
+                    .map { FormattedLine(it) }
             ).asIterable()
         add(MarkupRenderer.render(lines, stageWidth * 0.5f, linkAction = ::openCivilopedia)).row()
     }

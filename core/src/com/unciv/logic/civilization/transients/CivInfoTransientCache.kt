@@ -15,10 +15,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
@@ -49,13 +46,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
 
+        val state = StateForConditionals(civInfo)
         val buildingsToRequiredResources = ruleset.buildings.values
                 .filter { civInfo.getEquivalentBuilding(it) == it }
-                .associateWith { it.requiredResources() }
+                .associateWith { it.requiredResources(state) }
 
         val unitsToRequiredResources = ruleset.units.values
                 .filter { civInfo.getEquivalentUnit(it) == it }
-                .associateWith { it.requiredResources() }
+                .associateWith { it.requiredResources(state) }
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
             val applicableBuildings = buildingsToRequiredResources.filter { it.value.contains(resource) }.map { it.key }
@@ -71,17 +69,17 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         }
 
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo == civInfo.civName) {
+            if (building.uniqueTo != null && civInfo.matchesFilter(building.uniqueTo!!)) {
                 uniqueBuildings.add(building)
             }
         }
 
         for (improvement in ruleset.tileImprovements.values)
-            if (improvement.uniqueTo == civInfo.civName)
+            if (improvement.uniqueTo != null && civInfo.matchesFilter(improvement.uniqueTo!!))
                 uniqueImprovements.add(improvement)
 
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo == civInfo.civName) {
+            if (unit.uniqueTo != null && civInfo.matchesFilter(unit.uniqueTo!!)) {
                 uniqueUnits.add(unit)
             }
         }
@@ -358,8 +356,16 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
 
+        val summarizedResourceSupply = newDetailedCivResources.sumByResource("All")
+
+        val newResourceUniqueMap = UniqueMap()
+        for (resource in civInfo.summarizedCivResourceSupply)
+            if (resource.amount > 0)
+                newResourceUniqueMap.addUniques(resource.resource.uniqueObjects)
+        
         civInfo.detailedCivResources = newDetailedCivResources
-        civInfo.summarizedCivResourceSupply = newDetailedCivResources.sumByResource("All")
+        civInfo.summarizedCivResourceSupply = summarizedResourceSupply
+        civInfo.civResourcesUniqueMap = newResourceUniqueMap
 
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }

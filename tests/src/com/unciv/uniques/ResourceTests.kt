@@ -1,6 +1,7 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -256,7 +257,7 @@ class ResourceTests {
 
 
     @Test
-    fun CityResourcesWorkWithConditional() {
+    fun cityResourcesWorkWithConditional() {
         // given
         val resource = game.createResource(UniqueType.CityResource.text)
         val resourceAndConditionalBuilding = game.createBuilding("Provides [2] [${resource.name}]",
@@ -271,7 +272,7 @@ class ResourceTests {
     }
 
     @Test
-    fun CityResourcesFromImprovementWithConditional() {
+    fun cityResourcesFromImprovementWithConditional() {
         // given
         val resource = game.createResource(UniqueType.CityResource.text)
         val resourceImprovement = game.createTileImprovement("Provides [2] [${resource.name}] <in [non-[Fresh water]] tiles>")
@@ -283,5 +284,37 @@ class ResourceTests {
         // then
         val resourceAmountInCapital = city.getAvailableResourceAmount(resource.name)
         assert(resourceAmountInCapital == 0)
+    }
+
+
+    @Test
+    fun stockpiledResourcesConsumedWhenConstructionStarts() {
+        // given
+        val resource = game.createResource(UniqueType.Stockpiled.text)
+        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
+        city.cityConstructions.addBuilding(building)
+        assert(civInfo.getCivResourcesByName()[resource.name] == 2)
+        
+        val consumingBuilding = game.createBuilding("Costs [1] [${resource.name}]")
+        assert(civInfo.getCivResourcesByName()[resource.name] == 2) // no change yet
+        city.cityConstructions.currentConstructionFromQueue = consumingBuilding.name
+        civInfo.playerType = PlayerType.Human // to not loop endlessly on "next turn"
+        game.gameInfo.currentPlayer = civInfo.civName
+        game.gameInfo.currentPlayerCiv = civInfo
+        game.gameInfo.nextTurn()
+        assert(civInfo.getCivResourcesByName()[resource.name] == 1) // 1 was consumed because production started
+    }
+
+    @Test
+    fun constructionsRequiringStockpiledResourcesUnconstructableWithoutThem() {
+        // given
+        val resource = game.createResource(UniqueType.Stockpiled.text)
+        val consumingBuilding = game.createBuilding("Costs [1] [${resource.name}]")
+        assert(!consumingBuilding.isBuildable(city.cityConstructions))
+
+
+        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
+        city.cityConstructions.addBuilding(building)
+        assert(consumingBuilding.isBuildable(city.cityConstructions))
     }
 }

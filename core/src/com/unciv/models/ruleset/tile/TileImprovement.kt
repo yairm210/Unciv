@@ -45,7 +45,7 @@ class TileImprovement : RulesetStatsObject() {
     fun getShortDecription() = ImprovementDescriptions.getShortDescription(this)
 
     fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
-    fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
+    fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
     fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
     fun canBeBuiltOn(terrain: String): Boolean {
@@ -83,8 +83,7 @@ class TileImprovement : RulesetStatsObject() {
             "Improvement" -> true // For situations involving tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
-            in uniqueMap -> true
-            else -> false
+            else -> uniqueMap.hasTagUnique(filter)
         }
     }
 
@@ -120,7 +119,8 @@ class TileImprovement : RulesetStatsObject() {
         val terrainsCanBeBuiltOnTypes = sequence {
             yieldAll(expandedTerrainsCanBeBuiltOn.asSequence()
                 .mapNotNull { ruleset.terrains[it]?.type })
-            yieldAll(TerrainType.values().asSequence()
+            yieldAll(
+                TerrainType.entries.asSequence()
                 .filter { it.name in expandedTerrainsCanBeBuiltOn })
         }.filter { it.name !in cannotFilters }.toMutableSet()
 

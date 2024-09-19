@@ -118,7 +118,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 .coerceAtMost(95)  // Try to avoid runaway food gain in mods, just in case
         foodStored += (foodNeededToGrow * percentOfFoodCarriedOver / 100f).toInt()
         addPopulation(1)
-        city.updateCitizens = true
+        city.shouldReassignPopulation = true
         city.civ.addNotification("[${city.name}] has grown!", city.location,
             NotificationCategory.Cities, NotificationIcon.Growth)
     }
@@ -131,6 +131,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {
             unassignExtraPopulation()
+            city.cityStats.update()
         } else {
             autoAssignPopulation()
         }
@@ -267,8 +268,6 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 }
             }
         }
-
-        city.cityStats.update()
     }
 
     fun getMaxSpecialists(): Counter<String> {

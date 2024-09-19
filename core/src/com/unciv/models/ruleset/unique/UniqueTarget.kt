@@ -59,6 +59,7 @@ enum class UniqueTarget(
     CityState(inheritsFrom = Global),
     ModOptions,
     Event,
+    EventChoice(inheritsFrom = Triggerable),
 
     // Modifiers
     Conditional("Modifiers that can be added to other uniques to limit when they will be active", modifierType = ModifierType.Conditional),

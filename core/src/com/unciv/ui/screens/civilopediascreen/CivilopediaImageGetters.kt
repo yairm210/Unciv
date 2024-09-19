@@ -1,8 +1,7 @@
 package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -23,7 +22,7 @@ internal object CivilopediaImageGetters {
     private const val policyInnerSize = 0.25f
 
     // Todo: potential synergy with map editor
-    private fun terrainImage(terrain: Terrain, ruleset: Ruleset, imageSize: Float): Actor {
+    internal fun terrainImage(terrain: Terrain, ruleset: Ruleset, imageSize: Float): Group {
         val tile = Tile()
         tile.ruleset = ruleset
         val baseTerrainFromOccursOn =
@@ -48,7 +47,7 @@ internal object CivilopediaImageGetters {
         group.isForceVisible = true
         group.isForMapEditorIcon = true
         group.update()
-        return Container(group)
+        return group
     }
 
     val construction = { name: String, size: Float ->

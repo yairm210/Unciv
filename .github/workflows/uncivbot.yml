@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
           npm i @octokit/rest
@@ -40,7 +40,7 @@ jobs:
     steps:
 
       - name: Merge Pull Request
-        uses: "actions/github-script@v5"
+        uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }} # Required because default workflow token can't merge PRs
           script: |
@@ -58,7 +58,7 @@ jobs:
           token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           ref: master # By default will checkout *the version at time of trigger* which does *not* contain the PR we just merged!
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
 
       - name: Increment version and release
         run: |
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
       - name: Add translation PRs to the new branch, and PR the new branch to master
 
           # SO, the story is that when using the default access token you CANNOT merge PRs from forks.

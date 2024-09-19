@@ -104,6 +104,7 @@ object Fonts {
     const val rangedStrength = '‡'      // U+2021 'double dagger'
     const val movement = '➡'            // U+27A1 'black rightwards arrow'
     const val range = '…'               // U+2026 'horizontal ellipsis'
+    const val health = '♡'              // U+2661 'white heart suit'
     const val production = '⚙'          // U+2699 'gear'
     const val gold = '¤'                // U+00A4 'currency sign'
     const val food = '⁂'                // U+2042 'asterism' (to avoid 🍏 U+1F34F 'green apple' needing 2 symbols in utf-16 and 4 in utf-8)

@@ -105,7 +105,7 @@
         "choices": [
             {
                 "text":"Got it",
-                "triggeredUniques": ["Mark tutorial [Meet another civilization] complete"],
+                "uniques": ["Mark tutorial [Meet another civilization] complete"],
             },
         ]
     },

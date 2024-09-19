@@ -175,16 +175,25 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     ): Table? {
         val promisesTable = Table()
 
-        // Not for (flag in DiplomacyFlags.values()) - all other flags should result in DiplomaticModifiers or stay internal?
-        val flag = DiplomacyFlags.AgreedToNotSettleNearUs
-        if (otherCivDiplomacyManager.hasFlag(flag)) {
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
             val text =
-                "We promised not to settle near them ([${otherCivDiplomacyManager.getFlag(flag)}] turns remaining)"
+                "We promised not to settle near them ([${otherCivDiplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSettleNearUs)}] turns remaining)"
             promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
         }
-        if (diplomacyManager.hasFlag(flag)) {
+        if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
             val text =
-                "They promised not to settle near us ([${diplomacyManager.getFlag(flag)}] turns remaining)"
+                "They promised not to settle near us ([${diplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSettleNearUs)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
+
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion)) {
+            val text =
+                "We promised not to spread religion to them ([${otherCivDiplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSpreadReligion)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
+        if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion)) {
+            val text =
+                "They promised not to spread religion to us ([${diplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSpreadReligion)}] turns remaining)"
             promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
         }
 
@@ -227,6 +236,20 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             dontSettleCitiesButton.disable()
         }
         demandsTable.add(dontSettleCitiesButton).row()
+
+        val dontSpreadReligionButton = "Please don't spread your religion to us.".toTextButton()
+        if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSpreadingReligion && it.value == viewingCiv.civName })
+            dontSpreadReligionButton.disable()
+        dontSpreadReligionButton.onClick {
+            otherCiv.popupAlerts.add(
+                PopupAlert(
+                    AlertType.DemandToStopSpreadingReligion,
+                    viewingCiv.civName
+                )
+            )
+            dontSpreadReligionButton.disable()
+        }
+        demandsTable.add(dontSpreadReligionButton).row()
 
         demandsTable.add(Constants.close.toTextButton().onClick { diplomacyScreen.updateRightSide(otherCiv) })
         return demandsTable

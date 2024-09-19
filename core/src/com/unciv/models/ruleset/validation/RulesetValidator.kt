@@ -23,6 +23,7 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
 import com.unciv.ui.images.Portrait
+import com.unciv.ui.images.PortraitPromotion
 
 class RulesetValidator(val ruleset: Ruleset) {
 
@@ -237,8 +238,21 @@ class RulesetValidator(val ruleset: Ruleset) {
         // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
+                
                 for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
                     lines += uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, true)
+                
+                if (choice.conditions.isNotEmpty())
+                    lines.add("Event choice 'conditions' field is deprecated, " +
+                            "please replace with 'Only available' or 'Not availble' uniques in 'uniques' field", 
+                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
+                
+                if (choice.triggeredUniques.isNotEmpty())
+                    lines.add("Event choice 'triggered uniques' field is deprecated, " +
+                            "please place the triggers in the 'uniques' field",
+                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
+                
+                uniqueValidator.checkUniques(choice, lines, true, tryFixUnknownUniques)
             }
         }
     }
@@ -331,12 +345,24 @@ class RulesetValidator(val ruleset: Ruleset) {
                 for (prereq in policy.requires!!)
                     if (!ruleset.policies.containsKey(prereq))
                         lines.add("${policy.name} requires policy $prereq which does not exist!", sourceObject = policy)
+
             uniqueValidator.checkUniques(policy, lines, true, tryFixUnknownUniques)
         }
 
-        for (branch in ruleset.policyBranches.values)
+        for (branch in ruleset.policyBranches.values) {
             if (branch.era !in ruleset.eras)
                 lines.add("${branch.name} requires era ${branch.era} which does not exist!", sourceObject = branch)
+
+            val policyLocations = HashMap<String, Policy>()
+            for (policy in branch.policies) {
+                val policyLocation = "${policy.row}/${policy.column}"
+                val existingPolicyInLocation = policyLocations[policyLocation]
+
+                if (existingPolicyInLocation == null) policyLocations[policyLocation] = policy
+                else lines.add("Policies ${policy.name} and ${existingPolicyInLocation.name} in branch ${branch.name}" +
+                        " are both located at column ${policy.column} row ${policy.row}!", sourceObject = policy)
+            }
+        }
 
 
         for (policy in ruleset.policyBranches.values.flatMap { it.policies + it })
@@ -632,7 +658,8 @@ class RulesetValidator(val ruleset: Ruleset) {
     ) {
         for (promotion in ruleset.unitPromotions.values) {
             uniqueValidator.checkUniques(promotion, lines, false, tryFixUnknownUniques)
-
+            checkContrasts(promotion.innerColorObject ?: PortraitPromotion.defaultInnerColor,
+                promotion.outerColorObject ?: PortraitPromotion.defaultOuterColor, promotion, lines)
             addPromotionErrorRulesetInvariant(promotion, lines)
         }
     }
@@ -661,10 +688,20 @@ class RulesetValidator(val ruleset: Ruleset) {
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
 
-        // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
-        val constrastRatio = nation.getContrastRatio()
-        if (constrastRatio < 3) {
-            val (newInnerColor, newOuterColor) = getSuggestedColors(nation)
+        checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
+    }
+    
+    
+
+    private fun checkContrasts(
+        innerColor: Color,
+        outerColor: Color,
+        nation: RulesetObject,
+        lines: RulesetErrorList
+    ) {
+        val constrastRatio = getContrastRatio(innerColor, outerColor)
+        if (constrastRatio < 3) { // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
+            val (newInnerColor, newOuterColor) = getSuggestedColors(innerColor, outerColor)
 
             var text = "${nation.name}'s colors do not contrast enough - it is unreadable!"
             text += "\nSuggested colors: "
@@ -675,11 +712,12 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
+
     data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
-    private fun getSuggestedColors(nation: Nation): SuggestedColors {
-        val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())
-        val outerColorLuminance = getRelativeLuminance(nation.getOuterColor())
+    private fun getSuggestedColors(innerColor: Color, outerColor: Color): SuggestedColors {
+        val innerColorLuminance = getRelativeLuminance(innerColor)
+        val outerColorLuminance = getRelativeLuminance(outerColor)
 
         val innerLerpColor: Color
         val outerLerpColor: Color
@@ -694,12 +732,12 @@ class RulesetValidator(val ruleset: Ruleset) {
 
 
         for (i in 1..10) {
-            val newInnerColor = nation.getInnerColor().cpy().lerp(innerLerpColor, 0.05f * i)
-            val newOuterColor = nation.getOuterColor().cpy().lerp(outerLerpColor, 0.05f * i)
+            val newInnerColor = innerColor.cpy().lerp(innerLerpColor, 0.05f * i)
+            val newOuterColor = outerColor.cpy().lerp(outerLerpColor, 0.05f * i)
 
             if (getContrastRatio(newInnerColor, newOuterColor) > 3) return SuggestedColors(newInnerColor, newOuterColor)
         }
-        throw Exception("Error getting suggested colors for nation "+nation.name)
+        throw Exception("Error getting suggested colors")
     }
 
     private fun addBuildingErrorsRulesetInvariant(

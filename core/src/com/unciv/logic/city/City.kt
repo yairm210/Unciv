@@ -82,7 +82,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
-    var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
+    var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
 
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
@@ -139,7 +139,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.isOriginalCapital = isOriginalCapital
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.demandedResource = demandedResource
-        toReturn.updateCitizens = updateCitizens
+        toReturn.shouldReassignPopulation = shouldReassignPopulation
         toReturn.cityAIFocus = cityAIFocus
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
@@ -164,7 +164,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
-        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && civ.matchesFilter(it.uniqueTo!!) }
         return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 
@@ -315,19 +315,19 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
         if (!manualSpecialists)
             population.specialistAllocations.clear()
-        updateCitizens = false
+        shouldReassignPopulation = false
         population.autoAssignPopulation()
     }
 
     /** Apply worked tiles optimization (aka CityFocus) -
      *  immediately for a human player whoes turn it is (interactive),
      *  or deferred to the next startTurn while nextTurn is running (for AI)
-     *  @see reassignPopulation
+     *  @see shouldReassignPopulation
      */
     fun reassignPopulationDeferred() {
         // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
         if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
-        else updateCitizens = true
+        else shouldReassignPopulation = true
     }
 
     fun destroyCity(overrideSafeties: Boolean = false) {
@@ -411,8 +411,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         hasSoldBuildingThisTurn = true
 
         population.unassignExtraPopulation() // If the building provided specialists, release them to other work
-        population.autoAssignPopulation()
-        cityStats.update()
+        population.autoAssignPopulation() // also updates city stats
         civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
 

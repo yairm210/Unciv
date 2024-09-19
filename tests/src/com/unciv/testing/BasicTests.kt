@@ -93,7 +93,7 @@ class BasicTests {
     fun baseRulesetHasNoBugs() {
         for (baseRuleset in BaseRuleset.entries) {
             val ruleset = RulesetCache[baseRuleset.fullName]!!
-            val modCheck = ruleset.checkModLinks()
+            val modCheck = ruleset.getErrorList()
             if (modCheck.isNotOK())
                 debug("%s", modCheck.getErrorText(true))
             Assert.assertFalse(modCheck.isNotOK())

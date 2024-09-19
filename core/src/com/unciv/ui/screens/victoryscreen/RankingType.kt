@@ -12,7 +12,7 @@ enum class RankingType(
     // production, gold, happiness, and culture already have icons added when the line is `tr()`anslated
     Score({ ImageGetter.getImage("OtherIcons/Score").apply { color = Color.FIREBRICK } }, 'S'),
     Population({ ImageGetter.getStatIcon("Population") }, 'N'),
-    CropYield("Crop Yield", { ImageGetter.getStatIcon("Food") }, 'C'),
+    Growth("Growth", { ImageGetter.getStatIcon("Food") }, 'C'),
     Production('P'),
     Gold('G'),
     Territory({ ImageGetter.getImage("OtherIcons/Hexagon") }, 'T'),

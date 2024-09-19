@@ -28,7 +28,7 @@ object StartNormalizer {
             }
         }
 
-        if (tileMap.mapParameters.getStrategicBalance())
+        if (!isMinorCiv && tileMap.mapParameters.getStrategicBalance())
             placeStrategicBalanceResources(startTile, ruleset, tileData)
 
         normalizeProduction(startTile, isMinorCiv, ruleset, tileData)

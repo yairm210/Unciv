@@ -299,7 +299,18 @@ class NewGameScreen(
 
         val newGame:GameInfo
         try {
-            newGame = GameStarter.startNewGame(gameSetupInfo)
+            val selectedScenario = mapOptionsTable.getSelectedScenario()
+            newGame = if (selectedScenario == null)
+                GameStarter.startNewGame(gameSetupInfo)
+            else {
+                val gameInfo = game.files.loadGameFromFile(selectedScenario.file)
+                // Instead of removing spectator we AI-ify it, so we don't get problems in e.g. diplomacy
+                gameInfo.civilizations.firstOrNull { it.civName == Constants.spectator }?.playerType = PlayerType.AI
+                for (playerInfo in gameSetupInfo.gameParameters.players){
+                    gameInfo.civilizations.firstOrNull { it.civName == playerInfo.chosenCiv }?.playerType = playerInfo.playerType
+                }
+                gameInfo
+            }
         } catch (exception: Exception) {
             exception.printStackTrace()
             launchOnGLThread {

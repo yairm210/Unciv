@@ -118,12 +118,14 @@ The code below is an example of a valid "turns" definition and it specifies that
 
 Events allow users to choose between options of triggers to activate.
 
-| Attribute       | Type                 | Default  | Notes                                                                         |
-|-----------------|----------------------|----------|-------------------------------------------------------------------------------|
-| name            | String               | Required | Used for triggering via "Triggers a [event] event" unique                     |
-| text            | String               | None     | Flavor text displayed to user                                                 |
-| civilopediaText | List                 | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
-| choices         | List of EventChoices |          | User can choose to trigger one of the viable choices                          |
+| Attribute       | Type                                | Default  | Notes                                                                                                                    |
+|-----------------|-------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------|
+| name            | String                              | Required | Used for triggering via "Triggers a [event] event" unique                                                                |
+| text            | String                              | None     | Flavor text displayed to user                                                                                            |
+| presentation    | One of: "None", "Alert", "Floating" | Alert    | "Alert" indicates a regular popup, "None" means the choice is made randomly, "Floating" is for tutorial-style indicators |
+| civilopediaText | List                                | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                            |
+| choices         | List of EventChoices                |          | User can choose to trigger one of the viable choices                                                                     |
+
 
 You can use text and/or civilopediaText, if both are present both are shown (but why would you?)
 

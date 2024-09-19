@@ -38,6 +38,7 @@ internal class AcceptModErrorsPopup(
 
         val warnings = modCheckResult.replace("Error:", "«RED»Error«»:")
             .replace("Warning:","«GOLD»Warning«»:")
+            .replace("OK:","«GREEN»OK«»:")
         val label2 = ColorMarkupLabel(warnings)
         label2.wrap = true
         add(label2).width(wrapWidth)

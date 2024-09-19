@@ -1,8 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.UncivSlider

@@ -76,7 +76,7 @@ internal class CliInput(
     override fun equals(other: Any?): Boolean = when {
         this === other -> true
         other is CliInput -> compareTo(other) == 0
-        other is String -> compareTo(other, method) == 0
+        other is String -> compareTo(other.replace("[","").replace("]",""), method) == 0
         else -> false
     }
 
@@ -149,7 +149,7 @@ internal class CliInput(
     /** Finds an enum instance of type [T] whose name [equals] `this` parameter.
      *  @throws ConsoleErrorException if not found. */
     inline fun <reified T: Enum<T>> enumValue(): T = enumValueOrNull<T>()
-        ?: throw ConsoleErrorException("'$this' is not a valid ${T::class.java.simpleName}. Options are: ${enumValues<T>()}.")
+        ?: throw ConsoleErrorException("'$this' is not a valid ${T::class.java.simpleName}. Options are: ${enumValues<T>().map { it.name }}.")
 
     /** Finds the first entry that [equals] `this` parameter.
      *  @return `null` if not found. */

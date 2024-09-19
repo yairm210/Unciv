@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import junit.framework.TestCase.assertEquals
@@ -38,7 +39,7 @@ class BattleTest {
     @Test
     fun `defender should withdraw from melee attack if has the unique to do so`() {
         // given
-        val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "May withdraw before melee ([100]%)")
+        val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), UniqueType.WithdrawsBeforeMeleeCombat.text)
         defenderUnit.currentMovement = 2f
 
         // when

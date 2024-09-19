@@ -152,7 +152,7 @@ class ModCheckboxTable(
 
         if (checkBox.isChecked) {
             // First the quick standalone check
-            val modLinkErrors = mod.checkModLinks()
+            val modLinkErrors = mod.getErrorList()
             if (modLinkErrors.isError()) {
                 modLinkErrors.showWarnOrErrorToast(screen)
                 changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()

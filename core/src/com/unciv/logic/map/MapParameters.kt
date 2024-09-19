@@ -18,6 +18,7 @@ object MapGeneratedMainType {
     const val randomGenerated = "Random Generated"
     // Non-generated maps
     const val custom = "Custom"
+    const val scenario = "Scenario"
 
 }
 

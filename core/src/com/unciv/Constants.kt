@@ -68,6 +68,8 @@ object Constants {
 
     const val cancelImprovementOrder = "Cancel improvement order"
     const val tutorialPopupNamePrefix = "Tutorial: "
+    const val thisUnit = "This Unit"
+    const val targetUnit = "Target Unit"
 
     const val OK = "OK"
     const val close = "Close"
@@ -87,6 +89,8 @@ object Constants {
     const val repair = "Repair"
 
     const val uniqueOrDelimiter = "\" OR \""
+    const val stringSplitCharacter = '␟' // U+241 - Unit separator character. Used to join texts and split them with a char that is virtually guaranteed to not be used in normal text. 
+
 
     const val simulationCiv1 = "SimulationCiv1"
     const val simulationCiv2 = "SimulationCiv2"

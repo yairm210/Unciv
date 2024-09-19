@@ -44,7 +44,7 @@ class TileImprovementFunctions(val tile: Tile) {
     fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: Civilization): Sequence<ImprovementBuildingProblem> = sequence {
         val stateForConditionals = StateForConditionals(civInfo, tile = tile)
 
-        if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
+        if (improvement.uniqueTo != null && !civInfo.matchesFilter(improvement.uniqueTo!!))
             yield(ImprovementBuildingProblem.WrongCiv)
         if (civInfo.cache.uniqueImprovements.any { it.replaces == improvement.name })
             yield(ImprovementBuildingProblem.Replaced)

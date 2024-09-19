@@ -68,6 +68,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var escorting: Boolean = false
 
     var automatedRoadConnectionDestination: Vector2? = null
+    // Temp disable, since this data broke saves
+    @Transient
     var automatedRoadConnectionPath: List<Vector2>? = null
 
     var attacksThisTurn = 0
@@ -93,6 +95,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
     var attacksSinceTurnStart = ArrayList<Vector2>()
+    
+    class UnitStatus {
+        var name:String = ""
+        /** Decreses at *start on next turn* so defensive statuses persist on enemy turns */
+        var turnsLeft = 1
+        
+        @Transient
+        lateinit var uniques: List<Unique>
+        
+        fun setTransients(unit: MapUnit) {
+            uniques = unit.civ.gameInfo.ruleset.unitPromotions[name]?.uniqueObjects ?: emptyList()
+        }
+    }
+    
+    var statuses = ArrayList<UnitStatus>()
 
     //endregion
     //region Transient fields
@@ -196,6 +213,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
+        toReturn.statuses = ArrayList(statuses) 
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
         return toReturn
@@ -258,7 +276,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
-    fun getUniques(): Sequence<Unique> = tempUniquesMap.values.asSequence().flatten()
+    fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
 
     fun getMatchingUniques(
             uniqueType: UniqueType,
@@ -559,7 +577,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
                 if (civ.matchesFilter(filter)) return true
-                if (tempUniquesMap.containsKey(filter)) return true
+                if (tempUniquesMap.hasTagUnique(filter)) return true
                 if (promotions.promotions.contains(filter)) return true
                 return false
             }
@@ -626,6 +644,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         promotions.setTransients(this)
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
+        for (status in statuses) status.setTransients(this)
 
         updateUniques()
         if (action == UnitActionType.Automate.value){
@@ -638,7 +657,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val uniqueSources =
                 baseUnit.uniqueObjects.asSequence() +
                         type.uniqueObjects +
-                        promotions.getPromotions().flatMap { it.uniqueObjects }
+                        promotions.getPromotions().flatMap { it.uniqueObjects } +
+                        statuses.flatMap { it.uniques }
+        
         tempUniquesMap = UniqueMap(uniqueSources)
         cache.updateUniques()
     }
@@ -1004,6 +1025,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // The exception is when a unit changes position when not in its turn, such as by melee withdrawal or foreign territory expulsion. Then the segment here and the segment from the end of here to the current position can both be shown.
             movementMemories.removeFirst()
         }
+    }
+    
+    fun setStatus(name:String, turns:Int){
+        val existingStatus = statuses.firstOrNull { it.name == name }
+        if (existingStatus != null){
+            if (turns > existingStatus.turnsLeft) existingStatus.turnsLeft = turns
+            return
+        }
+        
+        val status = UnitStatus()
+        status.name = name
+        status.turnsLeft = turns
+        status.setTransients(this)
+        statuses.add(status)
+        updateUniques()
     }
 
 

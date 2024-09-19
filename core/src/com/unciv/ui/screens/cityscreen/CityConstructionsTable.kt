@@ -277,7 +277,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                             && dto.rejectionReason?.type == RejectionReasonType.RequiresBuildingInThisCity
                             && constructionButtonDTOList.any {
                                 (it.construction is Building) && (it.construction.name == dto.construction.requiredBuilding
-                                        || it.construction.replaces == dto.construction.requiredBuilding || it.construction.hasUnique(dto.construction.requiredBuilding!!))
+                                        || it.construction.replaces == dto.construction.requiredBuilding
+                                        || it.construction.hasTagUnique(dto.construction.requiredBuilding!!))
                             })
                         continue
 
@@ -438,7 +439,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 resourceTable.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
-        for (unique in constructionButtonDTO.construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)) {
+        for (unique in constructionButtonDTO.construction
+            .getMatchingUniquesNotConflicting(UniqueType.CostsResources, StateForConditionals(cityScreen.city))) {
             val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                 Color.RED else Color.WHITE
             resourceTable.add(ColorMarkupLabel(unique.params[0], color)).expandX().left().padLeft(5f)

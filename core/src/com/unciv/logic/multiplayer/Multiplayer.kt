@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
@@ -150,8 +151,12 @@ class Multiplayer {
         val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
-        if (gameInfo.currentTurnStartTime != preview.currentTurnStartTime)
-            return false // Game was updated since we tried
+
+
+        if (gameInfo.currentPlayer != preview.currentPlayer) {
+            game.doManualUpdate(gameInfo.asPreview())
+            return false
+        }
 
         val playerCiv = gameInfo.getCurrentPlayerCivilization()
 
@@ -174,6 +179,35 @@ class Multiplayer {
         multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         return true
+    }
+
+    /** Returns false if game was not up to date
+     * Returned value indicates an error string - will be null if successful  */
+    suspend fun skipCurrentPlayerTurn(game: MultiplayerGame): String? {
+        val preview = game.preview ?: return game.error!!.message
+        // download to work with the latest game state
+        val gameInfo: GameInfo
+        try {
+            gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
+        }
+        catch (ex: Exception){
+            return ex.message
+        }
+        
+        if (gameInfo.currentPlayer != preview.currentPlayer) {
+            game.doManualUpdate(gameInfo.asPreview())
+            return "Could not pass turn - current player has been updated!"
+        }
+
+        val playerCiv = gameInfo.getCurrentPlayerCivilization()
+        NextTurnAutomation.automateCivMoves(playerCiv, false)
+        gameInfo.nextTurn()
+
+        val newPreview = gameInfo.asPreview()
+        multiplayerFiles.files.saveGame(newPreview, game.fileHandle)
+        multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
+        game.doManualUpdate(newPreview)
+        return null
     }
 
     /**

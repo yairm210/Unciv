@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
@@ -74,9 +75,9 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
         val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
-        // Shortcut, we are working a good tile (like resource) and don't need to check for other tiles to work
-        if (!dangerousTiles.contains(currentTile) && getFullPriority(unit.getTile(), unit, localUniqueCache) >= 10
-            && currentTile.improvementInProgress != null) {
+        // Shortcut, we are working a suitable tile, and we're better off minimizing worker-turns by finishing everything on this tile
+        if (currentTile.improvementInProgress != null && !dangerousTiles.contains(currentTile)
+            && getFullPriority(unit.getTile(), unit, localUniqueCache) >= 2) {
             return
         }
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)
@@ -160,7 +161,7 @@ class WorkerAutomation(
         }
 
         // Nothing to do, try again to connect cities
-        if (civInfo.stats.statsForNextTurn.gold > 10 && roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect)) return
+        if (roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect)) return
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())
@@ -231,24 +232,22 @@ class WorkerAutomation(
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.hasFalloutEquivalent()) priority += 1
+            if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) priority += 1 // removing our forests is good for tempo
+            if (tile.terrainHasUnique(UniqueType.FreshWater)) priority += 1 // we want our farms up when unlocking Civil Service
         }
         // give a minor priority to tiles that we could expand onto
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
             priority += 1
 
-        if (priority <= 0 && tile.hasViewableResource(civInfo))  {
+        if (tile.hasViewableResource(civInfo)) {
             priority += 1
-            // New Resources are great!
-            if (tile.tileResource.resourceType != ResourceType.Bonus
-                && !civInfo.hasResource(tile.resource!!))
-                priority += 2
+            if (tile.tileResource.resourceType == ResourceType.Luxury) priority += 3
+            //luxuries are more important than other types of resources
         }
-        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) priority += when {
-                civInfo.stats.statsForNextTurn.gold <= 5 -> 0
-                civInfo.stats.statsForNextTurn.gold <= 10 -> 1
-                civInfo.stats.statsForNextTurn.gold <= 30 -> 2
-                else -> 3
-            }
+    
+        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap)
+            priority += 3
+            
         tileRankings[tile] = TileImprovementRank(priority)
         return priority + unitSpecificPriority
     }
@@ -321,7 +320,7 @@ class WorkerAutomation(
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress!!]
 
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
-            (it.value.uniqueTo == null || it.value.uniqueTo == unit.civ.civName)
+            (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!))
                     && unit.canBuildImprovement(it.value, tile)
                     && tile.improvementFunctions.canBuildImprovement(it.value, civInfo)
         }
@@ -357,9 +356,10 @@ class WorkerAutomation(
         // After gathering all the data, we conduct the hierarchy in one place
         val improvementString = when {
             bestBuildableImprovement != null && bestBuildableImprovement.isRoad() -> bestBuildableImprovement.name
-            improvementStringForResource != null -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
+            // For bonus resources we just want the highest-yield improvement, not necessarily the resource-yielding improvement
+            improvementStringForResource != null && tile.tileResource.resourceType != ResourceType.Bonus -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
             // If this is a resource that HAS an improvement that we can see, but this unit can't build it, don't waste your time
-            tile.resource != null && tile.hasViewableResource(civInfo) && tile.tileResource.getImprovements().any() -> return null
+            tile.resource != null && tile.hasViewableResource(civInfo) && tile.tileResource.resourceType != ResourceType.Bonus && tile.tileResource.getImprovements().any() -> return null
             bestBuildableImprovement == null -> null
 
             tile.improvement != null &&
@@ -386,10 +386,7 @@ class WorkerAutomation(
         if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
             && tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
             val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile]!!
-            var value = roadPlan.priority
-            if (civInfo.stats.statsForNextTurn.gold >= 20)
-            // Higher priority if we are closer to connecting the city
-                value += (5 - roadPlan.numberOfRoadsToBuild).coerceAtLeast(0)
+            val value = (roadPlan.priority - 5) // We want some forest chopping and farm building first if the road doesn't have high priority
             return value
         }
 
@@ -424,6 +421,8 @@ class WorkerAutomation(
                     stats.add(statDiff)
                     // Take into account that the resource might be improved by the *final* improvement
                     isResourceImprovedByNewImprovement = newTile.resource != null && newTile.tileResource.isImprovedBy(wantedFinalImprovement.name)
+                if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved))
+                    stats.add(Stat.Production, 0.5f) //We're gaining tempo by chopping the forest, adding an imaginary yield per turn is a way to correct for this
                 }
 
             }

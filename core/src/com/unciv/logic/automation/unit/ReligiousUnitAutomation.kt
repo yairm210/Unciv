@@ -2,6 +2,7 @@ package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -17,6 +18,18 @@ object ReligiousUnitAutomation {
             it.religion.getMajorityReligion() != unit.civ.religionManager.religion
         }
 
+        /** Lowest value will be chosen */
+        fun rankCityForReligionSpread(city: City): Int {
+            var rank = city.getCenterTile().aerialDistanceTo(unit.getTile())
+            
+            val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
+            if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
+                rank += 10 // Greatly discourage, but if the other options are too far away we'll take it anyway
+            }
+                
+            return rank
+        }
+        
         val city =
             if (ourCitiesWithoutReligion.any())
                 ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -24,7 +37,7 @@ object ReligiousUnitAutomation {
                 .filter { it.religion.getMajorityReligion() != unit.civ.religionManager.religion }
                 .filter { it.civ.knows(unit.civ) && !it.civ.isAtWarWith(unit.civ) }
                 .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
-                .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+                .minByOrNull { rankCityForReligionSpread(it) }
 
         if (city == null) return
         val destination = city.getTiles()

@@ -1,3 +1,135 @@
+## 4.13.9
+
+Significant memory improvements - should allow for much larger maps on memory-constrained devices!
+
+CPU performance improvements 
+
+Solved rare automation crashes with escorted units
+
+## 4.13.8
+
+Allowed starting Scenarios, including Multiplayer, through the "New Game" screen! :D
+
+WLTK + continuous rendering no longer cause city tiles to be dimmed
+
+Fixed Scenario mods being undownloadable and needing to restart game to access Scenario picker
+
+Added Barbarian Musketman and Worker variants for AbsoluteUnits
+
+Images are restored to ruleset correctly when resuming open game screen
+
+BNW unit sprites for HexaRealm - By GeneralWadaling
+
+## 4.13.7
+
+Performance improvements!
+
+Added Barbarian image variants for AbsoluteUnits by Pelo
+
+AI is displeased when you become the new ally of a city-state it was the ally of
+
+kick/skip turn in mutliplayer only active if the game contains the current player ID
+
+## 4.13.6
+
+Performance improvements!
+
+AI prioritizes unit upgrades over purchasing new constructions
+
+Units are not added to cities in resistance if non-resistant cities are available
+
+## 4.13.5
+
+Modding:
+- Make event choices ruleset objects, with standard "uniques" field
+- Added "AI choice weight" for event choices, techs, policies and promotions 
+
+Moved screen orientation setting from advanced tab to display tab
+
+Performance: only trigger population reassignment on new buildings when it really changes something
+
+Better stat-related checks for buildings in cities 
+
+## 4.13.4
+
+Don't allow constructing stockpiled-resource-requiring constructions when lacking the resources
+
+Consume stockpiled resources when purchasing constructions that require them
+
+Don't show "ok" ruleset validations when starting a new game
+
+Set "auto assign city production" to false for new players
+
+Automated units retreat from Barbarians when not at war - By EmperorPinguin
+
+## 4.13.3
+
+Fixed 'conquer city' automation crash
+
+Minor memory performance improvements
+
+Natural wonders uniques generalized to work for terrain feature as well
+
+Prep work for unit-based Events :)
+
+Dev console displays enum options correctly when given incorrect options
+
+## 4.13.2
+
+Added "upon damaging a [mapUnitFilter] unit" which can trigger a unique on the *enemy* unit -
+All unit trigger uniques start with a targetting parameter to reflect this
+
+Added "[unitTriggerTarget] is destroyed" unit triggerable
+
+City overview updates when entering & exiting city
+
+Fixed "don't settle cities" demand triggering "stop spreading religion" demand
+
+Skipping turns for a game updates the MP screen
+
+AI worker improvements - By EmperorPinguin
+
+## 4.13.1
+
+Unit statuses, which are temporary promotions!
+- Can be applied with "This Unit gains the [promotion] status for [positiveAmount] turn(s)"
+- Can be removed with "This Unit loses the [promotion] status"
+
+When selecting a unit, show only arrows relevant to selected unit
+
+Better AI conquering of cities
+
+Allowed specifying custom colors for unit promotions
+
+"ok" warnings now colored in 'accept mod errors' popup
+
+Discourage spreading religion by AI to civs they've promised to not do so
+
+## 4.13.0
+
+Fixed Civilopedia not showing non-unique buildings and units on techs
+
+UI: Show terrain icons in text
+UI: Fade in newly-explored tiles
+
+Added "don't spread religion to us" demand
+
+Modding: Improvement, Unit and Building 'uniqueTo' field can apply to civ *filters*
+
+AI changes  - By EmperorPinguin
+
+## 4.12.19
+
+Multiplayer: Add button to skip current player after 24h inactivity 
+
+Strategic balance applies only to major civs, as per Civ V
+
+Automated settlers take conditionals on settling locations into account
+
+Modding: Added ruleset validation that 2 policies in the same branch do not have the same position
+
+"Land to water" natural wonders do not cause ruins on water tiles
+
 ## 4.12.18
 
 Reduced (uncompressed) save file size by 15%, with 15% pending later versions
