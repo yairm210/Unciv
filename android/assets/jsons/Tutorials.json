@@ -11,7 +11,7 @@
 			  {"text":"Select categories with the buttons on top of the screen. Also up there is the button to leave Civilopedia and go back to where you were before.","starred":true,"color":"#666"},
 			  {"text":"Each category has a list of entries on the left of the screen, sorted alphabetically (with few exceptions). Clicking an entry will update the center pane were you are currently reading this.","starred":true,"color":"#666"},
 			  {"text":"Lines can link to other Civilopedia entries, they are marked with a chain link symbol like this one. You can click anywhere on the line to follow the link.", "link":"Tutorial/New Game"},
-			  {"text":"The current category is special - all articles on general concepts are here. It is called 'Tutorials' because you can revisit these here, too.","starred":true,"color":"#666"},
+			  {"text":"The current category is special - all articles on general concepts are here. It is called \"Tutorials\" because you can revisit these here, too.","starred":true,"color":"#666"},
 			  {},
 			  {"text":"What information can I find","header":4},
 			  {"text":"The data shown is not dependent on your current game's situation, e.g. bonuses for the nation you are playing or difficulty modifiers will not affect the numbers."},
