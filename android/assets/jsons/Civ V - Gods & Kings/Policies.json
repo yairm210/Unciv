@@ -93,7 +93,8 @@
                 "name": "Citizenship",
                 "uniques": [
                     "[-25]% construction time for [All] improvements",
-                    "Free [Worker] appears"
+                    "Free [Worker] appears",
+                    "[-100]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 4
@@ -102,7 +103,7 @@
                 "name": "Collective Rule",
                 "uniques": [
                     "[+50]% Production when constructing [Settler] units [in capital]",
-                    "Free [Settler] appears"
+                    "Free [Settler] appears",
                 ],
                 "requires": ["Republic"],
                 "row": 2,
@@ -122,7 +123,8 @@
                 "name": "Meritocracy",
                 "uniques": [
                     "[+1 Happiness] [in all cities connected to capital]",
-                    "[-5]% Unhappiness from [Population] [in all non-occupied cities]"
+                    "[-5]% Unhappiness from [Population] [in all non-occupied cities]",
+                    "[-100]% weight to this choice for AI decisions"
                 ],
                 "requires": ["Citizenship"],
                 "row": 2,
@@ -434,7 +436,8 @@
                 "uniques": [
                     "[+1 Happiness] from every [University]",
                     "[+1 Happiness] from every [Observatory]",
-                    "[+1 Happiness] from every [Public School]"
+                    "[+1 Happiness] from every [Public School]",
+                    "[-100]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 4
@@ -490,13 +493,13 @@
         "policies": [
             {
                 "name": "Constitution",
-                "uniques": ["[+2 Culture] from every [Wonder]"],
+                "uniques": ["[+2 Culture] from every [Wonder]", "[-100]% weight to this choice for AI decisions"],
                 "row": 1,
                 "column": 1
             },
             {
                 "name": "Universal Suffrage",
-                "uniques": ["[+33]% Strength for cities <when defending>"],
+                "uniques": ["[+33]% Strength for cities <when defending>", "[-100]% weight to this choice for AI decisions"],
                 "row": 1,
                 "column": 3
             },

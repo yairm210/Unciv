@@ -59,12 +59,14 @@
 				"name": "Sailing",
 				"row": 1,
 				"prerequisites": ["Pottery"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'He who commands the sea has command of everything.' - Themistocles"
 			},
 			{
 				"name": "Calendar",
 				"row": 2,
 				"prerequisites": ["Pottery"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'So teach us to number our days, so that we may apply our hearts unto wisdom.' - Bible Psalms 90:12"
 			},
 			{
@@ -77,12 +79,14 @@
 				"name": "Trapping",
 				"row": 5,
 				"prerequisites": ["Animal Husbandry"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome"
 			},
 			{
 				"name": "The Wheel",
 				"row": 7,
 				"prerequisites": ["Animal Husbandry", "Archery"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb"
 			},
 			{
@@ -163,7 +167,7 @@
 				"name": "Engineering",
 				"row": 8,
 				"prerequisites": ["Mathematics","Construction"],
-				"uniques": ["Roads connect tiles across rivers"],
+				"uniques": ["Roads connect tiles across rivers","[+100]% weight to this choice for AI decisions"],
 				"quote": "'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci"
 			},
 			{
@@ -191,7 +195,7 @@
 				"name": "Civil Service",
 				"row": 5,
 				"prerequisites": ["Currency","Horseback Riding","Drama and Poetry"],
-				"uniques": ["Enables Open Borders agreements"],
+				"uniques": ["Enables Open Borders agreements","[+100]% weight to this choice for AI decisions"],
 				"quote": "'The only thing that saves us from the bureaucracy is its inefficiency' - Eugene McCarthy"
 			},
 			{
@@ -227,7 +231,7 @@
 				"name": "Education",
 				"row": 3,
 				"prerequisites": ["Theology","Civil Service"],
-				"uniques": ["Enables conversion of city production to [Science]","Enables Research agreements"],
+				"uniques": ["Enables conversion of city production to [Science]","Enables Research agreements","[+100]% weight to this choice for AI decisions"],
 				"quote": "'Education is the best provision for old age.' - Aristotle"
 			},
 			{
@@ -276,6 +280,7 @@
 				"name": "Acoustics",
 				"row": 4,
 				"prerequisites": ["Education"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Their rising all at once was as the sound of thunder heard remote' - Milton"
 			},
 			{
@@ -354,6 +359,7 @@
 				"name": "Scientific Theory",
 				"row": 4,
 				"prerequisites": ["Architecture","Economics"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Every great advance in science has issued from a new audacity of imagination.' - John Dewey"
 			},
 			{
@@ -378,6 +384,7 @@
 				"name": "Fertilizer",
 				"row": 10,
 				"prerequisites": ["Chemistry"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'The nation that destroys its soil destroys itself.' - Franklin Delano Roosevelt"
 			}
 		]
@@ -393,12 +400,14 @@
 				"name": "Biology",
 				"row": 2,
 				"prerequisites": ["Archaeology","Scientific Theory"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'If the brain were so simple we could understand it, we would be so simple we couldn't.' - Lyall Watson"
 			},
 			{
 				"name": "Electricity",
 				"row": 3,
 				"prerequisites": ["Scientific Theory"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Is it a fact - or have I dreamt it - that, by means of electricity, the world of matter has become a great nerve, vibrating thousands of miles in a breathless point of time?' - Nathaniel Hawthorne"
 			},
 			{
@@ -451,6 +460,7 @@
 				"name": "Railroads",
 				"row": 8,
 				"prerequisites": ["Steam Power","Dynamite"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'The introduction of so powerful an agent as steam to a carriage on wheels will make a great change in the situation of man.' - Thomas Jefferson"
 			}
 		]
@@ -466,6 +476,7 @@
 				"name": "Plastics",
 				"row": 3,
 				"prerequisites": ["Radio","Replaceable Parts"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Ben, I want to say one word to you, just one word: plastics.' - Buck Henry and Calder Willingham, The Graduate"
 			},
 			{
@@ -505,6 +516,7 @@
 				"name": "Atomic Theory",
 				"row": 4,
 				"prerequisites": ["Plastics","Electronics"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'The unleashed power of the atom has changed everything save our modes of thinking, and we thus drift toward unparalleled catastrophes.' - Albert Einstein"
 			},
 			{
@@ -544,6 +556,7 @@
 				"name": "Rocketry",
 				"row": 6,
 				"prerequisites": ["Radar"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'A good rule for rocket experimenters to follow is this: always assume that it will explode.' - Astronautics Magazine, 1937"
 			},
 			{
@@ -583,7 +596,7 @@
 				"name": "Satellites",
 				"row": 6,
 				"prerequisites": ["Rocketry"],
-				"uniques": ["Reveals the entire map"],
+				"uniques": ["Reveals the entire map","[+100]% weight to this choice for AI decisions"],
 				"quote": "'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson"
 			},
 			{
@@ -596,6 +609,7 @@
 				"name": "Lasers",
 				"row": 8,
 				"prerequisites": ["Computers"],
+                "uniques": ["[-100]% weight to this choice for AI decisions"],
 				"quote": "'The night is far spent, the day is at hand: let us therefore cast off the works of darkness, and let us put on the armor of light.' - The Holy Bible: Romans, 13:12"
 			}
 		]
@@ -612,6 +626,7 @@
 				"name": "Globalization",
 				"row": 2,
 				"prerequisites": ["Telecommunications"],
+                "uniques": ["[-100]% weight to this choice for AI decisions"],
 				"quote": "'The new electronic interdependence recreates the world in the image of a global village.' - Marshall McLuhan"
 			},
 			{
@@ -624,6 +639,7 @@
 				"name": "Nuclear Fusion",
 				"row": 6,
 				"prerequisites": ["Advanced Ballistics", "Satellites", "Robotics"],
+                "uniques": ["[-100]% weight to this choice for AI decisions"],
 				"quote": "'The release of atomic energy has not created a new problem. It has readily made more urgent the necessity of solving an existing one.' - Albert Einstein"
 			},
 			{
@@ -636,6 +652,7 @@
 				"name": "Stealth",
 				"row": 8,
 				"prerequisites": ["Robotics", "Lasers"],
+                "uniques": ["[-100]% weight to this choice for AI decisions"],
 				"quote": "'Be extremely subtle, even to the point of formlessness, be extremely mysterious, even to the point of soundlessness. Thereby you can be the director of the opponent's fate.' - Sun Tzu"
 			}
 		]
