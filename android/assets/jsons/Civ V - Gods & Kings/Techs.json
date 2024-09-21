@@ -161,6 +161,7 @@
 				"name": "Currency",
 				"row": 7,
 				"prerequisites": ["Mathematics"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Better is bread with a happy heart than wealth with vexation.' - Amenemope"
 			},
 			{
@@ -287,6 +288,7 @@
 				"name": "Banking",
 				"row": 6,
 				"prerequisites": ["Chivalry", "Education"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau"
 			},
 			{
@@ -436,6 +438,7 @@
 				"name": "Refrigeration",
 				"row": 2,
 				"prerequisites": ["Biology", "Electricity"], //todo: offshore platform should need this
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'And homeless near a thousand homes I stood, and near a thousand tables pined and wanted food.' - William Wordsworth"
 			},
 			{
@@ -495,6 +498,7 @@
 				"name": "Combustion",
 				"row": 8,
 				"prerequisites": ["Railroads"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'Any man who can drive safely while kissing a pretty girl is simply not giving the kiss the attention it deserves.' - Albert Einstein"
 			}
 		]
