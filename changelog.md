@@ -1,3 +1,27 @@
+## 4.13.10
+
+detekt
+
+Resolved  - Great prophets bought in city with different religion do not get incorrect warning popup
+
+Resolved  - Getting all resources does not eliminate WLTK day
+
+Tilesets: Added edge tile images!
+
+Added validations for 'replaces' being set when 'uniqueTo' is not
+
+chore: renamed MoveImmediatelyOnceBought -> CanMoveImmediatelyOnceBought
+
+Resolved  - MP game with invalid preview cannot be joined
+
+4.13.9-patch1
+
+Solved crash due to race condition 
+
+Resolved  - Changing rulesets in new game screen no longer leads to fake error warnings
+
+chore: CheckModLinks -> GetErrorList
+
 ## 4.13.9
 
 Significant memory improvements - should allow for much larger maps on memory-constrained devices!
