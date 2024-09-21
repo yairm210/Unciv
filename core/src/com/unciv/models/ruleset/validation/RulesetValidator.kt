@@ -526,6 +526,8 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("${improvement.name} requires tech ${improvement.techRequired} which does not exist!", sourceObject = improvement)
             if (improvement.replaces != null && !ruleset.tileImprovements.containsKey(improvement.replaces))
                 lines.add("${improvement.name} replaces ${improvement.replaces} which does not exist!", sourceObject = improvement)
+            if (improvement.replaces != null && improvement.uniqueTo == null)
+                lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!ruleset.terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines.add("${improvement.name} can be built on terrain $terrain which does not exist!", sourceObject = improvement)
@@ -768,6 +770,9 @@ class RulesetValidator(val ruleset: Ruleset) {
                     "Building ${building.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
                     RulesetErrorSeverity.Warning, building
                 )
+
+        if (building.replaces != null && building.uniqueTo == null)
+            lines.add("${building.name} should replace ${building.replaces} but does not have uniqueTo assigned!")
     }
 
     private fun addTechColumnErrorsRulesetInvariant(lines: RulesetErrorList) {
@@ -834,6 +839,10 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (upgradesTo == unit.name || (upgradesTo == unit.replaces))
                 lines.add("${unit.name} upgrades to itself!", sourceObject = unit)
         }
+        
+        if (unit.replaces != null && unit.uniqueTo == null)
+            lines.add("${unit.name} should replace ${unit.replaces} but does not have uniqueTo assigned!")
+        
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
     }

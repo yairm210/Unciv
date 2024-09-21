@@ -8,6 +8,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.ui.components.tilegroups.layers.EdgeTileImage
+import com.unciv.ui.components.tilegroups.layers.NeighborDirection
 import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
 
@@ -66,6 +68,26 @@ class TileSetStrings(
     val bottomRightRiver by lazy { orFallback { tilesLocation + "River-BottomRight"} }
     val bottomRiver by lazy { orFallback { tilesLocation + "River-Bottom"} }
     val bottomLeftRiver  by lazy { orFallback { tilesLocation + "River-BottomLeft"} }
+    
+    val edgeImagesByPosition = ImageGetter.getAllImageNames()
+        .filter { it.startsWith(tileSetLocation +"Edges/") }
+        .mapNotNull {
+            val split = it.split('/').last() // without folder
+                .split("-")
+            // Comprised of 3 parts: origin tilefilter, destination tilefilter, 
+            //   and edge type: Bottom, BottomLeft or BottomRight
+            if (split.size != 4) return@mapNotNull null
+
+            // split[0] is name and is unused
+            val originTileFilter = split[1]
+            val destinationTileFilter = split[2]
+            val neighborDirection = split[3]
+            val neighborDirectionEnumValue = NeighborDirection.entries
+                .firstOrNull { it.name == neighborDirection } ?: return@mapNotNull null
+
+            EdgeTileImage(it, originTileFilter, destinationTileFilter, neighborDirectionEnumValue)
+        }
+        .groupBy { it.edgeType }
 
     val unitsLocation = unitSetLocation + "Units/"
 

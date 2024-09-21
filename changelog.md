@@ -1,3 +1,17 @@
+## 4.13.10
+
+Tilesets: Added edge tile images!
+
+Great prophets bought in city with different religion do not get incorrect warning popup
+
+Getting all resources does not eliminate WLTK day
+
+modding: Added validations for 'replaces' being set when 'uniqueTo' is not (units/buildings/improvements)
+
+Invalid MP games cannot be 'joined'
+
+Changing rulesets in new game screen no longer leads to fake error warnings
+
 ## 4.13.9
 
 Significant memory improvements - should allow for much larger maps on memory-constrained devices!

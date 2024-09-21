@@ -467,6 +467,8 @@ object ImageGetter {
         specialist.color = color
         return specialist
     }
+    
+    fun getAllImageNames() = textureRegionDrawables.keys
 
     fun getAvailableSkins() = ninePatchDrawables.keys.asSequence().map { it.split("/")[1] }.distinct()
 
