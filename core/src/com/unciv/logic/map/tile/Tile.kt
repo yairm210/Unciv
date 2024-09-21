@@ -690,6 +690,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return if (probability == 0.0) 0.04  // This is the default of 1 per 25 tiles
         else probability
     }
+    
+    fun isTilemapInitialized() = ::tileMap.isInitialized
 
     //endregion
     //region state-changing functions
@@ -712,7 +714,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         isOcean = baseTerrain == Constants.ocean
 
         // Resource amounts missing - Old save or bad mapgen?
-        if (::tileMap.isInitialized && resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
+        if (isTilemapInitialized() && resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
             // Let's assume it's a small deposit
             setTileResource(tileResource, majorDeposit = false)
         }
@@ -812,7 +814,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     private fun updateUniqueMap() {
-        if (!::tileMap.isInitialized) return // This tile is a fake tile, for visual display only (e.g. map editor, civilopedia)
+        if (!isTilemapInitialized()) return // This tile is a fake tile, for visual display only (e.g. map editor, civilopedia)
         val terrainNameList = allTerrains.map { it.name }.toList()
 
         // List hash is function of all its items, so the same items in the same order will always give the same hash

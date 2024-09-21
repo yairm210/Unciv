@@ -1,6 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
@@ -85,10 +86,32 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             else -> baseHexagon + getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
         }
     }
+    
+    private fun getEdgeTileLocations(): Sequence<String> {
+        val tile = tile()
+        if (!tile.isTilemapInitialized()) // fake tile 
+            return emptySequence()
+        return tile.neighbors
+            .filter { it.position.x < tile.position.x || it.position.y < tile.position.y }
+            .flatMap { getMatchingEdges(tile, it) }
+    }
+
+    private fun getMatchingEdges(originTile: Tile, neighborTile: Tile): List<String>{
+        val vectorToNeighbor =  neighborTile.position.cpy().sub(originTile.position)
+        val direction = NeighborDirection.fromVector(vectorToNeighbor) ?: return emptyList()
+        val possibleEdgeFiles = strings().edgeImagesByPosition[direction] ?: return emptyList()
+
+        return possibleEdgeFiles.filter {
+            if (!originTile.matchesFilter(it.originTileFilter)) return@filter false
+            if (!neighborTile.matchesFilter(it.destinationTileFilter)) return@filter false
+            return@filter true
+        }.map { it.fileName }
+    }
 
     private fun updateTileImage(viewingCiv: Civilization?) {
-        val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
-
+        val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv) + 
+                getEdgeTileLocations()
+        
         if (tileBaseImageLocations.size == tileImageIdentifiers.size) {
             if (tileBaseImageLocations.withIndex().all { (i, imageLocation) -> tileImageIdentifiers[i] == imageLocation })
                 return // All image identifiers are the same as the current ones, no need to change anything
@@ -211,3 +234,21 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             else baseHexagon + strings().orFallback{ getTile(tileGroup.tile.naturalWonder!!) }
 
 }
+
+enum class NeighborDirection {
+    Top, TopRight, TopLeft, Bottom, BottomLeft, BottomRight;
+
+    companion object {
+        fun fromVector(vector2: Vector2): NeighborDirection? = when {
+            vector2.x == 1f && vector2.y == 1f -> Top
+            vector2.x == 0f && vector2.y == 1f -> TopRight
+            vector2.x == 1f && vector2.y == 0f -> TopLeft
+            vector2.x == -1f && vector2.y == -1f -> Bottom
+            vector2.x == 0f && vector2.y == -1f -> BottomLeft
+            vector2.x == -1f && vector2.y == 0f -> BottomRight
+            else -> null
+        }
+    }
+}
+
+data class EdgeTileImage(val fileName:String, val originTileFilter: String, val destinationTileFilter: String, val edgeType: NeighborDirection)
