@@ -1,23 +1,11 @@
-
-
-detekt
-
-Resolved  - Great prophets bought in city with different religion do not get incorrect warning popup
-
-Resolved  - Getting all resources does not eliminate WLTK day
-
 Tilesets: Added edge tile images!
 
-Added validations for 'replaces' being set when 'uniqueTo' is not
+Great prophets bought in city with different religion do not get incorrect warning popup
 
-chore: renamed MoveImmediatelyOnceBought -> CanMoveImmediatelyOnceBought
+Getting all resources does not eliminate WLTK day
 
-Resolved  - MP game with invalid preview cannot be joined
+modding: Added validations for 'replaces' being set when 'uniqueTo' is not (units/buildings/improvements)
 
-4.13.9-patch1
+Invalid MP games cannot be 'joined'
 
-Solved crash due to race condition 
-
-Resolved  - Changing rulesets in new game screen no longer leads to fake error warnings
-
-chore: CheckModLinks -> GetErrorList
+Changing rulesets in new game screen no longer leads to fake error warnings
