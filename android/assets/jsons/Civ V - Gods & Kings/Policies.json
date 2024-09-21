@@ -35,7 +35,8 @@
                 "name": "Oligarchy",
                 "uniques": [
                     "Units in cities cost no Maintenance",
-                    "[+50]% Strength for cities <with a garrison> <when attacking>"
+                    "[+50]% Strength for cities <with a garrison> <when attacking>",
+                    "[-100]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 5
@@ -437,7 +438,7 @@
                     "[+1 Happiness] from every [University]",
                     "[+1 Happiness] from every [Observatory]",
                     "[+1 Happiness] from every [Public School]",
-                    "[-100]% weight to this choice for AI decisions"
+                    "[-50]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 4
@@ -461,7 +462,7 @@
             },
             {
                 "name": "Scientific Revolution",
-                "uniques": ["Science gained from research agreements [+50]%"],
+                "uniques": ["Science gained from research agreements [+50]%", "[-100]% weight to this choice for AI decisions"],
                 "requires": ["Free Thought"],
                 "row": 3,
                 "column": 2
@@ -556,7 +557,7 @@
         "policies": [
             {
                 "name": "Populism",
-                "uniques": ["[+25]% Strength <for [Wounded] units>"],
+                "uniques": ["[+25]% Strength <for [Wounded] units>", "[+100]% weight to this choice for AI decisions"],
                 "row": 1,
                 "column": 2
             },
@@ -625,7 +626,7 @@
             {
                 "name": "United Front",
                 "uniques": [
-                    "Militaristic City-States grant units [2] times as fast when you are at war with a common nation"
+                    "Militaristic City-States grant units [2] times as fast when you are at war with a common nation","[-100]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 1
