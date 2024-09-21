@@ -699,7 +699,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val balance = city.getStatReserve(stat)
             val majorityReligion = city.religion.getMajorityReligion()
             val yourReligion = city.civ.religionManager.religion
-            val isBuyingWithFaithForForeignReligion = construction.hasUnique(UniqueType.ReligiousUnit) && majorityReligion != yourReligion
+            val isBuyingWithFaithForForeignReligion = construction.hasUnique(UniqueType.ReligiousUnit)
+                    && !construction.hasUnique(UniqueType.TakeReligionOverBirthCity)
+                    && majorityReligion != yourReligion
 
             addGoodSizedLabel("Currently you have [$balance] [${stat.name}].").padBottom(10f).row()
             if (isBuyingWithFaithForForeignReligion) {
