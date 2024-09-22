@@ -25,6 +25,7 @@
 				"name": "Pottery",
 				"row": 2,
 				"prerequisites": ["Agriculture"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Shall the clay say to him that fashioneth it, what makest thou?' - Bible Isaiah 45:9"
 			},
 			{
@@ -43,6 +44,7 @@
 				"name": "Mining",
 				"row": 9,
 				"prerequisites": ["Agriculture"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty"
 			}
 
@@ -134,6 +136,7 @@
 				"name": "Construction",
 				"row": 9,
 				"prerequisites": ["Masonry","The Wheel"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfully executed.' - Johann Wolfgang von Goethe"
 			}
 		]
@@ -295,6 +298,7 @@
 				"name": "Printing Press",
 				"row": 8,
 				"prerequisites": ["Machinery","Physics","Chivalry"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'It is a newspaper's duty to print the news and raise hell.' - The Chicago Times"
 			},
 			{

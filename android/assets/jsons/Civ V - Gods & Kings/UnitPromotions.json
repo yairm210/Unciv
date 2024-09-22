@@ -422,7 +422,7 @@
 	// Bomber
 	{
 		"name": "Siege I",
-		"uniques": ["[+33]% Strength <vs cities>"],
+		"uniques": ["[+33]% Strength <vs cities>", "[-100]% weight to this choice for AI decisions"],
 		"unitTypes": ["Bomber"],
         "column": 17,
         "row": 1
