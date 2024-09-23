@@ -1043,13 +1043,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Personality uniques
 ??? example  "Will not build [baseUnitFilter/buildingFilter]"
@@ -1088,13 +1088,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Policy uniques
 ??? example  "Only available"
@@ -1111,13 +1111,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## FounderBelief uniques
 !!! note ""
@@ -1144,13 +1144,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## FollowerBelief uniques
 !!! note ""
@@ -1387,13 +1387,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FollowerBelief
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Building uniques
 ??? example  "Consumes [amount] [resource]"
@@ -1562,13 +1562,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## UnitAction uniques
 !!! note ""
@@ -2133,23 +2133,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## UnitType uniques
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Promotion uniques
 ??? example  "Only available"
@@ -2172,13 +2172,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Terrain uniques
 ??? example  "[stats]"
@@ -2357,13 +2357,13 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
@@ -2521,13 +2521,13 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Improvement
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Resource uniques
 ??? example  "Obsolete with [tech]"
@@ -2598,13 +2598,13 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Ruins uniques
 ??? example  "Only available"
@@ -2629,23 +2629,23 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Building, Unit, Ruins, Tutorial
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Speed uniques
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
@@ -2743,6 +2743,15 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+
+??? example  "Will not be displayed in Civilopedia"
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+
+??? example  "Comment [comment]"
+	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+	Example: "Comment [comment]"
+
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
 ## Conditional uniques
 !!! note ""

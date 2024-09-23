@@ -69,8 +69,13 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix)
 
         val rulesetErrors = RulesetErrorList(ruleset)
-
-        if (uniqueContainer != null && !unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()))
+        
+        if (uniqueContainer != null &&
+            !(unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()) ||
+                    // "for X turns" effectively turns a global unique into a trigger
+                    unique.hasModifier(UniqueType.ConditionalTimedUnique)
+                        && uniqueContainer.getUniqueTarget().canAcceptUniqueTarget(UniqueTarget.Triggerable)
+                    ))
             rulesetErrors.add("$prefix is not allowed on its target type", RulesetErrorSeverity.Warning, uniqueContainer, unique)
 
         val typeComplianceErrors = getComplianceErrors(unique)
