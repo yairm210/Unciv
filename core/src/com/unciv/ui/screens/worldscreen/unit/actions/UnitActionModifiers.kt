@@ -7,6 +7,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.ceil
 
@@ -116,6 +117,16 @@ object UnitActionModifiers {
                     if(unit.civ.getCivResourcesByName()[resourceName] != null)
                         unit.civ.resourceStockpiles.add(resourceName, -amount)
                 }
+                UniqueType.UnitActionRemovingPromotion -> {
+                    val promotionName = conditional.params[0]
+                    // if has a status, remove that instead - the promotion is 'safe'
+                    val unitStatus = unit.statuses.firstOrNull { it.name == promotionName }
+                    if (unitStatus != null) {
+                        unit.statuses.remove(unitStatus)
+                    } else { // check for real promotion
+                        unit.promotions.removePromotion(promotionName)
+                    }
+                }
                 else -> continue
             }
         }
@@ -176,6 +187,12 @@ object UnitActionModifiers {
             actionUnique,
             defaultAllMovement
         ).tr() + Fonts.movement
+        
+        for (removes in actionUnique.getModifiers(UniqueType.UnitActionRemovingPromotion)) {
+            val promotionName = removes.params[0]
+            val promotionChar = FontRulesetIcons.rulesetObjectNameToChar[promotionName]
+            if (promotionChar != null) effects += "-$promotionChar"
+        }
 
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"

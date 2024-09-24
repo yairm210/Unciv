@@ -547,7 +547,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(trigger, stateForConditionals))
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals))

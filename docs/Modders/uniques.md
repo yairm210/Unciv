@@ -3262,6 +3262,16 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 ??? example  "&lt;upon being promoted&gt;"
 	Applicable to: UnitTriggerCondition
 
+??? example  "&lt;upon gaining the [promotion] promotion&gt;"
+	Example: "&lt;upon gaining the [Shock I] promotion&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon losing the [promotion] promotion&gt;"
+	Example: "&lt;upon losing the [Shock I] promotion&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ??? example  "&lt;upon losing at least [amount] HP in a single attack&gt;"
 	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
 
@@ -3310,6 +3320,12 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 ??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
 	A positive Integer value will be subtracted from your stock. Do not confuse with "Costs [amount] [stockpiledResource]" (uppercase 'C') for Improvements, Buildings, and Units.
 	Example: "&lt;costs [3] [Mana]&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;removing the [promotion] promotion/status&gt;"
+	Removes the promotion/status from the unit - this is not a cost, units will be able to activate the action even without the promotion/status. To limit, use <with the [promotion] promotion> conditional
+	Example: "&lt;removing the [Shock I] promotion/status&gt;"
 
 	Applicable to: UnitActionModifier
 
