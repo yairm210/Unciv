@@ -1,16 +1,14 @@
 ## 4.13.11
 
-internal - Enable writing new format of civ ranking history
+Better AI evaluation for 'win the game' buildings
 
-Resolved  - re-activate Thai language, now with diacritic support
+Modding:
+- Trigger uniques from religious beliefs activate correctly
+- Added "removing the [promotion] promotion/status" unit action modifier
+- Added 'upon gaining/losing [promotionName] promotion' unit trigger uniques 
+- Allow comment uniques and timed uniques in event choices
 
-Resolved  - trigger uniques from religious beliefs activate correctly
-
-Added "removing the [promotion] promotion/status" unit action modifier
-
-Added 'upon gaining/losing [promotionName] promotion' unit trigger uniques - see 
-
-Allow comment uniques and timed uniques in event choices
+Re-activate Thai language, now with diacritic support
 
 Improve AI tech and policy choices  - By EmperorPinguin
 
