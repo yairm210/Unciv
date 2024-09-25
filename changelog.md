@@ -1,3 +1,19 @@
+## 4.13.11
+
+internal - Enable writing new format of civ ranking history
+
+Resolved  - re-activate Thai language, now with diacritic support
+
+Resolved  - trigger uniques from religious beliefs activate correctly
+
+Added "removing the [promotion] promotion/status" unit action modifier
+
+Added 'upon gaining/losing [promotionName] promotion' unit trigger uniques - see 
+
+Allow comment uniques and timed uniques in event choices
+
+Improve AI tech and policy choices  - By EmperorPinguin
+
 ## 4.13.10
 
 Tilesets: Added edge tile images!
