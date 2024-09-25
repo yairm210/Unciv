@@ -31,7 +31,7 @@ object ReligionAutomation {
             return
         }
         
-        if (civInfo.religionManager.remainingFoundableReligions() == 0 && civInfo.religionManager.religionState == ReligionState.Pantheon) {
+        if (civInfo.religionManager.remainingFoundableReligions() == 0 ) {
             buyGreatPerson(civInfo)
             return
         }
@@ -80,8 +80,6 @@ object ReligionAutomation {
             tryBuyAnyReligiousBuilding(civInfo)
             return
         }
-
-        // Todo: buy Great People post industrial era
 
         // Just buy missionaries to spread our religion outside of our civ
         if (civInfo.units.getCivUnits().count { it.hasUnique(UniqueType.CanSpreadReligion) } < 4) {

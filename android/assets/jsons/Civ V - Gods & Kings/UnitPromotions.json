@@ -422,7 +422,7 @@
 	// Bomber
 	{
 		"name": "Siege I",
-		"uniques": ["[+33]% Strength <vs cities>"],
+		"uniques": ["[+33]% Strength <vs cities>", "[-100]% weight to this choice for AI decisions"],
 		"unitTypes": ["Bomber"],
         "column": 17,
         "row": 1
@@ -628,7 +628,7 @@
 
 	{
 		"name": "Ambush I",
-		"uniques": ["[+33]% Strength <vs [Armored] units>"],
+		"uniques": ["[+33]% Strength <vs [Armored] units>", "[-100]% weight to this choice for AI decisions"],
 		"unitTypes": ["Sword","Gunpowder","Fighter","Bomber"],
         "column": 25,
         "row": 1
