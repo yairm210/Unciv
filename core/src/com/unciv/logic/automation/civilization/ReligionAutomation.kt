@@ -70,11 +70,10 @@ object ReligionAutomation {
             buyInquisitorNear(civInfo, holyCity)
             return
         }
-        
         // Buy religious buildings in cities if possible
         val citiesWithMissingReligiousBuildings = civInfo.cities.filter { city ->
-            city.religion.getMajorityReligion() != null
-                && !city.cityConstructions.isAllBuilt(city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs)
+            city.religion.getMajorityReligion() != null 
+            && !city.cityConstructions.isAllBuilt(city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs)
         }
         if (citiesWithMissingReligiousBuildings.any()) {
             tryBuyAnyReligiousBuilding(civInfo)
