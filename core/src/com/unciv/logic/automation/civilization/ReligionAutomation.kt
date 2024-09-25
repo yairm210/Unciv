@@ -33,6 +33,11 @@ object ReligionAutomation {
         
         if (civInfo.religionManager.remainingFoundableReligions() == 0 ) {
             buyGreatPerson(civInfo)
+            return
+        }
+
+        // We don't have a religion and no more change of getting it :(
+        if (civInfo.religionManager.religionState <= ReligionState.Pantheon) {
             tryBuyAnyReligiousBuilding(civInfo)
             return
         }
@@ -63,6 +68,16 @@ object ReligionAutomation {
             && !holyCity.religion.isProtectedByInquisitor()
         ) {
             buyInquisitorNear(civInfo, holyCity)
+            return
+        }
+        
+        // Buy religious buildings in cities if possible
+        val citiesWithMissingReligiousBuildings = civInfo.cities.filter { city ->
+            city.religion.getMajorityReligion() != null
+                && !city.cityConstructions.isAllBuilt(city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs)
+        }
+        if (citiesWithMissingReligiousBuildings.any()) {
+            tryBuyAnyReligiousBuilding(civInfo)
             return
         }
 
