@@ -70,7 +70,7 @@ object ReligionAutomation {
             buyInquisitorNear(civInfo, holyCity)
             return
         }
-        
+
         // Buy religious buildings in cities if possible
         val citiesWithMissingReligiousBuildings = civInfo.cities.filter { city ->
             city.religion.getMajorityReligion() != null
