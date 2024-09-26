@@ -295,7 +295,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var value = 0f
         if (!cityIsOverAverageProduction) return value
         if (building.isWonder) value += 2f
-        if (building.hasUnique(UniqueType.TriggersCulturalVictory)) value += 10f * personality.modifierFocus(PersonalityValue.Culture, .3f)
+        if (building.hasUnique(UniqueType.TriggersCulturalVictory)
+            || building.hasUnique(UniqueType.TriggersVictory)) value += 20f // if we're this close to actually winning, we don't care what your preferred victory type is
         if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f * personality.modifierFocus(PersonalityValue.Science, .3f)
         return value
     }
