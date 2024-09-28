@@ -1,3 +1,13 @@
+## 4.13.12
+
+Resolved  - Cannot have 2 research agreements at once due to counteroffers
+
+Resolved  - added "upon losing/gaining the [promotion] status" unit triggers
+
+chore: Added unit.removeStatus helper function
+
+Fixed "Top" edge tiles not showing - kudos @legacymtgsalvationuser69544
+
 ## 4.13.11
 
 Better AI evaluation for 'win the game' buildings
