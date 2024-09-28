@@ -34,9 +34,7 @@ class EmpireOverviewScreen(
     override fun getCivilopediaRuleset() = viewingPlayer.gameInfo.ruleset
 
     init {
-        val selectCategory = defaultCategory
-            //TODO replace with `?: persistState.last` in a future update
-            ?: EmpireOverviewCategories.entries.firstOrNull { it.name == game.settings.lastOverviewPage }
+        val selectCategory = defaultCategory ?: persistState.last
         val iconSize = Constants.defaultFontSize.toFloat()
 
         tabbedPager = TabbedPager(
@@ -76,9 +74,7 @@ class EmpireOverviewScreen(
 
     override fun recreate(): BaseScreen {
         tabbedPager.selectPage(-1)  // trigger deselect on _old_ instance so the tabs can persist their stuff
-        return EmpireOverviewScreen(viewingPlayer,
-            //TODO replace with `persistState.last)` in a future update
-            EmpireOverviewCategories.entries.firstOrNull { it.name == game.settings.lastOverviewPage })
+        return EmpireOverviewScreen(viewingPlayer, persistState.last)
     }
 
     fun resizePage(tab: EmpireOverviewTab) {
