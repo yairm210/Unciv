@@ -169,7 +169,7 @@ class UnitTurnManager(val unit: MapUnit) {
         
         for (status in unit.statuses.toList()){
             status.turnsLeft--
-            if (status.turnsLeft <= 0) unit.statuses.remove(status)
+            if (status.turnsLeft <= 0) unit.removeStatus(status.name)
         }
         unit.updateUniques()
     }

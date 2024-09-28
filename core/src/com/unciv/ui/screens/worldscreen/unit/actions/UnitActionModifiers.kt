@@ -120,9 +120,9 @@ object UnitActionModifiers {
                 UniqueType.UnitActionRemovingPromotion -> {
                     val promotionName = conditional.params[0]
                     // if has a status, remove that instead - the promotion is 'safe'
-                    val unitStatus = unit.statuses.firstOrNull { it.name == promotionName }
-                    if (unitStatus != null) {
-                        unit.statuses.remove(unitStatus)
+                    val unitStatus = 
+                    if (unit.statuses.any { it.name == promotionName }) {
+                        unit.removeStatus(promotionName)
                     } else { // check for real promotion
                         unit.promotions.removePromotion(promotionName)
                     }

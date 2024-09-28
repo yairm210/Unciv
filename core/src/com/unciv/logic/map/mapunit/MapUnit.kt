@@ -1041,6 +1041,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         statuses.add(status)
         updateUniques()
     }
+    
+    fun removeStatus(name:String){
+        val wereRemoved = statuses.removeAll { it.name == name }
+        if (wereRemoved){
+            updateUniques()
+        }
+    }
 
 
     fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
