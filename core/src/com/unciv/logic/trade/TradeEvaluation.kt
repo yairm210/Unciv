@@ -48,7 +48,16 @@ class TradeEvaluation {
         return when (tradeOffer.type) {
             TradeOfferType.Gold -> true // even if they go negative it's okay
             TradeOfferType.Gold_Per_Turn -> true // even if they go negative it's okay
-            TradeOfferType.Treaty -> true
+            TradeOfferType.Treaty -> {
+                // Current automation should prevent these from being offered anyway, 
+                //   these are a safeguard against future automation changes 
+                when (tradeOffer.name) {
+                    Constants.peaceTreaty -> offerer.isAtWarWith(tradePartner)
+                    Constants.researchAgreement -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResearchAgreement)
+                    Constants.defensivePact -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.DefensivePact)
+                    else -> true // potentional future treaties
+                }
+            }
             TradeOfferType.Agreement -> true
             TradeOfferType.Luxury_Resource -> hasResource(tradeOffer)
             TradeOfferType.Strategic_Resource -> hasResource(tradeOffer)
