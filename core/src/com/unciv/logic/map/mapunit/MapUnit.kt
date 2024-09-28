@@ -1040,13 +1040,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
         status.setTransients(this)
         statuses.add(status)
         updateUniques()
+
+        for (unique in getMatchingUniques(UniqueType.TriggerUponStatusGain))
+            if (unique.params[0] == name)
+                UniqueTriggerActivation.triggerUnique(unique, this)
     }
     
     fun removeStatus(name:String){
         val wereRemoved = statuses.removeAll { it.name == name }
-        if (wereRemoved){
-            updateUniques()
-        }
+        if (!wereRemoved) return
+        
+        updateUniques()
+
+        for (unique in getMatchingUniques(UniqueType.TriggerUponStatusLoss))
+            if (unique.params[0] == name)
+                UniqueTriggerActivation.triggerUnique(unique, this)
     }
 
 
