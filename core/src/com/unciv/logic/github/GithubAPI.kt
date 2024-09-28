@@ -194,7 +194,7 @@ object GithubAPI {
         if (matchZip != null && matchZip.groups.size > 4)
             return processMatch(matchZip)
 
-        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/([^/]+)$""").matchEntire(url)
+        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.*)$""").matchEntire(url)
         if (matchBranch != null && matchBranch.groups.size > 4)
             return processMatch(matchBranch)
 
