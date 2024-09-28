@@ -74,7 +74,7 @@ object UnitActionModifiers {
         return true
     }
 
-    /**Checks if this Action Unique can be executed, based on action modifiers
+    /** Checks if this Action Unique can be executed, based on action modifiers
      * @param unit: The specific unit executing the Action
      * @param actionUnique: Unique that defines the Action
      * @return Boolean
@@ -120,7 +120,6 @@ object UnitActionModifiers {
                 UniqueType.UnitActionRemovingPromotion -> {
                     val promotionName = conditional.params[0]
                     // if has a status, remove that instead - the promotion is 'safe'
-                    val unitStatus = 
                     if (unit.statuses.any { it.name == promotionName }) {
                         unit.removeStatus(promotionName)
                     } else { // check for real promotion
