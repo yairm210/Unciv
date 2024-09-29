@@ -1,7 +1,5 @@
 ## 4.13.13
 
-Homework from @SomeTroglodyte - Remove lastOverviewPage and replace with persistState.last 
-
 Minimized MP game update IO by ignoring games older than 2 weeks for 'update all'
 
 Resolved ANRs when pausing game due to game clone time
