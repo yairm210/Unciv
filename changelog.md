@@ -1,3 +1,17 @@
+## 4.13.13
+
+Homework from @SomeTroglodyte - Remove lastOverviewPage and replace with persistState.last 
+
+Minimized MP game update IO by ignoring games older than 2 weeks for 'update all'
+
+Resolved ANRs when pausing game due to game clone time
+
+Resolved ANRs when starting a new game (checking for multuplayer server connection)
+
+Protect terrainImage against incorrectly configured mods (natural wonder turnsInto is not in ruleset)
+
+Resolved race-condition error for loading terrain icons
+
 ## 4.13.12
 
 Cannot have 2 research agreements at once due to counteroffers
