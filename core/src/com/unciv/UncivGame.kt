@@ -399,7 +399,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
         if (::musicController.isInitialized) musicController.pause()
         val curGameInfo = gameInfo
-        if (curGameInfo != null) files.autosaves.requestAutoSave(curGameInfo)
+        // Since we're pausing the game, we don't need to clone it before autosave - no one else will touch it
+        if (curGameInfo != null) files.autosaves.requestAutoSaveUnCloned(curGameInfo)
         super.pause()
     }
 
