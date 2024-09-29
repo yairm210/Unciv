@@ -49,7 +49,7 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     // For different unit views, we want to effectively "ignore" the terrain and color it by special view
-    private val terrainOverlay = ImageGetter.getImage(strings().hexagon ).setHexagonSize()
+    private val terrainOverlay = ImageGetter.getImage(strings().hexagon).setHexagonSize()
 
     init {
         terrainOverlay.isVisible = false
