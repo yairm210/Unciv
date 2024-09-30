@@ -150,16 +150,18 @@ class MapEditorEditTab(
     }
 
     // "Normal" setBrush overload, using named RulesetObject icon
-    fun setBrush(name: String, icon: String, pediaLink: String = icon, isRemove: Boolean = false, applyAction: (Tile)->Unit) {
-        brushHandlerType = BrushHandlerType.Tile
+    fun setBrush(name: String, icon: String, handlerType: BrushHandlerType = BrushHandlerType.Tile,
+                 pediaLink: String = icon, isRemove: Boolean = false, applyAction: (Tile)->Unit) {
+        brushHandlerType = handlerType
         val brushActor = FormattedLine(name, icon = icon, iconCrossed = isRemove).render(0f)
         linkCivilopedia(brushActor, pediaLink)
         brushCell.setActor(brushActor)
         brushAction = applyAction
     }
+    
     // Helper overload for brushes using icons not existing as RulesetObject
-    private fun setBrush(name: String, icon: Actor, pediaLink: String, applyAction: (Tile)->Unit) {
-        brushHandlerType = BrushHandlerType.Tile
+    fun setBrush(handlerType: BrushHandlerType, name: String, icon: Actor, pediaLink: String, applyAction: (Tile)->Unit) {
+        brushHandlerType = handlerType
         val line = Table().apply {
             add(icon).padRight(10f)
             add(name.toLabel())
@@ -167,16 +169,6 @@ class MapEditorEditTab(
         linkCivilopedia(line, pediaLink)
         brushCell.setActor(line)
         brushAction = applyAction
-    }
-    // This overload is used by Roads and Starting locations
-    fun setBrush(handlerType: BrushHandlerType, name: String, icon: String, pediaLink: String = icon, isRemove: Boolean = false, applyAction: (Tile)->Unit) {
-        setBrush(name, icon, pediaLink, isRemove, applyAction)
-        brushHandlerType = handlerType
-    }
-    // This overload is used by Rivers
-    fun setBrush(handlerType: BrushHandlerType, name: String, icon: Actor, pediaLink: String, applyAction: (Tile)->Unit) {
-        setBrush(name, icon, pediaLink, applyAction)
-        brushHandlerType = handlerType
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {

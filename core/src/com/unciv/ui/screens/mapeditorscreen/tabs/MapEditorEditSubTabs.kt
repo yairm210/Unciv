@@ -227,7 +227,7 @@ class MapEditorEditImprovementsTab(
         ) {
             val road = RoadStatus.entries.firstOrNull { r -> r.name == it }
             if (road != null)
-                editTab.setBrush(BrushHandlerType.Road, it, "Improvement/$it") { tile ->
+                editTab.setBrush(it, "Improvement/$it", handlerType = BrushHandlerType.Road) { tile ->
                     tile.roadStatus = if (tile.roadStatus == road) RoadStatus.None else road
                 }
             else
@@ -286,7 +286,7 @@ class MapEditorEditStartsTab(
         val eraserIcon = "Nation/${firstNation.name}"
         val eraser = FormattedLine("Remove starting locations", icon = eraserIcon, size = 24, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush(BrushHandlerType.Direct, "Remove", eraserIcon, pediaLink = "", isRemove = true) { tile ->
+            editTab.setBrush("Remove", eraserIcon, handlerType = BrushHandlerType.Direct, pediaLink = "", isRemove = true) { tile ->
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
@@ -306,7 +306,7 @@ class MapEditorEditStartsTab(
                 val isMajorCiv = ruleset.nations[it]?.isMajorCiv ?: false
                 val selectedUsage = if (isMajorCiv) TileMap.StartingLocation.Usage.entries[usageOptionGroup.checkedIndex]
                     else TileMap.StartingLocation.Usage.Normal
-                editTab.setBrush(BrushHandlerType.Direct, it.spectatorToAnyCiv(), icon, pediaLink) { tile ->
+                editTab.setBrush(it.spectatorToAnyCiv(), icon, BrushHandlerType.Direct, pediaLink) { tile ->
                     // toggle the starting location here, note this allows
                     // both multiple locations per nation and multiple nations per tile
                     if (!tile.tileMap.addStartingLocation(it, tile, selectedUsage))
