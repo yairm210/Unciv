@@ -107,10 +107,10 @@ class MapEditorEditTab(
             minimumWidth = subTabsWidth,
             maximumWidth = subTabsWidth,
             headerPadding = 5f,
-            capacity = AllEditSubTabs.values().size
+            capacity = AllEditSubTabs.entries.size
         )
 
-        for (page in AllEditSubTabs.values()) {
+        for (page in AllEditSubTabs.entries) {
             // Empty tabs with placeholders, filled when activated()
             subTabs.addPage(page.caption, Group(), ImageGetter.getImage(page.icon), 20f,
                 shortcutKey = KeyCharAndCode(page.key), disabled = true)
@@ -184,7 +184,7 @@ class MapEditorEditTab(
             // ruleset has changed
             ruleset = editorScreen.ruleset
             ImageGetter.setNewRuleset(ruleset)
-            for (page in AllEditSubTabs.values()) {
+            for (page in AllEditSubTabs.entries) {
                 val tab = page.instantiate(this, ruleset)
                 subTabs.replacePage(page.caption, tab)
                 subTabs.setPageDisabled(page.caption, (tab as IMapEditorEditSubTabs).isDisabled())
@@ -255,44 +255,31 @@ class MapEditorEditTab(
             if (brushSize == -1) {
                 val bfs = BFS(tile) { it.isSimilarEnough(tile) }
                 bfs.stepToEnd()
-                bfs.getReachedTiles().asSequence()
+                bfs.getReachedTiles().toSet()
             } else {
-                tile.getTilesInDistance(brushSize - 1)
+                tile.getTilesInDistance(brushSize - 1).toSet()
             }
+        
         for (tileToPaint in tiles) {
             when (brushHandlerType) {
                 BrushHandlerType.Direct -> directPaintTile(tileToPaint)
                 BrushHandlerType.Tile -> paintTile(tileToPaint)
-                BrushHandlerType.Road -> roadPaintTile(tileToPaint)
-                BrushHandlerType.River -> riverPaintTile(tileToPaint)
+                BrushHandlerType.Road -> paintTile(tileToPaint)
+                BrushHandlerType.River -> directPaintTile(tileToPaint)
                 else -> {} // other cases can't reach here
             }
         }
+        
+        // Adjacent tiles could have images changed as well, due to rivers/edge tiles/roads
+        val tilesToUpdate = tiles.flatMap { it.neighbors + it }.toSet()
+        for (tileToUpdate in tilesToUpdate) editorScreen.updateTile(tileToUpdate)
     }
 
     /** Used for starting locations - no temp tile as brushAction needs to access tile.tileMap */
     private fun directPaintTile(tile: Tile) {
         brushAction(tile)
         editorScreen.isDirty = true
-        editorScreen.updateAndHighlight(tile)
-    }
-
-    /** Used for rivers - same as [directPaintTile] but may need to update 10,12 and 2 o'clock neighbor tiles too
-     *
-     *  Note: Unlike [paintRiverFromTo] this does **not** call [MapGenerator.convertTerrains] to allow more freedom.
-     */
-    private fun riverPaintTile(tile: Tile) {
-        directPaintTile(tile)
-        for (neighbor in tile.neighbors) {
-            if (neighbor.position.x > tile.position.x || neighbor.position.y > tile.position.y)
-                editorScreen.updateTile(neighbor)
-        }
-    }
-
-    // Used for roads - same as paintTile but all neighbors need TileGroup.update too
-    private fun roadPaintTile(tile: Tile) {
-        if (!paintTile(tile)) return
-        for (neighbor in tile.neighbors) editorScreen.updateTile(neighbor)
+        editorScreen.highlightTile(tile)
     }
 
     /** apply brush to a single tile */
@@ -322,7 +309,7 @@ class MapEditorEditTab(
         if (tile.naturalWonder != savedTile.naturalWonder)
             editorScreen.naturalWondersNeedRefresh = true
         editorScreen.isDirty = true
-        editorScreen.updateAndHighlight(tile)
+        editorScreen.highlightTile(tile)
         return true
     }
 
