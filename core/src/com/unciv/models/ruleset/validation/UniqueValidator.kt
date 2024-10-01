@@ -115,9 +115,9 @@ class UniqueValidator(val ruleset: Ruleset) {
         return rulesetErrors
     }
 
-    val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
+    private val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
         UniqueType.DoubleResourceProduced, UniqueType.StrategicResourcesIncrease)
-    val resourceConditionals = setOf(
+    private val resourceConditionals = setOf(
         UniqueType.ConditionalWithResource,
         UniqueType.ConditionalWithoutResource,
         UniqueType.ConditionalWhenBetweenStatResource,
