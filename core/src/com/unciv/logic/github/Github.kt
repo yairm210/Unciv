@@ -105,7 +105,8 @@ object Github {
             // We DO NOT want to accept "Transfer-Encoding: chunked" here, as we need to know the size for progress tracking
             // So this attempts to limit the encoding to gzip only
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-            // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes :(
+            // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes 
+            // which means we don't actually know the total length :(
             it.setRequestProperty("Accept-Encoding", "gzip")
             
             val disposition = it.getHeaderField(contentDispositionHeader)
@@ -115,7 +116,7 @@ object Github {
             // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
             
             contentLength = it.getHeaderField("Content-Length")?.toInt()
-                ?: 0
+                ?: 0 // repo.length is a total lie
         } ?: return null
 
         // Download to temporary zip
