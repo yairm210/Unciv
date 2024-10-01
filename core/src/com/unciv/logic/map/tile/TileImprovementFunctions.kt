@@ -238,11 +238,6 @@ class TileImprovementFunctions(val tile: Tile) {
             tile.setTerrainFeatures(tile.terrainFeatures.filterNot { feature -> removableTerrainFeatures.any { it.name == feature } })
         }
 
-        if (civToActivateBroaderEffects != null && improvementObject != null
-            && improvementObject.hasUnique(UniqueType.TakesOverAdjacentTiles)
-        )
-            takeOverTilesAround(civToActivateBroaderEffects, tile)
-
         if (civToActivateBroaderEffects != null && improvementObject != null)
             triggerImprovementUniques(improvementObject, civToActivateBroaderEffects, unit)
 
