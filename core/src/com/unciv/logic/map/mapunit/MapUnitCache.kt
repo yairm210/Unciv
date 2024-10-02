@@ -120,7 +120,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
         hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius)
         hasCitadelPlacementUnique = mapUnit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
             .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }
-            .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
+            .any { it.hasUnique(UniqueType.OneTimeTakeOverTilesInRadius) }
     }
 
     companion object {

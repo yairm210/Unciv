@@ -151,7 +151,8 @@ class MapEditorEditTab(
 
     // "Normal" setBrush overload, using named RulesetObject icon
     fun setBrush(name: String, icon: String, handlerType: BrushHandlerType = BrushHandlerType.Tile,
-                 pediaLink: String = icon, isRemove: Boolean = false, applyAction: (Tile)->Unit) {
+                 pediaLink: String = icon, isRemove: Boolean = false,
+                 applyAction: (Tile)->Unit) {
         brushHandlerType = handlerType
         val brushActor = FormattedLine(name, icon = icon, iconCrossed = isRemove).render(0f)
         linkCivilopedia(brushActor, pediaLink)
@@ -162,12 +163,12 @@ class MapEditorEditTab(
     // Helper overload for brushes using icons not existing as RulesetObject
     fun setBrush(handlerType: BrushHandlerType, name: String, icon: Actor, pediaLink: String, applyAction: (Tile)->Unit) {
         brushHandlerType = handlerType
-        val line = Table().apply {
+        val brushActor = Table().apply {
             add(icon).padRight(10f)
             add(name.toLabel())
         }
-        linkCivilopedia(line, pediaLink)
-        brushCell.setActor(line)
+        linkCivilopedia(brushActor, pediaLink)
+        brushCell.setActor(brushActor)
         brushAction = applyAction
     }
 
@@ -255,9 +256,9 @@ class MapEditorEditTab(
         for (tileToPaint in tiles) {
             when (brushHandlerType) {
                 BrushHandlerType.Direct -> directPaintTile(tileToPaint)
+                BrushHandlerType.River -> directPaintTile(tileToPaint)
                 BrushHandlerType.Tile -> paintTile(tileToPaint)
                 BrushHandlerType.Road -> paintTile(tileToPaint)
-                BrushHandlerType.River -> directPaintTile(tileToPaint)
                 else -> {} // other cases can't reach here
             }
         }
