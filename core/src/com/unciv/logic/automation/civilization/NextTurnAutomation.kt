@@ -367,17 +367,9 @@ object NextTurnAutomation {
 
         if (greatPeople.isEmpty()) return
         var greatPerson = greatPeople.random()
-
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
-            val culturalGP =
-                greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
-            if (culturalGP != null) greatPerson = culturalGP
-        }
-        if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
-            val scientificGP =
-                greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
-            if (scientificGP != null) greatPerson = scientificGP
-        }
+        val scienceGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
+        if (scienceGP != null)  greatPerson = scienceGP
+        // Humans would pick a prophet or engineer, but it'd require more sophistication on part of the AI - a scientist is the safest option for now
 
         civInfo.units.addUnit(greatPerson, civInfo.cities.firstOrNull { it.isCapital() })
 

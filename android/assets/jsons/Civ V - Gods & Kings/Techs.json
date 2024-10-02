@@ -38,6 +38,7 @@
 				"name": "Archery",
 				"row": 7,
 				"prerequisites": ["Agriculture"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'The haft of the arrow has been feathered with one of the eagle's own plumes, we often give our enemies the means of our own destruction' - Aesop"
 			},
 			{
@@ -101,6 +102,7 @@
 				"name": "Bronze Working",
 				"row": 10,
 				"prerequisites": ["Mining"],
+                "uniques": ["[+50]% weight to this choice for AI decisions"],
 				"quote": "'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer"
 			}
 		]
@@ -124,6 +126,7 @@
 				"name": "Horseback Riding",
 				"row": 5,
 				"prerequisites": ["Trapping","The Wheel"],
+                "uniques": ["[+50]% weight to this choice for AI decisions"],
 				"quote": "'A Horse! A Horse! My kingdom for a horse!' - Shakespeare (Richard III)"
 			},
 			{
@@ -152,6 +155,7 @@
 				"name": "Philosophy",
 				"row": 2,
 				"prerequisites": ["Writing","Calendar"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
 			},
 			{
@@ -178,6 +182,7 @@
 				"name": "Iron Working",
 				"row": 10,
 				"prerequisites": ["Bronze Working"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats"
 			}
 		]
@@ -213,6 +218,7 @@
 				"name": "Metal Casting",
 				"row": 9,
 				"prerequisites": ["Engineering","Iron Working"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib"
 			}
 		]
@@ -229,6 +235,7 @@
 				"cost": 375,
 				"row": 1,
 				"prerequisites": ["Optics","Theology"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes"
 			},
 			{
@@ -262,6 +269,7 @@
 				"name": "Steel",
 				"row": 10,
 				"prerequisites": ["Metal Casting"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man"
 			}
 		]
@@ -276,7 +284,7 @@
 			{
 				"name": "Astronomy",
 				"row": 2,
-				"uniques": ["[+1] Movement <for [Embarked] units>","Enables [Embarked] units to enter ocean tiles"],
+				"uniques": ["[+1] Movement <for [Embarked] units>","Enables [Embarked] units to enter ocean tiles","[+50]% weight to this choice for AI decisions"],
 				"prerequisites": ["Compass","Education"],
 				"quote": "'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer"
 			},
@@ -305,6 +313,7 @@
 				"name": "Gunpowder",
 				"row": 10,
 				"prerequisites": ["Physics","Steel"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel"
 			}
 		]
@@ -332,18 +341,21 @@
 				"name": "Economics",
 				"row": 6,
 				"prerequisites": ["Banking","Printing Press"],
+                "uniques": ["[+50]% weight to this choice for AI decisions"],
 				"quote": "'Compound interest is the most powerful force in the universe.' - Albert Einstein"
 			},
 			{
 				"name": "Metallurgy",
 				"row": 9,
 				"prerequisites": ["Printing Press","Gunpowder"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'There never was a good knife made of bad steel.' - Benjamin Franklin"
 			},
 			{
 				"name": "Chemistry",
 				"row": 10,
 				"prerequisites": ["Gunpowder"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge"
 			}
 		]
@@ -359,6 +371,7 @@
 				"name": "Archaeology",
 				"row": 2,
 				"prerequisites": ["Navigation","Architecture"],
+                "uniques": ["[+50]% weight to this choice for AI decisions"],
 				"quote": "'Those who cannot remember the past are condemned to repeat it.' - George Santayana"
 			},
 			{
@@ -372,12 +385,14 @@
 				"name": "Industrialization",
 				"row": 6,
 				"prerequisites": ["Economics"],
+                "uniques": ["[+50]% weight to this choice for AI decisions"],
 				"quote": "'Industrialization based on machinery, already referred to as a characteristic of our age, is but one aspect of the revolution that is being wrought by technology.' - Emily Greene Balch"
 			},
 			{
 				"name": "Rifling",
 				"row": 7,
 				"prerequisites": ["Economics","Metallurgy"],
+                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'It is well that war is so terrible, or we should grow too fond of it.' - Robert E. Lee"
 			},
 			{
@@ -442,19 +457,21 @@
 				"name": "Refrigeration",
 				"row": 2,
 				"prerequisites": ["Biology", "Electricity"], //todo: offshore platform should need this
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-75]% weight to this choice for AI decisions"],
 				"quote": "'And homeless near a thousand homes I stood, and near a thousand tables pined and wanted food.' - William Wordsworth"
 			},
 			{
 				"name": "Radio",
 				"row": 3,
 				"prerequisites": ["Electricity"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'The whole country was tied together by radio. We all experienced the same heroes and comedians and singers. They were giants.' - Woody Allen"
 			},
 			{
 				"name": "Replaceable Parts",
 				"row": 4,
 				"prerequisites": ["Electricity","Steam Power"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Nothing is particularly hard if you divide it into small jobs.' - Henry Ford"
 			},
 			{
@@ -483,7 +500,7 @@
 				"name": "Plastics",
 				"row": 3,
 				"prerequisites": ["Radio","Replaceable Parts"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[+200]% weight to this choice for AI decisions"],
 				"quote": "'Ben, I want to say one word to you, just one word: plastics.' - Buck Henry and Calder Willingham, The Graduate"
 			},
 			{
@@ -531,6 +548,7 @@
 				"name": "Radar",
 				"row": 6,
 				"prerequisites": ["Ballistics","Electronics"],
+                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Vision is the art of seeing things invisible.' - Jonathan Swift"
 			},
 			{
@@ -604,7 +622,7 @@
 				"name": "Satellites",
 				"row": 6,
 				"prerequisites": ["Rocketry"],
-				"uniques": ["Reveals the entire map","[+100]% weight to this choice for AI decisions"],
+				"uniques": ["Reveals the entire map","[+200]% weight to this choice for AI decisions"],
 				"quote": "'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson"
 			},
 			{

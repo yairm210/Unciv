@@ -259,7 +259,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
             ?: return
-        val modifier = 3f * personality.modifierFocus(PersonalityValue.Science, .4f)
+        val modifier = 20f //We're weighing Apollo program according to personality. If we decided to invest in that, we might as well commit to it.
         addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
     }
 

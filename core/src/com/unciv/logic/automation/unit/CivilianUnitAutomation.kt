@@ -85,6 +85,7 @@ object CivilianUnitAutomation {
 
             val hurriedPolicy = UnitActions.invokeUnitAction(unit, UnitActionType.HurryPolicy)
             if (hurriedPolicy) return
+            //TODO: save up great scientists/writers for late game (8 turns after research labs/broadcast towers resp.)
         }
 
         // Great merchant -> Conduct trade mission if late game and if not at war.
@@ -145,7 +146,7 @@ object CivilianUnitAutomation {
     private fun isLateGame(civ: Civilization): Boolean {
         val researchCompletePercent =
             (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
-        return researchCompletePercent >= 0.7f
+        return researchCompletePercent >= 0.6f
     }
 
     /** Returns whether the civilian spends its turn hiding and not moving */
