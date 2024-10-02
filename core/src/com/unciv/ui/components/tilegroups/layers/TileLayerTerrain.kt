@@ -92,13 +92,13 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         if (!tile.isTilemapInitialized()) // fake tile 
             return emptySequence()
         return tile.neighbors
-            .filter { it.position.x < tile.position.x || it.position.y < tile.position.y }
             .flatMap { getMatchingEdges(tile, it) }
     }
 
     private fun getMatchingEdges(originTile: Tile, neighborTile: Tile): List<String>{
         val vectorToNeighbor =  neighborTile.position.cpy().sub(originTile.position)
-        val direction = NeighborDirection.fromVector(vectorToNeighbor) ?: return emptyList()
+        val direction = NeighborDirection.fromVector(vectorToNeighbor)
+            ?: return emptyList()
         val possibleEdgeFiles = strings().edgeImagesByPosition[direction] ?: return emptyList()
 
         return possibleEdgeFiles.filter {

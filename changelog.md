@@ -1,3 +1,25 @@
+## 4.13.13
+
+Minimized MP game update IO by ignoring games older than 2 weeks for 'update all'
+
+Resolved ANRs when pausing game due to game clone time
+
+Resolved ANRs when starting a new game (checking for multuplayer server connection)
+
+Protect terrainImage against incorrectly configured mods (natural wonder turnsInto is not in ruleset)
+
+Resolved race-condition error for loading terrain icons
+
+## 4.13.12
+
+Cannot have 2 research agreements at once due to counteroffers
+
+Modding: Added "upon losing/gaining the [promotion] status" unit triggers
+
+Mod branch parsing (downloading from user input url) can now handle branch names containing "/"
+
+Fixed "Top" edge tiles not showing - kudos @legacymtgsalvationuser69544
+
 ## 4.13.11
 
 Better AI evaluation for 'win the game' buildings

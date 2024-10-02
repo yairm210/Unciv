@@ -82,6 +82,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addTechColumnErrorsRulesetInvariant(lines)
         addEraErrors(lines, tryFixUnknownUniques)
         addSpeedErrors(lines)
+        addPersonalityErrors(lines)
         addBeliefErrors(lines, tryFixUnknownUniques)
         addNationErrors(lines, tryFixUnknownUniques)
         addPolicyErrors(lines, tryFixUnknownUniques)
@@ -406,6 +407,16 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("Negative speed modifier for game speed ${speed.name}", sourceObject = speed)
             if (speed.yearsPerTurn.isEmpty())
                 lines.add("Empty turn increment list for game speed ${speed.name}", sourceObject = speed)
+        }
+    }
+    
+    private fun addPersonalityErrors(lines: RulesetErrorList) {
+        for (personality in ruleset.personalities.values) {
+            if (personality.preferredVictoryType != Constants.neutralVictoryType
+                    && personality.preferredVictoryType !in ruleset.victories) {
+                lines.add("Preferred victory type ${personality.preferredVictoryType} does not exist in ruleset",
+                    RulesetErrorSeverity.Warning, sourceObject = personality,)
+            }
         }
     }
 

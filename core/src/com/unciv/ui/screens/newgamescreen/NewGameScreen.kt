@@ -277,6 +277,7 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
+        Gdx.input.inputProcessor = null // To avoid ANRs
         return try {
             val multiplayerServer = UncivGame.Current.settings.multiplayer.server
             val u =  URL(if (Multiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
@@ -287,6 +288,9 @@ class NewGameScreen(
             true
         } catch(_: Throwable) {
             false
+        }
+        finally {
+            Gdx.input.inputProcessor = stage
         }
     }
 

@@ -25,14 +25,17 @@ internal object CivilopediaImageGetters {
     internal fun terrainImage(terrain: Terrain, ruleset: Ruleset, imageSize: Float): Group {
         val tile = Tile()
         tile.ruleset = ruleset
+        
         val baseTerrainFromOccursOn =
             terrain.occursOn.mapNotNull { ruleset.terrains[it] }.lastOrNull { it.type.isBaseTerrain }?.name
             ?: ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land }?.name
             ?: ruleset.terrains.keys.first()
+        
         when (terrain.type) {
             TerrainType.NaturalWonder -> {
                 tile.naturalWonder = terrain.name
-                tile.baseTerrain = terrain.turnsInto ?: baseTerrainFromOccursOn
+                tile.baseTerrain = if (terrain.turnsInto != null && ruleset.terrains.containsKey(terrain.turnsInto)) terrain.turnsInto!!
+                    else baseTerrainFromOccursOn
             }
             TerrainType.TerrainFeature -> {
                 tile.baseTerrain = baseTerrainFromOccursOn

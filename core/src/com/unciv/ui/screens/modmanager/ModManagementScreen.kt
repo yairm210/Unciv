@@ -427,7 +427,9 @@ class ModManagementScreen private constructor(
                     actualDownloadButton.setText("Download".tr())
                     actualDownloadButton.enable()
                 } else
-                    downloadMod(repo) { popup.close() }
+                    downloadMod(repo, {
+                        actualDownloadButton.setText("{Downloading...} ${it}%".tr())
+                    }) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -470,7 +472,10 @@ class ModManagementScreen private constructor(
         rightSideButton.onClick {
             rightSideButton.setText("Downloading...".tr())
             rightSideButton.disable()
-            downloadMod(repo) {
+            
+            downloadMod(repo,{
+                rightSideButton.setText("{Downloading...} ${it}%".tr())
+            }) {
                 rightSideButton.setText("Downloaded!".tr())
             }
         }
@@ -480,12 +485,13 @@ class ModManagementScreen private constructor(
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
-    private fun downloadMod(repo: GithubAPI.Repo, postAction: () -> Unit = {}) {
+    private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((Int)->Unit)? = null, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(
                     repo,
-                    UncivGame.Current.files.getModsFolder()
+                    UncivGame.Current.files.getModsFolder(),
+                    updateProgressPercent
                 )
                     ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)

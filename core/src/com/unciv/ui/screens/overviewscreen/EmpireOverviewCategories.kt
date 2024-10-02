@@ -11,8 +11,7 @@ import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPe
  *
  *  To add a Tab, build a new [EmpireOverviewTab] subclass and fill out a new entry here, that's all.
  *  Note the enum value's name is used as Tab caption, so if you ever need a non-alphanumeric caption
- *  please redesign to include a property for the caption - and don't forget GameSettings.lastOverviewPage
- *  currently looks for name when applied but uses tab caption when saving.
+ *  please redesign to include a property for the caption
  */
 enum class EmpireOverviewCategories(
     val iconName: String,

@@ -3272,6 +3272,16 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: UnitTriggerCondition
 
+??? example  "&lt;upon gaining the [promotion] status&gt;"
+	Example: "&lt;upon gaining the [Shock I] status&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon losing the [promotion] status&gt;"
+	Example: "&lt;upon losing the [Shock I] status&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ??? example  "&lt;upon losing at least [amount] HP in a single attack&gt;"
 	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
 

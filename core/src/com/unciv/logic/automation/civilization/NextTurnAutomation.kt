@@ -54,10 +54,12 @@ object NextTurnAutomation {
             if (civInfo.gameInfo.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
+            
             DiplomacyAutomation.offerOpenBorders(civInfo)
             DiplomacyAutomation.offerResearchAgreement(civInfo)
             DiplomacyAutomation.offerDefensivePact(civInfo)
             TradeAutomation.exchangeLuxuries(civInfo)
+            
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
             freeUpSpaceResources(civInfo)
