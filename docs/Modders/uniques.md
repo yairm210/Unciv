@@ -3005,6 +3005,11 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: Conditional
 
+??? example  "&lt;in cities with less than [amount] [populationFilter]&gt;"
+	Example: "&lt;in cities with less than [3] [Followers of this Religion]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;with a garrison&gt;"
 	Applicable to: Conditional
 
