@@ -374,7 +374,7 @@ object ReligionAutomation {
                         unique.params[0].toFloat() / 8f
                 UniqueType.StatsFromGlobalCitiesFollowingReligion ->
                     unique.stats.values.sum() * 2f //free yields that are potentially more than our own number of cities would allow
-                UniqueType.StatsFromGlobalFollowers -> 
+                UniqueType.StatsFromGlobalFollowers ->
                     10f * (unique.stats.values.sum() / unique.params[1].toFloat())
                 UniqueType.Strength ->
                     unique.params[0].toFloat() * 2f//combat strength from beliefs is very strong
