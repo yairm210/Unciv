@@ -155,7 +155,6 @@
 				"name": "Philosophy",
 				"row": 2,
 				"prerequisites": ["Writing","Calendar"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
 				"quote": "'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
 			},
 			{
