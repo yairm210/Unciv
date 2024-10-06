@@ -1028,6 +1028,9 @@ class CivilizationInfoPreview() {
         playerType = civilization.playerType
         playerId = civilization.playerId
     }
+
+    // For easier debugging
+    override fun toString(): String = "$civName ($playerType) $playerId"
 }
 
 enum class CivFlags {
