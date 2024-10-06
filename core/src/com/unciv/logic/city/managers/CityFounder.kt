@@ -44,7 +44,6 @@ class CityFounder {
         city.expansion.reset()
 
         city.tryUpdateRoadStatus()
-//         civInfo.cache.updateCitiesConnectedToCapital() // Carthage cities can connect immediately
 
         val tile = city.getCenterTile()
         for (terrainFeature in tile.terrainFeatures.filter {
