@@ -195,6 +195,10 @@ object Conditionals {
                 checkOnCity { population.getPopulationFilterAmount(conditional.params[1]) >= conditional.params[0].toInt() }
             UniqueType.ConditionalExactPopulationFilter ->
                 checkOnCity { population.getPopulationFilterAmount(conditional.params[1]) == conditional.params[0].toInt() }
+            UniqueType.ConditionalBetweenPopulationFilter ->
+                checkOnCity {population.getPopulationFilterAmount(conditional.params[2]) in conditional.params[0].toInt()..conditional.params[1].toInt() }
+            UniqueType.ConditionalBelowPopulationFilter ->
+                checkOnCity { population.getPopulationFilterAmount(conditional.params[1]) < conditional.params[0].toInt() }
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 

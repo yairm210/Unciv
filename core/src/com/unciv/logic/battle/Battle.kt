@@ -417,7 +417,7 @@ object Battle {
                         if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
-            val attackerHurtString = if (damageDealt != null) " ([-${damageDealt.defenderDealt}] HP)" else ""
+            val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
             val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
             val notificationString = attackerString + attackerHurtString + whatHappenedString + defenderString + defenderHurtString
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()

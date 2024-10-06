@@ -1,0 +1,11 @@
+Ruleset validation for personalities with victory types not present in ruleset
+
+Added mod download percentage tracking
+
+Adjacent tiles updated when tile in changed in map editor, to update relevant edge tile images
+
+Remove "-0 HP" from city attack notifications
+
+Improve AI city settling, science game, and belief picking  - By EmperorPinguin
+
+Add two population-related conditional uniques  - By PLynx01

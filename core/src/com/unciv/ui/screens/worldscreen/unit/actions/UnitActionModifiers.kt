@@ -80,10 +80,11 @@ object UnitActionModifiers {
      * @return Boolean
      */
     fun canActivateSideEffects(unit: MapUnit, actionUnique: Unique): Boolean {
-        return canUse(unit, actionUnique)
-            && getMovementPointsRequired(actionUnique) <= ceil(unit.currentMovement).toInt()
-            && canSpendStatsCost(unit, actionUnique)
-            && canSpendStockpileCost(unit, actionUnique)
+        if (!canUse(unit, actionUnique)) return false
+        if (getMovementPointsRequired(actionUnique) > ceil(unit.currentMovement).toInt()) return false
+        if (!canSpendStatsCost(unit, actionUnique)) return false
+        if (!canSpendStockpileCost(unit, actionUnique)) return false
+        return true
     }
 
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false) {
