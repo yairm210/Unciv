@@ -1,22 +1,10 @@
-
-
-chore: Delete dead code
-
-chore: Easier debug for canActivateSideEffects
-
-Remove "-0 HP" from city attack notifications
-
-Missionaries no longer restricted from spreading religion in city where it's already the major religion
-
-chore: deprecate old uniques
-
 Ruleset validation for personalities with victory types not present in ruleset
 
 Added mod download percentage tracking
 
-chore: Simplified brush code - less overload functions, by adding a parameter to existing functions (reduce layers of indirection)
+Adjacent tiles updated when tile in changed in map editor, to update relevant edge tile images
 
-Simplified brush code - no matter what, always visually update all updated tiles and their neighbors - could have edge images that are now relevant
+Remove "-0 HP" from city attack notifications
 
 Improve AI city settling, science game, and belief picking  - By EmperorPinguin
 
