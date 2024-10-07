@@ -237,8 +237,10 @@ object UniqueTriggerActivation {
                 return { placeUnits() }
             }
             UniqueType.OneTimeFreeUnitRuins -> {
-                var civUnit = civInfo.getEquivalentUnit(unique.params[0])
-                if ( civUnit.isCityFounder() && civInfo.isOneCityChallenger()) {
+                val unitName = unique.params[0]
+                val baseUnit = ruleset.units[unitName] ?: return null
+                var civUnit = civInfo.getEquivalentUnit(baseUnit)
+                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger()) {
                      val replacementUnit = ruleset.units.values
                          .firstOrNull {
                              it.getMatchingUniques(UniqueType.BuildImprovements)
