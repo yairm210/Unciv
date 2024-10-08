@@ -107,10 +107,18 @@ class NewGameScreen(
         }
 
         rightSideButton.setText("Start game!".tr())
-        rightSideButton.onClick(this::onStartGameClicked)
+        rightSideButton.onClick(this::startGameAvoidANRs)
     }
 
-    private fun onStartGameClicked() {
+    private fun startGameAvoidANRs(){
+        // Don't allow players to click the game while we're checking if it's ok
+        Gdx.input.inputProcessor = null
+        val success = startGame()
+        // if it is successful, the player should wait for the new screen, not touch the old one
+        if (!success) Gdx.input.inputProcessor = stage
+    }
+    
+    private fun startGame(): Boolean {
         mapOptionsTable.cancelBackgroundJobs()
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             if (!checkConnectionToMultiplayerServer()) {
@@ -119,7 +127,7 @@ class NewGameScreen(
                 noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
                 noInternetConnectionPopup.addCloseButton()
                 noInternetConnectionPopup.open()
-                return
+                return false
             }
 
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
@@ -130,7 +138,7 @@ class NewGameScreen(
                     invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
                     invalidPlayerIdPopup.addCloseButton()
                     invalidPlayerIdPopup.open()
-                    return
+                    return false
                 }
             }
 
@@ -140,7 +148,7 @@ class NewGameScreen(
                     notAllowedToSpectate.addGoodSizedLabel("You are not allowed to spectate!".tr()).row()
                     notAllowedToSpectate.addCloseButton()
                     notAllowedToSpectate.open()
-                    return
+                    return false
                 }
             }
         }
@@ -154,7 +162,7 @@ class NewGameScreen(
             noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
             noHumanPlayersPopup.addCloseButton()
             noHumanPlayersPopup.open()
-            return
+            return false
         }
 
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty()) {
@@ -162,7 +170,7 @@ class NewGameScreen(
             noVictoryTypesPopup.addGoodSizedLabel("No victory conditions were selected!".tr()).row()
             noVictoryTypesPopup.addCloseButton()
             noVictoryTypesPopup.open()
-            return
+            return false
         }
 
         val modCheckResult = newGameOptionsTable.modCheckboxes.savedModcheckResult
@@ -173,22 +181,19 @@ class NewGameScreen(
                 restoreDefault = { newGameOptionsTable.resetRuleset() },
                 action = {
                     gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
-                    onStartGameClicked()
+                    startGameAvoidANRs()
                 }
             )
-            return
+            return false
         }
-
-        Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
 
         if (mapOptionsTable.mapTypeSelectBox.selected.value == MapGeneratedMainType.custom) {
             val map = try {
                 MapSaver.loadMap(gameSetupInfo.mapFile!!)
             } catch (ex: Throwable) {
                 Log.error("Could not load map", ex)
-                Gdx.input.inputProcessor = stage
                 ToastPopup("Could not load map!", this)
-                return
+                return false
             }
 
             val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
@@ -199,8 +204,7 @@ class NewGameScreen(
                     incompatibleMap.addGoodSizedLabel(incompatibility).row()
                 incompatibleMap.addCloseButton()
                 incompatibleMap.open()
-                Gdx.input.inputProcessor = stage
-                return
+                return false
             }
         } else {
             // Generated map - check for sensible dimensions and if exceeded correct them and notify user
@@ -213,8 +217,7 @@ class NewGameScreen(
                     customMapWidth.text = mapSize.width.tr()
                     customMapHeight.text = mapSize.height.tr()
                 }
-                Gdx.input.inputProcessor = stage
-                return
+                return false
             }
         }
 
@@ -226,6 +229,7 @@ class NewGameScreen(
         Concurrency.runOnNonDaemonThreadPool("NewGame") {
             startNewGame()
         }
+        return true
     }
 
     /** Subtables may need an upper limit to their width - they can ask this function. */
@@ -277,7 +281,6 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
-        Gdx.input.inputProcessor = null // To avoid ANRs
         return try {
             val multiplayerServer = UncivGame.Current.settings.multiplayer.server
             val u =  URL(if (Multiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
@@ -288,9 +291,6 @@ class NewGameScreen(
             true
         } catch(_: Throwable) {
             false
-        }
-        finally {
-            Gdx.input.inputProcessor = stage
         }
     }
 
