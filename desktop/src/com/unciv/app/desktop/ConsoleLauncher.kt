@@ -47,9 +47,8 @@ internal object ConsoleLauncher {
 
         ruleset.nations[simulationCiv1] = Nation().apply { name = simulationCiv1 }
         ruleset.nations[simulationCiv2] = Nation().apply { name = simulationCiv2 }
-
-        //Watch the capitalization! In-game, they need to be capitalized for testing AI logic (e.g.: if (civInfo.civName == "SimulationCiv2"))
-
+        //These names need PascalCase if applied in-game for testing (e.g. if (civInfo.civName == "SimulationCiv2"))
+        
         val gameParameters = getGameParameters(simulationCiv1, simulationCiv2)
         val mapParameters = getMapParameters()
         val gameSetupInfo = GameSetupInfo(gameParameters, mapParameters)
