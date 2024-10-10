@@ -32,6 +32,10 @@ object Countables {
         if (countable.equalsPlaceholderText("[] Buildings"))
             return civInfo.cities.sumOf { it.cityConstructions.getBuiltBuildings()
                 .count { it.matchesFilter(placeholderParameters[0]) } }
+        
+        if (countable.equalsPlaceholderText("Remaining [] Civilizations"))
+            return gameInfo.civilizations.filter { !it.isDefeated() }
+                .count { it.matchesFilter(placeholderParameters[0]) }
 
         if (gameInfo.ruleset.tileResources.containsKey(countable))
             return stateForConditionals.getResourceAmount(countable)
