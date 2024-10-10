@@ -154,8 +154,6 @@ object CityLocationTileRanker {
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
         if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
-        // Apply the effect of having a lighthouse, since we can probably assume that we will build it
-        if (onCoast && rankTile.isOcean) locationSpecificTileValue += 1.2f //food is ranked at 1.2 points
         // Check if there are any new unique luxury resources
         if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
             && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
@@ -168,8 +166,6 @@ object CityLocationTileRanker {
         if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
 
         var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
-        // We can't build improvements on water tiles without resources
-        if (!rankTile.isLand) rankTileValue -= 1
 
         if (rankTile.resource != null) {
             rankTileValue += when (rankTile.tileResource.resourceType) {
