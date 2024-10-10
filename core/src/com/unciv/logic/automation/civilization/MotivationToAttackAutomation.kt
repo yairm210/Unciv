@@ -292,10 +292,10 @@ object MotivationToAttackAutomation {
             combatStrengthRatio > 1.6f -> 6f
             combatStrengthRatio > 1.4f -> 4f
             combatStrengthRatio > 1.2f -> 2f
-            combatStrengthRatio > .8f -> 0f
-            combatStrengthRatio > .6f -> -5f
-            combatStrengthRatio > .4f -> -15f
-            else -> -20f
+            combatStrengthRatio > .8f -> -5f
+            combatStrengthRatio > .6f -> -10f
+            combatStrengthRatio > .4f -> -20f
+            else -> -40f
         }
         return combatStrengthModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Military, .2f)
     }
