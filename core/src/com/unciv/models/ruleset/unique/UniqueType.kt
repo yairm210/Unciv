@@ -663,7 +663,9 @@ enum class UniqueType(
     ConditionalTutorialCompleted("if tutorial [comment] is completed", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
 
     /////// civ conditionals
-    ConditionalCivFilter("for [civFilter]", UniqueTarget.Conditional),
+    ConditionalCivFilter("for [civFilter] Civilizations", UniqueTarget.Conditional),
+    @Deprecated("As of 4.13.15", ReplaceWith("for [civFilter] Civilizations"))
+    ConditionalCivFilterOld("for [civFilter]", UniqueTarget.Conditional),
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
