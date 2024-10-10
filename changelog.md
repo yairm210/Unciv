@@ -1,3 +1,19 @@
+## 4.13.15
+
+AI: Greatly discourage attacking enemies with stronger total combat strength
+
+Conditional phrasing: "for [civFilter]" -> "for [civFilter] Civilizations"
+
+Fixed spies stealing multiple tech steals in one turn
+
+Added 'City-State' as value for nationFilter
+
+AI: Keep 'don't spread religion' promises better
+
+Resolved new game ANRs in a better way
+
+Modding: Resolved badly configured ruins causing crashes
+
 ## 4.13.14
 
 Ruleset validation for personalities with victory types not present in ruleset
