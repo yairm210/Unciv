@@ -1,18 +1,18 @@
 ## 4.13.15
 
-AI: Greatly discourage attacking enemies with stronger total combat strength
-
-Conditional phrasing: "for [civFilter]" -> "for [civFilter] Civilizations"
-
 Fixed spies stealing multiple tech steals in one turn
-
-Added 'City-State' as value for nationFilter
-
-AI: Keep 'don't spread religion' promises better
 
 Resolved new game ANRs in a better way
 
-Modding: Resolved badly configured ruins causing crashes
+AI: 
+- Keep 'don't spread religion' promises better
+- Greatly discourage attacking stronger enemies
+
+Modding:
+- Added "Remaining [civFilter] Civilizations" as countable value
+- Conditional phrasing: "for [civFilter]" -> "for [civFilter] Civilizations"
+- Resolved badly configured ruins causing crashes
+- Added 'City-State' as value for nationFilter
 
 ## 4.13.14
 
