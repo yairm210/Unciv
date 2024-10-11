@@ -267,8 +267,7 @@ class Nation : RulesetObject() {
             in Constants.all -> true
             name -> true
             "Major" -> isMajorCiv
-            // "CityState" to be deprecated, replaced by "City-States"
-            "CityState", Constants.cityStates -> isCityState
+            Constants.cityStates, "City-State" -> isCityState
             else -> uniques.contains(filter)
         }
     }

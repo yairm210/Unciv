@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeFo
 import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter
+import com.unciv.models.translations.equalsPlaceholderText
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front of the rest.
 
@@ -71,6 +72,10 @@ enum class UniqueParameterType(
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
             parameterText.toIntOrNull() != null -> true
+            parameterText.equalsPlaceholderText("[] Buildings") -> true
+            parameterText.equalsPlaceholderText("[] Cities") -> true
+            parameterText.equalsPlaceholderText("[] Units") -> true
+            parameterText.equalsPlaceholderText("Remaining [] Civilizations") -> true
             else -> super.isKnownValue(parameterText, ruleset)
         }
 
@@ -230,7 +235,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.nation.Nation.matchesFilter] */
     NationFilter("nationFilter", Constants.cityStates) {
-        override val staticKnownValues = setOf(Constants.cityStates, "Major") + Constants.all
+        override val staticKnownValues = setOf(Constants.cityStates, "City-State", "Major") + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 

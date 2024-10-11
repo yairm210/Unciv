@@ -158,7 +158,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     private fun startStealingTech() {
         progressTowardsStealingTech = 0
         setAction(SpyAction.StealingTech)
-        endTurn()
     }
 
     /**

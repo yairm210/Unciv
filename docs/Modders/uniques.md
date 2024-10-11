@@ -2786,8 +2786,8 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: Conditional
 
-??? example  "&lt;for [civFilter]&gt;"
-	Example: "&lt;for [City-States]&gt;"
+??? example  "&lt;for [civFilter] Civilizations&gt;"
+	Example: "&lt;for [City-States] Civilizations&gt;"
 
 	Applicable to: Conditional
 
