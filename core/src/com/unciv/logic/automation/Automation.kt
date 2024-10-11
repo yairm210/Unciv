@@ -86,7 +86,7 @@ object Automation {
             if (surplusFood < 0)
                 yieldStats.food *= 8 // Starving, need Food, get to 0
             else if (city.civ.getHappiness() > -1)
-                yieldStats.food *= 1.5f
+                yieldStats.food *= 2 //1.5f is preferred, but 2 provides more protection against badly configured personalities
             else if (city.civ.getHappiness() < 0) {
                 // 75% of excess food is wasted when in negative happiness
                 yieldStats.food /= 4
