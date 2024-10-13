@@ -47,7 +47,8 @@ internal object ConsoleLauncher {
 
         ruleset.nations[simulationCiv1] = Nation().apply { name = simulationCiv1 }
         ruleset.nations[simulationCiv2] = Nation().apply { name = simulationCiv2 }
-
+        //These names need PascalCase if applied in-game for testing (e.g. if (civInfo.civName == "SimulationCiv2"))
+        
         val gameParameters = getGameParameters(simulationCiv1, simulationCiv2)
         val mapParameters = getMapParameters()
         val gameSetupInfo = GameSetupInfo(gameParameters, mapParameters)
@@ -56,7 +57,8 @@ internal object ConsoleLauncher {
         UncivGame.Current.gameInfo = newGame
 
 
-        val simulation = Simulation(newGame, 10, 4)
+        val simulation = Simulation(newGame, 50, 8)
+        //Unless the effect size is very large, you'll typically need a large number of games to get a statistically significant result
 
         simulation.start()
     }
@@ -71,7 +73,8 @@ internal object ConsoleLauncher {
 
     private fun getGameParameters(civilization1: String, civilization2: String): GameParameters {
         return GameParameters().apply {
-            difficulty = "Chieftain"
+            difficulty = "Prince"
+            numberOfCityStates = 0
             speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
