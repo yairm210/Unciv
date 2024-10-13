@@ -1,3 +1,17 @@
+## 4.13.16
+
+Added "if [modFilter] is not enabled" conditional - https://github.com/yairm210/Civ-IV/pull/36
+
+Resolved  - Units that can withdraw before melee do not do so when escorting civilian units
+
+Resolved  - Filtering uniques are also checked for in unit types
+
+Resolved  - Free tech pickable in any way you enter the tech screen
+
+Resolved  - documented explicit discrepancy from Civ V regarding great warpath railroad connection
+
+Fixed broken doc links
+
 ## 4.13.15
 
 Fixed spies stealing multiple tech steals in one turn
