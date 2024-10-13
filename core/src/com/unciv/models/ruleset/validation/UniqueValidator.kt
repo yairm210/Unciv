@@ -31,15 +31,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     fun populateFilteringUniqueHashsets() {
-        addToHashsets(ruleset.globalUniques)
-        ruleset.units.values.forEach { addToHashsets(it) }
-        ruleset.buildings.values.forEach { addToHashsets(it) }
-        ruleset.unitPromotions.values.forEach { addToHashsets(it) }
-        ruleset.technologies.values.forEach { addToHashsets(it) }
-        ruleset.nations.values.forEach { addToHashsets(it) }
-        ruleset.tileResources.values.forEach { addToHashsets(it) }
-        ruleset.terrains.values.forEach { addToHashsets(it) }
-        ruleset.tileImprovements.values.forEach { addToHashsets(it) }
+        ruleset.allRulesetObjects().forEach { addToHashsets(it) }
     }
 
     fun checkUniques(
