@@ -1,16 +1,14 @@
 ## 4.13.16
 
-Added "if [modFilter] is not enabled" conditional - https://github.com/yairm210/Civ-IV/pull/36
+AI: Better rules to not build unit-carrying units
 
-Resolved  - Units that can withdraw before melee do not do so when escorting civilian units
+Units that can withdraw before melee do not do so when escorting civilian units
 
-Resolved  - Filtering uniques are also checked for in unit types
+Modding: 
+- Filtering uniques are also checked for in unit types
+- Added "if [modFilter] is not enabled" conditional
 
-Resolved  - Free tech pickable in any way you enter the tech screen
-
-Resolved  - documented explicit discrepancy from Civ V regarding great warpath railroad connection
-
-Fixed broken doc links
+UI: Free tech pickable in any way you enter the tech screen
 
 ## 4.13.15
 
