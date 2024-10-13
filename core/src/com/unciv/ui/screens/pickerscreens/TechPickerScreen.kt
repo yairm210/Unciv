@@ -33,9 +33,9 @@ import kotlin.math.abs
 class TechPickerScreen(
     internal val civInfo: Civilization,
     centerOnTech: Technology? = null,
-    private val freeTechPick: Boolean = false
 ) : PickerScreen() {
 
+    private val freeTechPick: Boolean = civInfo.tech.freeTechs != 0
     private val ruleset = civInfo.gameInfo.ruleset
     private var techNameToButton = HashMap<String, TechButton>()
     private var selectedTech: Technology? = null
@@ -84,8 +84,8 @@ class TechPickerScreen(
         topTable.add(techTable)
         techTable.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-
-        rightSideButton.setText("Pick a tech".tr())
+        
+        rightSideButton.setText(if (freeTechPick) "Pick a free tech".tr() else "Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) { tryExit() }
 
         // per default show current/recent technology,
