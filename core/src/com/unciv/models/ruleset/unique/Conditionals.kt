@@ -313,6 +313,10 @@ object Conditionals {
                 val filter = conditional.params[0]
                 (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }
             }
+            UniqueType.ConditionalModNotEnabled -> checkOnGameInfo {
+                val filter = conditional.params[0]
+                (gameParameters.mods.asSequence() + gameParameters.baseRuleset).none { ModCompatibility.modNameFilter(it, filter) }
+            }
 
             else -> false
         }

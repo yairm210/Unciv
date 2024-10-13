@@ -981,6 +981,7 @@ enum class UniqueType(
     ModMapPreselection("Mod preselects map [comment]", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
         docDescription = "Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive."),
     ConditionalModEnabled("if [modFilter] is enabled", UniqueTarget.Conditional),
+    ConditionalModNotEnabled("if [modFilter] is not enabled", UniqueTarget.Conditional),
 
     // endregion
 
