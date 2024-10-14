@@ -159,9 +159,8 @@ object Automation {
         val totalCarriableUnits =
             civInfo.units.getCivUnits().count { it.matchesFilter(carryFilter) }
         val totalCarryingSlots = civInfo.units.getCivUnits().sumOf { getCarryAmount(it) }
-        val currentUnitCarryingSlots = carryUnique.params[0].toInt()
                 
-        return totalCarriableUnits < totalCarryingSlots + currentUnitCarryingSlots
+        return totalCarriableUnits < totalCarryingSlots
     }
 
     fun chooseMilitaryUnit(city: City, availableUnits: Sequence<BaseUnit>): String? {
