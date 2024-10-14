@@ -243,12 +243,13 @@ class ModManagementScreen private constructor(
         }
 
         loading.show()  // Now that it's on stage, start animation
+        replaceLoadingWithOptions()
+        
         // Allow clicking the loading icon to stop the query
         loading.onClick {
             if (runningSearchJob?.isActive != true) return@onClick
             runningSearchJob?.cancel()
             markOnlineQueryIncomplete()
-            replaceLoadingWithOptions()
         }
     }
 
@@ -291,7 +292,6 @@ class ModManagementScreen private constructor(
                 Log.error("Could not download mod list", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
-                    replaceLoadingWithOptions()
                 }
                 Gdx.app.clipboard.contents = ex.stackTraceToString()
                 runningSearchJob = null
@@ -370,8 +370,6 @@ class ModManagementScreen private constructor(
         // continue search unless last page was reached
         if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
             tryDownloadPage(pageNum + 1)
-        else
-            replaceLoadingWithOptions()
     }
 
     private fun markOnlineQueryIncomplete() {
