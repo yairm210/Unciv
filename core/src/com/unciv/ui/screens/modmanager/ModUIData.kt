@@ -12,14 +12,17 @@ import com.unciv.ui.components.fonts.Fonts
  *  (This is important on resize - ModUIData are passed to the new screen)
  *  Note it is guaranteed either ruleset or repo are non-null, never both.
  */
-internal class ModUIData private constructor(
+class ModUIData private constructor(
     val name: String,
     val description: String,
-    val ruleset: Ruleset?,
-    val repo: GithubAPI.Repo?,
+    val ruleset: Ruleset? = null,
+    val repo: GithubAPI.Repo? = null,
     var isVisual: Boolean = false,
     var hasUpdate: Boolean = false
 ) {
+    // For deserialization from cache file 
+    constructor():this("","")
+    
     constructor(ruleset: Ruleset, isVisual: Boolean): this (
         ruleset.name,
         ruleset.getSummary().let {
@@ -46,7 +49,7 @@ internal class ModUIData private constructor(
         else -> ""
     }
 
-    fun matchesFilter(filter: ModManagementOptions.Filter): Boolean = when {
+    internal fun matchesFilter(filter: ModManagementOptions.Filter): Boolean = when {
         !matchesCategory(filter) -> false
         filter.text.isEmpty() -> true
         name.contains(filter.text, true) -> true

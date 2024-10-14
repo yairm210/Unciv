@@ -22,6 +22,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.screens.modmanager.ModUIData
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -34,6 +35,7 @@ private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
+const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
 
 class UncivFiles(
     /**
@@ -143,14 +145,6 @@ class UncivFiles(
     }
 
     /**
-     * @return `true` if successful.
-     * @throws SecurityException when delete access was denied
-     */
-    fun deleteMultiplayerSave(gameName: String): Boolean {
-        return deleteSave(getMultiplayerSave(gameName))
-    }
-
-    /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      *
      * @return `true` if successful.
@@ -162,6 +156,7 @@ class UncivFiles(
     }
 
     //endregion
+    
     //region Saving
 
     fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
@@ -253,9 +248,6 @@ class UncivFiles(
         return gameInfoFromString(gameData)
     }
 
-    fun loadGamePreviewByName(gameName: String) =
-            loadGamePreviewFromFile(getMultiplayerSave(gameName))
-
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
         return json().fromJson(GameInfoPreview::class.java, gameFile) ?: throw emptyFile(gameFile)
     }
@@ -296,6 +288,7 @@ class UncivFiles(
 
 
     //endregion
+    
     //region Settings
 
     private fun getGeneralSettingsFile(): FileHandle {
@@ -356,6 +349,34 @@ class UncivFiles(
 
         return game
     }
+
+    //endregion
+    
+    //region Mod caching
+    fun saveModCache(modDataList: List<ModUIData>){
+        val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
+        try {
+            json().toJson(modDataList, file)
+        }
+        catch (ex: Exception){ // Not a huge deal if this fails
+            Log.error("Error saving mod cache", ex)
+        }
+    }
+
+
+    fun loadModCache(): List<ModUIData>{
+        val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
+        if (!file.exists()) return emptyList()
+        try {
+            return json().fromJsonFile(Array<ModUIData>::class.java, file)
+                .toList()
+        }
+        catch (ex: Exception){ // Not a huge deal if this fails
+            Log.error("Error loading mod cache", ex)
+            return emptyList()
+        }
+    }
+
 
     //endregion
 

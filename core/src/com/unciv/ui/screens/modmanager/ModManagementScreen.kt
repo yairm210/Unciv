@@ -109,8 +109,8 @@ class ModManagementScreen private constructor(
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
     // Keep metadata and buttons in separate pools
-    private val installedModInfo = previousInstalledMods ?: HashMap(10) // HashMap<String, ModUIData> inferred
-    private val onlineModInfo = previousOnlineMods ?: HashMap(90) // HashMap<String, ModUIData> inferred
+    private val installedModInfo = previousInstalledMods ?: HashMap(10)
+    private val onlineModInfo = previousOnlineMods ?: HashMap(game.files.loadModCache().associateBy { it.name })
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
@@ -347,6 +347,10 @@ class ModManagementScreen private constructor(
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
             onlineModsTable.add(getCachedModButton(mod)).row()
+        }
+
+        Concurrency.run("Cache mod list"){
+            game.files.saveModCache(onlineModInfo.values.toList())
         }
 
         // Now the tasks after the 'page' of search results has been fully processed
