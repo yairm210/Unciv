@@ -1,24 +1,18 @@
 ## 4.13.17
 
-Modding: Resolved  - Allow removing free policies
+Mod management screen:
+- Cache online mod list for fast loading
+- Always allow mod search
 
-Resolved  - crash on modded game with no capital city indicator
+Modding: 
+- Allow removing free policies
+- Resolved crash on modded game with no capital city indicator
 
-AI: Improved automated worker tile selection (workable tile applies to current tile, separated to debuggable function))
+AI: Improved automated worker tile selection
 
 Solve ANRs due to resuming music player which is in an unplayable state
 
-Allow mod search always - hack version (does not remove loader)
-
-Cache online mod list for fast load
-
-translations: 'Enemy city has attacked' once again translatable
-
-Actually I think I had it right the first time - avoid building if all carriable units can already be carried now, NOT if carrier will have empty slots
-
-Don't auto-replace holy sites  - By EmperorPinguin
-
-update pi-apps shields query  - By theofficialgman
+Don't auto-replace holy sites in G&K - By EmperorPinguin
 
 ## 4.13.16
 
