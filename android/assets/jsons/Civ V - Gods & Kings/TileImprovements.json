@@ -223,7 +223,7 @@
 		"name": "Holy site",
 		"terrainsCanBeBuiltOn": ["Land"],
 		"faith": 6,
-		"uniques": ["Great Improvement", "Removes removable features when built", "Pillaging this improvement yields approximately [+20 Gold]"]
+		"uniques": ["Great Improvement", "Removes removable features when built", "Will not be replaced by automated units", "Pillaging this improvement yields approximately [+20 Gold]"]
 	},
 	{
 		"name": "Citadel",
