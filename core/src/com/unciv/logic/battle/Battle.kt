@@ -639,6 +639,7 @@ object Battle {
     private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
         if (defender.unit.isEmbarked()) return false
         if (defender.unit.cache.cannotMove) return false
+        if (defender.unit.isEscorting()) return false // running away and leaving the escorted unit defeats the purpose of escorting
 
         // Promotions have no effect as per what I could find in available documentation
         val fromTile = defender.getTile()

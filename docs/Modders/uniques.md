@@ -3161,6 +3161,11 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: Conditional
 
+??? example  "&lt;if [modFilter] is not enabled&gt;"
+	Example: "&lt;if [DeCiv Redux] is not enabled&gt;"
+
+	Applicable to: Conditional
+
 ## TriggerCondition uniques
 !!! note ""
 

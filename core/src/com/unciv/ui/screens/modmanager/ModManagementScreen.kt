@@ -109,8 +109,8 @@ class ModManagementScreen private constructor(
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
     // Keep metadata and buttons in separate pools
-    private val installedModInfo = previousInstalledMods ?: HashMap(10) // HashMap<String, ModUIData> inferred
-    private val onlineModInfo = previousOnlineMods ?: HashMap(90) // HashMap<String, ModUIData> inferred
+    private val installedModInfo = previousInstalledMods ?: HashMap(10)
+    private val onlineModInfo = previousOnlineMods ?: HashMap(game.files.loadModCache().associateBy { it.name })
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
@@ -243,12 +243,13 @@ class ModManagementScreen private constructor(
         }
 
         loading.show()  // Now that it's on stage, start animation
+        replaceLoadingWithOptions()
+        
         // Allow clicking the loading icon to stop the query
         loading.onClick {
             if (runningSearchJob?.isActive != true) return@onClick
             runningSearchJob?.cancel()
             markOnlineQueryIncomplete()
-            replaceLoadingWithOptions()
         }
     }
 
@@ -291,7 +292,6 @@ class ModManagementScreen private constructor(
                 Log.error("Could not download mod list", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
-                    replaceLoadingWithOptions()
                 }
                 Gdx.app.clipboard.contents = ex.stackTraceToString()
                 runningSearchJob = null
@@ -349,6 +349,10 @@ class ModManagementScreen private constructor(
             onlineModsTable.add(getCachedModButton(mod)).row()
         }
 
+        Concurrency.run("Cache mod list"){
+            game.files.saveModCache(onlineModInfo.values.toList())
+        }
+
         // Now the tasks after the 'page' of search results has been fully processed
         // The search has reached the last page!
         if (repoSearch.items.size < amountPerPage) {
@@ -366,8 +370,6 @@ class ModManagementScreen private constructor(
         // continue search unless last page was reached
         if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
             tryDownloadPage(pageNum + 1)
-        else
-            replaceLoadingWithOptions()
     }
 
     private fun markOnlineQueryIncomplete() {

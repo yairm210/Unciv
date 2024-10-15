@@ -544,7 +544,8 @@ class MusicController {
      */
     fun resume(speedFactor: Float = 1f) {
         Log.debug("MusicTrackController.resume called")
-        if (state == ControllerState.Pause && current != null) {
+        if (state == ControllerState.Pause && current != null
+            && current!!.state.canPlay && current!!.music != null) {
             val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
             current!!.startFade(MusicTrackController.State.FadeIn, fadingStep)
             // this may circumvent a PlaySingle, but -

@@ -1,3 +1,15 @@
+## 4.13.16
+
+AI: Better rules to not build unit-carrying units
+
+Units that can withdraw before melee do not do so when escorting civilian units
+
+Modding: 
+- Filtering uniques are also checked for in unit types
+- Added "if [modFilter] is not enabled" conditional
+
+UI: Free tech pickable in any way you enter the tech screen
+
 ## 4.13.15
 
 Fixed spies stealing multiple tech steals in one turn

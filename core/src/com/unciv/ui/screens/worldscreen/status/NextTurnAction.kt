@@ -2,7 +2,6 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.Counter
@@ -57,7 +56,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             worldScreen.viewingCiv.shouldOpenTechPicker()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen(
-                TechPickerScreen(worldScreen.viewingCiv, null, worldScreen.viewingCiv.tech.freeTechs != 0)
+                TechPickerScreen(worldScreen.viewingCiv, null)
             )
     },
     PickPolicy("Pick a policy", Color.VIOLET) {

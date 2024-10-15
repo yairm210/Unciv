@@ -159,6 +159,7 @@ object Automation {
         val totalCarriableUnits =
             civInfo.units.getCivUnits().count { it.matchesFilter(carryFilter) }
         val totalCarryingSlots = civInfo.units.getCivUnits().sumOf { getCarryAmount(it) }
+                
         return totalCarriableUnits < totalCarryingSlots
     }
 
@@ -197,7 +198,7 @@ object Automation {
             .filter { allowSpendingResource(city.civ, it) }
             .filterNot {
                 // filter out carrier-type units that can't attack if we don't need them
-                (it.hasUnique(UniqueType.CarryAirUnits) && it.hasUnique(UniqueType.CannotAttack))
+                it.hasUnique(UniqueType.CarryAirUnits)
                         && providesUnneededCarryingSlots(it, city.civ)
             }
             // Only now do we filter out the constructable units because that's a heavier check
