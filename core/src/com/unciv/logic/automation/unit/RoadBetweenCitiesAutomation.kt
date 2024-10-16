@@ -178,6 +178,8 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
      * @return a pair containing a list of tiles that resemble the road to build and the city that the road will connect to
      */
     private fun getRoadToConnectCityToCapital(unit: MapUnit, city: City): Pair<City, List<Tile>>? {
+        if (tilesOfConnectedCities.isEmpty()) return null // In mods with no capital city indicator, there are no connected cities
+        
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
         val toConnectTile = city.getCenterTile()
         val bfs: BFS = bfsCache[toConnectTile.position] ?:
