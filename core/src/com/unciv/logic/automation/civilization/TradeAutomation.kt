@@ -75,7 +75,8 @@ object TradeAutomation {
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeOfferType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
-
+            if (offer.type == TradeOfferType.Luxury_Resource)
+                continue // Don't ask for luxuries as counteroffer, players likely don't want to sell them if they didn't offer them already
             if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
                 continue // So you don't get double offers of open borders declarations of war etc.
             if (offer.type == TradeOfferType.Treaty)
