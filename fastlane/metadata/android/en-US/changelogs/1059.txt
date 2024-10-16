@@ -1,0 +1,13 @@
+Modding: 
+- Allow removing free policies
+- Resolved crash on modded game with no capital city indicator
+
+AI: Improved automated worker tile selection (workable tile applies to current tile, separated to debuggable function))
+
+Solve ANRs due to resuming music player which is in an unplayable state
+
+Always allow mod search
+
+Cache online mod list for fast loading
+
+Don't auto-replace holy sites in G&K - By EmperorPinguin

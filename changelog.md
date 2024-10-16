@@ -1,3 +1,19 @@
+## 4.13.17
+
+Mod management screen:
+- Cache online mod list for fast loading
+- Always allow mod search
+
+Modding: 
+- Allow removing free policies
+- Resolved crash on modded game with no capital city indicator
+
+AI: Improved automated worker tile selection
+
+Solve ANRs due to resuming music player which is in an unplayable state
+
+Don't auto-replace holy sites in G&K - By EmperorPinguin
+
 ## 4.13.16
 
 AI: Better rules to not build unit-carrying units
