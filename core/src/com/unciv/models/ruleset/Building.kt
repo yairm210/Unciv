@@ -150,8 +150,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
-        if (stat == Stat.Gold && isAnyWonder()) return false
-        if (city == null) return super.canBePurchasedWithStat(null, stat)
+        val purchaseReson = canBePurchasedWithStatReasons(null, stat)
+        if (purchaseReson != PurchaseReason.UniqueAllowed && stat == Stat.Gold && isAnyWonder()) return false
+        if (city == null) return purchaseReson.purchasable
 
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
         return (
