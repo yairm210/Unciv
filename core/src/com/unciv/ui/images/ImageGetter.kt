@@ -236,8 +236,6 @@ object ImageGetter {
     }
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
-    fun techIconExists(techName: String) = imageExists("TechIcons/$techName")
-    fun unitIconExists(unitName: String) = imageExists("UnitIcons/$unitName")
     fun ninePatchImageExists(fileName: String) = ninePatchDrawables.containsKey(fileName)
 
     fun getStatIcon(statName: String): Image = getImage("StatIcons/$statName")
@@ -252,7 +250,9 @@ object ImageGetter {
     fun getRandomNationPortrait(size: Float): Portrait = PortraitNation(Constants.random, size)
 
     fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image =
-        getImage("UnitIcons/$unitName").apply { this.color = color }
+        if (imageExists("UnitIcons/$unitName"))
+            getImage("UnitIcons/$unitName").apply { this.color = color }
+        else getImage("UnitTypeIcons/$unitName").apply { this.color = color }
 
     fun getConstructionPortrait(construction: String, size: Float): Group {
         if (ruleset.buildings.containsKey(construction)) {
