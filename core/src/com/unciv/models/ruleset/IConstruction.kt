@@ -45,19 +45,28 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
+        return canBePurchasedWithStatReasons(city, stat).purchasable
+    }
+
+    /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
+    fun canBePurchasedWithStatReasons(city: City?, stat: Stat): PurchaseReason {
         val stateForConditionals = StateForConditionals(city?.civ, city)
-        if (stat == Stat.Production || stat == Stat.Happiness) return false
-        if (hasUnique(UniqueType.CannotBePurchased, stateForConditionals)) return false
+        if (stat == Stat.Production || stat == Stat.Happiness) return PurchaseReason.Invalid
+        if (hasUnique(UniqueType.CannotBePurchased, stateForConditionals)) return PurchaseReason.Unpurchasable
         // Can be purchased with [Stat] [cityFilter]
-        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat, stateForConditionals)
-            .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
-        ) return true
+        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, StateForConditionals.IgnoreConditionals)
+                .any { city == null ||
+                    (it.conditionalsApply(stateForConditionals) && it.params[0] == stat.name && city.matchesFilter(it.params[1]))
+                }
+        ) return PurchaseReason.UniqueAllowed
         // Can be purchased for [amount] [Stat] [cityFilter]
-        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, stateForConditionals)
-            .any { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
-        ) return true
-        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable, stateForConditionals)
-        return false
+        if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, StateForConditionals.IgnoreConditionals)
+                .any { city == null ||
+                    (it.conditionalsApply(stateForConditionals) && it.params[1] == stat.name && city.matchesFilter(it.params[2]))
+                }
+        ) return PurchaseReason.UniqueAllowed
+        if (stat == Stat.Gold && !hasUnique(UniqueType.Unbuildable, stateForConditionals)) return PurchaseReason.Allowed
+        return PurchaseReason.NotAllowed
     }
 
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
@@ -111,6 +120,15 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     }
 }
 
+enum class PurchaseReason(val purchasable: Boolean) {
+    Allowed(true),
+    Invalid(false),
+    Unpurchasable(false),
+    UniqueAllowed(true),
+    Other(false),
+    OtherAllowed(true),
+    NotAllowed(false)
+}
 
 
 class RejectionReason(val type: RejectionReasonType,
