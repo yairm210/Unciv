@@ -115,8 +115,10 @@ class TradeEvaluation {
     private fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
             TradeOfferType.Gold -> return offer.amount
-            // GPT loses 1% of value for each 'future' turn, meaning: gold now is more valuable than gold in the future
-            TradeOfferType.Gold_Per_Turn -> return (1..offer.duration).sumOf { offer.amount * 0.99.pow(it) }.toInt()
+            // GPT loses value for each 'future' turn, meaning: gold now is more valuable than gold in the future
+            // Empire-wide production tends to grow at roughly 2% per turn (quick speed), so let's take that as a base line
+            // Formula could be more sophisticated by taking into account game speed and estimated chance of the gpt-giver cancelling the trade after X amount of turns
+            TradeOfferType.Gold_Per_Turn -> return (1..offer.duration).sumOf { offer.amount * 0.98.pow(it) }.toInt()
             TradeOfferType.Treaty -> {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
@@ -332,11 +334,11 @@ class TradeEvaluation {
     fun getGoldInflation(civInfo: Civilization): Double {
         val modifier = 1000.0
         val goldPerTurn = civInfo.stats.statsForNextTurn.gold.toDouble()
-        // To visualise the function, plug this into a 2d graphing calculator \frac{1000}{x^{1.2}+1.11*1000}
-        // Goes from 1 at GPT = 0 to .834 at GPT = 100, .296 at GPT = 1000 and 0.116 at GPT = 10000
-        // The current value of gold will never go below 10% or the .1f that it is set to
+        // To visualise the function, plug this into a 2d graphing calculator \frac{1000}{x^{1.2}+1.66*1000}
+        // Goes from 1 at GPT = 0 to .923 at GPT = 100, .577 at GPT = 1000 and 0.415 at GPT = 10000
+        // The current value of gold will never go below 40%, or the .4f that it is set to (being roughly the efficiency ratio between purchasing and upgrading units)
         // So this does not scale off to infinity
-        return modifier / (goldPerTurn.coerceAtLeast(1.0).pow(1.2) + (1.11 * modifier)) + .1
+        return modifier/ (goldPerTurn.coerceAtLeast(1.0).pow(1.2) + (1.66 * modifier)) + .4
     }
 
     /** This code returns a positive value if the city is significantly far away from the capital
