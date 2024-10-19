@@ -5,14 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.map.tile.Tile
-import com.unciv.models.Religion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -32,13 +29,10 @@ import com.unciv.ui.components.extensions.addCell
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.getConsumesAmountString
-import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -49,8 +43,6 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.CityScreenConstructionMenu
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
@@ -66,19 +58,16 @@ private class ConstructionButtonDTO(
 
 /**
  * Manager to hold and coordinate two widgets for the city screen left side:
- * - Construction queue with the enqueue / buy buttons.
- *   The queue is scrollable, limited to one third of the stage height.
+ * - Construction queue which is scrollable, limited to one third of the stage height.
  * - Available constructions display, scrolling, grouped with expanders and therefore of dynamic height.
  */
 class CityConstructionsTable(private val cityScreen: CityScreen) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
-    private var selectedQueueEntry = -1 // None
-    private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
+    var selectedQueueEntry = -1 // None
 
     private val upperTable = Table(BaseScreen.skin)
     private val constructionsQueueScrollPane: ScrollPane
     private val constructionsQueueTable = Table()
-    private val buyButtonsTable = Table()
 
     private val lowerTable = Table()
     private val availableConstructionsScrollPane: ScrollPane
@@ -109,7 +98,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         upperTable.add(constructionsQueueScrollPane)
             .maxHeight(stageHeight / 3 - 10f)
             .padBottom(pad).row()
-        upperTable.add(buyButtonsTable).padBottom(pad).row()
 
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
         availableConstructionsScrollPane.setOverscroll(false, false)
@@ -149,14 +137,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun updateButtons(construction: IConstruction?) {
-        buyButtonsTable.clear()
         if (!cityScreen.canChangeState) return
         /** [UniqueType.MayBuyConstructionsInPuppets] support - we need a buy button for civs that could buy items in puppets */
         if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
-        buyButtonsTable.add(getQueueButton(construction)).padRight(5f)
-        if (construction != null && construction !is PerpetualConstruction)
-            for (button in getBuyButtons(construction as INonPerpetualConstruction))
-                buyButtonsTable.add(button).padRight(5f)
     }
 
     private fun updateConstructionQueue() {
@@ -553,38 +536,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 || city.isPuppet
     }
 
-    private fun getQueueButton(construction: IConstruction?): TextButton {
-        val city = cityScreen.city
-        val cityConstructions = city.cityConstructions
-        val button: TextButton
-
-        if (isSelectedQueueEntry()) {
-            button = "Remove from queue".toTextButton()
-            button.onActivation(binding = KeyboardBinding.AddConstruction) {
-                cityConstructions.removeFromQueue(selectedQueueEntry, false)
-                cityScreen.clearSelection()
-                selectedQueueEntry = -1
-                cityScreen.city.reassignPopulation()
-                cityScreen.update()
-            }
-            if (city.isPuppet)
-                button.disable()
-        } else {
-            button = "Add to queue".toTextButton()
-            if (construction == null
-                    || cannotAddConstructionToQueue(construction, city, cityConstructions)) {
-                button.disable()
-            } else {
-                button.onActivation(binding = KeyboardBinding.AddConstruction, sound = UncivSound.Silent) {
-                    addConstructionToQueue(construction, cityConstructions)
-                }
-            }
-        }
-
-        button.labelCell.pad(5f)
-        return button
-    }
-
     private fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
         // Some evil person decided to double tap real fast - #4977
         if (cannotAddConstructionToQueue(construction, cityScreen.city, cityConstructions))
@@ -618,155 +569,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             else -> UncivSound.Click
         }
     }
-
-    private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
-        return Stat.statsUsableToBuy.mapNotNull { getBuyButton(construction, it) }
-    }
-
-    private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
-        if (stat !in Stat.statsUsableToBuy || construction == null)
-            return null
-
-        val city = cityScreen.city
-        val button = "".toTextButton()
-
-        if (!isConstructionPurchaseShown(construction, stat)) {
-            // This can't ever be bought with the given currency.
-            // We want one disabled "buy" button without a price for "priceless" buildings such as wonders
-            // We don't want such a button when the construction can be bought using a different currency
-            if (stat != Stat.Gold || construction.canBePurchasedWithAnyStat(city))
-                return null
-            button.setText("Buy".tr())
-            button.disable()
-        } else {
-            val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-            button.setText("Buy".tr() + " " + constructionBuyCost.tr() + stat.character)
-
-            button.onActivation(binding = KeyboardBinding.BuyConstruction) {
-                button.disable()
-                buyButtonOnClick(construction, stat)
-            }
-            button.isEnabled = cityScreen.canCityBeChanged() &&
-                    city.cityConstructions.isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
-            preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
-        }
-
-        button.labelCell.pad(5f)
-
-        return button
-    }
-
-    private fun buyButtonOnClick(construction: INonPerpetualConstruction, stat: Stat = preferredBuyStat) {
-        if (construction !is Building || !construction.hasCreateOneImprovementUnique())
-            return askToBuyConstruction(construction, stat)
-        if (selectedQueueEntry < 0)
-            return cityScreen.startPickTileForCreatesOneImprovement(construction, stat, true)
-        // Buying a UniqueType.CreatesOneImprovement building from queue must pass down
-        // the already selected tile, otherwise a new one is chosen from Automation code.
-        val improvement = construction.getImprovementToCreate(
-            cityScreen.city.getRuleset(), cityScreen.city.civ)!!
-        val tileForImprovement = cityScreen.city.cityConstructions.getTileForImprovement(improvement.name)
-        askToBuyConstruction(construction, stat, tileForImprovement)
-    }
-
-    /** Ask whether user wants to buy [construction] for [stat].
-     *
-     * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
-     * and it needs to do all checks and the sound as appropriate.
-     */
-    fun askToBuyConstruction(
-        construction: INonPerpetualConstruction,
-        stat: Stat = preferredBuyStat,
-        tile: Tile? = null
-    ) {
-        if (!isConstructionPurchaseShown(construction, stat)) return
-        val city = cityScreen.city
-        val constructionStatBuyCost = construction.getStatBuyCost(city, stat)!!
-        if (!city.cityConstructions.isConstructionPurchaseAllowed(construction, stat, constructionStatBuyCost)) return
-
-        cityScreen.closeAllPopups()
-        ConfirmBuyPopup(construction, stat,constructionStatBuyCost, tile)
-    }
-
-    private inner class ConfirmBuyPopup(
-        construction: INonPerpetualConstruction,
-        stat: Stat,
-        constructionStatBuyCost: Int,
-        tile: Tile?
-    ) : Popup(cityScreen.stage) {
-        init {
-            val city = cityScreen.city
-            val balance = city.getStatReserve(stat)
-            val majorityReligion = city.religion.getMajorityReligion()
-            val yourReligion = city.civ.religionManager.religion
-            val isBuyingWithFaithForForeignReligion = construction.hasUnique(UniqueType.ReligiousUnit)
-                    && !construction.hasUnique(UniqueType.TakeReligionOverBirthCity)
-                    && majorityReligion != yourReligion
-
-            addGoodSizedLabel("Currently you have [$balance] [${stat.name}].").padBottom(10f).row()
-            if (isBuyingWithFaithForForeignReligion) {
-                // Earlier tests should forbid this Popup unless both religions are non-null, but to be safe:
-                fun Religion?.getName() = this?.getReligionDisplayName() ?: Constants.unknownCityName
-                addGoodSizedLabel("You are buying a religious unit in a city that doesn't follow the religion you founded ([${yourReligion.getName()}]). " +
-                    "This means that the unit is tied to that foreign religion ([${majorityReligion.getName()}]) and will be less useful.").row()
-                addGoodSizedLabel("Are you really sure you want to purchase this unit?", Constants.headingFontSize).run {
-                    actor.color = Color.FIREBRICK
-                    padBottom(10f)
-                    row()
-                }
-            }
-            addGoodSizedLabel("Would you like to purchase [${construction.name}] for [$constructionStatBuyCost] [${stat.character}]?").row()
-
-            addCloseButton(Constants.cancel, KeyboardBinding.Cancel) { cityScreen.update() }
-            val confirmStyle = BaseScreen.skin.get("positive", TextButton.TextButtonStyle::class.java)
-            addOKButton("Purchase", KeyboardBinding.Confirm, confirmStyle) {
-                purchaseConstruction(construction, stat, tile)
-            }
-            equalizeLastTwoButtonWidths()
-            open(true)
-        }
-    }
-
-    /** This tests whether the buy button should be _shown_ */
-    private fun isConstructionPurchaseShown(construction: INonPerpetualConstruction, stat: Stat): Boolean {
-        val city = cityScreen.city
-        return construction.canBePurchasedWithStat(city, stat)
-    }
-
-    /** Called only by askToBuyConstruction's Yes answer - not to be confused with [CityConstructions.purchaseConstruction]
-     * @param tile supports [UniqueType.CreatesOneImprovement]
-     */
-    private fun purchaseConstruction(
-        construction: INonPerpetualConstruction,
-        stat: Stat = Stat.Gold,
-        tile: Tile? = null
-    ) {
-        SoundPlayer.play(stat.purchaseSound)
-        val city = cityScreen.city
-        if (!city.cityConstructions.purchaseConstruction(construction, selectedQueueEntry, false, stat, tile)) {
-            Popup(cityScreen).apply {
-                add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
-                addCloseButton()
-                open()
-            }
-            return
-        }
-        if (isSelectedQueueEntry() || cityScreen.selectedConstruction?.isBuildable(city.cityConstructions) != true) {
-            selectedQueueEntry = -1
-            cityScreen.clearSelection()
-
-            // Allow buying next queued or auto-assigned construction right away
-            city.cityConstructions.chooseNextConstruction()
-            if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
-                val newConstruction = city.cityConstructions.getCurrentConstruction()
-                if (newConstruction is INonPerpetualConstruction)
-                    cityScreen.selectConstruction(newConstruction)
-            }
-        }
-        cityScreen.city.reassignPopulation()
-        cityScreen.update()
-    }
-
+    
     private fun getMovePriorityButton(
         arrowDirection: Int,
         binding: KeyboardBinding,

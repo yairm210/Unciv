@@ -133,6 +133,9 @@ class CityScreen(
     var pickTileData: PickTileForImprovementData? = null
     /** A [Building] with [UniqueType.CreatesOneImprovement] has been selected _in the queue_: show the tile it will place the improvement on */
     private var selectedQueueEntryTargetTile: Tile? = null
+    var selectedQueueEntry
+        get() = constructionsTable.selectedQueueEntry
+        set(value) { constructionsTable.selectedQueueEntry = value }
     /** Cached city.expansion.chooseNewTileToOwn() */
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
@@ -452,7 +455,7 @@ class CityScreen(
             val improvement = pickTileData.improvement
             if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.civ)) {
                 if (pickTileData.isBuying) {
-                    constructionsTable.askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
+                    selectedConstructionTable.askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
                     // This way to store where the improvement a CreatesOneImprovement Building will create goes
                     // might get a bit fragile if several buildings constructing the same improvement type

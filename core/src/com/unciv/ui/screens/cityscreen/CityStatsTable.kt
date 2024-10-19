@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
@@ -33,7 +32,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.ceil
 import kotlin.math.round
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
@@ -108,7 +106,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         upperTable.add(miniStatsTable)
 
         upperTable.addSeparator()
-        upperTable.add(detailedStatsButton).row()
+        lowerTable.add(detailedStatsButton).row()
         addText()
 
         // begin lowerTable
@@ -170,9 +168,9 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 }.tr()
         turnsToPopString += " (${city.population.foodStored}${Fonts.food}/${city.population.getFoodToNextPopulation()}${Fonts.food})"
 
-        upperTable.add(unassignedPopLabel).row()
-        upperTable.add(turnsToExpansionString.toLabel()).row()
-        upperTable.add(turnsToPopString.toLabel()).row()
+        lowerTable.add(unassignedPopLabel).row()
+        lowerTable.add(turnsToExpansionString.toLabel()).row()
+        lowerTable.add(turnsToPopString.toLabel()).row()
 
         val tableWithIcons = Table()
         tableWithIcons.defaults().pad(2f)
@@ -212,7 +210,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             tableWithIcons.add(wltkLabel).row()
         }
 
-        upperTable.add(tableWithIcons).row()
+        lowerTable.add(tableWithIcons).row()
     }
 
     private fun addCitizenManagement() {
