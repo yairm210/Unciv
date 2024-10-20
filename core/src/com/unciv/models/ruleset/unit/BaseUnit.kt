@@ -163,6 +163,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        if (hasUnique(UniqueType.ShowsWhenUnbuilable, StateForConditionals(cityConstructions.city)))
+            return true
         val rejectionReasons = getRejectionReasons(cityConstructions)
 
         if (rejectionReasons.none { !it.shouldShow }) return true

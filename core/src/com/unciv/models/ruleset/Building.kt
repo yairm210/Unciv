@@ -244,6 +244,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                 return false
         }
+        if (hasUnique(UniqueType.ShowsWhenUnbuilable, StateForConditionals(cityConstructions.city)))
+            return true
 
         val rejectionReasons = getRejectionReasons(cityConstructions)
 

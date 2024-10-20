@@ -955,6 +955,7 @@ enum class UniqueType(
         UniqueTarget.Promotion, UniqueTarget.Policy, flags = UniqueFlag.setOfHiddenToUsers),
     
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
+    ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
     ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier),
     ForEveryAmountCountable("for every [amount] [countable]", UniqueTarget.MetaModifier),
