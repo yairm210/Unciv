@@ -1,21 +1,10 @@
+Better AI decisions for policy branches
 
-
-AI: Don't choose piety branch when religion is disabled, don't choose Patronage when few city-states remain
-
-Modding: Replaced "Hidden when religion is disabled" with "Only available <when religion is enabled>"
-
-Modding: Replaced "Hidden when [victoryType] Victory is disabled" with "Only available <when [victoryType] Victory is enabled>"
-
-chore: StateForConditionals accepts GameInfo, HiddenBySettings -> UnavailableBySettings for pending changes
-
-AI: Added weighted decision for policy branches
-
-AI: Preferred victory type only affects AI policy decision if that victory type is enabled
+Modding: 
+- Allow fallback to "UnitTypeIcons/$unitName" if "UnitIcons/$unitName" does not exist
+- Added unique-weighted decision for policy branches
+- Better "hidden when" uniques for disabled religion, victory types
 
 Resolved rare crash when map contains improvements not in ruleset
 
-Resolved  - Allow fallback to "UnitTypeIcons/$unitName" if "UnitIcons/$unitName" does not exist
-
-Add unique to show construction when unbuildable  - By SeventhM
-
-Docs: Add documentation for Remaining Civilizations  - By RobLoach
+Add unique to show construction when unbuildable - By SeventhM

@@ -1550,14 +1550,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
 
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
 ??? example  "Hidden when espionage is disabled"
 	Applicable to: Building
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+
+??? example  "Shown while unbuilable"
+	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
@@ -2119,11 +2119,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+
+??? example  "Shown while unbuilable"
+	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
@@ -2615,9 +2615,6 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: Ruins
 
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
@@ -2644,9 +2641,6 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
 ## Tutorial uniques
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
 ## CityState uniques
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
@@ -2776,6 +2770,12 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 ??? example  "&lt;when [victoryType] Victory is disabled&gt;"
 	Example: "&lt;when [Domination] Victory is disabled&gt;"
 
+	Applicable to: Conditional
+
+??? example  "&lt;when religion is enabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when religion is disabled&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;with [amount]% chance&gt;"
