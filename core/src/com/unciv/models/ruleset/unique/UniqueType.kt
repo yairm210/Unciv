@@ -654,11 +654,17 @@ enum class UniqueType(
     ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
 
 
-    /////// general conditionals
-    ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
+    /////// game conditionals
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before turn number [amount]", UniqueTarget.Conditional),
     ConditionalAfterTurns("after turn number [amount]", UniqueTarget.Conditional),
+    ConditionalSpeed("on [speed] game speed", UniqueTarget.Conditional),
+    ConditionalVictoryEnabled("when [victoryType] Victory is enabled", UniqueTarget.Conditional),
+    ConditionalVictoryDisabled("when [victoryType] Victory is disabled", UniqueTarget.Conditional),
+    
+
+    /////// general conditionals
+    ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
     ConditionalTutorialsEnabled("if tutorials are enabled", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
     ConditionalTutorialCompleted("if tutorial [comment] is completed", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
 
@@ -680,10 +686,6 @@ enum class UniqueType(
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),
     ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
     ConditionalIfStartingInEra("if starting in the [era]", UniqueTarget.Conditional),
-
-    ConditionalSpeed("on [speed] game speed", UniqueTarget.Conditional),
-    ConditionalVictoryEnabled("when [victoryType] Victory is enabled", UniqueTarget.Conditional),
-    ConditionalVictoryDisabled("when [victoryType] Victory is disabled", UniqueTarget.Conditional),
 
     ConditionalFirstCivToResearch("if no other Civilization has researched this", UniqueTarget.Conditional),
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
@@ -944,6 +946,7 @@ enum class UniqueType(
     AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
         UniqueTarget.Promotion, UniqueTarget.Policy, flags = UniqueFlag.setOfHiddenToUsers),
     
+    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when [victoryType] Victory is enabled>"))
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),

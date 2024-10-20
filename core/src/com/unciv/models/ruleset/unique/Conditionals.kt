@@ -31,7 +31,7 @@ object Conditionals {
         /** Helper to simplify conditional tests requiring gameInfo */
         fun checkOnGameInfo(predicate: (GameInfo.() -> Boolean)): Boolean {
             if (state.gameInfo == null) return false
-            return state.gameInfo!!.predicate()
+            return state.gameInfo.predicate()
         }
 
         /** Helper to simplify conditional tests requiring a Civilization */
@@ -49,7 +49,7 @@ object Conditionals {
         /** Helper to simplify the "compare civ's current era with named era" conditions */
         fun compareEra(eraParam: String, compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
             if (state.gameInfo == null) return false
-            val era = state.gameInfo!!.ruleset.eras[eraParam] ?: return false
+            val era = state.gameInfo.ruleset.eras[eraParam] ?: return false
             return compare(state.relevantCiv!!.getEraNumber(), era.eraNumber)
         }
 
@@ -62,15 +62,15 @@ object Conditionals {
             compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
         ): Boolean {
             if (state.gameInfo == null) return false
-            var gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo!!.speed.modifier else 1f
+            var gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo.speed.modifier else 1f
 
-            if (state.gameInfo!!.ruleset.tileResources.containsKey(resourceOrStatName))
+            if (state.gameInfo.ruleset.tileResources.containsKey(resourceOrStatName))
                 return compare(state.getResourceAmount(resourceOrStatName), lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
             val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
             val statReserve = state.getStatAmount(stat)
 
-            gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo!!.speed.statCostModifiers[stat]!! else 1f
+            gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo.speed.statCostModifiers[stat]!! else 1f
             return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
         }
 
