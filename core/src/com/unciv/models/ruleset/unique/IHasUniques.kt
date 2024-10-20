@@ -100,6 +100,8 @@ interface IHasUniques : INamed {
             UniqueType.ConditionalVictoryDisabled,
             UniqueType.ConditionalVictoryEnabled,
             UniqueType.ConditionalSpeed,
+            UniqueType.ConditionalReligionEnabled,
+            UniqueType.ConditionalReligionDisabled,
         )
         val stateForConditionals = StateForConditionals(gameInfo = gameInfo)
 
