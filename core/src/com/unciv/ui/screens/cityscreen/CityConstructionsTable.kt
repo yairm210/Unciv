@@ -58,7 +58,8 @@ private class ConstructionButtonDTO(
 
 /**
  * Manager to hold and coordinate two widgets for the city screen left side:
- * - Construction queue which is scrollable, limited to one third of the stage height.
+ * - Construction queue with the buy button.
+ *   The queue is scrollable, limited to one third of the stage height.
  * - Available constructions display, scrolling, grouped with expanders and therefore of dynamic height.
  */
 class CityConstructionsTable(private val cityScreen: CityScreen) {
@@ -68,6 +69,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val upperTable = Table(BaseScreen.skin)
     private val constructionsQueueScrollPane: ScrollPane
     private val constructionsQueueTable = Table()
+    private val buttonsTable = Table()
+    private val buyButtonFactory = BuyButtonFactory(cityScreen)
 
     private val lowerTable = Table()
     private val availableConstructionsScrollPane: ScrollPane
@@ -98,6 +101,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         upperTable.add(constructionsQueueScrollPane)
             .maxHeight(stageHeight / 3 - 10f)
             .padBottom(pad).row()
+        upperTable.add(buttonsTable).padBottom(pad).row()
 
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
         availableConstructionsScrollPane.setOverscroll(false, false)
@@ -140,6 +144,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (!cityScreen.canChangeState) return
         /** [UniqueType.MayBuyConstructionsInPuppets] support - we need a buy button for civs that could buy items in puppets */
         if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
+        buttonsTable.clear()
+        buyButtonFactory.addBuyButtons(buttonsTable, construction) {
+            it.padRight(5f)
+        }
     }
 
     private fun updateConstructionQueue() {

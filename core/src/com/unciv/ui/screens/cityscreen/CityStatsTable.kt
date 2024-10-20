@@ -85,7 +85,6 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             isOpen = !isOpen
             cityScreen.updateWithoutConstructionAndMap()
         }
-        headerIconClickArea.setDebug(true)
     }
 
     fun update(height: Float) {

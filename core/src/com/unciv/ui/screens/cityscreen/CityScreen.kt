@@ -455,7 +455,7 @@ class CityScreen(
             val improvement = pickTileData.improvement
             if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.civ)) {
                 if (pickTileData.isBuying) {
-                    selectedConstructionTable.askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
+                    BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
                     // This way to store where the improvement a CreatesOneImprovement Building will create goes
                     // might get a bit fragile if several buildings constructing the same improvement type
