@@ -82,8 +82,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
-    override fun isHiddenBySettings(gameInfo: GameInfo) =
-        super<INonPerpetualConstruction>.isHiddenBySettings(gameInfo) ||
+    override fun isUnavailableBySettings(gameInfo: GameInfo) =
+        super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
     fun getUpgradeUnits(stateForConditionals: StateForConditionals = StateForConditionals.EmptyState): Sequence<String> {
@@ -212,7 +212,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (isHiddenBySettings(civ.gameInfo))
+        if (isUnavailableBySettings(civ.gameInfo))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
