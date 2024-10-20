@@ -2,7 +2,7 @@ package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -42,8 +42,14 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
     private val lowerTable = Table() // table that will be in the ScrollPane
     private val lowerPane: ScrollPane
     private val city = cityScreen.city
-    private val lowerCell: Cell<ScrollPane>
-
+    private val headerIcon = ImageGetter.getImage("OtherIcons/BackArrow").apply {
+        setSize(18f, 18f)
+        setOrigin(Align.center)
+        rotation = 90f
+    }
+    private var headerIconClickArea = Table()
+    private var isOpen = true
+    
     private val detailedStatsButton = "Stats".toTextButton().apply {
         labelCell.pad(10f)
         onActivation(binding = KeyboardBinding.ShowStats) {
@@ -63,16 +69,23 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             "CityScreen/CityStatsTable/InnerTable",
             tintColor = Color.BLACK.cpy().apply { a = 0.8f }
         )
-        innerTable.add(upperTable).row()
 
         upperTable.defaults().pad(2f)
         lowerTable.defaults().pad(2f)
         lowerPane = ScrollPane(lowerTable)
         lowerPane.setOverscroll(false, false)
         lowerPane.setScrollingDisabled(true, false)
-        lowerCell = innerTable.add(lowerPane)
 
-        add(innerTable)
+        add(innerTable).growX()
+
+        // collapse icon with larger click area
+        headerIconClickArea.add(headerIcon).size(headerIcon.width).pad(6f+2f, 12f, 6f, 2f )
+        headerIconClickArea.touchable = Touchable.enabled
+        headerIconClickArea.onClick {
+            isOpen = !isOpen
+            cityScreen.updateWithoutConstructionAndMap()
+        }
+        headerIconClickArea.setDebug(true)
     }
 
     fun update(height: Float) {
@@ -103,9 +116,9 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             val valueToDisplay = if (stat == Stat.Happiness) city.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
         }
-        upperTable.add(miniStatsTable)
-
+        upperTable.add(miniStatsTable).expandX()
         upperTable.addSeparator()
+        
         lowerTable.add(detailedStatsButton).row()
         addText()
 
@@ -120,11 +133,20 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         addBuildingsInfo()
 
+        headerIcon.rotation = if(isOpen) 90f else 0f
+        
+        innerTable.clear()
+        innerTable.add(upperTable).expandX()
+        innerTable.add(headerIconClickArea).row()
+        val lowerCell = if (isOpen) {
+            innerTable.add(lowerPane).colspan(2)
+        } else null
+
         upperTable.pack()
         lowerTable.pack()
         lowerPane.layout()
         lowerPane.updateVisualScroll()
-        lowerCell.maxHeight(height - upperTable.height - 8f) // 2 on each side of each cell in innerTable
+        lowerCell?.maxHeight(height - upperTable.height - 8f) // 2 on each side of each cell in innerTable
 
         innerTable.pack()  // update innerTable
         pack()  // update self last

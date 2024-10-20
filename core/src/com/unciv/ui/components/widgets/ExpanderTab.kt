@@ -83,7 +83,7 @@ class ExpanderTab(
             )
         )
         if (icon != null) header.add(icon)
-        header.add(headerLabel).expandX().padLeft(arrowSize) // pad left have it centered despite the arrow
+        header.add(headerLabel).expandX()
         header.add(headerIcon).size(arrowSize).align(Align.center)
         header.touchable= Touchable.enabled
         header.onActivation { toggle() }
