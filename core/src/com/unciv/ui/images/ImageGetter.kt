@@ -22,6 +22,7 @@ import com.unciv.json.json
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.extensions.center
@@ -249,10 +250,10 @@ object ImageGetter {
 
     fun getRandomNationPortrait(size: Float): Portrait = PortraitNation(Constants.random, size)
 
-    fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image =
-        if (imageExists("UnitIcons/$unitName"))
-            getImage("UnitIcons/$unitName").apply { this.color = color }
-        else getImage("UnitTypeIcons/$unitName").apply { this.color = color }
+    fun getUnitIcon(unit: BaseUnit, color: Color = Color.BLACK): Image =
+        if (imageExists("UnitIcons/${unit.name}"))
+            getImage("UnitIcons/${unit.name}").apply { this.color = color }
+        else getImage("UnitTypeIcons/${unit.type}").apply { this.color = color }
 
     fun getConstructionPortrait(construction: String, size: Float): Group {
         if (ruleset.buildings.containsKey(construction)) {

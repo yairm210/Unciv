@@ -7,25 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.logic.city.City
-import com.unciv.logic.city.CityFlags
-import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.CityResources
-import com.unciv.logic.city.GreatPersonPointsBreakdown
+import com.unciv.logic.city.*
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toGroup
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
@@ -33,7 +22,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.ceil
 import kotlin.math.round
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
@@ -364,7 +352,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
             val info = Table()
 
-            info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
+            val greatPerson = city.getRuleset().units[greatPersonName] ?: continue
+            info.add(ImageGetter.getUnitIcon(greatPerson, Color.GOLD).toGroup(20f))
                 .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
 

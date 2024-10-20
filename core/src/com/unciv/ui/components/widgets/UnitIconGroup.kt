@@ -81,7 +81,7 @@ private class FlagBackground(drawable: TextureRegionDrawable, size: Float) : Ima
 class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
     var actionGroup: Group? = null
 
-    private val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civ.nation.getInnerColor())
+    private val flagIcon = ImageGetter.getUnitIcon(unit.baseUnit, unit.civ.nation.getInnerColor())
     private var flagBg: FlagBackground = FlagBackground(getBackgroundDrawableForUnit(), size)
     private var flagSelection: Image = getBackgroundSelectionForUnit()
     private var flagMask: Image? = getBackgroundMaskForUnit()
