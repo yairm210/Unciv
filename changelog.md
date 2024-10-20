@@ -1,3 +1,16 @@
+## 4.13.18
+
+Better AI decisions for policy branches
+
+Modding: 
+- Allow fallback to "UnitTypeIcons/$unitName" if "UnitIcons/$unitName" does not exist
+- Added unique-weighted decision for policy branches
+- Better "hidden when" uniques for disabled religion, victory types
+
+Resolved rare crash when map contains improvements not in ruleset
+
+Add unique to show construction when unbuildable - By SeventhM
+
 ## 4.13.17
 
 Mod management screen:

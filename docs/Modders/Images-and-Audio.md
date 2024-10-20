@@ -71,7 +71,7 @@ Note that the Mod author can (and often should) control whether the checkbox app
 
 ## Override built-in graphics
 
-If a mod supplies an image with the same name and path as one included in the base game (and its [atlas](Mods.md#more-on-images-and-the-texture-atlas) is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.
+If a mod supplies an image with the same name and path as one included in the base game (and its atlas is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.
 
 For example, if you include a file named "Images/OtherIcons/Link.png" in your mod, you will be overriding the little chain links icon denoting linked lines in Civilopedia. The first part of the path is not relevant for overriding, it controls which of a set of atlas files will carry the image, but for selection in the game only the rest of the path is relevant. So, to override "Images.Tech/TechIcons/Archery.png" you could place your image as "Images/TechIcons/Archery.png" and it would work because the "TechIcons/Archery" part is the key.
 
@@ -84,6 +84,7 @@ You will need to supply the graphics for new elements - a new unit needs its ico
 -   The path and name of the image file need to conform to the rule: `Image[.AtlasName]/Type-specific/Objectname.png` (Type-specific means "TechIcons" for a Technology, "NationIcons" for a Nation and so on. See vanilla game folders. Objectname is the exact name as defined in json, before translation.)
 -   All path parts are case sensitive.
 -   Unit Pixel sprites and [Tilesets](Creating-a-custom-tileset.md) follow special rules.
+-   If `UnitIcons/<UnitName>.png` does not exist, we fall back to `UnitTypeIcons/<UnitType>.png` - this allows setting a single image for an entire type of units without fiddling with each one 
 -   Promotions can be named "`[Unitname] ability`". In such a case, if `UnitIcons/Unitname.png` exists it will fall back to that unit icon when `UnitPromotionIcons/Unitname ability.png` is missing.
 -   Promotions can be named "Something I" (or " II" or " III"). The suffix will be removed and painted as little stars, only the base `UnitPromotionIcons/Something.png` will be loaded.
 -   The special rules for promotions can be combined, e.g. "`[Warrior] ability III`" will fall back to the Warrior unit icon and paint 3 Stars on it.
@@ -193,7 +194,7 @@ Civilopedia falls back to the icon for the Belief type - as you can see in the b
 
 You can enable pictures for each of the Victories, illustrating their progress. That could be a Spaceship under construction, showing the parts you've added, or cultural progress as you complete Policy branches. They will be shown on a new tab of the Victory Screen.
 
-For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](../Other/Miscellaneous-JSON-files.md#victorytypes-json), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
+For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](Mod-file-structure/5-Miscellaneous-JSON-files#victorytypesjson), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
 
 * `VictoryIllustrations/<name>/Background.png` - this determines overall dimensions, the others must not exceed its size and should ideally have identical size. Mandatory, if this file is missing, no illustrations will be shown for this Victory Type.
 * `VictoryIllustrations/<name>/Won.png` - shown if _you_ (the viewing player) won this Victory.

@@ -64,8 +64,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getDescription(city: City, showAdditionalInfo: Boolean) = BuildingDescriptions.getDescription(this, city, showAdditionalInfo)
     override fun getCivilopediaTextLines(ruleset: Ruleset) = BuildingDescriptions.getCivilopediaTextLines(this, ruleset)
 
-    override fun isHiddenBySettings(gameInfo: GameInfo): Boolean {
-        if (super<INonPerpetualConstruction>.isHiddenBySettings(gameInfo)) return true
+    override fun isUnavailableBySettings(gameInfo: GameInfo): Boolean {
+        if (super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo)) return true
         if (!gameInfo.gameParameters.nuclearWeaponsEnabled && hasUnique(UniqueType.EnablesNuclearWeapons)) return true
         return isHiddenByStartingEra(gameInfo)
     }
@@ -244,6 +244,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                 return false
         }
+        if (hasUnique(UniqueType.ShowsWhenUnbuilable, StateForConditionals(cityConstructions.city)))
+            return true
 
         val rejectionReasons = getRejectionReasons(cityConstructions)
 
@@ -264,7 +266,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
-        if (isHiddenBySettings(civ.gameInfo)) {
+        if (isUnavailableBySettings(civ.gameInfo)) {
             // Repeat the starting era test isHiddenBySettings already did to change the RejectionReasonType
             if (isHiddenByStartingEra(civ.gameInfo))
                 yield(RejectionReasonType.WonderDisabledEra.toInstance())

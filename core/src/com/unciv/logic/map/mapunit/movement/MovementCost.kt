@@ -79,7 +79,9 @@ object MovementCost {
         if (unit.cache.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        val terrainCost = to.lastTerrain.movementCost.toFloat()
+        // Cities reduce terrain cost to 1
+        val terrainCost = if (to.isCityCenter()) 1f
+            else to.lastTerrain.movementCost.toFloat()
 
         if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost

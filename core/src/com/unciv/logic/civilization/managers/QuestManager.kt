@@ -790,7 +790,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                     building.isWonder
                     && challenger.tech.isResearched(building)
                     // Can't be disabled
-                    && !building.isHiddenBySettings(civ.gameInfo)
+                    && !building.isUnavailableBySettings(civ.gameInfo)
                     // Can't be a unique wonder
                     && building.uniqueTo == null
                     // Big loop last: Exists or more than 25% built anywhere
@@ -825,7 +825,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 .distinct()
                 // The hidden test is already done by getGreatPeople for the civ-specific units,
                 // repeat for the replaced one we'll be asking for
-                .filterNot { it in existingGreatPeople || it.isHiddenBySettings(civ.gameInfo) }
+                .filterNot { it in existingGreatPeople || it.isUnavailableBySettings(civ.gameInfo) }
                 .toList()
 
         return greatPeople.randomOrNull()

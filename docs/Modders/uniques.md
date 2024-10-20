@@ -1550,19 +1550,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
 
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
 ??? example  "Hidden when espionage is disabled"
 	Applicable to: Building
 
-??? example  "Hidden when [victoryType] Victory is disabled"
-	Example: "Hidden when [Domination] Victory is disabled"
-
-	Applicable to: Building, Unit
-
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+
+??? example  "Shown while unbuilable"
+	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
@@ -2124,16 +2119,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
-??? example  "Hidden when [victoryType] Victory is disabled"
-	Example: "Hidden when [Domination] Victory is disabled"
-
-	Applicable to: Building, Unit
-
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+
+??? example  "Shown while unbuilable"
+	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
@@ -2625,9 +2615,6 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: Ruins
 
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
@@ -2654,9 +2641,6 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
 ## Tutorial uniques
-??? example  "Hidden when religion is disabled"
-	Applicable to: Building, Unit, Ruins, Tutorial
-
 ## CityState uniques
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
@@ -2758,11 +2742,6 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
     Modifiers that can be added to other uniques to limit when they will be active
 
-??? example  "&lt;with [amount]% chance&gt;"
-	Example: "&lt;with [3]% chance&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;every [positiveAmount] turns&gt;"
 	Example: "&lt;every [3] turns&gt;"
 
@@ -2775,6 +2754,32 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 ??? example  "&lt;after turn number [amount]&gt;"
 	Example: "&lt;after turn number [3]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;on [speed] game speed&gt;"
+	Example: "&lt;on [Quick] game speed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when [victoryType] Victory is enabled&gt;"
+	Example: "&lt;when [Domination] Victory is enabled&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when [victoryType] Victory is disabled&gt;"
+	Example: "&lt;when [Domination] Victory is disabled&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when religion is enabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when religion is disabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;with [amount]% chance&gt;"
+	Example: "&lt;with [3]% chance&gt;"
 
 	Applicable to: Conditional
 
@@ -2838,21 +2843,6 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 ??? example  "&lt;if starting in the [era]&gt;"
 	Example: "&lt;if starting in the [Ancient era]&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;on [speed] game speed&gt;"
-	Example: "&lt;on [Quick] game speed&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;when [victoryType] Victory is enabled&gt;"
-	Example: "&lt;when [Domination] Victory is enabled&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;when [victoryType] Victory is disabled&gt;"
-	Example: "&lt;when [Domination] Victory is disabled&gt;"
 
 	Applicable to: Conditional
 

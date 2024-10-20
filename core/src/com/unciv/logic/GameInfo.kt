@@ -292,14 +292,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun isReligionEnabled(): Boolean {
-        val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
-                || ruleset.modOptions.hasUnique(UniqueType.DisableReligion))
-        return !religionDisabledByRuleset
+        if (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)) return false
+        if (ruleset.modOptions.hasUnique(UniqueType.DisableReligion)) return false
+        return true
     }
 
-    fun isEspionageEnabled(): Boolean {
-        return gameParameters.espionageEnabled
-    }
+    fun isEspionageEnabled(): Boolean = gameParameters.espionageEnabled
 
     private fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
