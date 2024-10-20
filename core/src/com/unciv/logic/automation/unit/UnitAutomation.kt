@@ -67,10 +67,8 @@ object UnitAutomation {
 
         val tileWithRuinOrEncampment = unit.viewableTiles
             .firstOrNull {
-                (
-                        (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent())
-                                || it.improvement == Constants.barbarianEncampment
-                        )
+                (it.getTileImprovement()?.isAncientRuinsEquivalent() == true
+                                || it.improvement == Constants.barbarianEncampment)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
         unit.movement.headTowards(tileWithRuinOrEncampment)
