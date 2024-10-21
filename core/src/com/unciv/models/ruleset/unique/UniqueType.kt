@@ -949,7 +949,7 @@ enum class UniqueType(
         UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
         flags = UniqueFlag.setOfHiddenToUsers),
     
-    #Deprecated("As of 4.13.19", ReplaceWith("Only available <when espionage is enabled>"))
+    @Deprecated("As of 4.13.19", ReplaceWith("Only available <when espionage is enabled>"))
     HiddenWithoutEspionage("Hidden when espionage is disabled", UniqueTarget.Building,
         flags = UniqueFlag.setOfHiddenToUsers),
 
