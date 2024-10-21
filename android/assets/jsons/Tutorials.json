@@ -288,25 +288,14 @@
 	"Instead, diplomatic relations with City-States are determined by Influence - a meter of 'how much the City-State likes you'.\nInfluence can be increased by attacking their enemies, liberating their city, and giving them sums of gold.",
 	"Certain bonuses are given when you are at above 30 influence.\nWhen you have above 60 Influence, and you have the highest influence with them of all civilizations, you are considered their 'Ally', and gain further bonuses and access to the Luxury and Strategic resources in their lands."
     ]
-  }, 
-  {
-    "name": "Specialists",
-    "civilopediaText": [
-        {"text":"While working the land is good, eventually your Citizens will want to Specialize."},
-        {"text":"Certain Buildings will also provide Specialist Slots. These slots will show up in the Citizen Management within the City Screen under Specialists. Each slot can be filled with a Citizen which will then become a Specialist."},
-        {"text": "Each Specialist will generate a certain amount of yield as indicated to the right of the available slots."},
-        {"text": "While these are a great way to specialize the yield production of a City outside of the surrounding Tile Yields, Specialists have an additional value. Each one also generates Great Person Points each turn. With enough of them, a new Great Person will join your Nation."},
-        {"text": "See also Great People","link": "Tutorials/Great People"}
-    ]
   },
   {
     "name": "Great People",
-    "civilopediaText": [
-        {"text": "Certain buildings, and specialists in cities, generate Great Person points per turn.\nThere are several types of Great People, and their points accumulate separately.\nThe number of points per turn and accumulated points can be viewed in the Overview screen."},
-        {"text": "Alternatively, the Great Person points breakdown per city can be viewed in each City Screen (see UI Tips article)."},
-        {"text": "Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now."},
-        {"text": "Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"},
-        {"text": "See also Specialists","link": "Tutorials/Specialists"}
+    "steps": [
+	"Certain buildings, and specialists in cities, generate Great Person points per turn.\nThere are several types of Great People, and their points accumulate separately.\nThe number of points per turn and accumulated points can be viewed in the Overview screen.",
+	"Alternatively, the Great Person points breakdown per city can be viewed in each city screen (see UI Tips article).",
+	"Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now.",
+	"Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"
     ]
   },
   {
@@ -326,7 +315,7 @@
       "civilopediaText": [
           {"text": "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons."},
           {"text": "On the world screen the hotkeys are as follows:"},
-          {"text": "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its City Screen if already centered"},
+          {"text": "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered"},
           {"text": "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload"},
           {"text": "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"},
           {},
@@ -424,7 +413,7 @@
     "steps": [
         "When founding a city, it won't follow a religion immediately.",
         "The religion a city follows depends on the total pressure each religion has within the city.",
-        "Followers are allocated in the same proportions as these pressures, and these followers can be viewed in the City Screen.",
+        "Followers are allocated in the same proportions as these pressures, and these followers can be viewed in the city screen.",
         "You are allowed to check religious followers and pressures in cities you do not own by selecting them.",
         "In both places, a tap/click on the icon of a religion will show detailed information with its effects.",
         "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
@@ -447,7 +436,7 @@
         "",
         "Cities also passively add pressure of their majority religion to nearby cities.",
         "Each city provides +6 pressure per turn to all cities within 10 tiles, though the exact amount of pressure depends on the game speed.",
-        "This pressure can also be seen in the City Screen, and gives you an idea of how religions in your cities will evolve if you don't do anything.",
+        "This pressure can also be seen in the city screen, and gives you an idea of how religions in your cities will evolve if you don't do anything.",
         "Holy cities also provide +30 pressure of the religion founded there to themselves, making it very difficult to effectively convert a holy city.",
         "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
         "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet."
@@ -594,18 +583,18 @@
             {"text":"On the World screen, swipe the notification list to the right to temporarily hide it. Click the \"Bell\" button to display them again."},
             {"text":"The default state for the notification list can be set in Options > Display > UI - Notifications on world screen."},
             {},
-            {"text":"Entering a City Screen quickly","header":5,"color":"#fa0"},
-            {"text":"You can Right-click or long press a city button on the World screen. The result is the same as tapping it twice - once to select and move the button, again to trigger a reaction: show the City Screen (if the city is yours to inspect), or offer the foreign city info popup."},
+            {"text":"Entering a city screen quickly","header":5,"color":"#fa0"},
+            {"text":"You can Right-click or long press a city button on the World screen. The result is the same as tapping it twice - once to select and move the button, again to trigger a reaction: show the city screen (if the city is yours to inspect), or offer the foreign city info popup."},
             {},
             {"text":"Upgrade multiple units of the same type","header":5,"color":"#fa0"},
             {"text":"On the World screen, select an unit that can be upgraded, then right-click or long press the \"Upgrade\" button to open a popup menu allowing to upgrade all units of this type at once."},
             {"text":"In the Units overview, the same upgrade menu is available by clicking the unit icon in the \"Upgrade\" column. When an unit is upgradeable, the icon is lit if conditions are met (enough gold and/or resources), otherwise it is dimmed."},
             {},
             {},
-            {"text":"City Screen","header":3},
+            {"text":"City screen","header":3},
             {},
             {"text":"Additional controls for the construction queue","header":5,"color":"#fa0"},
-            {"text":"Right-click or long press a construction item to open a popup menu with additional controls, allowing to manage production of the same item in all cities, by issuing the commands from the same City Screen."},
+            {"text":"Right-click or long press a construction item to open a popup menu with additional controls, allowing to manage production of the same item in all cities, by issuing the commands from the same City screen."},
             {"text":"The \"Disable\" option moves an item to a separated \"Disabled\" tab, preventing its automatic queueing by the \"Auto-assign city production\" option. To move a disabled item back to its initial place, enter again the popup menu, and choose \"Enable\"."},
             {"text":"Disabled items are set globally and persistent: they are not reset in a new game, or by restarting Unciv."},
             {},
