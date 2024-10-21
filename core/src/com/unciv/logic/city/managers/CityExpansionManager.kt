@@ -11,8 +11,8 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.components.extensions.withItem
-import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.utils.withItem
+import com.unciv.utils.withoutItem
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
