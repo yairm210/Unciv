@@ -15,8 +15,8 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.ui.components.extensions.contains
+import com.unciv.utils.addToMapOfSets
+import com.unciv.utils.contains
 import java.lang.Integer.max
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
