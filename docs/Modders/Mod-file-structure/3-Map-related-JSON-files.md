@@ -125,7 +125,7 @@ Some of the rewards ruins can give will have results that are not deterministic 
 A few uniques can be added to ancient ruin effects to modify when they can be earned. These are:
 
 - "Only available after [amount] turns"
-- "Hidden when religion is disabled"
+- "Only available <when religion is enabled>"
 - "Hidden after a great prophet has been earned"
 
 ## [Tileset-specific json](../../Creating-a-custom-tileset.md)

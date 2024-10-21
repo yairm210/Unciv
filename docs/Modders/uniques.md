@@ -1550,9 +1550,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
 
-??? example  "Hidden when espionage is disabled"
-	Applicable to: Building
-
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
@@ -2776,6 +2773,12 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Conditional
 
 ??? example  "&lt;when religion is disabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when espionage is enabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when espionage is disabled&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;with [amount]% chance&gt;"
