@@ -165,6 +165,18 @@ object UnitActionsFromUniques {
         ))
     }
 
+    // Instead of Withdrawing, stand your ground!
+    internal fun getGuardActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat)) return emptySequence()
+        return sequenceOf(UnitAction(UnitActionType.Guard,
+            useFrequency = 0f,
+            action = {
+                unit.action = UnitActionType.Guard.value
+                unit.useMovementPoints(unit.currentMovement)
+            }.takeIf { unit.hasMovement() })
+        )
+    }
+
     internal fun getTriggerUniqueActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getUniques()) {
             // not a unit action

@@ -497,6 +497,13 @@
     ]
   },
   {
+    "name": "Guard",
+    "civilopediaText": [
+        {"text":"Some units have the ability to Withdraw before a melee attack is struck. However, perhaps you wish for them to stand their ground to protect a particular tile. If you do, then give them the Guard command and they will stay fixed until they die or you give them fresh orders."},
+        {"text":"This is NOT the same as Fortify and they will gain no defensive bonus. They will simply not utilize their Withdraw ability."}
+    ]
+  },
+  {
     "name": "City Tile Blockade",
     "steps": [
         "One of your tiles is blocked by an enemy: when an enemy unit stands on a tile you own, the tile will not produce yields and cannot be worked by a city this turn. City will reallocate population from a blocked tile automatically.",
