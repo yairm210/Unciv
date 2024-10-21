@@ -17,7 +17,6 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -124,9 +123,7 @@ class CivilopediaScreen(
                 compareBy<CivilopediaEntry>{ it.sortBy }
                     .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
                         // In order for the extra icons on Happiness and Faith to not affect sort order
-                        it.name.tr(true).replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"")
-                            .replace(Fonts.food.toString(),"").replace(Fonts.production.toString(),"")
-                            .replace(Fonts.gold.toString(),"").replace(Fonts.science.toString(),"")})
+                        it.name.tr(true, true)})
 
         var currentY = -1f
 
