@@ -25,6 +25,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private val selectedConstructionTable = Table()
+    private val buyButtonFactory = BuyButtonFactory(cityScreen)
 
     init {
         selectedConstructionTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -89,9 +90,23 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             descriptionLabel.wrap = true
             add(descriptionLabel).colspan(2).width(stage.width / 4)
 
-            // Show sell button if construction is a currently sellable building
-            if (construction is Building && cityConstructions.isBuilt(construction.name)
-                    && construction.isSellable()) {
+            if (cityConstructions.isBuilt(construction.name)) {
+                showSellButton(construction)
+            } else if (buyButtonFactory.hasBuyButtons(construction)) {
+                row()
+                buyButtonFactory.addBuyButtons(selectedConstructionTable, construction) {
+                    it.padTop(5f).colspan(2).center()
+                }
+            }
+        }
+    }
+
+    // Show sell button if construction is a currently sellable building
+    private fun showSellButton(
+        construction: IConstruction
+    ) {
+        if (construction is Building && construction.isSellable()) {
+            selectedConstructionTable.run {
                 val sellAmount = cityScreen.city.getGoldForSellingBuilding(construction.name)
                 val sellText = "{Sell} $sellAmount " + Fonts.gold
                 val sellBuildingButton = sellText.toTextButton()
@@ -138,4 +153,5 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
         cityScreen.clearSelection()
         cityScreen.update()
     }
+    
 }
