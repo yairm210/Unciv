@@ -1,20 +1,16 @@
 ## 4.13.19
 
-Resolves  - Unit icon falls back to UnitTypeIcons/<unitType> successfully
+Update mods even if we have cached data 
 
-Resolved  - Cities reduce tile movement cost to 1, per Civ V
+Modding: Unit icon falls back to UnitTypeIcons/<unitType> successfully
 
-By itanasi:
-- Add Specialists Tutorial 
-- Updating documentation 
-- Clean up the icon replacement code by adding hide option to .tr() 
-- Small fix to Modding Wiki for Ranged Strength clarification 
+Cities reduce tile movement cost to 1 (on e.g. hills), per Civ V
+
+Add Specialists Tutorial - By itanasi 
 
 Add `<when espionage is enabled>` conditional  - By RobLoach
 
-By SeventhM:
-- Allow purchasing wonders with gold when explicitly given a unique 
-- Lint: Move CollectionExtensions 
+Allow purchasing wonders with gold when explicitly given a unique - By SeventhM 
 
 ## 4.13.18
 
