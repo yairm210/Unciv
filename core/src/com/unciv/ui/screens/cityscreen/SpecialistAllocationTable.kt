@@ -137,7 +137,8 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
         // greatPersonPoints is a Counter so iteration order is potentially random:
         // Sort by unit name without collator to ensure consistency in those rare mods where one Specialist gives points to several GP counters
         for ((gpName, gpPoints) in specialist.greatPersonPoints.asSequence().sortedBy { it.key }) {
-            addWrapping(gpPoints, Color.GOLD, ImageGetter.getUnitIcon(gpName, Color.GOLD))
+            val greatPerson = city.getRuleset().units[gpName] ?: continue
+            addWrapping(gpPoints, Color.GOLD, ImageGetter.getUnitIcon(greatPerson, Color.GOLD))
         }
 
         // This uses Stats.iterator() which ensures consistent Stat order and returns no zero value

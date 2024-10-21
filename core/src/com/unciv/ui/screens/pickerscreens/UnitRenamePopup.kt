@@ -12,7 +12,7 @@ class UnitRenamePopup(val screen: BaseScreen, val unit: MapUnit, val actionOnClo
         AskTextPopup(
             screen,
             label = "Choose name for [${unit.baseUnit.name}]",
-            icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
+            icon = ImageGetter.getUnitIcon(unit.baseUnit).surroundWithCircle(80f),
             defaultText = unit.instanceName ?: unit.baseUnit.name.tr(hideIcons = true),
             validate = { it != unit.name },
             actionOnOk = { userInput ->

@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.randomWeighted
+import com.unciv.utils.randomWeighted
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

@@ -22,6 +22,7 @@ import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
@@ -30,11 +31,10 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
-import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.utils.addToMapOfSets
+import com.unciv.utils.randomWeighted
 import kotlin.math.roundToInt
 import kotlin.random.Random
 

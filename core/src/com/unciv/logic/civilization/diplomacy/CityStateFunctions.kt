@@ -24,8 +24,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.utils.randomWeighted
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random

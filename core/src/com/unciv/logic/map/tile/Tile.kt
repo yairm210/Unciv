@@ -29,11 +29,11 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.withItem
-import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
+import com.unciv.utils.withItem
+import com.unciv.utils.withoutItem
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
