@@ -55,14 +55,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (hasUnique(UniqueType.CannotBePurchased, stateForConditionals)) return PurchaseReason.Unpurchasable
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, StateForConditionals.IgnoreConditionals)
-                .any { city == null ||
-                    (it.conditionalsApply(stateForConditionals) && it.params[0] == stat.name && city.matchesFilter(it.params[1]))
+                .any {
+                    it.params[0] == stat.name &&
+                    (city == null || (it.conditionalsApply(stateForConditionals) && city.matchesFilter(it.params[1])))
                 }
         ) return PurchaseReason.UniqueAllowed
         // Can be purchased for [amount] [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, StateForConditionals.IgnoreConditionals)
-                .any { city == null ||
-                    (it.conditionalsApply(stateForConditionals) && it.params[1] == stat.name && city.matchesFilter(it.params[2]))
+                .any {
+                    it.params[1] == stat.name &&
+                    (city == null || (it.conditionalsApply(stateForConditionals) && city.matchesFilter(it.params[2])))
                 }
         ) return PurchaseReason.UniqueAllowed
         if (stat == Stat.Gold && !hasUnique(UniqueType.Unbuildable, stateForConditionals)) return PurchaseReason.Allowed
