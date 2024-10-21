@@ -384,7 +384,7 @@
         "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
         "Generating more ☮Faith will allow you to found a religion."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Religion",
@@ -398,7 +398,7 @@
         "This will allow you to choose another follower belief, as well as an enhancer belief, that only applies to you.",
         "Do take care founding a religion soon, only about half the players in the game are able to found a religion!"
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Beliefs",
@@ -406,7 +406,7 @@
         "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.",
         "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Religion inside cities",
@@ -419,7 +419,7 @@
         "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
         "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Spreading Religion",
@@ -441,7 +441,7 @@
         "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
         "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Inquisitors",
@@ -452,7 +452,7 @@
         "Often this results in the city immediately converting to their religion",
         "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Maya Long Count calendar cycle",

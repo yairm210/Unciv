@@ -663,7 +663,8 @@ enum class UniqueType(
     ConditionalVictoryDisabled("when [victoryType] Victory is disabled", UniqueTarget.Conditional),
     ConditionalReligionEnabled("when religion is enabled", UniqueTarget.Conditional),
     ConditionalReligionDisabled("when religion is disabled", UniqueTarget.Conditional),
-    
+    ConditionalEspionageEnabled("when espionage is enabled", UniqueTarget.Conditional),
+    ConditionalEspionageDisabled("when espionage is disabled", UniqueTarget.Conditional),
 
     /////// general conditionals
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
@@ -948,6 +949,7 @@ enum class UniqueType(
         UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
         flags = UniqueFlag.setOfHiddenToUsers),
     
+    @Deprecated("As of 4.13.19", ReplaceWith("Only available <when espionage is enabled>"))
     HiddenWithoutEspionage("Hidden when espionage is disabled", UniqueTarget.Building,
         flags = UniqueFlag.setOfHiddenToUsers),
 
