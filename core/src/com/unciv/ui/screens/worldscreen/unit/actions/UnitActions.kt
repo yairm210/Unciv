@@ -381,8 +381,7 @@ object UnitActions {
             type = UnitActionType.Wait,
             useFrequency = 65f, // Preferably have this on the first page
             action = {
-                unit.due = false
-                GUI.getWorldScreen().switchToNextUnit()
+                unit.due = false // Skips to next unit due to worldScreen.switchToNextUnit() in activateAction 
             }
         ))
     }
