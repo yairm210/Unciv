@@ -851,7 +851,7 @@ The following audio is from https://pixabay.com/ [Pixabay License](https://pixab
 
 ## Visual effects
 
-The fireworks on the City screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
+The fireworks on the City Screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
 All differences and edits done by the Unciv team.
 License quoted:
 ```

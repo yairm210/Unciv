@@ -1,3 +1,17 @@
+## 4.13.19
+
+Update mods even if we have cached data 
+
+Modding: Unit icon falls back to UnitTypeIcons/<unitType> successfully
+
+Cities reduce tile movement cost to 1 (on e.g. hills), per Civ V
+
+Add Specialists Tutorial - By itanasi 
+
+Add `<when espionage is enabled>` conditional  - By RobLoach
+
+Allow purchasing wonders with gold when explicitly given a unique - By SeventhM 
+
 ## 4.13.18
 
 Better AI decisions for policy branches
@@ -2699,7 +2713,7 @@ all unpillagable improvements are not destroyed by 'destroy improvements' unique
 
 By SomeTroglodyte:
 - Fix broken random nations pool
-- City screen displays "free" tile yields undimmed
+- City Screen displays "free" tile yields undimmed
 
 AbsoluteUnits - Chu-Ko-Nu, Longbowman, Crossbowman v2  - By letstalkaboutdune
 
@@ -5368,7 +5382,7 @@ Fix units not entering cities upon capture - By avdstaaij
 
 By SomeTroglodyte:
 - Civilopedia - Difficulty
-- City screen stats double separators
+- City Screen stats double separators
 - Unit rename UI
 
 By xlenstra:
@@ -6706,7 +6720,7 @@ Translation updates
 
 ## 3.11.8
 
-Improved performance, especially in the City screen
+Improved performance, especially in the City Screen
 
 Avoided more badly-defined-mod crashes, and some rare non-mod crashes and ANRs
 
@@ -8173,7 +8187,7 @@ Map editor menu fix - by lyrjie
 
 Can no longer acquire another player's tiles in multiplayer - by lyrjie
 
-Specialist allocation is immediately viewable on the City screen
+Specialist allocation is immediately viewable on the City Screen
 
 Legalism fix - by reversi
 
