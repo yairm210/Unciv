@@ -510,4 +510,8 @@ class Ruleset {
     }
 
     fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
+
+    fun getResource(resourceName: String): TileResource {
+        return tileResources[resourceName]!!
+    }
 }

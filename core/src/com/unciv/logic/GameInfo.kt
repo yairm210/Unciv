@@ -38,6 +38,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -538,7 +539,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return true
     }
 
-    /** Generate a notification pointing out resources.
+    /** Generate a notification pointing out resources. Only researched Resources are considered.
      * @param maxDistance from next City, default removes distance limitation.
      * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
      * @return `null` if no resources were found, otherwise a Notification instance.
@@ -550,6 +551,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         maxDistance: Int = Int.MAX_VALUE,
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
+
+        if (!civ.tech.isResearched(ruleset.getResource(resourceName))) {
+            return null
+        }
+        
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city
