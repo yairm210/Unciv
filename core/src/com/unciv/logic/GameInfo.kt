@@ -38,7 +38,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
-import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -552,7 +551,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
 
-        if (!civ.tech.isResearched(ruleset.getResource(resourceName))) {
+        val resource = ruleset.tileResources[resourceName] ?: return null
+        if (!civ.tech.isResearched(resource)) {
             return null
         }
         
