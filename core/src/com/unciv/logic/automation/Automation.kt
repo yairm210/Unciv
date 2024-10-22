@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.victoryscreen.RankingType
+import kotlin.math.max
 
 object Automation {
 
@@ -64,32 +65,43 @@ object Automation {
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
+        val starving = surplusFood < 0
         // If current Production converts Food into Production, then calculate increased Production Yield
         if (cityStatsObj.canConvertFoodToProduction(surplusFood, city.cityConstructions.getCurrentConstruction())) {
             // calculate delta increase of food->prod. This isn't linear
             yieldStats.production += cityStatsObj.getProductionFromExcessiveFood(surplusFood+yieldStats.food) - cityStatsObj.getProductionFromExcessiveFood(surplusFood)
             yieldStats.food = 0f  // all food goes to 0
         }
+
+        var growthFood = yieldStats.food  // amount of food yield beyond needed to avoid starving, default all
+        if (starving)
+            growthFood = max(yieldStats.food + surplusFood, 0f)
+        val feedFood = yieldStats.food - growthFood // how much to feed pop
+        // avoid growth, only count Food that gets you not-starving, but no more
+        if (city.avoidGrowth) {
+            if (starving)
+                yieldStats.food = feedFood
+            else
+                yieldStats.food = 0f
+        }
         // Apply base weights
         yieldStats.applyRankingWeights()
 
-        if (surplusFood > 0 && city.avoidGrowth) {
-            yieldStats.food = 0f // don't need more food!
-        } else if (cityAIFocus in CityFocus.zeroFoodFocuses) {
-            // Focus on non-food/growth
-            if (surplusFood < 0)
-                yieldStats.food *= 8 // Starving, need Food, get to 0
-            else if (city.civ.getHappiness() < 1)
-                yieldStats.food /= 4
-        } else if (!city.avoidGrowth) {
-            // NoFocus or Food/Growth Focus.
-            if (surplusFood < 0)
-                yieldStats.food *= 8 // Starving, need Food, get to 0
-            else if (city.civ.getHappiness() > -1)
-                yieldStats.food *= 2 //1.5f is preferred, but 2 provides more protection against badly configured personalities
-            else if (city.civ.getHappiness() < 0) {
-                // 75% of excess food is wasted when in negative happiness
-                yieldStats.food /= 4
+        if (starving) // starving, need Food, scale feedFood by 8(super important)*14(base weight)
+            yieldStats.food += feedFood * 111
+        else {
+            if (cityAIFocus in CityFocus.zeroFoodFocuses) {
+                // Focus on non-food/growth
+                if (city.civ.getHappiness() < 1)
+                    yieldStats.food /= 4
+            } else {
+                // NoFocus or Food/Growth Focus.
+                if (city.civ.getHappiness() > -1)
+                    yieldStats.food *= 2 //1.5f is preferred, but 2 provides more protection against badly configured personalities
+                else if (city.civ.getHappiness() < 0) {
+                    // 75% of excess food is wasted when in negative happiness
+                    yieldStats.food /= 4
+                }
             }
         }
 
@@ -128,7 +140,6 @@ object Automation {
 
         // Apply City focus
         cityAIFocus.applyWeightTo(yieldStats)
-
         return yieldStats.values.sum()
     }
 
