@@ -57,7 +57,7 @@ class Notification() : IsPartOfGameInfoSerialization, Json.Serializable {
 
         companion object {
             fun safeValueOf(name: String): NotificationCategory? =
-                values().firstOrNull { it.name == name }
+                entries.firstOrNull { it.name == name }
         }
     }
 
@@ -74,7 +74,7 @@ class Notification() : IsPartOfGameInfoSerialization, Json.Serializable {
                 ruleset.nations.containsKey(icon) ->
                     ImageGetter.getNationPortrait(ruleset.nations[icon]!!, iconSize)
                 ruleset.units.containsKey(icon) ->
-                    ImageGetter.getUnitIcon(icon)
+                    ImageGetter.getUnitIcon(ruleset.units[icon]!!)
                 else ->
                     ImageGetter.getImage(icon)
             }

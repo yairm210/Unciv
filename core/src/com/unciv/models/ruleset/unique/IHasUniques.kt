@@ -95,10 +95,38 @@ interface IHasUniques : INamed {
      *  - Default implementation checks disabling by Religion, Espionage or Victory types.
      *  - Overrides need to deal with e.g. Era-specific wonder disabling, no-nukes, ruin rewards by difficulty, and so on!
      */
-    fun isHiddenBySettings(gameInfo: GameInfo): Boolean {
+    fun isUnavailableBySettings(gameInfo: GameInfo): Boolean {
+        val gameBasedConditionals = setOf(
+            UniqueType.ConditionalVictoryDisabled,
+            UniqueType.ConditionalVictoryEnabled,
+            UniqueType.ConditionalSpeed,
+            UniqueType.ConditionalReligionEnabled,
+            UniqueType.ConditionalReligionDisabled,
+            UniqueType.ConditionalEspionageEnabled,
+            UniqueType.ConditionalEspionageDisabled,
+        )
+        val stateForConditionals = StateForConditionals(gameInfo = gameInfo)
+
+        if (getMatchingUniques(UniqueType.Unavailable, StateForConditionals.IgnoreConditionals)
+                .any { unique ->
+                    unique.modifiers.any {
+                        it.type in gameBasedConditionals
+                                && Conditionals.conditionalApplies(null, it, stateForConditionals) } })
+            return true
+        
+        if (getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+                .any { unique ->
+                    unique.modifiers.any {
+                        it.type in gameBasedConditionals
+                                && !Conditionals.conditionalApplies(null, it, stateForConditionals) } })
+            return true
+        
         if (!gameInfo.isReligionEnabled() && hasUnique(UniqueType.HiddenWithoutReligion)) return true
         if (!gameInfo.isEspionageEnabled() && hasUnique(UniqueType.HiddenWithoutEspionage)) return true
-        if (getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { it.params[0] !in gameInfo.gameParameters.victoryTypes }) return true
+        
+        
+        if (getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
+            .any { it.params[0] !in gameInfo.gameParameters.victoryTypes }) return true
         return false
     }
 
@@ -106,7 +134,7 @@ interface IHasUniques : INamed {
      *  Is this ruleset object hidden from Civilopedia?
      *
      *  - Obviously, the [UniqueType.HiddenFromCivilopedia] test is done here (and nowhere else - exception TranslationFileWriter for Tutorials).
-     *  - Includes the [isHiddenBySettings] test if [gameInfo] is known, otherwise existence of Religion is guessed from [ruleset], and all victory types are assumed enabled.
+     *  - Includes the [isUnavailableBySettings] test if [gameInfo] is known, otherwise existence of Religion is guessed from [ruleset], and all victory types are assumed enabled.
      *  - Note: RulesetObject-type specific overrides should not be necessary unless (TODO) we implement support for conditionals on the 'Hidden*' Uniques.
      *  @param gameInfo Defaults to [UncivGame.getGameInfoOrNull]. Civilopedia must also be able to run from MainMenu without a game loaded. In that case only this parameter can be `null`. So if you know it - provide!
      *  @param ruleset required if [gameInfo] is null, otherwise optional.
@@ -117,7 +145,7 @@ interface IHasUniques : INamed {
         ruleset: Ruleset? = null
     ): Boolean {
         if (hasUnique(UniqueType.HiddenFromCivilopedia)) return true
-        if (gameInfo != null && isHiddenBySettings(gameInfo)) return true
+        if (gameInfo != null && isUnavailableBySettings(gameInfo)) return true
         if (gameInfo == null && hasUnique(UniqueType.HiddenWithoutReligion) && ruleset!!.beliefs.isEmpty()) return true
         return false
     }

@@ -21,9 +21,9 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.utils.randomWeighted
 
 object UnitAutomation {
 
@@ -67,10 +67,8 @@ object UnitAutomation {
 
         val tileWithRuinOrEncampment = unit.viewableTiles
             .firstOrNull {
-                (
-                        (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent())
-                                || it.improvement == Constants.barbarianEncampment
-                        )
+                (it.getTileImprovement()?.isAncientRuinsEquivalent() == true
+                                || it.improvement == Constants.barbarianEncampment)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
         unit.movement.headTowards(tileWithRuinOrEncampment)

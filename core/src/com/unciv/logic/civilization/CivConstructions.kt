@@ -9,9 +9,9 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.ui.components.extensions.contains
-import com.unciv.ui.components.extensions.yieldAllNotNull
+import com.unciv.utils.addToMapOfSets
+import com.unciv.utils.contains
+import com.unciv.utils.yieldAllNotNull
 
 class CivConstructions : IsPartOfGameInfoSerialization {
 

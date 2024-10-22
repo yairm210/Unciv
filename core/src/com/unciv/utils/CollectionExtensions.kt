@@ -1,4 +1,4 @@
-package com.unciv.ui.components.extensions
+package com.unciv.utils
 
 import com.badlogic.gdx.utils.Array
 import kotlin.random.Random
