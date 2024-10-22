@@ -89,6 +89,9 @@ object CityLocationTileRanker {
 
         val onCoast = newCityTile.isCoastalTile()
         val onHill = newCityTile.isHill()
+        val onGrassland = !onHill && newCityTile.baseTerrain == "Grassland"
+        val onPlainsOrHill = onHill || newCityTile.baseTerrain == "Plains" // Also Mycelium in AF
+        val onSnowOrDesert = !onHill && (newCityTile.baseTerrain == "Snow" || newCityTile.baseTerrain == "Desert")
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
@@ -103,10 +106,18 @@ object CityLocationTileRanker {
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.resource != null) tileValue -= 4
-        if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
-        // Settling on bonus resources tends to waste a food
-        // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
+        if (newCityTile.resource != null) tileValue -= 10
+        // Applying a penalty, so we don't overvalue settling on resources by too much
+        if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 7
+        // Food resources on grassland increase our city centre yields
+        // Not as much in Rekmod, however...
+        if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Strategic && !onPlainsOrHill) tileValue -= 10
+        // Production resources on hills/plains increase or city centre yields
+        if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Luxury && newCityTile.tileResource.matchesFilter("Salt")) tileValue -= 30
+        // Players don't like seeing the AI build cities on Salt in G&K
+        // Settling on other generally is generally good (arguably also on Salt if BNW unhappiness penalties would apply) 
+        if (onSnowOrDesert) tileValue += 4
+        // A city centre is the only good tile improvement on these tiles
 
         var tiles = 0
         for (i in 0..3) {
