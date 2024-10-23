@@ -145,6 +145,8 @@ class RejectionReason(val type: RejectionReasonType,
 
     fun isConstructionRejection(): Boolean = type in constructionRejectionReasonType
 
+    fun isNeverVisible(): Boolean = type in neverVisible
+
     /** Returns the index of [orderedImportantRejectionTypes] with the smallest index having the
      * highest precedence */
     fun getRejectionPrecedence(): Int {
@@ -197,7 +199,7 @@ class RejectionReason(val type: RejectionReasonType,
             RejectionReasonType.UniqueToOtherNation,
             RejectionReasonType.ReplacedByOurUnique,
             RejectionReasonType.Obsoleted,
-            RejectionReasonType.WonderBeingBuiltElsewhere
+            RejectionReasonType.WonderBeingBuiltElsewhere,
         )
     }
 }
