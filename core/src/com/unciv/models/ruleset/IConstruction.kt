@@ -200,6 +200,7 @@ class RejectionReason(val type: RejectionReasonType,
             RejectionReasonType.ReplacedByOurUnique,
             RejectionReasonType.Obsoleted,
             RejectionReasonType.WonderBeingBuiltElsewhere,
+            RejectionReasonType.RequiresTech,
         )
     }
 }
