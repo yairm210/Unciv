@@ -108,12 +108,6 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         // We could simply test food==0 - but this way NullifiesStat(food) will still allow growth:
         if (city.getMatchingUniques(UniqueType.NullifiesGrowth).any())
             return
-        
-        // Hard block growth when using Avoid Growth, cap stored food
-        if (city.avoidGrowth) {
-            foodStored = foodNeededToGrow
-            return
-        }
 
         // growth!
         foodStored -= foodNeededToGrow
