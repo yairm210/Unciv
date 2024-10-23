@@ -552,7 +552,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     ): Notification? {
 
         val resource = ruleset.tileResources[resourceName] ?: return null
-        if (!civ.tech.isResearched(resource)) {
+        if (!civ.tech.isRevealed(resource)) {
             return null
         }
         

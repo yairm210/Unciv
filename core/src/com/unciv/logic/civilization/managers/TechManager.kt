@@ -157,7 +157,10 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
     /** resources which need no research count as researched */
-    fun isResearched(resource: TileResource) = resource.revealedBy?.let { isResearched(it) } ?: true
+    fun isRevealed(resource: TileResource): Boolean {
+        val revealedBy = resource.revealedBy ?: return true
+        return isResearched(revealedBy)
+    }
     
     fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
 
