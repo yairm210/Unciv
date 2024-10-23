@@ -201,6 +201,8 @@ class RejectionReason(val type: RejectionReasonType,
             RejectionReasonType.Obsoleted,
             RejectionReasonType.WonderBeingBuiltElsewhere,
             RejectionReasonType.RequiresTech,
+            RejectionReasonType.NoSettlerForOneCityPlayers,
+            RejectionReasonType.WaterUnitsInCoastalCities,
         )
     }
 }
