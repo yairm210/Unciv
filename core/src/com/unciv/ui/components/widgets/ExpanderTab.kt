@@ -74,7 +74,7 @@ class ExpanderTab(
         header.defaults().pad(headerPad)
         headerIcon.setSize(arrowSize, arrowSize)
         headerIcon.setOrigin(Align.center)
-        headerIcon.rotation = 180f
+        headerIcon.rotation = 0f
         headerIcon.color = arrowColor
         header.background(
             BaseScreen.skinStrings.getUiBackground(
@@ -83,7 +83,7 @@ class ExpanderTab(
             )
         )
         if (icon != null) header.add(icon)
-        header.add(headerLabel)
+        header.add(headerLabel).expandX()
         header.add(headerIcon).size(arrowSize).align(Align.center)
         header.touchable= Touchable.enabled
         header.onActivation { toggle() }
@@ -111,11 +111,11 @@ class ExpanderTab(
         if (noAnimation || !UncivGame.Current.settings.continuousRendering) {
             contentWrapper.clear()
             if (isOpen) contentWrapper.add(innerTable)
-            headerIcon.rotation = if (isOpen) 90f else 180f
+            headerIcon.rotation = if (isOpen) 90f else 0f
             if (!noAnimation) onChange?.invoke()
             return
         }
-        val action = object: FloatAction ( 90f, 180f, animationDuration, Interpolation.linear) {
+        val action = object: FloatAction ( 90f, 0f, animationDuration, Interpolation.linear) {
             override fun update(percent: Float) {
                 super.update(percent)
                 headerIcon.rotation = this.value

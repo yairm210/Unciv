@@ -536,7 +536,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return true
     }
 
-    /** Generate a notification pointing out resources.
+    /** Generate a notification pointing out resources. Only researched Resources are considered.
      * @param maxDistance from next City, default removes distance limitation.
      * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
      * @return `null` if no resources were found, otherwise a Notification instance.
@@ -548,6 +548,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         maxDistance: Int = Int.MAX_VALUE,
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
+
+        val resource = ruleset.tileResources[resourceName] ?: return null
+        if (!civ.tech.isRevealed(resource)) {
+            return null
+        }
+        
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city

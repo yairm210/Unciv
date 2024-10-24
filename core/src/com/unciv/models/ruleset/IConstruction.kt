@@ -145,49 +145,66 @@ class RejectionReason(val type: RejectionReasonType,
 
     fun isConstructionRejection(): Boolean = type in constructionRejectionReasonType
 
+    fun isNeverVisible(): Boolean = type in neverVisible
+
     /** Returns the index of [orderedImportantRejectionTypes] with the smallest index having the
      * highest precedence */
     fun getRejectionPrecedence(): Int {
         return orderedImportantRejectionTypes.indexOf(type)
     }
 
-    // Used for constant variables in the functions above
-    private val techPolicyEraWonderRequirements = hashSetOf(
-        RejectionReasonType.Obsoleted,
-        RejectionReasonType.RequiresTech,
-        RejectionReasonType.RequiresPolicy,
-        RejectionReasonType.MorePolicyBranches,
-        RejectionReasonType.RequiresBuildingInSomeCity,
-    )
-    private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
-        RejectionReasonType.Obsoleted,
-        RejectionReasonType.WonderAlreadyBuilt,
-        RejectionReasonType.NationalWonderAlreadyBuilt,
-        RejectionReasonType.CannotBeBuiltWith,
-        RejectionReasonType.MaxNumberBuildable,
-    )
-    private val orderedImportantRejectionTypes = listOf(
-        RejectionReasonType.ShouldNotBeDisplayed,
-        RejectionReasonType.WonderBeingBuiltElsewhere,
-        RejectionReasonType.RequiresBuildingInAllCities,
-        RejectionReasonType.RequiresBuildingInThisCity,
-        RejectionReasonType.RequiresBuildingInSomeCity,
-        RejectionReasonType.RequiresBuildingInSomeCities,
-        RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
-        RejectionReasonType.CannotBeBuiltUnhappiness,
-        RejectionReasonType.PopulationRequirement,
-        RejectionReasonType.ConsumesResources,
-        RejectionReasonType.CanOnlyBePurchased,
-        RejectionReasonType.MaxNumberBuildable,
-        RejectionReasonType.NoPlaceToPutUnit,
-    )
-    // Exceptions. Used for units spawned/upgrade path, not built
-    private val constructionRejectionReasonType = listOf(
-        RejectionReasonType.Unbuildable,
-        RejectionReasonType.CannotBeBuiltUnhappiness,
-        RejectionReasonType.CannotBeBuilt,
-        RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
-    )
+    companion object {
+        // Used for constant variables in the functions above
+        private val techPolicyEraWonderRequirements = hashSetOf(
+            RejectionReasonType.Obsoleted,
+            RejectionReasonType.RequiresTech,
+            RejectionReasonType.RequiresPolicy,
+            RejectionReasonType.MorePolicyBranches,
+            RejectionReasonType.RequiresBuildingInSomeCity,
+        )
+        private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
+            RejectionReasonType.Obsoleted,
+            RejectionReasonType.WonderAlreadyBuilt,
+            RejectionReasonType.NationalWonderAlreadyBuilt,
+            RejectionReasonType.CannotBeBuiltWith,
+            RejectionReasonType.MaxNumberBuildable,
+        )
+        private val orderedImportantRejectionTypes = listOf(
+            RejectionReasonType.ShouldNotBeDisplayed,
+            RejectionReasonType.WonderBeingBuiltElsewhere,
+            RejectionReasonType.RequiresBuildingInAllCities,
+            RejectionReasonType.RequiresBuildingInThisCity,
+            RejectionReasonType.RequiresBuildingInSomeCity,
+            RejectionReasonType.RequiresBuildingInSomeCities,
+            RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
+            RejectionReasonType.CannotBeBuiltUnhappiness,
+            RejectionReasonType.PopulationRequirement,
+            RejectionReasonType.ConsumesResources,
+            RejectionReasonType.CanOnlyBePurchased,
+            RejectionReasonType.MaxNumberBuildable,
+            RejectionReasonType.NoPlaceToPutUnit,
+        )
+        // Exceptions. Used for units spawned/upgrade path, not built
+        private val constructionRejectionReasonType = listOf(
+            RejectionReasonType.Unbuildable,
+            RejectionReasonType.CannotBeBuiltUnhappiness,
+            RejectionReasonType.CannotBeBuilt,
+            RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
+        )
+        private val neverVisible = listOf(
+            RejectionReasonType.AlreadyBuilt,
+            RejectionReasonType.WonderAlreadyBuilt,
+            RejectionReasonType.NationalWonderAlreadyBuilt,
+            RejectionReasonType.DisabledBySetting,
+            RejectionReasonType.UniqueToOtherNation,
+            RejectionReasonType.ReplacedByOurUnique,
+            RejectionReasonType.Obsoleted,
+            RejectionReasonType.WonderBeingBuiltElsewhere,
+            RejectionReasonType.RequiresTech,
+            RejectionReasonType.NoSettlerForOneCityPlayers,
+            RejectionReasonType.WaterUnitsInCoastalCities,
+        )
+    }
 }
 
 
