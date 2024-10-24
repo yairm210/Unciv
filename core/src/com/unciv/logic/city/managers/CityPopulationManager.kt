@@ -109,6 +109,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         if (city.getMatchingUniques(UniqueType.NullifiesGrowth).any())
             return
 
+        // Hard block growth when using Avoid Growth, cap stored food
+        if (city.avoidGrowth) {
+            foodStored = foodNeededToGrow
+            return
+        }
+
         // growth!
         foodStored -= foodNeededToGrow
         val percentOfFoodCarriedOver =
