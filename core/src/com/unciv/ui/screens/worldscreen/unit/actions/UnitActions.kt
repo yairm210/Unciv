@@ -78,6 +78,7 @@ object UnitActions {
         UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
         UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepActions,
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
+        UnitActionType.Guard to UnitActionsFromUniques::getGuardActions,
         UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
         UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
         UnitActionType.ConnectRoad to UnitActionsFromUniques::getConnectRoadActions,

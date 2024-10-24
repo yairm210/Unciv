@@ -260,6 +260,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
+    fun isGuarding() = action == UnitActionType.Guard.value
 
     /**
      * @param includeOtherEscortUnit determines whether this method will also check if it's other escort unit is idle if it has one
@@ -273,7 +274,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 !tile.isMarkedForCreatesOneImprovement()
         ) return false
         if (includeOtherEscortUnit && isEscorting() && !getOtherEscortUnit()!!.isIdle(false)) return false
-        return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
+        return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving() || isGuarding())
     }
 
     fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
