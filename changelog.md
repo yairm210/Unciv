@@ -1,18 +1,12 @@
-## 4.13.20
+## 4.14.0
 
-Gradle 8.2->8.7, AGP 8.2.2->8.5.0 
-
-Resolved  - Wait action selects next unit
-
-chore: remove deprecated uniques
+Wait action selects next unit
 
 By sulai:
-- optimized city screen for smart phone 
-- fix: user only receives yellow resource notification if it is researched 
+- Better city screen buy button location 
+- Do not create resource notification for unresearched resources 
 
 Fix constructions that's always visible showing when belonging to another civ  - By SeventhM
-
-Docs: Update Portrait documentation  - By RobLoach
 
 ## 4.13.19
 
