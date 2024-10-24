@@ -104,8 +104,16 @@ object Automation {
             yieldStats.gold *= 2
         }
 
-        if (city.civ.getHappiness() < 0) {
-            yieldStats.happiness *= 2
+        if (city.civ.getHappiness() < 10) { 
+            //We've got an severe problem, try to get happiness by any means 
+            yieldStats.happiness *= 8 }
+        else if (city.civ.getHappiness() < 0) {
+            yieldStats.happiness *= 3 
+        }
+        
+        if (city.civ.getHappiness() < 10) { 
+            //Base game and most mods apply a -50% production penalty when in negative happiness 
+            yieldStats.production /= 2
         }
 
         if (allTechsAreResearched) {
