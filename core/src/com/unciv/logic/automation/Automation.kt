@@ -85,10 +85,11 @@ object Automation {
             // NoFocus or Food/Growth Focus.
             if (surplusFood < 0)
                 yieldStats.food *= 8 // Starving, need Food, get to 0
-            else if (city.civ.getHappiness() > -1)
+            else if (city.civ.getHappiness() > 0)
                 yieldStats.food *= 2 //1.5f is preferred, but 2 provides more protection against badly configured personalities
-            else if (city.civ.getHappiness() < 0) {
+            else if (city.civ.getHappiness() < 1) {
                 // 75% of excess food is wasted when in negative happiness
+                // 0 Happiness is positive happiness, but let's keep a 1-Happiness margin to account for e.g. Rationalism opener
                 yieldStats.food /= 4
             }
         }
