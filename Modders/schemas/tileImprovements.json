@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "terrainsCanBeBuiltOn": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+          },
+          "turnsToBuild": { "type": "integer" },
+          "techRequired": { "type": "string" },
+          "uniqueTo": { "type": "string" },
+          "shortcutKey": {
+              "type": "string",
+              "maxLength": 1
+          },
+
+          "production": { "type": "number" },
+          "food": { "type": "number" },
+          "gold": { "type": "number" },
+          "science": { "type": "number" },
+          "culture": { "type": "number" },
+          "happiness": { "type": "number" },
+          "faith": { "type": "number" },
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+      },
+      "required": [
+          "name",
+      ],
+      "additionalProperties": false
+  }
+}
