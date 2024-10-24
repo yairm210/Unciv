@@ -174,11 +174,22 @@ For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-exampl
 
 The base game uses flat icons, surrounded with colored circles as backgrounds (e.g. for units to fit the civilization's flag colors), to denote entities such as: units, buildings, techs, resources, improvements, religions, promotions, uniques, unit actions and nations in the UI. A mod can supply "Portraits" - static images that will remain uncolored - by adding images to `/Images/<entityType>Portraits/` (e.g. `/Images/BuildingPortraits/`, `/Images/ResourcePortraits/`, etc), which will be used in all UI elements (except for unit icons in the world map). The file name must correspond exactly with the unit/building/tech/resource/etc name  defined in corresponding JSONs (e.g. Units.json, Buildings.json, TileResources.json, etc) or have the same name as the file they suppose to replace, or they will be ignored.
 
-If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle.
-
-Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
+If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle. Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 
 For example, [here](https://github.com/vegeta1k95/Civ-5-Icons) is mod showing how to add custom portraits, which can complement the base game.
+
+Available `<entityType>Portraits/` include:
+
+* UnitPortraits
+* BuildingPortraits
+* TechPortraits
+* ResourcePortraits
+* ImprovementPortraits
+* UnitPromotionPortraits
+* UniquePortraits
+* NationPortraits
+* ReligionPortraits
+* UnitActionPortraits
 
 ### Adding icons for Unit Types
 
@@ -318,6 +329,3 @@ Notes:
 - In case of overlapping holidays, only one is chosen - and the "impact" of longer holidays is equalized by reducing the chance inversely proportional to the number of days. e.g. DiaDeLosMuertos is two days, so each Unciv launch on these days has 50% chance to show the egg.
 - Unciv's "map-based" easter eggs work independently!
 - No cultural prejudice is intended. If you know a nice custom we should include the date test for, just ask.
-
-
-*<entityType>Portraits/: Entities are: 'Unit', 'Building', 'Tech', 'Resource', 'Improvement', 'Promotion', 'Unique', 'Nation', 'Religion', 'UnitAction'
