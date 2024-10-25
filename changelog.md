@@ -1,3 +1,13 @@
+## 4.14.0
+
+Wait action selects next unit
+
+By sulai:
+- Better city screen buy button location 
+- Do not create resource notification for unresearched resources 
+
+Fix constructions that's always visible showing when belonging to another civ  - By SeventhM
+
 ## 4.13.19
 
 Update mods even if we have cached data 

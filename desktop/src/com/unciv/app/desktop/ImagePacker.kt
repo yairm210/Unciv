@@ -91,9 +91,9 @@ internal object ImagePacker {
                         var innerException = ex
                         while (innerException.cause != null && innerException.cause !== innerException) innerException = innerException.cause!!
                         if (innerException === ex)
-                            Log.error("Exception in ImagePacker: %s", ex.message)
+                            Log.error("Exception in ImagePacker for mod ${mod.name}: ${ex.message}")
                         else
-                            Log.error("Exception in ImagePacker: %s (%s)", ex.message, innerException.message)
+                            Log.error("Exception in ImagePacker for mod ${mod.name}: ${ex.message} (${innerException.message})")
                     }
                 }
             }

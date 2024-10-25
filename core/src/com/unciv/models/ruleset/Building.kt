@@ -245,10 +245,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                 return false
         }
-        if (hasUnique(UniqueType.ShowsWhenUnbuilable, StateForConditionals(cityConstructions.city)))
-            return true
 
         val rejectionReasons = getRejectionReasons(cityConstructions)
+
+        if (hasUnique(UniqueType.ShowsWhenUnbuilable, StateForConditionals(cityConstructions.city)) &&
+            rejectionReasons.none { it.isNeverVisible() })
+            return true
 
         if (rejectionReasons.any { it.type == RejectionReasonType.RequiresBuildingInSomeCities }
                 && cityConstructions.city.civ.gameInfo.gameParameters.oneCityChallenge)
