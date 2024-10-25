@@ -384,5 +384,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             // Placeholder, let's for now assume the tile improvement yields 5 science, to let the AI in Civ6 mod build Campuses etc.
             buildingStats[Stat.Science] += tileImprovementValue
         }
+        for (unique in building.getMatchingUniques(UniqueType.StatsFromTiles)) {
+            val extraTileYields = 2f
+            // Placeholder, let's for now assume it yields 2 food, to let the AI build Lighthouses
+            buildingStats[Stat.Food] += extraTileYields
+        }
     }
 }
