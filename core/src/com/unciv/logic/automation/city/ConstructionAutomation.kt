@@ -379,5 +379,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 buildingStats[Stat.Food] += foodGain * relativeAmount // Essentialy gives us the food per turn this unique saves us
             }
         }
+        for (unique in building.getMatchingUniques(UniqueType.CreatesOneImprovement)) {
+            val tileImprovementValue = 5f
+            // Placeholder, let's for now assume the tile improvement yields 5 science, to let the AI in Civ6 mod build Campuses etc.
+            buildingStats[Stat.Science] += tileImprovementValue
+        }
     }
 }
