@@ -122,7 +122,7 @@ class ResourcesOverviewTab(
         TradeOffer("Trade offer","Trade offer", "Resources we're offering in trades")
         ;
         companion object {
-            fun safeValueOf(name: String) = values().firstOrNull { it.name == name }
+            fun safeValueOf(name: String) = entries.firstOrNull { it.name == name }
         }
     }
     private val fixedContent = Table()
@@ -284,7 +284,7 @@ class ResourcesOverviewTab(
         /** Show unlocked **strategic** resources even if you have no access at all */
         for (resource in viewingPlayer.gameInfo.ruleset.tileResources.values) {
             if (resource.resourceType != ResourceType.Strategic) continue
-            if (resource.revealedBy == null || viewingPlayer.tech.isResearched(resource.revealedBy!!))
+            if (viewingPlayer.tech.isRevealed(resource))
                 newResourceSupplyList.add(resource, "No source", 0)
         }
 

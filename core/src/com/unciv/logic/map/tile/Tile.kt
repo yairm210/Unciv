@@ -531,13 +531,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isCoastalTile() = _isCoastalTile
 
     fun hasViewableResource(civInfo: Civilization): Boolean =
-            resource != null && (tileResource.revealedBy == null || civInfo.tech.isResearched(
-                tileResource.revealedBy!!))
+            resource != null && civInfo.tech.isRevealed(tileResource)
 
     fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
     fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
     fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
-    fun getTilesAtDistance(distance: Int): Sequence<Tile> =tileMap.getTilesAtDistance(position, distance)
+    fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position, distance)
 
     fun getDefensiveBonus(includeImprovementBonus: Boolean = true): Float {
         var bonus = baseTerrainObject.defenceBonus

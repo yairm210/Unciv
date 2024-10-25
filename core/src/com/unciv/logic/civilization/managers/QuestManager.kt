@@ -770,7 +770,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         val resourcesOnMap = civ.gameInfo.tileMap.values.asSequence().mapNotNull { it.resource }.distinct()
         val viewableResourcesForChallenger = resourcesOnMap.map { ruleset.tileResources[it]!! }
-                .filter { it.revealedBy == null || challenger.tech.isResearched(it.revealedBy!!) }
+                .filter { challenger.tech.isRevealed(it) }
 
         val notOwnedResources = viewableResourcesForChallenger.filter {
             it.resourceType != ResourceType.Bonus &&

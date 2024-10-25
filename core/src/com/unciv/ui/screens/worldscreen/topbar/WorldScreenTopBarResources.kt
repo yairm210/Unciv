@@ -97,8 +97,7 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
 
             val amount = civResources[resource.name] ?: 0
 
-            if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)
-                && amount == 0) // You can trade for resources you cannot process yourself yet
+            if (!civInfo.tech.isRevealed(resource) && amount == 0) // You cannot trade for resources you cannot process yourself yet
                 continue
 
             resourcesWrapper.add(icon).padLeft(if (index == 0) 0f else extraPadBetweenResources)
