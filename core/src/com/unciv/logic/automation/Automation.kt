@@ -78,31 +78,28 @@ object Automation {
             growthFood = max(yieldStats.food + surplusFood, 0f)
         val feedFood = yieldStats.food - growthFood // how much to feed pop
         // avoid growth, only count Food that gets you not-starving, but no more
+        // will be 0 if not starving
         if (city.avoidGrowth) {
-            if (starving)
-                yieldStats.food = feedFood
-            else
-                yieldStats.food = 0f
+            yieldStats.food = feedFood
+            growthFood = 0f // also zero out excess beyond needed to not starve
         }
         // Apply base weights
         yieldStats.applyRankingWeights()
 
-        if (starving) // starving, need Food, scale feedFood by 8(super important)*14(base weight)
-            yieldStats.food += feedFood * 111
-        else {
-            if (cityAIFocus in CityFocus.zeroFoodFocuses) {
-                // Focus on non-food/growth
-                if (city.civ.getHappiness() < 1)
-                    yieldStats.food /= 4
-            } else {
-                // NoFocus or Food/Growth Focus.
-                if (city.civ.getHappiness() > -1)
-                    yieldStats.food *= 2 //1.5f is preferred, but 2 provides more protection against badly configured personalities
-                else if (city.civ.getHappiness() < 0) {
-                    // 75% of excess food is wasted when in negative happiness
-                    yieldStats.food /= 4
-                }
-            }
+        // if starving, need Food, scale feedFood by 14(base weight)*8(super important)
+        yieldStats.food += feedFood * (14 * 8 - 1)
+        // growthFood is any food not required to meet Starvation
+        if (cityAIFocus in CityFocus.zeroFoodFocuses) {
+            // Focus on non-food/growth
+            // 75% of excess food is wasted when in negative happiness
+            if (city.civ.getHappiness() < 1)
+                yieldStats.food += growthFood * (14 / 4 - 1) // see below
+        } else {
+            // NoFocus or Food/Growth Focus.
+            if (city.civ.getHappiness() > -1)
+                yieldStats.food += growthFood * (14 * 2 - 1) //1.5f is preferred, but 2 provides more protection against badly configured personalities
+            else
+                yieldStats.food += growthFood * (14 / 4 - 1)
         }
 
         if (city.population.population < 10) {
