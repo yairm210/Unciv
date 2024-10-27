@@ -296,7 +296,7 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addSleepActions(unit: MapUnit, tile: Tile) {
-        if (unit.isFortified() || unit.canFortify() || !unit.hasMovement()) return
+        if (unit.isFortified() || unit.canFortify() || unit.isGuarding() || !unit.hasMovement()) return
         if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
 
         yield(UnitAction(UnitActionType.Sleep,

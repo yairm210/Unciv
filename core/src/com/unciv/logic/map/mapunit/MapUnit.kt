@@ -237,9 +237,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
 
     fun isFortified() = action?.startsWith(UnitActionType.Fortify.value) == true
+    fun isGuarding() = action?.equals(UnitActionType.Guard.value) == true
     fun isFortifyingUntilHealed() = isFortified() && isActionUntilHealed()
     fun getFortificationTurns(): Int {
-        if (!isFortified()) return 0
+        if (!(isFortified() || isGuarding())) return 0
         return turnsFortified
     }
 
@@ -260,7 +261,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
-    fun isGuarding() = action == UnitActionType.Guard.value
 
     /**
      * @param includeOtherEscortUnit determines whether this method will also check if it's other escort unit is idle if it has one

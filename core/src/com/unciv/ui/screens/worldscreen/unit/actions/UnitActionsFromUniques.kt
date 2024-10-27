@@ -166,15 +166,26 @@ object UnitActionsFromUniques {
     }
 
     // Instead of Withdrawing, stand your ground!
-    // Only available if unit can't Fortify and *could* withdraw
+    // Different than Fortify
     internal fun getGuardActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         if (!unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat)) return emptySequence()
-        if (unit.canFortify()) return emptySequence()
+        
+        if (unit.isGuarding()) {
+            val title = if (unit.canFortify()) "${"Guarding".tr()} ${unit.getFortificationTurns() * 20}%" else "Guarding".tr()
+            return sequenceOf(UnitAction(UnitActionType.Guard,
+                useFrequency = 0f,
+                isCurrentAction = true,
+                title = title
+            ))
+        }
+        
+        if (!unit.hasMovement()) return emptySequence()
+        
         return sequenceOf(UnitAction(UnitActionType.Guard,
             useFrequency = 0f,
             action = {
                 unit.action = UnitActionType.Guard.value
-            }.takeIf { unit.hasMovement() })
+            }.takeIf { !unit.isGuarding() })
         )
     }
 

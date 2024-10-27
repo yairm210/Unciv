@@ -105,5 +105,8 @@ class UnitUpgradeManager(val unit: MapUnit) {
         // wake up if lost ability to fortify
         if (newUnit.isFortified() && !newUnit.canFortify(ignoreAlreadyFortified = true))
             newUnit.action = null
+        // wake up from Guarding if can't Withdraw
+        if (newUnit.isGuarding() && !newUnit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat))
+            newUnit.action = null
     }
 }

@@ -376,7 +376,7 @@ class UnitMovement(val unit: MapUnit) {
             unit.removeFromTile() // we "teleport" them away
             unit.putInTile(allowedTile)
             // Cancel sleep or fortification if forcibly displaced - for now, leave movement / auto / explore orders
-            if (unit.isSleeping() || unit.isFortified())
+            if (unit.isSleeping() || unit.isFortified() || unit.isGuarding())
                 unit.action = null
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
 
@@ -435,7 +435,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
-        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping())
+        if (unit.isFortified() || unit.isGuarding() || unit.isSetUpForSiege() || unit.isSleeping())
             unit.action = null // un-fortify/un-setup/un-sleep after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
