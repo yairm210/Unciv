@@ -497,10 +497,11 @@
     ]
   },
   {
-    "name": "Guard",
+    "name": "Fortify, Guard, Withdraw",
     "civilopediaText": [
+        {"text": "Most Land units have the ability to Fortify. As they spend time without moving, they will slowly gain a Fortification Bonus to their Combat Strength representing digging in and preparing in case of an attack."},
         {"text":"Some units have the ability to Withdraw before a melee attack is struck. However, perhaps you wish for them to stand their ground to protect a particular tile. If you do, then give them the Guard command and they will stay fixed until they die or you give them fresh orders."},
-        {"text":"This is NOT the same as Fortify and they will gain no defensive bonus. They will simply not utilize their Withdraw ability."}
+        {"text":"This is NOT the same as Fortify but they will still gain the Fortification Bonus. They will simply not utilize their Withdraw ability. Fortified units with the Withdraw ability will try to flee when attacked."}
     ]
   },
   {
