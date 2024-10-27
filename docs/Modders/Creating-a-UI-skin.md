@@ -72,6 +72,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | LoadGameScreen/ | TopTable | null | |
 | MainMenuScreen/ | Background | null | |
 | MainMenuScreen/ | MenuButton | roundedEdgeRectangle | |
+| MainMenuScreen/ | Version | roundedEdgeRectangle | |
 | MapEditor/MapEditorToolsDrawer/ | Handle | null | |
 | ModManagementOptions/ | ExpanderTab | null | |
 | ModManagementScreen/ | BottomTable | null | |
