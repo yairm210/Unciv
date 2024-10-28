@@ -96,6 +96,13 @@ object Automation {
                 yieldStats.food /= 4
         }
 
+        for (unique in city.getMatchingUniques(UniqueType.StatPercentBonusCities)) { 
+            //Take into account modifiers to rank stats for citizen assignment
+            val statType = Stat.valueOf(unique.params[1])
+            val statModifier = 1 + unique.params[0].toFloat() / 100f
+            yieldStats[statType] *= statModifier
+            }
+
         if (city.population.population < 10) {
             // "small city" - we care more about food and less about global problems like gold science and culture
             // Food already handled above. Gold/Culture have low weights in Stats already
@@ -114,11 +121,6 @@ object Automation {
             yieldStats.happiness *= 3 
         }
         
-        if (city.civ.getHappiness() < 10) { 
-            //Base game and most mods apply a -50% production penalty when in negative happiness 
-            yieldStats.production /= 2
-        }
-
         if (allTechsAreResearched) {
             // Science is useless at this point
             yieldStats.science *= 0
