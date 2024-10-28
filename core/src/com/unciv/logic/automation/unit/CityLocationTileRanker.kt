@@ -108,9 +108,9 @@ object CityLocationTileRanker {
         // A city centre is the only good tile improvement on these tiles
         if (onSnowOrDesert) tileValue += 4
         if (newCityTile.resource != null) {
-            tileValue -= 15
+            tileValue -= 12
             // Applying a penalty, so we don't overvalue settling on resources by too much
-            if (newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 12
+            if (newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 9
             // Food resources on grassland increase our city centre yields
             // Not as much in Rekmod, however...
             if (newCityTile.tileResource.resourceType == ResourceType.Strategic && !onPlainsOrHill) tileValue -= 10
