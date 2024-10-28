@@ -88,8 +88,11 @@ object Automation {
             growthFood = 0f
         }
 
-        // if starving, need Food, so feedFood > 0
+        // If starving, need Food, so feedFood > 0
         // scale feedFood by 14(base weight)*8(super important)
+        // By only scaling what we need to reach Not Starving by x8, we can pick a tile that gives
+        // exactly as much Food as we need to Not Starve that also has other good yields instead of
+        // always picking the Highest Food tile until Not Starving
         yieldStats.food = feedFood * (14 * 8)
         // growthFood is any additional food not required to meet Starvation
         if (cityAIFocus in CityFocus.zeroFoodFocuses) {
