@@ -226,7 +226,7 @@ object BattleDamage {
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
 
-            if (defender.unit.isFortified())
+            if (defender.unit.isFortified() || defender.unit.isGuarding())
                 modifiers["Fortification"] = BattleConstants.FORTIFICATION_BONUS * defender.unit.getFortificationTurns()
         }
 

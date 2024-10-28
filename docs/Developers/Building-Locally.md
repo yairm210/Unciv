@@ -45,7 +45,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
 
 Unciv uses Gradle to specify dependencies and how to run. In the background, the Gradle gnomes will be off fetching the packages (a one-time effort) and, once that's done, will build the project!
 
-Unciv uses Gradle 8.2 and the Android Gradle Plugin 8.2.2. Can check in File > Project Structure > Project
+Unciv uses Gradle 8.7 and the Android Gradle Plugin 8.5. Can check in File > Project Structure > Project
 
 > Note: advanced build commands (as described in the next paragraph), specifically `gradlew desktop:dist` to build a jar, run just fine in Android Studio's terminal (Alt+F12), with most dependencies already taken care of.
 
