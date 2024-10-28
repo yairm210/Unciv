@@ -146,7 +146,7 @@ open class Stats(
     /** **Mutating function**
      * Apply weighting for Production Ranking */
     fun applyRankingWeights() {
-        food *= 14
+        //food *= 14  // Do weighting in rankStatsForCityWork() instead
         production *= 12
         gold *= 6 // 2 gold worth about 1 production
         science *= 9

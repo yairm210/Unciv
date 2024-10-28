@@ -21,7 +21,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.victoryscreen.RankingType
-import kotlin.math.max
+import kotlin.math.min
+
 
 object Automation {
 
@@ -72,24 +73,25 @@ object Automation {
             yieldStats.production += cityStatsObj.getProductionFromExcessiveFood(surplusFood+yieldStats.food) - cityStatsObj.getProductionFromExcessiveFood(surplusFood)
             yieldStats.food = 0f  // all food goes to 0
         }
-
-        var growthFood =
-            yieldStats.food  // amount of food yield beyond needed to avoid starving, default all
-        if (starving)
-            growthFood = max(yieldStats.food + surplusFood, 0f)
-        val feedFood = yieldStats.food - growthFood // how much to feed pop
-        // avoid growth, only count Food that gets you not-starving, but no more
-        // will be 0 if not starving
-        if (city.avoidGrowth) {
-            yieldStats.food = feedFood
-            growthFood = 0f // also zero out excess beyond needed to not starve
-        }
+        
         // Apply base weights
         yieldStats.applyRankingWeights()
 
-        // if starving, need Food, scale feedFood by 14(base weight)*8(super important)
-        yieldStats.food += feedFood * (14 * 8 - 1)
-        // growthFood is any food not required to meet Starvation
+        // Split Food Yield into feedFood, amount needed to not Starve
+        // and growthFood, any amount above that
+        var feedFood = 0f
+        if (starving)
+            feedFood = min(yieldStats.food, -surplusFood).coerceAtLeast(0f)
+        var growthFood = yieldStats.food - feedFood // how much extra Food we yield
+        // Avoid Growth, only count Food that gets you not-starving, but no more
+        if (city.avoidGrowth) {
+            growthFood = 0f
+        }
+
+        // if starving, need Food, so feedFood > 0
+        // scale feedFood by 14(base weight)*8(super important)
+        yieldStats.food = feedFood * (14 * 8)
+        // growthFood is any additional food not required to meet Starvation
         if (cityAIFocus in CityFocus.zeroFoodFocuses) {
             // Focus on non-food/growth
             // Reduce excess food focus to prevent Happiness spiral
@@ -97,14 +99,12 @@ object Automation {
                 yieldStats.food += growthFood * (14 / 4 - 1)
         } else {
             // NoFocus or Food/Growth Focus.
-            // Happy, so default Food weighting
-            // EmperorPenguin has run sims comparing weights
+            // When Happy, EmperorPenguin has run sims comparing weights
             // 1.5f is preferred,
             // but 2 provides more protection against badly configured personalities
-            if (city.civ.getHappiness() > -1)
-                yieldStats.food += growthFood * (14 * 2 - 1)
-            else
-                yieldStats.food += growthFood * (14 / 4 - 1) // see above
+            // If unhappy, see above
+            val growthFoodScaling = if (city.civ.getHappiness() >= 0) 14 * 2 else 14 / 4
+            yieldStats.food += growthFood * (growthFoodScaling - 1)
         }
 
         if (city.population.population < 10) {
