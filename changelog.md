@@ -1,3 +1,19 @@
+## 4.14.1
+
+Resolved  - 'upon gaining/losing the [promotion] status/promotion' triggers now work correctly
+
+Resolved  - Allow AI to use perpetual culture/faith conversions
+
+chore: Use new tech.isRevealed(resource) in other places
+
+LibGDX 1.13.0 
+
+Resolved  - Added version to main menu
+
+By itanasi:
+- Creating Guard Action 
+- Align Civilopedia on Idle Units and Wait command to current behavior 
+
 ## 4.14.0
 
 Wait action selects next unit
