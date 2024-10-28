@@ -108,14 +108,14 @@ object CityLocationTileRanker {
         // A city centre is the only good tile improvement on these tiles
         if (onSnowOrDesert) tileValue += 4
         if (newCityTile.resource != null) {
-            tileValue -= 10
+            tileValue -= 15
             // Applying a penalty, so we don't overvalue settling on resources by too much
-            if (newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 7
+            if (newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 12
             // Food resources on grassland increase our city centre yields
             // Not as much in Rekmod, however...
             if (newCityTile.tileResource.resourceType == ResourceType.Strategic && !onPlainsOrHill) tileValue -= 10
             // Production resources on hills/plains increase or city centre yields
-            if (newCityTile.tileResource.resourceType == ResourceType.Luxury && newCityTile.tileResource.matchesFilter("Salt")) tileValue -= 30
+            if (newCityTile.tileResource.resourceType == ResourceType.Luxury && newCityTile.tileResource.matchesFilter("Salt")) tileValue -= 20
             // Players don't like seeing the AI build cities on Salt in G&K
             // Settling on other generally is generally good (arguably also on Salt if BNW unhappiness penalties would apply) 
         }
