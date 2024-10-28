@@ -485,7 +485,7 @@ object Battle {
                 if (!attacker.unit.baseUnit.movesLikeAirUnits && !(attacker.isMelee() && defender.isDefeated()))
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
-            if (unit.isFortified() || unit.isSleeping())
+            if (unit.isFortified() || unit.isSleeping() || unit.isGuarding())
                 attacker.unit.action = null // but not, for instance, if it's Set Up - then it should definitely keep the action!
         } else if (attacker is CityCombatant) {
             attacker.city.attackedThisTurn = true
@@ -640,7 +640,8 @@ object Battle {
         if (defender.unit.isEmbarked()) return false
         if (defender.unit.cache.cannotMove) return false
         if (defender.unit.isEscorting()) return false // running away and leaving the escorted unit defeats the purpose of escorting
-
+        if (defender.unit.isGuarding()) return false // guarding this post and will fight to the death!
+        
         // Promotions have no effect as per what I could find in available documentation
         val fromTile = defender.getTile()
         val attackerTile = attacker.getTile()

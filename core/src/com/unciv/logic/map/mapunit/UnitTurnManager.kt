@@ -24,10 +24,12 @@ class UnitTurnManager(val unit: MapUnit) {
                 tile.getCity()?.shouldReassignPopulation = true
         }
 
-        if (!unit.hasUnitMovedThisTurn() && unit.isFortified() && unit.turnsFortified < 2) {
+        if (!unit.hasUnitMovedThisTurn()
+            && (unit.isFortified() || (unit.isGuarding() && unit.canFortify()))
+            && unit.turnsFortified < 2) {
             unit.turnsFortified++
         }
-        if (!unit.isFortified())
+        if (!unit.isFortified() && !unit.isGuarding())
             unit.turnsFortified = 0
 
         if (!unit.hasUnitMovedThisTurn() || unit.hasUnique(UniqueType.HealsEvenAfterAction))

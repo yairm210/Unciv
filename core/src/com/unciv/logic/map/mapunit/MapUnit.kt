@@ -237,9 +237,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
 
     fun isFortified() = action?.startsWith(UnitActionType.Fortify.value) == true
+    fun isGuarding() = action?.equals(UnitActionType.Guard.value) == true
     fun isFortifyingUntilHealed() = isFortified() && isActionUntilHealed()
     fun getFortificationTurns(): Int {
-        if (!isFortified()) return 0
+        if (!(isFortified() || isGuarding())) return 0
         return turnsFortified
     }
 
@@ -273,7 +274,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 !tile.isMarkedForCreatesOneImprovement()
         ) return false
         if (includeOtherEscortUnit && isEscorting() && !getOtherEscortUnit()!!.isIdle(false)) return false
-        return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
+        return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving() || isGuarding())
     }
 
     fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
