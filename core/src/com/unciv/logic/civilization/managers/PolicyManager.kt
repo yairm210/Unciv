@@ -194,7 +194,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     fun canAdoptPolicy(): Boolean {
         if (civInfo.isSpectator()) return false
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy()) return false
-        if (!allPoliciesAdopted(true)) return false
+        if (allPoliciesAdopted(true)) return false
         return true
     }
     
