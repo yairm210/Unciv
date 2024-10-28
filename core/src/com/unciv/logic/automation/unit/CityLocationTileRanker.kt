@@ -89,9 +89,11 @@ object CityLocationTileRanker {
 
         val onCoast = newCityTile.isCoastalTile()
         val onHill = newCityTile.isHill()
-        val onGrassland = !onHill && newCityTile.baseTerrain == "Grassland"
-        val onPlainsOrHill = onHill || newCityTile.baseTerrain == "Plains" // Also Mycelium in AF
-        val onSnowOrDesert = !onHill && (newCityTile.baseTerrain == "Snow" || newCityTile.baseTerrain == "Desert")
+        val foodStats = newCityTile.stats.tile.getBaseTerrain().food.toInt()
+        val productionStats = newCityTile.stats.tile.getBaseTerrain().production.toInt()
+        val onGrassland = !onHill && foodStats >= 2
+        val onPlainsOrHill = onHill || productionStats >= 1
+        val onSnowOrDesert = !onHill && foodStats == 0 && productionStats == 0
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
