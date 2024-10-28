@@ -99,7 +99,7 @@ object Automation {
             // Focus on non-food/growth
             // Reduce excess food focus to prevent Happiness spiral
             if (city.civ.getHappiness() < 1)
-                yieldStats.food += growthFood * (14 / 4 - 1)
+                yieldStats.food += growthFood * (14 / 4)
         } else {
             // NoFocus or Food/Growth Focus.
             // When Happy, EmperorPenguin has run sims comparing weights
@@ -107,7 +107,7 @@ object Automation {
             // but 2 provides more protection against badly configured personalities
             // If unhappy, see above
             val growthFoodScaling = if (city.civ.getHappiness() >= 0) 14 * 2 else 14 / 4
-            yieldStats.food += growthFood * (growthFoodScaling - 1)
+            yieldStats.food += growthFood * growthFoodScaling
         }
 
         if (city.population.population < 10) {
