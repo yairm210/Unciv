@@ -652,10 +652,9 @@ object NextTurnAutomation {
 
         for (civ1city in civ1.cities)
             for (civ2city in civ2.cities){
-                val currentDistance = CityDistance(civ1city, civ2city,
-                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile()))
-                if (minDistance == null || currentDistance.aerialDistance < minDistance.aerialDistance)
-                    minDistance = currentDistance
+                val currentDistance = civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())
+                if (minDistance == null || currentDistance < minDistance.aerialDistance)
+                    minDistance = CityDistance(civ1city, civ2city, currentDistance)
                 }
 
         return minDistance
