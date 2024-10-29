@@ -93,7 +93,7 @@ object CityLocationTileRanker {
         val productionStats = newCityTile.stats.tile.getBaseTerrain().production.toInt()
         val onGrassland = !onHill && foodStats >= 2
         val onPlainsOrHill = onHill || productionStats >= 1
-        val onSnowOrDesert = !onHill && foodStats == 0 && productionStats == 0
+        val onSnowOrDesert = newCityTile.terrainFeatures.isEmpty() && foodStats == 0 && productionStats == 0
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
@@ -165,7 +165,7 @@ object CityLocationTileRanker {
         if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
-        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
+        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 5
         // Check if there are any new unique luxury resources
         if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
             && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
