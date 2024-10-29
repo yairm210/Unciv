@@ -531,7 +531,7 @@ class WorkerAutomation(
         if (tile.hasViewableResource(civInfo)) valueOfFort -= 1
 
         // if this place is not perfect, let's see if there is a better one
-        val nearestTiles = tile.getTilesInDistance(1).filter { it.owningCity?.civ == civInfo }.toList()
+        val nearestTiles = tile.getTilesInDistance(1).filter { it.owningCity?.civ == civInfo }
         for (closeTile in nearestTiles) {
             // don't build forts too close to the cities
             if (closeTile.isCityCenter()) {

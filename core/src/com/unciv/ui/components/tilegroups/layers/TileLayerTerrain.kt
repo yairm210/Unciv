@@ -54,7 +54,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val baseHexagon = if (strings().tileSetConfig.useColorAsBaseTerrain)
             listOf(strings().hexagon)
-        else listOf()
+        else emptyList()
 
         val tile = tileGroup.tile
 
