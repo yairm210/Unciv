@@ -191,7 +191,6 @@ object SpecificUnitAutomation {
             return
         }
         unit.movement.headTowards(bestCityLocation)
-        
         if (unit.getTile() == bestCityLocation && unit.hasMovement())
             foundCityAction.action.invoke()
     }
