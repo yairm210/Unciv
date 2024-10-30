@@ -184,7 +184,7 @@ object Automation {
         var removeShips = true
         var isMissingNavalUnitsForCityDefence = false
 
-        fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
+        fun isNavalUnit(unit: BaseUnit) = unit.isMilitary && unit.type.isWaterUnit()
         if (city.isCoastal()) {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID
@@ -194,10 +194,10 @@ object Automation {
 
             val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
                 .count { it.isCityCenter() && it.getOwner() == city.civ }
-            val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
+            val numberOfOurNavalUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
                 .flatMap { it.getUnits() }
-                .count { isNavalMeleeUnit(it.baseUnit) }
-            isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
+                .count { isNavalUnit(it.baseUnit) }
+            isMissingNavalUnitsForCityDefence = 3 * numberOfOurConnectedCities > numberOfOurNavalUnits
 
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
@@ -227,9 +227,9 @@ object Automation {
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
         }
-        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }) {
+        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalUnit(it) }) {
             chosenUnit = militaryUnits
-                .filter { isNavalMeleeUnit(it) }
+                .filter { isNavalUnit(it) }
                 .maxBy { it.cost }
         }
         else { // randomize type of unit and take the most expensive of its kind
