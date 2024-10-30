@@ -102,7 +102,7 @@ object CityLocationTileRanker {
         // Hills are free production and defence
         if (onHill) tileValue += 7
         // Observatories are good, but current implementation not mod-friendly
-        if (isNextToMountain) tileValue += 5
+        if (isNextToMountain) tileValue += 6
         // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
         if (newCityTile.isAdjacentToRiver()) tileValue += 20
         // A city centre is the only good tile improvement on these tiles
@@ -110,7 +110,7 @@ object CityLocationTileRanker {
         if (newCityTile.resource != null) {
             tileValue -= 12
             // Applying a penalty, so we don't overvalue settling on resources by too much
-            if (newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 9
+            if (newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 10
             // Food resources on grassland increase our city centre yields
             // Not as much in Rekmod, however...
             if (newCityTile.tileResource.resourceType == ResourceType.Strategic && !onPlainsOrHill) tileValue -= 10
