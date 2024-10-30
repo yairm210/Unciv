@@ -232,7 +232,7 @@ class WorkerAutomation(
         if (!tile.hasViewableResource(civInfo) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
                 .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
         ) return false
-        if (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true) return false
+        if (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true && !tile.isPillaged()) return false
         return true
     }
 
@@ -248,6 +248,7 @@ class WorkerAutomation(
         var priority = 0f
         if (tile.getOwner() == civInfo) {
             priority += Automation.rankStatsValue(tile.stats.getTerrainStatsBreakdown().toStats(), civInfo)
+
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.hasFalloutEquivalent()) priority += 1
@@ -270,8 +271,6 @@ class WorkerAutomation(
         tileRankings[tile] = TileImprovementRank(priority)
         return priority + unitSpecificPriority
     }
-
-
     /**
      * Calculates the priority building the improvement on the tile
      */
@@ -296,6 +295,7 @@ class WorkerAutomation(
 
             if (tile.improvement != null && tile.isPillaged() && tile.owningCity != null) {
                 // Value repairing higher when it is quicker and is in progress
+                
                 var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
 
@@ -307,6 +307,7 @@ class WorkerAutomation(
                 }
             }
         }
+
         // A better tile than this unit can build might have been stored in the cache
         if (!rank.repairImprovment!! && (rank.bestImprovement == null ||
                 !unit.canBuildImprovement(rank.bestImprovement!!, tile))) return -100f
