@@ -190,17 +190,7 @@ object SpecificUnitAutomation {
                 throw Exception("City within distance")
             return
         }
-
         unit.movement.headTowards(bestCityLocation)
-        
-        // This if setement is to check if settler is on the bast tile and has no escort unit and its in a dangerous Tiles and can still move.
-        // then settle there 
-        if (bestTilesInfo.tileRankMap.containsKey(unit.getTile()) && unit.getOtherEscortUnit() == null && dangerousTiles.contains(unit.getTile())
-            && unit.hasMovement()) {
-            foundCityAction.action.invoke()
-            return
-        }
-
         
         if (unit.getTile() == bestCityLocation && unit.hasMovement())
             foundCityAction.action.invoke()
