@@ -89,11 +89,6 @@ object CityLocationTileRanker {
 
         val onCoast = newCityTile.isCoastalTile()
         val onHill = newCityTile.isHill()
-        val foodStats = newCityTile.stats.tile.getBaseTerrain().food.toInt()
-        val productionStats = newCityTile.stats.tile.getBaseTerrain().production.toInt()
-        val onGrassland = !onHill && foodStats >= 2
-        val onPlainsOrHill = onHill || productionStats >= 1
-        val onSnowOrDesert = newCityTile.terrainFeatures.isEmpty() && foodStats == 0 && productionStats == 0
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
         // Only count a luxary resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
@@ -102,23 +97,16 @@ object CityLocationTileRanker {
         // Hills are free production and defence
         if (onHill) tileValue += 7
         // Observatories are good, but current implementation not mod-friendly
-        if (isNextToMountain) tileValue += 6
+        if (isNextToMountain) tileValue += 5
         // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
         if (newCityTile.isAdjacentToRiver()) tileValue += 20
-        // A city centre is the only good tile improvement on these tiles
-        if (onSnowOrDesert) tileValue += 4
-        if (newCityTile.resource != null) {
-            tileValue -= 12
-            // Applying a penalty, so we don't overvalue settling on resources by too much
-            if (newCityTile.tileResource.resourceType == ResourceType.Bonus && onGrassland) tileValue += 10
-            // Food resources on grassland increase our city centre yields
-            // Not as much in Rekmod, however...
-            if (newCityTile.tileResource.resourceType == ResourceType.Strategic && !onPlainsOrHill) tileValue -= 10
-            // Production resources on hills/plains increase or city centre yields
-            if (newCityTile.tileResource.resourceType == ResourceType.Luxury && newCityTile.tileResource.matchesFilter("Salt")) tileValue -= 20
-            // Players don't like seeing the AI build cities on Salt in G&K
-            // Settling on other generally is generally good (arguably also on Salt if BNW unhappiness penalties would apply) 
-        }
+        // We want to found the city on an oasis because it can't be improved otherwise
+        if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
+        // If we build the city on a resource tile, then we can't build any special improvements on it
+        if (newCityTile.resource != null) tileValue -= 4
+        if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
+        // Settling on bonus resources tends to waste a food
+        // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
         var tiles = 0
         for (i in 0..3) {
@@ -148,13 +136,13 @@ object CityLocationTileRanker {
                 distanceToCity == 7 -> 2f
                 distanceToCity == 6 -> 4f
                 distanceToCity == 5 -> 8f // Settling further away sacrifices tempo
-                distanceToCity == 4 -> 7f
+                distanceToCity == 4 -> 6f
                 distanceToCity == 3 -> -25f
                 distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
             // We want a defensive ring around our capital
-            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 3 else 1
+            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
             modifier += distanceToCityModifier
         }
         return modifier
@@ -165,7 +153,7 @@ object CityLocationTileRanker {
         if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
-        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 5
+        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
         // Check if there are any new unique luxury resources
         if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
             && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
@@ -186,7 +174,7 @@ object CityLocationTileRanker {
                 ResourceType.Luxury -> 10f * rankTile.resourceAmount //very important for humans who might want to conquer the AI
             }
         }
-        if (rankTile.terrainHasUnique(UniqueType.FreshWater)) rankTileValue += 0.5f 
+        if (rankTile.terrainHasUnique(UniqueType.FreshWater)) rankTileValue += 0.5f
         //Taking into account freshwater farm food, maybe less important in baseruleset mods
         if (rankTile.terrainFeatures.isNotEmpty() && rankTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) rankTileValue += 0.5f
         //Taking into account yields from forest chopping

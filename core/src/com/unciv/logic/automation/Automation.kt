@@ -113,11 +113,8 @@ object Automation {
             // We have a global problem, we need to deal with it before it leads to science loss
             yieldStats.gold *= 2
         }
-
-        if (city.civ.getHappiness() < 10) { 
-            //We've got an severe problem, try to get happiness by any means 
-            yieldStats.happiness *= 8 }
-        else if (city.civ.getHappiness() < 0) {
+        
+        if (city.civ.getHappiness() < 0) {
             yieldStats.happiness *= 3 
         }
         
