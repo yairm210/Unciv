@@ -7,7 +7,7 @@ object BuildConfig {
     const val appCodeNumber = 1063
     const val appVersion = "4.14.1"
 
-    const val gdxVersion = "1.13.0"
+    const val gdxVersion = "1.12.1"
     const val ktorVersion = "2.3.12"
     const val coroutinesVersion = "1.8.1"
 
