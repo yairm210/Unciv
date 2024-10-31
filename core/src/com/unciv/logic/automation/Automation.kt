@@ -92,7 +92,7 @@ object Automation {
                 yieldStats.food *= 0
             else if (city.civ.getHappiness() < 1)
                 // 75% of excess food is wasted when in negative happiness
-                // 0 Happiness is positive happiness, but let's keep a 1-Happiness margin to account for e.g. Rationalism opener
+                // 0 Happiness is positive happiness, but let's keep a 1-Happiness margin
                 yieldStats.food /= 4
         }
 
