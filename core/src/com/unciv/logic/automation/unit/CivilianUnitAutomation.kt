@@ -30,7 +30,7 @@ object CivilianUnitAutomation {
             if (tilesCanMoveTo.isNotEmpty())
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
-        
+
         if (unit.isAutomatingRoadConnection())
             return unit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
 
