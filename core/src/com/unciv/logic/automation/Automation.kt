@@ -113,11 +113,11 @@ object Automation {
             // We have a global problem, we need to deal with it before it leads to science loss
             yieldStats.gold *= 2
         }
-        
+
         if (city.civ.getHappiness() < 0) {
             yieldStats.happiness *= 3 
         }
-        
+
         if (allTechsAreResearched) {
             // Science is useless at this point
             yieldStats.science *= 0
