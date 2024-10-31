@@ -232,7 +232,7 @@ class WorkerAutomation(
         if (!tile.hasViewableResource(civInfo) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
                 .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
         ) return false
-        if (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true) return false
+        if (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true && !tile.isPillaged()) return false
         return true
     }
 
@@ -270,8 +270,6 @@ class WorkerAutomation(
         tileRankings[tile] = TileImprovementRank(priority)
         return priority + unitSpecificPriority
     }
-
-
     /**
      * Calculates the priority building the improvement on the tile
      */

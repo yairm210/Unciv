@@ -190,7 +190,6 @@ object SpecificUnitAutomation {
                 throw Exception("City within distance")
             return
         }
-
         unit.movement.headTowards(bestCityLocation)
         if (unit.getTile() == bestCityLocation && unit.hasMovement())
             foundCityAction.action.invoke()
