@@ -214,12 +214,12 @@ class AlertPopup(
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
-        addButton("We are not interested.", KeyboardBinding.Cancel) {
+        addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
+            playerDiploManager.signDeclarationOfFriendship()
+        }.row()
+        addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
             playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
         }.row()
-        addButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
-            playerDiploManager.signDeclarationOfFriendship()
-        }
     }
 
     private fun addDefeated() {
@@ -242,7 +242,6 @@ class AlertPopup(
         addCloseButton("We shall do as we please.", KeyboardBinding.Cancel) {
             playerDiploManager.refuseDemandNotToSettleNear()
         }
-        
     }
 
     private fun addDemandToStopSpreadingReligion() {
