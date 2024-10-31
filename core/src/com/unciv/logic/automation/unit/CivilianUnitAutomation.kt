@@ -18,6 +18,11 @@ object CivilianUnitAutomation {
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+        if (unit.hasUnique(UniqueType.FoundCity))
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
+
+        if (tryRunAwayIfNeccessary(unit)) return
+
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
             // First off get out of the way, then decide if you actually want to do something else
             val tilesCanMoveTo = unit.movement.getDistanceToTiles()
@@ -25,12 +30,7 @@ object CivilianUnitAutomation {
             if (tilesCanMoveTo.isNotEmpty())
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
-
-        if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
         
-        if (tryRunAwayIfNeccessary(unit)) return
-
         if (unit.isAutomatingRoadConnection())
             return unit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
 
