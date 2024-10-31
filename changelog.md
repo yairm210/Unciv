@@ -1,3 +1,29 @@
+## 4.14.2
+
+DoF popup requires choosing an option
+
+Downgraded back to LibGDX 1.12.1 to solve Wayland and AWT issues
+
+Resource uniques are initialized correctly
+
+Memory performance improvements
+
+Workers will repair pillaged Great improvement tiles - By Emandac
+
+Avoid Growth blocks New Population - By itanasi
+
+## 4.14.1
+
+Modding: 'upon gaining/losing the [promotion] status/promotion' triggers now work correctly
+
+Allow AI to use perpetual culture/faith conversions
+
+Added version number to main menu
+
+By itanasi:
+- New 'Guard' action for units that can retreat from combat 
+- Align Civilopedia on Idle Units and Wait command to current behavior 
+
 ## 4.14.0
 
 Wait action selects next unit

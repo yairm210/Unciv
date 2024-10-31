@@ -128,6 +128,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 when {
                     PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science.name
                     PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
+                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture.name
+                    PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith.name
                     else -> PerpetualConstruction.idle.name
                 }
             } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {

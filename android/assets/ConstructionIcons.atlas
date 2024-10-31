@@ -1208,6 +1208,13 @@ UnitActionIcons/FortifyUntilHealed
   orig: 100, 100
   offset: 0, 0
   index: -1
+UnitActionIcons/Guard
+  rotate: false
+  xy: 622, 862
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 UnitActionIcons/FoundCity
   rotate: false
   xy: 730, 970

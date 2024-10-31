@@ -232,7 +232,7 @@ class WorkerAutomation(
         if (!tile.hasViewableResource(civInfo) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
                 .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
         ) return false
-        if (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true) return false
+        if (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true && !tile.isPillaged()) return false
         return true
     }
 
@@ -270,8 +270,6 @@ class WorkerAutomation(
         tileRankings[tile] = TileImprovementRank(priority)
         return priority + unitSpecificPriority
     }
-
-
     /**
      * Calculates the priority building the improvement on the tile
      */
@@ -531,7 +529,7 @@ class WorkerAutomation(
         if (tile.hasViewableResource(civInfo)) valueOfFort -= 1
 
         // if this place is not perfect, let's see if there is a better one
-        val nearestTiles = tile.getTilesInDistance(1).filter { it.owningCity?.civ == civInfo }.toList()
+        val nearestTiles = tile.getTilesInDistance(1).filter { it.owningCity?.civ == civInfo }
         for (closeTile in nearestTiles) {
             // don't build forts too close to the cities
             if (closeTile.isCityCenter()) {
