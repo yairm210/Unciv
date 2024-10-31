@@ -1,0 +1,17 @@
+
+
+DoF popup requires choosing an option
+
+Packed versions created with JRE 21
+
+Revert "LibGDX 1.13.0 "
+
+Resource uniques are initialized correctly
+
+perf(memory): Don't even create the data classes for intermediates :)
+
+perf(memory): Don't store city distances intermediately
+
+Fixing workers not repairing tiles with Great improvement when pillaged  - By Emandac
+
+Avoid Growth blocks New Population  - By itanasi
