@@ -2,19 +2,15 @@
 
 DoF popup requires choosing an option
 
-Packed versions created with JRE 21
-
-Revert "LibGDX 1.13.0 "
+Downgraded back to LibGDX 1.12.1 to solve Wayland and AWT issues
 
 Resource uniques are initialized correctly
 
-perf(memory): Don't even create the data classes for intermediates :)
+Memory performance improvements
 
-perf(memory): Don't store city distances intermediately
+Workers will repair pillaged Great improvement tiles - By Emandac
 
-Fixing workers not repairing tiles with Great improvement when pillaged  - By Emandac
-
-Avoid Growth blocks New Population  - By itanasi
+Avoid Growth blocks New Population - By itanasi
 
 ## 4.14.1
 
