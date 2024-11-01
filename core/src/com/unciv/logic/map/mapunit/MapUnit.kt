@@ -300,11 +300,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun getTriggeredUniques(
-            trigger: UniqueType,
-            stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this),
-            modifierFilter: (Unique) -> Boolean = { true }
+        trigger: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this),
+        triggerFilter: (Unique) -> Boolean = { true }
     ): Sequence<Unique> {
-        return tempUniquesMap.getTriggeredUniques(trigger, stateForConditionals, modifierFilter)
+        return tempUniquesMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter)
     }
     
 
@@ -834,10 +834,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
-        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponExpendingUnit))
-            if (unique.getModifiers(UniqueType.TriggerUponExpendingUnit).any { matchesFilter(it.params[0]) })
-                UniqueTriggerActivation.triggerUnique(unique, this,
-                    triggerNotificationText = "due to expending our [${this.name}]")
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponExpendingUnit){ matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerUnique(unique, this,
+                triggerNotificationText = "due to expending our [${this.name}]")
         destroy()
     }
 
@@ -1041,10 +1040,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         statuses.add(status)
         updateUniques()
 
-        for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusGain))
-            if (unique.getModifiers(UniqueType.TriggerUponStatusGain)
-                    .any { it.params[0] == name })
-                UniqueTriggerActivation.triggerUnique(unique, this)
+        for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusGain){ it.params[0] == name })
+            UniqueTriggerActivation.triggerUnique(unique, this)
     }
     
     fun removeStatus(name:String){
@@ -1053,10 +1050,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         
         updateUniques()
 
-        for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusLoss))
-            if (unique.getModifiers(UniqueType.TriggerUponStatusLoss)
-                    .any { it.params[0] == name })
-                UniqueTriggerActivation.triggerUnique(unique, this)
+        for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusLoss){ it.params[0] == name })
+            UniqueTriggerActivation.triggerUnique(unique, this)
     }
 
 

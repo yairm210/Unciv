@@ -541,18 +541,18 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getTriggeredUniques(
         trigger: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(this),
-        modifierFilter: (Unique) -> Boolean = { true }
+        triggerFilter: (Unique) -> Boolean = { true }
     ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, modifierFilter))
+        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
         yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals, modifierFilter) }
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter) }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, stateForConditionals, modifierFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals, modifierFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals, modifierFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals, modifierFilter))
-        yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, modifierFilter))
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals, triggerFilter))
+        yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
 
