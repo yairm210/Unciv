@@ -255,6 +255,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 
                 uniqueValidator.checkUniques(choice, lines, true, tryFixUnknownUniques)
             }
+            uniqueValidator.checkUniques(event, lines, true, tryFixUnknownUniques)
         }
     }
 
