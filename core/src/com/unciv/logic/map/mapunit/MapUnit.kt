@@ -301,13 +301,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getTriggeredUniques(
             trigger: UniqueType,
-            stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this)
+            stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this),
+            modifierFilter: (Unique) -> Boolean = { true }
     ): Sequence<Unique> {
-        return getUniques().filter { unique ->
-            unique.hasModifier(trigger)
-                    && unique.conditionalsApply(stateForConditionals)
-        }
+        return tempUniquesMap.getTriggeredUniques(trigger, stateForConditionals, modifierFilter)
     }
+    
 
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * StateForConditionals is assumed to regarding this mapUnit*/

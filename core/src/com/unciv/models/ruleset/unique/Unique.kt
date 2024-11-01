@@ -323,9 +323,10 @@ open class UniqueMap() {
 
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 
-    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals,
+                            modifierFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
         return getAllUniques().filter { unique ->
-            unique.hasModifier(trigger) && unique.conditionalsApply(stateForConditionals)
+            unique.getModifiers(trigger).any(modifierFilter) && unique.conditionalsApply(stateForConditionals)
         }.flatMap { it.getMultiplied(stateForConditionals) }
     }
     
