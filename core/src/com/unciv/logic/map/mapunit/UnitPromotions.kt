@@ -77,7 +77,8 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
                 UniqueTriggerActivation.triggerUnique(unique, unit)
             
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionGain))
-                if (unique.params[0] == promotionName)
+                if (unique.getModifiers(UniqueType.TriggerUponPromotionGain)
+                        .any { it.params[0] == promotionName })
                     UniqueTriggerActivation.triggerUnique(unique, unit)
         }
 
@@ -106,7 +107,8 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             unit.updateVisibleTiles()
             
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionLoss))
-                if (unique.params[0] == promotionName)
+                if (unique.getModifiers(UniqueType.TriggerUponPromotionLoss)
+                        .any { it.params[0] == promotionName })
                     UniqueTriggerActivation.triggerUnique(unique, unit)
         }
     }

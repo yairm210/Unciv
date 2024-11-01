@@ -1043,7 +1043,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         updateUniques()
 
         for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusGain))
-            if (unique.params[0] == name)
+            if (unique.getModifiers(UniqueType.TriggerUponStatusGain)
+                    .any { it.params[0] == name })
                 UniqueTriggerActivation.triggerUnique(unique, this)
     }
     
@@ -1054,7 +1055,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         updateUniques()
 
         for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusLoss))
-            if (unique.params[0] == name)
+            if (unique.getModifiers(UniqueType.TriggerUponStatusLoss)
+                    .any { it.params[0] == name })
                 UniqueTriggerActivation.triggerUnique(unique, this)
     }
 
