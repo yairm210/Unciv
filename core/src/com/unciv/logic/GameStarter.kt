@@ -195,6 +195,7 @@ object GameStarter {
             val startingEraNumber = ruleset.eras[gameSetupInfo.gameParameters.startingEra]!!.eraNumber
             for (tech in ruleset.technologies.values) {
                 if (ruleset.eras[tech.era()]!!.eraNumber >= startingEraNumber) continue
+                if (civInfo.tech.isUnresearchable(tech)) continue
                 civInfo.addTechSilently(tech.name)
             }
 
