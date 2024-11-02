@@ -214,7 +214,7 @@ object MotivationToAttackAutomation {
             relativeTech > -9 -> -5f
             else -> -10f
         }
-        return relativeTechModifier * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.Science, .2f)
+        return relativeTechModifier
     }
 
     private fun getProductionRatioModifier(civInfo: Civilization, otherCiv: Civilization): Float {
@@ -233,7 +233,7 @@ object MotivationToAttackAutomation {
             productionRatio > .25f -> -10f
             else -> -15f
         }
-        return productionRatioModifier * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.Production, .2f)
+        return productionRatioModifier
     }
 
     private fun getScoreRatioModifier(otherCiv: Civilization, civInfo: Civilization): Float {
