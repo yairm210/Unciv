@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.mapeditorscreen.MapGeneratorSteps
 import com.unciv.logic.map.tile.TileNormalizer
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
@@ -225,7 +226,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         fun convertTerrains(ruleset: Ruleset, tiles: Iterable<Tile>) {
             for (tile in tiles) {
                 val conversionUnique =
-                    tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain)
+                    tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain, StateForConditionals(tile = tile))
                         .firstOrNull { tile.isAdjacentTo(it.params[1]) }
                         ?: continue
                 val terrain = ruleset.terrains[conversionUnique.params[0]] ?: continue
