@@ -382,7 +382,11 @@ object UnitActions {
             type = UnitActionType.Wait,
             useFrequency = 65f, // Preferably have this on the first page
             action = {
-                unit.due = false // Skips to next unit due to worldScreen.switchToNextUnit() in activateAction 
+                // If it's on, skips to next unit due to worldScreen.switchToNextUnit() in activateAction
+                // We don't want to switch twice since then we skip units :)
+                if (!UncivGame.Current.settings.autoUnitCycle)
+                    GUI.getWorldScreen().switchToNextUnit()
+                unit.due = false 
             }
         ))
     }
