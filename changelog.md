@@ -1,3 +1,31 @@
+## 4.14.3
+
+Fixed Wait action when auto unit cycle is disabled
+
+modding: "Becomes [terrainName] when adjacent to [terrainFilter]" accepts conditionals
+
+Unresearchable techs not added when starting in advanced era
+
+United 'getTriggeredUniques' modifier filtering
+
+United 'getTriggeredUniques' modifier filtering
+
+modding: Resolved  - "upon gaining/losing the [promotion] status" triggers correctly
+
+modding: Resolved  - "upon building a [improvementFilter] improvement" triggers correctly
+
+Resolved  - multiturn autoplay worldscreen. nextTurn tuns on main GDX thread, since it interacts with UI element (progress bar)
+
+chore: Deprecated old event fields
+
+Modding: Added validation to event uniques
+
+Remove jvmToolchain so everyone can use their default 
+
+4.14.2-patch1
+
+Revert blocking DoF change 
+
 ## 4.14.2
 
 DoF popup requires choosing an option
