@@ -504,8 +504,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             else -> {
-                if (allTerrains.any { it.matchesFilter(filter, StateForConditionals(tile = this)) }) return true
-                if (getOwner()?.let { it.matchesFilter(filter, StateForConditionals(it, tile = this)) } == true) return true
+                val owner = getOwner()
+                val state = StateForConditionals(civInfo = owner, tile = this)
+                if (allTerrains.any { it.matchesFilter(filter, state) }) return true
+                if (owner != null && owner.matchesFilter(filter, state)) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
