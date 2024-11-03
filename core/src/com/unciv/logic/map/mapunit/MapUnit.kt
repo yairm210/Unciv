@@ -129,6 +129,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private var tempUniquesMap = UniqueMap()
 
     @Transient
+    /** Temp map excluding unit uniques*/
+    private var nonUnitUniquesMap = UniqueMap()
+
+    @Transient
     val movement = UnitMovement(this)
 
     @Transient
@@ -575,9 +579,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
-                if (baseUnit.matchesFilter(filter)) return true
-                if (civ.matchesFilter(filter, StateForConditionals(this))) return true
-                if (tempUniquesMap.hasUnique(filter, StateForConditionals(this)))
+                val state = StateForConditionals(this)
+                if (baseUnit.matchesFilter(filter, state)) return true
+                if (civ.matchesFilter(filter, state)) return true
+                if (nonUnitUniquesMap.hasUnique(filter, state))
                 if (promotions.promotions.contains(filter)) return true
                 return false
             }
@@ -654,13 +659,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun updateUniques() {
-        val uniqueSources =
-                baseUnit.uniqueObjects.asSequence() +
-                        type.uniqueObjects +
-                        promotions.getPromotions().flatMap { it.uniqueObjects } +
-                        statuses.flatMap { it.uniques }
+        val unitUniqueSources =
+            baseUnit.uniqueObjects.asSequence() +
+                type.uniqueObjects
+        val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
+            statuses.flatMap { it.uniques }
+        val uniqueSources = unitUniqueSources + otherUniqueSources
         
         tempUniquesMap = UniqueMap(uniqueSources)
+        nonUnitUniquesMap = UniqueMap(otherUniqueSources)
         cache.updateUniques()
     }
 
