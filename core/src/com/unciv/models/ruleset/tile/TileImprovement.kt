@@ -73,8 +73,10 @@ class TileImprovement : RulesetStatsObject() {
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String, tileState: StateForConditionals? = null): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) } ||
-            (tileState != null && uniqueMap.hasUnique(filter, tileState) || tileState == null && uniqueMap.hasTagUnique(filter))
+        MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                (tileState != null && hasUnique(it, tileState) || tileState == null && hasTagUnique(it))
+        })
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

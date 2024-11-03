@@ -486,8 +486,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) } ||
-            (state != null && hasUnique(filter, state) || state == null && uniques.contains(filter))
+        MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                (state != null && hasUnique(it, state) || state == null && hasTagUnique(it))
+        })
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

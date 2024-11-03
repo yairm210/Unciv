@@ -403,8 +403,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) } ||
-            (state != null && hasUnique(filter, state) || state == null && hasTagUnique(filter))
+        MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                (state != null && hasUnique(it, state) || state == null && hasTagUnique(it))
+        })
             
 
     fun matchesSingleFilter(filter: String): Boolean {

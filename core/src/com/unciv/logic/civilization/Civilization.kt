@@ -561,8 +561,10 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
     fun matchesFilter(filter: String, state: StateForConditionals? = StateForConditionals(this)): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) } ||
-            (state != null && nation.hasUnique(filter, state) || state == null && nation.hasTagUnique(filter))
+        MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                (state != null && nation.hasUnique(it, state) || state == null && nation.hasTagUnique(it))
+        })
 
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

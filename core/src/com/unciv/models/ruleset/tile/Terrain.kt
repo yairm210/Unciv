@@ -161,8 +161,10 @@ class Terrain : RulesetStatsObject() {
     val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) } ||
-            (state != null && hasUnique(filter) || state == null && hasTagUnique(filter))
+        MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                (state != null && hasUnique(it, state) || state == null && hasTagUnique(it))
+        })
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesSingleFilter(filter: String): Boolean {
