@@ -560,8 +560,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, state: StateForConditionals? = StateForConditionals(this)): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) } ||
+            (state != null && nation.hasUnique(filter, state) || state == null && nation.hasTagUnique(filter))
 
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

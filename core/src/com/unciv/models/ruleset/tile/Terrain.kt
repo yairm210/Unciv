@@ -6,6 +6,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -159,8 +160,9 @@ class Terrain : RulesetStatsObject() {
     /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
     val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) } ||
+            (state != null && hasUnique(filter) || state == null && hasTagUnique(filter))
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesSingleFilter(filter: String): Boolean {
@@ -175,7 +177,7 @@ class Terrain : RulesetStatsObject() {
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
 
-            else -> uniques.contains(filter)
+            else -> false
         }
     }
 

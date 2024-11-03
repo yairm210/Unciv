@@ -576,8 +576,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
-                if (civ.matchesFilter(filter)) return true
-                if (tempUniquesMap.hasTagUnique(filter)) return true
+                if (civ.matchesFilter(filter, StateForConditionals(this))) return true
+                if (tempUniquesMap.hasUnique(filter, StateForConditionals(this)))
                 if (promotions.promotions.contains(filter)) return true
                 return false
             }
@@ -597,7 +597,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return buildImprovementUniques.any()
         }
         return buildImprovementUniques
-                .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
+                .any { improvement.matchesFilter(it.params[0], StateForConditionals(this)) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     fun getReligionDisplayName(): String? {

@@ -472,8 +472,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
         if (ignoreImprovement) return false
-        if (getUnpillagedTileImprovement()?.matchesFilter(filter) == true) return true
-        return getUnpillagedRoadImprovement()?.matchesFilter(filter) == true
+        if (getUnpillagedTileImprovement()?.matchesFilter(filter, StateForConditionals(tile = this)) == true) return true
+        return getUnpillagedRoadImprovement()?.matchesFilter(filter, StateForConditionals(tile = this)) == true
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
@@ -504,8 +504,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             else -> {
-                if (allTerrains.any { it.matchesFilter(filter) }) return true
-                if (getOwner()?.matchesFilter(filter) == true) return true
+                if (allTerrains.any { it.matchesFilter(filter, StateForConditionals(tile = this)) }) return true
+                if (getOwner()?.let { it.matchesFilter(filter, StateForConditionals(it, tile = this)) } == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
@@ -516,7 +516,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 val resourceObject = tileResource
                 val hasResourceWithFilter =
                         tileResource.name == filter
-                                || tileResource.hasTagUnique(filter)
+                                || tileResource.hasUnique(filter, StateForConditionals(tile = this))
                                 || filter.removeSuffix(" resource") == tileResource.resourceType.name
                 if (!hasResourceWithFilter) return false
 

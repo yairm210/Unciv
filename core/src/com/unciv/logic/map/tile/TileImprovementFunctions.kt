@@ -150,7 +150,7 @@ class TileImprovementFunctions(val tile: Tile) {
 
             // Can't build if any terrain specifically prevents building this improvement
             tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
-                    unique -> !improvement.matchesFilter(unique.params[0])
+                    unique -> !improvement.matchesFilter(unique.params[0], StateForConditionals(tile = tile))
             } -> false
 
             // Can't build if the improvement specifically prevents building on some present feature
@@ -260,12 +260,12 @@ class TileImprovementFunctions(val tile: Tile) {
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0]) })
+            { improvement.matchesFilter(it.params[0], StateForConditionals(civ, unit = unit, tile = tile)) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         if (unit == null) return
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0]) })
+            { improvement.matchesFilter(it.params[0], StateForConditionals(civ, unit = unit, tile = tile)) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }
 

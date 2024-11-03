@@ -38,9 +38,15 @@ interface IHasUniques : INamed {
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueType, state)
+
+    fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+        uniqueMap.getMatchingUniques(uniqueTag, state)
     
     fun hasUnique(uniqueType: UniqueType, state: StateForConditionals? = null) =
         uniqueMap.hasMatchingUnique(uniqueType, state ?: StateForConditionals.EmptyState)
+
+    fun hasUnique(uniqueTag: String, state: StateForConditionals? = null) =
+        uniqueMap.hasMatchingUnique(uniqueTag, state ?: StateForConditionals.EmptyState)
 
     fun hasTagUnique(tagUnique: String) =
         uniqueMap.hasTagUnique(tagUnique)

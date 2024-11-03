@@ -164,7 +164,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
-        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && civ.matchesFilter(it.uniqueTo!!) }
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && civ.matchesFilter(it.uniqueTo!!, StateForConditionals(this)) }
         return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 
@@ -464,7 +464,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             // this will always be true when checked.
             "in cities following this religion" -> true
             "in cities following our religion" -> viewingCiv?.religionManager?.religion == religion.getMajorityReligion()
-            else -> civ.matchesFilter(filter)
+            else -> civ.matchesFilter(filter, StateForConditionals(this))
         }
     }
 

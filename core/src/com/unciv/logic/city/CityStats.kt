@@ -304,8 +304,9 @@ class CityStats(val city: City) {
     }
 
     private fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
-        if (construction is Building) return construction.matchesFilter(filter)
-        if (construction is BaseUnit) return construction.matchesFilter(filter)
+        val state = StateForConditionals(city)
+        if (construction is Building) return construction.matchesFilter(filter, state)
+        if (construction is BaseUnit) return construction.matchesFilter(filter, state)
         return false
     }
 
