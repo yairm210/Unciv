@@ -186,8 +186,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
-    fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
-
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
 
     // Note: There was a isEnqueued here functionally identical to isBeingConstructedOrEnqueued,
@@ -566,14 +564,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (!unique.hasTriggerConditional() && unique.conditionalsApply(stateForConditionals))
                 UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals))
-            if (unique.getModifiers(UniqueType.TriggerUponConstructingBuilding).any { building.matchesFilter(it.params[0])} )
-                UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals)
+                { building.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals))
-            if (unique.getModifiers(UniqueType.TriggerUponConstructingBuildingCityFilter).any {
-                    building.matchesFilter(it.params[0]) && city.matchesFilter(it.params[1]) })
-                UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals)
+                { building.matchesFilter(it.params[0]) && city.matchesFilter(it.params[1]) })
+            UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
     }
 
     fun removeBuilding(buildingName: String) {

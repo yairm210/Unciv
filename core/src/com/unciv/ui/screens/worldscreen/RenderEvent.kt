@@ -69,9 +69,6 @@ class RenderEvent(
 
         val lines = (
             choice.civilopediaText.asSequence()
-                + choice.triggeredUniqueObjects.asSequence()
-                    .filterNot { it.isHiddenToUsers() }
-                    .map { FormattedLine(it) }
                 + choice.uniqueObjects.filter { it.isTriggerable }
                     .filterNot { it.isHiddenToUsers() }
                     .map { FormattedLine(it) }

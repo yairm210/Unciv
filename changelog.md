@@ -1,3 +1,15 @@
+## 4.14.3
+
+Fixed Wait action when auto unit cycle is disabled
+
+Unresearchable techs not added when starting in advanced era
+
+modding:
+- Added validation to event uniques
+- "upon gaining/losing the [promotion] status" triggers correctly
+- "upon building a [improvementFilter] improvement" triggers correctly
+- "Becomes [terrainName] when adjacent to [terrainFilter]" accepts conditionals
+
 ## 4.14.2
 
 DoF popup requires choosing an option

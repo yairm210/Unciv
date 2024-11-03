@@ -13,6 +13,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 
 class NextTurnButton(
     private val worldScreen: WorldScreen
@@ -36,7 +37,7 @@ class NextTurnButton(
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
             autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
                 TurnManager(worldScreen.viewingCiv).automateTurn()
-                worldScreen.nextTurn()
+                Concurrency.runOnGLThread { worldScreen.nextTurn() }
                 autoPlay.endTurnMultiturnAutoPlay()
             }
         }

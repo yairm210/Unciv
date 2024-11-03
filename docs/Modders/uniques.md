@@ -3382,6 +3382,11 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: MetaModifier
 
+??? example  "&lt;for every adjacent [tileFilter]&gt;"
+	Example: "&lt;for every adjacent [Farm]&gt;"
+
+	Applicable to: MetaModifier
+
 ??? example  "&lt;for every [amount] [countable]&gt;"
 	Example: "&lt;for every [3] [1000]&gt;"
 

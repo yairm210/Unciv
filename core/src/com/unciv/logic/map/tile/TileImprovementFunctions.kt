@@ -260,12 +260,12 @@ class TileImprovementFunctions(val tile: Tile) {
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            .filter { improvement.matchesFilter(it.params[0]) })
+            { improvement.matchesFilter(it.params[0]) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         if (unit == null) return
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            .filter { improvement.matchesFilter(it.params[0]) })
+            { improvement.matchesFilter(it.params[0]) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }
 

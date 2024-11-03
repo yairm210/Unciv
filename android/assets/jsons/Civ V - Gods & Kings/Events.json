@@ -8,7 +8,7 @@
             {"text":"Click on a unit → Click on a destination → Click the arrow popup."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Units] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [Units] is more than [0]>",
             "Unavailable <if tutorial [Move unit] is completed>"
         ]
     },
@@ -21,7 +21,7 @@
             {"text":"Select the Settler → Click on 'Found city'."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Settler] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [[Settler] Units] is more than [0]>",
             "Unavailable <if tutorial [Found city] is completed>"
         ]
     },
@@ -34,7 +34,7 @@
             {"text":"Click the city button twice."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
             "Unavailable <if tutorial [Enter city screen] is completed>"
         ]
     },
@@ -60,7 +60,7 @@
             {"text":"Enter city screen → Click on a unit or building → Click 'add to queue'."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
             "Unavailable <if tutorial [Pick construction] is completed>"
         ]
     },
@@ -86,7 +86,7 @@
             {"text":"Enter city screen → Click the assigned tile to unassign → Click an unassigned tile to assign population."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
             "Unavailable <if tutorial [Reassign worked tiles] is completed>"
         ]
     },
@@ -99,7 +99,7 @@
             {"text":"Explore the map until you encounter another civilization!"},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [turns] is greater than [1]>",
+            "Only available <if tutorials are enabled> <when number of [turns] is more than [1]>",
             "Unavailable <if tutorial [Meet another civilization] is completed>"
         ],
         "choices": [
@@ -131,7 +131,7 @@
             {"text":"Construct a Worker unit → Move it to a Plains or Grassland tile → Click 'Construct improvement' → Choose the farm → Leave the worker there until it's finished."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
             "Unavailable <if tutorial [Construct an improvement] is completed>"
         ]
     },
@@ -144,7 +144,7 @@
             {"text":"Construct roads between your capital and another city. Or, automate your worker and let him get to that eventually."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is greater than [1]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [1]>",
             "Unavailable <if tutorial [Create a trade route] is completed>"
         ]
     },
@@ -170,7 +170,7 @@
             {"text":"Select an air unit → Select another city within range → Move the unit to the other city."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [[Air] Units] is greater than [0]>",
+            "Only available <if tutorials are enabled> <when number of [[Air] Units] is more than [0]>",
             "Unavailable <if tutorial [Move an air unit] is completed>"
         ]
     },
