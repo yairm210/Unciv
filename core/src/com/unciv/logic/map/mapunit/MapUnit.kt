@@ -579,7 +579,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
-                val state = StateForConditionals(this)
+                val state = StateForConditionals(unit = this,
+                    tile = if (::currentTile.isInitialized) currentTile else null) // Needed for edge cases while a unit is being placed
                 if (baseUnit.matchesFilter(filter, state)) return true
                 if (civ.matchesFilter(filter, state)) return true
                 if (nonUnitUniquesMap.hasUnique(filter, state))
