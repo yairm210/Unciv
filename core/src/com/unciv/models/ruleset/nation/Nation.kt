@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -257,10 +258,15 @@ class Nation : RulesetObject() {
             }
         }
     }
-    
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
-    }
+
+    @Transient
+    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
+    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+        MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                (state != null && hasUnique(it, state) || state == null && hasTagUnique(it))
+        })
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
