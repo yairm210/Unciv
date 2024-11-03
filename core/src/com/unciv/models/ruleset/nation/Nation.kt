@@ -274,7 +274,7 @@ class Nation : RulesetObject() {
             name -> true
             "Major" -> isMajorCiv
             Constants.cityStates, "City-State" -> isCityState
-            else -> uniques.contains(filter)
+            else -> false
         }
     }
 }
