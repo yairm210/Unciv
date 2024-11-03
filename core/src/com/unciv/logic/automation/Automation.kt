@@ -73,9 +73,6 @@ object Automation {
             yieldStats.production += cityStatsObj.getProductionFromExcessiveFood(surplusFood+yieldStats.food) - cityStatsObj.getProductionFromExcessiveFood(surplusFood)
             yieldStats.food = 0f  // all food goes to 0
         }
-        
-        // Apply base weights
-        yieldStats.applyRankingWeights()
 
         // Split Food Yield into feedFood, amount needed to not Starve
         // and growthFood, any amount above that
@@ -87,26 +84,32 @@ object Automation {
         if (city.avoidGrowth) {
             growthFood = 0f
         }
+        yieldStats.food = 1f
+        
+        // Apply base weights
+        yieldStats.applyRankingWeights()
+
+        val foodBaseWeight = yieldStats.food
 
         // If starving, need Food, so feedFood > 0
         // scale feedFood by 14(base weight)*8(super important)
         // By only scaling what we need to reach Not Starving by x8, we can pick a tile that gives
         // exactly as much Food as we need to Not Starve that also has other good yields instead of
         // always picking the Highest Food tile until Not Starving
-        yieldStats.food = feedFood * (14 * 8)
+        yieldStats.food = feedFood * (foodBaseWeight * 8)
         // growthFood is any additional food not required to meet Starvation
         if (cityAIFocus in CityFocus.zeroFoodFocuses) {
             // Focus on non-food/growth
             // Reduce excess food focus to prevent Happiness spiral
             if (city.civ.getHappiness() < 1)
-                yieldStats.food += growthFood * (14 / 4)
+                yieldStats.food += growthFood * (foodBaseWeight / 4)
         } else {
             // NoFocus or Food/Growth Focus.
             // When Happy, EmperorPenguin has run sims comparing weights
             // 1.5f is preferred,
             // but 2 provides more protection against badly configured personalities
             // If unhappy, see above
-            val growthFoodScaling = if (city.civ.getHappiness() >= 0) 14 * 2 else 14 / 4
+            val growthFoodScaling = if (city.civ.getHappiness() >= 0) foodBaseWeight * 2 else foodBaseWeight / 4
             yieldStats.food += growthFood * growthFoodScaling
         }
 
