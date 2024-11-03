@@ -79,7 +79,6 @@ object CivilianUnitAutomation {
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
         // Great writer -> Hurry policy  if late game
-        // TODO: Great artist -> Start golden age if late game
         if (isLateGame) {
             val hurriedResearch = UnitActions.invokeUnitAction(unit, UnitActionType.HurryResearch)
             if (hurriedResearch) return
