@@ -197,7 +197,6 @@ object Automation {
                 .count { isNavalUnit(it.baseUnit) }
             isMissingNavalUnitsForCityDefence = 3 * numberOfOurConnectedCities > numberOfOurNavalUnits
 
-
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
                                 || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
