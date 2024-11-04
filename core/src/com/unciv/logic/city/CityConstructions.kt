@@ -294,7 +294,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun cheapestStatBuilding(stat: Stat): Building? {
-        return city.getRuleset().buildings.values
+        return city.getRuleset().buildings.values.asSequence()
             .filter { !it.isAnyWonder() && it.isStatRelated(stat, city) &&
                 (it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name)) }
             .minByOrNull { it.cost }
