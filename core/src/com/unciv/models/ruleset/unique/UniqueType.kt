@@ -655,6 +655,7 @@ enum class UniqueType(
     ConditionalBeforeTurns("before turn number [amount]", UniqueTarget.Conditional),
     ConditionalAfterTurns("after turn number [amount]", UniqueTarget.Conditional),
     ConditionalSpeed("on [speed] game speed", UniqueTarget.Conditional),
+    ConditionalDifficulty("on [difficulty] difficulty", UniqueTarget.Conditional),
     ConditionalVictoryEnabled("when [victoryType] Victory is enabled", UniqueTarget.Conditional),
     ConditionalVictoryDisabled("when [victoryType] Victory is disabled", UniqueTarget.Conditional),
     ConditionalReligionEnabled("when religion is enabled", UniqueTarget.Conditional),
