@@ -163,7 +163,8 @@ class Terrain : RulesetStatsObject() {
     fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
-                (state != null && hasUnique(it, state) || state == null && hasTagUnique(it))
+                state != null && hasUnique(it, state) ||
+                state == null && hasTagUnique(it)
         })
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
@@ -172,7 +173,6 @@ class Terrain : RulesetStatsObject() {
             in Constants.all -> true
             name -> true
             "Terrain" -> true
-            in Constants.all -> true
             "Open terrain" -> !isRough()
             "Rough terrain" -> isRough()
             type.name -> true

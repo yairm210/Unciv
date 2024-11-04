@@ -75,7 +75,8 @@ class TileImprovement : RulesetStatsObject() {
     fun matchesFilter(filter: String, tileState: StateForConditionals? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
-                (tileState != null && hasUnique(it, tileState) || tileState == null && hasTagUnique(it))
+                tileState != null && hasUnique(it, tileState) ||
+                tileState == null && hasTagUnique(it)
         })
 
     private fun matchesSingleFilter(filter: String): Boolean {

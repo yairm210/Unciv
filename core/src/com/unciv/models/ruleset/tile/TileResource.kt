@@ -183,7 +183,8 @@ class TileResource : RulesetStatsObject() {
     fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
-                (state != null && hasUnique(filter, state) || state == null && hasTagUnique(filter))
+                state != null && hasUnique(filter, state) ||
+                state == null && hasTagUnique(filter)
         })
 
     fun matchesSingleFilter(filter: String) = when (filter) {

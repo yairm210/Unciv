@@ -265,7 +265,8 @@ class Nation : RulesetObject() {
     fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
-                (state != null && hasUnique(it, state) || state == null && hasTagUnique(it))
+                state != null && hasUnique(it, state) ||
+                state == null && hasTagUnique(it)
         })
 
     private fun matchesSingleFilter(filter: String): Boolean {
