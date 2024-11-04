@@ -390,7 +390,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun getWorkingCity(): City? {
         val civInfo = getOwner() ?: return null
-        return civInfo.cities.firstOrNull { it.isWorked(this) }
+        if (owningCity?.isWorked(this) == true) return owningCity // common case
+        return civInfo.cities.firstOrNull { it != owningCity && it.isWorked(this) }
     }
 
     fun isBlockaded(): Boolean {
@@ -422,7 +423,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield(): Boolean {
         if (getCity() == null) return false
-        return isCityCenter() || isWorked()
+        return isCityCenter()
+                || isWorked()
                 || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
                 || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation)
     }
