@@ -191,10 +191,12 @@ object Automation {
 
             val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
                 .count { it.isCityCenter() && it.getOwner() == city.civ }
+
             val numberOfOurNavalUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
                 .flatMap { it.getUnits() }
                 .count { isNavalUnit(it.baseUnit) }
             isMissingNavalUnitsForCityDefence = 3 * numberOfOurConnectedCities > numberOfOurNavalUnits
+
 
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)

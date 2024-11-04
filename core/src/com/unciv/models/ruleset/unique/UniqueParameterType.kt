@@ -426,6 +426,9 @@ enum class UniqueParameterType(
     Speed("speed", "Quick", "The name of any speed") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.speeds.keys
     },
+    Difficulty("difficulty", "Prince", "The name of any difficulty") {
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.difficulties.keys
+    },
 
     /** For [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement excluding 'Cancel improvement order'") {
