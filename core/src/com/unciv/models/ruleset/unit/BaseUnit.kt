@@ -63,6 +63,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     @Transient
     var cachedForceEvaluation: Int = -1
+    
+    @delegate:Transient // memory perf optimization to not create the string per unit
+    val unitIconLocation by lazy { "UnitIcons/$name.png" }
 
     @Transient
     val costFunctions = BaseUnitCost(this)

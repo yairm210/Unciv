@@ -251,8 +251,8 @@ object ImageGetter {
     fun getRandomNationPortrait(size: Float): Portrait = PortraitNation(Constants.random, size)
 
     fun getUnitIcon(unit: BaseUnit, color: Color = Color.BLACK): Image =
-        if (imageExists("UnitIcons/${unit.name}"))
-            getImage("UnitIcons/${unit.name}").apply { this.color = color }
+        if (imageExists(unit.unitIconLocation))
+            getImage(unit.unitIconLocation).apply { this.color = color }
         else getImage("UnitTypeIcons/${unit.type}").apply { this.color = color }
 
     fun getConstructionPortrait(construction: String, size: Float): Group {
