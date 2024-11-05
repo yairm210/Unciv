@@ -366,8 +366,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
-    @Transient
-    private val stateThisTile: StateForConditionals = StateForConditionals(tile = this)
+    @delegate:Transient
+    private val stateThisTile: StateForConditionals by lazy { StateForConditionals(tile = this) }
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = stateThisTile) =
         terrainUniqueMap.getMatchingUniques(uniqueType, state).any()
