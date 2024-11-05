@@ -378,8 +378,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         for (unique in building.getMatchingUniques(UniqueType.CarryOverFood, cityState)) {
             if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0) {
                 val foodGain = cityStats.currentCityStats.food + buildingStats.food
-                val relativeAmount = 1 / ( 1 - unique.params[0].toFloat() / 100f) - 1 
-                buildingStats[Stat.Food] += foodGain * relativeAmount // Essentialy gives us the food per turn this unique gives us
+                val relativeAmount = unique.params[0].toFloat() / 67f 
+                buildingStats[Stat.Food] += foodGain * relativeAmount // Approximately gives us the food per turn this unique gives us
             }
         }
     }
