@@ -1,3 +1,31 @@
+## 4.14.4
+
+Example for automating golden age triggers 
+
+Revert "perf(memory): Save unit icon location on baseunit"
+
+Don't allocate memory until you have to
+
+Fixed serialization
+
+perf(memory): Save stateForConditionals on tile for single-create
+
+perf(memory): Save unit icon location on baseunit
+
+perf(memory): When creating world screen, resize only once initially instead of allocating and copying many times
+
+perf(memory): calc cheapest stat building with sequence
+
+perf(memory): count naval units better
+
+perf: 'getWorkingCity' optimization
+
+modding: Added "on [difficulty] difficulty" conditional
+
+Save associated unique in UnitAction for automation / grouping - see 
+
+Avoid Growth and Food Ranking Improvements  - By itanasi
+
 ## 4.14.3
 
 Fixed Wait action when auto unit cycle is disabled
