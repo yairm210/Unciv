@@ -71,15 +71,14 @@ internal object ConsoleLauncher {
         }
     }
 
-    private fun getGameParameters(civilization1: String, civilization2: String): GameParameters {
+    private fun getGameParameters(vararg civilizations: String): GameParameters {
         return GameParameters().apply {
             difficulty = "Prince"
             numberOfCityStates = 0
             speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
-                add(Player(civilization1))
-                add(Player(civilization2))
+                civilizations.forEach { add(Player(it)) }
                 add(Player(Constants.spectator, PlayerType.Human))
             }
         }

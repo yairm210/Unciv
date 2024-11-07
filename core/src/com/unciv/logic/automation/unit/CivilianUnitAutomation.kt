@@ -104,8 +104,8 @@ object CivilianUnitAutomation {
         }
 
         // Great engineer -> Try to speed up wonder construction
-        if ((unit.hasUnique(UniqueType.CanSpeedupConstruction)
-                || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction))) {
+        if (unit.hasUnique(UniqueType.CanSpeedupConstruction)
+                || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction)) {
             val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
             if (wonderCanBeSpedUpEventually)
                 return
@@ -139,6 +139,14 @@ object CivilianUnitAutomation {
         //  ages?
 
         if (SpecificUnitAutomation.automateImprovementPlacer(unit)) return
+        
+        val goldenAgeAction = UnitActions.getUnitActions(unit, UnitActionType.TriggerUnique)
+            .filter { it.action != null && it.associatedUnique?.type in listOf(UniqueType.OneTimeEnterGoldenAge,
+                UniqueType.OneTimeEnterGoldenAgeTurns) }.firstOrNull()
+        if (goldenAgeAction != null) {
+            goldenAgeAction.action?.invoke()
+            return
+        }
 
         return // The AI doesn't know how to handle unknown civilian units
     }

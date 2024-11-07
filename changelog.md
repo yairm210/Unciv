@@ -1,3 +1,13 @@
+## 4.14.4
+
+Memory optimizations
+
+AI: Use Great Artists for Golden Ages 
+
+modding: Added "on [difficulty] difficulty" conditional 
+
+Avoid Growth and Food Ranking Improvements  - By itanasi
+
 ## 4.14.3
 
 Fixed Wait action when auto unit cycle is disabled
