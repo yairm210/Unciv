@@ -65,7 +65,7 @@ object Automation {
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
         }
 
-                val surplusFood = city.cityStats.currentCityStats[Stat.Food]
+        val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         val starving = surplusFood < 0
         // If current Production converts Food into Production, then calculate increased Production Yield
         if (cityStatsObj.canConvertFoodToProduction(surplusFood, city.cityConstructions.getCurrentConstruction())) {
