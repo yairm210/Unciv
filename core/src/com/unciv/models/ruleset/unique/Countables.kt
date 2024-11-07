@@ -37,12 +37,8 @@ object Countables {
             return gameInfo.civilizations.filter { !it.isDefeated() }
                 .count { it.matchesFilter(placeholderParameters[0]) }
         
-        if (countable.equalsPlaceholderText("[] Tiles")) {
-            val ownedTiles = gameInfo.tileMap.values.filter {
-                it.getOwner() == civInfo
-            }
-            return ownedTiles.count { it.matchesFilter(placeholderParameters[0]) }
-        }
+        if (countable.equalsPlaceholderText("Owned [] Tiles")) 
+            return civInfo.cities.sumOf { it.getTiles().count { it.matchesFilter(placeholderParameters[0]) } }
 
         if (gameInfo.ruleset.tileResources.containsKey(countable))
             return stateForConditionals.getResourceAmount(countable)
