@@ -682,7 +682,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         // Even if we aren't *technically* protectors, we *can* still be pissed you attacked our allies*
         val allyCivName = civInfo.getAllyCiv()
         val allyCiv = if (allyCivName != null) civInfo.gameInfo.getCivilization(allyCivName) else null
-        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs()){
+        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs() && allyCiv.knows(attacker)){
             val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
             // Less than if we were protectors
             allyDiplomacy.addModifier(DiplomaticModifiers.AttackedAlliedMinor, -10f)
