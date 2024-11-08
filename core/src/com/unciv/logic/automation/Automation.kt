@@ -109,7 +109,7 @@ object Automation {
             // 1.5f is preferred,
             // but 2 provides more protection against badly configured personalities
             // If unhappy, see above
-            val growthFoodScaling = if (city.civ.getHappiness() >= 1) foodBaseWeight * 2 else foodBaseWeight / 4
+            val growthFoodScaling = if (city.civ.getHappiness() >= 1) foodBaseWeight * 2 else if (city.civ.getHappiness() < 9) foodBaseWeight * 0 else foodBaseWeight / 4
             yieldStats.food += growthFood * growthFoodScaling
         }
 
