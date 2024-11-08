@@ -130,10 +130,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     }
 
     fun addPopulation(count: Int) {
-        val changedAmount =
-            if (population + count < 1) 1 - population
-            else count
-        population += count
+        val changedAmount = count.coerceAtMost(population - 1)
+        population += changedAmount
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {
             unassignExtraPopulation()
