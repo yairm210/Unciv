@@ -158,7 +158,7 @@ class CityStats(val city: City) {
         return stats
     }
 
-    private fun getGrowthBonus(totalFood: Float): StatMap {
+    fun getGrowthBonus(totalFood: Float): StatMap {
         val growthSources = StatMap()
         val stateForConditionals = StateForConditionals(city.civ, city)
         // "[amount]% growth [cityFilter]"

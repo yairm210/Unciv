@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.CityStats
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
@@ -106,9 +107,20 @@ object Automation {
             // but 2 provides more protection against badly configured personalities
             // Growth is penalized when Unhappy
             // No Growth if <-10, 1/4 if <0
-            val growthFoodScaling =
-                if (city.civ.getHappiness() < -10) 0f else (if (city.civ.getHappiness() < 0) foodBaseWeight / 4 else foodBaseWeight * 2)
-            yieldStats.food += growthFood * growthFoodScaling
+            // Reusing food growth code from CityStats.updateFinalStatList()
+            val growthNullifyingUnique = city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
+            if (growthNullifyingUnique == null) { // if not nullified
+                var newGrowthFood = growthFood  // running count of growthFood
+                val cityStats = CityStats(city)
+                val growthBonuses = cityStats.getGrowthBonus(growthFood)
+                for (growthBonus in growthBonuses) {
+                    newGrowthFood += growthBonus.value.food
+                }
+                if (city.isWeLoveTheKingDayActive() && city.civ.getHappiness() >= 0) {
+                    newGrowthFood += growthFood / 4
+                }
+                yieldStats.food += newGrowthFood * foodBaseWeight * 2
+            }
         }
 
         if (city.population.population < 10) {
