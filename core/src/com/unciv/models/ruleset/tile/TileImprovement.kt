@@ -72,12 +72,16 @@ class TileImprovement : RulesetStatsObject() {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
-    fun matchesFilter(filter: String, tileState: StateForConditionals? = null): Boolean =
-        MultiFilter.multiFilter(filter, {
+    fun matchesFilter(filter: String, tileState: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
                 tileState != null && hasUnique(it, tileState) ||
                 tileState == null && hasTagUnique(it)
         })
+        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+            tileState != null && hasUnique(filter, tileState) ||
+            tileState == null && hasTagUnique(filter)
+    }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

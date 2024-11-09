@@ -262,12 +262,16 @@ class Nation : RulesetObject() {
     @Transient
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
-    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
-        MultiFilter.multiFilter(filter, {
+    fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
                 state != null && hasUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
+        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+            state != null && hasUnique(filter, state) ||
+            state == null && hasTagUnique(filter)
+    }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {

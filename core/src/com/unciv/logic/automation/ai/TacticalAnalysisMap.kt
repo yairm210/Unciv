@@ -248,8 +248,8 @@ class TacticalAnalysisMap {
                 for (neighbor in tile.neighbors) {
 
                     // We don't want lakes and mountains to be separate zones - should attach them too
-                    val isLake = neighbor.matchesTerrainFilter(Constants.lakes)
-                    val isMountain = neighbor.matchesTerrainFilter(Constants.mountain)
+                    val isLake = neighbor.matchesTerrainFilter(Constants.lakes, multiFilter = false)
+                    val isMountain = neighbor.matchesTerrainFilter(Constants.mountain, multiFilter = false)
                     val neighborContinentSize = neighbor.tileMap.continentSizes[neighbor.getContinent()] ?: Int.MAX_VALUE
 
                     val isSameZone = neighbor.getContinent() == tile.getContinent()

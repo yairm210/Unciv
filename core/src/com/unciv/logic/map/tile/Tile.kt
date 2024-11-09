@@ -472,13 +472,14 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
         if (ignoreImprovement) return false
-        if (getUnpillagedTileImprovement()?.matchesFilter(filter, StateForConditionals(tile = this)) == true) return true
-        return getUnpillagedRoadImprovement()?.matchesFilter(filter, StateForConditionals(tile = this)) == true
+        if (getUnpillagedTileImprovement()?.matchesFilter(filter, StateForConditionals(tile = this), false) == true) return true
+        return getUnpillagedRoadImprovement()?.matchesFilter(filter, StateForConditionals(tile = this), false) == true
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
-    fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
-        return MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
+    fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
+        else matchesSingleTerrainFilter(filter, observingCiv)
     }
 
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
@@ -506,8 +507,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             else -> {
                 val owner = getOwner()
                 val state = StateForConditionals(civInfo = owner, tile = this)
-                if (allTerrains.any { it.matchesFilter(filter, state) }) return true
-                if (owner != null && owner.matchesFilter(filter, state)) return true
+                if (allTerrains.any { it.matchesFilter(filter, state, false) }) return true
+                if (owner != null && owner.matchesFilter(filter, state, false)) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false

@@ -567,8 +567,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, ::matchesSingleFilter) else matchesSingleFilter(filter)
     }
 
     private fun matchesSingleFilter(filter: String): Boolean {
@@ -581,8 +581,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> {
                 val state = StateForConditionals(unit = this,
                     tile = if (::currentTile.isInitialized) currentTile else null) // Needed for edge cases while a unit is being placed
-                if (baseUnit.matchesFilter(filter, state)) return true
-                if (civ.matchesFilter(filter, state)) return true
+                if (baseUnit.matchesFilter(filter, state, false)) return true
+                if (civ.matchesFilter(filter, state, false)) return true
                 if (nonUnitUniquesMap.hasUnique(filter, state))
                 if (promotions.promotions.contains(filter)) return true
                 return false

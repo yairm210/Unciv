@@ -37,12 +37,16 @@ class Technology: RulesetObject() {
 
     override fun era(ruleset: Ruleset) = ruleset.eras[era()]
 
-    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
-        MultiFilter.multiFilter(filter, {
+    fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
                 state != null && hasUnique(filter, state) ||
                 state == null && hasTagUnique(filter)
         })
+        else matchesSingleFilter(filter) ||
+            state != null && hasUnique(filter, state) ||
+            state == null && hasTagUnique(filter)
+    }
     
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
