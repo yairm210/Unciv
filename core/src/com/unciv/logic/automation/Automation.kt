@@ -99,28 +99,30 @@ object Automation {
         // always picking the Highest Food tile until Not Starving
         yieldStats.food = feedFood * (foodBaseWeight * 8)
         // growthFood is any additional food not required to meet Starvation
-        // if zeroFoodFocuses, ignore Growth as a metric for ranking
-        if (cityAIFocus !in CityFocus.zeroFoodFocuses) {
-            // NoFocus or Food/Growth Focus.
+
+        // Growth is penalized when Unhappy, see GlobalUniques.json
+        // No Growth if <-10, 1/4 if <0
+        // Reusing food growth code from CityStats.updateFinalStatList()
+        val growthNullifyingUnique =
+            city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
+        if (growthNullifyingUnique == null) { // if growth not nullified
+            var newGrowthFood = growthFood  // running count of growthFood
+            val cityStats = CityStats(city)
+            val growthBonuses = cityStats.getGrowthBonus(growthFood)
+            for (growthBonus in growthBonuses) {
+                newGrowthFood += growthBonus.value.food
+            }
+            if (city.isWeLoveTheKingDayActive() && city.civ.getHappiness() >= 0) {
+                newGrowthFood += growthFood / 4
+            }
+            newGrowthFood = newGrowthFood.coerceAtLeast(0f) // floor to 0 for safety
+
             // When Happy, EmperorPenguin has run sims comparing weights
             // 1.5f is preferred,
             // but 2 provides more protection against badly configured personalities
-            // Growth is penalized when Unhappy
-            // No Growth if <-10, 1/4 if <0
-            // Reusing food growth code from CityStats.updateFinalStatList()
-            val growthNullifyingUnique = city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
-            if (growthNullifyingUnique == null) { // if not nullified
-                var newGrowthFood = growthFood  // running count of growthFood
-                val cityStats = CityStats(city)
-                val growthBonuses = cityStats.getGrowthBonus(growthFood)
-                for (growthBonus in growthBonuses) {
-                    newGrowthFood += growthBonus.value.food
-                }
-                if (city.isWeLoveTheKingDayActive() && city.civ.getHappiness() >= 0) {
-                    newGrowthFood += growthFood / 4
-                }
-                yieldStats.food += newGrowthFood * foodBaseWeight * 2
-            }
+            // For non-Food/non-Default, use base weight
+            val baseFocusWeight = if (cityAIFocus in CityFocus.zeroFoodFocuses) 1 else 2
+            yieldStats.food += newGrowthFood * foodBaseWeight * baseFocusWeight
         }
 
         if (city.population.population < 10) {
