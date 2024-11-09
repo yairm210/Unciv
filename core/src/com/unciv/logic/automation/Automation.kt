@@ -98,18 +98,16 @@ object Automation {
         // always picking the Highest Food tile until Not Starving
         yieldStats.food = feedFood * (foodBaseWeight * 8)
         // growthFood is any additional food not required to meet Starvation
-        if (cityAIFocus in CityFocus.zeroFoodFocuses) {
-            // Focus on non-food/growth
-            // Reduce excess food focus to prevent Happiness spiral
-            if (city.civ.getHappiness() < 1)
-                yieldStats.food += growthFood * (foodBaseWeight / 4)
-        } else {
+        // if zeroFoodFocuses, ignore Growth as a metric for ranking
+        if (cityAIFocus !in CityFocus.zeroFoodFocuses) {
             // NoFocus or Food/Growth Focus.
             // When Happy, EmperorPenguin has run sims comparing weights
             // 1.5f is preferred,
             // but 2 provides more protection against badly configured personalities
-            // If unhappy, see above
-            val growthFoodScaling = if (city.civ.getHappiness() >= 0) foodBaseWeight * 2 else foodBaseWeight / 4
+            // Growth is penalized when Unhappy
+            // No Growth if <=-10, 1/4 if <0
+            val growthFoodScaling =
+                if (city.civ.getHappiness() <= -10) 0f else (if (city.civ.getHappiness() < 0) foodBaseWeight / 4 else foodBaseWeight * 2)
             yieldStats.food += growthFood * growthFoodScaling
         }
 
