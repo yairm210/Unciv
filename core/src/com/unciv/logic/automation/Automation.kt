@@ -105,9 +105,9 @@ object Automation {
             // 1.5f is preferred,
             // but 2 provides more protection against badly configured personalities
             // Growth is penalized when Unhappy
-            // No Growth if <=-10, 1/4 if <0
+            // No Growth if <-10, 1/4 if <0
             val growthFoodScaling =
-                if (city.civ.getHappiness() <= -10) 0f else (if (city.civ.getHappiness() < 0) foodBaseWeight / 4 else foodBaseWeight * 2)
+                if (city.civ.getHappiness() < -10) 0f else (if (city.civ.getHappiness() < 0) foodBaseWeight / 4 else foodBaseWeight * 2)
             yieldStats.food += growthFood * growthFoodScaling
         }
 
