@@ -98,12 +98,8 @@ object Automation {
         // always picking the Highest Food tile until Not Starving
         yieldStats.food = feedFood * (foodBaseWeight * 8)
         // growthFood is any additional food not required to meet Starvation
-        if (cityAIFocus in CityFocus.zeroFoodFocuses) {
-            // Focus on non-food/growth
-            // Reduce excess food focus to prevent Happiness spiral
-            if (city.civ.getHappiness() < 1)
-                yieldStats.food += growthFood * (foodBaseWeight / 4)
-        } else {
+        // if zeroFoodFocuses, ignore Growth as a metric for ranking
+        if (cityAIFocus !in CityFocus.zeroFoodFocuses) {
             // NoFocus or Food/Growth Focus.
             // When Happy, 2 production is better than 1 growth,
             // but setting such by default worsens AI civ citizen assignment,
