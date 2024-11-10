@@ -523,7 +523,8 @@ class GlobalUniquesTests {
     fun growthPercentBonusTest() {
         val civInfo = game.addCiv()
         val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
-        val building = game.createBuilding("[+100]% growth [in all cities]")
+        // City has 2 food from center -2 from pop, so total of 0
+        val building = game.createBuilding("[+100]% growth [in all cities]", "[+2 Food]")
         city.cityConstructions.addBuilding(building)
 
         city.cityStats.update()

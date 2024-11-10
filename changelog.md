@@ -1,3 +1,19 @@
+## 4.14.5
+
+Coast edge images for HexaRealm tiles by legacymtgsalvationuser69544 :)
+
+Place edge images over terrains and under improvements, where possible
+
+City-state unique units are not taken from civs within this game
+
+Don't assume the city-state ally knows the civ that attacked the city-state
+
+Modding:
+- Comment text is displayed on event choices
+- Don't allow triggers to decrease city population below 1
+
+Added owned tiles countable - By PLynx01
+
 ## 4.14.4
 
 Memory optimizations
