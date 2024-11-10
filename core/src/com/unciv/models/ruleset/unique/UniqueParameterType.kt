@@ -76,6 +76,7 @@ enum class UniqueParameterType(
             parameterText.equalsPlaceholderText("[] Cities") -> true
             parameterText.equalsPlaceholderText("[] Units") -> true
             parameterText.equalsPlaceholderText("Remaining [] Civilizations") -> true
+            parameterText.equalsPlaceholderText("Owned [] Tiles") -> true
             else -> super.isKnownValue(parameterText, ruleset)
         }
 
