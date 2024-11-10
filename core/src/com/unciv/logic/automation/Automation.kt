@@ -108,7 +108,9 @@ object Automation {
             // When Happy, 2 production is better than 1 growth,
             // but setting such by default worsens AI civ citizen assignment,
             // probably due to badly configured personalities not properly weighing food vs non-food yields
-            val growthFoodScaling = if (city.civ.getHappiness() > 0) foodBaseWeight * 2 else if (city.civ.getHappiness() < 8) foodBaseWeight * 0 else foodBaseWeight / 4
+            val growthFoodScaling = if (city.civ.getHappiness() > 0) foodBaseWeight * 2 
+                else if (city.civ.getHappiness() < 8) foodBaseWeight * 0 
+                else foodBaseWeight / 4
             yieldStats.food += growthFood * growthFoodScaling
         }
 
