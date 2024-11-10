@@ -131,9 +131,9 @@ class DiplomacyManagerTests {
         val dOpinionOfA = d.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
-        assertEquals(121f, bOpinionOfA) // massive boost, liberated their city
+        assertEquals(66f, bOpinionOfA) // massive boost, liberated their city
         assertEquals(0f, cOpinionOfA) // city conquering counters liberated city
-        assertEquals(11f, dOpinionOfA) // small boost, liberated another civ's city
+        assertEquals(6f, dOpinionOfA) // small boost, liberated another civ's city
     }
 
     @Test
@@ -158,8 +158,8 @@ class DiplomacyManagerTests {
         val cOpinionOfA = c.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
-        assertEquals(-121f, bOpinionOfA) // massive penality, conquered their city
-        assertEquals(-11f, cOpinionOfA) // warmonging penalty
+        assertEquals(-85f, bOpinionOfA) // massive penality, conquered their city
+        assertEquals(-8f, cOpinionOfA) // warmonging penalty
     }
 
     @Test
