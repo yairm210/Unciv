@@ -1748,8 +1748,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
-	Example: "[+20]% Strength for enemy [City] units in adjacent [Farm] tiles"
+??? example  "[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles"
+	Example: "[+20]% Strength for enemy [Wounded] units in adjacent [Farm] tiles"
 
 	Applicable to: Unit
 

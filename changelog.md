@@ -1,24 +1,18 @@
 ## 4.14.5
 
-New Krakatoa tile by legacymtgsalvationuser69544 for edge images to look good
-
 Coast edge images for HexaRealm tiles by legacymtgsalvationuser69544 :)
 
-Place edge images over terrains and under improvements, where possible to distinguish
+Place edge images over terrains and under improvements, where possible
 
-Clearer pop change limit redux - kudos @SeventhM
+City-state unique units are not taken from civs within this game
 
-Clearer pop change limit
+Don't assume the city-state ally knows the civ that attacked the city-state
 
-Resolved  - Comment text is displayed on event choices
+Modding:
+- Comment text is displayed on event choices
+- Don't allow triggers to decrease city population below 1
 
-Resolved  - City-state unique units are not taken from civs within this game
-
-Resolved  - Don't allow triggers to decrease city population below 1
-
-ConsoleLauncher accepts arbitrary amount of civs to simulate - see 
-
-Resolved  - Don't assume the city-state ally knows the civ that attacked the city-state
+Added owned tiles countable - By PLynx01
 
 ## 4.14.4
 
