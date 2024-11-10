@@ -149,6 +149,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun canBombard() = !attackedThisTurn && !isInResistance()
     fun getCenterTile(): Tile = centerTile
+    fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
