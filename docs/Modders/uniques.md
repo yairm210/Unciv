@@ -1748,8 +1748,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
-	Example: "[+20]% Strength for enemy [City] units in adjacent [Farm] tiles"
+??? example  "[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles"
+	Example: "[+20]% Strength for enemy [Wounded] units in adjacent [Farm] tiles"
 
 	Applicable to: Unit
 
@@ -2759,6 +2759,11 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: Conditional
 
+??? example  "&lt;on [difficulty] difficulty&gt;"
+	Example: "&lt;on [Prince] difficulty&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when [victoryType] Victory is enabled&gt;"
 	Example: "&lt;when [Domination] Victory is enabled&gt;"
 
@@ -3382,6 +3387,11 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 
 	Applicable to: MetaModifier
 
+??? example  "&lt;for every adjacent [tileFilter]&gt;"
+	Example: "&lt;for every adjacent [Farm]&gt;"
+
+	Applicable to: MetaModifier
+
 ??? example  "&lt;for every [amount] [countable]&gt;"
 	Example: "&lt;for every [3] [1000]&gt;"
 
@@ -3407,6 +3417,7 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
 *[countable]: This indicates a number or a numeric variable.
+*[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.

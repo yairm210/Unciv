@@ -194,10 +194,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     fun canAdoptPolicy(): Boolean {
         if (civInfo.isSpectator()) return false
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy()) return false
-
-        //Return true if there is a policy to adopt, else return false
-        return getRulesetPolicies().values.any { civInfo.policies.isAdoptable(it) }
+        if (allPoliciesAdopted(true)) return false
+        return true
     }
+    
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
 
@@ -234,9 +234,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
-            if (unique.getModifiers(UniqueType.TriggerUponAdoptingPolicyOrBelief).any { it.params[0] == policy.name })
-                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) {it.params[0] == policy.name})
+            UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         civInfo.cache.updateCivResources()
 

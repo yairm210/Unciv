@@ -3,7 +3,6 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
-import com.badlogic.gdx.utils.SharedLibraryLoader
 import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
@@ -19,7 +18,6 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
-import org.lwjgl.system.Configuration
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -27,9 +25,6 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
-        if (SharedLibraryLoader.isMac) {
-            Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
-        }
 
         // The uniques checker requires the file system to be seet up, which happens after lwjgw initializes it
         if (arg.isNotEmpty() && arg[0] == "mod-ci") {

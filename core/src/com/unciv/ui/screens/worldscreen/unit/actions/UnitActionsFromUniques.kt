@@ -78,6 +78,7 @@ object UnitActionsFromUniques {
             useFrequency = 80f,
             title = title,
             uncivSound = UncivSound.Chimes,
+            associatedUnique = unique,
             action = {
                 // check if we would be breaking a promise
                 val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
@@ -165,6 +166,30 @@ object UnitActionsFromUniques {
         ))
     }
 
+    // Instead of Withdrawing, stand your ground!
+    // Different than Fortify
+    internal fun getGuardActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat)) return emptySequence()
+        
+        if (unit.isGuarding()) {
+            val title = if (unit.canFortify()) "${"Guarding".tr()} ${unit.getFortificationTurns() * 20}%" else "Guarding".tr()
+            return sequenceOf(UnitAction(UnitActionType.Guard,
+                useFrequency = 0f,
+                isCurrentAction = true,
+                title = title
+            ))
+        }
+        
+        if (!unit.hasMovement()) return emptySequence()
+        
+        return sequenceOf(UnitAction(UnitActionType.Guard,
+            useFrequency = 0f,
+            action = {
+                unit.action = UnitActionType.Guard.value
+            }.takeIf { !unit.isGuarding() })
+        )
+    }
+
     internal fun getTriggerUniqueActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getUniques()) {
             // not a unit action
@@ -218,6 +243,7 @@ object UnitActionsFromUniques {
 
             yield(
                 UnitAction(UnitActionType.TriggerUnique, 80f, title,
+                    associatedUnique = unique,
                     action = unitAction.takeIf {
                         UnitActionModifiers.canActivateSideEffects(unit, unique)
                     })
@@ -288,6 +314,7 @@ object UnitActionsFromUniques {
                         unique,
                         unit
                     ),
+                    associatedUnique = unique,
                     action = {
                         val unitTile = unit.getTile()
                         unitTile.setImprovement(improvement.name, unit.civ, unit)
@@ -369,6 +396,7 @@ object UnitActionsFromUniques {
 
             yield(UnitAction(UnitActionType.Transform, 70f,
                 title = title,
+                associatedUnique = unique,
                 action = {
                     val oldMovement = unit.currentMovement
                     unit.destroy()

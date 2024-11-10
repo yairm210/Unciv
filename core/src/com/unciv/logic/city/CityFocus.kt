@@ -62,7 +62,7 @@ enum class CityFocus(
         KeyboardBinding.None
 
     open fun getStatMultiplier(stat: Stat) = when (this.stat) {
-        stat -> 3f
+        stat -> 3.05f // on ties, prefer the Focus
         else -> 1f
     }
 

@@ -21,6 +21,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.victoryscreen.RankingType
+import kotlin.math.min
+
 
 object Automation {
 
@@ -64,33 +66,51 @@ object Automation {
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
+        val starving = surplusFood < 0
         // If current Production converts Food into Production, then calculate increased Production Yield
         if (cityStatsObj.canConvertFoodToProduction(surplusFood, city.cityConstructions.getCurrentConstruction())) {
             // calculate delta increase of food->prod. This isn't linear
             yieldStats.production += cityStatsObj.getProductionFromExcessiveFood(surplusFood+yieldStats.food) - cityStatsObj.getProductionFromExcessiveFood(surplusFood)
             yieldStats.food = 0f  // all food goes to 0
         }
+
+        // Split Food Yield into feedFood, amount needed to not Starve
+        // and growthFood, any amount above that
+        var feedFood = 0f
+        if (starving)
+            feedFood = min(yieldStats.food, -surplusFood).coerceAtLeast(0f)
+        var growthFood = yieldStats.food - feedFood // how much extra Food we yield
+        // Avoid Growth, only count Food that gets you not-starving, but no more
+        if (city.avoidGrowth) {
+            growthFood = 0f
+        }
+        yieldStats.food = 1f
+        
         // Apply base weights
         yieldStats.applyRankingWeights()
 
-        if (surplusFood > 0 && city.avoidGrowth) {
-            yieldStats.food = 0f // don't need more food!
-        } else if (cityAIFocus in CityFocus.zeroFoodFocuses) {
+        val foodBaseWeight = yieldStats.food
+
+        // If starving, need Food, so feedFood > 0
+        // scale feedFood by 14(base weight)*8(super important)
+        // By only scaling what we need to reach Not Starving by x8, we can pick a tile that gives
+        // exactly as much Food as we need to Not Starve that also has other good yields instead of
+        // always picking the Highest Food tile until Not Starving
+        yieldStats.food = feedFood * (foodBaseWeight * 8)
+        // growthFood is any additional food not required to meet Starvation
+        if (cityAIFocus in CityFocus.zeroFoodFocuses) {
             // Focus on non-food/growth
-            if (surplusFood < 0)
-                yieldStats.food *= 8 // Starving, need Food, get to 0
-            else if (city.civ.getHappiness() < 1)
-                yieldStats.food /= 4
-        } else if (!city.avoidGrowth) {
+            // Reduce excess food focus to prevent Happiness spiral
+            if (city.civ.getHappiness() < 1)
+                yieldStats.food += growthFood * (foodBaseWeight / 4)
+        } else {
             // NoFocus or Food/Growth Focus.
-            if (surplusFood < 0)
-                yieldStats.food *= 8 // Starving, need Food, get to 0
-            else if (city.civ.getHappiness() > -1)
-                yieldStats.food *= 2 //1.5f is preferred, but 2 provides more protection against badly configured personalities
-            else if (city.civ.getHappiness() < 0) {
-                // 75% of excess food is wasted when in negative happiness
-                yieldStats.food /= 4
-            }
+            // When Happy, EmperorPenguin has run sims comparing weights
+            // 1.5f is preferred,
+            // but 2 provides more protection against badly configured personalities
+            // If unhappy, see above
+            val growthFoodScaling = if (city.civ.getHappiness() >= 0) foodBaseWeight * 2 else foodBaseWeight / 4
+            yieldStats.food += growthFood * growthFoodScaling
         }
 
         if (city.population.population < 10) {
@@ -181,9 +201,9 @@ object Automation {
 
             val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
                 .count { it.isCityCenter() && it.getOwner() == city.civ }
-            val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
-                .flatMap { it.getUnits() }
-                .count { isNavalMeleeUnit(it.baseUnit) }
+            val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles()
+                .sumOf { it.getUnits().count { isNavalMeleeUnit(it.baseUnit) } }
+                
             isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
 
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {

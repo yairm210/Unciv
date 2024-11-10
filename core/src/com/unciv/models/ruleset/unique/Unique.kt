@@ -76,17 +76,29 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     private fun getUniqueMultiplier(stateForConditionals: StateForConditionals): Int {
-        val forEveryModifiers = getModifiers(UniqueType.ForEveryCountable)
-        val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
+        
         var amount = 1
+        
+        val forEveryModifiers = getModifiers(UniqueType.ForEveryCountable)
         for (conditional in forEveryModifiers) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
             if (multiplier != null) amount *= multiplier
         }
+        
+        val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
         for (conditional in forEveryAmountModifiers) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
             val perEvery = conditional.params[0].toInt()
             if (multiplier != null) amount *= multiplier / perEvery
+        }
+
+        if (stateForConditionals.relevantTile != null){
+            val forEveryAdjacentTileModifiers = getModifiers(UniqueType.ForEveryAdjacentTile)
+            for (conditional in forEveryAdjacentTileModifiers) {
+                val multiplier = stateForConditionals.relevantTile!!.neighbors
+                    .count { it.matchesFilter(conditional.params[0]) }
+                amount *= multiplier
+            }
         }
 
         return amount.coerceAtLeast(0)
@@ -311,9 +323,10 @@ open class UniqueMap() {
 
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 
-    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals,
+                            triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
         return getAllUniques().filter { unique ->
-            unique.hasModifier(trigger) && unique.conditionalsApply(stateForConditionals)
+            unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(stateForConditionals)
         }.flatMap { it.getMultiplied(stateForConditionals) }
     }
     

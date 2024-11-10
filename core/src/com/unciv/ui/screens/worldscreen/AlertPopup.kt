@@ -214,12 +214,12 @@ class AlertPopup(
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
+        addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
+            playerDiploManager.signDeclarationOfFriendship()
+        }.row()
         addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
             playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
         }.row()
-        addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
-            playerDiploManager.signDeclarationOfFriendship()
-        }
     }
 
     private fun addDefeated() {

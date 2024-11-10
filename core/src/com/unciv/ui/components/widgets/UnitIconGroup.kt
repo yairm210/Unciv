@@ -138,6 +138,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
         return when {
             unit.isEmbarked() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagEmbark")
             unit.isFortified() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagFortify")
+            unit.isGuarding() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagFortify")
             unit.isCivilian() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagCivilian")
             else -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlag")
         }
@@ -147,6 +148,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
         return when {
             unit.isEmbarked() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagEmbarkInner")
             unit.isFortified() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagFortifyInner")
+            unit.isGuarding() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagFortifyInner")
             unit.isCivilian() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagCivilianInner")
             else -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagInner")
         }
@@ -157,6 +159,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
         val filename = when {
             unit.isEmbarked() -> "UnitFlagIcons/UnitFlagMaskEmbark"
             unit.isFortified() -> "UnitFlagIcons/UnitFlagMaskFortify"
+            unit.isGuarding() -> "UnitFlagIcons/UnitFlagMaskFortify"
             unit.isCivilian() -> "UnitFlagIcons/UnitFlagMaskCivilian"
             else -> "UnitFlagIcons/UnitFlagMask"
         }
@@ -170,6 +173,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
         return when {
             unit.isEmbarked() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionEmbark")
             unit.isFortified() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionFortify")
+            unit.isGuarding() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionFortify")
             unit.isCivilian() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionCivilian")
             else -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelection")
         }

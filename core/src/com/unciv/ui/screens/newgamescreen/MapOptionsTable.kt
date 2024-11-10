@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.logic.map.MapParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
@@ -13,7 +12,7 @@ import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 
-class ScenarioSelectTable(val newGameScreen: NewGameScreen, mapParameters: MapParameters) : Table() {
+class ScenarioSelectTable(val newGameScreen: NewGameScreen) : Table() {
     
     data class ScenarioData(val name:String, val file: FileHandle){
         var preview: GameInfoPreview? = null
@@ -71,7 +70,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
     internal val generatedMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.generated)
     private val randomMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.randomGenerated)
     private val savedMapOptionsTable = MapFileSelectTable(newGameScreen, mapParameters)
-    private val scenarioOptionsTable = ScenarioSelectTable(newGameScreen, mapParameters)
+    private val scenarioOptionsTable = ScenarioSelectTable(newGameScreen)
     internal val mapTypeSelectBox: TranslatedSelectBox
 
     init {
