@@ -105,12 +105,10 @@ object Automation {
                 yieldStats.food += growthFood * (foodBaseWeight / 4)
         } else {
             // NoFocus or Food/Growth Focus.
-            // When Happy, EmperorPenguin has run sims comparing weights
-            // 1.5f is preferred,
-            // but 2 provides more protection against badly configured personalities
-            // If unhappy, see above
-            val growthFoodScaling = if (city.civ.getHappiness() >= 0) foodBaseWeight * 2 else foodBaseWeight / 4
-            yieldStats.food += growthFood * growthFoodScaling
+            // When Happy, 2 production is better than 1 growth,
+            // but setting such by default worsens AI civ citizen assignment,
+            // probably due to badly configured personalities not properly weighing food vs non-food yields
+            val growthFoodScaling = if (city.civ.getHappiness() > 0) foodBaseWeight * 2 else if (city.civ.getHappiness() < 8) foodBaseWeight * 0 else foodBaseWeight / 4
         }
 
         if (city.population.population < 10) {
