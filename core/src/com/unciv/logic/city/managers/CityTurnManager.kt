@@ -134,7 +134,7 @@ class CityTurnManager(val city: City) {
                 )
                 city.destroyCity()
             } else { //if not razed yet:
-                city.population.addPopulation(-1 * removedPopulation)
+                city.population.addPopulation(-removedPopulation)
                 if (city.population.foodStored >= city.population.getFoodToNextPopulation()) { //if surplus in the granary...
                     city.population.foodStored =
                             city.population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold
