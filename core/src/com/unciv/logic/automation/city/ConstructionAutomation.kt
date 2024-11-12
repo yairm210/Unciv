@@ -251,7 +251,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val numberOfWorkersWeWant = if (cities <= 5) (cities * 1.5f) else 7.5f + ((cities - 5))
 
         if (workers < numberOfWorkersWeWant) {
-            val modifier = numberOfWorkersWeWant / (workers + 0.4f) // The worse our worker to city ratio is, the more desperate we are
+            val modifier = numberOfWorkersWeWant / (workers + 0.17f) // The worse our worker to city ratio is, the more desperate we are
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
         }
     }
