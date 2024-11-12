@@ -425,7 +425,7 @@ enum class UniqueType(
     HealAdjacentUnits("All adjacent units heal [amount] HP when healing", UniqueTarget.Unit),
 
     // Vision
-    @Deprecated("As of 4.14.6", ReplaceWith("[+100]% Strength <when defending> <for [Embarked] units>"))
+    @Deprecated("As of 4.14.6", ReplaceWith("[+100]% Strength <when defending> <when [Embarked]>"))
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     NoSight("No Sight", UniqueTarget.Unit),
     CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
