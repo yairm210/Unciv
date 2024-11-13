@@ -76,19 +76,14 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         val terrainImages = if (tile.naturalWonder != null)
             sequenceOf(tile.baseTerrain, tile.naturalWonder!!)
         else  sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
-        val edgeImages = getEdgeTileLocations()
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
         val allTogetherLocation = strings().getTile(allTogether)
 
-        // If the tilesetconfig *explicitly* lists the terrains+improvements etc, we can't know where in that list to place the edges
-        //   So we default to placing them over everything else.
-        // If there is no explicit list, then we can know to place them between the terrain and the improvement
         return when {
-            strings().tileSetConfig.ruleVariants[allTogether] != null -> baseHexagon + 
-                    strings().tileSetConfig.ruleVariants[allTogether]!!.map { strings().getTile(it) } + edgeImages
-            ImageGetter.imageExists(allTogetherLocation) -> baseHexagon + allTogetherLocation + edgeImages
-            tile.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon) + edgeImages
-            else -> baseHexagon + getTerrainImageLocations(terrainImages) + edgeImages + getImprovementAndResourceImages(resourceAndImprovementSequence)
+            strings().tileSetConfig.ruleVariants[allTogether] != null -> baseHexagon + strings().tileSetConfig.ruleVariants[allTogether]!!.map { strings().getTile(it) }
+            ImageGetter.imageExists(allTogetherLocation) -> baseHexagon + allTogetherLocation
+            tile.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon)
+            else -> baseHexagon + getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
         }
     }
     
@@ -114,7 +109,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     private fun updateTileImage(viewingCiv: Civilization?) {
-        val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
+        val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv) + 
+                getEdgeTileLocations()
         
         if (tileBaseImageLocations.size == tileImageIdentifiers.size) {
             if (tileBaseImageLocations.withIndex().all { (i, imageLocation) -> tileImageIdentifiers[i] == imageLocation })
