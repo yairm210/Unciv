@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -490,11 +491,13 @@ class NotificationsScroll(
             // Actions are blocked while update() is rebuilding the UI elements - to be safe from unexpected state changes
             if (!blockAct) super.act(delta)
         }
+
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
 
     private fun getUserSettingCheckDisabled(): Boolean {
         val settingString = GUI.getSettings().notificationScroll
-        val setting = UserSetting.values().firstOrNull { it.name == settingString }
+        val setting = UserSetting.entries.firstOrNull { it.name == settingString }
             ?: UserSetting.default()
         userSettingChanged = false
         if (setting == userSetting)
