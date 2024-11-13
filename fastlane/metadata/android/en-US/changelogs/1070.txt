@@ -1,0 +1,29 @@
+
+
+Resolved  - added 'unit remove all' console command
+
+Remove Tactical AI files - untouched for 2 years and unused, causes confusion to new developers
+
+Add passthrough functions to all layers for perf work
+
+Actual performance change :)
+
+perf(rendering): Don't try to find edge tiles unless we know other images have changes as well
+
+perf(rendering): ignore unit layers with no units
+
+AI does not offer open borders trade if other side already has open borders
+
+Fix tests
+
+Resolve  - don't allow trading away max gold/max gpt to multiple civs
+
+chore: resolved  - deprecated 'defence bonus when embarked' unique
+
+4.14.5-patch1
+
+Fix 'raze city' 
+
+In trade, if one side has *negative* resources of a certain type, the resource on the other side should be colored green to mark it as attractive
+
+Fix typos in MacOS documentation  - By vuriaval
