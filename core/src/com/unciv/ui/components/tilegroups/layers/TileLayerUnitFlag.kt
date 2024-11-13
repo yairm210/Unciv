@@ -1,5 +1,6 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -26,9 +27,14 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     }
 
     override fun act(delta: Float) { // No 'snapshotting' since we trust it will remain the same
+        if (civilianUnitIcon == null && militaryUnitIcon == null)
+            return
         for (child in children)
             child.act(delta)
     }
+
+    // For perf profiling
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
     private fun clearSlots() {
         civilianUnitIcon?.remove()
