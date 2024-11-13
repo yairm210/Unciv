@@ -1,5 +1,6 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
@@ -10,6 +11,9 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 
 class UnitSpriteSlot : Group() {
+    init {
+        isTransform = false
+    }
     var imageLocation = ""
 }
 
@@ -17,6 +21,10 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (civilianSlot.imageLocation.isEmpty() && militarySlot.imageLocation.isEmpty()) return
+        super.draw(batch, parentAlpha)
+    }
 
     private var civilianSlot: UnitSpriteSlot = UnitSpriteSlot()
     private var militarySlot: UnitSpriteSlot = UnitSpriteSlot()

@@ -461,7 +461,7 @@
         "They can remove all other religions from one of your own cities, removing any pressures built up.",
         "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
         "Often this results in the city immediately converting to their religion",
-        "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
+        "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is unaffected."
       ],
     "uniques": ["Only available <when religion is enabled>"]
   },

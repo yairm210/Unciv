@@ -1,6 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.Constants
@@ -13,6 +14,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha) // perf
 
     private var highlight: Image? = null // for blue and red circles/emphasis on the tile
     private var crosshair: Image? = null // for when a unit is targeted

@@ -962,9 +962,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can only heal by pillaging"
 	Applicable to: Global, Unit
 
-??? example  "Defense bonus when embarked"
-	Applicable to: Global, Unit
-
 ??? example  "[relativeAmount]% maintenance costs"
 	Example: "[+20]% maintenance costs"
 
@@ -1900,9 +1897,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "All adjacent units heal [3] HP when healing"
 
 	Applicable to: Unit
-
-??? example  "Defense bonus when embarked"
-	Applicable to: Global, Unit
 
 ??? example  "No Sight"
 	Applicable to: Unit

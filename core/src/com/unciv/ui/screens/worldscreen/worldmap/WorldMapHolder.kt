@@ -197,7 +197,6 @@ class WorldMapHolder(
                 unitTable.citySelected(previousSelectedCity)
             }
         }
-        worldScreen.viewingCiv.tacticalAI.showZonesDebug(tile)
         worldScreen.shouldUpdate = true
     }
 

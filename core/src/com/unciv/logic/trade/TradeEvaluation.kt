@@ -46,8 +46,9 @@ class TradeEvaluation {
         }
 
         return when (tradeOffer.type) {
-            TradeOfferType.Gold -> true // even if they go negative it's okay
-            TradeOfferType.Gold_Per_Turn -> true // even if they go negative it's okay
+            // if they go a little negative it's okay, but don't allowing going overboard (promising same gold to many)
+            TradeOfferType.Gold -> tradeOffer.amount * 0.9f < offerer.gold
+            TradeOfferType.Gold_Per_Turn -> tradeOffer.amount * 0.9f < offerer.stats.statsForNextTurn.gold
             TradeOfferType.Treaty -> {
                 // Current automation should prevent these from being offered anyway, 
                 //   these are a safeguard against future automation changes 

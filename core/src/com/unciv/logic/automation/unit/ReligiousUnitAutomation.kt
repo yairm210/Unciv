@@ -105,7 +105,8 @@ object ReligiousUnitAutomation {
         }
 
         if (destinationCity == null) return
-        val destinationTile = destinationCity.getCenterTile().neighbors // Inquisitors prevent spreading to the city they are next to
+
+        val destinationTile = destinationCity.getCenterTile().neighbors
                 .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
