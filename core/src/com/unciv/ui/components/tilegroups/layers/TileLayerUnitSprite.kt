@@ -21,6 +21,10 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (civilianSlot.imageLocation.isEmpty() && militarySlot.imageLocation.isEmpty()) return
+        super.draw(batch, parentAlpha)
+    }
 
     private var civilianSlot: UnitSpriteSlot = UnitSpriteSlot()
     private var militarySlot: UnitSpriteSlot = UnitSpriteSlot()
@@ -93,10 +97,5 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
         civilianSlot.imageLocation = ""
         militarySlot.imageLocation = ""
-    }
-
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (civilianSlot.imageLocation.isEmpty() && militarySlot.imageLocation.isEmpty()) return
-        super.draw(batch, parentAlpha)
     }
 }
