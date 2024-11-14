@@ -357,6 +357,7 @@ enum class UniqueParameterType(
             parameterText in staticKnownValues -> true
             ImprovementFilter.isKnownValue(parameterText, ruleset) -> true
             TerrainFilter.isKnownValue(parameterText, ruleset) -> true
+            CivFilter.isKnownValue(parameterText, ruleset) -> true
             else -> false
         }
 
