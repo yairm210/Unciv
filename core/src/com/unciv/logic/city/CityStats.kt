@@ -588,8 +588,9 @@ class CityStats(val city: City) {
         }
 
         val growthNullifyingUnique = city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
-        if (growthNullifyingUnique != null) {
-            // Note that negative food will also be nullified. Pretty sure that's conform civ V, but haven't checked.
+        totalFood = newFinalStatList.values.map { it.food }.sum()
+        if (growthNullifyingUnique != null && totalFood > 0) {
+            // Only nullify if positive Food
             val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
             newFinalStatList.add(
                 growthNullifyingUnique.getSourceNameForUser(),
