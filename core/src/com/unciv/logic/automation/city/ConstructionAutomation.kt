@@ -381,5 +381,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 buildingStats[Stat.Food] += foodGain * relativeAmount // Essentialy gives us the food per turn this unique saves us
             }
         }
+        
+        for (unique in building.getMatchingUniques(UniqueType.StatsFromTiles)) {
+            val statType = Stat.Food //placeholder
+            val extraTileYields = 1f //placeholder
+            buildingStats[statType] += extraTileYields
+        }
     }
 }
