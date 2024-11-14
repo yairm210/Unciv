@@ -120,6 +120,7 @@ object Automation {
             // When Happy, 2 production is better than 1 growth,
             // but setting such by default worsens AI civ citizen assignment,
             // probably due to badly configured personalities not properly weighing food vs non-food yields
+
             // Zero out Growth if close to Unhappiness limit as well
             val baseFocusWeight = if (city.civ.getHappiness() < -8) 0 else {
                 if (cityAIFocus in CityFocus.zeroFoodFocuses) 1 else 2
