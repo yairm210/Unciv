@@ -34,7 +34,7 @@ import kotlin.random.Random
 class CityStateFunctions(val civInfo: Civilization) {
 
     /** Attempts to initialize the city state, returning true if successful. */
-    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Sequence<String>): Boolean {
+    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<String>): Boolean {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
@@ -56,7 +56,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
             val possibleUnits = ruleset.units.values.filter {
                 return@filter !it.availableInEra(ruleset, startingEra) // Not from the start era or before
-                    && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
+                    && it.uniqueTo != null && it.uniqueTo !in usedMajorCivs // Must be from a major civ not in the game
                         // Note that this means that units unique to a civ *filter* instead of a civ *name* will not be provided
                     && ruleset.unitTypes[it.unitType]!!.isLandUnit()
                     && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
@@ -682,7 +682,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         // Even if we aren't *technically* protectors, we *can* still be pissed you attacked our allies*
         val allyCivName = civInfo.getAllyCiv()
         val allyCiv = if (allyCivName != null) civInfo.gameInfo.getCivilization(allyCivName) else null
-        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs()){
+        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs() && allyCiv.knows(attacker)){
             val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
             // Less than if we were protectors
             allyDiplomacy.addModifier(DiplomaticModifiers.AttackedAlliedMinor, -10f)

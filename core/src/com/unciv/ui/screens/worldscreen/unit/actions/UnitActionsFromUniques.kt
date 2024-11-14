@@ -78,6 +78,7 @@ object UnitActionsFromUniques {
             useFrequency = 80f,
             title = title,
             uncivSound = UncivSound.Chimes,
+            associatedUnique = unique,
             action = {
                 // check if we would be breaking a promise
                 val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
@@ -242,6 +243,7 @@ object UnitActionsFromUniques {
 
             yield(
                 UnitAction(UnitActionType.TriggerUnique, 80f, title,
+                    associatedUnique = unique,
                     action = unitAction.takeIf {
                         UnitActionModifiers.canActivateSideEffects(unit, unique)
                     })
@@ -312,6 +314,7 @@ object UnitActionsFromUniques {
                         unique,
                         unit
                     ),
+                    associatedUnique = unique,
                     action = {
                         val unitTile = unit.getTile()
                         unitTile.setImprovement(improvement.name, unit.civ, unit)
@@ -393,6 +396,7 @@ object UnitActionsFromUniques {
 
             yield(UnitAction(UnitActionType.Transform, 70f,
                 title = title,
+                associatedUnique = unique,
                 action = {
                     val oldMovement = unit.currentMovement
                     unit.destroy()

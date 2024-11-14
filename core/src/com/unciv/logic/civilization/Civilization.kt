@@ -8,7 +8,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
@@ -168,9 +167,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
-
-    /* AI section */
-    val tacticalAI = TacticalAI()
 
     var notifications = ArrayList<Notification>()
 
@@ -781,8 +777,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
-
-        tacticalAI.init(this)
 
         cache.setTransients()
     }

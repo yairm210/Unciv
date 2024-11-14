@@ -116,6 +116,7 @@ object DiplomacyAutomation {
                 it.isMajorCiv() && !civInfo.isAtWarWith(it)
                     && it.hasUnique(UniqueType.EnablesOpenBorders)
                     && !civInfo.getDiplomacyManager(it)!!.hasOpenBorders
+                    && !it.getDiplomacyManager(civInfo)!!.hasOpenBorders
                     && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
                     && !areWeOfferingTrade(civInfo, it, Constants.openBorders)
             }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
