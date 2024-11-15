@@ -87,7 +87,6 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
     private var flagMask: Image? = getBackgroundMaskForUnit()
 
     init {
-
         isTransform = false // performance helper - nothing here is rotated or scaled
         color.a *= UncivGame.Current.settings.unitIconOpacity
 

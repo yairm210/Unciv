@@ -1,3 +1,15 @@
+## 4.14.6
+
+Rendering performance improvements
+
+AI does not offer open borders trade if other side already has open borders
+
+Don't allow trading away max gold/max gpt to multiple civs
+
+Added 'unit remove all' console command
+
+In trade, if one side has *negative* resources of a certain type, the resource on the other side is colored green
+
 ## 4.14.5
 
 Coast edge images for HexaRealm tiles by legacymtgsalvationuser69544 :)
