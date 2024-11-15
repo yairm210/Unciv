@@ -116,14 +116,18 @@ object Automation {
                 newGrowthFood += growthFood / 4
             }
             newGrowthFood = newGrowthFood.coerceAtLeast(0f) // floor to 0 for safety
-
-            // When Happy, 2 production is better than 1 growth,
-            // but setting such by default worsens AI civ citizen assignment,
-            // probably due to badly configured personalities not properly weighing food vs non-food yields
-
-            // Zero out Growth if close to Unhappiness limit as well
-            val foodModWeight = if (city.civ.getHappiness() < -8) 0 else {
-                if (city.civ.isHuman()) 1 else 2
+            
+            
+            var foodModWeight = 1
+            // Zero out Growth if close to Unhappiness limit
+            if (city.civ.getHappiness() < -8) foodModWeight = 0
+            else {
+                if (city.civ.isAI()) {
+                    // When Happy, 2 production is better than 1 growth,
+                    // but setting such by default worsens AI civ citizen assignment,
+                    // probably due to badly configured personalities not properly weighing food vs non-food yields
+                    foodModWeight = 2
+                }
             }
             yieldStats.food += newGrowthFood * foodBaseWeight * foodModWeight
         }
