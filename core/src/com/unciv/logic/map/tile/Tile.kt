@@ -366,8 +366,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
-    @delegate:Transient
-    private val stateThisTile: StateForConditionals by lazy { StateForConditionals(tile = this) }
+    @Transient
+    private var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = stateThisTile) =
         terrainUniqueMap.getMatchingUniques(uniqueType, state).any()
@@ -476,8 +476,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
         if (ignoreImprovement) return false
-        if (getUnpillagedTileImprovement()?.matchesFilter(filter, StateForConditionals(tile = this), false) == true) return true
-        return getUnpillagedRoadImprovement()?.matchesFilter(filter, StateForConditionals(tile = this), false) == true
+        if (getUnpillagedTileImprovement()?.matchesFilter(filter, stateThisTile, false) == true) return true
+        return getUnpillagedRoadImprovement()?.matchesFilter(filter, stateThisTile, false) == true
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
@@ -510,9 +510,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
             else -> {
                 val owner = getOwner()
-                val state = StateForConditionals(civInfo = owner, tile = this)
-                if (allTerrains.any { it.matchesFilter(filter, state, false) }) return true
-                if (owner != null && owner.matchesFilter(filter, state, false)) return true
+                if (allTerrains.any { it.matchesFilter(filter, stateThisTile, false) }) return true
+                if (owner != null && owner.matchesFilter(filter, stateThisTile, false)) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
@@ -523,7 +522,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 val resourceObject = tileResource
                 val hasResourceWithFilter =
                         tileResource.name == filter
-                                || tileResource.hasUnique(filter, StateForConditionals(tile = this))
+                                || tileResource.hasUnique(filter, stateThisTile)
                                 || filter.removeSuffix(" resource") == tileResource.resourceType.name
                 if (!hasResourceWithFilter) return false
 
@@ -736,6 +735,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     fun setOwnerTransients() {
+        // If it has an owning city, the state was already set in setOwningCity
+        if (owningCity == null) stateThisTile = StateForConditionals(tile = this)
         if (owningCity == null && roadOwner != "")
             getRoadOwner()!!.neutralRoads.add(this.position)
     }
@@ -752,6 +753,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             roadOwner = ""
         }
         owningCity = city
+        stateThisTile = StateForConditionals(tile = this, city = city)
         isCityCenterInternal = getCity()?.location == position
     }
 
