@@ -736,7 +736,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun setOwnerTransients() {
         // If it has an owning city, the state was already set in setOwningCity
-        if (owningCity == null) stateThisTile = StateForConditionals(tile = this)
+        if (owningCity == null) stateThisTile = StateForConditionals(tile = this,
+            // When generating maps we call this function but there's no gameinfo
+            gameInfo = if (tileMap.hasGameInfo()) tileMap.gameInfo else null)
         if (owningCity == null && roadOwner != "")
             getRoadOwner()!!.neutralRoads.add(this.position)
     }
@@ -753,7 +755,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             roadOwner = ""
         }
         owningCity = city
-        stateThisTile = StateForConditionals(tile = this, city = city)
+        stateThisTile = StateForConditionals(tile = this, city = city, gameInfo = tileMap.gameInfo)
         isCityCenterInternal = getCity()?.location == position
     }
 
