@@ -140,9 +140,6 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         runAndMeasure("assignContinents") {
             map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
-        runAndMeasure("RiverGenerator") {
-            RiverGenerator(map, randomness, ruleset).spawnRivers()
-        }
         convertTerrains(map.values)
 
         // Region based map generation - not used when generating maps in map editor
@@ -169,6 +166,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             runAndMeasure("spreadResources") {
                 spreadResources(map)
             }
+        }
+        runAndMeasure("RiverGenerator") { // After nat wonders have a chance to change land to water
+            RiverGenerator(map, randomness, ruleset).spawnRivers()
         }
         runAndMeasure("spreadAncientRuins") {
             spreadAncientRuins(map)
