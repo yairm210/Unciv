@@ -118,15 +118,21 @@ object Automation {
             newGrowthFood = newGrowthFood.coerceAtLeast(0f) // floor to 0 for safety
             
             
-            var foodModWeight = 1
+            var foodModWeight = 1f
             // Zero out Growth if close to Unhappiness limit
-            if (city.civ.getHappiness() < -8) foodModWeight = 0
+            if (city.civ.getHappiness() < -8) foodModWeight = 0f
             else {
                 if (city.civ.isAI()) {
                     // When Happy, 2 production is better than 1 growth,
                     // but setting such by default worsens AI civ citizen assignment,
                     // probably due to badly configured personalities not properly weighing food vs non-food yields
-                    foodModWeight = 2
+                    foodModWeight = 2f
+                } else {
+                    // Human weights
+                    if (city.population.population < 4)
+                        foodModWeight = 2f
+                    else if (surplusFood > city.population.getFoodToNextPopulation() / 10 && cityAIFocus == CityFocus.NoFocus)
+                        foodModWeight = 0.75f // get Growth just under Production
                 }
             }
             yieldStats.food += newGrowthFood * foodBaseWeight * foodModWeight
