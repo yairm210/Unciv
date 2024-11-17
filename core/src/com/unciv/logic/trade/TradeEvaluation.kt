@@ -184,12 +184,12 @@ class TradeEvaluation {
             TradeOfferType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer for city id "+offer.name+" which does't seem to exist for this civ!")
-                val stats = city.cityStats.currentCityStats
                 val surrounded: Int = surroundedByOurCities(city, civInfo)
                 if (civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
                     return 0 // we can't really afford to go into negative happiness because of buying a city
-                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + surrounded
-                return sumOfStats.toInt() * 100
+                val sumOfPop = city.population.population
+                val sumOfBuildings = city.cityConstructions.getBuiltBuildings().count()
+                return ((sumOfPop * 4 + sumOfBuildings * 1 + 4 + surrounded) * 100).coerceAtLeast(1000)
             }
             TradeOfferType.Agreement -> {
                 if (offer.name == Constants.openBorders) return 100
@@ -308,10 +308,9 @@ class TradeEvaluation {
                     ?: throw Exception("Got an offer to sell city id " + offer.name + " which does't seem to exist for this civ!")
 
                 val distanceBonus = distanceCityTradeModifier(civInfo, city)
-                val stats = city.cityStats.currentCityStats
-                val sumOfStats =
-                    stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + distanceBonus
-                return (sumOfStats.toInt() * 100).coerceAtLeast(1000)
+                val sumOfPop = city.population.population
+                val sumOfBuildings = city.cityConstructions.getBuiltBuildings().count()
+                return ((sumOfPop * 4 + sumOfBuildings * 1 + 4 + distanceBonus) * 100).coerceAtLeast(1000)
             }
             TradeOfferType.Agreement -> {
                 if (offer.name == Constants.openBorders) {
