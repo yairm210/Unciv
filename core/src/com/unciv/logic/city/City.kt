@@ -149,6 +149,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun canBombard() = !attackedThisTurn && !isInResistance()
     fun getCenterTile(): Tile = centerTile
+    fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
@@ -164,7 +165,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val indicatorBuildings = getRuleset().buildings.values.asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
-        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && civ.matchesFilter(it.uniqueTo!!) }
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && civ.matchesFilter(it.uniqueTo!!, StateForConditionals(this)) }
         return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 
@@ -425,8 +426,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
-    fun matchesFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
-        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, viewingCiv) })
+    fun matchesFilter(filter: String, viewingCiv: Civilization? = civ, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter)
+            MultiFilter.multiFilter(filter, { matchesSingleFilter(it, viewingCiv) })
+        else matchesSingleFilter(filter, viewingCiv)
     }
 
     private fun matchesSingleFilter(filter: String, viewingCiv: Civilization? = civ): Boolean {
@@ -464,7 +467,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             // this will always be true when checked.
             "in cities following this religion" -> true
             "in cities following our religion" -> viewingCiv?.religionManager?.religion == religion.getMajorityReligion()
-            else -> civ.matchesFilter(filter)
+            else -> civ.matchesFilter(filter, StateForConditionals(this), false)
         }
     }
 

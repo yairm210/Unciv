@@ -327,7 +327,7 @@ object UniqueTriggerActivation {
                 val policyFilter = unique.params[0]
                 val policiesToRemove = civInfo.policies.adoptedPolicies
                     .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter) }
+                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
                 if (policiesToRemove.isEmpty()) return null
 
                 return {
@@ -350,7 +350,7 @@ object UniqueTriggerActivation {
                 val refundPercentage = unique.params[1].toInt()
                 val policiesToRemove = civInfo.policies.adoptedPolicies
                     .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter) }
+                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
                 if (policiesToRemove.isEmpty()) return null
 
                 val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
@@ -907,7 +907,7 @@ object UniqueTriggerActivation {
                 return {
                     for (applicableCity in applicableCities) {
                         val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
-                            it.matchesFilter(unique.params[0])
+                            it.matchesFilter(unique.params[0], StateForConditionals(applicableCity))
                         }.toSet()
                         applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
                     }
@@ -924,7 +924,7 @@ object UniqueTriggerActivation {
                 return {
                     for (applicableCity in applicableCities) {
                         val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
-                            it.matchesFilter(unique.params[0]) && it.isSellable()
+                            it.matchesFilter(unique.params[0], StateForConditionals(applicableCity)) && it.isSellable()
                         }
 
                         for (building in buildingsToSell) applicableCity.sellBuilding(building)

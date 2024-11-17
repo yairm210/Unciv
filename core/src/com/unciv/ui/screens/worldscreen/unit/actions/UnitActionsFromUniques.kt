@@ -296,7 +296,7 @@ object UnitActionsFromUniques {
 
         for (unique in uniquesToCheck) {
             val improvementFilter = unique.params[0]
-            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter) }
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, StateForConditionals(unit = unit, tile = tile)) }
 
             for (improvement in improvements) {
                 // Try to skip Improvements we can never build

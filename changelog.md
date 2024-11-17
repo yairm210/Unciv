@@ -1,3 +1,18 @@
+## 4.14.7
+
+CPU performance improvements
+
+Modding:
+- Mod checker accepts civ filters as tile filters
+- Great General unique works with conditionals
+- Nat wonders land->water conversion no longer causes rivers on water tiles
+
+Growth nullifying uniques do not nullify starvation
+
+Removed Scenarios button, since the 'new game' screen handles scenarios better
+
+Allow filter uniques to have conditionals and work with modifiers  - By SeventhM
+
 ## 4.14.6
 
 Rendering performance improvements

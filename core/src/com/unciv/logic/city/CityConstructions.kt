@@ -241,7 +241,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
-            isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasTagUnique(buildingNameOrUnique) }
+            isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique, StateForConditionals(city)) }
 
     fun getWorkDone(constructionName: String): Int {
         return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
@@ -565,11 +565,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
         for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals)
-                { building.matchesFilter(it.params[0]) })
+                { building.matchesFilter(it.params[0], stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
         for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals)
-                { building.matchesFilter(it.params[0]) && city.matchesFilter(it.params[1]) })
+                { building.matchesFilter(it.params[0], stateForConditionals) && city.matchesFilter(it.params[1]) })
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
     }
 
@@ -674,15 +674,15 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 ?: return false // We should never end up here anyway, so things have already gone _way_ wrong
             city.addStat(stat, -1 * constructionCost)
 
-            val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
+            val conditionalState = StateForConditionals(city)
 
             if ((
                     city.civ.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState) +
                     city.civ.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 ).any {
                     (
-                        construction is BaseUnit && construction.matchesFilter(it.params[0]) ||
-                        construction is Building && construction.matchesFilter(it.params[0])
+                        construction is BaseUnit && construction.matchesFilter(it.params[0], conditionalState) ||
+                        construction is Building && construction.matchesFilter(it.params[0], conditionalState)
                     )
                     && city.matchesFilter(it.params[3])
                     && it.params[2] == stat.name

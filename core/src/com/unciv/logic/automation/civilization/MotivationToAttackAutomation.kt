@@ -104,7 +104,7 @@ object MotivationToAttackAutomation {
         }
 
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
-            modifiers.add(Pair("Receiving trade resources", -8f * personality.modifierFocus(PersonalityValue.Commerce, .5f) * personality.modifierFocus(PersonalityValue.Military, .2f)))
+            modifiers.add(Pair("Receiving trade resources", -8f * personality.modifierFocus(PersonalityValue.Commerce, .5f)))
 
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
@@ -296,7 +296,7 @@ object MotivationToAttackAutomation {
             combatStrengthRatio > .4f -> -20f
             else -> -40f
         }
-        return combatStrengthModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Military, .2f)
+        return combatStrengthModifier
     }
 
     private fun hasNoUnitsThatCanAttackCityWithoutDying(civInfo: Civilization, theirCity: City) = civInfo.units.getCivUnits().filter { it.isMilitary() }.none {

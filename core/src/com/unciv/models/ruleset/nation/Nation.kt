@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -257,9 +258,19 @@ class Nation : RulesetObject() {
             }
         }
     }
-    
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+
+    @Transient
+    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+
+    fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                state != null && hasUnique(it, state) ||
+                state == null && hasTagUnique(it)
+        })
+        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+            state != null && hasUnique(filter, state) ||
+            state == null && hasTagUnique(filter)
     }
 
     private fun matchesSingleFilter(filter: String): Boolean {
@@ -268,7 +279,7 @@ class Nation : RulesetObject() {
             name -> true
             "Major" -> isMajorCiv
             Constants.cityStates, "City-State" -> isCityState
-            else -> uniques.contains(filter)
+            else -> false
         }
     }
 }

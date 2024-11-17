@@ -39,10 +39,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(city))
         .map{ it.params[0] }
     private fun shouldAvoidConstruction (construction: IConstruction): Boolean {
+        val stateForConditionals = StateForConditionals(city)
         for (toAvoid in constructionsToAvoid) {
-            if (construction is Building && construction.matchesFilter(toAvoid))
+            if (construction is Building && construction.matchesFilter(toAvoid, stateForConditionals))
                 return true
-            if (construction is BaseUnit && construction.matchesFilter(toAvoid))
+            if (construction is BaseUnit && construction.matchesFilter(toAvoid, stateForConditionals))
                 return true
         }
         return false
@@ -251,7 +252,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val numberOfWorkersWeWant = if (cities <= 5) (cities * 1.5f) else 7.5f + ((cities - 5))
 
         if (workers < numberOfWorkersWeWant) {
-            val modifier = numberOfWorkersWeWant / (workers + 0.4f) // The worse our worker to city ratio is, the more desperate we are
+            val modifier = numberOfWorkersWeWant / (workers + 0.17f) // The worse our worker to city ratio is, the more desperate we are
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
         }
     }

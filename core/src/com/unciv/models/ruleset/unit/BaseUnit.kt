@@ -120,6 +120,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return super<RulesetObject>.hasUnique(uniqueType, state) || ::ruleset.isInitialized && type.hasUnique(uniqueType, state)
     }
 
+    override fun hasUnique(uniqueTag: String, state: StateForConditionals?): Boolean {
+        return super<RulesetObject>.hasUnique(uniqueTag, state) || ::ruleset.isInitialized && type.hasUnique(uniqueTag, state)
+    }
+
     override fun hasTagUnique(tagUnique: String): Boolean {
         return super<RulesetObject>.hasTagUnique(tagUnique) || ::ruleset.isInitialized && type.hasTagUnique(tagUnique) 
     }
@@ -136,6 +140,20 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (ourUniques.none()) return typeUniques
         if (typeUniques.none()) return ourUniques
         return ourUniques + type.getMatchingUniques(uniqueType, state)
+    }
+
+    /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
+    override fun getMatchingUniques(uniqueTag: String, state: StateForConditionals): Sequence<Unique> {
+        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueTag, state)
+        if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
+            return ourUniques
+        }
+        val typeUniques = type.getMatchingUniques(uniqueTag, state)
+        // Memory optimization - very rarely do we actually get uniques from both sources,
+        //   and sequence addition is expensive relative to the rare case that we'll actually need it
+        if (ourUniques.none()) return typeUniques
+        if (typeUniques.none()) return ourUniques
+        return ourUniques + type.getMatchingUniques(uniqueTag, state)
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
@@ -211,7 +229,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (civ.tech.isResearched(obsoleteTech))
                 yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
-        if (uniqueTo != null && !civ.matchesFilter(uniqueTo!!))
+        if (uniqueTo != null && !civ.matchesFilter(uniqueTo!!, stateForConditionals))
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
@@ -250,7 +268,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
 
         for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
-            if (this@BaseUnit.matchesFilter(unique.params[0])) {
+            if (this@BaseUnit.matchesFilter(unique.params[0], stateForConditionals)) {
                 val hasHappinessCondition = unique.hasModifier(UniqueType.ConditionalBelowHappiness)
                         || unique.hasModifier(UniqueType.ConditionalBetweenHappiness)
                 if (hasHappinessCondition)
@@ -384,8 +402,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                state != null && hasUnique(it, state) ||
+                state == null && hasTagUnique(it)
+        })
+        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+            state != null && hasUnique(filter, state) ||
+            state == null && hasTagUnique(filter)
+    }
+            
 
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
@@ -408,16 +435,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
 
             else -> {
-                if (type.matchesFilter(filter)) return true
                 for (requiredTech: String in requiredTechs())
-                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter) == true) return true
+                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter, multiFilter = false) == true) return true
                 if (
                 // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
                     // "military units" --> "Military", using invariant locale
-                    && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
+                    && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() },
+                        multiFilter = false)
                 ) return true
-                return uniqueMap.hasTagUnique(filter)
+                return false
             }
         }
     }

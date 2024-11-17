@@ -110,7 +110,7 @@ object Conditionals {
             UniqueType.ConditionalTutorialsEnabled -> UncivGame.Current.settings.showTutorials
             UniqueType.ConditionalTutorialCompleted -> conditional.params[0] in UncivGame.Current.settings.tutorialTasksCompleted
 
-            UniqueType.ConditionalCivFilter, UniqueType.ConditionalCivFilterOld -> checkOnCiv { matchesFilter(conditional.params[0]) }
+            UniqueType.ConditionalCivFilter, UniqueType.ConditionalCivFilterOld -> checkOnCiv { matchesFilter(conditional.params[0], state) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
             UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
             UniqueType.ConditionalWithResource -> state.getResourceAmount(conditional.params[0]) > 0
@@ -207,7 +207,7 @@ object Conditionals {
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
-            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City") == true
+            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City", false) == true
             UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 state.relevantUnit?.matchesFilter(conditional.params[0]) == true

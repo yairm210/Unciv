@@ -539,7 +539,7 @@ object NextTurnAutomation {
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
                     personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(civInfo))
-                        .none { unique -> it.matchesFilter(unique.params[0]) } }
+                        .none { unique -> it.matchesFilter(unique.params[0], StateForConditionals(civInfo)) } }
         if (settlerUnits.isEmpty()) return
 
         if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first

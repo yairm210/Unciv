@@ -313,7 +313,7 @@ Allowed values:
 - `Units`, `[mapUnitFilter] Units`
 - `[buildingFilter] Buildings`
 - `Remaining [civFilter] Civilizations`
-- `[tileFilter] Tiles`
+- `Owned [tileFilter] Tiles`
 - Stat name - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
 - Resource name (can be city stats or civilization stats, depending on where the unique is used)
 

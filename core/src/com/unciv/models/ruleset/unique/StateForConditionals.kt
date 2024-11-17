@@ -28,8 +28,8 @@ data class StateForConditionals(
 
     val ignoreConditionals: Boolean = false,
 ) {
-    constructor(city: City) : this(city.civ, city, tile = city.getCenterTile())
-    constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = unit.currentTile)
+    constructor(city: City) : this(city.civ, city, tile = city.getCenterTileOrNull())
+    constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = if (unit.hasTile()) unit.getTile() else null)
     constructor(ourCombatant: ICombatant, theirCombatant: ICombatant? = null,
                 attackedTile: Tile? = null, combatAction: CombatAction? = null) : this(
         ourCombatant.getCivInfo(),
@@ -52,7 +52,7 @@ data class StateForConditionals(
         ?: tile
         // We need to protect against conditionals checking tiles for units pre-placement - see #10425, #10512
         ?: relevantUnit?.run { if (hasTile()) getTile() else null }
-        ?: city?.getCenterTile()
+        ?: city?.getCenterTileOrNull()
     }
 
     val relevantCity by lazy {

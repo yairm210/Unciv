@@ -6,6 +6,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -159,8 +160,16 @@ class Terrain : RulesetStatsObject() {
     /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
     val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                state != null && hasUnique(it, state) ||
+                state == null && hasTagUnique(it)
+        })
+        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+            state != null && hasUnique(filter, state) ||
+            state == null && hasTagUnique(filter)
+    }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesSingleFilter(filter: String): Boolean {
@@ -168,14 +177,13 @@ class Terrain : RulesetStatsObject() {
             in Constants.all -> true
             name -> true
             "Terrain" -> true
-            in Constants.all -> true
             "Open terrain" -> !isRough()
             "Rough terrain" -> isRough()
             type.name -> true
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
 
-            else -> uniques.contains(filter)
+            else -> false
         }
     }
 

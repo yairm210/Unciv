@@ -129,6 +129,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private var tempUniquesMap = UniqueMap()
 
     @Transient
+    /** Temp map excluding unit uniques*/
+    private var nonUnitUniquesMap = UniqueMap()
+
+    @Transient
     val movement = UnitMovement(this)
 
     @Transient
@@ -563,8 +567,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
+    fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, ::matchesSingleFilter) else matchesSingleFilter(filter)
     }
 
     private fun matchesSingleFilter(filter: String): Boolean {
@@ -575,9 +579,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
-                if (baseUnit.matchesFilter(filter)) return true
-                if (civ.matchesFilter(filter)) return true
-                if (tempUniquesMap.hasTagUnique(filter)) return true
+                val state = StateForConditionals(this)
+                if (baseUnit.matchesFilter(filter, state, false)) return true
+                if (civ.matchesFilter(filter, state, false)) return true
+                if (nonUnitUniquesMap.hasUnique(filter, state))
                 if (promotions.promotions.contains(filter)) return true
                 return false
             }
@@ -597,7 +602,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return buildImprovementUniques.any()
         }
         return buildImprovementUniques
-                .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
+                .any { improvement.matchesFilter(it.params[0], StateForConditionals(this)) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     fun getReligionDisplayName(): String? {
@@ -654,13 +659,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun updateUniques() {
-        val uniqueSources =
-                baseUnit.uniqueObjects.asSequence() +
-                        type.uniqueObjects +
-                        promotions.getPromotions().flatMap { it.uniqueObjects } +
-                        statuses.flatMap { it.uniques }
+        val unitUniqueSources =
+            baseUnit.uniqueObjects.asSequence() +
+                type.uniqueObjects
+        val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
+            statuses.flatMap { it.uniques }
+        val uniqueSources = unitUniqueSources + otherUniqueSources
         
         tempUniquesMap = UniqueMap(uniqueSources)
+        nonUnitUniquesMap = UniqueMap(otherUniqueSources)
         cache.updateUniques()
     }
 
