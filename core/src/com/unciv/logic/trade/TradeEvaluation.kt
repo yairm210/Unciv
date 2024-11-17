@@ -189,7 +189,7 @@ class TradeEvaluation {
                     return 0 // we can't really afford to go into negative happiness because of buying a city
                 val sumOfPop = city.population.population
                 val sumOfBuildings = city.cityConstructions.getBuiltBuildings().count()
-                return ((sumOfPop * 4 + sumOfBuildings * 1 + 4 + surrounded) * 100).coerceAtLeast(1000)
+                return ((sumOfPop * 4 + sumOfBuildings * 1 + 4 + surrounded) * 100)
             }
             TradeOfferType.Agreement -> {
                 if (offer.name == Constants.openBorders) return 100
