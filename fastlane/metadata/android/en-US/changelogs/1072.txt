@@ -1,0 +1,19 @@
+
+
+Resolved  - Nat wonders land->water conversion no longer causes rivers on water tiles
+
+Resolved  - Limited, but performant, edge filters
+
+perf(cpu): cheaper, and slightly clearer, 'movement affected by zone of control'
+
+4.14.6-patch1
+
+Resolved  - mod checker accepts civ filters as tile filters
+
+Resolved  - great general unique works with conditionals (cache for 'has unique' ignores conditionals)
+
+Growth nullifying uniques do not nullify starvation
+
+Removed Scenarios button, since the new game screen handles scenarios better
+
+Allow filter uniques to have conditionals and work with modifiers  - By SeventhM
