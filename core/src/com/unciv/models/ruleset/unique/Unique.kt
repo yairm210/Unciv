@@ -298,12 +298,19 @@ open class UniqueMap() {
     
     fun hasUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueType).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
+
+    fun hasUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+        getUniques(uniqueTag).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
     
     fun hasTagUnique(tagUnique: String) =
         innerUniqueMap.containsKey(tagUnique)
 
     // 160ms vs 1000-1250ms/30s
     fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
+        ?.asSequence()
+        ?: emptySequence()
+
+    fun getUniques(uniqueTag: String) = innerUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
@@ -317,9 +324,23 @@ open class UniqueMap() {
                     else -> it.getMultiplied(state)
                 }
             }
+
+    fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+        getUniques(uniqueTag)
+            // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
+            .flatMap {
+                when {
+                    it.isTimedTriggerable -> emptySequence()
+                    !it.conditionalsApply(state) -> emptySequence()
+                    else -> it.getMultiplied(state)
+                }
+            }
     
     fun hasMatchingUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
         getUniques(uniqueType).any { it.conditionalsApply(state) }
+
+    fun hasMatchingUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+        getUniques(uniqueTag).any { it.conditionalsApply(state) }
 
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 

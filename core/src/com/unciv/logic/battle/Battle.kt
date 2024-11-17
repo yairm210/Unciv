@@ -533,7 +533,7 @@ object Battle {
             for (unit in greatGeneralUnits) {
                 val greatGeneralPointsBonus = thisCombatant
                     .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
-                    .filter { unit.matchesFilter(it.params[0]) }
+                    .filter { unit.matchesFilter(it.params[0], stateForConditionals) }
                     .sumOf { it.params[1].toDouble() }
                 val greatGeneralPointsModifier = 1.0 + greatGeneralPointsBonus / 100
 

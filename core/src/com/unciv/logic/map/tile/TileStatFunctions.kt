@@ -78,9 +78,9 @@ class TileStatFunctions(val tile: Tile) {
                 val tileType = unique.params[1]
                 if (tile.matchesFilter(tileType, observingCiv, true))
                     listOfStats.add("{${unique.sourceObjectName}} ({${unique.getDisplayText()}})" to unique.stats)
-                else if (improvement != null && improvement.matchesFilter(tileType))
+                else if (improvement != null && improvement.matchesFilter(tileType, StateForConditionals(city = city, tile = tile)))
                     improvementStats.add(unique.stats)
-                else if (road != null && road.matchesFilter(tileType))
+                else if (road != null && road.matchesFilter(tileType, StateForConditionals(city = city, tile = tile)))
                     roadStats.add(unique.stats)
             }
         }
@@ -186,9 +186,9 @@ class TileStatFunctions(val tile: Tile) {
         fun addStats(filter: String, stat: Stat, amount: Float) {
             if (tile.matchesFilter(filter, observingCiv, true))
                 terrainStats.add(stat, amount)
-            else if (improvement != null && improvement.matchesFilter(filter))
+            else if (improvement != null && improvement.matchesFilter(filter, StateForConditionals(city = city, tile = tile)))
                 improvementStats.add(stat, amount)
-            else if (road != null && road.matchesFilter(filter))
+            else if (road != null && road.matchesFilter(filter, StateForConditionals(city = city, tile = tile)))
                 roadStats.add(stat, amount)
         }
 

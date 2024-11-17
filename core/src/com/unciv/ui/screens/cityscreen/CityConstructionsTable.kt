@@ -269,7 +269,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                             && constructionButtonDTOList.any {
                                 (it.construction is Building) && (it.construction.name == dto.construction.requiredBuilding
                                         || it.construction.replaces == dto.construction.requiredBuilding
-                                        || it.construction.hasTagUnique(dto.construction.requiredBuilding!!))
+                                        || it.construction.hasUnique(dto.construction.requiredBuilding!!, StateForConditionals(cityScreen.city)))
                             })
                         continue
 

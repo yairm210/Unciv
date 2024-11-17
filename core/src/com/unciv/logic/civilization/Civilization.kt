@@ -551,19 +551,16 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
-
-    @Transient
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
-
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, state: StateForConditionals? = StateForConditionals(this), multiFilter: Boolean = true): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    fun matchesSingleFilter(filter: String, state: StateForConditionals? = StateForConditionals(this)): Boolean {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
-            else -> nation.matchesFilter(filter)
+            else -> nation.matchesFilter(filter, state, false)
         }
     }
 

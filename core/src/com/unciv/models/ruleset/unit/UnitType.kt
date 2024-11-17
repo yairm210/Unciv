@@ -36,7 +36,7 @@ class UnitType() : RulesetObject() {
             "Land" -> isLandUnit()
             "Water" -> isWaterUnit()
             "Air" -> isAirUnit()
-            else -> uniqueMap.hasTagUnique(filter)
+            else -> hasTagUnique(filter)
         }
     }
 

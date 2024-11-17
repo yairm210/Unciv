@@ -366,8 +366,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
-    @delegate:Transient
-    private val stateThisTile: StateForConditionals by lazy { StateForConditionals(tile = this) }
+    @Transient
+    private var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = stateThisTile) =
         terrainUniqueMap.getMatchingUniques(uniqueType, state).any()
@@ -476,13 +476,14 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
         if (ignoreImprovement) return false
-        if (getUnpillagedTileImprovement()?.matchesFilter(filter) == true) return true
-        return getUnpillagedRoadImprovement()?.matchesFilter(filter) == true
+        if (getUnpillagedTileImprovement()?.matchesFilter(filter, stateThisTile, false) == true) return true
+        return getUnpillagedRoadImprovement()?.matchesFilter(filter, stateThisTile, false) == true
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
-    fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
-        return MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
+    fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
+        else matchesSingleTerrainFilter(filter, observingCiv)
     }
 
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
@@ -508,8 +509,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             else -> {
-                if (allTerrains.any { it.matchesFilter(filter) }) return true
-                if (getOwner()?.matchesFilter(filter) == true) return true
+                val owner = getOwner()
+                if (allTerrains.any { it.matchesFilter(filter, stateThisTile, false) }) return true
+                if (owner != null && owner.matchesFilter(filter, stateThisTile, false)) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
@@ -520,7 +522,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 val resourceObject = tileResource
                 val hasResourceWithFilter =
                         tileResource.name == filter
-                                || tileResource.hasTagUnique(filter)
+                                || tileResource.hasUnique(filter, stateThisTile)
                                 || filter.removeSuffix(" resource") == tileResource.resourceType.name
                 if (!hasResourceWithFilter) return false
 
@@ -733,6 +735,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     fun setOwnerTransients() {
+        // If it has an owning city, the state was already set in setOwningCity
+        if (owningCity == null) stateThisTile = StateForConditionals(tile = this,
+            // When generating maps we call this function but there's no gameinfo
+            gameInfo = if (tileMap.hasGameInfo()) tileMap.gameInfo else null)
         if (owningCity == null && roadOwner != "")
             getRoadOwner()!!.neutralRoads.add(this.position)
     }
@@ -749,6 +755,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             roadOwner = ""
         }
         owningCity = city
+        stateThisTile = StateForConditionals(tile = this, city = city, gameInfo = tileMap.gameInfo)
         isCityCenterInternal = getCity()?.location == position
     }
 

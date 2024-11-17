@@ -35,15 +35,18 @@ open class Policy : RulesetObject() {
         fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
     }
 
-    fun matchesFilter(filter: String): Boolean {
-        return MultiFilter.multiFilter(filter, ::matchesSingleFilter)
-    }
+    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+        MultiFilter.multiFilter(filter, {
+            matchesSingleFilter(filter) ||
+                state != null && hasUnique(filter, state) ||
+                state == null && hasTagUnique(filter)
+        })
+    
     fun matchesSingleFilter(filter: String): Boolean {
         return when(filter) {
             in Constants.all -> true
             name -> true
             "[${branch.name}] branch" -> true
-            in uniques -> true
             else -> false
         }
     }
