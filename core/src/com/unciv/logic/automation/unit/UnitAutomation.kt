@@ -136,7 +136,7 @@ object UnitAutomation {
         if (upgradeUnits.none()) return false // for resource reasons, usually
         val upgradedUnit = upgradeUnits.minBy { it.cost }
 
-        if (upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)).keys.any { !unit.requiresResource(it) }) {
+        if (upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state).keys.any { !unit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
@@ -157,10 +157,10 @@ object UnitAutomation {
             if (!unit.civ.tech.isResearched(baseUnit))
                 return true
             return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                .any { !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit)) }
+                .any { !it.conditionalsApply(unit.cache.state) }
         }
 
-        return unit.baseUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
+        return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)
             .map { unit.civ.getEquivalentUnit(it) }
             .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) }
     }
@@ -184,7 +184,7 @@ object UnitAutomation {
                 .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
             if (availablePromotions.none()) break
             val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
-            val stateForConditionals = StateForConditionals(unit)
+            val stateForConditionals = unit.cache.state
             
             val chosenPromotion = if (freePromotions.isNotEmpty()) freePromotions.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
             else availablePromotions.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
