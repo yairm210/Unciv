@@ -42,6 +42,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
     var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
+    
+    fun updateState() {
+        civInfo.state = StateForConditionals(civInfo)
+    }
 
     fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset

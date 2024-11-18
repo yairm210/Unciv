@@ -87,7 +87,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     lateinit var nation: Nation
     
     @Transient
-    val state = StateForConditionals(this)
+    var state = StateForConditionals.EmptyState
 
     @Transient
     val units = UnitManager(this)
