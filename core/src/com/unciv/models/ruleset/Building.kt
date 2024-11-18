@@ -124,7 +124,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = cost.toFloat()
-        val stateForConditionals = city?.state ?: StateForConditionals(civInfo)
+        val stateForConditionals = city?.state ?: civInfo.state
 
         for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, stateForConditionals))
             productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()

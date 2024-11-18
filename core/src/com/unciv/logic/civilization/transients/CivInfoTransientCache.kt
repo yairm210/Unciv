@@ -46,7 +46,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
 
-        val state = StateForConditionals(civInfo)
+        val state = civInfo.state
         val buildingsToRequiredResources = ruleset.buildings.values
                 .filter { civInfo.getEquivalentBuilding(it) == it }
                 .associateWith { it.requiredResources(state) }
@@ -325,7 +325,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
-                    if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, StateForConditionals(cityStateAlly))) continue
+                    if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, cityStateAlly.state)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
                     cityStateProvidedResources.add(resourceSupply.copy(amount = newAmount))
                 }

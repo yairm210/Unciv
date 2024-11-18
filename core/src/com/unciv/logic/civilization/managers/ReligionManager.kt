@@ -9,7 +9,6 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -403,7 +402,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
         for (belief in beliefs)
-            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(StateForConditionals(civInfo)) })
+            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) })
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats

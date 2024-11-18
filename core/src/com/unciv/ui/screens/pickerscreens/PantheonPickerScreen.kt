@@ -21,7 +21,7 @@ class PantheonPickerScreen(
             val beliefButton = getBeliefButton(belief, withTypeLabel = false)
             if (choosingCiv.religionManager.getReligionWithBelief(belief) == null
                 && belief.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                    .none { !it.conditionalsApply(choosingCiv) }) {
+                    .none { !it.conditionalsApply(choosingCiv.state) }) {
                 beliefButton.onClickSelect(selection, belief) {
                     selectedPantheon = belief
                     pick("Follow [${belief.name}]".tr())

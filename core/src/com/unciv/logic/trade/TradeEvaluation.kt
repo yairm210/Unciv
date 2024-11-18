@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -157,7 +156,7 @@ class TradeEvaluation {
                             it.getResourceRequirementsPerTurn(city.state).containsKey(offer.name) } }
                 val canUseForUnits = civInfo.cities
                         .any { city -> city.cityConstructions.getConstructableUnits().any {
-                            it.getResourceRequirementsPerTurn(StateForConditionals(civInfo)).containsKey(offer.name) } }
+                            it.getResourceRequirementsPerTurn(civInfo.state).containsKey(offer.name) } }
                 if (!canUseForBuildings && !canUseForUnits) return 0
 
                 return 50 * amountToBuyInOffer
@@ -264,7 +263,7 @@ class TradeEvaluation {
                 if (!civInfo.isAtWar()) return 50 * offer.amount
 
                 val canUseForUnits = civInfo.gameInfo.ruleset.units.values
-                    .any { it.getResourceRequirementsPerTurn(StateForConditionals(civInfo)).containsKey(offer.name)
+                    .any { it.getResourceRequirementsPerTurn(civInfo.state).containsKey(offer.name)
                             && it.isBuildable(civInfo) }
                 if (!canUseForUnits) return 50 * offer.amount
 

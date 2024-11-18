@@ -2,7 +2,6 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
@@ -12,7 +11,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
     fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = baseUnit.cost.toFloat()
 
-        val stateForConditionals = city?.state ?: StateForConditionals(civInfo)
+        val stateForConditionals = city?.state ?: civInfo.state
         for (unique in baseUnit.getMatchingUniques(UniqueType.CostIncreasesPerCity, stateForConditionals))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
 

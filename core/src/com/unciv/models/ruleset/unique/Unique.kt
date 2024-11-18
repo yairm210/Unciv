@@ -228,9 +228,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
     fun forCivGetMatchingUniques(
         civ: Civilization,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(
-            civ
-        )
+        stateForConditionals: StateForConditionals = civ.state
     ): Sequence<Unique> {
         val sequence = civ.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
         // The uniques CACHED are ALL civ uniques, regardless of conditional matching.
