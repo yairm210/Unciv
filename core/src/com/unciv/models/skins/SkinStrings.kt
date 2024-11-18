@@ -99,4 +99,8 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
                 ?: default
                 ?: skinConfig.clearColor
 
+    fun getUIFontColor(path: String) = skinConfig.skinVariants[path]?.fontColor
+
+    fun getUIIconColor(path: String) = skinConfig.skinVariants[path]?.iconColor
+
 }

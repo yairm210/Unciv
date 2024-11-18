@@ -215,7 +215,8 @@ object ImageGetter {
     fun getExternalImage(fileName: String) =
         getExternalImage(Gdx.files.internal("ExtraImages/$fileName"))
 
-    fun getImage(fileName: String?): Image = ImageWithCustomSize(getDrawable(fileName))
+    fun getImage(fileName: String?, tintColor: Color? = null): Image = 
+        ImageWithCustomSize(getDrawable(fileName)).apply { color = tintColor ?: Color.WHITE }
 
     fun getDrawable(fileName: String?): TextureRegionDrawable =
         textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!

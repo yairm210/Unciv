@@ -18,6 +18,8 @@ class SkinConfig(initialCapacity: Int) {
         val image: String? = null
         val tint: Color? = null
         val alpha: Float? = null
+        val fontColor: Color? = null
+        val iconColor: Color? = null
     }
 
     fun clone() = SkinConfig(skinVariants.size).also { it.updateConfig(this) }
