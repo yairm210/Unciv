@@ -398,13 +398,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
         
-        for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
-            val amount = unique.params[0].toInt()
-            val resourceName = unique.params[1]
-            val availableResources = cityConstructions.city.getAvailableResourceAmount(resourceName)
-            if (availableResources < amount)
-                yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(amount - availableResources)))
-        }
+        // If we've already paid the unit costs, we don't need to pay it again
+        if (cityConstructions.getWorkDone(name) == 0)
+            for (unique in getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+                val amount = unique.params[0].toInt()
+                val resourceName = unique.params[1]
+                val availableResources = cityConstructions.city.getAvailableResourceAmount(resourceName)
+                if (availableResources < amount)
+                    yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(amount - availableResources)))
+            }
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.city.getWorkableTiles()
