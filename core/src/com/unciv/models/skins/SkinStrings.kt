@@ -8,19 +8,21 @@ import com.unciv.ui.images.ImageGetter
 class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
     private val skinLocation = "Skins/$skin/"
     val skinConfig = SkinCache[skin] ?: SkinConfig()
+    private val fallbackSkinLocation = if (skinConfig.fallbackSkin != null) "Skins/${skinConfig.fallbackSkin}/" else null
+    val fallbackSkinConfig = SkinCache[skinConfig.fallbackSkin]
 
     // Default shapes must always end with "Shape" so the UiElementDocsWriter can identify them
-    val roundedEdgeRectangleSmallShape = skinLocation + "roundedEdgeRectangle-small"
-    val roundedTopEdgeRectangleSmallShape = skinLocation + "roundedTopEdgeRectangle-small"
-    val roundedTopEdgeRectangleSmallBorderShape = skinLocation + "roundedTopEdgeRectangle-small-border"
-    val roundedEdgeRectangleMidShape = skinLocation + "roundedEdgeRectangle-mid"
-    val roundedEdgeRectangleMidBorderShape = skinLocation + "roundedEdgeRectangle-mid-border"
-    val roundedEdgeRectangleShape = skinLocation + "roundedEdgeRectangle"
-    val rectangleWithOutlineShape = skinLocation + "rectangleWithOutline"
-    val selectBoxShape = skinLocation + "select-box"
-    val selectBoxPressedShape = skinLocation + "select-box-pressed"
-    val checkboxShape = skinLocation + "checkbox"
-    val checkboxPressedShape = skinLocation + "checkbox-pressed"
+    val roundedEdgeRectangleSmallShape = "roundedEdgeRectangle-small"
+    val roundedTopEdgeRectangleSmallShape = "roundedTopEdgeRectangle-small"
+    val roundedTopEdgeRectangleSmallBorderShape = "roundedTopEdgeRectangle-small-border"
+    val roundedEdgeRectangleMidShape = "roundedEdgeRectangle-mid"
+    val roundedEdgeRectangleMidBorderShape = "roundedEdgeRectangle-mid-border"
+    val roundedEdgeRectangleShape = "roundedEdgeRectangle"
+    val rectangleWithOutlineShape = "rectangleWithOutline"
+    val selectBoxShape = "select-box"
+    val selectBoxPressedShape = "select-box-pressed"
+    val checkboxShape = "checkbox"
+    val checkboxPressedShape = "checkbox-pressed"
 
     /**
      * Gets either a drawable which was defined inside skinConfig for the given path or the drawable
@@ -46,6 +48,7 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
      *                  separate alpha value, it will be applied to a clone of either color.
      */
     fun getUiBackground(path: String, default: String? = null, tintColor: Color? = null): NinePatchDrawable {
+        val locationForDefault = skinLocation + default
         val locationByName = skinLocation + path
         val skinVariant = skinConfig.skinVariants[path]
         val locationByConfigVariant = if (skinVariant?.image != null) skinLocation + skinVariant.image else null
@@ -53,15 +56,42 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
             if (skinVariant?.alpha == null) this
             else cpy().apply { a = skinVariant.alpha }
         }
+        
         val location = when {
             locationByConfigVariant != null && ImageGetter.ninePatchImageExists(locationByConfigVariant) ->
                 locationByConfigVariant
             ImageGetter.ninePatchImageExists(locationByName) ->
                 locationByName
+            default != null && ImageGetter.ninePatchImageExists(locationForDefault) ->
+                locationForDefault
             else ->
-                default
+                null
         }
-        return ImageGetter.getNinePatch(location, tint)
+        
+        if (location != null) {
+            return ImageGetter.getNinePatch(location, tint)
+        }
+
+        val fallbackLocationForDefault = fallbackSkinLocation + default
+        val fallbackLocationByName = fallbackSkinLocation + path
+        val fallbackSkinVariant = skinConfig.skinVariants[path]
+        val fallbackLocationByConfigVariant = if (fallbackSkinVariant?.image != null) skinLocation + fallbackSkinVariant.image else null
+        val fallbackTint = (fallbackSkinVariant?.tint ?: tintColor)?.run {
+            if (fallbackSkinVariant?.alpha == null) this
+            else cpy().apply { a = fallbackSkinVariant.alpha }
+        }
+
+        val fallbackLocation = when {
+            fallbackLocationByConfigVariant != null && ImageGetter.ninePatchImageExists(fallbackLocationByConfigVariant) ->
+                fallbackLocationByConfigVariant
+            ImageGetter.ninePatchImageExists(fallbackLocationByName) ->
+                fallbackLocationByName
+            default != null && ImageGetter.ninePatchImageExists(fallbackLocationForDefault) ->
+                fallbackLocationForDefault
+            else ->
+                null
+        }
+        return ImageGetter.getNinePatch(fallbackLocation, fallbackTint)
     }
 
     fun getUIColor(path: String, default: Color? = null) =

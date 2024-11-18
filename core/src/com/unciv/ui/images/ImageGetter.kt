@@ -111,6 +111,8 @@ object ImageGetter {
             }
             for (region in tempAtlas.regions) {
                 if (region.name.startsWith("Skins")) {
+                    // TODO: give user a mod warning that the image names has to be [name].9.png
+                    //      if this throws an exception
                     val ninePatch = tempAtlas.createPatch(region.name)
                     ninePatchDrawables[region.name] = NinePatchDrawable(ninePatch)
                 } else {
