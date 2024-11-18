@@ -347,8 +347,7 @@ object Automation {
             for (city in civInfo.cities) {
                 val otherConstruction = city.cityConstructions.getCurrentConstruction()
                 if (otherConstruction is Building)
-                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(
-                        StateForConditionals(civInfo, city))[resource]
+                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(city.state)[resource]
                 else
                     futureForUnits += otherConstruction.getResourceRequirementsPerTurn(
                         StateForConditionals(civInfo))[resource]

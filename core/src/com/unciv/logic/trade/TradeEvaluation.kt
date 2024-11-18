@@ -154,7 +154,7 @@ class TradeEvaluation {
 
                 val canUseForBuildings = civInfo.cities
                         .any { city -> city.cityConstructions.getBuildableBuildings().any {
-                            it.getResourceRequirementsPerTurn(StateForConditionals(civInfo, city)).containsKey(offer.name) } }
+                            it.getResourceRequirementsPerTurn(city.state).containsKey(offer.name) } }
                 val canUseForUnits = civInfo.cities
                         .any { city -> city.cityConstructions.getConstructableUnits().any {
                             it.getResourceRequirementsPerTurn(StateForConditionals(civInfo)).containsKey(offer.name) } }

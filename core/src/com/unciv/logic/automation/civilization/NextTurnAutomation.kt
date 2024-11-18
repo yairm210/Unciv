@@ -402,7 +402,7 @@ object NextTurnAutomation {
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
-                        && it.requiredResources(StateForConditionals(civInfo, city)).contains(resource)
+                        && it.requiredResources(city.state).contains(resource)
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()

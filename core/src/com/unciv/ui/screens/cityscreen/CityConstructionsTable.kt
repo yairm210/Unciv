@@ -207,7 +207,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val buttonText = cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
             val resourcesRequired = if (entry is BaseUnit)
                 entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
-                else entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
+                else entry.getResourceRequirementsPerTurn(city.state)
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
                         .filter { it.isImportantRejection() }
@@ -269,7 +269,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                             && constructionButtonDTOList.any {
                                 (it.construction is Building) && (it.construction.name == dto.construction.requiredBuilding
                                         || it.construction.replaces == dto.construction.requiredBuilding
-                                        || it.construction.hasUnique(dto.construction.requiredBuilding!!, StateForConditionals(cityScreen.city)))
+                                        || it.construction.hasUnique(dto.construction.requiredBuilding!!, cityScreen.city.state))
                             })
                         continue
 
@@ -329,7 +329,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 else cityConstructions.getTurnsToConstructionString(construction, isFirstConstructionOfItsKind)
 
         val constructionResource = if (construction is BaseUnit)
-                construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
+                construction.getResourceRequirementsPerTurn(city.state)
             else construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
         for ((resourceName, amount) in constructionResource) {
             val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
@@ -431,7 +431,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             }
         }
         for (unique in constructionButtonDTO.construction
-            .getMatchingUniquesNotConflicting(UniqueType.CostsResources, StateForConditionals(cityScreen.city))) {
+            .getMatchingUniquesNotConflicting(UniqueType.CostsResources, cityScreen.city.state)) {
             val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                 Color.RED else Color.WHITE
             resourceTable.add(ColorMarkupLabel(unique.params[0], color)).expandX().left().padLeft(5f)

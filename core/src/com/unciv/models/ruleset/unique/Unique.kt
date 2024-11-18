@@ -209,7 +209,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(city.civ, city)
+        stateForConditionals: StateForConditionals = city.state
     ): Sequence<Unique> {
         // City uniques are a combination of *global civ* uniques plus *city relevant* uniques (see City.getMatchingUniques())
         // We can cache the civ uniques separately, so if we have several cities using the same cache,
