@@ -113,9 +113,11 @@ class NewGameScreen(
     private fun startGameAvoidANRs(){
         // Don't allow players to click the game while we're checking if it's ok
         Gdx.input.inputProcessor = null
-        val success = startGame()
-        // if it is successful, the player should wait for the new screen, not touch the old one
-        if (!success) Gdx.input.inputProcessor = stage
+        Concurrency.run { // even just *checking* can take time
+            val success = startGame()
+            // if it is successful, the player should wait for the new screen, not touch the old one
+            if (!success) Gdx.input.inputProcessor = stage
+        }
     }
     
     private fun startGame(): Boolean {
