@@ -1,3 +1,15 @@
+## 4.14.8
+
+Avoid ANR errors when attempting to start a MP game when server takes too long to respond
+
+Avoid OOM errors when updating all games by avoiding parallelization
+
+Resolved  - don't reject constructions for missing stockpiled resource costs, AFTER you've already paid them
+
+Cache state for units, civs, and cities  - By SeventhM
+
+Changes  - By itanasi
+
 ## 4.14.7
 
 CPU performance improvements
