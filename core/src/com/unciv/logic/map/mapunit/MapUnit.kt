@@ -285,7 +285,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getMatchingUniques(
             uniqueType: UniqueType,
-            stateForConditionals: StateForConditionals = StateForConditionals(civ, unit = this),
+            stateForConditionals: StateForConditionals = cache.state,
             checkCivInfoUniques: Boolean = false
     ) = sequence {
         yieldAll(
@@ -297,7 +297,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun hasUnique(
             uniqueType: UniqueType,
-            stateForConditionals: StateForConditionals = StateForConditionals(civ, unit = this),
+            stateForConditionals: StateForConditionals = cache.state,
             checkCivInfoUniques: Boolean = false
     ): Boolean {
         return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
@@ -305,7 +305,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getTriggeredUniques(
         trigger: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this),
+        stateForConditionals: StateForConditionals = cache.state,
         triggerFilter: (Unique) -> Boolean = { true }
     ): Sequence<Unique> {
         return tempUniquesMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter)
@@ -317,14 +317,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getResourceRequirementsPerTurn(): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (baseUnit.requiredResource != null) resourceRequirements[baseUnit.requiredResource!!] = 1
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources, StateForConditionals(civ, unit = this)))
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, cache.state))
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
     }
 
     fun requiresResource(resource: String): Boolean {
         if (getResourceRequirementsPerTurn().contains(resource)) return true
-        for (unique in getMatchingUniques(UniqueType.CostsResources, StateForConditionals(civ, unit = this))) {
+        for (unique in getMatchingUniques(UniqueType.CostsResources, cache.state)) {
             if (unique.params[1] == resource) return true
         }
         return false
@@ -370,7 +370,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
-        val conditionalState = StateForConditionals(civInfo = civ, unit = this)
+        val conditionalState = cache.state
 
         val relevantUniques = getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true) +
                 getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
@@ -579,10 +579,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
-                val state = StateForConditionals(this)
-                if (baseUnit.matchesFilter(filter, state, false)) return true
-                if (civ.matchesFilter(filter, state, false)) return true
-                if (nonUnitUniquesMap.hasUnique(filter, state))
+                if (baseUnit.matchesFilter(filter, cache.state, false)) return true
+                if (civ.matchesFilter(filter, cache.state, false)) return true
+                if (nonUnitUniquesMap.hasUnique(filter, cache.state))
                 if (promotions.promotions.contains(filter)) return true
                 return false
             }
@@ -602,7 +601,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return buildImprovementUniques.any()
         }
         return buildImprovementUniques
-                .any { improvement.matchesFilter(it.params[0], StateForConditionals(this)) || tile.matchesTerrainFilter(it.params[0]) }
+                .any { improvement.matchesFilter(it.params[0], cache.state) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     fun getReligionDisplayName(): String? {
@@ -714,8 +713,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     !it.isExplored(civ)
                 }
                 for (tile in newlyExploredTiles) {
-                    // Include tile in the state for correct RNG seeding
-                    val state = StateForConditionals(civInfo = civ, unit = this, tile = tile)
+                    val state = cache.state
                     for (unique in unfilteredTriggeredUniques) {
                         if (unique.getModifiers(UniqueType.TriggerUponDiscoveringTile)
                                 .any { tile.matchesFilter(it.params[0], civ) }
@@ -864,6 +862,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
+        // The state also needs to be valid for uniques to see the cached version
+        cache.state = StateForConditionals(this)
         // The improvement may get removed if it has ruins effects or is a barbarian camp, and will still be needed if removed
         val improvement = tile.improvement
 

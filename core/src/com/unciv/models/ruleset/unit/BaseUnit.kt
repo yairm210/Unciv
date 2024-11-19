@@ -183,7 +183,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
 
-        if (hasUnique(UniqueType.ShowsWhenUnbuilable, StateForConditionals(cityConstructions.city)) &&
+        if (hasUnique(UniqueType.ShowsWhenUnbuilable, cityConstructions.city.state) &&
             rejectionReasons.none { it.isNeverVisible() })
             return true
 
@@ -202,7 +202,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         additionalResources: Counter<String> = Counter.ZERO
     ): Sequence<RejectionReason> = sequence {
 
-        val stateForConditionals = StateForConditionals(civ, city)
+        val stateForConditionals = city?.state ?: civ.state
 
         if (city != null && isWaterUnit && !city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
@@ -295,7 +295,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private fun notMetRejections(unique: Unique, civ: Civilization, city: City?, built: Boolean=false): Sequence<RejectionReason> = sequence {
         for (conditional in unique.modifiers) {
             // We yield a rejection only when conditionals are NOT met
-            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, city)))
+            if (Conditionals.conditionalApplies(unique, conditional, city?.state ?: civ.state))
                 continue
             when (conditional.type) {
                 UniqueType.ConditionalBuildingBuiltAmount -> {

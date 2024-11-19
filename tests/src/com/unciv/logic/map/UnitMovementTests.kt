@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -178,6 +179,7 @@ class UnitMovementTests {
         barbCiv.gameInfo = testGame.gameInfo
         barbCiv.setNameForUnitTests(Constants.barbarians) // they are always enemies
         barbCiv.nation = Nation().apply { name = Constants.barbarians }
+        barbCiv.cache.updateState()
 
         testGame.gameInfo.civilizations.add(barbCiv)
 

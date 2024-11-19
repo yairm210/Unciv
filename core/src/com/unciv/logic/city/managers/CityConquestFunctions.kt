@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.max
 import kotlin.math.min
@@ -255,6 +256,7 @@ class CityConquestFunctions(val city: City) {
         oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
         newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
         city.civ = newCiv
+        city.state = StateForConditionals(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns
         city.previousOwner = oldCiv.civName

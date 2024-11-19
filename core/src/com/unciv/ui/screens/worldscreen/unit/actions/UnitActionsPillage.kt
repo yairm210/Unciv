@@ -7,7 +7,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -74,7 +73,7 @@ object UnitActionsPillage {
 
         // Accumulate the loot
         val pillageYield = Stats()
-        val stateForConditionals = StateForConditionals(unit=unit)
+        val stateForConditionals = unit.cache.state
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom, stateForConditionals)) {
             for ((stat, value) in unique.stats) {
                 // Unique text says "approximately [X]", so we add 0..X twice - think an RPG's 2d12

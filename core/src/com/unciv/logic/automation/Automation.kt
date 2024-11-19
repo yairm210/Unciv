@@ -342,8 +342,8 @@ object Automation {
             return true
 
         val requiredResources = if (construction is BaseUnit)
-            construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo))
-        else construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo, cityInfo))
+            construction.getResourceRequirementsPerTurn(civInfo.state)
+        else construction.getResourceRequirementsPerTurn(cityInfo?.state ?: civInfo.state)
         // Does it even require any resources?
         if (requiredResources.isEmpty())
             return true
@@ -361,11 +361,9 @@ object Automation {
             for (city in civInfo.cities) {
                 val otherConstruction = city.cityConstructions.getCurrentConstruction()
                 if (otherConstruction is Building)
-                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(
-                        StateForConditionals(civInfo, city))[resource]
+                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(city.state)[resource]
                 else
-                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn(
-                        StateForConditionals(civInfo))[resource]
+                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn(civInfo.state)[resource]
             }
 
             // Make sure we have some for space

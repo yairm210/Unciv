@@ -215,6 +215,7 @@ object BattleUnitCapture {
         // This is so that future checks which check if a unit has been captured are caught give the right answer
         //  For example, in postBattleMoveToAttackedTile
         capturedUnit.civ = capturingCiv
+        capturedUnit.cache.state = StateForConditionals(capturedUnit)
 
         val workerTypeUnit = capturingCiv.gameInfo.ruleset.units.values
             .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements)

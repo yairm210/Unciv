@@ -341,7 +341,7 @@ object DiplomacyTurnManager {
 
         val provideMilitaryUnitUniques = civInfo.cityStateFunctions
             .getCityStateBonuses(otherCiv().cityStateType, relationshipIgnoreAfraid(), UniqueType.CityStateMilitaryUnits)
-            .filter { it.conditionalsApply(civInfo) }.toList()
+            .filter { it.conditionalsApply(civInfo.state) }.toList()
         if (provideMilitaryUnitUniques.isEmpty()) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
 
         for (unique in provideMilitaryUnitUniques) {
