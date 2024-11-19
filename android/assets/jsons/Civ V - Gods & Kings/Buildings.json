@@ -1119,7 +1119,8 @@
         "isWonder": true,
         "uniques": ["Only available <when espionage is enabled>", "[-99]% enemy spy effectiveness [in this city]",
             "[-25]% enemy spy effectiveness [in all cities]"],
-        "requiredTech": "Computers"
+        "requiredTech": "Computers",
+        "quote": "'Distrust and caution are the parents of security.' - Benjamin Franklin"
     },
 
 	// Information Era
