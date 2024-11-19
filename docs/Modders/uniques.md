@@ -2451,6 +2451,7 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Improvement
 
 ??? example  "Gives a defensive bonus of [relativeAmount]%"
+	Does not accept unit-based conditionals
 	Example: "Gives a defensive bonus of [+20]%"
 
 	Applicable to: Improvement
