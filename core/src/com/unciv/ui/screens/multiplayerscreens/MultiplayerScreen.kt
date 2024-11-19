@@ -58,8 +58,10 @@ class MultiplayerScreen : PickerScreen() {
 
         setupHelpButton()
         setupRightSideButton()
-
-        game.onlineMultiplayer.requestUpdate()
+        
+        Concurrency.run("Update all multiplayer games") {
+            game.onlineMultiplayer.requestUpdate()
+        }
 
         pickerPane.bottomTable.background = skinStrings.getUiBackground("MultiplayerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.topTable.background = skinStrings.getUiBackground("MultiplayerScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
@@ -112,7 +114,11 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun createRefreshButton(): TextButton {
         val btn = "Refresh list".toTextButton()
-        btn.onClick { game.onlineMultiplayer.requestUpdate() }
+        btn.onClick {
+            Concurrency.run("Update all multiplayer games") {
+                game.onlineMultiplayer.requestUpdate()
+            }
+        }
         return btn
     }
 

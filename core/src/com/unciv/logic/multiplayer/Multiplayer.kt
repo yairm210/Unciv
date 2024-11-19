@@ -14,10 +14,8 @@ import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.isLargerThan
-import com.unciv.utils.Concurrency
 import com.unciv.utils.Dispatcher
 import com.unciv.utils.debug
-import com.unciv.utils.launchOnThreadPool
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
@@ -94,21 +92,17 @@ class Multiplayer {
      *
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      */
-    fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<MultiplayerGame> = listOf()) {
-        Concurrency.run("Update all multiplayer games") {
-            val fileThrottleInterval = if (forceUpdate) Duration.ZERO else FILE_UPDATE_THROTTLE_PERIOD
-            // An exception only happens here if the files can't be listed, should basically never happen
-            throttle(lastFileUpdate, fileThrottleInterval, {}, action = {multiplayerFiles.updateSavesFromFiles()})
+    suspend fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<MultiplayerGame> = listOf()) {
+        val fileThrottleInterval = if (forceUpdate) Duration.ZERO else FILE_UPDATE_THROTTLE_PERIOD
+        // An exception only happens here if the files can't be listed, should basically never happen
+        throttle(lastFileUpdate, fileThrottleInterval, {}, action = {multiplayerFiles.updateSavesFromFiles()})
 
-            for (game in multiplayerFiles.savedGames.values) {
-                if (game in doNotUpdate) continue
-                // Any games that haven't been updated in 2 weeks (!) are inactive, don't waste your time
-                if (Duration.between(Instant.ofEpochMilli(game.fileHandle.lastModified()), Instant.now())
-                    .isLargerThan(Duration.ofDays(14))) continue
-                launchOnThreadPool {
-                    game.requestUpdate(forceUpdate)
-                }
-            }
+        for (game in multiplayerFiles.savedGames.values) {
+            if (game in doNotUpdate) continue
+            // Any games that haven't been updated in 2 weeks (!) are inactive, don't waste your time
+            if (Duration.between(Instant.ofEpochMilli(game.fileHandle.lastModified()), Instant.now())
+                .isLargerThan(Duration.ofDays(14))) continue
+            game.requestUpdate(forceUpdate) // DO NOT spawn in thread, since that leads to OOMs when many games try at once
         }
     }
 
