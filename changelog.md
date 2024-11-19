@@ -1,14 +1,14 @@
 ## 4.14.8
 
-Avoid ANR errors when attempting to start a MP game when server takes too long to respond
+Avoid 'application not responding' errors on Android when attempting to start a multiplayer game
 
-Avoid OOM errors when updating all games by avoiding parallelization
+Avoid out of memory errors when updating multiplayer games
 
-Resolved  - don't reject constructions for missing stockpiled resource costs, AFTER you've already paid them
+Don't reject constructions for missing stockpiled resource costs, AFTER you've already paid them
 
-Cache state for units, civs, and cities  - By SeventhM
+Memory performance improvements - By SeventhM
 
-Changes  - By itanasi
+Growth changes - By itanasi
 
 ## 4.14.7
 
