@@ -52,7 +52,7 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
         val locationByName = skinLocation + path
         val skinVariant = skinConfig.skinVariants[path]
         val locationByConfigVariant = if (skinVariant?.image != null) skinLocation + skinVariant.image else null
-        val tint = (skinVariant?.tint ?: tintColor)?.run {
+        val tint = (skinVariant?.tint ?: skinConfig.defaultVariantTint ?: tintColor)?.run {
             if (skinVariant?.alpha == null) this
             else cpy().apply { a = skinVariant.alpha }
         }
