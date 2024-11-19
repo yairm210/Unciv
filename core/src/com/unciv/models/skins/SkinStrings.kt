@@ -9,7 +9,7 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
     private val skinLocation = "Skins/$skin/"
     val skinConfig = SkinCache[skin] ?: SkinConfig()
     private val fallbackSkinLocation = if (skinConfig.fallbackSkin != null) "Skins/${skinConfig.fallbackSkin}/" else null
-    val fallbackSkinConfig = SkinCache[skinConfig.fallbackSkin]
+    private val fallbackSkinConfig = SkinCache[skinConfig.fallbackSkin]
 
     // Default shapes must always end with "Shape" so the UiElementDocsWriter can identify them
     val roundedEdgeRectangleSmallShape = "roundedEdgeRectangle-small"
@@ -74,8 +74,11 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
 
         val fallbackLocationForDefault = fallbackSkinLocation + default
         val fallbackLocationByName = fallbackSkinLocation + path
-        val fallbackSkinVariant = skinConfig.skinVariants[path]
-        val fallbackLocationByConfigVariant = if (fallbackSkinVariant?.image != null) skinLocation + fallbackSkinVariant.image else null
+        val fallbackSkinVariant = fallbackSkinConfig?.skinVariants?.get(path)
+        val fallbackLocationByConfigVariant = if (fallbackSkinVariant?.image != null)
+            fallbackSkinLocation + fallbackSkinVariant.image 
+        else 
+            null
         val fallbackTint = (fallbackSkinVariant?.tint ?: tintColor)?.run {
             if (fallbackSkinVariant?.alpha == null) this
             else cpy().apply { a = fallbackSkinVariant.alpha }
@@ -99,8 +102,10 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
                 ?: default
                 ?: skinConfig.clearColor
 
-    fun getUIFontColor(path: String) = skinConfig.skinVariants[path]?.fontColor
-
-    fun getUIIconColor(path: String) = skinConfig.skinVariants[path]?.iconColor
+    
+    fun getUIFontColor(path: String) = skinConfig.skinVariants[path]?.foregroundColor
+    
+    fun getUIIconColor(path: String) = 
+        skinConfig.skinVariants[path]?.iconColor ?: skinConfig.skinVariants[path]?.foregroundColor
 
 }

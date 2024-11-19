@@ -18,7 +18,7 @@ class SkinConfig(initialCapacity: Int) {
         val image: String? = null
         val tint: Color? = null
         val alpha: Float? = null
-        val fontColor: Color? = null
+        val foregroundColor: Color? = null
         val iconColor: Color? = null
     }
 
@@ -27,6 +27,7 @@ class SkinConfig(initialCapacity: Int) {
     /** 'Merges' [other] into **`this`**
      *
      *  [baseColor] and [clearColor] are overwritten with clones from [other].
+     *  [fallbackSkin] is overwritten with [other]'s value.
      *  [skinVariants] with the same key are copied and overwritten, new [skinVariants] are added. */
     fun updateConfig(other: SkinConfig) {
         baseColor = other.baseColor.cpy()
