@@ -169,9 +169,12 @@ This is an example of such a config file that will be explain below:
 ```json
 {
     "baseColor": {"r":1,"g":0,"b":0,"a":1},
+    "defaultVariantTint": {"r":1,"g":1,"b":1,"a":1},
     "skinVariants": {
         "MainMenuScreen/MenuButton": {
-            "image": "MyCoolNewDesign"
+            "image": "MyCoolNewDesign",
+            "foregroundColor": {"r": 0, "g": 0, "b": 1, "a": 1},
+            "iconColor": {"r": 0, "g": 1, "b": 0, "a": 1}
         },
         "TechPickerScreen/TechButton": {
             "image": "MyCoolNewDesign",
@@ -198,6 +201,21 @@ A color defined with normalized RGBA values. Default value: `{"r": 0, "g": 0.251
 
 Defines the color unciv uses in most ui elements as default
 
+### fallbackSkin
+
+A string. Default value: "Minimal".
+
+The name of another skin to use as a fallback if an image is not found or not specified in this skin.
+Set to null to disable fallback.
+
+### defaultVariantTint
+
+A color defined with normalized RGBA values. Default value: null
+
+The tint all skinVariants should use if not explicitly specified in a skinVariant.
+If you mostly use colored images set this to white (`{"r": 1, "g": 1, "b": 1, "a": 1}`) to get
+the correct colors.
+
 ### skinVariants
 
 A dictionary mapping string to a SkinElement. Default value: empty
@@ -218,10 +236,24 @@ A path to an image. The file is expected to be located alongside the 6 basic sha
 
 A color defined with normalized RGBA values. Default value: null
 
-The color this UI element should have.
+The tint this UI element should get. Is applied as a tint on top of the image. This means that if the
+image is colored and the tint is not white the tint color will merge with the image color and not override it.
 
 #### alpha
 
 A float value. Default value: null
 
 The alpha this UI element should have. Overwrites the alpha value of tint if specified.
+
+### foregroundColor
+
+A color defined with normalized RGBA values. Default value: null
+
+The color this UI element should use for its font and icons. To color icon and font differently use
+the `iconColor` in addition to this.
+
+### iconColor
+
+A color defined with normalized RGBA values. Default value: null
+
+The color this UI element should use for its icons. Overrides the `foregroundColor` for icons if specified.
