@@ -621,6 +621,17 @@ class Civilization : IsPartOfGameInfoSerialization {
         return baseUnit
     }
 
+    /**
+     * Returns the first incator building under the given [stateForConditionals]
+     */
+    fun capitalCityIndicator(stateForConditionals: StateForConditionals = state): Building? {
+        val indicatorBuildings = gameInfo.ruleset.buildings.values.asSequence()
+            .filter { it.hasUnique(UniqueType.IndicatesCapital, StateForConditionals.IgnoreConditionals) } // Ignoring for consistency
+
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && matchesFilter(it.uniqueTo!!, stateForConditionals) }
+        return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
+    }
+
     override fun toString(): String = civName // for debug
 
     /**
@@ -926,11 +937,14 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun moveCapitalTo(city: City?, oldCapital: City?) {
         // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
-        val newCapitalIndicator = city?.capitalCityIndicator()
+        val newCapitalIndicator = if (city == null) null
+        else capitalCityIndicator(city.state)
         if (newCapitalIndicator != null) {
             // move new capital
-            city.cityConstructions.addBuilding(newCapitalIndicator)
-            city.isBeingRazed = false // stop razing the new capital if it was being razed
+            if (city != null) {
+                city.cityConstructions.addBuilding(newCapitalIndicator)
+                city.isBeingRazed = false // stop razing the new capital if it was being razed
+            }
 
             // move the buildings with MovedToNewCapital unique
             if (oldCapital != null) {
@@ -942,12 +956,16 @@ class Civilization : IsPartOfGameInfoSerialization {
                 oldCapital.cityConstructions.removeBuildings(buildingsToMove)
 
                 // Add the buildings to new capital
-                for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
+                if (city != null) {
+                    for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
+                }
             }
         }
 
-        val oldCapitalIndicator = oldCapital?.capitalCityIndicator()
-        if (oldCapitalIndicator != null) oldCapital.cityConstructions.removeBuilding(oldCapitalIndicator)
+        if (oldCapital != null) {
+            val oldCapitalIndicator = capitalCityIndicator(oldCapital.state)
+            if (oldCapitalIndicator != null) oldCapital.cityConstructions.removeBuilding(oldCapitalIndicator)
+        }
     }
 
     /** @param oldCapital `null` when destroying, otherwise old capital */
