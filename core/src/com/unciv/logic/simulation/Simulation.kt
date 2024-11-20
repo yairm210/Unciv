@@ -24,6 +24,7 @@ class Simulation(
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
+    private val majorCivs = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.size
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
@@ -114,7 +115,7 @@ class Simulation(
         for (civ in civilizations) {
 
             val numSteps = max(steps.size, 1)
-            val expWinRate = 1f / civilizations.size.toDouble()
+            val expWinRate = 1f / majorCivs
             val winRate = numWins[civ]!!.value * 100 / numSteps
             if (winRate == 0) continue
 
@@ -125,7 +126,7 @@ class Simulation(
                 val pval = binomialTest(
                     numWins[civ]!!.value.toDouble(),
                     numSteps.toDouble(),
-                    expWinRate,
+                    expWinRate.toDouble(),
                     "greater"
                 )
                 outString += "one-tail binomial pval = $pval\n"
