@@ -156,7 +156,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
-    fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.getMatchingUniques(UniqueType.IndicatesCapital, state).any()
+    fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
     fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
