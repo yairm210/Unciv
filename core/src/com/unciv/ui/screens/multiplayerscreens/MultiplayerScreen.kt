@@ -284,6 +284,8 @@ class MultiplayerScreen : PickerScreen() {
         btn.onClick {
             Popup(this).apply {
                 val textField = UncivTextField("Game name", selectedGame!!.name)
+                // slashes in mp names are interpreted as directory separators, so we don't allow them
+                textField.setTextFieldFilter { _, c -> c != '/' && c != '\\' }
                 add(textField).width(stageToShowOn.width / 2).row()
                 val saveButton = "Save".toTextButton()
 
