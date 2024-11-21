@@ -1,3 +1,25 @@
+## 4.14.9
+
+resolved  - uniques hidden from users do not show icons in tech tree
+
+resolved  - disallow slashes in mp game names
+
+chore: rename canSwap to allowSwap so we don't think it's a precomputed value of something
+
+perf(cpu): Changed when(string) for performance
+
+docs:
+
+Added more options for UI skin mods  - By GGGuenni
+
+By SeventhM:
+- Fix capital indicating uniques ignoring gamestate 
+- Fix tile defence uniques ignoring unit state 
+
+By itanasi:
+- ConsoleLauncher: Add binomial test output 
+- Adding Server Icons 
+
 ## 4.14.8
 
 Avoid 'application not responding' errors on Android when attempting to start a multiplayer game
