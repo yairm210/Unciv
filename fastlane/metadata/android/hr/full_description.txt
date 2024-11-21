@@ -4,7 +4,7 @@ Izgradite svoju civilizaciju, istražite tehnologije, proširite svoje gradove i
 
 Zahtjevi? greške? Želite li pomoći razvoju? Popis obaveza za aplikaciju je https://github.com/yairm210/Unciv/issues
 
-Pitanja? Komentari? Pridružite nam se na Discordu na https://discord.gg/bjrB4Xw ;)
+Pitanja? Komentari? Pridružite nam se na Diskordu na https://discord.gg/bjrB4Xw ;)
 
 Želite li pomoći u prevođenju igre na vaš jezik? Pogledajte https://yairm210.github.io/Unciv/Other/Translating/
 
