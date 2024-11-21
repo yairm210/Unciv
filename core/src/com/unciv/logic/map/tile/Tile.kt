@@ -549,7 +549,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
     fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position, distance)
 
-    fun getDefensiveBonus(includeImprovementBonus: Boolean = true): Float {
+    fun getDefensiveBonus(includeImprovementBonus: Boolean = true, unit: MapUnit? = null): Float {
         var bonus = baseTerrainObject.defenceBonus
         if (terrainFeatureObjects.isNotEmpty()) {
             val otherTerrainBonus = terrainFeatureObjects.maxOf { it.defenceBonus }
@@ -558,7 +558,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (naturalWonder != null) bonus += getNaturalWonder().defenceBonus
         val tileImprovement = getUnpillagedTileImprovement()
         if (tileImprovement != null && includeImprovementBonus) {
-            for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus, stateThisTile))
+            for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus, unit?.cache?.state ?: stateThisTile))
                 bonus += unique.params[0].toFloat() / 100
         }
         return bonus
