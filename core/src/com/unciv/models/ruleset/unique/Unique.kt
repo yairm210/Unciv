@@ -338,7 +338,8 @@ open class UniqueMap() {
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
     fun hasMatchingUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
-        getUniques(uniqueTag).any { it.conditionalsApply(state) }
+        getUniques(uniqueTag)
+            .any { it.conditionalsApply(state) }
 
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 

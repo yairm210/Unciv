@@ -69,29 +69,26 @@ class TileImprovement : RulesetStatsObject() {
         || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { terrain.matchesFilter(it.params[0]) }
 
 
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String, tileState: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+            matchesSingleFilter(it) ||
                 tileState != null && hasUnique(it, tileState) ||
                 tileState == null && hasTagUnique(it)
         })
-        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+        else matchesSingleFilter(filter) ||
             tileState != null && hasUnique(filter, tileState) ||
             tileState == null && hasTagUnique(filter)
     }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
-            name -> true
-            replaces -> true
-            in Constants.all -> true
+            "all", "All" -> true
             "Improvement" -> true // For situations involving tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
-            else -> false
+            else -> filter == name || filter == replaces // 2 string equalities is better than hashmap lookup
         }
     }
 

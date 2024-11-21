@@ -258,28 +258,26 @@ class Nation : RulesetObject() {
             }
         }
     }
-
-    @Transient
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
-
+    
     fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+            matchesSingleFilter(filter) ||
                 state != null && hasUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
-        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+        else matchesSingleFilter(filter) ||
             state != null && hasUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
 
     private fun matchesSingleFilter(filter: String): Boolean {
+        // All cases are compile-time constants, for performance
         return when (filter) {
-            in Constants.all -> true
-            name -> true
+            "All", "all" -> true
             "Major" -> isMajorCiv
             Constants.cityStates, "City-State" -> isCityState
-            else -> false
+            else -> filter == name
         }
     }
 }
