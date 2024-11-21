@@ -417,12 +417,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             
 
     fun matchesSingleFilter(filter: String): Boolean {
+        // all cases are constants for performance
         return when (filter) {
-            unitType -> true
-            name -> true
-            replaces -> true
-            in Constants.all -> true
-
+            "all", "All" -> true
             "Melee" -> isMelee()
             "Ranged" -> isRanged()
             "Civilian" -> isCivilian()
@@ -437,6 +434,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
 
             else -> {
+                if (filter == unitType) return true
+                else if (filter == name) return true
+                else if (filter == replaces) return true
+                
                 for (requiredTech: String in requiredTechs())
                     if (ruleset.technologies[requiredTech]?.matchesFilter(filter, multiFilter = false) == true) return true
                 if (

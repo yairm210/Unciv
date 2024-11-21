@@ -485,28 +485,33 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
         else matchesSingleTerrainFilter(filter, observingCiv)
     }
+    
 
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
+        // Constant strings get their own 'when' for performance - 
+        //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734
+        when (filter) {
+            "Terrain" -> return true
+            "All", "all" -> return true
+            "Water" -> return isWater
+            "Land" -> return isLand
+            Constants.coastal -> return isCoastalTile()
+            Constants.river -> return isAdjacentToRiver()
+            "your" -> return observingCiv != null && getOwner() == observingCiv
+            "Foreign Land", "Foreign" -> return observingCiv != null && !isFriendlyTerritory(observingCiv)
+            "Friendly Land", "Friendly" -> return observingCiv != null && isFriendlyTerritory(observingCiv)
+            "Enemy Land", "Enemy" -> return observingCiv != null && isEnemyTerritory(observingCiv)
+            "resource" -> return observingCiv != null && hasViewableResource(observingCiv)
+            "Water resource" -> return isWater && observingCiv != null && hasViewableResource(observingCiv)
+            "Featureless" -> return terrainFeatures.isEmpty()
+            "Open terrain" -> return allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
+            Constants.freshWaterFilter -> 
+                return isAdjacentTo(Constants.freshWater, observingCiv)
+        }
+        
         return when (filter) {
-            "Terrain" -> true
-            "All", "all" -> true
             baseTerrain -> true
-            "Water" -> isWater
-            "Land" -> isLand
-            Constants.coastal -> isCoastalTile()
-            Constants.river -> isAdjacentToRiver()
-
-            "your" -> observingCiv != null && getOwner() == observingCiv
-            "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
-            "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
-            "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
-
             resource -> observingCiv != null && hasViewableResource(observingCiv)
-            "resource" -> observingCiv != null && hasViewableResource(observingCiv)
-            "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
-            "Featureless" -> terrainFeatures.isEmpty()
-            "Open terrain" -> allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
-            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater, observingCiv)
 
             else -> {
                 val owner = getOwner()
