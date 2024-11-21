@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
@@ -9,13 +8,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.Conditionals
-import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueParameterType
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
@@ -496,15 +489,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         })
 
     private fun matchesSingleFilter(filter: String): Boolean {
+        // all cases are constants for performance
         return when (filter) {
-            in Constants.all -> true
-            name -> true
+            "all", "All" -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()
             "National Wonder", "National" -> isNationalWonder
             "World Wonder", "World" -> isWonder
-            replaces -> true
             else -> {
+                if (filter == name) return true
+                if (filter == replaces) return true
                 if (::ruleset.isInitialized) // False when loading ruleset and checking buildingsToRemove
                     for (requiredTech: String in requiredTechs())
                         if (ruleset.technologies[requiredTech]?.matchesFilter(filter, multiFilter = false) == true) return true
