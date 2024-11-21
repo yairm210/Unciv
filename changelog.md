@@ -1,24 +1,16 @@
 ## 4.14.9
 
-resolved  - uniques hidden from users do not show icons in tech tree
+CPU performance improvements
 
-resolved  - disallow slashes in mp game names
+Uniques hidden from users do not show icons in tech tree
 
-chore: rename canSwap to allowSwap so we don't think it's a precomputed value of something
-
-perf(cpu): Changed when(string) for performance
-
-docs:
+Disallow slashes in mp game names
 
 Added more options for UI skin mods  - By GGGuenni
 
 By SeventhM:
 - Fix capital indicating uniques ignoring gamestate 
-- Fix tile defence uniques ignoring unit state 
-
-By itanasi:
-- ConsoleLauncher: Add binomial test output 
-- Adding Server Icons 
+- Fix tile defence uniques ignoring unit state
 
 ## 4.14.8
 
