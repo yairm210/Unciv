@@ -40,7 +40,7 @@ class CityConquestFunctions(val city: City) {
         for (building in city.cityConstructions.getBuiltBuildings()) {
             when {
                 building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured) || building.isWonder -> continue
-                building.hasUnique(UniqueType.IndicatesCapital) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
+                building.hasUnique(UniqueType.IndicatesCapital, city.state) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
                 building.hasUnique(UniqueType.DestroyedWhenCityCaptured) ->
                     city.cityConstructions.removeBuilding(building)
                 // Regular buildings have a 34% chance of removal
