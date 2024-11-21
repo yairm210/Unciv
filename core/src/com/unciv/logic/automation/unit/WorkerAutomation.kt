@@ -85,8 +85,8 @@ class WorkerAutomation(
 
         if (tileToWork != currentTile && tileToWork != null) {
             debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
-            if (unit.movement.canReachInCurrentTurn(tileToWork) && unit.movement.canMoveTo(tileToWork, canSwap = true)) {
-                if (!unit.movement.canMoveTo(tileToWork, canSwap = false) && unit.movement.canUnitSwapTo(tileToWork)) {
+            if (unit.movement.canReachInCurrentTurn(tileToWork) && unit.movement.canMoveTo(tileToWork, allowSwap = true)) {
+                if (!unit.movement.canMoveTo(tileToWork, allowSwap = false) && unit.movement.canUnitSwapTo(tileToWork)) {
                     // There must be a unit on the target tile! Lets swap with it.
                     unit.movement.swapMoveToTile(tileToWork)
                 }
