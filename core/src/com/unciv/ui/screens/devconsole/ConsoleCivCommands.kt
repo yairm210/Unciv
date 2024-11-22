@@ -3,8 +3,6 @@ package com.unciv.ui.screens.devconsole
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tech.Technology
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.devconsole.CliInput.Companion.findCliInput
 
@@ -23,6 +21,8 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
 
         "setplayertype" to ConsoleAction("civ setplayertype <civName> <ai/human>") { console, params ->
             val civ = console.getCivByName(params[0])
+            if (!civ.isMajorCiv())
+                throw ConsoleErrorException("Can only change player type for major civs")
             civ.playerType = params[1].enumValue<PlayerType>()
             DevConsoleResponse.OK
         },
