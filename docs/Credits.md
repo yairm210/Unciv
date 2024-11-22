@@ -779,6 +779,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [RobotHeadSquare] (https://thenounproject.com/icon/robot-head-6356754/) by Ahmad Arzaha
 - [RobotHeadRect] (https://thenounproject.com/icon/robot-1704106/) by suib icon
 - [Bobot] by reallybasicname in the Discord
+- [DollarSign] (https://thenounproject.com/icon/dollar-sign-6466560/) by Ahmad Arzaha
 
 ### Main menu
 
