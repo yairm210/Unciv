@@ -2,11 +2,11 @@ Reimplementacija najpoznatije igre za izgradnju civilizacije otvorenog koda - br
 
 Izgradite svoju civilizaciju, istražite tehnologije, proširite svoje gradove i porazite svoje neprijatelje!
 
-Zahtjevi? greške? Želite li pomoći razvoju? Popis obaveza za aplikaciju je https://github.com/yairm210/Unciv/issues
+Zahtjevi? greške? Želite li pomoći razvoju? Popis obaveza za aplikaciju je <a href="https://github.com/yairm210/Unciv/issues">GitHub Issues</a>
 
-Pitanja? Komentari? Pridružite nam se na Diskordu na https://discord.gg/bjrB4Xw ;)
+Pitanja? Komentari? Pridružite nam se na Diskordu na <a href="https://discord.gg/bjrB4Xw">Discord</a> ;)
 
-Želite li pomoći u prevođenju igre na vaš jezik? Pogledajte https://yairm210.github.io/Unciv/Other/Translating/
+Želite li pomoći u prevođenju igre na vaš jezik? Pogledajte <a href="https://yairm210.github.io/Unciv/Other/Translating">Wiki</a>
 
 Svijet čeka! Hoćete li izgraditi svoju civilizaciju u carstvo koje će izdržati test vremena?
 
