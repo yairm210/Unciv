@@ -97,7 +97,7 @@ class Multiplayer {
         // An exception only happens here if the files can't be listed, should basically never happen
         throttle(lastFileUpdate, fileThrottleInterval, {}, action = {multiplayerFiles.updateSavesFromFiles()})
 
-        for (game in multiplayerFiles.savedGames.values) {
+        for (game in multiplayerFiles.savedGames.values.toList()) { // since updates are long, .toList for immutability
             if (game in doNotUpdate) continue
             // Any games that haven't been updated in 2 weeks (!) are inactive, don't waste your time
             if (Duration.between(Instant.ofEpochMilli(game.fileHandle.lastModified()), Instant.now())
@@ -303,7 +303,7 @@ suspend fun <T> throttle(
     lastSuccessfulExecution: AtomicReference<Instant?>,
     throttleInterval: Duration,
     onNoExecution: () -> T,
-    onFailed: (Exception) -> T = { throw it },
+    onFailed: (Throwable) -> T = { throw it },
     action: suspend () -> T
 ): T {
     val lastExecution = lastSuccessfulExecution.get()
@@ -323,7 +323,7 @@ suspend fun <T> throttle(
 suspend fun <T> attemptAction(
     lastSuccessfulExecution: AtomicReference<Instant?>,
     onNoExecution: () -> T,
-    onFailed: (Exception) -> T = { throw it },
+    onFailed: (Throwable) -> T = { throw it },
     action: suspend () -> T
 ): T {
     val lastExecution = lastSuccessfulExecution.get()
@@ -331,7 +331,7 @@ suspend fun <T> attemptAction(
     return if (lastSuccessfulExecution.compareAndSet(lastExecution, now)) {
         try {
             action()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             lastSuccessfulExecution.compareAndSet(now, lastExecution)
             onFailed(e)
         }
