@@ -56,7 +56,7 @@ class GameList(
 private class GameDisplay(
     multiplayerGameName: String,
     var preview: GameInfoPreview?,
-    error: Exception?,
+    error: Throwable?,
     private val onSelected: (String) -> Unit
 ) : Table(), Comparable<GameDisplay> {
     var gameName: String = multiplayerGameName
