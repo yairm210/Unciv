@@ -529,6 +529,8 @@ class UnitMovement(val unit: MapUnit) {
      * Precondition: this unit can swap-move to the given tile, as determined by canUnitSwapTo
      */
     fun swapMoveToTile(destination: Tile) {
+        if (!unit.currentTile.neighbors.contains(destination))
+            throw Exception("Unit $unit cannot swap with a tile that is not a neighbor")
         unit.stopEscorting()
         val otherUnit = (
             if (unit.isCivilian())

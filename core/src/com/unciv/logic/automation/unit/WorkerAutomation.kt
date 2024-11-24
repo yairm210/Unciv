@@ -85,13 +85,17 @@ class WorkerAutomation(
 
         if (tileToWork != currentTile && tileToWork != null) {
             debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
-            if (unit.movement.canReachInCurrentTurn(tileToWork) && unit.movement.canMoveTo(tileToWork, allowSwap = true)) {
-                if (!unit.movement.canMoveTo(tileToWork, allowSwap = false) && unit.movement.canUnitSwapTo(tileToWork)) {
-                    // There must be a unit on the target tile! Lets swap with it.
-                    unit.movement.swapMoveToTile(tileToWork)
-                }
-            }
+            
             val reachedTile = unit.movement.headTowards(tileToWork)
+            
+            if (tileToWork in reachedTile.neighbors
+                && unit.movement.canMoveTo(tileToWork, allowSwap = true)
+                && !unit.movement.canMoveTo(tileToWork, allowSwap = false)
+                && unit.movement.canUnitSwapTo(tileToWork)) {
+                // There must be a unit on the target tile! Let's swap with it.
+                unit.movement.swapMoveToTile(tileToWork)
+            }
+            
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
 
             // If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
