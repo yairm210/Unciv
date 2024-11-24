@@ -303,7 +303,7 @@ suspend fun <T> throttle(
     lastSuccessfulExecution: AtomicReference<Instant?>,
     throttleInterval: Duration,
     onNoExecution: () -> T,
-    onFailed: (Exception) -> T = { throw it },
+    onFailed: (Throwable) -> T = { throw it },
     action: suspend () -> T
 ): T {
     val lastExecution = lastSuccessfulExecution.get()
@@ -323,7 +323,7 @@ suspend fun <T> throttle(
 suspend fun <T> attemptAction(
     lastSuccessfulExecution: AtomicReference<Instant?>,
     onNoExecution: () -> T,
-    onFailed: (Exception) -> T = { throw it },
+    onFailed: (Throwable) -> T = { throw it },
     action: suspend () -> T
 ): T {
     val lastExecution = lastSuccessfulExecution.get()
@@ -331,7 +331,7 @@ suspend fun <T> attemptAction(
     return if (lastSuccessfulExecution.compareAndSet(lastExecution, now)) {
         try {
             action()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             lastSuccessfulExecution.compareAndSet(now, lastExecution)
             onFailed(e)
         }
