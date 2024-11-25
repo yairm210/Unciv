@@ -20,7 +20,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
-    private val tileBaseImages: ArrayList<Image> = ArrayList()
+    val tileBaseImages: ArrayList<Image> = ArrayList()
     private var tileImageIdentifiers = listOf<String>()
     private var bottomRightRiverImage: Image? = null
     private var bottomRiverImage: Image? = null
@@ -155,6 +155,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             val finalLocation = existingImages.random(
                 Random(tileGroup.tile.position.hashCode() + locationToCheck.hashCode()))
             val image = ImageGetter.getImage(finalLocation)
+            image.name = finalLocation // for debug mode reveal
 
             tileBaseImages.add(image)
             addActor(image)
