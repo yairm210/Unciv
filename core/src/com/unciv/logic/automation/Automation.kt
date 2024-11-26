@@ -128,13 +128,6 @@ object Automation {
             yieldStats.food += newGrowthFood * foodBaseWeight * baseFocusWeight
         }
 
-        for (unique in city.getMatchingUniques(UniqueType.StatPercentBonusCities)) { 
-            //Take into account modifiers to rank stats for citizen assignment
-            val statType = Stat.valueOf(unique.params[1])
-            val statModifier = 1 + unique.params[0].toFloat() / 100f
-            yieldStats[statType] *= statModifier
-            }
-
         if (city.population.population < 10) {
             // "small city" - we care more about food and less about global problems like gold science and culture
             // Food already handled above. Gold/Culture have low weights in Stats already
@@ -213,7 +206,7 @@ object Automation {
         var removeShips = true
         var isMissingNavalUnitsForCityDefence = false
 
-        fun isNavalUnit(unit: BaseUnit) = unit.isMilitary && unit.type.isWaterUnit()
+        fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
         if (city.isCoastal()) {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID
@@ -224,9 +217,9 @@ object Automation {
             val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
                 .count { it.isCityCenter() && it.getOwner() == city.civ }
             val numberOfOurNavalUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles()
-                .sumOf { it.getUnits().count { isNavalUnit(it.baseUnit) } }
+                .sumOf { it.getUnits().count { isNavalMeleeUnit(it.baseUnit) } }
             
-            isMissingNavalUnitsForCityDefence = 3 * numberOfOurConnectedCities > numberOfOurNavalUnits
+            isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalUnits
 
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
@@ -256,9 +249,9 @@ object Automation {
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
         }
-        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalUnit(it) }) {
+        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }) {
             chosenUnit = militaryUnits
-                .filter { isNavalUnit(it) }
+                .filter { isNavalMeleeUnit(it) }
                 .maxBy { it.cost }
         }
         else { // randomize type of unit and take the most expensive of its kind
