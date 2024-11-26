@@ -367,7 +367,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun getBuildingStatsFromUniques(building: Building, buildingStats: Stats) {
-        //TODO: add evaluation for tile yields provided by buildings (e.g. Lighthouse), and improvements consutructed by buildings
         for (unique in building.getMatchingUniques(UniqueType.StatPercentBonusCities, cityState)) {
             val statType = Stat.valueOf(unique.params[1])
             val relativeAmount = unique.params[0].toFloat() / 100f
@@ -379,7 +378,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0) {
                 val foodGain = cityStats.currentCityStats.food + buildingStats.food
                 val relativeAmount = unique.params[0].toFloat() / 100f
-                buildingStats[Stat.Food] += foodGain * relativeAmount // Essentially gives us the food per turn this unique saves us
+                buildingStats[Stat.Food] += foodGain * relativeAmount // Essentialy gives us the food per turn this unique saves us
             }
         }
     }
