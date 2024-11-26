@@ -1399,7 +1399,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Costs [amount] [stockpiledResource]"
-	Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
+	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
 	Applicable to: Building, Unit, Improvement
@@ -1609,7 +1609,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Costs [amount] [stockpiledResource]"
-	Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
+	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
 	Applicable to: Building, Unit, Improvement
@@ -2369,7 +2369,7 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Global, FollowerBelief, Improvement
 
 ??? example  "Costs [amount] [stockpiledResource]"
-	Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
+	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
 	Applicable to: Building, Unit, Improvement
@@ -2451,6 +2451,7 @@ If your mod renames Coast or Lakes, do not use this with one of these as paramet
 	Applicable to: Improvement
 
 ??? example  "Gives a defensive bonus of [relativeAmount]%"
+	Does not accept unit-based conditionals
 	Example: "Gives a defensive bonus of [+20]%"
 
 	Applicable to: Improvement

@@ -50,7 +50,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     fun canBePurchasedWithStatReasons(city: City?, stat: Stat): PurchaseReason {
-        val stateForConditionals = StateForConditionals(city?.civ, city)
+        val stateForConditionals = city?.state ?: StateForConditionals.EmptyState
         if (stat == Stat.Production || stat == Stat.Happiness) return PurchaseReason.Invalid
         if (hasUnique(UniqueType.CannotBePurchased, stateForConditionals)) return PurchaseReason.Unpurchasable
         // Can be purchased with [Stat] [cityFilter]
@@ -92,7 +92,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     }
 
     fun getBaseBuyCost(city: City, stat: Stat): Float? {
-        val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
+        val conditionalState = city.state
 
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
@@ -310,7 +310,7 @@ open class PerpetualStatConversion(val stat: Stat) :
         if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled())
             return false
 
-        val stateForConditionals = StateForConditionals(city.civ, city, tile = city.getCenterTile())
+        val stateForConditionals = city.state
         return city.civ.getMatchingUniques(UniqueType.EnablesCivWideStatProduction, stateForConditionals)
             .any { it.params[0] == stat.name }
     }

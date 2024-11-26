@@ -41,13 +41,13 @@ class MultiplayerGame(
         }
     }
     val name = fileHandle.name()
-    var error: Exception? = null
+    var error: Throwable? = null
 
     init {
         if (preview == null) {
             try {
                 loadPreviewFromFile()
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 error = e
             }
         }
@@ -69,9 +69,9 @@ class MultiplayerGame(
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
         val onUnchanged = { GameUpdateResult(UNCHANGED, preview!!) }
-        val onError = { e: Exception ->
-            error = e
-            GameUpdateResult(e)
+        val onError = { t: Throwable ->
+            error = t
+            GameUpdateResult(t)
         }
         debug("Starting multiplayer game update for %s with id %s", name, preview?.gameId)
         launchOnGLThread {
@@ -145,10 +145,10 @@ class MultiplayerGame(
 private class GameUpdateResult private constructor(
     val type: Type,
     val status: GameInfoPreview?,
-    val error: Exception?
+    val error: Throwable?
 ) {
     constructor(type: Type, status: GameInfoPreview) : this(type, status, null)
-    constructor(error: Exception) : this(FAILURE, null, error)
+    constructor(error: Throwable) : this(FAILURE, null, error)
 
     enum class Type { CHANGED, UNCHANGED, FAILURE }
 }

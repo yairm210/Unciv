@@ -24,7 +24,6 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -262,7 +261,7 @@ object NextTurnAutomation {
             return researchableTechs.toSortedMap().values.toList()
         }
 
-        val stateForConditionals = StateForConditionals(civInfo)
+        val stateForConditionals = civInfo.state
         while(civInfo.tech.freeTechs > 0) {
             val costs = getGroupedResearchableTechs()
             if (costs.isEmpty()) return
@@ -351,7 +350,7 @@ object NextTurnAutomation {
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
                 else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }
-                    .randomWeighted { it.getWeightForAiDecision(StateForConditionals(civInfo)) }
+                    .randomWeighted { it.getWeightForAiDecision(civInfo.state) }
 
             civInfo.policies.adopt(policyToAdopt)
         }
@@ -402,7 +401,7 @@ object NextTurnAutomation {
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
-                        && it.requiredResources(StateForConditionals(civInfo, city)).contains(resource)
+                        && it.requiredResources(city.state).contains(resource)
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()
@@ -538,8 +537,8 @@ object NextTurnAutomation {
             }) return
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
-                    personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(civInfo))
-                        .none { unique -> it.matchesFilter(unique.params[0], StateForConditionals(civInfo)) } }
+                    personality.getMatchingUniques(UniqueType.WillNotBuild, civInfo.state)
+                        .none { unique -> it.matchesFilter(unique.params[0], civInfo.state) } }
         if (settlerUnits.isEmpty()) return
 
         if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first

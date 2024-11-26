@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
@@ -9,13 +8,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.Conditionals
-import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueParameterType
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
@@ -83,7 +76,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
         
-        val conditionalState = StateForConditionals(city)
+        val conditionalState = city.state
 
         for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject)) {
             if (!matchesFilter(unique.params[1], conditionalState)) continue
@@ -105,7 +98,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = city?.civ ?: return stats  // initial stats
         
-        val conditionalState = StateForConditionals(city)
+        val conditionalState = city.state
 
         for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2], conditionalState))
@@ -124,7 +117,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = cost.toFloat()
-        val stateForConditionals = StateForConditionals(civInfo, city)
+        val stateForConditionals = city?.state ?: civInfo.state
 
         for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, stateForConditionals))
             productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()
@@ -158,7 +151,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (purchaseReason != PurchaseReason.UniqueAllowed && stat == Stat.Gold && isAnyWonder()) return false
         if (city == null) return purchaseReason.purchasable
 
-        val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
+        val conditionalState = city.state
         return (
             city.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 .any {
@@ -185,7 +178,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getBaseBuyCost(city: City, stat: Stat): Float? {
-        val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
+        val conditionalState = city.state
 
         return sequence {
             val baseCost = super.getBaseBuyCost(city, stat)
@@ -229,7 +222,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? {
         var cost = getBaseBuyCost(city, stat)?.toDouble() ?: return null
-        val conditionalState = StateForConditionals(city)
+        val conditionalState = city.state
 
         for (unique in city.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
@@ -253,7 +246,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         val rejectionReasons = getRejectionReasons(cityConstructions)
 
-        if (hasUnique(UniqueType.ShowsWhenUnbuilable, StateForConditionals(cityConstructions.city)) &&
+        if (hasUnique(UniqueType.ShowsWhenUnbuilable, cityConstructions.city.state) &&
             rejectionReasons.none { it.isNeverVisible() })
             return true
 
@@ -267,9 +260,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
-        val cityCenter = cityConstructions.city.getCenterTile()
-        val civ = cityConstructions.city.civ
-        val stateForConditionals = StateForConditionals(civ, cityConstructions.city)
+        val city = cityConstructions.city
+        val cityCenter = city.getCenterTile()
+        val civ = city.civ
+        val stateForConditionals = city.state
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
@@ -305,7 +299,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
                 UniqueType.RequiresPopulation ->
-                    if (unique.params[0].toInt() > cityConstructions.city.population.population)
+                    if (unique.params[0].toInt() > city.population.population)
                         yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
 
                 UniqueType.MustBeOn ->
@@ -326,7 +320,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.MustHaveOwnedWithinTiles ->
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
-                        .none { it.matchesFilter(unique.params[0], civ) && it.getOwner() == cityConstructions.city.civ }
+                        .none { it.matchesFilter(unique.params[0], civ) && it.getOwner() == civ }
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
 
@@ -431,7 +425,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val civ = cityConstructions.city.civ
         for (conditional in unique.modifiers) {
             // We yield a rejection only when conditionals are NOT met
-            if (Conditionals.conditionalApplies(unique, conditional, StateForConditionals(civ, cityConstructions.city)))
+            if (Conditionals.conditionalApplies(unique, conditional, cityConstructions.city.state))
                 continue
             when (conditional.type) {
                 UniqueType.ConditionalBuildingBuiltAmount -> {
@@ -495,15 +489,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         })
 
     private fun matchesSingleFilter(filter: String): Boolean {
+        // all cases are constants for performance
         return when (filter) {
-            in Constants.all -> true
-            name -> true
+            "all", "All" -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()
             "National Wonder", "National" -> isNationalWonder
             "World Wonder", "World" -> isWonder
-            replaces -> true
             else -> {
+                if (filter == name) return true
+                if (filter == replaces) return true
                 if (::ruleset.isInitialized) // False when loading ruleset and checking buildingsToRemove
                     for (requiredTech: String in requiredTechs())
                         if (ruleset.technologies[requiredTech]?.matchesFilter(filter, multiFilter = false) == true) return true

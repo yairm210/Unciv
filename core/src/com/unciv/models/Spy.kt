@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.ceil
@@ -390,13 +389,13 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
             city.civ == civInfo -> {
                 // Spy is in our own city
-                friendlyUniques = city.getMatchingUniques(UniqueType.SpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
+                friendlyUniques = city.getMatchingUniques(UniqueType.SpyEffectiveness, city.state, includeCivUniques = true)
                 enemyUniques = emptySequence()
             }
             else -> {
                 // Spy is active in a foreign city
                 friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
-                enemyUniques = city.getMatchingUniques(UniqueType.EnemySpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
+                enemyUniques = city.getMatchingUniques(UniqueType.EnemySpyEffectiveness, city.state, includeCivUniques = true)
             }
         }
         var totalEfficiency = 1.0

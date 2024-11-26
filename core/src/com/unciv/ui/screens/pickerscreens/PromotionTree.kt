@@ -104,7 +104,7 @@ class PromotionTree(val unit: MapUnit) {
         }
 
         // Determine unreachable / disabled nodes
-        val state = StateForConditionals(unit.civ, unit = unit)
+        val state = unit.cache.state
         for (node in nodes.values) {
             // defensive - I don't know how to provoke the situation, but if it ever occurs, disallow choosing that promotion
             if (node.promotion.prerequisites.isNotEmpty() && node.parents.isEmpty())

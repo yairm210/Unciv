@@ -907,7 +907,7 @@ object UniqueTriggerActivation {
                 return {
                     for (applicableCity in applicableCities) {
                         val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
-                            it.matchesFilter(unique.params[0], StateForConditionals(applicableCity))
+                            it.matchesFilter(unique.params[0], applicableCity.state)
                         }.toSet()
                         applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
                     }
@@ -924,7 +924,7 @@ object UniqueTriggerActivation {
                 return {
                     for (applicableCity in applicableCities) {
                         val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
-                            it.matchesFilter(unique.params[0], StateForConditionals(applicableCity)) && it.isSellable()
+                            it.matchesFilter(unique.params[0], applicableCity.state) && it.isSellable()
                         }
 
                         for (building in buildingsToSell) applicableCity.sellBuilding(building)

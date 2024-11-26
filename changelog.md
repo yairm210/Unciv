@@ -1,3 +1,45 @@
+## 4.14.10
+
+Fixed Flood Plains generation
+
+Fixed crash when swapping while retreating
+
+Added debug option to show tile image locations
+
+Worker units do not try and swap with non-adjacent tiles
+
+Better MP update error handling
+
+Resolved crashes due to incorrect music state
+
+Console cannot change player type for non-major civs or allow adding cities to spectator/barbarian
+
+## 4.14.9
+
+CPU performance improvements
+
+Uniques hidden from users do not show icons in tech tree
+
+Disallow slashes in mp game names
+
+Added more options for UI skin mods  - By GGGuenni
+
+By SeventhM:
+- Fix capital indicating uniques ignoring gamestate 
+- Fix tile defence uniques ignoring unit state
+
+## 4.14.8
+
+Avoid 'application not responding' errors on Android when attempting to start a multiplayer game
+
+Avoid out of memory errors when updating multiplayer games
+
+Don't reject constructions for missing stockpiled resource costs, AFTER you've already paid them
+
+Memory performance improvements - By SeventhM
+
+Growth changes - By itanasi
+
 ## 4.14.7
 
 CPU performance improvements

@@ -1,0 +1,9 @@
+Avoid 'application not responding' errors on Android when attempting to start a multiplayer game
+
+Avoid out of memory errors when updating multiplayer games
+
+Don't reject constructions for missing stockpiled resource costs, AFTER you've already paid them
+
+Memory performance improvements - By SeventhM
+
+Growth changes - By itanasi

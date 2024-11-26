@@ -4,7 +4,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
 import com.unciv.models.UpgradeUnitAction
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
@@ -20,11 +19,11 @@ object UnitActionsUpgrade {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
         val specialUpgradesTo = if (isSpecial)
-            unit.baseUnit.getMatchingUniques(UniqueType.RuinsUpgrade, StateForConditionals(civInfo, unit = unit))
+            unit.baseUnit.getMatchingUniques(UniqueType.RuinsUpgrade, unit.cache.state)
                 .map { it.params[0] }.firstOrNull()
         else null
         val upgradeUnits = if (specialUpgradesTo != null) sequenceOf(specialUpgradesTo)
-            else unit.baseUnit.getUpgradeUnits(StateForConditionals(civInfo, unit = unit))
+            else unit.baseUnit.getUpgradeUnits(unit.cache.state)
         if (upgradeUnits.none()) return@sequence // can't upgrade to anything
         if (!isAnywhere && unitTile.getOwner() != civInfo) return@sequence
 
@@ -39,7 +38,7 @@ object UnitActionsUpgrade {
             val resourceRequirementsDelta = Counter<String>()
             for ((resource, amount) in unit.getResourceRequirementsPerTurn())
                 resourceRequirementsDelta.add(resource, -amount)
-            for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)))
+            for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state))
                 resourceRequirementsDelta.add(resource, amount)
             for ((resource, _) in resourceRequirementsDelta.filter { it.value < 0 })  // filter copies, so no CCM
                 resourceRequirementsDelta[resource] = 0

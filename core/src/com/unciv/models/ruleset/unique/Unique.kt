@@ -209,7 +209,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(city.civ, city)
+        stateForConditionals: StateForConditionals = city.state
     ): Sequence<Unique> {
         // City uniques are a combination of *global civ* uniques plus *city relevant* uniques (see City.getMatchingUniques())
         // We can cache the civ uniques separately, so if we have several cities using the same cache,
@@ -228,9 +228,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
     fun forCivGetMatchingUniques(
         civ: Civilization,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(
-            civ
-        )
+        stateForConditionals: StateForConditionals = civ.state
     ): Sequence<Unique> {
         val sequence = civ.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
         // The uniques CACHED are ALL civ uniques, regardless of conditional matching.
@@ -340,7 +338,8 @@ open class UniqueMap() {
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
     fun hasMatchingUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
-        getUniques(uniqueTag).any { it.conditionalsApply(state) }
+        getUniques(uniqueTag)
+            .any { it.conditionalsApply(state) }
 
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 

@@ -1,0 +1,11 @@
+CPU performance improvements
+
+Uniques hidden from users do not show icons in tech tree
+
+Disallow slashes in mp game names
+
+Added more options for UI skin mods  - By GGGuenni
+
+By SeventhM:
+- Fix capital indicating uniques ignoring gamestate 
+- Fix tile defence uniques ignoring unit state

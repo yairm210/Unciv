@@ -2,7 +2,6 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
@@ -12,7 +11,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
     fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = baseUnit.cost.toFloat()
 
-        val stateForConditionals = StateForConditionals(civInfo, city)
+        val stateForConditionals = city?.state ?: civInfo.state
         for (unique in baseUnit.getMatchingUniques(UniqueType.CostIncreasesPerCity, stateForConditionals))
             productionCost += civInfo.cities.size * unique.params[0].toInt()
 
@@ -36,7 +35,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
 
     /** Contains only unit-specific uniques that allow purchasing with stat */
     fun canBePurchasedWithStat(city: City, stat: Stat): Boolean {
-        val conditionalState = StateForConditionals(city)
+        val conditionalState = city.state
 
         if (city.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                     .any {
@@ -75,7 +74,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
 
     fun getStatBuyCost(city: City, stat: Stat): Int? {
         var cost = baseUnit.getBaseBuyCost(city, stat)?.toDouble() ?: return null
-        val conditionalState = StateForConditionals(city)
+        val conditionalState = city.state
 
         for (unique in city.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && baseUnit.matchesFilter(unique.params[1], conditionalState))
@@ -90,7 +89,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
 
 
     fun getBaseBuyCosts(city: City, stat: Stat): Sequence<Float> {
-        val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
+        val conditionalState = city.state
         return sequence {
             yieldAll(city.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .filter {
