@@ -319,23 +319,24 @@ object UnitAutomation {
             val otherUnit = retreatTile.militaryUnit
             if (otherUnit == null) {
                 // See if we can retreat to the tile
-                if (unit.movement.canMoveTo(retreatTile)) {
-                    unit.movement.moveToTile(retreatTile)
-                    return true
-                }
+                if (!unit.movement.canMoveTo(retreatTile)) continue
+                unit.movement.moveToTile(retreatTile)
+                return true
             } else if (otherUnit.civ == unit.civ) {
                 // The tile is taken, lets see if we want to swap retreat to it
-                if (otherUnit.health > 80) {
-                    if (otherUnit.baseUnit.isRanged()) {
-                        // Don't swap ranged units closer than they have to be
-                        val range = otherUnit.baseUnit.range
-                        if (ourDistanceToClosestEnemy < range)
-                            continue
-                    }
-                    if (unit.movement.canUnitSwapTo(retreatTile)) {
+                if (otherUnit.health <= 80) continue
+                if (otherUnit.baseUnit.isRanged()) {
+                    // Don't swap ranged units closer than they have to be
+                    val range = otherUnit.baseUnit.range
+                    if (ourDistanceToClosestEnemy < range)
+                        continue
+                }
+                if (unit.movement.canUnitSwapTo(retreatTile)) {
+                    unit.movement.headTowards(retreatTile) // we need to move through the intermediate tiles
+                    if (unit.currentTile.neighbors.contains(otherUnit.currentTile)) {
                         unit.movement.swapMoveToTile(retreatTile)
-                        return true
                     }
+                    return true
                 }
             }
         }
