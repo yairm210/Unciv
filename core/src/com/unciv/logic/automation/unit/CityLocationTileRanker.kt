@@ -174,7 +174,7 @@ object CityLocationTileRanker {
                 ResourceType.Luxury -> 10f * rankTile.resourceAmount //very important for humans who might want to conquer the AI
             }
         }
-        if (rankTile.terrainHasUnique(UniqueType.FreshWater)) rankTileValue += 0.5f
+        if (rankTile.terrainHasUnique(UniqueType.FreshWater)) rankTileValue += 0.5f 
         //Taking into account freshwater farm food, maybe less important in baseruleset mods
         if (rankTile.terrainFeatures.isNotEmpty() && rankTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) rankTileValue += 0.5f
         //Taking into account yields from forest chopping
