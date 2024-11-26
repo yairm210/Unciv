@@ -333,7 +333,8 @@ object UnitAutomation {
                 }
                 if (unit.movement.canUnitSwapTo(retreatTile)) {
                     unit.movement.headTowards(retreatTile) // we need to move through the intermediate tiles
-                    if (unit.currentTile.neighbors.contains(otherUnit.currentTile)) {
+                    // if nothing changed
+                    if (unit.currentTile.neighbors.contains(otherUnit.currentTile) && unit.movement.canUnitSwapTo(retreatTile)) {
                         unit.movement.swapMoveToTile(retreatTile)
                     }
                     return true
