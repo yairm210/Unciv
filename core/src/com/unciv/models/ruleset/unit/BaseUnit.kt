@@ -42,7 +42,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var interceptRange = 0
     var unitType: String = ""
 
-    val type by lazy { ruleset.unitTypes[unitType]!! }
+    val type by lazy { ruleset.unitTypes[unitType]
+        ?: throw Exception("Unit $name has unit type $unitType which is not present in ruleset!") }
     override var requiredTech: String? = null
     var requiredResource: String? = null
 
