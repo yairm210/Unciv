@@ -105,7 +105,6 @@ object ReligiousUnitAutomation {
         }
 
         if (destinationCity == null) return
-
         val destinationTile = destinationCity.getCenterTile().neighbors
                 .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }

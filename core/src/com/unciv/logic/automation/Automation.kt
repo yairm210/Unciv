@@ -147,7 +147,7 @@ object Automation {
         }
 
         if (city.civ.getHappiness() < 0) {
-            yieldStats.happiness *= 3
+            yieldStats.happiness *= 2
         }
 
         if (allTechsAreResearched) {

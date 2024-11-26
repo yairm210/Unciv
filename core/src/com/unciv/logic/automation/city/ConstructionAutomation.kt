@@ -379,7 +379,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0) {
                 val foodGain = cityStats.currentCityStats.food + buildingStats.food
                 val relativeAmount = unique.params[0].toFloat() / 100f
-                buildingStats[Stat.Food] += foodGain * relativeAmount // Approximately gives us the food per turn this unique gives us
+                buildingStats[Stat.Food] += foodGain * relativeAmount // Essentially gives us the food per turn this unique saves us
             }
         }
     }
