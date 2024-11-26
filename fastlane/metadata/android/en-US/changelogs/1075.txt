@@ -1,21 +1,13 @@
+Fixed Flood Plains generation
 
+Fixed crash when swapping while retreating
 
-Revert "Resolved  - Nat wonders land->water conversion no longer causes rivers on water tiles"
+Added debug option to show tile image locations
 
-Resolved  - fixed crash when swapping while retreating
+Worker units do not try and swap with non-adjacent tiles
 
-Resolved  - debug option to show tile image locations
+Better MP update error handling
 
-console: Don't allow adding cities to spectator/barbarian (will crash)
+Resolved crashes due to incorrect music state
 
-Resolved  - Worker units do not try and swap with non-adjacent tiles
-
-Allow MP updates to catch Throwable, which includes OutOfMemoryError
-
-Resolved MP update task concurrent modification exception
-
-Resolved crashes due to incorrect music state - no idea what's actually causing it, but the entire music track handling needs a revamp anyway
-
-Resolved  - console cannot change player type for non-major civs
-
-Adding Dollar Sign  - By itanasi
+Console cannot change player type for non-major civs or allow adding cities to spectator/barbarian
