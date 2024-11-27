@@ -1,20 +1,15 @@
 ## 4.14.11
 
-Allow loading games where a buildings' "replaces" has been removed
+Added Github + Discord icon links on main menu
 
-Allow loading games with natural wonders that have been removed from mods
+City construction progress is reset when puppeting, not when annexing
 
-Added lake-land edge tiles - by @legacymtgsalvationuser69544
+Mods:
+- Allow loading games where a buildings' "replaces" has been removed
+- Allow loading games with natural wonders that have been removed from mods
+- Only add city ruins improvements if they exist in the ruleset
 
-Added Github icon+link on main menu
-
-Added Discord icon+link on main menu
-
-Re-allow long-tile swapping - resolves , relevant to #12522
-
-Resolved  - city construction progress is reset when puppeting, not when annexing
-
-Resolved  - only add city ruins improvements if they exist in the ruleset
+Added lake-land edge tiles - by legacymtgsalvationuser69544
 
 Move Capital building function from city to civ  - By SeventhM
 
