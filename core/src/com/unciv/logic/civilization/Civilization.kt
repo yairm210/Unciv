@@ -580,7 +580,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun getEquivalentBuilding(baseBuilding: Building): Building {
-        if (baseBuilding.replaces != null)
+        if (baseBuilding.replaces != null
+                && baseBuilding.replaces in gameInfo.ruleset.buildings)
             return getEquivalentBuilding(baseBuilding.replaces!!)
 
         for (building in cache.uniqueBuildings)
