@@ -128,13 +128,13 @@ class CityConquestFunctions(val city: City) {
         city.cityStats.update()
         // The city could be producing something that puppets shouldn't, like units
         city.cityConstructions.currentConstructionIsUserSet = false
+        city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         city.cityConstructions.constructionQueue.clear()
         city.cityConstructions.chooseNextConstruction()
     }
 
     fun annexCity() {
         city.isPuppet = false
-        city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         if (!city.isInResistance()) city.shouldReassignPopulation = true
         city.setCityFocus(CityFocus.NoFocus)
         city.cityStats.update()
@@ -186,7 +186,7 @@ class CityConquestFunctions(val city: City) {
 
         if (foundingCiv.cities.size == 1) {
             // Resurrection!
-            val capitalCityIndicator = city.capitalCityIndicator()
+            val capitalCityIndicator = conqueringCiv.capitalCityIndicator(city)
             if (capitalCityIndicator != null) city.cityConstructions.addBuilding(capitalCityIndicator)
             for (civ in city.civ.gameInfo.civilizations) {
                 if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
