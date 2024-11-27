@@ -207,15 +207,25 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         civilopediaButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
         civilopediaButton.setPosition(30f, 30f)
         stage.addActor(civilopediaButton)
-        
+
+        val rightSideButtons = Table().apply { defaults().pad(10f) }
         val discordButton = ImageGetter.getImage("OtherIcons/Discord")
             .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
             .surroundWithThinCircle(Color.WHITE)
             .onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
-        discordButton.setPosition(stage.width-30f-discordButton.width, 30f)
-        stage.addActor(discordButton)
+        rightSideButtons.add(discordButton)
+
+        val githubButton = ImageGetter.getImage("OtherIcons/Github")
+            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
+            .surroundWithThinCircle(Color.WHITE)
+            .onActivation { Gdx.net.openURI("https://github.com/yairm210/Unciv") }
+        rightSideButtons.add(githubButton)
         
-        
+        rightSideButtons.pack()
+        rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
+        stage.addActor(rightSideButtons)
+
+
         val versionLabel = "{Version} ${UncivGame.VERSION.text}".toLabel()
         versionLabel.setAlignment(Align.center)
         val versionTable = Table()

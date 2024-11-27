@@ -71,10 +71,6 @@ class WorldScreenMenuPopup(
             worldScreen.openOptionsPopup(withDebug = true)
         }
         optionsCell.nextColumn()
-        addButton("Community") {
-            close()
-            WorldScreenCommunityPopup(worldScreen).open(force = true)
-        }.nextColumn()
         if (showMusic)
             addButton("Music", KeyboardBinding.MusicPlayer) {
                 close()
