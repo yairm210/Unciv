@@ -128,13 +128,13 @@ class CityConquestFunctions(val city: City) {
         city.cityStats.update()
         // The city could be producing something that puppets shouldn't, like units
         city.cityConstructions.currentConstructionIsUserSet = false
+        city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         city.cityConstructions.constructionQueue.clear()
         city.cityConstructions.chooseNextConstruction()
     }
 
     fun annexCity() {
         city.isPuppet = false
-        city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         if (!city.isInResistance()) city.shouldReassignPopulation = true
         city.setCityFocus(CityFocus.NoFocus)
         city.cityStats.update()
