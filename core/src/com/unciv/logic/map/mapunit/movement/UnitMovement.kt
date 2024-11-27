@@ -526,7 +526,6 @@ class UnitMovement(val unit: MapUnit) {
 
     /**
      * Swaps this unit with the unit on the given tile
-     * Limited to neighboring tiles only
      * Precondition: this unit can swap-move to the given tile, as determined by canUnitSwapTo
      */
     fun swapMoveToTile(destination: Tile) {
