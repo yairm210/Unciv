@@ -982,7 +982,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitLoseStatus -> {
                 if (unit == null) return null
-                if (unit.statuses.none { it.name == unique.params[1] }) return null
+                if (!unit.hasStatus(unique.params[1])) return null
                 return {
                     unit.removeStatus(unique.params[1])
                     true

@@ -11,8 +11,6 @@ Mods:
 
 Added lake-land edge tiles - by legacymtgsalvationuser69544
 
-Move Capital building function from city to civ  - By SeventhM
-
 ## 4.14.10
 
 Fixed Flood Plains generation
