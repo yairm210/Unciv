@@ -213,10 +213,10 @@ object Conditionals {
                 state.relevantUnit?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalUnitWithPromotion -> state.relevantUnit != null &&
                     (state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
-                    || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
+                    || state.relevantUnit!!.hasStatus(conditional.params[0]) )
             UniqueType.ConditionalUnitWithoutPromotion -> state.relevantUnit != null &&
                     !(state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
-                            || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
+                            || state.relevantUnit!!.hasStatus(conditional.params[0]) )
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalAboveHP -> state.relevantUnit != null && state.relevantUnit!!.health > conditional.params[0].toInt()
