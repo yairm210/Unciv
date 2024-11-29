@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.Net
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
@@ -182,6 +183,13 @@ class EspionageAction : NotificationAction {
     }
 }
 
+class LinkAction(private val url: String = "") : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        if (url.isNotEmpty()) {
+            Net.openURI(url)
+        }
+    }
+}
 
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
