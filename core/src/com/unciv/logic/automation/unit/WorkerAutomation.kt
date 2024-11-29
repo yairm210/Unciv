@@ -366,11 +366,15 @@ class WorkerAutomation(
 
         val improvementStringForResource: String? = when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
+            
             tile.terrainFeatures.isNotEmpty()
                 && lastTerrain.unbuildable
                 && isRemovable(lastTerrain)
                 && !tile.providesResources(civInfo)
-                && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
+                && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements)
+                && potentialTileImprovements.containsKey(Constants.remove + lastTerrain.name)
+                    -> Constants.remove + lastTerrain.name
+            
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it == tile.improvement }
                 .maxByOrNull { getImprovementRanking(tile, unit, it, localUniqueCache) }
         }
@@ -378,10 +382,16 @@ class WorkerAutomation(
         // After gathering all the data, we conduct the hierarchy in one place
         val improvementString = when {
             bestBuildableImprovement != null && bestBuildableImprovement.isRoad() -> bestBuildableImprovement.name
+            
             // For bonus resources we just want the highest-yield improvement, not necessarily the resource-yielding improvement
-            improvementStringForResource != null && tile.tileResource.resourceType != ResourceType.Bonus -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
+            improvementStringForResource != null && tile.tileResource.resourceType != ResourceType.Bonus ->
+                if (improvementStringForResource==tile.improvement) null else improvementStringForResource
+            
             // If this is a resource that HAS an improvement that we can see, but this unit can't build it, don't waste your time
-            tile.resource != null && tile.hasViewableResource(civInfo) && tile.tileResource.resourceType != ResourceType.Bonus && tile.tileResource.getImprovements().any() -> return null
+            tile.resource != null && tile.hasViewableResource(civInfo)
+                    && tile.tileResource.resourceType != ResourceType.Bonus
+                    && tile.tileResource.getImprovements().any() -> return null
+            
             bestBuildableImprovement == null -> null
 
             tile.improvement != null &&
@@ -389,9 +399,9 @@ class WorkerAutomation(
                 -> null // What we have is better, even if it's pillaged we should repair it
 
             lastTerrain.let {
-                isRemovable(it) &&
-                    (Automation.rankStatsValue(it, civInfo) < 0
-                        || it.hasUnique(UniqueType.NullifyYields))
+                isRemovable(it)
+                        && potentialTileImprovements.containsKey(Constants.remove + lastTerrain.name)
+                        && (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields))
             } -> Constants.remove + lastTerrain.name
 
             else -> bestBuildableImprovement.name

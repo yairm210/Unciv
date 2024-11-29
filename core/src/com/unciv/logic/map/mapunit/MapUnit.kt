@@ -588,7 +588,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> {
                 if (baseUnit.matchesFilter(filter, cache.state, false)) return true
                 if (civ.matchesFilter(filter, cache.state, false)) return true
-                if (nonUnitUniquesMap.hasUnique(filter, cache.state))
+                if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
                 if (promotions.promotions.contains(filter)) return true
                 // Badly optimized, but it's rare that statuses is even non-empty
                 // Statuses really should be converted to a hashmap
