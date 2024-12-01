@@ -362,7 +362,7 @@ class WorkerAutomation(
 
         val lastTerrain = tile.lastTerrain
 
-        fun isRemovable(terrain: Terrain): Boolean = ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
+        fun isRemovable(terrain: Terrain): Boolean = potentialTileImprovements.containsKey(Constants.remove + terrain.name)
 
         val improvementStringForResource: String? = when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
@@ -372,7 +372,6 @@ class WorkerAutomation(
                 && isRemovable(lastTerrain)
                 && !tile.providesResources(civInfo)
                 && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements)
-                && potentialTileImprovements.containsKey(Constants.remove + lastTerrain.name)
                     -> Constants.remove + lastTerrain.name
             
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it == tile.improvement }
@@ -400,7 +399,6 @@ class WorkerAutomation(
 
             lastTerrain.let {
                 isRemovable(it)
-                        && potentialTileImprovements.containsKey(Constants.remove + lastTerrain.name)
                         && (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields))
             } -> Constants.remove + lastTerrain.name
 
