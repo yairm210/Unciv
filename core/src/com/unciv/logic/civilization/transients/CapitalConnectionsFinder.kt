@@ -16,11 +16,13 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
 
     private val openBordersCivCities = civInfo.gameInfo.getCities().filter { canEnterBordersOf(it.civ) }
 
-    private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
-    private val road = RoadStatus.Road.name
-    private val railroad = RoadStatus.Railroad.name
-    private val harborFromRoad = "$harbor-$road"
-    private val harborFromRailroad = "$harbor-$railroad"
+    companion object {
+        private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
+        private val road = RoadStatus.Road.name
+        private val railroad = RoadStatus.Railroad.name
+        private val harborFromRoad = "$harbor-$road"
+        private val harborFromRailroad = "$harbor-$railroad"
+    }
 
     private val ruleset = civInfo.gameInfo.ruleset
     private val roadIsResearched = ruleset.tileImprovements[road].let {
