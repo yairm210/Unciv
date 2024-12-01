@@ -273,7 +273,7 @@ class TileStatFunctions(val tile: Tile) {
         val currentStats = currentTileStats
             ?: getTileStats(city, observingCiv, cityUniqueCache)
 
-        val tileClone = tile.clone()
+        val tileClone = tile.clone(addUnits = false)
         tileClone.setTerrainTransients()
 
         tileClone.setImprovement(improvement.name)

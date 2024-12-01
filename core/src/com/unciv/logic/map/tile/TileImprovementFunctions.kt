@@ -117,7 +117,7 @@ class TileImprovementFunctions(val tile: Tile) {
                 tile.ruleset.tileRemovals.firstOrNull { it.name == Constants.remove + feature } }
             if (featureRemovals.isEmpty()) return false
             if (featureRemovals.any { it !in knownFeatureRemovals }) return false
-            val clonedTile = tile.clone()
+            val clonedTile = tile.clone(addUnits = false)
             clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
                 feature -> featureRemovals.any { it.name.removePrefix(Constants.remove) == feature } })
             return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
