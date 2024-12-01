@@ -186,9 +186,9 @@ class TileStatFunctions(val tile: Tile) {
         fun addStats(filter: String, stat: Stat, amount: Float) {
             if (tile.matchesFilter(filter, observingCiv, true))
                 terrainStats.add(stat, amount)
-            else if (improvement != null && improvement.matchesFilter(filter, StateForConditionals(city = city, tile = tile)))
+            else if (improvement != null && improvement.matchesFilter(filter, stateForConditionals))
                 improvementStats.add(stat, amount)
-            else if (road != null && road.matchesFilter(filter, StateForConditionals(city = city, tile = tile)))
+            else if (road != null && road.matchesFilter(filter, stateForConditionals))
                 roadStats.add(stat, amount)
         }
 
