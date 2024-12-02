@@ -439,7 +439,7 @@ class WorkerAutomation(
             val removedImprovement = if (removedObject == tile.improvement) removedObject else null
 
             if (removedFeature != null || removedImprovement != null) {
-                val newTile = tile.clone()
+                val newTile = tile.clone(addUnits = false)
                 newTile.setTerrainTransients()
                 if (removedFeature != null)
                     newTile.removeTerrainFeature(removedFeature)

@@ -2,18 +2,15 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.images.ImageGetter
 
-class UnitSpriteSlot : Group() {
-    init {
-        isTransform = false
-    }
+class UnitSpriteSlot : NonTransformGroup() {
     var imageLocation = ""
 }
 

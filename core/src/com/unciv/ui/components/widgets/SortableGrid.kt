@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.ISortableGridContentProvider
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -303,11 +304,10 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     // Note this is not a WidgetGroup and thus does not implement Layout, so all layout details are left to the container
     // - in this case, a Table.Cell.  This will knowingly place the arrow partly outside the Group bounds.
     private inner class IconHeaderElement(column: CT, override val headerActor: Actor) : IHeaderElement {
-        override val outerActor = Group()
+        override val outerActor = NonTransformGroup()
         override var sortShown = SortDirection.None
 
         init {
-            outerActor.isTransform = false
             outerActor.setSize(iconSize, iconSize)
             outerActor.addActor(headerActor)
             headerActor.setSize(iconSize, iconSize)

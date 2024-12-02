@@ -193,7 +193,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     //endregion
 
-    fun clone(): Tile {
+    fun clone(/** For stat diff checks, units are meaningless */ addUnits:Boolean = true): Tile {
         val toReturn = Tile()
         toReturn.tileMap = tileMap
         toReturn.ruleset = ruleset
@@ -203,9 +203,11 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         toReturn.isLand = isLand
         toReturn.isWater = isWater
         toReturn.isOcean = isOcean
-        if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
-        if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
-        for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
+        if (addUnits) {
+            if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
+            if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
+            for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
+        }
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
         toReturn.terrainFeatures = terrainFeatures // immutable lists can be directly passed around
