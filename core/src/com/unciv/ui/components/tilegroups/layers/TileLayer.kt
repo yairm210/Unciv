@@ -1,20 +1,19 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.tilesets.TileSetCache
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 
-abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
+abstract class TileLayer(val tileGroup: TileGroup, size: Float) : NonTransformGroup() {
 
     init {
         touchable = Touchable.disabled
-        isTransform = false
         @Suppress("LeakingThis")
         setSize(size, size)
     }
