@@ -17,11 +17,11 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
     private val openBordersCivCities = civInfo.gameInfo.getCities().filter { canEnterBordersOf(it.civ) }
 
     companion object {
-        private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
+        private const val HARBOR = "Harbor"   // hardcoding at least centralized for this class for now
         private val road = RoadStatus.Road.name
         private val railroad = RoadStatus.Railroad.name
-        private val harborFromRoad = "$harbor-$road"
-        private val harborFromRailroad = "$harbor-$railroad"
+        private val harborFromRoad = "$HARBOR-$road"
+        private val harborFromRailroad = "$HARBOR-$railroad"
     }
 
     private val ruleset = civInfo.gameInfo.ruleset
@@ -62,18 +62,18 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
 
     private fun checkRoad(cityToConnectFrom: City) {
         check(
-                cityToConnectFrom,
-                transportType = road,
-                overridingTransportType = railroad,
-                tileFilter = { tile -> tile.hasConnection(civInfo) }
+            cityToConnectFrom,
+            transportType = road,
+            overridingTransportType = railroad,
+            tileFilter = { tile -> tile.hasConnection(civInfo) }
         )
     }
 
     private fun checkRailroad(cityToConnectFrom: City) {
         check(
-                cityToConnectFrom,
-                transportType = railroad,
-                tileFilter = { tile -> tile.getUnpillagedRoad() == RoadStatus.Railroad }
+            cityToConnectFrom,
+            transportType = railroad,
+            tileFilter = { tile -> tile.getUnpillagedRoad() == RoadStatus.Railroad }
         )
     }
 
