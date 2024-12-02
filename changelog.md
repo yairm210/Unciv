@@ -1,3 +1,45 @@
+## 4.14.12
+
+Resolved  - Spies assigned to cities moved to other civs are returned to hideout
+
+Resolved  - multiline unique descriptions hidden in doc
+
+Better text: the religion we spread may not be ours
+
+chore: detekt lint
+
+Removed 'please' from Civ demands to make them more demand-y
+
+perf(memory): Single-init strings for CapitalConnectionsFinder
+
+perf(memory): Don't clone units when cloning tiles for 'alternative history' checks
+
+perf(minor)
+
+detekt lint fix
+
+perf(memory): Reuse conditional states
+
+perf(memory): Reuse conditional states
+
+perf(memory): Don't create a resource counter if we know we don't need it
+
+perf(rendering): Added class NonTransformGroup:Group for draw() performance
+
+ANR: Disable input while building crash screen
+
+chore: isRemovable(terrain) returns if the tile improvement is actually buildable
+
+Resolved  - automated workers don't remove terrain features without the proper tech
+
+Allow unit triggers to be used in unit-triggered events
+
+Add statusMap as lookup-performant alternative to status list - not yet source of truth
+
+Add LinkAction  - By touhidurrr
+
+Fix promotion uniques being ignored if it didn't match a promotion names  - By SeventhM
+
 ## 4.14.11
 
 Added Github + Discord icon links on main menu
