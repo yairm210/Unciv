@@ -273,6 +273,10 @@ class CityConquestFunctions(val city: City) {
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
         removeBuildingsOnMoveToCiv()
 
+        // catch-all - should ideally not happen as we catch the individual cases with an appropriate notification
+        city.espionage.removeAllPresentSpies(SpyFleeReason.Other) 
+        
+
         // Place palace for newCiv if this is the only city they have.
         if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)
 
