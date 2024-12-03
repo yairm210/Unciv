@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -30,7 +29,7 @@ import com.unciv.ui.components.extensions.toLabel
  *  - It sets its own [size] but **paints outside these bounds** - by [borderSize].
  *  - Typically, if you want one in a Table Cell, add an extra [borderSize] padding to avoid surprises.
  */
-open class Portrait(val type: Type, val imageName: String, val size: Float, val borderSize: Float = 2f) : NonTransformGroup() {
+open class Portrait(val type: Type, val imageName: String, val size: Float, val borderSize: Float = 2f) : Group() {
 
     enum class Type(val directory: String) {
         Unit("Unit"),
@@ -68,6 +67,8 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     }
 
     init {
+        isTransform = false // NOT NonTransformGroup, since we need to turn it upside down when generating font chars
+
         image = getMainImage()
         background = getMainBackground()
 
@@ -108,7 +109,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
         } else {
             image.setSize(size*0.75f, size*0.75f)
 
-            val bg = NonTransformGroup()
+            val bg = Group().apply { isTransform = false }
 
             val circleInner = ImageGetter.getCircle()
             val circleOuter = ImageGetter.getCircle()
