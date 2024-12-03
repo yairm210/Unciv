@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityStats
@@ -126,10 +127,33 @@ object Automation {
                     // When Happy, 2 production is better than 1 growth,
                     // but setting such by default worsens AI civ citizen assignment,
                     // probably due to badly configured personalities not properly weighing food vs non-food yields
-                    foodModWeight = 2f
+                    if(city.civ.nation.name == "Korea") {
+                        if (city.population.population < 5)
+                            foodModWeight = 2f
+                        else
+                            foodModWeight = 1f
+                    } else if (city.civ.nation.name == "Korea1p5") {
+                        foodModWeight = 1.5f
+                    } else {
+                        foodModWeight = 2f
+                    }
+                    if(city.civ.nation.name == Constants.simulationCiv1) {
+                        if (city.population.population < 5)
+                            foodModWeight = 2f
+                        else if (surplusFood > city.population.getFoodToNextPopulation() / 10 && cityAIFocus == CityFocus.NoFocus)
+                            foodModWeight = 0.75f // get Growth just under Production
+                        else
+                            foodModWeight = 1f
+                    }
+                    if(city.civ.nation.name == Constants.simulationCiv2) {
+                        if (city.population.population < 5)
+                            foodModWeight = 2f
+                        else
+                            foodModWeight = 1f
+                    }
                 } else {
                     // Human weights
-                    if (city.population.population < 4)
+                    if (city.population.population < 5)
                         foodModWeight = 2f
                     else if (surplusFood > city.population.getFoodToNextPopulation() / 10 && cityAIFocus == CityFocus.NoFocus)
                         foodModWeight = 0.75f // get Growth just under Production
