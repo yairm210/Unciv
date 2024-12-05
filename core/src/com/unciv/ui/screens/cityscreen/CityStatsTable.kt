@@ -183,11 +183,13 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         lowerTable.add(turnsToExpansionString.toLabel()).row()
         lowerTable.add(turnsToPopString.toLabel()).row()
 
-        val tableWithIcons = Table()
+        val tableWithIcons = Table() // Each row has a SINGLE actor
         tableWithIcons.defaults().pad(2f)
         if (city.isInResistance()) {
-            tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
-            tableWithIcons.add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
+            tableWithIcons.add(Table().apply {
+                add(ImageGetter.getImage("StatIcons/Resistance")).size(20f).padRight(2f)
+                add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel())
+            })
         }
 
         val resourceTable = Table()
@@ -214,11 +216,13 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             else -> null to null
         }
         if (wltkLabel != null) {
-            tableWithIcons.add(wltkIcon!!).size(20f).padRight(5f)
+            tableWithIcons.add(Table().apply {
+                add(wltkIcon!!).size(20f).padRight(5f)
+                add(wltkLabel).row()
+            })
             wltkLabel.onClick {
                 cityScreen.openCivilopedia("Tutorial/We Love The King Day")
             }
-            tableWithIcons.add(wltkLabel).row()
         }
 
         lowerTable.add(tableWithIcons).row()
