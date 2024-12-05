@@ -1,12 +1,10 @@
 package com.unciv.logic.map.mapgenerator
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapType
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -173,12 +171,65 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         runAndMeasure("spreadAncientRuins") {
             spreadAncientRuins(map)
         }
+        
+        mirror(map)
 
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)
             TileNormalizer.normalizeToRuleset(tile, ruleset)
 
         return map
+    }
+    
+    private fun flipTopBottom(vector: Vector2): Vector2 = Vector2(-vector.y, -vector.x)
+    private fun flipLeftRight(vector: Vector2): Vector2 = Vector2(vector.y, vector.x)
+
+    private fun mirror(map: TileMap) {
+        fun copyTile(tile: Tile, x: Int, y: Int) {
+            val mirrorTile = map.getIfTileExistsOrNull(x, y) ?: return
+            tile.setBaseTerrain(mirrorTile.getBaseTerrain())
+            // todo rivers are a bitch
+            tile.naturalWonder = mirrorTile.naturalWonder
+            tile.setTerrainFeatures(mirrorTile.terrainFeatures)
+            tile.resource = mirrorTile.resource
+            tile.improvement = mirrorTile.improvement
+        }
+        
+        when (map.mapParameters.mirroring){
+            MirroringType.none -> return
+            MirroringType.topbottom -> {
+                for (tile in map.values) {
+                    if (tile.getRow() <= 0) continue
+                    val flip = flipTopBottom(tile.position)
+                    copyTile(tile, flip.x.toInt(), flip.y.toInt())
+                }
+            }
+            MirroringType.leftright -> {
+                for (tile in map.values) {
+                    if (tile.getColumn() <= 0) continue
+                    val flip = flipLeftRight(tile.position)
+                    copyTile(tile, flip.x.toInt(), flip.y.toInt())
+                }
+            }
+            MirroringType.aroundCenterTile -> {
+                for (tile in map.values) {
+                    if (tile.getRow() <= 0) continue
+                    val flipTopBottom = flipTopBottom(tile.position)
+                    val flipTopBottomLeftRight = flipLeftRight(flipTopBottom)
+                    copyTile(tile, flipTopBottomLeftRight.x.toInt(), flipTopBottomLeftRight.y.toInt())
+                }
+            }
+            MirroringType.fourway -> {
+                for (tile in map.values) {
+                    if (tile.getRow() < 0 && tile.getColumn() < 0) continue
+                    var originVector = tile.position
+                    if (tile.getRow() >= 0) originVector = flipTopBottom(originVector)
+                    if (tile.getColumn() >= 0) originVector = flipLeftRight(originVector)
+                    copyTile(tile, originVector.x.toInt(), originVector.y.toInt())
+                }
+            }
+            else -> return
+        }
     }
 
     fun generateSingleStep(map: TileMap, step: MapGeneratorSteps) {
