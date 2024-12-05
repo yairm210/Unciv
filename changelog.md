@@ -1,3 +1,31 @@
+## 4.14.13
+
+Resolved  - "Stats from tiles" uniques work with terrain + improvement filter combos
+
+Resolved  - resource icons in city screen look good with resistance
+
+Temporarily ignore touhidurr notifications - bad user experience
+
+chore: code linting
+
+perf(mem): Only create terrainOverlay images when needed
+
+perf(mem): SIGNIFICANT memory save, removed 2 unnecessary groups per tile by only assigning when they actually contain units
+
+perf(mem): Create one TileSetStrings shared across  all terrain emojis
+
+Fixed translations
+
+4.14.12-patch2
+
+Fixed icons 
+
+4.14.12-patch1
+
+Resolved  - Fixed city names disappearing 
+
+hexarealm: Fix Snow Lake edge name  - By RobLoach
+
 ## 4.14.12
 
 Allow unit triggers to be used in unit-triggered events
