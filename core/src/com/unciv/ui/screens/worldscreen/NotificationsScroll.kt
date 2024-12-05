@@ -203,6 +203,8 @@ class NotificationsScroll(
             coveredNotificationsBottom + restoreButtonPad,
             Align.bottomRight)
     }
+    
+    private val serverIconsToIgnore = hashSetOf("NotificationIcons/RobotArm", "NotificationIcons/ServerRack", "NotificationIcons/DollarSign")
 
     private fun updateContent(
         notifications: List<Notification>,
@@ -264,6 +266,9 @@ class NotificationsScroll(
                 notificationsTable.add(header).right().row()
             }
             for (notification in categoryNotifications) {
+                // Temporarily ignore touhidurrr notifications
+                if (notification.icons.any { it in serverIconsToIgnore }) continue
+                
                 val item = ListItem(notification, backgroundDrawable)
                 itemWidths.add(item.itemWidth)
                 val itemCell = notificationsTable.add(item)
