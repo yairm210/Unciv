@@ -1,13 +1,13 @@
 Reimplementacija najpoznatije igre za izgradnju civilizacije otvorenog koda - brza, mala, bez oglasa, besplatna zauvijek!
 
-Izgradi svoju civilizaciju, istraži tehnologije, proširi svoje gradove i porazi svoje neprijatelje!
+Izgradite svoju civilizaciju, istražite tehnologije, proširite svoje gradove i porazite svoje neprijatelje!
 
-Zahtjevi? greške? Želiš li pomoći razvoju? Popis obaveza za aplikaciju je na <a href="https://github.com/yairm210/Unciv/issues">GitHub Issues</a>
+Zahtjevi? greške? Želite li pomoći razvoju? Popis obaveza za aplikaciju je na <a href="https://github.com/yairm210/Unciv/issues">GitHub Issues</a>
 
-Pitanja? Komentari? Pridruži nam se na Diskordu na <a href="https://discord.gg/bjrB4Xw">Discord</a> ;)
+Pitanja? Komentari? Pridružite nam se na Diskordu na <a href="https://discord.gg/bjrB4Xw">Discord</a> ;)
 
-Želiš li pomoći u prevođenju igre na svoj jezik? Pogledaj <a href="https://yairm210.github.io/Unciv/Other/Translating">Wiki</a>
+Želite li pomoći u prevođenju igre na svoj jezik? Pogledajte <a href="https://yairm210.github.io/Unciv/Other/Translating">Wiki</a>
 
-Svijet čeka! Hoćeš li izgraditi svoju civilizaciju u carstvo koje će izdržati test vremena?
+Svijet čeka! Hoćete li izgraditi svoju civilizaciju u carstvo koje će izdržati test vremena?
 
-Dopuštenje 'imaj puni pristup mreži' potrebno je za preuzimanja koja pokreće korisnik i značajku za više igrača. Sva ostala navedena dopuštenja su automatski uključena od strane API-a koji se koristi za implementaciju obavijesti o potezima više igrača. Mrežna dopuštenja koriste se za popis modova, preuzimanje modova, preuzimanje glazbe i za slanje/preuzimanje igara za više igrača. Niti jedna druga internetska komunikacija nije pokrenuta od strane Unciv.
+Dopuštenje 'imaj puni pristup mreži' potrebno je za preuzimanja koja pokreće korisnik i značajku više igrača. Sva ostala navedena dopuštenja su automatski uključena od strane API-a koji se koristi za implementaciju obavijesti o potezima više igrača. Mrežna dopuštenja koriste se za popis modova, preuzimanje modova, preuzimanje glazbe i za slanje/preuzimanje igara više igrača. Niti jedna druga internetska komunikacija nije pokrenuta od strane Unciv-a.
