@@ -2916,7 +2916,7 @@ TileSets/HexaRealm/Edges/Lake-Plains/Fresh-Plains-Lakes-TopLeft
   orig: 64, 56
   offset: 0, 0
   index: -1
-TileSets/HexaRealm/Edges/Lake-Snow/Fresh-Snow-Lakes--TopLeft
+TileSets/HexaRealm/Edges/Lake-Snow/Fresh-Snow-Lakes-TopLeft
   rotate: false
   xy: 361, 1639
   size: 64, 56
