@@ -339,17 +339,21 @@ class WorldMapHolder(
 
         // Steal the current sprites to our new group
         val unitSpriteAndIcon = Group().apply { setPosition(tileGroup.x, tileGroup.y) }
-        val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit)
-        for (spriteImage in unitSpriteSlot.children) unitSpriteAndIcon.addActor(spriteImage)
+        val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit) ?: return
+        
+        for (spriteImage in unitSpriteSlot.spriteGroup.children) unitSpriteAndIcon.addActor(spriteImage)
         tileGroup.parent.addActor(unitSpriteAndIcon)
 
-        // Disable the final tile, so we won't have one image "merging into" the other
-        val targetTileSpriteSlot = tileGroups[targetTile]!!.layerUnitArt.getSpriteSlot(selectedUnit)
-        targetTileSpriteSlot.isVisible = false
-
+        
 
         unitSpriteAndIcon.addAction(
             Actions.sequence(
+                Actions.run {
+                    // Disable the final tile, so we won't have one image "merging into" the other
+                    // Can only be done after the new group has been updated, to get the spriteGroup
+                    val targetTileSpriteSlot = tileGroups[targetTile]!!.layerUnitArt.getSpriteSlot(selectedUnit)
+                    targetTileSpriteSlot?.spriteGroup?.isVisible = false
+                },
                 *pathToTile.map { tile ->
                     Actions.moveTo(
                         tileGroups[tile]!!.x,
@@ -359,7 +363,8 @@ class WorldMapHolder(
                 }.toTypedArray(),
                 Actions.run {
                     // Re-enable the final tile
-                    targetTileSpriteSlot.isVisible = true
+                    val targetTileSpriteSlot = tileGroups[targetTile]!!.layerUnitArt.getSpriteSlot(selectedUnit)
+                    targetTileSpriteSlot?.spriteGroup?.isVisible = true
                     worldScreen.shouldUpdate = true
                 },
                 Actions.removeActor(),

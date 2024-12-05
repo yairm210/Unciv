@@ -486,6 +486,8 @@ object ImageGetter {
         .filter { it.startsWith("TileSets") && !it.contains("/Units/") }
         .map { it.split("/")[1] }.distinct()
 
-    fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence().filter { it.contains("/Units/") }
-        .map { it.split("/")[1] }.distinct()
+    fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence()
+        .filter { it.startsWith("TileSets") && it.contains("/Units/") }
+        .map { it.split("/")[1] }
+        .distinct()
 }
