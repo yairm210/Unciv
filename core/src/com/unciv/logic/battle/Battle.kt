@@ -26,6 +26,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
@@ -383,6 +384,20 @@ object Battle {
                 plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
                 if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
             )
+        }
+        for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunderStockpile, checkCivInfoUniques = true)) {
+            if (plunderedUnit.matchesFilter(unique.params[1])) {
+                val percentage = unique.params[0].toFloat()
+                val stockpile = unique.params[2]
+                if (stockpile == "golden age points") {
+                    civ.goldenAges.addHappines((percentage / 100f * damageDealt).roundToInt())
+                    continue
+                }
+                val plunderedResource = civ.gameInfo.ruleset.tileResources[stockpile]
+                if (plunderedResource != null && plunderedResource.isStockpiled()) {
+                    civ.resourceStockpiles.add(stockpile, (percentage / 100f * damageDealt).roundToInt())
+                }
+            }
         }
     }
 
