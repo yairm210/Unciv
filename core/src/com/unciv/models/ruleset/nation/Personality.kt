@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.nation
 
 import com.unciv.Constants
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
@@ -39,6 +38,7 @@ enum class PersonalityValue {
                 Stat.Culture -> Culture
                 Stat.Happiness -> Happiness
                 Stat.Faith -> Faith
+                Stat.GoldenAge -> Happiness
             }
         }
     }

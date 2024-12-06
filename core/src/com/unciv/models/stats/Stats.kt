@@ -18,7 +18,8 @@ open class Stats(
     var science: Float = 0f,
     var culture: Float = 0f,
     var happiness: Float = 0f,
-    var faith: Float = 0f
+    var faith: Float = 0f,
+    var goldenAge: Float = 0f
 ): Iterable<Stats.StatValuePair> {
 
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
@@ -32,6 +33,7 @@ open class Stats(
             Stat.Culture -> ::culture
             Stat.Happiness -> ::happiness
             Stat.Faith -> ::faith
+            Stat.GoldenAge -> ::goldenAge
         }
     }
 
@@ -206,6 +208,7 @@ open class Stats(
         if (culture != 0f) yield(StatValuePair(Stat.Culture, culture))
         if (happiness != 0f) yield(StatValuePair(Stat.Happiness, happiness))
         if (faith != 0f) yield(StatValuePair(Stat.Faith, faith))
+        if (goldenAge != 0f) yield(StatValuePair(Stat.GoldenAge, goldenAge))
     }
 
     /** Enables aggregates over the values, never empty */

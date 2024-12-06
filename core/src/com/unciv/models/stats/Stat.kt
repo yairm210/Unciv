@@ -18,14 +18,16 @@ enum class Stat(
     Science(NotificationIcon.Science, UncivSound.Chimes, Fonts.science, colorFromHex(0x8c9dff)),
     Culture(NotificationIcon.Culture, UncivSound.Paper, Fonts.culture, colorFromHex(0x8b60ff)),
     Happiness(NotificationIcon.Happiness, UncivSound.Click, Fonts.happiness, colorFromHex(0xffd800)),
-    Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith, colorFromHex(0xcbdfff));
+    GoldenAge(NotificationIcon.Happiness, UncivSound.Click, Fonts.happiness, colorFromHex(0xffd800)),
+    Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith, colorFromHex(0xcbdfff)),
+    ;
 
     companion object {
-        val statsUsableToBuy = setOf(Gold, Food, Science, Culture, Faith)
-        private val valuesAsMap = values().associateBy { it.name }
+        val statsUsableToBuy = setOf(Gold, Food, Science, Culture, Faith, GoldenAge)
+        private val valuesAsMap = entries.associateBy { it.name }
         fun safeValueOf(name: String) = valuesAsMap[name]
         fun isStat(name: String) = name in valuesAsMap
         fun names() = valuesAsMap.keys
-        val statsWithCivWideField = setOf(Gold, Science, Culture, Faith)
+        val statsWithCivWideField = setOf(Gold, Science, Culture, Faith, GoldenAge)
     }
 }

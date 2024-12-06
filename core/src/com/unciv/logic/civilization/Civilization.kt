@@ -855,6 +855,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                               if(amount > 0) totalCultureForContests += amount }
             Stat.Science -> tech.addScience(amount)
             Stat.Gold -> addGold(amount)
+            Stat.GoldenAge -> goldenAges.addHappiness(amount)
             Stat.Faith -> { religionManager.storedFaith += amount
                             if(amount > 0) totalFaithForContests += amount }
             else -> {}
@@ -871,6 +872,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                 else tech.researchOfTech(tech.currentTechnology()!!.name)
             }
             Stat.Gold -> gold
+            Stat.GoldenAge -> goldenAges.storedHappiness
             Stat.Faith -> religionManager.storedFaith
             else -> 0
         }
