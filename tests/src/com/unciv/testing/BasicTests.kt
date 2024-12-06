@@ -295,13 +295,14 @@ class BasicTests {
     fun statMathRandomResultTest() {
         val iterations = 42
         val expectedStats = Stats(
-            production = 212765.08f,
-            food = 776.8394f,
-            gold = -4987.297f,
-            science = 14880.18f,
-            culture = -49435.21f,
-            happiness = -13046.4375f,
-            faith = 7291.375f
+            production = 121978.49f,
+            food = -61781.594f,
+            gold = 26999.16f,
+            science = -314892.78f,
+            culture = -863140.8f,
+            happiness = -3383080.8f,
+            faith = -120111.21f,
+            goldenAge = 1774618.2f
         )
         // This is dependent on iterator order, so when that changes the expected values must change too
         val stats = statMathRunner(iterations)
