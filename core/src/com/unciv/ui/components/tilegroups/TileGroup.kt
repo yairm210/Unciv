@@ -1,19 +1,12 @@
 package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.components.tilegroups.layers.TileLayerBorders
-import com.unciv.ui.components.tilegroups.layers.TileLayerCityButton
-import com.unciv.ui.components.tilegroups.layers.TileLayerFeatures
-import com.unciv.ui.components.tilegroups.layers.TileLayerMisc
-import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
-import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitSprite
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
+import com.unciv.ui.components.NonTransformGroup
+import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -22,7 +15,7 @@ open class TileGroup(
     var tile: Tile,
     val tileSetStrings: TileSetStrings,
     groupSize: Float = TileGroupMap.groupSize + 4
-) : Group() {
+) : NonTransformGroup() {
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -55,7 +48,6 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
 
     init {
-        isTransform = false // performance helper - nothing here is rotated or scaled
         this.setSize(groupSize, groupSize)
 
         this.addActor(layerTerrain)

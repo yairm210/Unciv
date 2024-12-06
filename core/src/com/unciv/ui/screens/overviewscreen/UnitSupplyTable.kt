@@ -1,11 +1,11 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
@@ -24,8 +24,7 @@ internal object UnitSupplyTable {
     ): ExpanderTab {
         val stats = viewingPlayer.stats
         val deficit = stats.getUnitSupplyDeficit()
-        val icon = if (deficit <= 0) null else Group().apply {
-            isTransform = false
+        val icon = if (deficit <= 0) null else NonTransformGroup().apply {
             setSize(36f, 36f)
             val image = ImageGetter.getImage("OtherIcons/ExclamationMark")
             image.color = Color.FIREBRICK

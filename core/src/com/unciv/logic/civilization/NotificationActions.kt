@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
@@ -182,6 +183,13 @@ class EspionageAction : NotificationAction {
     }
 }
 
+class LinkAction(private val url: String = "") : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        if (url.isNotEmpty()) {
+            Gdx.net.openURI(url);
+        }
+    }
+}
 
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
@@ -206,13 +214,14 @@ internal class NotificationActionsDeserializer {
     private val OverviewAction: OverviewAction? = null
     private val PolicyAction: PolicyAction? = null
     private val EspionageAction: EspionageAction? = null
+    private val LinkAction: LinkAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
             LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
             MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction, PolicyAction,
-            EspionageAction
+            EspionageAction, LinkAction
         )
     }
 }

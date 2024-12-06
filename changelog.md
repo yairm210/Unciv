@@ -1,3 +1,46 @@
+## 4.14.13
+
+SIGNIFICANT memory performance improvements for large maps
+
+"Stats from tiles" uniques work with terrain + improvement filter combos
+
+Layout for resource icons in city screen when in resistance - fixed
+
+Remove server notifications - bad user experience
+
+hexarealm: Fix Snow-Lake edges - By RobLoach
+
+## 4.14.12
+
+Allow unit triggers to be used in unit-triggered events
+
+Memory and rendering performance improvements
+
+Solved ANRs while building crash screen
+
+Spies assigned to cities moved to other civs are returned to hideout
+
+Automated workers don't remove terrain features without the proper tech
+
+Removed 'please' from Civ demands to make them more demand-y
+
+Fix promotion uniques being ignored if it didn't match a promotion names  - By SeventhM
+
+Notifications can link to URLs  - By touhidurrr
+
+## 4.14.11
+
+Added Github + Discord icon links on main menu
+
+City construction progress is reset when puppeting, not when annexing
+
+Mods:
+- Allow loading games where a buildings' "replaces" has been removed
+- Allow loading games with natural wonders that have been removed from mods
+- Only add city ruins improvements if they exist in the ruleset
+
+Added lake-land edge tiles - by legacymtgsalvationuser69544
+
 ## 4.14.10
 
 Fixed Flood Plains generation

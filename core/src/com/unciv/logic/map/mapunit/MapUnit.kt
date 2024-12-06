@@ -109,7 +109,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
     
+    @Deprecated("As of 4.14.12 - use statusMap instead (for lookup performance)")
+    /** This is still the source of truth, currently replicating all statuses to use both the map and the list
+       so that ongoing games retain their statuses until we're ready to switch over */
     var statuses = ArrayList<UnitStatus>()
+    /** New status container - should NOT serve as source of truth since MP games going 
+     * back and forth between older versions will lose this data! */
+    var statusMap = HashMap<String, UnitStatus>()
 
     //endregion
     //region Transient fields
@@ -217,7 +223,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        toReturn.statuses = ArrayList(statuses) 
+        toReturn.statuses = ArrayList(statuses)
+        toReturn.statusMap = HashMap(statusMap)
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
         return toReturn
@@ -581,8 +588,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> {
                 if (baseUnit.matchesFilter(filter, cache.state, false)) return true
                 if (civ.matchesFilter(filter, cache.state, false)) return true
-                if (nonUnitUniquesMap.hasUnique(filter, cache.state))
+                if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
                 if (promotions.promotions.contains(filter)) return true
+                // Badly optimized, but it's rare that statuses is even non-empty
+                // Statuses really should be converted to a hashmap
+                if (getStatus(name) != null) return true 
                 return false
             }
         }
@@ -648,7 +658,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
         promotions.setTransients(this)
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
-        for (status in statuses) status.setTransients(this)
+        
+        for (status in statuses){
+            status.setTransients(this)
+            statusMap[status.name] = status
+        }
 
         updateUniques()
         if (action == UnitActionType.Automate.value){
@@ -1033,8 +1047,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
     
+    fun getStatus(name:String): UnitStatus? = statuses.firstOrNull { it.name == name }
+    fun hasStatus(name:String): Boolean = getStatus(name) != null
+    
     fun setStatus(name:String, turns:Int){
-        val existingStatus = statuses.firstOrNull { it.name == name }
+        val existingStatus = getStatus(name)
         if (existingStatus != null){
             if (turns > existingStatus.turnsLeft) existingStatus.turnsLeft = turns
             return
@@ -1045,6 +1062,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         status.turnsLeft = turns
         status.setTransients(this)
         statuses.add(status)
+        statusMap[status.name] = status
         updateUniques()
 
         for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusGain){ it.params[0] == name })
@@ -1053,6 +1071,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     
     fun removeStatus(name:String){
         val wereRemoved = statuses.removeAll { it.name == name }
+        statusMap.remove(name)
         if (!wereRemoved) return
         
         updateUniques()

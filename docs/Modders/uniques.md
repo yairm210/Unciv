@@ -2204,7 +2204,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Neighboring tiles will convert to [baseTerrain/terrainFeature]"
 	Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.
-If your mod renames Coast or Lakes, do not use this with one of these as parameter, as the code preventing artifacts won't work.
+	If your mod renames Coast or Lakes, do not use this with one of these as parameter, as the code preventing artifacts won't work.
 	Example: "Neighboring tiles will convert to [Grassland]"
 
 	Applicable to: Terrain

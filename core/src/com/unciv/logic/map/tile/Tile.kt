@@ -193,7 +193,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     //endregion
 
-    fun clone(): Tile {
+    fun clone(/** For stat diff checks, units are meaningless */ addUnits:Boolean = true): Tile {
         val toReturn = Tile()
         toReturn.tileMap = tileMap
         toReturn.ruleset = ruleset
@@ -203,9 +203,11 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         toReturn.isLand = isLand
         toReturn.isWater = isWater
         toReturn.isOcean = isOcean
-        if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
-        if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
-        for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
+        if (addUnits) {
+            if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
+            if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
+            for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
+        }
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
         toReturn.terrainFeatures = terrainFeatures // immutable lists can be directly passed around
@@ -467,15 +469,14 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
-    fun matchesFilter(filter: String, civInfo: Civilization? = null, ignoreImprovement: Boolean = false): Boolean {
-        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo, ignoreImprovement) })
+    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo) })
     }
 
-    private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null, ignoreImprovement: Boolean = false): Boolean {
+    private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
-        if (ignoreImprovement) return false
         if (getUnpillagedTileImprovement()?.matchesFilter(filter, stateThisTile, false) == true) return true
         return getUnpillagedRoadImprovement()?.matchesFilter(filter, stateThisTile, false) == true
     }
@@ -862,6 +863,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             improvement = null
         if (improvementQueue.any { it.improvement !in ruleset.tileImprovements })
             improvementQueue.clear() // Just get rid of everything, all bets are off
+        if (naturalWonder != null && naturalWonder !in ruleset.terrains)
+            naturalWonder = null
     }
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place

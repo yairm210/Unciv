@@ -67,7 +67,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     }
 
     init {
-        isTransform = false
+        isTransform = false // NOT NonTransformGroup, since we need to turn it upside down when generating font chars
 
         image = getMainImage()
         background = getMainBackground()

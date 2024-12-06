@@ -77,7 +77,7 @@ class UniqueDocsWriter {
                 else uniqueType.text
                 lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
                 if (uniqueType.docDescription != null)
-                    lines += "\t${uniqueType.docDescription}"
+                    lines += "\t${uniqueType.docDescription!!.replace("\n","\n\t")}"
                 if (uniqueType.parameterTypeMap.isNotEmpty()) {
                     // This one will give examples for _each_ filter in a "tileFilter/specialist/buildingFilter" kind of parameter e.g. "Farm/Merchant/Library":
                     // `val paramExamples = uniqueType.parameterTypeMap.map { it.joinToString("/") { pt -> pt.docExample } }.toTypedArray()`

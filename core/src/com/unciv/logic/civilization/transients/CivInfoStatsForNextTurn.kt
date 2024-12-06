@@ -272,9 +272,9 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
                 statMap.add(key, value)
         }
 
-        val transportUpkeep = getTransportationUpkeep() * -1
+        val transportUpkeep = getTransportationUpkeep()
         if (transportUpkeep.happiness != 0f)
-            statMap["Transportation Upkeep"] = transportUpkeep.happiness
+            statMap["Transportation Upkeep"] = -transportUpkeep.happiness
 
         for ((key, value) in getGlobalStatsFromUniques())
             statMap.add(key,value.happiness)

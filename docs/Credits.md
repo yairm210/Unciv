@@ -186,9 +186,11 @@ By Basil:
 Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
 
 
-HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset)
+HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset):
 
-- Coast Edge tiles
+- Coast-Land edge tiles
+- Coast-Ocean edge tiles
+- Lake-Land edge tiles
 - Krakatoa (based on The Bucketeer's tile)
 
 ### Resources

@@ -39,6 +39,14 @@ object MapType {
     const val empty = "Empty"
 }
 
+object MirroringType {
+    const val none = "None"
+    const val aroundCenterTile = "Around Center Tile"
+    const val fourway = "4-way"
+    const val topbottom = "Top-Bottom"
+    const val leftright = "Bottom-Top"
+}
+
 class MapParameters : IsPartOfGameInfoSerialization {
     var name = ""
     var type = MapType.pangaea
@@ -46,6 +54,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var shape = MapShape.hexagonal
     var mapSize = MapSize.Medium
     var mapResources = MapResourceSetting.default.label
+    var mirroring: String = MirroringType.none
     var noRuins = false
     var noNaturalWonders = false
     // DO NOT CHANGE DEFAULTS since that changes all existing games to new default!

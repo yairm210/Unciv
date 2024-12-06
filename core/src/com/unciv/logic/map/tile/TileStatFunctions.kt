@@ -76,11 +76,11 @@ class TileStatFunctions(val tile: Tile) {
 
             for (unique in statsFromTilesUniques + statsFromObjectsUniques + statsFromTilesWithoutUniques) {
                 val tileType = unique.params[1]
-                if (tile.matchesFilter(tileType, observingCiv, true))
-                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.getDisplayText()}})" to unique.stats)
-                else if (improvement != null && improvement.matchesFilter(tileType, StateForConditionals(city = city, tile = tile)))
+                if (improvement != null && improvement.matchesFilter(tileType, stateForConditionals))
                     improvementStats.add(unique.stats)
-                else if (road != null && road.matchesFilter(tileType, StateForConditionals(city = city, tile = tile)))
+                else if (tile.matchesFilter(tileType, observingCiv))
+                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.getDisplayText()}})" to unique.stats)
+                else if (road != null && road.matchesFilter(tileType, stateForConditionals))
                     roadStats.add(unique.stats)
             }
         }
@@ -129,11 +129,11 @@ class TileStatFunctions(val tile: Tile) {
         return listOfStats.filter { !it.second.isEmpty() }.map { it.first to it.second.clone() }
     }
 
-    /** Ensures each stat is >= [other].stat - modifies in place */
+    /** Ensures each stat is >= [minimumStats].stat - modifies in place */
     private fun missingFromMinimum(current: Stats, minimumStats: Stats): Stats {
         // Note: Not `for ((stat, value) in other)` - that would skip zero values
         val missingStats = Stats()
-        for (stat in Stat.values()) {
+        for (stat in Stat.entries) {
             if (current[stat] < minimumStats[stat])
                 missingStats[stat] = minimumStats[stat] - current[stat]
         }
@@ -184,11 +184,11 @@ class TileStatFunctions(val tile: Tile) {
         val roadStats = Stats()
 
         fun addStats(filter: String, stat: Stat, amount: Float) {
-            if (tile.matchesFilter(filter, observingCiv, true))
-                terrainStats.add(stat, amount)
-            else if (improvement != null && improvement.matchesFilter(filter, StateForConditionals(city = city, tile = tile)))
+            if (improvement != null && improvement.matchesFilter(filter, stateForConditionals))
                 improvementStats.add(stat, amount)
-            else if (road != null && road.matchesFilter(filter, StateForConditionals(city = city, tile = tile)))
+            else if (tile.matchesFilter(filter, observingCiv))
+                terrainStats.add(stat, amount)
+            else if (road != null && road.matchesFilter(filter, stateForConditionals))
                 roadStats.add(stat, amount)
         }
 
@@ -203,7 +203,7 @@ class TileStatFunctions(val tile: Tile) {
             val cachedAllStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
                 city, UniqueType.AllStatsPercentFromObject, stateForConditionals)
             for (unique in cachedAllStatPercentFromObjectCityUniques) {
-                for (stat in Stat.values())
+                for (stat in Stat.entries)
                     addStats(unique.params[1], stat, unique.params[0].toFloat())
             }
 
@@ -217,7 +217,7 @@ class TileStatFunctions(val tile: Tile) {
             val cachedAllStatPercentFromObjectCivUniques = uniqueCache.forCivGetMatchingUniques(
                 observingCiv, UniqueType.AllStatsPercentFromObject, stateForConditionals)
             for (unique in cachedAllStatPercentFromObjectCivUniques) {
-                for (stat in Stat.values())
+                for (stat in Stat.entries)
                     addStats(unique.params[1], stat, unique.params[0].toFloat())
             }
         }
@@ -273,7 +273,7 @@ class TileStatFunctions(val tile: Tile) {
         val currentStats = currentTileStats
             ?: getTileStats(city, observingCiv, cityUniqueCache)
 
-        val tileClone = tile.clone()
+        val tileClone = tile.clone(addUnits = false)
         tileClone.setTerrainTransients()
 
         tileClone.setImprovement(improvement.name)

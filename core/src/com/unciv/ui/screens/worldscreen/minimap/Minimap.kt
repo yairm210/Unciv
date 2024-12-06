@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
@@ -16,8 +16,15 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civInfo: Civilization?) : Group() {
-    private val tileLayer = Group()
+class TileLayerGroup: NonTransformGroup(){
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civInfo: Civilization?) : NonTransformGroup() {
+    private val tileLayer = TileLayerGroup()
+    private val borderLayer = NonTransformGroup()
+    private val cityLayer = NonTransformGroup()
+            
     private val minimapTiles: List<MinimapTile>
     private val scrollPositionIndicators: List<ClippingImage>
     private var lastViewingCiv: Civilization? = null
@@ -27,9 +34,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     private var tileMapHeight = 0f
 
     init {
-        // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
-        isTransform = false
-
         // Set fixed minimap size
         val stageMinimapSize = calcMinimapSize(minimapSize)
         setSize(stageMinimapSize.x, stageMinimapSize.y)
@@ -58,6 +62,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         scrollPositionIndicators.forEach(tileLayer::addActor)
 
         addActor(tileLayer)
+        addActor(borderLayer)
+        addActor(cityLayer)
 
         mapHolder.onViewportChangedListener = ::updateScrollPosition
     }
@@ -238,11 +244,12 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             if (shouldBeUnrevealed || !ownerChanged) continue
 
             if (tileInfo.isCityCenter()) {
-                minimapTile.updateCityCircle().updateActorsIn(this)
+                minimapTile.updateCityCircle().updateActorsIn(cityLayer)
             }
 
-            minimapTile.updateBorders().updateActorsIn(this)
+            minimapTile.updateBorders().updateActorsIn(borderLayer)
         }
+        
         lastViewingCiv = viewingCiv
     }
 

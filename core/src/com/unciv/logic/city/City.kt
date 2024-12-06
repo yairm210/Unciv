@@ -163,14 +163,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
-    fun capitalCityIndicator(): Building? {
-        val indicatorBuildings = getRuleset().buildings.values.asSequence()
-            .filter { it.hasUnique(UniqueType.IndicatesCapital, state) }
-
-        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && civ.matchesFilter(it.uniqueTo!!, state) }
-        return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
-    }
-
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)

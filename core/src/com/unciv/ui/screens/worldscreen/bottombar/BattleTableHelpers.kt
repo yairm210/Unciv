@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
@@ -23,6 +22,7 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 
 
 object BattleTableHelpers {
@@ -144,22 +144,31 @@ object BattleTableHelpers {
         }
     }
 
+    fun WorldScreen.battleAnimationDeferred(
+        attacker: ICombatant, damageToAttacker: Int,
+        defender: ICombatant, damageToDefender: Int
+    ){
+        // This ensures that we schedule the animation to happen AFTER the worldscreen.update(), 
+        //    where the spriteGroup of the attacker is created on the tile it moves to 
+        Concurrency.runOnGLThread { battleAnimation(attacker, damageToAttacker, defender, damageToDefender) }
+    }
 
-    fun WorldScreen.battleAnimation(
+    private fun WorldScreen.battleAnimation(
         attacker: ICombatant, damageToAttacker: Int,
         defender: ICombatant, damageToDefender: Int
     ) {
         fun getMapActorsForCombatant(combatant: ICombatant): Sequence<Actor> =
-                sequence {
-                    val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
-                    if (combatant.isCity()) {
-                        val icon = tileGroup.layerMisc.improvementIcon
-                        if (icon != null) yield (icon)
-                    } else if (!combatant.isAirUnit()) {
-                        val slot = if (combatant.isCivilian()) 0 else 1
-                        yieldAll((tileGroup.layerUnitArt.getChild(slot) as Group).children)
-                    }
+            sequence {
+                val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
+                if (combatant.isCity()) {
+                    val icon = tileGroup.layerMisc.improvementIcon
+                    if (icon != null) yield (icon)
+                } else if (!combatant.isAirUnit()) {
+                    val slot = tileGroup.layerUnitArt.getSpriteSlot((combatant as MapUnitCombatant).unit)
+                    if (slot != null) yieldAll(slot.spriteGroup.children)
                 }
+            }
+
 
         val actorsToFlashRed =
                 sequence {

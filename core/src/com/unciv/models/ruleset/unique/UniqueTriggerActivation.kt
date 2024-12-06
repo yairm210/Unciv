@@ -124,11 +124,9 @@ object UniqueTriggerActivation {
                     choice.triggerChoice(civInfo, unit)
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
-                    /** See [AlertPopup.addEvent] for the deserializing of this string to the context */
+                    /** See [com.unciv.ui.screens.worldscreen.AlertPopup.addEvent] for the deserializing of this string to the context */
                     var eventText = event.name
-                    // Todo later version: Uncomment this to enable events with unit triggers
-                    // if (unit != null) eventText += Constants.stringSplitCharacter + "unitId=" + unit.id
-                     
+                    if (unit != null) eventText += Constants.stringSplitCharacter + "unitId=" + unit.id
                     civInfo.popupAlerts.add(PopupAlert(AlertType.Event, eventText))
                     true
                 }
@@ -982,7 +980,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitLoseStatus -> {
                 if (unit == null) return null
-                if (unit.statuses.none { it.name == unique.params[1] }) return null
+                if (!unit.hasStatus(unique.params[1])) return null
                 return {
                     unit.removeStatus(unique.params[1])
                     true

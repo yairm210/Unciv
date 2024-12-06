@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.centerY
@@ -312,8 +313,7 @@ object ImageGetter {
         return redCross
     }
 
-    fun getCrossedImage(image: Actor, iconSize: Float) = Group().apply {
-            isTransform = false
+    fun getCrossedImage(image: Actor, iconSize: Float) = NonTransformGroup().apply {
             setSize(iconSize, iconSize)
             image.center(this)
             addActor(image)
@@ -343,7 +343,7 @@ object ImageGetter {
                 .setProgress(progressColor, percentComplete, padding = progressPadding)
     }
 
-    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true) : Group() {
+    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true) : NonTransformGroup() {
 
         var primaryPercentage: Float = 0f
         var secondaryPercentage: Float = 0f
@@ -355,7 +355,6 @@ object ImageGetter {
 
         init {
             setSize(width, height)
-            isTransform = false
         }
 
         fun setLabel(color: Color, text: String, fontSize: Int = Constants.defaultFontSize) : ProgressBar {
@@ -487,6 +486,8 @@ object ImageGetter {
         .filter { it.startsWith("TileSets") && !it.contains("/Units/") }
         .map { it.split("/")[1] }.distinct()
 
-    fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence().filter { it.contains("/Units/") }
-        .map { it.split("/")[1] }.distinct()
+    fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence()
+        .filter { it.startsWith("TileSets") && it.contains("/Units/") }
+        .map { it.split("/")[1] }
+        .distinct()
 }
