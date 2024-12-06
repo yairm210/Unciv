@@ -26,6 +26,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
@@ -352,6 +353,7 @@ object Battle {
                 UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
+        goldenAgeFromDamage(attacker, defender, defenderDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
     }
 
@@ -383,6 +385,23 @@ object Battle {
                 plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
                 if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
             )
+        }
+    }
+
+    private fun goldenAgeFromDamage(
+        plunderingUnit: ICombatant,
+        plunderedUnit: ICombatant,
+        damageDealt: Int
+    ) {
+        // implementation based on the description of the original civilopedia, see issue #4374
+        if (plunderingUnit !is MapUnitCombatant) return
+
+        val civ = plunderingUnit.getCivInfo()
+        for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsGoldenAge, checkCivInfoUniques = true)) {
+            if (plunderedUnit.matchesFilter(unique.params[1])) {
+                val percentage = unique.params[0].toFloat()
+                civ.goldenAges.addHappiness((percentage / 100f * damageDealt).roundToInt())
+            }
         }
     }
 
