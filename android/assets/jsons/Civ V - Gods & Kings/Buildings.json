@@ -876,7 +876,7 @@
 		"hurryCostModifier": 0,
 		"uniques": ["[+1 Science] per [2] population [in this city]"],
 		"requiredTech": "Scientific Theory"
-	},
+	},  
 	{
 		"name": "Factory",
 		"cost": 360,
@@ -951,7 +951,15 @@
         "requiredBuilding": "Constabulary",
         "requiredTech": "Electricity"
     },
-
+    {   
+        "name": "Military Factory",
+        "cost": 350,
+        "maintenance":1,
+        "production": 6,
+        "percentStatBonus": {"production": 20},
+        "requiredBuilding": "Factory"
+        "requiredTech": "Military Science",
+        
 	// Modern Era
 
 	// Column 11
