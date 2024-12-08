@@ -124,7 +124,7 @@ class MapUnitAction(
 ) : NotificationAction {
     constructor(unit: MapUnit) : this(unit.currentTile.position, unit.id)
     override fun execute(worldScreen: WorldScreen) {
-        val selectUnit = id == Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
+        val selectUnit = id != Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
         val unit = if (selectUnit) null else
             worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = selectUnit, forceSelectUnit = unit)
@@ -185,9 +185,7 @@ class EspionageAction : NotificationAction {
 
 class LinkAction(private val url: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        if (url.isNotEmpty()) {
-            Gdx.net.openURI(url);
-        }
+        if (url.isNotEmpty()) Gdx.net.openURI(url)
     }
 }
 
