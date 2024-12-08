@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityStats
@@ -149,10 +148,7 @@ object Automation {
             }
             newGrowthFood = newGrowthFood.coerceAtLeast(0f) // floor to 0 for safety
             
-            
-            var foodModWeight = getFoodModWeight(city, surplusFood)
-            
-            yieldStats.food += newGrowthFood * foodBaseWeight * foodModWeight
+            yieldStats.food += newGrowthFood * foodBaseWeight * getFoodModWeight(city, surplusFood)
         }
 
         if (city.population.population < 10) {
