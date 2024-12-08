@@ -672,6 +672,28 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            UniqueType.OneTimeGainGoldenAge -> {
+                if (unique.params[0].toIntOrNull() == null) return null
+
+                return {
+                    var amount = unique.params[0].toInt()
+                    if (unique.isModifiedByGameSpeed()) amount = (amount * civInfo.gameInfo.speed.modifier).roundToInt()
+
+                    civInfo.goldenAges.addHappiness(amount)
+
+                    val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
+                        notification.fillPlaceholders(amount.tr())
+                    else notification
+
+                    val notificationText = getNotificationText(
+                        filledNotification, triggerNotificationText,
+                        "Gained $amount golden age points"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Happiness)
+                    true
+                }
+            }
             UniqueType.OneTimeGainPantheon -> {
                 if (civInfo.religionManager.religionState != ReligionState.None) return null
                 val gainedFaith = civInfo.religionManager.faithForPantheon(2)

@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
-import kotlin.math.max
 
 class GoldenAgeManager : IsPartOfGameInfoSerialization {
     @Transient
@@ -28,6 +27,10 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
     }
 
     fun isGoldenAge(): Boolean = turnsLeftForCurrentGoldenAge > 0
+
+    fun addHappiness(amount: Int) {
+        storedHappiness += amount
+    }
 
     fun happinessRequiredForNextGoldenAge(): Int {
         var cost = (500 + numberOfGoldenAges * 250).toFloat()
