@@ -338,10 +338,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             getRejectionReasons(cityConstructions).none()
 
-    override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
+    fun construct(cityConstructions: CityConstructions, boughtWith: Stat?): MapUnit? {
         val civInfo = cityConstructions.city.civ
         val unit = civInfo.units.addUnit(this, cityConstructions.city)
-            ?: return false  // couldn't place the unit, so there's actually no unit =(
+            ?: return null  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
         if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.CanMoveImmediatelyOnceBought))
@@ -349,7 +349,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         addConstructionBonuses(unit, cityConstructions)
 
-        return true
+        return unit
     }
 
     // This returns the name of the unit this tech upgrades this unit to,
