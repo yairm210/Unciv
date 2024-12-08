@@ -1121,10 +1121,24 @@
 		"upgradesTo": "Rocket Artillery",
 		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
 			"Must set up to ranged attack","[-1] Sight", "Never appears as a Barbarian unit"],
-		"promotions": ["Indirect Fire"],
+		"promotions": ["Indirect Fire"],l
 		"attackSound": "artillery"
 	},
-
+    {  
+        "name": "Крупп мортира"
+        "unitType": "Siege"
+        "uniqueTo": "Germany"
+        "movement": 3,
+        "strength": 30,
+        "range": 3,
+        "cost": 340,
+		"requiredTech": "Dynamite",
+        "upgradesTo": "Rocket Artillery"
+        "uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
+            "Must set up to ranged attack","[-1] Sight","Never appears as a Barbarian unit"]
+        "promotions": ["Indirect Fire"],
+        "attackSound": "artillery"
+        
 	// Modern era
 
 	{
