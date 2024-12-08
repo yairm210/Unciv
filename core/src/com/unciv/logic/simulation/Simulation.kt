@@ -29,6 +29,7 @@ class Simulation(
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
+    private var winTurnByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var avgSpeed = 0f
     private var avgDuration: Duration = Duration.ZERO
     private var totalTurns = 0
@@ -42,6 +43,9 @@ class Simulation(
             winRateByVictory[civ] = mutableMapOf()
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
                 winRateByVictory[civ]!![victory] = MutableInt(0)
+            winTurnByVictory[civ] = mutableMapOf()
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
+                winTurnByVictory[civ]!![victory] = MutableInt(0)
         }
     }
 
@@ -98,10 +102,12 @@ class Simulation(
         // win Rate
         numWins.values.forEach { it.value = 0 }
         winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
+        winTurnByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
         steps.forEach {
             if (it.winner != null) {
                 numWins[it.winner!!]!!.inc()
                 winRateByVictory[it.winner!!]!![it.victoryType]!!.inc()
+                winTurnByVictory[it.winner!!]!![it.victoryType]!!.set(winTurnByVictory[it.winner!!]!![it.victoryType]!!.get() + it.turns)
             }
         }
         totalTurns = steps.sumOf { it.turns }
@@ -137,6 +143,12 @@ class Simulation(
                 outString += "$victory: $winsVictory%    "
             }
             outString += "\n"
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
+                val winsTurns =
+                    winTurnByVictory[civ]!![victory]!!.value / max(winRateByVictory[civ]!![victory]!!.value, 1)
+                outString += "$victory: $winsTurns    "
+            }
+            outString += "avg turns\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"

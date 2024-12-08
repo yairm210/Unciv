@@ -41,13 +41,15 @@ enum class CityFocus(
     FaithFocus("${Stat.Faith.character}", true, Stat.Faith),
     GoldGrowthFocus("${Stat.Gold.character} ${Stat.Food.character}", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
-            Stat.Gold, Stat.Food -> 2f
+            Stat.Gold -> 2f
+            Stat.Food -> 1.5f
             else -> 1f
         }
     },
     ProductionGrowthFocus("${Stat.Production.character} ${Stat.Food.character}", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
-            Stat.Production, Stat.Food -> 2f
+            Stat.Production -> 2f
+            Stat.Food -> 1.5f
             else -> 1f
         }
     },

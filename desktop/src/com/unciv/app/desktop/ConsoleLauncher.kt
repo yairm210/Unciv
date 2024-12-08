@@ -57,7 +57,7 @@ internal object ConsoleLauncher {
         UncivGame.Current.gameInfo = newGame
 
 
-        val simulation = Simulation(newGame, 50, 8)
+        val simulation = Simulation(newGame, 50, 20)
         //Unless the effect size is very large, you'll typically need a large number of games to get a statistically significant result
 
         simulation.start()
