@@ -91,8 +91,6 @@ class WonderOverviewTab(
 
 
 class WonderInfo {
-    val gameInfo = UncivGame.Current.gameInfo!!
-    val ruleSet = gameInfo.ruleset
 
     enum class WonderStatus(val label: String) {
         Hidden(""),
@@ -150,7 +148,7 @@ class WonderInfo {
     /** Do we know about a natural wonder despite not having found it yet? */
     private fun knownFromQuest(viewingPlayer: Civilization, name: String): Boolean {
         // No, *your* civInfo's QuestManager has no idea about your quests
-        for (civ in gameInfo.civilizations) {
+        for (civ in viewingPlayer.gameInfo.civilizations) {
             for (quest in civ.questManager.getAssignedQuestsFor(viewingPlayer.civName)) {
                 if (quest.questName == QuestName.FindNaturalWonder.value && quest.data1 == name)
                     return true
@@ -161,16 +159,17 @@ class WonderInfo {
 
     fun collectInfo(viewingPlayer: Civilization): Array<WonderInfo> {
         val collator = UncivGame.Current.settings.getCollatorFromLocale()
+        val ruleset = viewingPlayer.gameInfo.ruleset
 
         // Maps all World Wonders by name to their era for grouping
         val wonderEraMap: Map<String, Era?> =
-                ruleSet.buildings.values.asSequence()
+            ruleset.buildings.values.asSequence()
                     .filter { it.isWonder }
-                    .associate { it.name to it.era(ruleSet) }
+                    .associate { it.name to it.era(ruleset) }
 
         // Maps all World Wonders by their position in sort order to their name
         val allWonderMap: Map<Int, String> =
-                ruleSet.buildings.values.asSequence()
+            ruleset.buildings.values.asSequence()
                     .filter { it.isWonder }
                         // 100 is so wonders with no era get displayed after all eras, not before
                     .sortedWith(compareBy<Building> { wonderEraMap[it.name]?.eraNumber ?: 100 }.thenBy(collator) { it.name.tr(hideIcons = true) })
@@ -183,7 +182,7 @@ class WonderInfo {
 
         // Maps all Natural Wonders on the map by name to their tile
         val allNaturalsMap: Map<String, Tile> =
-                gameInfo.tileMap.values.asSequence()
+                viewingPlayer.gameInfo.tileMap.values.asSequence()
                     .filter { it.isNaturalWonder() }
                     .associateBy { it.naturalWonder!! }
         val naturalsCount = allNaturalsMap.size
@@ -197,7 +196,7 @@ class WonderInfo {
         // Pre-populate result with "Unknown" entries
         val wonders = Array(wonderCount + naturalsCount) { index ->
             if (index < wonderCount) {
-                val wonder = ruleSet.buildings[allWonderMap[index]!!]!!
+                val wonder = ruleset.buildings[allWonderMap[index]!!]!!
                 val era = wonderEraMap[wonder.name]
                 val status = if (shouldBeDisplayed(viewingPlayer, wonder, era?.eraNumber)) WonderStatus.Unbuilt else WonderStatus.Hidden
                 WonderInfo(
@@ -218,7 +217,7 @@ class WonderInfo {
             }
         }
 
-        for (city in gameInfo.getCities()) {
+        for (city in viewingPlayer.gameInfo.getCities()) {
             for (wonderName in city.cityConstructions.getBuiltBuildings().map { it.name }.toList().intersect(wonderIndexMap.keys)) {
                 val index = wonderIndexMap[wonderName]!!
                 val status = when {
@@ -244,7 +243,7 @@ class WonderInfo {
             }
             if (status == WonderStatus.NotFound && !knownFromQuest(viewingPlayer, name)) continue
             val city = if (status == WonderStatus.NotFound) null
-            else gameInfo.getCities()
+            else viewingPlayer.gameInfo.getCities()
                 .filter { it.getCenterTile().aerialDistanceTo(tile) <= 5
                     && viewingPlayer.knows(it.civ) 
                     && viewingPlayer.hasExplored(it.getCenterTile()) }
