@@ -45,8 +45,13 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
             nationName = "${unit.civ.civName}-"
         }
 
-        if ((currentSlot?.currentImageLocation ?: "") == "$nationName$location") return currentSlot // No-op
-        if (location == "" || !ImageGetter.imageExists(location)) return null // No such image
+        if (currentSlot == null && location == "") return null // No-op - had none, has none
+        if (currentSlot?.currentImageLocation == "$nationName$location") return currentSlot // No-op - had, has
+        
+        if (location == "" || !ImageGetter.imageExists(location)){
+            currentSlot?.spriteGroup?.remove()
+            return null
+        } 
         
         val slot = currentSlot ?: UnitSpriteSlot()
             .apply { this@TileLayerUnitSprite.addActor(spriteGroup) }
