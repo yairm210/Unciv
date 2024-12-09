@@ -1,3 +1,19 @@
+## 4.14.14
+
+Automated air units respect "Cannot move" unique
+
+Resolved rare New Game Screen "application not responding" errors
+
+AI: 
+- Don't pick most expensive tech as free tech, if it's marked as "0 weight for AI decisions"
+- Decreased base Fort value to not build it instead of useful improvements
+
+Remove images of expended units
+
+Display city state type name for battle bonuses
+
+"Unit built" notification selects the built unit
+
 ## 4.14.13
 
 SIGNIFICANT memory performance improvements for large maps

@@ -205,6 +205,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.baseUnit = baseUnit
         toReturn.name = name
         toReturn.civ = civ
+        toReturn.id = id
         toReturn.owner = owner
         toReturn.originalOwner = originalOwner
         toReturn.instanceName = instanceName

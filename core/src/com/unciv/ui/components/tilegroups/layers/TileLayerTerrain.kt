@@ -102,11 +102,11 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             .flatMap { getMatchingEdges(tile, it) }
     }
 
-    private fun getMatchingEdges(originTile: Tile, neighborTile: Tile): List<String>{
+    private fun getMatchingEdges(originTile: Tile, neighborTile: Tile): Sequence<String>{
         val vectorToNeighbor =  neighborTile.position.cpy().sub(originTile.position)
         val direction = NeighborDirection.fromVector(vectorToNeighbor)
-            ?: return emptyList()
-        val possibleEdgeFiles = strings().edgeImagesByPosition[direction] ?: return emptyList()
+            ?: return emptySequence()
+        val possibleEdgeFiles = strings().edgeImagesByPosition[direction] ?: return emptySequence()
         
         // Required for performance - full matchesFilter is too expensive for something that needs to run every update()
         fun matchesFilterMinimal(originTile: Tile, filter: String): Boolean {
@@ -115,7 +115,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             return false
         }
 
-        return possibleEdgeFiles.filter {
+        return possibleEdgeFiles.asSequence().filter {
             if (!matchesFilterMinimal(originTile, it.originTileFilter)) return@filter false
             if (!matchesFilterMinimal(neighborTile, it.destinationTileFilter)) return@filter false
             return@filter true

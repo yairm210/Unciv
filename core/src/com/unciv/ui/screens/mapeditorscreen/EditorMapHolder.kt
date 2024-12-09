@@ -33,7 +33,7 @@ class EditorMapHolder(
 
     val tileGroups = HashMap<Tile, TileGroup>()
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
-    private val allTileGroups = ArrayList<TileGroup>()
+    private val allTileGroups = ArrayList<TileGroup>(tileMap.values.size)
 
     private var blinkAction: Action? = null
 

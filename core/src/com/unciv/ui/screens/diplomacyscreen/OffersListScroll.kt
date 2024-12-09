@@ -90,7 +90,7 @@ class OffersListScroll(
                     Luxury_Resource, Strategic_Resource ->
                         ImageGetter.getResourcePortrait(offer.name, 30f)
                     WarDeclaration ->
-                        ImageGetter.getNationPortrait(UncivGame.Current.gameInfo!!.ruleset.nations[offer.name]!!, 30f)
+                        ImageGetter.getNationPortrait(ourCiv.gameInfo.ruleset.nations[offer.name]!!, 30f)
                     else -> null
                 }
                 val tradeButton = IconTextButton(tradeLabel, tradeIcon).apply {

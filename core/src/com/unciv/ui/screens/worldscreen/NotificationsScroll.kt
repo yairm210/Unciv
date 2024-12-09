@@ -266,8 +266,8 @@ class NotificationsScroll(
                 notificationsTable.add(header).right().row()
             }
             for (notification in categoryNotifications) {
-                // Temporarily ignore touhidurrr notifications
-                if (notification.icons.any { it in serverIconsToIgnore }) continue
+                if (worldScreen.gameInfo.turns % 10 != 0 // Allow touhidurrr notifications every 10 turns
+                    && notification.icons.any { it in serverIconsToIgnore }) continue
                 
                 val item = ListItem(notification, backgroundDrawable)
                 itemWidths.add(item.itemWidth)
