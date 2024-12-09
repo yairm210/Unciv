@@ -262,7 +262,7 @@ object NextTurnAutomation {
         }
 
         val stateForConditionals = civInfo.state
-        while(civInfo.tech.freeTechs > 0) {
+        while (civInfo.tech.freeTechs > 0) {
             val costs = getGroupedResearchableTechs()
             if (costs.isEmpty()) return
             
