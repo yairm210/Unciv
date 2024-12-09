@@ -1,5 +1,3 @@
-
-
 AI: Don't pick most expensive tech as free tech, if it's marked as "0 weight for AI decisions"
 
 Run mod compatibility checks on another thread, to avoid ANRs in new game screen

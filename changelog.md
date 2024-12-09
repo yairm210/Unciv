@@ -1,32 +1,18 @@
 ## 4.14.14
 
-AI: Don't pick most expensive tech as free tech, if it's marked as "0 weight for AI decisions"
+Automated air units respect "Cannot move" unique
 
-Run mod compatibility checks on another thread, to avoid ANRs in new game screen
+Resolved rare New Game Screen "application not responding" errors
 
-Resolved  - automated air units with "Cannot move" do not move
+AI: 
+- Don't pick most expensive tech as free tech, if it's marked as "0 weight for AI decisions"
+- Decreased base Fort value to not build it instead of useful improvements
 
-Removed uses of UncivGame.Current.gameInfo when unnecessary
+Remove images of expended units
 
-Decreased base Fort value to not build it instead of useful improvements
+Display city state type name for battle bonuses
 
-Resolve  - Remove images of expended units
-
-Fix tests, unresolve 
-
-Resolved  - Display city state type name for battle bonuses
-
-Resolved  - AI can move air units with "Cannot move" unique
-
-Resolved  - "Unit built" notification selects the built unit
-
-4.14.13-patch1
-
-Fixed battle animation crash 
-
-Map mirroring!
-
-Crop images  - By itanasi
+"Unit built" notification selects the built unit
 
 ## 4.14.13
 
