@@ -54,7 +54,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var shape = MapShape.hexagonal
     var mapSize = MapSize.Medium
     var mapResources = MapResourceSetting.default.label
-    var mirroring: String = MirroringType.fourway
+    var mirroring: String = MirroringType.none
     var noRuins = false
     var noNaturalWonders = false
     // DO NOT CHANGE DEFAULTS since that changes all existing games to new default!
