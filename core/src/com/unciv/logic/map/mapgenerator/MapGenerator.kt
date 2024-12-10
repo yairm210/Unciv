@@ -185,8 +185,23 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     private fun flipLeftRight(vector: Vector2): Vector2 = Vector2(vector.y, vector.x)
 
     private fun mirror(map: TileMap) {
-        fun copyTile(tile: Tile, x: Int, y: Int) {
-            val mirrorTile = map.getIfTileExistsOrNull(x, y) ?: return
+        if (map.mapParameters.mirroring == MirroringType.none) return
+        
+        fun copyTile(tile: Tile, mirroringType: String) {
+            val mirrorTileVector = when (mirroringType){
+                MirroringType.topbottom -> if (tile.getRow() <= 0) return else flipTopBottom(tile.position)
+                MirroringType.leftright -> if (tile.getColumn() <= 0) return else flipLeftRight(tile.position)
+                MirroringType.aroundCenterTile -> if (tile.getRow() <= 0) return else flipLeftRight(flipTopBottom(tile.position))
+                MirroringType.fourway -> when {
+                    tile.getRow() < 0 && tile.getColumn() < 0 -> return
+                    tile.getRow() < 0 -> flipTopBottom(tile.position)
+                    tile.getColumn() < 0 -> flipLeftRight(tile.position)
+                    else -> flipLeftRight(flipTopBottom(tile.position))
+                }
+                else -> return
+            }
+            
+            val mirrorTile = map.getIfTileExistsOrNull(mirrorTileVector.x.toInt(), mirrorTileVector.y.toInt()) ?: return
             tile.setBaseTerrain(mirrorTile.getBaseTerrain())
             // todo rivers are a bitch
             tile.naturalWonder = mirrorTile.naturalWonder
@@ -194,41 +209,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             tile.resource = mirrorTile.resource
             tile.improvement = mirrorTile.improvement
         }
-        
-        when (map.mapParameters.mirroring){
-            MirroringType.none -> return
-            MirroringType.topbottom -> {
-                for (tile in map.values) {
-                    if (tile.getRow() <= 0) continue
-                    val flip = flipTopBottom(tile.position)
-                    copyTile(tile, flip.x.toInt(), flip.y.toInt())
-                }
-            }
-            MirroringType.leftright -> {
-                for (tile in map.values) {
-                    if (tile.getColumn() <= 0) continue
-                    val flip = flipLeftRight(tile.position)
-                    copyTile(tile, flip.x.toInt(), flip.y.toInt())
-                }
-            }
-            MirroringType.aroundCenterTile -> {
-                for (tile in map.values) {
-                    if (tile.getRow() <= 0) continue
-                    val flipTopBottom = flipTopBottom(tile.position)
-                    val flipTopBottomLeftRight = flipLeftRight(flipTopBottom)
-                    copyTile(tile, flipTopBottomLeftRight.x.toInt(), flipTopBottomLeftRight.y.toInt())
-                }
-            }
-            MirroringType.fourway -> {
-                for (tile in map.values) {
-                    if (tile.getRow() < 0 && tile.getColumn() < 0) continue
-                    var originVector = tile.position
-                    if (tile.getRow() >= 0) originVector = flipTopBottom(originVector)
-                    if (tile.getColumn() >= 0) originVector = flipLeftRight(originVector)
-                    copyTile(tile, originVector.x.toInt(), originVector.y.toInt())
-                }
-            }
-            else -> return
+
+        for (tile in map.values) {
+            copyTile(tile, MirroringType.topbottom)
         }
     }
 
