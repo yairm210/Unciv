@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
@@ -58,12 +59,16 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             group.moveBy(padX, padY)
         }
 
-        scrollPositionIndicators = createScrollPositionIndicators()
-        scrollPositionIndicators.forEach(tileLayer::addActor)
 
         addActor(tileLayer)
         addActor(borderLayer)
         addActor(cityLayer)
+        
+        val scrollIndicatorLayer = Group()
+        scrollIndicatorLayer.setSize(width, height)
+        scrollPositionIndicators = createScrollPositionIndicators()
+        scrollPositionIndicators.forEach(scrollIndicatorLayer::addActor)
+        addActor(scrollIndicatorLayer)
 
         mapHolder.onViewportChangedListener = ::updateScrollPosition
     }

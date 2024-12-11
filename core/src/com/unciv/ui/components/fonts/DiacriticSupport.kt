@@ -106,7 +106,8 @@ class DiacriticSupport(
             val stripCommentRegex = """^"?(.*?)"?(?:\s*#.*)?$""".toRegex()
             fun String?.parseDiacriticEntry(): String {
                 if (isNullOrEmpty()) return ""
-                val tokens = stripCommentRegex.matchEntire(this)!!.groupValues[1].splitToSequence(' ').toMutableList()
+                val tokens = stripCommentRegex.matchEntire(this)!!.groupValues[1]
+                    .splitToSequence(' ').filter { it.isNotEmpty() }.toMutableList()
                 for (index in tokens.indices) {
                     val token = tokens[index]
                     when {
@@ -123,7 +124,7 @@ class DiacriticSupport(
             val rangeStart = translations[TranslationKeys.rangeStart].parseDiacriticEntry()
             val rangeEnd = translations[TranslationKeys.rangeEnd].parseDiacriticEntry()
             val range = if (rangeStart.isEmpty() || rangeEnd.isEmpty()) CharRange.EMPTY
-                else rangeStart.first()..rangeEnd.first()
+                else rangeStart.min()..rangeEnd.max()
             val leftDiacritics = translations[TranslationKeys.left].parseDiacriticEntry()
             val rightDiacritics = translations[TranslationKeys.right].parseDiacriticEntry()
             val joinerDiacritics = translations[TranslationKeys.joiner].parseDiacriticEntry()
