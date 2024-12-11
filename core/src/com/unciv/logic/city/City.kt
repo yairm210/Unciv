@@ -91,7 +91,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
     }
 
-    var cityAIFocus: String = CityFocus.NoFocus.name
+    private var cityAIFocus: String = CityFocus.NoFocus.name
     fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
@@ -385,15 +385,12 @@ class City : IsPartOfGameInfoSerialization, INamed {
         CityConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
-        if (getCenterTile().roadStatus == RoadStatus.None) {
-            val roadImprovement = getRuleset().roadImprovement
-            if (roadImprovement != null && roadImprovement.techRequired in civ.tech.techsResearched)
-                getCenterTile().roadStatus = RoadStatus.Road
-        } else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
-            val railroadImprovement = getRuleset().railroadImprovement
-            if (railroadImprovement != null && railroadImprovement.techRequired in civ.tech.techsResearched)
-                getCenterTile().roadStatus = RoadStatus.Railroad
+        val requiredRoad = when{
+            getRuleset().railroadImprovement?.let { it.techRequired == null || it.techRequired in civ.tech.techsResearched } == true -> RoadStatus.Railroad
+            getRuleset().roadImprovement?.let { it.techRequired == null || it.techRequired in civ.tech.techsResearched } == true -> RoadStatus.Road
+            else -> RoadStatus.None
         }
+        getCenterTile().setRoadStatus(requiredRoad, civ)
     }
 
     fun getGoldForSellingBuilding(buildingName: String) =

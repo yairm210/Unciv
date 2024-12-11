@@ -80,6 +80,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     private val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
 
     var roadStatus = RoadStatus.None
+    
     var roadIsPillaged = false
     private var roadOwner: String = "" // either who last built the road or last owner of tile
 
@@ -885,25 +886,21 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun setImprovement(improvementStr: String, civToHandleCompletion: Civilization? = null, unit: MapUnit? = null) =
         improvementFunctions.setImprovement(improvementStr, civToHandleCompletion, unit)
 
-    // function handling when adding a road to the tile
-    fun addRoad(roadType: RoadStatus, creatingCivInfo: Civilization?) {
-        roadStatus = roadType
+    // function handling when removing a road from the tile
+    fun removeRoad() = setRoadStatus(RoadStatus.None, null)
+    
+    fun setRoadStatus(newRoadStatus: RoadStatus, creatingCivInfo: Civilization?) {
+        roadStatus = newRoadStatus
         roadIsPillaged = false
-        if (getOwner() != null) {
+        
+        if (newRoadStatus == RoadStatus.None && owningCity == null)
+            getRoadOwner()?.neutralRoads?.remove(this.position)
+        else if (getOwner() != null) {
             roadOwner = getOwner()!!.civName
         } else if (creatingCivInfo != null) {
             roadOwner = creatingCivInfo.civName // neutral tile, use building unit
             creatingCivInfo.neutralRoads.add(this.position)
         }
-    }
-
-    // function handling when removing a road from the tile
-    fun removeRoad() {
-        roadIsPillaged = false
-        if (roadStatus == RoadStatus.None) return
-        roadStatus = RoadStatus.None
-        if (owningCity == null)
-            getRoadOwner()?.neutralRoads?.remove(this.position)
     }
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {

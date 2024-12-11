@@ -64,7 +64,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         addActor(borderLayer)
         addActor(cityLayer)
         
-        val scrollIndicatorLayer = Group()
+        val scrollIndicatorLayer = Group().apply { touchable = Touchable.disabled } // Do not block!
         scrollIndicatorLayer.setSize(width, height)
         scrollPositionIndicators = createScrollPositionIndicators()
         scrollPositionIndicators.forEach(scrollIndicatorLayer::addActor)
