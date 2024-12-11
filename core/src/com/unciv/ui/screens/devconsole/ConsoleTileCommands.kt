@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
@@ -42,7 +41,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
 
         "removeroad" to ConsoleAction("tile removeroad") { console, _ ->
             val selectedTile = console.getSelectedTile()
-            selectedTile.roadStatus = RoadStatus.None
+            selectedTile.removeRoad()
             //todo this covers many cases but not all - do we really need to loop over all civs?
             selectedTile.getOwner()?.cache?.updateCitiesConnectedToCapital()
             DevConsoleResponse.OK
