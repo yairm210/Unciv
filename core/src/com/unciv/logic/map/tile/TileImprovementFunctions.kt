@@ -203,8 +203,8 @@ class TileImprovementFunctions(val tile: Tile) {
             improvementName?.startsWith(Constants.remove) == true -> {
                 activateRemovalImprovement(improvementName, civToActivateBroaderEffects)
             }
-            improvementName == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, civToActivateBroaderEffects)
-            improvementName == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, civToActivateBroaderEffects)
+            improvementName == RoadStatus.Road.name -> tile.setRoadStatus(RoadStatus.Road, civToActivateBroaderEffects)
+            improvementName == RoadStatus.Railroad.name -> tile.setRoadStatus(RoadStatus.Railroad, civToActivateBroaderEffects)
             improvementName == Constants.repair -> tile.setRepaired()
             else -> {
                 tile.improvementIsPillaged = false
