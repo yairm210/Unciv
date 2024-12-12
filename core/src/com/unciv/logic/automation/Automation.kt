@@ -48,32 +48,30 @@ object Automation {
 
     // More complicated logic to properly weigh Food vs other Stats (esp Production)
     private fun getFoodModWeight(city: City, surplusFood: Float): Float {
-        var foodModWeight = 1f
-
         // Zero out Growth if close to Unhappiness limit
         if (city.civ.getHappiness() < -8) {
-            foodModWeight = 0f
+            return 0f
         } else if (city.civ.isAI()) {
             // When Happy, 2 production is better than 1 growth,
             // but setting such by default worsens AI civ citizen assignment,
             // probably due to badly configured personalities not properly weighing food vs non-food yields
             if (city.population.population < 5)
-                foodModWeight = 2f
+                return 2f
             else if (surplusFood > city.population.getFoodToNextPopulation() / 10)
-                foodModWeight = 0.75f // get Growth just under Production
+                return 0.75f // get Growth just under Production
             else
-                foodModWeight = 1.5f
+                return 1.5f
         } else {
             // Human weights. May be different since AI Happiness is always "easier"
             // Only apply these for Default to not interfere with Focus weights
             if (city.getCityFocus() == CityFocus.NoFocus) {
                 if (city.population.population < 5)
-                    foodModWeight = 2f
+                    return 2f
                 else if (surplusFood > city.population.getFoodToNextPopulation() / 10)
-                    foodModWeight = 0.75f // get Growth just under Production
+                    return 0.75f // get Growth just under Production
             }
         }
-        return foodModWeight
+        return 1f
     }
     
     fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
