@@ -43,6 +43,8 @@ object Constants {
     const val barbarianEncampment = "Barbarian encampment"
     const val cityCenter = "City center"
     
+    const val goldenAgePoints = "GA Points"
+    
     // Treaties
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"

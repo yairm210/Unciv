@@ -560,12 +560,12 @@ object UniqueTriggerActivation {
                 var amount = unique.params[0].toIntOrNull() ?: return null
                 if (unique.isModifiedByGameSpeed()) amount = (amount * civInfo.gameInfo.speed.modifier).roundToInt()
                 val resourceName = unique.params[1]
-                val goldenAge = resourceName == "golden age points"
+                val goldenAge = resourceName == Constants.goldenAgePoints
                 if (goldenAge) return {
                     civInfo.goldenAges.addHappiness(amount)
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
-                        "You have gained [$amount] golden age points"
+                        "You have gained [$amount] points towards a golden age"
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, NotificationIcon.Happiness)
@@ -595,12 +595,12 @@ object UniqueTriggerActivation {
                 }
                 val amount = tileBasedRandom.nextInt(minAmount, maxAmount)
                 val resourceName = unique.params[2]
-                val goldenAge = resourceName == "golden age points"
+                val goldenAge = resourceName == Constants.goldenAgePoints
                 if (goldenAge) return {
                     civInfo.goldenAges.addHappiness(amount)
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
-                        "You have gained [$amount] golden age points"
+                        "You have gained [$amount] points towards a golden age"
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, NotificationIcon.Happiness)

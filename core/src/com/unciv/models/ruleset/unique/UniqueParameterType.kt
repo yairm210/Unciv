@@ -473,7 +473,7 @@ enum class UniqueParameterType(
     
     StockPile("stockpile", "Mana", "The name of any stockpiled resource or stockpilable stat"){
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
-            ruleset.tileResources.filter { it.value.isStockpiled() }.keys + "golden age points"
+            ruleset.tileResources.filter { it.value.isStockpiled() }.keys + Constants.goldenAgePoints
     },
 
     /** Used by [UniqueType.ImprovesResources], implemented by [com.unciv.models.ruleset.tile.TileResource.matchesFilter] */

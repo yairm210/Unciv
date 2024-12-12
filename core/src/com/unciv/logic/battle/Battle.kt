@@ -389,7 +389,7 @@ object Battle {
             if (plunderedUnit.matchesFilter(unique.params[1])) {
                 val percentage = unique.params[0].toFloat()
                 val stockpile = unique.params[2]
-                if (stockpile == "golden age points") {
+                if (stockpile == Constants.goldenAgePoints) {
                     civ.goldenAges.addHappiness((percentage / 100f * damageDealt).roundToInt())
                     continue
                 }
