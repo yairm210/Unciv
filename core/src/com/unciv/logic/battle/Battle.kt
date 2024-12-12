@@ -390,7 +390,7 @@ object Battle {
                 val percentage = unique.params[0].toFloat()
                 val stockpile = unique.params[2]
                 if (stockpile == "golden age points") {
-                    civ.goldenAges.addHappines((percentage / 100f * damageDealt).roundToInt())
+                    civ.goldenAges.addHappiness((percentage / 100f * damageDealt).roundToInt())
                     continue
                 }
                 val plunderedResource = civ.gameInfo.ruleset.tileResources[stockpile]

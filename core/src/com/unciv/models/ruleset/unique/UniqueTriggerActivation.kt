@@ -562,7 +562,7 @@ object UniqueTriggerActivation {
                 val resourceName = unique.params[1]
                 val goldenAge = resourceName == "golden age points"
                 if (goldenAge) return {
-                    civInfo.goldenAges.addHappines(amount)
+                    civInfo.goldenAges.addHappiness(amount)
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
                         "You have gained [$amount] golden age points"
@@ -597,7 +597,7 @@ object UniqueTriggerActivation {
                 val resourceName = unique.params[2]
                 val goldenAge = resourceName == "golden age points"
                 if (goldenAge) return {
-                    civInfo.goldenAges.addHappines(amount)
+                    civInfo.goldenAges.addHappiness(amount)
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
                         "You have gained [$amount] golden age points"

@@ -28,7 +28,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
 
     fun isGoldenAge(): Boolean = turnsLeftForCurrentGoldenAge > 0
     
-    fun addHappines(amount: Int) {
+    fun addHappiness(amount: Int) {
         storedHappiness += amount
     }
 
