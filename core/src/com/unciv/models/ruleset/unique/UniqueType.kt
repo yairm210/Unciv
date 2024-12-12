@@ -449,7 +449,6 @@ enum class UniqueType(
 
     // Gains from battle
     DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [stockpile/civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
-    DamageUnitsPlunderStockpile("Gain [amount]% of the damage done to [combatantFilter] units as [stockpile]", UniqueTarget.Unit, UniqueTarget.Global),
     CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
     KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
     KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),

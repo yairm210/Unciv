@@ -363,16 +363,28 @@ object Battle {
     ) {
         // implementation based on the description of the original civilopedia, see issue #4374
         if (plunderingUnit !is MapUnitCombatant) return
+        val civ = plunderingUnit.getCivInfo()
         val plunderedGoods = Stats()
 
         for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
             if (plunderedUnit.matchesFilter(unique.params[1])) {
                 val percentage = unique.params[0].toFloat()
-                plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * damageDealt)
+                val type = unique.params[2]
+                if (Stat.isStat(type)) {
+                    plunderedGoods.add(Stat.valueOf(type), percentage / 100f * damageDealt)
+                    continue
+                }
+                if (type == Constants.goldenAgePoints) {
+                    civ.goldenAges.addHappiness((percentage / 100f * damageDealt).roundToInt())
+                    continue
+                }
+                val plunderedResource = civ.gameInfo.ruleset.tileResources[type]
+                if (plunderedResource != null && plunderedResource.isStockpiled()) {
+                    civ.resourceStockpiles.add(type, (percentage / 100f * damageDealt).roundToInt())
+                }
             }
         }
 
-        val civ = plunderingUnit.getCivInfo()
         for ((key, value) in plunderedGoods) {
             val plunderedAmount = value.toInt()
             if (plunderedAmount == 0) continue
@@ -384,20 +396,6 @@ object Battle {
                 plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
                 if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
             )
-        }
-        for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunderStockpile, checkCivInfoUniques = true)) {
-            if (plunderedUnit.matchesFilter(unique.params[1])) {
-                val percentage = unique.params[0].toFloat()
-                val stockpile = unique.params[2]
-                if (stockpile == Constants.goldenAgePoints) {
-                    civ.goldenAges.addHappiness((percentage / 100f * damageDealt).roundToInt())
-                    continue
-                }
-                val plunderedResource = civ.gameInfo.ruleset.tileResources[stockpile]
-                if (plunderedResource != null && plunderedResource.isStockpiled()) {
-                    civ.resourceStockpiles.add(stockpile, (percentage / 100f * damageDealt).roundToInt())
-                }
-            }
         }
     }
 
