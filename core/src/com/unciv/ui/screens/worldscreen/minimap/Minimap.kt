@@ -135,11 +135,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         // hex height = sqrt(3) / 2 * d / 2, number of rows = mapDiameter * 2
         height *= minimapTileSize * sqrt(3f) * 0.5f
         // hex width = 0.75 * d
-        width =
-                if (mapParameters.worldWrap)
-                    (width - 1f) * minimapTileSize * 0.75f
-                else
-                    width * minimapTileSize * 0.75f
+        width = if (mapParameters.worldWrap)    (width - 1f) * minimapTileSize * 0.75f
+                else                            width * minimapTileSize * 0.75f
 
         return Vector2(width, height)
     }
