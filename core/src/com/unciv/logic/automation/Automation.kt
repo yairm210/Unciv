@@ -123,7 +123,9 @@ object Automation {
 
             // Zero out Growth if close to Unhappiness limit as well
             val baseFocusWeight = if (city.civ.getHappiness() < -8) 0f else {
-                if (cityAIFocus in CityFocus.zeroFoodFocuses) 1f else 1.5f
+                if (cityAIFocus in CityFocus.zeroFoodFocuses) 1f
+                else if (city.population.population < 5) 2f //5 pop is best cutoff according to tests
+                else 1.5f
             }
             yieldStats.food += newGrowthFood * foodBaseWeight * baseFocusWeight
         }
