@@ -110,8 +110,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun faithForPantheon(additionalCivs: Int = 0): Int {
         val gameInfo = civInfo.gameInfo
         val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null }
-        return ((gameInfo.ruleset.modOptions.constants.pantheonBase + numCivs * gameInfo.ruleset.modOptions.constants.pantheonGrowth) * gameInfo.speed.faithCostModifier)
-            .roundToInt()
+        val cost = gameInfo.ruleset.modOptions.constants.pantheonBase + numCivs * gameInfo.ruleset.modOptions.constants.pantheonGrowth
+        return (cost * gameInfo.speed.faithCostModifier).roundToInt()
     }
 
     /** Used for founding the pantheon and for each time the player gets additional pantheon beliefs
