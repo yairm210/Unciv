@@ -29,9 +29,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
     private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
     private val unitIconHolder = Table()
-    private val unitNameLabel = "".toLabel()
+    private val unitNameLabel = "".toLabel(fontSize = 24)
     private val unitIconNameGroup = Table()
-    private val promotionsTable = Table()
+    private val promotionsTable = Table().apply { defaults().padRight(5f) }
     private val unitDescriptionTable = Table(BaseScreen.skin)
 
     val selectedUnit : MapUnit?
@@ -103,7 +103,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             val moveBetweenUnitsTable = Table().apply {
                 add(prevIdleUnitButton)
                 unitIconNameGroup.add(unitIconHolder)
-                unitIconNameGroup.add(unitNameLabel).pad(5f)
+                unitIconNameGroup.add(unitNameLabel).apply { Fonts.font.descent }
                 unitIconHolder.touchable = Touchable.enabled
                 unitNameLabel.touchable = Touchable.enabled
                 add(unitIconNameGroup)
@@ -276,7 +276,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 unitIconHolder.add(UnitIconGroup(selectedUnit!!, 30f)).pad(5f)
 
                 for (promotion in selectedUnit!!.promotions.getPromotions(true))
-                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name)).padBottom(2f)
+                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f)).padBottom(2f)
                 
                 for (status in selectedUnit!!.statuses) {
                     val group = ImageGetter.getPromotionPortrait(status.name)
