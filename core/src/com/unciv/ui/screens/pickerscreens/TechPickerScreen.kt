@@ -152,7 +152,7 @@ class TechPickerScreen(
             val color = when {
                 civTech.era.name == era -> queuedTechColor
                 ruleset.eras[era]!!.eraNumber < civTech.era.eraNumber -> colorFromRGB(255, 175, 0)
-                else -> Color.BLACK.cpy()
+                else -> ImageGetter.CHARCOAL.cpy()
             }
 
             val table1 = Table().pad(1f)
@@ -213,7 +213,7 @@ class TechPickerScreen(
                 tempTechsToResearch.firstOrNull() == techName && !freeTechPick -> currentTechColor
                 researchableTechs.contains(techName) -> researchableTechColor
                 tempTechsToResearch.contains(techName) -> queuedTechColor
-                else -> Color.BLACK.cpy()
+                else -> ImageGetter.CHARCOAL.cpy()
             })
 
             if (isResearched && techName != Constants.futureTech) {

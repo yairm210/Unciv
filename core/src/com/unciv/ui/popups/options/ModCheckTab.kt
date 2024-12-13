@@ -120,7 +120,7 @@ class ModCheckTab(
                         else -> "OtherIcons/Checkmark"
                     }
                     val icon = ImageGetter.getImage(iconName)
-                        .apply { color = Color.BLACK }
+                        .apply { color = ImageGetter.CHARCOAL }
                         .surroundWithCircle(30f, color = iconColor)
 
                     val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = mod.name in openedExpanderTitles) {

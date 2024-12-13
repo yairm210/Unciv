@@ -61,7 +61,7 @@ class GlobalPoliticsOverviewTable(
         defaults().pad(5f)
         background = BaseScreen.skinStrings.getUiBackground(
             "OverviewScreen/DiplomacyOverviewTab/CivTable",
-            tintColor = Color.BLACK
+            tintColor = ImageGetter.CHARCOAL
         )
     }
 
@@ -532,7 +532,7 @@ class GlobalPoliticsOverviewTable(
             legend.add(ShadowedLabel("Diagram line colors", Constants.headingFontSize)).colspan(2).row()
             //todo Rethink hardcoding together with the statusLine.color one in DiplomacyGroup
             legend.addLegendRow("War", Color.RED)
-            for (level in RelationshipLevel.values()) {
+            for (level in RelationshipLevel.entries) {
                 val lineColor = if (level == RelationshipLevel.Ally) Color.CYAN else level.color
                 legend.addLegendRow(level.name, lineColor)
             }

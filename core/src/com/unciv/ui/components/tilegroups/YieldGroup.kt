@@ -32,7 +32,7 @@ class YieldGroup : HorizontalGroup() {
 
     fun getIcon(statName: String) =
             ImageGetter.getStatIcon(statName).surroundWithCircle(12f)
-                    .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
+                    .apply { circle.color = ImageGetter.CHARCOAL; circle.color.a = 0.5f }
 
     private fun getStatIconsTable(statName: String, number: Int): Table {
         val table = Table()
@@ -57,7 +57,7 @@ class YieldGroup : HorizontalGroup() {
 
                 val group = Group().apply { setSize(22f, 22f) }
                 val largeImage = ImageGetter.getStatIcon(statName).surroundWithCircle(22f)
-                    .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
+                    .apply { circle.color = ImageGetter.CHARCOAL;circle.color.a = 0.5f }
                 group.addToCenter(largeImage)
 
                 if (number > 5) {
@@ -67,7 +67,7 @@ class YieldGroup : HorizontalGroup() {
                         fontColor = Color.WHITE,
                         alignment = Align.center
                     )
-                    val amountGroup = label.surroundWithCircle(10f, true, Color.BLACK)
+                    val amountGroup = label.surroundWithCircle(10f, true, ImageGetter.CHARCOAL)
                     label.y -= 0.5f
                     amountGroup.x = group.width - amountGroup.width * 3 / 4
                     amountGroup.y = -amountGroup.height / 4

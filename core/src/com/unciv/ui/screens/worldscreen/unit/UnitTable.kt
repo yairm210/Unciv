@@ -253,7 +253,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 1 -> Color.BROWN
                 2 -> Color.LIGHT_GRAY
                 3 -> Color.GOLD
-                else -> Color.BLACK
+                else -> ImageGetter.CHARCOAL
             }
             repeat(spy.rank) {
                 val star = ImageGetter.getImage("OtherIcons/Star")
@@ -280,7 +280,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 
                 for (status in selectedUnit!!.statuses) {
                     val group = ImageGetter.getPromotionPortrait(status.name)
-                    val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8).surroundWithCircle(15f, color = Color.BLACK)
+                    val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8).surroundWithCircle(15f, color = ImageGetter.CHARCOAL)
                     group.addActor(turnsLeft)
                     turnsLeft.setPosition(group.width, 0f, Align.bottomRight)
                     promotionsTable.add(group).padBottom(2f)

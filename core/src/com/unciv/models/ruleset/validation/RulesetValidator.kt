@@ -22,6 +22,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.images.PortraitPromotion
 
@@ -724,9 +725,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         if (innerColorLuminance > outerColorLuminance) { // inner is brighter
             innerLerpColor = Color.WHITE
-            outerLerpColor = Color.BLACK
+            outerLerpColor = ImageGetter.CHARCOAL
         } else {
-            innerLerpColor = Color.BLACK
+            innerLerpColor = ImageGetter.CHARCOAL
             outerLerpColor = Color.WHITE
         }
 

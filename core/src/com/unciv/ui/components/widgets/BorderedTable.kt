@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
@@ -22,7 +23,7 @@ open class BorderedTable(
      *  that parser still works!
      */
 
-    var bgColor: Color = Color.BLACK
+    var bgColor: Color = ImageGetter.CHARCOAL
     var bgBorderColor: Color = Color.WHITE
 
     var borderSize: Float = 5f
