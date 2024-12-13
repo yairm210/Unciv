@@ -157,8 +157,8 @@ object Automation {
             if (city.civ.wantsToFocusOn(stat))
                 yieldStats[stat] *= 2f
 
-            val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
-            if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
+            val modifierFocus = civPersonality.modifierFocus(PersonalityValue[stat])
+            if (modifierFocus != 1f) yieldStats[stat] *= modifierFocus
         }
 
         // Apply City focus
