@@ -122,7 +122,7 @@ object Automation {
             // probably due to badly configured personalities not properly weighing food vs non-food yields
 
             // Zero out Growth if close to Unhappiness limit as well
-            val baseFocusWeight = if (city.civ.getHappiness() < -8) 0 else {
+            val baseFocusWeight = if (city.civ.getHappiness() < -8) 0f else {
                 if (cityAIFocus in CityFocus.zeroFoodFocuses) 1f else 1.5f
             }
             yieldStats.food += newGrowthFood * foodBaseWeight * baseFocusWeight
