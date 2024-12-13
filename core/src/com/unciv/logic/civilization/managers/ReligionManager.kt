@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import java.lang.Integer.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class ReligionManager : IsPartOfGameInfoSerialization {
@@ -106,8 +107,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             || religionState == ReligionState.Pantheon // any subsequent pantheons before founding a religion
             || (religionState == ReligionState.Religion || religionState == ReligionState.EnhancedReligion) // any belief adding outside of great prophet use
 
-    fun faithForPantheon(additionalCivs: Int = 0) =
-        civInfo.gameInfo.ruleset.modOptions.constants.pantheonBase + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * civInfo.gameInfo.ruleset.modOptions.constants.pantheonGrowth
+    fun faithForPantheon(additionalCivs: Int = 0): Int {
+        val gameInfo = civInfo.gameInfo
+        val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null }
+        return ((gameInfo.ruleset.modOptions.constants.pantheonBase + numCivs * gameInfo.ruleset.modOptions.constants.pantheonGrowth) * gameInfo.speed.faithCostModifier)
+            .roundToInt()
+    }
 
     /** Used for founding the pantheon and for each time the player gets additional pantheon beliefs
      * before forming a religion */
