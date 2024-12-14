@@ -41,7 +41,7 @@ object BaseUnitDescriptions {
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()
-        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn(StateForConditionals(city.civ))) {
+        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn(city.civ.state)) {
             val available = availableResources[resourceName] ?: 0
             val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
             val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())

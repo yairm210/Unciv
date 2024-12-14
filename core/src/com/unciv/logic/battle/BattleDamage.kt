@@ -219,7 +219,7 @@ object BattleDamage {
                 return modifiers
             }
 
-            val tileDefenceBonus = tile.getDefensiveBonus()
+            val tileDefenceBonus = tile.getDefensiveBonus(unit = defender.unit)
             if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) && tileDefenceBonus > 0
                 || !defender.unit.hasUnique(UniqueType.NoDefensiveTerrainPenalty, checkCivInfoUniques = true) && tileDefenceBonus < 0
             )

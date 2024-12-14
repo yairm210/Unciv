@@ -1,16 +1,15 @@
 package com.unciv.ui.screens.overviewscreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
@@ -76,7 +75,7 @@ class NotificationsOverviewTable(
             add(ImageGetter.getWhiteDot()).minHeight(2f).width(stageWidth / 4)
         }).row()
 
-        for (category in NotificationCategory.values()) {
+        for (category in Notification.NotificationCategory.entries) {
             val categoryNotifications = notifications.filter { it.category == category }
             if (categoryNotifications.isEmpty()) continue
 
@@ -86,7 +85,7 @@ class NotificationsOverviewTable(
             for (notification in categoryNotifications) {
                 val notificationTable = Table(BaseScreen.skin)
 
-                val label = ColorMarkupLabel(notification.text, Color.BLACK, fontSize = 20)
+                val label = ColorMarkupLabel(notification.text, ImageGetter.CHARCOAL, fontSize = 20)
                     .apply { wrap = true }
 
                 notificationTable.add(label).width(stageWidth / 2 - iconSize * notification.icons.size)

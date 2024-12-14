@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
@@ -179,11 +180,17 @@ class TileResource : RulesetStatsObject() {
         }
     }
 
-    fun matchesFilter(filter: String) = when (filter) {
+    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+        MultiFilter.multiFilter(filter, {
+            matchesSingleFilter(filter) ||
+                state != null && hasUnique(filter, state) ||
+                state == null && hasTagUnique(filter)
+        })
+
+    fun matchesSingleFilter(filter: String) = when (filter) {
         name -> true
         "any" -> true
         resourceType.name -> true
-        in uniques -> true
         else -> improvementStats?.any { filter == it.key.name } == true
     }
 

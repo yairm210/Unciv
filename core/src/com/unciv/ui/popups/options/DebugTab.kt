@@ -58,6 +58,9 @@ fun debugTab(
     add("Show coordinates on tiles".toCheckBox(DebugUtils.SHOW_TILE_COORDS) {
         DebugUtils.SHOW_TILE_COORDS = it
     }).colspan(2).row()
+    add("Show tile image locations".toCheckBox(DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) {
+        DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it
+    }).colspan(2).row()
 
     val curGameInfo = game.gameInfo
     if (curGameInfo != null) {

@@ -136,6 +136,7 @@ class TestGame {
         civInfo.gameInfo = gameInfo
         civInfo.setNameForUnitTests(nation.name)
         if (isPlayer) civInfo.playerType = PlayerType.Human
+        civInfo.cache.updateState()
         gameInfo.civilizations.add(civInfo)
         civInfo.setTransients()
 
@@ -153,6 +154,7 @@ class TestGame {
         nation.name = Constants.barbarians
         barbarianCivilization.nation = nation
         barbarianCivilization.gameInfo = gameInfo
+        barbarianCivilization.cache.updateState()
         gameInfo.civilizations.add(barbarianCivilization)
         return barbarianCivilization
     }

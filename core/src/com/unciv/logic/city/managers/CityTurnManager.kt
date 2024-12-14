@@ -126,7 +126,7 @@ class CityTurnManager(val city: City) {
                         .sumOf { it.params[0].toInt() - 1 }
 
             if (city.population.population <= removedPopulation) {
-                city.espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
+                city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
                 city.civ.addNotification(
                     "[${city.name}] has been razed to the ground!",
                     city.location, NotificationCategory.General,

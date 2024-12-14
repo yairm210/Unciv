@@ -1,10 +1,13 @@
 package com.unciv.ui.screens.worldscreen.mainmenu
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -71,10 +74,6 @@ class WorldScreenMenuPopup(
             worldScreen.openOptionsPopup(withDebug = true)
         }
         optionsCell.nextColumn()
-        addButton("Community") {
-            close()
-            WorldScreenCommunityPopup(worldScreen).open(force = true)
-        }.nextColumn()
         if (showMusic)
             addButton("Music", KeyboardBinding.MusicPlayer) {
                 close()
@@ -86,6 +85,12 @@ class WorldScreenMenuPopup(
                 close()
                 worldScreen.openDeveloperConsole()
             }.nextColumn()
+        
+        addButton("Exit") {
+            close()
+            Gdx.app.exit()
+        }.apply { actor.style = BaseScreen.skin.get("negative", TextButtonStyle::class.java) }
+            .nextColumn()
 
         addCloseButton().run { colspan(if (singleColumn || column == 1) 1 else 2) }
         pack()

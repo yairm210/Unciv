@@ -22,7 +22,8 @@ internal object CivilopediaImageGetters {
     private const val policyInnerSize = 0.25f
 
     // Todo: potential synergy with map editor
-    internal fun terrainImage(terrain: Terrain, ruleset: Ruleset, imageSize: Float): Group {
+    internal fun terrainImage(terrain: Terrain, ruleset: Ruleset,
+                              imageSize: Float, tileSetStrings: TileSetStrings? = null): Group {
         val tile = Tile()
         tile.ruleset = ruleset
         
@@ -46,7 +47,8 @@ internal object CivilopediaImageGetters {
                 tile.baseTerrain = terrain.name
         }
         tile.setTerrainTransients()
-        val group = TileGroup(tile, TileSetStrings(ruleset, UncivGame.Current.settings), imageSize * 36f / 54f)  // TileGroup normally spills out of its bounding box
+        val group = TileGroup(tile, tileSetStrings ?: TileSetStrings(ruleset, UncivGame.Current.settings),
+                imageSize * 36f / 54f)  // TileGroup normally spills out of its bounding box
         group.isForceVisible = true
         group.isForMapEditorIcon = true
         group.update()
@@ -73,7 +75,7 @@ internal object CivilopediaImageGetters {
             }.surroundWithCircle(size)
             return null
         }
-        return tryImage("$policyBranchIconFolder/$name", Color.BLACK)
+        return tryImage("$policyBranchIconFolder/$name", ImageGetter.CHARCOAL)
             ?: tryImage("$policyIconFolder/$name", Color.BROWN)
     }
     val resource = { name: String, size: Float ->

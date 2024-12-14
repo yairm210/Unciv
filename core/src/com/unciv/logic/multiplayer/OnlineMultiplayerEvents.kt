@@ -25,7 +25,7 @@ class MultiplayerGameUpdated(
  */
 class MultiplayerGameUpdateFailed(
     override val name: String,
-    val error: Exception
+    val error: Throwable
 ) : MultiplayerGameUpdateEnded
 /**
  * Gets sent when a game updated successfully, but nothing changed

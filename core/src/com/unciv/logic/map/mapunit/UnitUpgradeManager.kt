@@ -1,7 +1,6 @@
 package com.unciv.logic.map.mapunit
 
 import com.unciv.models.ruleset.RejectionReasonType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
@@ -56,7 +55,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
         // the UniqueType being allowed on a BaseUnit - we don't have a MapUnit in the loop.
         // Actually instantiating every intermediate to support such mods: todo
         var civModifier = 1f
-        val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
+        val stateForConditionals = unit.cache.state
         for (unique in unit.civ.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
             civModifier *= unique.params[0].toPercent()
 

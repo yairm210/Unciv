@@ -1,3 +1,141 @@
+## 4.14.15
+
+UI improvements:
+
+- Tile Info Table 
+- Changed Black to Charcoal 
+- Unit description table
+
+Fixed cities built on pillages roads colored red
+
+Fixed scroll position indicator
+
+Fixed Thai diacritic support
+
+Added "exit" button in world screen popup menu
+
+Fixed AI religion belief assessment
+
+Increase starting Luxury amount to match Civ 5 - By SeventhM
+
+UI fixes: dividers, checkbox-to-text spacing, multiplayer tab connection button  - By Toxile (new contributor!)
+
+## 4.14.14
+
+Automated air units respect "Cannot move" unique
+
+Resolved rare New Game Screen "application not responding" errors
+
+AI: 
+- Don't pick most expensive tech as free tech, if it's marked as "0 weight for AI decisions"
+- Decreased base Fort value to not build it instead of useful improvements
+
+Remove images of expended units
+
+Display city state type name for battle bonuses
+
+"Unit built" notification selects the built unit
+
+## 4.14.13
+
+SIGNIFICANT memory performance improvements for large maps
+
+"Stats from tiles" uniques work with terrain + improvement filter combos
+
+Layout for resource icons in city screen when in resistance - fixed
+
+Remove server notifications - bad user experience
+
+hexarealm: Fix Snow-Lake edges - By RobLoach
+
+## 4.14.12
+
+Allow unit triggers to be used in unit-triggered events
+
+Memory and rendering performance improvements
+
+Solved ANRs while building crash screen
+
+Spies assigned to cities moved to other civs are returned to hideout
+
+Automated workers don't remove terrain features without the proper tech
+
+Removed 'please' from Civ demands to make them more demand-y
+
+Fix promotion uniques being ignored if it didn't match a promotion names  - By SeventhM
+
+Notifications can link to URLs  - By touhidurrr
+
+## 4.14.11
+
+Added Github + Discord icon links on main menu
+
+City construction progress is reset when puppeting, not when annexing
+
+Mods:
+- Allow loading games where a buildings' "replaces" has been removed
+- Allow loading games with natural wonders that have been removed from mods
+- Only add city ruins improvements if they exist in the ruleset
+
+Added lake-land edge tiles - by legacymtgsalvationuser69544
+
+## 4.14.10
+
+Fixed Flood Plains generation
+
+Fixed crash when swapping while retreating
+
+Added debug option to show tile image locations
+
+Worker units do not try and swap with non-adjacent tiles
+
+Better MP update error handling
+
+Resolved crashes due to incorrect music state
+
+Console cannot change player type for non-major civs or allow adding cities to spectator/barbarian
+
+## 4.14.9
+
+CPU performance improvements
+
+Uniques hidden from users do not show icons in tech tree
+
+Disallow slashes in mp game names
+
+Added more options for UI skin mods  - By GGGuenni
+
+By SeventhM:
+- Fix capital indicating uniques ignoring gamestate 
+- Fix tile defence uniques ignoring unit state
+
+## 4.14.8
+
+Avoid 'application not responding' errors on Android when attempting to start a multiplayer game
+
+Avoid out of memory errors when updating multiplayer games
+
+Don't reject constructions for missing stockpiled resource costs, AFTER you've already paid them
+
+Memory performance improvements - By SeventhM
+
+Growth changes - By itanasi
+
+## 4.14.7
+
+CPU performance improvements
+
+Modding:
+- Mod checker accepts civ filters as tile filters
+- Great General unique works with conditionals
+- Nat wonders land->water conversion no longer causes rivers on water tiles
+
+Growth nullifying uniques do not nullify starvation
+
+Removed Scenarios button, since the 'new game' screen handles scenarios better
+
+Allow filter uniques to have conditionals and work with modifiers  - By SeventhM
+
 ## 4.14.6
 
 Rendering performance improvements

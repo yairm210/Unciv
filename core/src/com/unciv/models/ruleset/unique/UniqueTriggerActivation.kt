@@ -124,11 +124,9 @@ object UniqueTriggerActivation {
                     choice.triggerChoice(civInfo, unit)
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
-                    /** See [AlertPopup.addEvent] for the deserializing of this string to the context */
+                    /** See [com.unciv.ui.screens.worldscreen.AlertPopup.addEvent] for the deserializing of this string to the context */
                     var eventText = event.name
-                    // Todo later version: Uncomment this to enable events with unit triggers
-                    // if (unit != null) eventText += Constants.stringSplitCharacter + "unitId=" + unit.id
-                     
+                    if (unit != null) eventText += Constants.stringSplitCharacter + "unitId=" + unit.id
                     civInfo.popupAlerts.add(PopupAlert(AlertType.Event, eventText))
                     true
                 }
@@ -327,7 +325,7 @@ object UniqueTriggerActivation {
                 val policyFilter = unique.params[0]
                 val policiesToRemove = civInfo.policies.adoptedPolicies
                     .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter) }
+                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
                 if (policiesToRemove.isEmpty()) return null
 
                 return {
@@ -350,7 +348,7 @@ object UniqueTriggerActivation {
                 val refundPercentage = unique.params[1].toInt()
                 val policiesToRemove = civInfo.policies.adoptedPolicies
                     .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter) }
+                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
                 if (policiesToRemove.isEmpty()) return null
 
                 val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
@@ -907,7 +905,7 @@ object UniqueTriggerActivation {
                 return {
                     for (applicableCity in applicableCities) {
                         val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
-                            it.matchesFilter(unique.params[0])
+                            it.matchesFilter(unique.params[0], applicableCity.state)
                         }.toSet()
                         applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
                     }
@@ -924,7 +922,7 @@ object UniqueTriggerActivation {
                 return {
                     for (applicableCity in applicableCities) {
                         val buildingsToSell = applicableCity.cityConstructions.getBuiltBuildings().filter {
-                            it.matchesFilter(unique.params[0]) && it.isSellable()
+                            it.matchesFilter(unique.params[0], applicableCity.state) && it.isSellable()
                         }
 
                         for (building in buildingsToSell) applicableCity.sellBuilding(building)
@@ -982,7 +980,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitLoseStatus -> {
                 if (unit == null) return null
-                if (unit.statuses.none { it.name == unique.params[1] }) return null
+                if (!unit.hasStatus(unique.params[1])) return null
                 return {
                     unit.removeStatus(unique.params[1])
                     true

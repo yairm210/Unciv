@@ -17,7 +17,6 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -94,7 +93,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         constructionsQueueScrollPane.setOverscroll(false, false)
         constructionsQueueTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityConstructionTable/ConstructionsQueueTable",
-            tintColor = Color.BLACK
+            tintColor = ImageGetter.CHARCOAL
         )
 
         upperTable.defaults().left().top()
@@ -107,7 +106,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         availableConstructionsScrollPane.setOverscroll(false, false)
         availableConstructionsTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityConstructionTable/AvailableConstructionsTable",
-            tintColor = Color.BLACK
+            tintColor = ImageGetter.CHARCOAL
         )
         lowerTableScrollCell = lowerTable.add(availableConstructionsScrollPane).bottom()
         lowerTable.row()
@@ -206,8 +205,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             val buttonText = cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
             val resourcesRequired = if (entry is BaseUnit)
-                entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
-                else entry.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
+                entry.getResourceRequirementsPerTurn(city.civ.state)
+                else entry.getResourceRequirementsPerTurn(city.state)
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
                         .filter { it.isImportantRejection() }
@@ -269,7 +268,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                             && constructionButtonDTOList.any {
                                 (it.construction is Building) && (it.construction.name == dto.construction.requiredBuilding
                                         || it.construction.replaces == dto.construction.requiredBuilding
-                                        || it.construction.hasTagUnique(dto.construction.requiredBuilding!!))
+                                        || it.construction.hasUnique(dto.construction.requiredBuilding!!, cityScreen.city.state))
                             })
                         continue
 
@@ -329,8 +328,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 else cityConstructions.getTurnsToConstructionString(construction, isFirstConstructionOfItsKind)
 
         val constructionResource = if (construction is BaseUnit)
-                construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))
-            else construction.getResourceRequirementsPerTurn(StateForConditionals(city.civ))
+                construction.getResourceRequirementsPerTurn(city.civ.state)
+            else construction.getResourceRequirementsPerTurn(city.state)
         for ((resourceName, amount) in constructionResource) {
             val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
             text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()
@@ -384,7 +383,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             else
                 BaseScreen.skinStrings.getUiBackground(
                     "CityScreen/CityConstructionTable/QueueEntry",
-                    tintColor = Color.BLACK
+                    tintColor = ImageGetter.CHARCOAL
                 )
     }
 
@@ -431,7 +430,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             }
         }
         for (unique in constructionButtonDTO.construction
-            .getMatchingUniquesNotConflicting(UniqueType.CostsResources, StateForConditionals(cityScreen.city))) {
+            .getMatchingUniquesNotConflicting(UniqueType.CostsResources, cityScreen.city.state)) {
             val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                 Color.RED else Color.WHITE
             resourceTable.add(ColorMarkupLabel(unique.params[0], color)).expandX().left().padLeft(5f)
@@ -443,7 +442,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New")
-                .apply { color = Color.BLACK }.surroundWithCircle(40f)
+                .apply { color = ImageGetter.CHARCOAL }.surroundWithCircle(40f)
             addToQueueButton.onClick(UncivSound.Silent) {
                 // Since the pickConstructionButton.onClick adds the construction if it's selected,
                 // this effectively adds the construction even if it's unselected
@@ -503,7 +502,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             // Lazy because possibly not needed (highlight true, clearOthers false) and slightly costly
             BaseScreen.skinStrings.getUiBackground(
                 "CityScreen/CityConstructionTable/PickConstructionButton",
-                tintColor = Color.BLACK
+                tintColor = ImageGetter.CHARCOAL
             )
         }
 
@@ -586,7 +585,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         movePriority: (Int) -> Int
     ): Table {
         val button = Table()
-        button.add(ImageGetter.getArrowImage(arrowDirection).apply { color = Color.BLACK }.surroundWithCircle(40f))
+        button.add(ImageGetter.getArrowImage(arrowDirection).apply { color = ImageGetter.CHARCOAL }.surroundWithCircle(40f))
         button.touchable = Touchable.enabled
         // Don't bind the queue reordering keys here - those should affect only the selected entry, not all of them
         button.onActivation {

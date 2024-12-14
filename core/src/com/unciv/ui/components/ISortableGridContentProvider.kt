@@ -87,7 +87,7 @@ interface ISortableGridContentProvider<IT, ACT> {
         @JvmStatic
         fun getCircledIcon(path: String, iconSize: Float, circleColor: Color = Color.LIGHT_GRAY) =
             ImageGetter.getImage(path)
-                .apply { color = Color.BLACK }
+                .apply { color = ImageGetter.CHARCOAL }
                 .surroundWithCircle(iconSize, color = circleColor)
 
         @JvmStatic

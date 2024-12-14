@@ -6,7 +6,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -158,9 +157,9 @@ class CityStats(val city: City) {
         return stats
     }
 
-    private fun getGrowthBonus(totalFood: Float): StatMap {
+    fun getGrowthBonus(totalFood: Float): StatMap {
         val growthSources = StatMap()
-        val stateForConditionals = StateForConditionals(city.civ, city)
+        val stateForConditionals = city.state
         // "[amount]% growth [cityFilter]"
         for (unique in city.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals = stateForConditionals)) {
             if (!city.matchesFilter(unique.params[1])) continue
@@ -304,8 +303,9 @@ class CityStats(val city: City) {
     }
 
     private fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
-        if (construction is Building) return construction.matchesFilter(filter)
-        if (construction is BaseUnit) return construction.matchesFilter(filter)
+        val state = city.state
+        if (construction is Building) return construction.matchesFilter(filter, state)
+        if (construction is BaseUnit) return construction.matchesFilter(filter, state)
         return false
     }
 

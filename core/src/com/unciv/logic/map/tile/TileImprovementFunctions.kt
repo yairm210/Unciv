@@ -117,7 +117,7 @@ class TileImprovementFunctions(val tile: Tile) {
                 tile.ruleset.tileRemovals.firstOrNull { it.name == Constants.remove + feature } }
             if (featureRemovals.isEmpty()) return false
             if (featureRemovals.any { it !in knownFeatureRemovals }) return false
-            val clonedTile = tile.clone()
+            val clonedTile = tile.clone(addUnits = false)
             clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
                 feature -> featureRemovals.any { it.name.removePrefix(Constants.remove) == feature } })
             return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
@@ -150,7 +150,7 @@ class TileImprovementFunctions(val tile: Tile) {
 
             // Can't build if any terrain specifically prevents building this improvement
             tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
-                    unique -> !improvement.matchesFilter(unique.params[0])
+                    unique -> !improvement.matchesFilter(unique.params[0], StateForConditionals(tile = tile))
             } -> false
 
             // Can't build if the improvement specifically prevents building on some present feature
@@ -203,8 +203,8 @@ class TileImprovementFunctions(val tile: Tile) {
             improvementName?.startsWith(Constants.remove) == true -> {
                 activateRemovalImprovement(improvementName, civToActivateBroaderEffects)
             }
-            improvementName == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, civToActivateBroaderEffects)
-            improvementName == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, civToActivateBroaderEffects)
+            improvementName == RoadStatus.Road.name -> tile.setRoadStatus(RoadStatus.Road, civToActivateBroaderEffects)
+            improvementName == RoadStatus.Railroad.name -> tile.setRoadStatus(RoadStatus.Railroad, civToActivateBroaderEffects)
             improvementName == Constants.repair -> tile.setRepaired()
             else -> {
                 tile.improvementIsPillaged = false
@@ -260,12 +260,12 @@ class TileImprovementFunctions(val tile: Tile) {
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0]) })
+            { improvement.matchesFilter(it.params[0], StateForConditionals(civ, unit = unit, tile = tile)) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         if (unit == null) return
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0]) })
+            { improvement.matchesFilter(it.params[0], StateForConditionals(civ, unit = unit, tile = tile)) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }
 

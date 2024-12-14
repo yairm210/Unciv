@@ -20,7 +20,6 @@ import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -34,15 +33,20 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val city = cityConstructions.city
     private val civInfo = city.civ
 
+    private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
+    private val cityState = city.state
+    private val cityStats = city.cityStats
+
     private val personality = civInfo.getPersonality()
 
-    private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(city))
+    private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, cityState)
         .map{ it.params[0] }
     private fun shouldAvoidConstruction (construction: IConstruction): Boolean {
+        val stateForConditionals = cityState
         for (toAvoid in constructionsToAvoid) {
-            if (construction is Building && construction.matchesFilter(toAvoid))
+            if (construction is Building && construction.matchesFilter(toAvoid, stateForConditionals))
                 return true
-            if (construction is BaseUnit && construction.matchesFilter(toAvoid))
+            if (construction is BaseUnit && construction.matchesFilter(toAvoid, stateForConditionals))
                 return true
         }
         return false
@@ -85,10 +89,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     private val cityIsOverAverageProduction = city.cityStats.currentCityStats.production >= averageProduction
-
-    private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
-    private val cityState = StateForConditionals(city)
-    private val cityStats = city.cityStats
 
     private data class ConstructionChoice(val choice: String, var choiceModifier: Float,
                                           val remainingWork: Int, val production: Int)

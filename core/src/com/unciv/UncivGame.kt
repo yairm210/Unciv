@@ -462,6 +462,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             // ignore
         }
         Gdx.app.postRunnable {
+            Gdx.input.inputProcessor = null // CrashScreen needs to toJson which can take a while
+            // This may not be enough, we may need to run "generate crash text" in a different thread,
+            //   but for now let's try this.
             setAsRootScreen(CrashScreen(ex))
         }
     }
@@ -483,7 +486,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.14.6-patch1", 1071)
+        val VERSION = Version("4.14.15", 1083)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
@@ -507,7 +510,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 }
 
-private class GameStartScreen : BaseScreen() {
+class GameStartScreen : BaseScreen() {
     init {
         val logoImage = ImageGetter.getExternalImage("banner.png")
         logoImage.center(stage)

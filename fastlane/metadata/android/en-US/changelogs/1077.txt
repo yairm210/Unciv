@@ -1,0 +1,15 @@
+Allow unit triggers to be used in unit-triggered events
+
+Memory and rendering performance improvements
+
+Solved ANRs while building crash screen
+
+Spies assigned to cities moved to other civs are returned to hideout
+
+Automated workers don't remove terrain features without the proper tech
+
+Removed 'please' from Civ demands to make them more demand-y
+
+Fix promotion uniques being ignored if it didn't match a promotion names  - By SeventhM
+
+Notifications can link to URLs  - By touhidurrr

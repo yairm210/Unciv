@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.diplomacy
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
@@ -153,7 +154,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 city.cityConstructions.getConstructableUnits()
                 .filter { !it.isCivilian() && it.isLandUnit && it.uniqueTo == null }
                 // Does not make us go over any resource quota
-                .filter { it.getResourceRequirementsPerTurn(StateForConditionals(civInfo = receivingCiv)).none {
+                .filter { it.getResourceRequirementsPerTurn(receivingCiv.state).none {
                     it.value > 0 && receivingCiv.getResourceAmount(it.key) < it.value
                 } }
                 .toList().randomOrNull()
@@ -371,18 +372,22 @@ class CityStateFunctions(val civInfo: Civilization) {
             return
 
         otherCiv.addGold(-getDiplomaticMarriageCost())
+        
         val notificationLocation = civInfo.getCapital()!!.location
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
             notificationLocation,
             NotificationCategory.Diplomacy, civInfo.civName,
             NotificationIcon.Diplomacy, otherCiv.civName)
+        
         for (civ in civInfo.gameInfo.civilizations.filter { it != otherCiv })
             civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civInfo.civName}], bringing them under their control.",
                 notificationLocation,
                 NotificationCategory.Diplomacy, civInfo.civName,
                 NotificationIcon.Diplomacy, otherCiv.civName)
+        
         for (unit in civInfo.units.getCivUnits())
             unit.gift(otherCiv)
+        
 
         // Make sure this CS can never be liberated
         civInfo.gameInfo.getCities().filter {
@@ -393,6 +398,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         for (city in civInfo.cities) {
+            city.espionage.removeAllPresentSpies(SpyFleeReason.CityTakenOverByMarriage)
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
         }

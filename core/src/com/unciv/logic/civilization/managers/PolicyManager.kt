@@ -47,7 +47,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
                 val victoryPriority = civInfo.getPreferredVictoryTypes().sumOf { branch.priorities[it] ?: 0}
                 val personalityPriority = civInfo.getPersonality().priorities[branch.name] ?: 0
                 val branchPriority = (victoryPriority + personalityPriority) * 
-                        branch.getWeightForAiDecision(StateForConditionals(civInfo))
+                        branch.getWeightForAiDecision(civInfo.state)
                 value[branch] = branchPriority.roundToInt()
             }
             return value
@@ -186,8 +186,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleset.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                .any { !it.conditionalsApply(civInfo) }) return false
-        if (policy.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return false
+                .any { !it.conditionalsApply(civInfo.state) }) return false
+        if (policy.hasUnique(UniqueType.Unavailable, civInfo.state)) return false
         return true
     }
 
@@ -231,7 +231,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         //todo Can this be mapped downstream to a PolicyAction:NotificationAction?
         val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
-            if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) {it.params[0] == policy.name})

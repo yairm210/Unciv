@@ -10,6 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.max
+import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
@@ -23,10 +24,12 @@ class Simulation(
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
+    private val majorCivs = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.size
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
-    var winRate = mutableMapOf<String, MutableInt>()
+    var numWins = mutableMapOf<String, MutableInt>()
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
+    private var winTurnByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var avgSpeed = 0f
     private var avgDuration: Duration = Duration.ZERO
     private var totalTurns = 0
@@ -36,10 +39,13 @@ class Simulation(
 
     init{
         for (civ in civilizations) {
-            this.winRate[civ] = MutableInt(0)
+            this.numWins[civ] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
                 winRateByVictory[civ]!![victory] = MutableInt(0)
+            winTurnByVictory[civ] = mutableMapOf()
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
+                winTurnByVictory[civ]!![victory] = MutableInt(0)
         }
     }
 
@@ -94,12 +100,14 @@ class Simulation(
 
     fun getStats() {
         // win Rate
-        winRate.values.forEach { it.value = 0 }
+        numWins.values.forEach { it.value = 0 }
         winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
+        winTurnByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
         steps.forEach {
             if (it.winner != null) {
-                winRate[it.winner!!]!!.inc()
+                numWins[it.winner!!]!!.inc()
                 winRateByVictory[it.winner!!]!![it.victoryType]!!.inc()
+                winTurnByVictory[it.winner!!]!![it.victoryType]!!.set(winTurnByVictory[it.winner!!]!![it.victoryType]!!.get() + it.turns)
             }
         }
         totalTurns = steps.sumOf { it.turns }
@@ -112,22 +120,72 @@ class Simulation(
         var outString = ""
         for (civ in civilizations) {
 
-            val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
-            if (wins == 0) continue
+            val numSteps = max(steps.size, 1)
+            val expWinRate = 1f / majorCivs
+            val winRate = numWins[civ]!!.value * 100 / numSteps
+            if (winRate == 0) continue
 
             outString += "\n$civ:\n"
-            outString += "$wins% total win rate \n"
+            outString += "$winRate% total win rate \n"
+            if (numSteps * expWinRate >= 10 && numSteps * (1 - expWinRate) >= 10) {
+                // large enough sample size, binomial distribution approximates the Normal Curve
+                val pval = binomialTest(
+                    numWins[civ]!!.value.toDouble(),
+                    numSteps.toDouble(),
+                    expWinRate.toDouble(),
+                    "greater"
+                )
+                outString += "one-tail binomial pval = $pval\n"
+            }
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
-                val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)
+                val winsVictory =
+                    winRateByVictory[civ]!![victory]!!.value * 100 / max(numWins[civ]!!.value, 1)
                 outString += "$victory: $winsVictory%    "
             }
-             outString += "\n"
+            outString += "\n"
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
+                val winsTurns =
+                    winTurnByVictory[civ]!![victory]!!.value / max(winRateByVictory[civ]!![victory]!!.value, 1)
+                outString += "$victory: $winsTurns    "
+            }
+            outString += "avg turns\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"
         outString += "Total time: $totalDuration\n"
 
         return outString
+    }
+
+    private fun binomialTest(successes: Double, trials: Double, p: Double, alternative: String): Double {
+        val q = 1 - p
+        val mean = trials * p
+        val variance = trials * p * q
+        val stdDev = sqrt(variance)
+        val z = (successes - mean) / stdDev
+        val pValue = 1 - normalCdf(z)
+        return when (alternative) {
+            "greater" -> pValue
+            "less" -> 1 - pValue
+            else -> throw IllegalArgumentException("Alternative must be 'greater' or 'less'")
+        }
+    }
+
+    private fun normalCdf(z: Double): Double {
+        return 0.5 * (1 + erf(z / sqrt(2.0)))
+    }
+
+    // Approximation of the error function
+    private fun erf(x: Double): Double {
+        val t = 1.0 / (1.0 + 0.5 * kotlin.math.abs(x))
+        val tau =
+            t * kotlin.math.exp(
+                -x * x - 1.26551223 +
+                    t * (1.00002368 + t * (0.37409196 + t * (0.09678418
+                    + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 +
+                    t * (1.48851587 + t * (-0.82215223 + t * 0.17087277))))))))
+            )
+        return if (x >= 0) 1 - tau else tau - 1
     }
 }
 

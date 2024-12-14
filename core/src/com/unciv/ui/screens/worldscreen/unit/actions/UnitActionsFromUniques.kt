@@ -197,7 +197,7 @@ object UnitActionsFromUniques {
             // extends an existing unit action
             if (unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes)) continue
             if (!unique.isTriggerable) continue
-            if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
+            if (!unique.conditionalsApply(unit.cache.state)) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
             val baseTitle = when (unique.type) {
@@ -296,7 +296,7 @@ object UnitActionsFromUniques {
 
         for (unique in uniquesToCheck) {
             val improvementFilter = unique.params[0]
-            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter) }
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, StateForConditionals(unit = unit, tile = tile)) }
 
             for (improvement in improvements) {
                 // Try to skip Improvements we can never build
@@ -366,8 +366,7 @@ object UnitActionsFromUniques {
     internal fun getTransformActions(unit: MapUnit, tile: Tile) = sequence {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        val stateForConditionals =
-            StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
+        val stateForConditionals = unit.cache.state
 
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
@@ -383,7 +382,7 @@ object UnitActionsFromUniques {
             val resourceRequirementsDelta = Counter<String>()
             for ((resource, amount) in unit.getResourceRequirementsPerTurn())
                 resourceRequirementsDelta.add(resource, -amount)
-            for ((resource, amount) in unitToTransformTo.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)))
+            for ((resource, amount) in unitToTransformTo.getResourceRequirementsPerTurn(unit.cache.state))
                 resourceRequirementsDelta.add(resource, amount)
             val newResourceRequirementsString = resourceRequirementsDelta.entries
                 .filter { it.value > 0 }

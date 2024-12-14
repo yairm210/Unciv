@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.addToCenter
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -78,7 +79,7 @@ private class FlagBackground(drawable: TextureRegionDrawable, size: Float) : Ima
 }
 
 /** Displays the unit's icon and action */
-class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
+class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
     var actionGroup: Group? = null
 
     private val flagIcon = ImageGetter.getUnitIcon(unit.baseUnit, unit.civ.nation.getInnerColor())
@@ -87,7 +88,6 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : Group() {
     private var flagMask: Image? = getBackgroundMaskForUnit()
 
     init {
-        isTransform = false // performance helper - nothing here is rotated or scaled
         color.a *= UncivGame.Current.settings.unitIconOpacity
 
         val sizeSelectionX = size*1.6f

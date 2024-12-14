@@ -85,6 +85,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var nation: Nation
+    
+    @Transient
+    var state = StateForConditionals.EmptyState
 
     @Transient
     val units = UnitManager(this)
@@ -449,7 +452,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         for (resourceSupply in detailedCivResources) {
             if (resourceSupply.resource.isStockpiled()) continue
-            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, StateForConditionals(this))) continue
+            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, state)) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
                 newResourceSupplyList.add(resourceSupply.copy())
@@ -509,14 +512,14 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
-        StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals = state) =
+        getMatchingUniques(uniqueType, stateForConditionals).any()
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(this)
+        stateForConditionals: StateForConditionals = state
     ): Sequence<Unique> = sequence {
         yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
@@ -536,7 +539,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getTriggeredUniques(
         trigger: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(this),
+        stateForConditionals: StateForConditionals = state,
         triggerFilter: (Unique) -> Boolean = { true }
     ) : Iterable<Unique> = sequence {
         yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
@@ -551,19 +554,16 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
-
-    @Transient
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
-
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, state: StateForConditionals? = this.state, multiFilter: Boolean = true): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    fun matchesSingleFilter(filter: String, state: StateForConditionals? = this.state): Boolean {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
-            else -> nation.matchesFilter(filter)
+            else -> nation.matchesFilter(filter, state, false)
         }
     }
 
@@ -580,7 +580,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun getEquivalentBuilding(baseBuilding: Building): Building {
-        if (baseBuilding.replaces != null)
+        if (baseBuilding.replaces != null
+                && baseBuilding.replaces in gameInfo.ruleset.buildings)
             return getEquivalentBuilding(baseBuilding.replaces!!)
 
         for (building in cache.uniqueBuildings)
@@ -619,6 +620,17 @@ class Civilization : IsPartOfGameInfoSerialization {
             if (unit.replaces == baseUnit.name)
                 return unit
         return baseUnit
+    }
+
+    fun capitalCityIndicator(city: City? = null): Building? {
+        val stateForConditionals = if (city?.civ == this) city.state
+        else if (city == null) state
+        else StateForConditionals(this, city)
+        val indicatorBuildings = gameInfo.ruleset.buildings.values.asSequence()
+            .filter { it.hasUnique(UniqueType.IndicatesCapital, stateForConditionals) }
+
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && matchesFilter(it.uniqueTo!!, stateForConditionals) }
+        return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 
     override fun toString(): String = civName // for debug
@@ -926,10 +938,10 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun moveCapitalTo(city: City?, oldCapital: City?) {
         // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
-        val newCapitalIndicator = city?.capitalCityIndicator()
+        val newCapitalIndicator = if (city == null) null else capitalCityIndicator(city)
         if (newCapitalIndicator != null) {
             // move new capital
-            city.cityConstructions.addBuilding(newCapitalIndicator)
+            city!!.cityConstructions.addBuilding(newCapitalIndicator)
             city.isBeingRazed = false // stop razing the new capital if it was being razed
 
             // move the buildings with MovedToNewCapital unique
@@ -946,8 +958,8 @@ class Civilization : IsPartOfGameInfoSerialization {
             }
         }
 
-        val oldCapitalIndicator = oldCapital?.capitalCityIndicator()
-        if (oldCapitalIndicator != null) oldCapital.cityConstructions.removeBuilding(oldCapitalIndicator)
+        val oldCapitalIndicator = if (oldCapital == null) null else capitalCityIndicator(oldCapital)
+        if (oldCapitalIndicator != null) oldCapital!!.cityConstructions.removeBuilding(oldCapitalIndicator)
     }
 
     /** @param oldCapital `null` when destroying, otherwise old capital */

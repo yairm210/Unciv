@@ -162,6 +162,11 @@ The name of the tile should be `<tile name>-<origin tile filter>-<destination ti
 - TopLeft
 - TopRight
 
+And where the tile filter is one of:
+- Terrain name
+- Feature name
+- Terrain type (Land/Water)
+
 For example: `Cliff-Hills-Coast-Top.png`
 
 The initial name has no bearing on the image used, it is just a way to group images together.

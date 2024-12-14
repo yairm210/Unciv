@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
@@ -16,8 +17,15 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civInfo: Civilization?) : Group() {
-    private val tileLayer = Group()
+class TileLayerGroup: NonTransformGroup(){
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civInfo: Civilization?) : NonTransformGroup() {
+    private val tileLayer = TileLayerGroup()
+    private val borderLayer = NonTransformGroup()
+    private val cityLayer = NonTransformGroup()
+            
     private val minimapTiles: List<MinimapTile>
     private val scrollPositionIndicators: List<ClippingImage>
     private var lastViewingCiv: Civilization? = null
@@ -27,9 +35,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     private var tileMapHeight = 0f
 
     init {
-        // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
-        isTransform = false
-
         // Set fixed minimap size
         val stageMinimapSize = calcMinimapSize(minimapSize)
         setSize(stageMinimapSize.x, stageMinimapSize.y)
@@ -54,10 +59,16 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             group.moveBy(padX, padY)
         }
 
-        scrollPositionIndicators = createScrollPositionIndicators()
-        scrollPositionIndicators.forEach(tileLayer::addActor)
 
         addActor(tileLayer)
+        addActor(borderLayer)
+        addActor(cityLayer)
+        
+        val scrollIndicatorLayer = Group().apply { touchable = Touchable.disabled } // Do not block!
+        scrollIndicatorLayer.setSize(width, height)
+        scrollPositionIndicators = createScrollPositionIndicators()
+        scrollPositionIndicators.forEach(scrollIndicatorLayer::addActor)
+        addActor(scrollIndicatorLayer)
 
         mapHolder.onViewportChangedListener = ::updateScrollPosition
     }
@@ -124,11 +135,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         // hex height = sqrt(3) / 2 * d / 2, number of rows = mapDiameter * 2
         height *= minimapTileSize * sqrt(3f) * 0.5f
         // hex width = 0.75 * d
-        width =
-                if (mapParameters.worldWrap)
-                    (width - 1f) * minimapTileSize * 0.75f
-                else
-                    width * minimapTileSize * 0.75f
+        width = if (mapParameters.worldWrap)    (width - 1f) * minimapTileSize * 0.75f
+                else                            width * minimapTileSize * 0.75f
 
         return Vector2(width, height)
     }
@@ -238,11 +246,12 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             if (shouldBeUnrevealed || !ownerChanged) continue
 
             if (tileInfo.isCityCenter()) {
-                minimapTile.updateCityCircle().updateActorsIn(this)
+                minimapTile.updateCityCircle().updateActorsIn(cityLayer)
             }
 
-            minimapTile.updateBorders().updateActorsIn(this)
+            minimapTile.updateBorders().updateActorsIn(borderLayer)
         }
+        
         lastViewingCiv = viewingCiv
     }
 

@@ -110,7 +110,7 @@ object Conditionals {
             UniqueType.ConditionalTutorialsEnabled -> UncivGame.Current.settings.showTutorials
             UniqueType.ConditionalTutorialCompleted -> conditional.params[0] in UncivGame.Current.settings.tutorialTasksCompleted
 
-            UniqueType.ConditionalCivFilter, UniqueType.ConditionalCivFilterOld -> checkOnCiv { matchesFilter(conditional.params[0]) }
+            UniqueType.ConditionalCivFilter, UniqueType.ConditionalCivFilterOld -> checkOnCiv { matchesFilter(conditional.params[0], state) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
             UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
             UniqueType.ConditionalWithResource -> state.getResourceAmount(conditional.params[0]) > 0
@@ -207,16 +207,16 @@ object Conditionals {
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
-            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City") == true
+            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City", false) == true
             UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 state.relevantUnit?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalUnitWithPromotion -> state.relevantUnit != null &&
                     (state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
-                    || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
+                    || state.relevantUnit!!.hasStatus(conditional.params[0]) )
             UniqueType.ConditionalUnitWithoutPromotion -> state.relevantUnit != null &&
                     !(state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
-                            || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
+                            || state.relevantUnit!!.hasStatus(conditional.params[0]) )
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalAboveHP -> state.relevantUnit != null && state.relevantUnit!!.health > conditional.params[0].toInt()

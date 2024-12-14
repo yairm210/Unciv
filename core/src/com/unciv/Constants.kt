@@ -107,6 +107,7 @@ object Constants {
     const val defaultFallbackTileset = "FantasyHex"
     const val defaultUnitset = "AbsoluteUnits"
     const val defaultSkin = "Minimal"
+    const val defaultFallbackSkin = "Minimal"
 
     /**
      * Use this to determine whether a [MapUnit][com.unciv.logic.map.mapunit.MapUnit]'s movement is exhausted

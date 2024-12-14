@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.CityStats
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
@@ -98,20 +99,33 @@ object Automation {
         // always picking the Highest Food tile until Not Starving
         yieldStats.food = feedFood * (foodBaseWeight * 8)
         // growthFood is any additional food not required to meet Starvation
-        if (cityAIFocus in CityFocus.zeroFoodFocuses) {
-            // Focus on non-food/growth
-            // Reduce excess food focus to prevent Happiness spiral
-            if (city.civ.getHappiness() < 1)
-                yieldStats.food += growthFood * (foodBaseWeight / 4)
-        } else {
-            // NoFocus or Food/Growth Focus.
+
+        // Growth is penalized when Unhappy, see GlobalUniques.json
+        // No Growth if <-10, 1/4 if <0
+        // Reusing food growth code from CityStats.updateFinalStatList()
+        val growthNullifyingUnique =
+            city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
+        if (growthNullifyingUnique == null) { // if not nullified
+            var newGrowthFood = growthFood  // running count of growthFood
+            val cityStats = CityStats(city)
+            val growthBonuses = cityStats.getGrowthBonus(growthFood)
+            for (growthBonus in growthBonuses) {
+                newGrowthFood += growthBonus.value.food
+            }
+            if (city.isWeLoveTheKingDayActive() && city.civ.getHappiness() >= 0) {
+                newGrowthFood += growthFood / 4
+            }
+            newGrowthFood = newGrowthFood.coerceAtLeast(0f) // floor to 0 for safety
+
             // When Happy, 2 production is better than 1 growth,
             // but setting such by default worsens AI civ citizen assignment,
             // probably due to badly configured personalities not properly weighing food vs non-food yields
-            val growthFoodScaling = if (city.civ.getHappiness() > 0) foodBaseWeight * 2 
-                else if (city.civ.getHappiness() < -8) foodBaseWeight * 0 
-                else foodBaseWeight / 4
-            yieldStats.food += growthFood * growthFoodScaling
+
+            // Zero out Growth if close to Unhappiness limit as well
+            val baseFocusWeight = if (city.civ.getHappiness() < -8) 0 else {
+                if (cityAIFocus in CityFocus.zeroFoodFocuses) 1 else 2
+            }
+            yieldStats.food += newGrowthFood * foodBaseWeight * baseFocusWeight
         }
 
         if (city.population.population < 10) {
@@ -328,8 +342,8 @@ object Automation {
             return true
 
         val requiredResources = if (construction is BaseUnit)
-            construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo))
-        else construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo, cityInfo))
+            construction.getResourceRequirementsPerTurn(civInfo.state)
+        else construction.getResourceRequirementsPerTurn(cityInfo?.state ?: civInfo.state)
         // Does it even require any resources?
         if (requiredResources.isEmpty())
             return true
@@ -347,11 +361,9 @@ object Automation {
             for (city in civInfo.cities) {
                 val otherConstruction = city.cityConstructions.getCurrentConstruction()
                 if (otherConstruction is Building)
-                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(
-                        StateForConditionals(civInfo, city))[resource]
+                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(city.state)[resource]
                 else
-                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn(
-                        StateForConditionals(civInfo))[resource]
+                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn(civInfo.state)[resource]
             }
 
             // Make sure we have some for space

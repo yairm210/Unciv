@@ -2,7 +2,6 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -15,6 +14,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
@@ -41,8 +41,8 @@ class TechPickerScreen(
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
     private var tempTechsToResearch: ArrayList<String>
-    private var lines = Group().apply { isTransform = false }
-    private var orderIndicators = Group().apply { isTransform = false }
+    private var lines = NonTransformGroup()
+    private var orderIndicators = NonTransformGroup()
     private var eraLabels = ArrayList<Label>()
 
     /** We need this to be a separate table, and NOT the topTable, because *inhales*
@@ -152,7 +152,7 @@ class TechPickerScreen(
             val color = when {
                 civTech.era.name == era -> queuedTechColor
                 ruleset.eras[era]!!.eraNumber < civTech.era.eraNumber -> colorFromRGB(255, 175, 0)
-                else -> Color.BLACK.cpy()
+                else -> ImageGetter.CHARCOAL.cpy()
             }
 
             val table1 = Table().pad(1f)
@@ -213,7 +213,7 @@ class TechPickerScreen(
                 tempTechsToResearch.firstOrNull() == techName && !freeTechPick -> currentTechColor
                 researchableTechs.contains(techName) -> researchableTechColor
                 tempTechsToResearch.contains(techName) -> queuedTechColor
-                else -> Color.BLACK.cpy()
+                else -> ImageGetter.CHARCOAL.cpy()
             })
 
             if (isResearched && techName != Constants.futureTech) {
@@ -409,7 +409,7 @@ class TechPickerScreen(
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
         for (requiredTech in pathToTech) {
             for (unique in requiredTech.uniqueObjects
-                .filter { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo) }) {
+                .filter { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo.state) }) {
                 rightSideButton.setText(unique.getDisplayText().tr())
                 rightSideButton.disable()
                 return

@@ -65,9 +65,12 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
     var hasStrengthBonusInRadiusUnique = false
     var hasCitadelPlacementUnique = false
+    
+    var state = StateForConditionals.EmptyState
 
     fun updateUniques() {
 
+        state = StateForConditionals(mapUnit)
         allTilesCosts1 = mapUnit.hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = mapUnit.hasUnique(UniqueType.CanPassImpassable)
         ignoresTerrainCost = mapUnit.hasUnique(UniqueType.IgnoresTerrainCost)
@@ -104,10 +107,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
         canEnterIceTiles = mapUnit.hasUnique(UniqueType.CanEnterIceTiles)
-        cannotEnterOceanTiles = mapUnit.hasUnique(
-            UniqueType.CannotEnterOcean,
-            StateForConditionals(civInfo = mapUnit.civ, unit = mapUnit)
-        )
+        cannotEnterOceanTiles = mapUnit.hasUnique(UniqueType.CannotEnterOcean, state)
 
         hasUniqueToBuildImprovements = mapUnit.hasUnique(UniqueType.BuildImprovements)
         hasUniqueToCreateWaterImprovements = mapUnit.hasUnique(UniqueType.CreateWaterImprovements)

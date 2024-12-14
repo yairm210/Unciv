@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar
@@ -93,7 +92,7 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
         for ((index, resourceActors) in resourceActors.withIndex()) {
             val (resource, label, icon) = resourceActors
 
-            if (resource.hasUnique(UniqueType.NotShownOnWorldScreen, StateForConditionals(civInfo))) continue
+            if (resource.hasUnique(UniqueType.NotShownOnWorldScreen, civInfo.state)) continue
 
             val amount = civResources[resource.name] ?: 0
 

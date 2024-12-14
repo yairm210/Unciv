@@ -50,12 +50,7 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     // For different unit views, we want to effectively "ignore" the terrain and color it by special view
-    private val terrainOverlay = ImageGetter.getImage(strings().hexagon).setHexagonSize()
-
-    init {
-        terrainOverlay.isVisible = false
-        addActor(terrainOverlay)
-    }
+    private var terrainOverlay: Image? = ImageGetter.getImage(strings().hexagon).setHexagonSize()
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
@@ -219,7 +214,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
         if (DebugUtils.SHOW_TILE_COORDS) {
             val label = this.tile().position.toPrettyString()
-            startingLocationIcons.add(label.toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+            startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
                 setOrigin(Align.center)
                 center(tileGroup)
@@ -270,7 +265,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         // Add a Label with the total count for this tile
         if (nations.size > 3) {
             // Tons of locations for this tile - display number in red, behind the top three
-            startingLocationIcons.add(nations.size.tr().toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+            startingLocationIcons.add(nations.size.tr().toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
                 setOrigin(Align.center)
                 center(tileGroup)
@@ -337,21 +332,23 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     /** Activates a colored semitransparent overlay. [color] is cloned, brightened by 0.3f and an alpha of 0.4f applied. */
-    fun overlayTerrain(color: Color) {
-        terrainOverlay.color = color.brighten(0.3f).apply { a = 0.4f }
-        terrainOverlay.isVisible = true
-        determineVisibility()
-    }
+    fun overlayTerrain(color: Color) = overlayTerrainInner(color.brighten(0.3f).apply { a = 0.4f })
 
     /** Activates a colored semitransparent overlay. [color] is cloned and [alpha] applied. No brightening unlike the overload without explicit alpha! */
-    fun overlayTerrain(color: Color, alpha: Float) {
-        terrainOverlay.color = color.cpy().apply { a = alpha }
-        terrainOverlay.isVisible = true
+    fun overlayTerrain(color: Color, alpha: Float) = overlayTerrainInner(color.cpy().apply { a = alpha })
+    
+    private fun overlayTerrainInner(color: Color) {
+        if (terrainOverlay == null){
+            terrainOverlay = ImageGetter.getImage(strings().hexagon).setHexagonSize()
+            addActor(terrainOverlay)
+        }
+        terrainOverlay?.color = color
         determineVisibility()
     }
 
     fun hideTerrainOverlay() {
-        terrainOverlay.isVisible = false
+        terrainOverlay?.remove()
+        terrainOverlay = null
         determineVisibility()
     }
 
@@ -401,7 +398,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
                 || hexOutlineIcon != null
                 || arrows.isNotEmpty()
                 || startingLocationIcons.isNotEmpty()
-                || terrainOverlay.isVisible
+                || terrainOverlay != null
     }
 
     fun reset(localUniqueCache: LocalUniqueCache) {

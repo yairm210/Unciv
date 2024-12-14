@@ -4,7 +4,6 @@ import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -48,7 +47,7 @@ object BuildingDescriptions {
         if (isWonder) translatedLines += "Wonder".tr()
         if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
-            for ((resourceName, amount) in getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))) {
+            for ((resourceName, amount) in getResourceRequirementsPerTurn(city.state)) {
                 val available = city.getAvailableResourceAmount(resourceName)
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
                 val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())

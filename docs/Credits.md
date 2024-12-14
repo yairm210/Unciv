@@ -186,9 +186,11 @@ By Basil:
 Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
 
 
-HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset)
+HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset):
 
-- Coast Edge tiles
+- Coast-Land edge tiles
+- Coast-Ocean edge tiles
+- Lake-Land edge tiles
 - Krakatoa (based on The Bucketeer's tile)
 
 ### Resources
@@ -774,6 +776,12 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
 - [Galileo Donatello](https://en.wikipedia.org/wiki/File:Galileo_Donato.jpg) for the "Meet another civilization" tutorial: Public domain
+- [ServerRack](https://thenounproject.com/icon/server-rack-922717/) by Chad Remsing
+- [RobotArm] (https://thenounproject.com/icon/robot-7300306/) by Faizal khusein
+- [RobotHeadSquare] (https://thenounproject.com/icon/robot-head-6356754/) by Ahmad Arzaha
+- [RobotHeadRect] (https://thenounproject.com/icon/robot-1704106/) by suib icon
+- [Bobot] by reallybasicname in the Discord
+- [DollarSign] (https://thenounproject.com/icon/dollar-sign-6466560/) by Ahmad Arzaha
 
 ### Main menu
 

@@ -165,9 +165,9 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
 
     fun isUnresearchable(tech: Technology): Boolean {
-        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo) })
+        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo.state) })
             return true
-        if (tech.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return true
+        if (tech.hasUnique(UniqueType.Unavailable, civInfo.state)) return true
         return false
     }
 
@@ -313,10 +313,10 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
-            if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch) { newTech.matchesFilter(it.params[0]) })
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch) { newTech.matchesFilter(it.params[0], civInfo.state) })
             UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
@@ -453,7 +453,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
-                    if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
+                    if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
                         UniqueTriggerActivation.triggerUnique(
                             unique,
                             civInfo,

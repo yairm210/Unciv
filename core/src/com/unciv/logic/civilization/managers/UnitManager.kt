@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -100,7 +99,7 @@ class UnitManager(val civInfo: Civilization) {
         if (unit != null) {
             val triggerNotificationText = "due to gaining a [${unit.name}]"
             for (unique in unit.getUniques())
-                if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo, unit = unit)))
+                if (!unique.hasTriggerConditional() && unique.conditionalsApply(unit.cache.state))
                     UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
 
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit) 
