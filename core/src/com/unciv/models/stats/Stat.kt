@@ -11,7 +11,7 @@ enum class Stat(
     val purchaseSound: UncivSound,
     val character: Char,
     val color: Color
-) {
+) : GameResource {
     Production(NotificationIcon.Production, UncivSound.Click, Fonts.production, colorFromHex(0xc14d00)),
     Food(NotificationIcon.Food, UncivSound.Click, Fonts.food, colorFromHex(0x24A348)),
     Gold(NotificationIcon.Gold, UncivSound.Coin, Fonts.gold, colorFromHex(0xffeb7f)),
@@ -22,7 +22,7 @@ enum class Stat(
 
     companion object {
         val statsUsableToBuy = setOf(Gold, Food, Science, Culture, Faith)
-        private val valuesAsMap = values().associateBy { it.name }
+        private val valuesAsMap = entries.associateBy { it.name }
         fun safeValueOf(name: String) = valuesAsMap[name]
         fun isStat(name: String) = name in valuesAsMap
         fun names() = valuesAsMap.keys

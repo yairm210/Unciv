@@ -48,8 +48,10 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -451,7 +453,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
 
         for (resourceSupply in detailedCivResources) {
-            if (resourceSupply.resource.isStockpiled()) continue
+            if (resourceSupply.resource.isStockpiled) continue
             if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, state)) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
@@ -475,7 +477,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
         for (entry in getCivResourceSupply())
-            if (!entry.resource.isStockpiled())
+            if (!entry.resource.isStockpiled)
                 hashMap[entry.resource.name] = entry.amount
         for ((key, value) in resourceStockpiles)
             hashMap[key] = value
@@ -863,6 +865,26 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    fun addGameResource(stat: GameResource, amount: Int) {
+        if (stat is TileResource && !stat.isCityWide && stat.isStockpiled) gainStockpiledResource(stat.name, amount)
+        when (stat) {
+            Stat.Culture -> { policies.addCulture(amount)
+                if (amount > 0) totalCultureForContests += amount }
+            Stat.Science -> tech.addScience(amount)
+            Stat.Gold -> addGold(amount)
+            Stat.Faith -> { religionManager.storedFaith += amount
+                if (amount > 0) totalFaithForContests += amount }
+            SubStat.GoldenAgePoints -> goldenAges.addHappiness(amount)
+            else -> {}
+            // Food and Production wouldn't make sense to be added nationwide
+            // Happiness cannot be added as it is recalculated again, use a unique instead
+        }
+    }
+    
+    fun gainStockpiledResource(resourceName: String, amount: Int) {
+        resourceStockpiles.add(resourceName, amount)
+    }
+
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
             Stat.Culture -> policies.storedCulture
@@ -872,6 +894,22 @@ class Civilization : IsPartOfGameInfoSerialization {
             }
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
+            else -> 0
+        }
+    }
+
+    fun getReserve(stat: GameResource): Int {
+        if (stat is TileResource && !stat.isCityWide && stat.isStockpiled)
+            return resourceStockpiles[stat.name]
+        return when (stat) {
+            Stat.Culture -> policies.storedCulture
+            Stat.Science -> {
+                if (tech.currentTechnology() == null) 0
+                else tech.researchOfTech(tech.currentTechnology()!!.name)
+            }
+            Stat.Gold -> gold
+            Stat.Faith -> religionManager.storedFaith
+            SubStat.GoldenAgePoints -> goldenAges.storedHappiness
             else -> 0
         }
     }

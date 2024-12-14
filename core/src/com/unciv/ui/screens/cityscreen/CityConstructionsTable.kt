@@ -332,7 +332,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             else construction.getResourceRequirementsPerTurn(city.state)
         for ((resourceName, amount) in constructionResource) {
             val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
-            text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()
+            text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled).tr()
         }
 
         table.defaults().pad(2f).minWidth(40f)

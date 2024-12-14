@@ -28,7 +28,7 @@ object CityResources {
         // This way we get them once, but it is ugly, I welcome other ideas :/
         getCityResourcesFromCiv(city, cityResources, resourceModifers)
 
-        cityResources.removeAll { !it.resource.hasUnique(UniqueType.CityResource) }
+        cityResources.removeAll { !it.resource.isCityWide }
 
         return cityResources
     }
@@ -69,7 +69,7 @@ object CityResources {
     fun getAvailableResourceAmount(city: City, resourceName: String): Int {
         val resource = city.getRuleset().tileResources[resourceName] ?: return 0
 
-        if (resource.hasUnique(UniqueType.CityResource))
+        if (resource.isCityWide)
             return getCityResourcesAvailableToCity(city).asSequence().filter { it.resource == resource }.sumOf { it.amount }
         return city.civ.getResourceAmount(resourceName)
     }
