@@ -1,16 +1,12 @@
 ## 4.14.15
 
-TileInfoTable improvements - see 
+UI improvements:
 
-Changed Black in UI to Charcoal - see 
-
-More unit table improvements - see 
-
-Better icons in unit description table - see 
+- Tile Info Table 
+- Changed Black to Charcoal 
+- Unit description table
 
 Fixed cities built on pillages roads colored red
-
-fix: Scroll position indicators do not block minimap clicks
 
 Fixed scroll position indicator
 
@@ -18,21 +14,11 @@ Fixed Thai diacritic support
 
 Added "exit" button in world screen popup menu
 
-Fixed AI religion belief assessment (far too much weight given to tiles)
+Fixed AI religion belief assessment
 
-default mirroring none
+Increase starting Luxury amount to match Civ 5 - By SeventhM
 
-Added river mirroring
-
-Simplified mirroring code in prep for rivers
-
-Removed 'ignore touhidurr notifications'
-
-Add Avg Victory Turns to Simulation  - By itanasi
-
-Increase starting Luxury amount to match Civ 5  - By SeventhM
-
-UI tweaks and fixes: dividers, checkbox-to-text spacing, multiplayer tab connection button  - By Toxile
+UI fixes: dividers, checkbox-to-text spacing, multiplayer tab connection button  - By Toxile (new contributor!)
 
 ## 4.14.14
 

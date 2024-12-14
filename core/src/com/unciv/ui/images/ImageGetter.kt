@@ -47,7 +47,7 @@ import kotlin.math.sqrt
 object ImageGetter {
     const val whiteDotLocation = "OtherIcons/whiteDot"
     const val circleLocation = "OtherIcons/Circle"
-    val CHARCOAL = Color(0x333333FF)
+    val CHARCOAL = Color(0x111111FF)
 
     // We use texture atlases to minimize texture swapping - see https://yairm210.medium.com/the-libgdx-performance-guide-1d068a84e181
     lateinit var atlas: TextureAtlas
