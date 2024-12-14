@@ -48,6 +48,7 @@ object Automation {
 
     // More complicated logic to properly weigh Food vs other Stats (esp Production)
     private fun getFoodModWeight(city: City, surplusFood: Float): Float {
+        val speed = city.civ.gameInfo.speed.modifier
         // Zero out Growth if close to Unhappiness limit
         if (city.civ.getHappiness() < -8)
             return 0f
@@ -57,7 +58,7 @@ object Automation {
             // probably due to badly configured personalities not properly weighing food vs non-food yields
             if (city.population.population < 5)
                 return 2f
-            if (surplusFood > city.population.getFoodToNextPopulation() / 10)
+            if (surplusFood > city.population.getFoodToNextPopulation() / (10 * speed))
                 return 0.75f // get Growth just under Production
             return 1.5f
         }
@@ -66,7 +67,7 @@ object Automation {
         if (city.getCityFocus() == CityFocus.NoFocus) {
             if (city.population.population < 5)
                 return 2f
-            if (surplusFood > city.population.getFoodToNextPopulation() / 10)
+            if (surplusFood > city.population.getFoodToNextPopulation() / (10 * speed))
                 return 0.75f // get Growth just under Production
         }
 
