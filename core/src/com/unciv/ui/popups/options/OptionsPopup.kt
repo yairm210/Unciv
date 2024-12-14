@@ -3,6 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
@@ -190,6 +191,7 @@ class OptionsPopup(
             val worldScreen = GUI.getWorldScreenIfActive()
             if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
         }
+        checkbox.getImageCell().padRight(Constants.defaultFontSize / 2.0f);
         if (newRow) table.add(checkbox).colspan(2).left().row()
         else table.add(checkbox).left()
     }
