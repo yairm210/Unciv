@@ -53,7 +53,7 @@ class AdvancedTab(
         defaults().pad(5f)
 
         addAutosaveTurnsSelectBox()
-        addSeparator(Color.GRAY)
+        addSeparator()
 
         if (Display.hasCutout())
             addCutoutCheckbox()
@@ -63,14 +63,14 @@ class AdvancedTab(
 
         addFontFamilySelect(onFontChange)
         addFontSizeMultiplier(onFontChange)
-        addSeparator(Color.GRAY)
+        addSeparator()
 
         addMaxZoomSlider()
 
         addEasterEggsCheckBox()
 
         addEnlargeNotificationsCheckBox()
-        addSeparator(Color.GRAY)
+        addSeparator()
 
         addSetUserId()
 

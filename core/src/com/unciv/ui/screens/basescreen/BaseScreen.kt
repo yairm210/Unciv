@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.unciv.GameStartScreen
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.BaseRuleset
@@ -60,7 +61,7 @@ abstract class BaseScreen : Screen {
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = UncivStage(ExtendViewport(height, height))
 
-        if (enableSceneDebug && this !is CrashScreen) {
+        if (enableSceneDebug && this !is CrashScreen && this !is GameStartScreen) {
             stage.setDebugUnderMouse(true)
             stage.setDebugTableUnderMouse(true)
             stage.setDebugParentUnderMouse(true)

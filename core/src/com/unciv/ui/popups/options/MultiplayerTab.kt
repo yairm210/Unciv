@@ -32,19 +32,18 @@ import java.time.temporal.ChronoUnit
 
 fun multiplayerTab(
     optionsPopup: OptionsPopup
-): Table {
-    val tab = Table(BaseScreen.skin)
-    tab.pad(10f)
-    tab.defaults().pad(5f)
+) = Table(BaseScreen.skin).apply {
+    pad(10f)
+    defaults().pad(5f)
 
     val settings = optionsPopup.settings
 
     optionsPopup.addCheckbox(
-        tab, "Enable multiplayer status button in singleplayer games",
+        this, "Enable multiplayer status button in singleplayer games",
         settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
     )
 
-    addSeparator(tab)
+    addSeparator()
 
     val curRefreshSelect = RefreshSelect(
         "Update status of currently played game every:",
@@ -53,7 +52,7 @@ fun multiplayerTab(
         GameSetting.MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY,
         settings
     )
-    addSelectAsSeparateTable(tab, curRefreshSelect)
+    addSelectAsSeparateTable(this, curRefreshSelect)
 
     val allRefreshSelect = RefreshSelect(
         "In-game, update status of all games every:",
@@ -62,39 +61,37 @@ fun multiplayerTab(
         GameSetting.MULTIPLAYER_ALL_GAME_REFRESH_DELAY,
         settings
     )
-    addSelectAsSeparateTable(tab, allRefreshSelect)
+    addSelectAsSeparateTable(this, allRefreshSelect)
 
-    addSeparator(tab)
+    addSeparator()
 
     // at the moment the notification service only exists on Android
     val turnCheckerSelect: RefreshSelect?
     if (Gdx.app.type == Application.ApplicationType.Android) {
-        turnCheckerSelect = addTurnCheckerOptions(tab, optionsPopup)
-        addSeparator(tab)
+        turnCheckerSelect = addTurnCheckerOptions(this, optionsPopup)
+        addSeparator()
     } else {
         turnCheckerSelect = null
     }
 
     val sounds = IMediaFinder.LabeledSounds().getLabeledSounds()
-    addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in your currently open game:",
+    addSelectAsSeparateTable(this, SettingsSelect("Sound notification for when it's your turn in your currently open game:",
         sounds,
         GameSetting.MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND,
         settings
     ))
 
-    addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in any other game:",
+    addSelectAsSeparateTable(this, SettingsSelect("Sound notification for when it's your turn in any other game:",
         sounds,
         GameSetting.MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND,
         settings
     ))
 
-    addSeparator(tab)
+    addSeparator()
 
-    addMultiplayerServerOptions(tab, optionsPopup,
+    addMultiplayerServerOptions(this, optionsPopup,
         listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect)
     )
-
-    return tab
 }
 
 private fun addMultiplayerServerOptions(
@@ -155,7 +152,7 @@ private fun addMultiplayerServerOptions(
                 popup.reuseWith("Failed!", true)
             }
         }
-    }).row()
+    }).colspan(2).row()
 
     if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
         val passwordTextField = UncivTextField(
@@ -362,6 +359,3 @@ private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<
     tab.add(table).growX().fillX().row()
 }
 
-private fun addSeparator(tab: Table) {
-    tab.addSeparator(BaseScreen.skinStrings.skinConfig.baseColor.brighten(0.1f))
-}

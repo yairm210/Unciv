@@ -366,7 +366,7 @@ object LuxuryResourcePlacementLogic {
         val averageFertilityDensity =
             regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.size }.toFloat()
         for (region in regions) {
-            var targetLuxuries = 1
+            var targetLuxuries = 2
             if (tileMap.mapParameters.getLegendaryStart())
                 targetLuxuries++
             if (region.totalFertility / region.tiles.size.toFloat() < averageFertilityDensity) {

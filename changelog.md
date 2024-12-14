@@ -1,3 +1,25 @@
+## 4.14.15
+
+UI improvements:
+
+- Tile Info Table 
+- Changed Black to Charcoal 
+- Unit description table
+
+Fixed cities built on pillages roads colored red
+
+Fixed scroll position indicator
+
+Fixed Thai diacritic support
+
+Added "exit" button in world screen popup menu
+
+Fixed AI religion belief assessment
+
+Increase starting Luxury amount to match Civ 5 - By SeventhM
+
+UI fixes: dividers, checkbox-to-text spacing, multiplayer tab connection button  - By Toxile (new contributor!)
+
 ## 4.14.14
 
 Automated air units respect "Cannot move" unique

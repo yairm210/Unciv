@@ -12,7 +12,6 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
@@ -32,12 +31,13 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
 
     internal fun updateTileTable(tile: Tile?) {
         clearChildren()
+        pad(5f)
 
         if (tile != null && (DebugUtils.VISIBLE_MAP || selectedCiv.hasExplored(tile)) ) {
-            add(getStatsTable(tile))
+            add(getStatsTable(tile)).left().row()
             add(MarkupRenderer.render(TileDescription.toMarkup(tile, selectedCiv), padding = 0f, iconDisplay = IconDisplay.None) {
                 worldScreen.openCivilopedia(it)
-            } ).pad(5f).row()
+            } ).padTop(5f).row()
             if (DebugUtils.VISIBLE_MAP) add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)
             if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS){
                 val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tile]!!.layerTerrain.tileBaseImages.joinToString{"\n"+it.name}
@@ -53,15 +53,10 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
     private fun getStatsTable(tile: Tile): Table {
         val table = Table()
         table.defaults().pad(2f)
-
-        // padLeft = padRight + 5: for symmetry. An extra 5 for the distance yield number to
-        // tile text comes from the pad up there in updateTileTable
+        
         for ((key, value) in tile.stats.getTileStats(selectedCiv)) {
-            table.add(ImageGetter.getStatIcon(key.name))
-                .size(20f).align(Align.right).padLeft(10f)
-            table.add(value.toInt().toLabel())
+            table.add((key.character + value.toInt().toString()).toLabel())
                 .align(Align.left).padRight(5f)
-            table.row()
         }
         table.touchable = Touchable.enabled
         table.onClick {

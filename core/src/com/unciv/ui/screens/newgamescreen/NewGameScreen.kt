@@ -225,9 +225,9 @@ class NewGameScreen(
         scrollPane.setScrollingDisabled(true,true)
 
         topTable.add("Game Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f, 0f)
-        topTable.addSeparatorVertical(Color.BLACK, 1f)
+        topTable.addSeparatorVertical(ImageGetter.CHARCOAL, 1f)
         topTable.add("Map Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
-        topTable.addSeparatorVertical(Color.BLACK, 1f)
+        topTable.addSeparatorVertical(ImageGetter.CHARCOAL, 1f)
         topTable.add("Civilizations".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
         topTable.addSeparator(Color.CLEAR, height = 1f)
 

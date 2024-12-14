@@ -81,7 +81,7 @@ internal class VictoryScreenCivGroup(
                 civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.GREYED_OUT -> {
                     val icon = (ImageGetter.getImage("OtherIcons/DisbandUnit"))
                     icon.setSize(30f)
-                    return Triple(icon, Color.LIGHT_GRAY, Color.BLACK)
+                    return Triple(icon, Color.LIGHT_GRAY, ImageGetter.CHARCOAL)
                 }
                 currentPlayer.isSpectator()
                     || civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.REGULAR
@@ -92,7 +92,7 @@ internal class VictoryScreenCivGroup(
                     return Triple(ImageGetter.getNationPortrait(civ.nation, 30f), civ.nation.getOuterColor(), civ.nation.getInnerColor())
                 }
                 else ->
-                    return Triple((ImageGetter.getRandomNationPortrait(30f)), Color.LIGHT_GRAY, Color.BLACK)
+                    return Triple((ImageGetter.getRandomNationPortrait(30f)), Color.LIGHT_GRAY, ImageGetter.CHARCOAL)
             }
         }
 
