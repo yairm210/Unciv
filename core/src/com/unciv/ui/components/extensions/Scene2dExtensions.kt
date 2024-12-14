@@ -206,7 +206,7 @@ private fun getSeparatorImage(color: Color) = Image(ImageGetter.getWhiteDotDrawa
  * Create a horizontal separator as an empty Container with a colored background.
  * @param colSpan Optionally override [colspan][Cell.colspan] which defaults to the current column count.
  */
-fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Float = 2f): Cell<Image> {
+fun Table.addSeparator(color: Color = BaseScreen.skin.getColor("color"), colSpan: Int = 0, height: Float = 1f): Cell<Image> {
     if (!cells.isEmpty && !cells.last().isEndRow) row()
     val separator = getSeparatorImage(color)
     val cell = add(separator)
@@ -323,7 +323,7 @@ fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean
         }
         // Add a little distance between the icon and the text. 0 looks glued together,
         // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".
-        imageCell.padRight(1f)
+        imageCell.padRight(Constants.defaultFontSize / 2.0f)
     }
 
 /** Sets the [font color][Label.LabelStyle.fontColor] on a [Label] and returns it to allow chaining */
