@@ -353,12 +353,12 @@ class AdvancedTab(
 
     private fun addEasterEggsCheckBox() {
         val checkbox = "Enable Easter Eggs".toCheckBox(settings.enableEasterEggs) { settings.enableEasterEggs = it }
-        add(checkbox).colspan(2).row()
+        add(checkbox).row()
     }
 
     private fun addEnlargeNotificationsCheckBox() {
         val checkbox = "Enlarge selected notifications"
             .toCheckBox(settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
-        add(checkbox).colspan(2).row()
+        add(checkbox).row()
     }
 }

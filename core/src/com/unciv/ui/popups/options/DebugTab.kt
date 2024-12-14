@@ -51,34 +51,34 @@ fun debugTab(
 
     add("Supercharged".toCheckBox(DebugUtils.SUPERCHARGED) {
         DebugUtils.SUPERCHARGED = it
-    }).colspan(2).row()
+    }).row()
     add("View entire map".toCheckBox(DebugUtils.VISIBLE_MAP) {
         DebugUtils.VISIBLE_MAP = it
-    }).colspan(2).row()
+    }).row()
     add("Show coordinates on tiles".toCheckBox(DebugUtils.SHOW_TILE_COORDS) {
         DebugUtils.SHOW_TILE_COORDS = it
-    }).colspan(2).row()
+    }).row()
     add("Show tile image locations".toCheckBox(DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) {
         DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it
-    }).colspan(2).row()
+    }).row()
 
     val curGameInfo = game.gameInfo
     if (curGameInfo != null) {
         add("God mode (current game)".toCheckBox(curGameInfo.gameParameters.godMode) {
             curGameInfo.gameParameters.godMode = it
-        }).colspan(2).row()
+        }).row()
     }
 
     add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
         UncivFiles.saveZipped = it
-    }).colspan(2).row()
+    }).row()
     add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
         MapSaver.saveZipped = it
-    }).colspan(2).row()
+    }).row()
 
     add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
         BaseScreen.enableSceneDebug = it
-    }).colspan(2).row()
+    }).row()
 
     add(Table().apply {
         add("Unique misspelling threshold".toLabel()).left().fillX()
