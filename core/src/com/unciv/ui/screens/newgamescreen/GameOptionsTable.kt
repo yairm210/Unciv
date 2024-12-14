@@ -30,6 +30,7 @@ import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -44,6 +45,7 @@ class GameOptionsTable(
 ) : Table(BaseScreen.skin) {
     private var gameParameters = previousScreen.gameSetupInfo.gameParameters
     private var ruleset = previousScreen.ruleset
+    private val tabs: TabbedPager
     internal var locked = false
 
     private var baseRulesetHash = gameParameters.baseRuleset.hashCode()
@@ -67,7 +69,11 @@ class GameOptionsTable(
         background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
         top()
         defaults().pad(5f)
-        update()
+        tabs = TabbedPager(
+            // These ought to be updated
+            this.width, this.width, 0f, previousScreen.stage.height,
+            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 3
+        )
     }
 
     fun update() {
@@ -81,27 +87,39 @@ class GameOptionsTable(
             modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
         }
 
+        add(tabs).grow()
+        tabs.addPage("Basic", basicTab())
+        tabs.addPage("Advanced", advancedTab())
+        tabs.addPage("Mods", modsTab())
+
+        tabs.selectPage(0) // Basic
+
+        pack()
+    }
+
+    private fun basicTab(): Table = Table().apply {
+        pad(10f)
+        defaults().pad(5f)
+
+        addBaseRulesetSelectBox()
+        addDifficultySelectBox()
+        addGameSpeedSelectBox()
+        addEraSelectBox()
+        // align left and right edges with other SelectBoxes but allow independent dropdown width
         add(Table().apply {
-            defaults().pad(5f)
-            addBaseRulesetSelectBox()
-            addDifficultySelectBox()
-            addGameSpeedSelectBox()
-            addEraSelectBox()
-            // align left and right edges with other SelectBoxes but allow independent dropdown width
-            add(Table().apply {
-                val turnSlider = addMaxTurnsSlider()
-                if (turnSlider != null)
-                    add(turnSlider).padTop(10f).row()
-                if (gameParameters.randomNumberOfPlayers) {
-                    addMinMaxPlayersSliders()
-                }
-                if (gameParameters.randomNumberOfCityStates) {
-                    addMinMaxCityStatesSliders()
-                } else {
-                    addCityStatesSlider()
-                }
-            }).colspan(2).fillX().row()
-        }).row()
+            val turnSlider = addMaxTurnsSlider()
+            if (turnSlider != null)
+                add(turnSlider).padTop(10f).row()
+            if (gameParameters.randomNumberOfPlayers) {
+                addMinMaxPlayersSliders()
+            }
+            if (gameParameters.randomNumberOfCityStates) {
+                addMinMaxCityStatesSliders()
+            } else {
+                addCityStatesSlider()
+            }
+        }).colspan(2).fillX().row()
+
         addVictoryTypeCheckboxes()
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
@@ -109,33 +127,27 @@ class GameOptionsTable(
         if (gameParameters.isOnlineMultiplayer)
             checkboxTable.addAnyoneCanSpectateCheckbox()
         add(checkboxTable).center().row()
+    }
 
-        val expander = ExpanderTab(
-            "Advanced Settings",
-            startsOutOpened = gameParameters.enableRandomNationsPool,
-            persistenceID = "GameOptionsTable.Advanced"
-        ) {
-            it.defaults().pad(5f, 0f)
-            it.addNoCityRazingCheckbox()
-            it.addNoBarbariansCheckbox()
-            it.addRagingBarbariansCheckbox()
-            it.addOneCityChallengeCheckbox()
-            it.addNuclearWeaponsCheckbox()
-            it.addEnableEspionageCheckbox()
-            it.addNoStartBiasCheckbox()
-            it.addRandomPlayersCheckbox()
-            it.addRandomCityStatesCheckbox()
-            it.addRandomNationsPoolCheckbox()
-            if (gameParameters.enableRandomNationsPool) {
-                it.addNationsSelectTextButton()
-            }
-        }
-        add(expander).pad(10f).row()
+    private fun advancedTab(): Table = Table().apply {
+        pad(10f)
+        defaults().pad(5f)
 
-        if (!isPortrait)
-            add(modCheckboxes).padTop(0f).row()
+        addNoCityRazingCheckbox()
+        addNoBarbariansCheckbox()
+        addRagingBarbariansCheckbox()
+        addOneCityChallengeCheckbox()
+        addNuclearWeaponsCheckbox()
+        addEnableEspionageCheckbox()
+        addNoStartBiasCheckbox()
+        addRandomPlayersCheckbox()
+        addRandomCityStatesCheckbox()
+        addRandomNationsPoolCheckbox()
+        addNationsSelectTextButton()
+    }
 
-        pack()
+    private fun modsTab(): Table = Table().apply {
+        if (!isPortrait) add(modCheckboxes).row()
     }
 
     private fun Table.addCheckbox(
@@ -147,7 +159,7 @@ class GameOptionsTable(
         val checkbox = text.toCheckBox(initialState) { onChange(it) }
         checkbox.isDisabled = lockable && locked
         checkbox.align(Align.left)
-        add(checkbox).colspan(2).row()
+        add(checkbox).colspan(2).left().row()
         return checkbox
     }
 
@@ -417,7 +429,7 @@ class GameOptionsTable(
         { gameParameters.startingEra = it; null }
     }
 
-    private fun addVictoryTypeCheckboxes() {
+    private fun Table.addVictoryTypeCheckboxes() {
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing

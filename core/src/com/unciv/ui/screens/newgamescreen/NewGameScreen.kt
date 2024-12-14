@@ -231,9 +231,7 @@ class NewGameScreen(
         topTable.add("Civilizations".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
         topTable.addSeparator(Color.CLEAR, height = 1f)
 
-        topTable.add(ScrollPane(newGameOptionsTable)
-                .apply { setOverscroll(false, false) })
-                .width(stage.width / 3).top()
+        topTable.add(newGameOptionsTable).width(stage.width / 3).top()
         topTable.addSeparatorVertical(Color.CLEAR, 1f)
         topTable.add(ScrollPane(mapOptionsTable)
                 .apply { setOverscroll(false, false) })
