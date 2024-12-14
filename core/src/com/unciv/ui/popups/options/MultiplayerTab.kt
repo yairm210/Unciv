@@ -152,7 +152,7 @@ private fun addMultiplayerServerOptions(
                 popup.reuseWith("Failed!", true)
             }
         }
-    }).row()
+    }).colspan(2).row()
 
     if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
         val passwordTextField = UncivTextField(
