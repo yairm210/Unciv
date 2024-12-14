@@ -323,7 +323,7 @@ fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean
         }
         // Add a little distance between the icon and the text. 0 looks glued together,
         // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".
-        imageCell.padRight(1f)
+        imageCell.padRight(Constants.defaultFontSize / 2.0f)
     }
 
 /** Sets the [font color][Label.LabelStyle.fontColor] on a [Label] and returns it to allow chaining */
