@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
@@ -94,7 +95,7 @@ class Nation : RulesetObject() {
     fun setTransients() {
         outerColorObject = colorFromRGB(outerColor)
 
-        innerColorObject = if (innerColor == null) Color.BLACK
+        innerColorObject = if (innerColor == null) ImageGetter.CHARCOAL
                            else colorFromRGB(innerColor!!)
 
         forestsAndJunglesAreRoads = uniqueMap.hasUnique(UniqueType.ForestsAndJunglesAreRoads)

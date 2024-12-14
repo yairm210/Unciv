@@ -27,6 +27,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider.Companion.formatPercent
 import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.abs
 import kotlin.math.sign
@@ -155,7 +156,7 @@ class UncivSlider (
         stepChanged()   // Initialize tip formatting
 
         if (plusMinus) {
-            minusButton = "-".toLabel(Color.BLACK, plusMinusFontSize)
+            minusButton = "-".toLabel(ImageGetter.CHARCOAL, plusMinusFontSize)
                 .apply { setAlignment(Align.center) }
                 .surroundWithCircle(plusMinusCircleSize)
             minusButton.onClick {
@@ -171,7 +172,7 @@ class UncivSlider (
 
         if (plusMinus) {
             if (vertical) row()
-            plusButton = "+".toLabel(Color.BLACK, plusMinusFontSize)
+            plusButton = "+".toLabel(ImageGetter.CHARCOAL, plusMinusFontSize)
                 .apply { setAlignment(Align.center) }
                 .surroundWithCircle(plusMinusCircleSize)
             plusButton.onClick {

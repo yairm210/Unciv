@@ -51,7 +51,7 @@ class InfluenceTable(
         setSize(width, height)
         background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/CityButton/InfluenceBar",
-            tintColor = Color.BLACK)
+            tintColor = ImageGetter.CHARCOAL)
 
         val normalizedInfluence = max(-60f, min(influence, 60f)) / 30f
 
@@ -115,11 +115,11 @@ private class DefenceTable(city: City) : BorderedTable(
 
         val selectedCiv = GUI.getSelectedPlayer()
         borderSize = 4f
-        bgColor = Color.BLACK
+        bgColor = ImageGetter.CHARCOAL
         bgBorderColor = when {
             city.civ == selectedCiv -> colorFromRGB(255, 237, 200)
             city.civ.isAtWarWith(selectedCiv) -> Color.RED
-            else -> Color.BLACK
+            else -> ImageGetter.CHARCOAL
         }
 
         pad(2f, 3f, 0f, 3f)
@@ -216,7 +216,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         bgBorderColor = when {
             city.civ == selectedCiv -> colorFromRGB(233, 233, 172)
             city.civ.isAtWarWith(selectedCiv) -> colorFromRGB(230, 51, 0)
-            else -> Color.BLACK
+            else -> ImageGetter.CHARCOAL
         }
         borderSize = when {
             city.civ == selectedCiv -> 4f
@@ -269,7 +269,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         val growthBar = ImageGetter.getProgressBarVertical(4f, 30f,
             if (city.isStarving()) 1.0f else growthPercentage,
-            if (city.isStarving()) Color.RED else CityButton.ColorGrowth, Color.BLACK, 1f)
+            if (city.isStarving()) Color.RED else CityButton.ColorGrowth, ImageGetter.CHARCOAL, 1f)
         growthBar.color.a = 0.8f
 
         val turnLabelText = when {
@@ -367,7 +367,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         }
 
         val productionBar = ImageGetter.getProgressBarVertical(4f, 30f, percentage,
-            CityButton.ColorConstruction, Color.BLACK, 1f)
+            CityButton.ColorConstruction, ImageGetter.CHARCOAL, 1f)
         productionBar.setSemiProgress(CityButton.ColorConstruction.cpy().darken(0.4f), nextTurnPercentage, 1f)
         productionBar.color.a = 0.8f
 

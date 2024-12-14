@@ -29,9 +29,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
     private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
     private val unitIconHolder = Table()
-    private val unitNameLabel = "".toLabel()
+    private val unitNameLabel = "".toLabel(fontSize = 24)
     private val unitIconNameGroup = Table()
-    private val promotionsTable = Table()
+    private val promotionsTable = Table().apply { defaults().padRight(5f) }
     private val unitDescriptionTable = Table(BaseScreen.skin)
 
     val selectedUnit : MapUnit?
@@ -103,7 +103,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             val moveBetweenUnitsTable = Table().apply {
                 add(prevIdleUnitButton)
                 unitIconNameGroup.add(unitIconHolder)
-                unitIconNameGroup.add(unitNameLabel).pad(5f)
+                unitIconNameGroup.add(unitNameLabel).apply { Fonts.font.descent }
                 unitIconHolder.touchable = Touchable.enabled
                 unitNameLabel.touchable = Touchable.enabled
                 add(unitIconNameGroup)
@@ -170,23 +170,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
                 unitDescriptionTable.clear()
                 unitDescriptionTable.defaults().pad(2f)
-                unitDescriptionTable.add(ImageGetter.getStatIcon("Movement")).size(20f)
-                unitDescriptionTable.add(unit.getMovementString()).padRight(10f)
+                unitDescriptionTable.add(Fonts.movement + unit.getMovementString()).padRight(10f)
 
-                if (!unit.isCivilian()) {
-                    unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit.strength.tr()).padRight(10f)
-                }
+                if (!unit.isCivilian())
+                    unitDescriptionTable.add(Fonts.strength + unit.baseUnit.strength.tr()).padRight(10f)
 
-                if (unit.baseUnit.rangedStrength != 0) {
-                    unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
-                    unitDescriptionTable.add(unit.baseUnit.rangedStrength.tr()).padRight(10f)
-                }
+                if (unit.baseUnit.rangedStrength != 0)
+                    unitDescriptionTable.add(Fonts.rangedStrength + unit.baseUnit.rangedStrength.tr()).padRight(10f)
 
-                if (unit.baseUnit.isRanged()) {
-                    unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
-                    unitDescriptionTable.add(unit.getRange().tr()).padRight(10f)
-                }
+                if (unit.baseUnit.isRanged())
+                    unitDescriptionTable.add(Fonts.range + unit.getRange().tr()).padRight(10f)
 
                 val interceptionRange = unit.getInterceptionRange()
                 if (interceptionRange > 0) {
@@ -260,7 +253,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 1 -> Color.BROWN
                 2 -> Color.LIGHT_GRAY
                 3 -> Color.GOLD
-                else -> Color.BLACK
+                else -> ImageGetter.CHARCOAL
             }
             repeat(spy.rank) {
                 val star = ImageGetter.getImage("OtherIcons/Star")
@@ -283,11 +276,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 unitIconHolder.add(UnitIconGroup(selectedUnit!!, 30f)).pad(5f)
 
                 for (promotion in selectedUnit!!.promotions.getPromotions(true))
-                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name)).padBottom(2f)
+                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f)).padBottom(2f)
                 
                 for (status in selectedUnit!!.statuses) {
                     val group = ImageGetter.getPromotionPortrait(status.name)
-                    val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8).surroundWithCircle(15f, color = Color.BLACK)
+                    val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8).surroundWithCircle(15f, color = ImageGetter.CHARCOAL)
                     group.addActor(turnsLeft)
                     turnsLeft.setPosition(group.width, 0f, Align.bottomRight)
                     promotionsTable.add(group).padBottom(2f)

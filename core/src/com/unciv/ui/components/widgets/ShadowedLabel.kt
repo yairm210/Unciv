@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
 
 /**
  *  A widget containing two [Label]s superimposed with an offset to create a shadow effect.
@@ -28,7 +29,7 @@ class ShadowedLabel(
     text: String,
     fontSize: Int = Constants.defaultFontSize,
     labelColor: Color = Color.WHITE,
-    shadowColor: Color = Color.BLACK,
+    shadowColor: Color = ImageGetter.CHARCOAL,
     hideIcons: Boolean = true,
     shadowOffset: Float = 1f
 ) : Stack() {
