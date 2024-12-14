@@ -95,7 +95,7 @@ class TechButton(
         techEnabledIcons.background = BaseScreen.skinStrings.getUiBackground(
             "TechPickerScreen/TechButtonIconsOutline",
             BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
-            tintColor = Color.BLACK.cpy().apply { a = 0.7f }
+            tintColor = ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }
         )
         techEnabledIcons.pad(2f, 10f, 2f, 0f)
         techEnabledIcons.defaults().padRight(5f)

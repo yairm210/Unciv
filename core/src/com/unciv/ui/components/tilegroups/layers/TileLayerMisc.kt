@@ -214,7 +214,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
         if (DebugUtils.SHOW_TILE_COORDS) {
             val label = this.tile().position.toPrettyString()
-            startingLocationIcons.add(label.toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+            startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
                 setOrigin(Align.center)
                 center(tileGroup)
@@ -265,7 +265,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         // Add a Label with the total count for this tile
         if (nations.size > 3) {
             // Tons of locations for this tile - display number in red, behind the top three
-            startingLocationIcons.add(nations.size.tr().toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+            startingLocationIcons.add(nations.size.tr().toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
                 setOrigin(Align.center)
                 center(tileGroup)

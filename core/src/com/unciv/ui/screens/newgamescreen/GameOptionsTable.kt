@@ -514,7 +514,7 @@ private class RandomNationPickerPopup(
         const val buttonsCircleSize = 70f
         const val buttonsIconSize = 50f
         const val buttonsOffsetFromEdge = 5f
-        val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
+        val buttonsBackColor: Color = ImageGetter.CHARCOAL.cpy().apply { a = 0.67f }
     }
 
     // This Popup's body has two halves of same size, either side by side or arranged vertically

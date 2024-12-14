@@ -91,9 +91,9 @@ fun colorFromHex(hexColor: Int): Color {
 fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1f)
 /** Create a new [Color] instance from r/g/b given as Integers in the range 0..255 in the form of a 3-element List [rgb] */
 fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
-/** Linearly interpolates between this [Color] and [BLACK][Color.BLACK] by [t] which is in the range [[0,1]].
+/** Linearly interpolates between this [Color] and [BLACK][ImageGetter.CHARCOAL] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
-fun Color.darken(t: Float): Color = Color(this).lerp(Color.BLACK, t)
+fun Color.darken(t: Float): Color = Color(this).lerp(ImageGetter.CHARCOAL, t)
 /** Linearly interpolates between this [Color] and [WHITE][Color.WHITE] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
 fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
@@ -117,7 +117,7 @@ fun Actor.surroundWithCircle(
     return IconCircleGroup(size, this, resizeActor, color, circleImageLocation)
 }
 
-fun Actor.surroundWithThinCircle(color: Color=Color.BLACK): IconCircleGroup = surroundWithCircle(width+2f, false, color)
+fun Actor.surroundWithThinCircle(color: Color=ImageGetter.CHARCOAL): IconCircleGroup = surroundWithCircle(width+2f, false, color)
 
 
 fun Actor.addBorder(size: Float, color: Color, expandCell: Boolean = false): Table {

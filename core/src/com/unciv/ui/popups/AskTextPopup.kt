@@ -24,7 +24,7 @@ import com.unciv.ui.components.extensions.toLabel
 class AskTextPopup(
     screen: BaseScreen,
     label: String = "Please enter some text",
-    icon: Group = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
+    icon: Group = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(80f),
     defaultText: String = "",
     errorText: String = "Invalid input! Please enter a different string.",
     maxLength: Int = 32,

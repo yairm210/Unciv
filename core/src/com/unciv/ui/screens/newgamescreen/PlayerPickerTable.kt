@@ -100,7 +100,7 @@ class PlayerPickerTable(
         }
 
         if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
-            val addPlayerButton = "+".toLabel(Color.BLACK, 30)
+            val addPlayerButton = "+".toLabel(ImageGetter.CHARCOAL, 30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
                 .onClick {
@@ -211,7 +211,7 @@ class PlayerPickerTable(
         }
 
         if (!locked) {
-            playerTable.add("-".toLabel(Color.BLACK, 30, Align.center)
+            playerTable.add("-".toLabel(ImageGetter.CHARCOAL, 30, Align.center)
                 .surroundWithCircle(40f)
                 .onClick {
                     gameParameters.players.remove(player)
