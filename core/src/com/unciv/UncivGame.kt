@@ -306,7 +306,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 screen = screenStack.last(),
                 question = "Do you want to exit the game?",
                 confirmText = "Exit",
-                restoreDefault = { musicController.resume() },
+                restoreDefault = { musicController.resumeFromShutdown() },
                 action = { Gdx.app.exit() }
             ).open(force = true)
             return null
@@ -386,7 +386,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
-        musicController.resume()
+        musicController.resumeFromShutdown()
 
         // This is also needed in resume to open links and notifications
         // correctly when the app was already running. The handling in onCreate
