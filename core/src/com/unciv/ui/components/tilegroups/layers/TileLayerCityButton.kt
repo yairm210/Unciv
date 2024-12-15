@@ -47,7 +47,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
         if (tileGroup !is WorldTileGroup) return
 
-        val city = tile().getCity()
+        val city = tile.getCity()
 
         // There used to be a city here but it was razed
         if (city == null && cityButton != null) {

@@ -51,7 +51,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             }
             if (roadStatus == RoadStatus.None) continue // no road image
 
-            val image = ImageGetter.getImage(strings().orFallback { roadsMap[roadStatus]!! })
+            val image = ImageGetter.getImage(strings.orFallback { roadsMap[roadStatus]!! })
             roadImage.image = image
 
             val relativeWorldPosition = tile.tileMap.getNeighborTilePositionAsWorldCoords(tile, neighbor)
