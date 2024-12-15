@@ -74,6 +74,9 @@ class GameOptionsTable(
             this.width, this.width, 0f, previousScreen.stage.height,
             headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 3
         )
+        tabs.addPage("Basic", basicTab())
+        tabs.addPage("Advanced", advancedTab())
+        tabs.addPage("Mods", modsTab())
     }
 
     fun update() {
@@ -88,9 +91,6 @@ class GameOptionsTable(
         }
 
         add(tabs).grow()
-        tabs.addPage("Basic", basicTab())
-        tabs.addPage("Advanced", advancedTab())
-        tabs.addPage("Mods", modsTab())
 
         tabs.selectPage(0) // Basic
 
