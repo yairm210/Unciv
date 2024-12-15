@@ -109,7 +109,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         
         // Required for performance - full matchesFilter is too expensive for something that needs to run every update()
         fun matchesFilterMinimal(originTile: Tile, filter: String): Boolean {
-            if (originTile.allTerrains.any { it.name == filter }) return true
+            if (originTile.cachedTerrainData.terrainNameSet.contains(filter)) return true
             if (originTile.getBaseTerrain().type.name == filter) return true
             return false
         }
