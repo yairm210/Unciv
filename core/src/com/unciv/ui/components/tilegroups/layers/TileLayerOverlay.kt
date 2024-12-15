@@ -22,13 +22,13 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     private var fog: Image? = null
     private var unexplored: Image? = null
 
-    private fun getHighlight() = ImageGetter.getImage(strings().highlight).setHexagonSize() // for blue and red circles/emphasis on the tile
-    private fun getCrosshair() = ImageGetter.getImage(strings().crosshair).setHexagonSize() // for when a unit is targeted
+    private fun getHighlight() = ImageGetter.getImage(strings.highlight).setHexagonSize() // for blue and red circles/emphasis on the tile
+    private fun getCrosshair() = ImageGetter.getImage(strings.crosshair).setHexagonSize() // for when a unit is targeted
     private fun getGoodCityLocationIndicator() = ImageGetter.getImage("OtherIcons/Cities").setHexagonSize(0.25f)
-    private fun getFog() = ImageGetter.getImage(strings().crosshatchHexagon ).setHexagonSize().apply { 
+    private fun getFog() = ImageGetter.getImage(strings.crosshatchHexagon ).setHexagonSize().apply { 
         color = Color.WHITE.cpy().apply { a = 0.2f }
     }
-    private fun getUnexplored() = ImageGetter.getImage(strings().unexploredTile ).setHexagonSize()
+    private fun getUnexplored() = ImageGetter.getImage(strings.unexploredTile ).setHexagonSize()
     
     fun orderToFront() {
         unexplored?.toFront()
@@ -100,19 +100,19 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         setUnexplored(viewingCiv)
 
-        if (tile().getShownImprovement(viewingCiv) == Constants.barbarianEncampment
-                && tile().isExplored(viewingCiv))
+        if (tile.getShownImprovement(viewingCiv) == Constants.barbarianEncampment
+                && tile.isExplored(viewingCiv))
             showHighlight(Color.RED)
     }
 
     private fun setUnexplored(viewingCiv: Civilization) {
-        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tile())
+        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tile)
         val unexploredIsVisible = unexplored != null
         if (unexploredIsVisible && !unexploredShouldBeVisible) {
             unexplored?.remove()
             determineVisibility()
         } else if (!unexploredIsVisible && unexploredShouldBeVisible
-                && ImageGetter.imageExists(strings().unexploredTile)) {
+                && ImageGetter.imageExists(strings.unexploredTile)) {
             unexplored = getUnexplored()
             addActor(unexplored)
             determineVisibility()
