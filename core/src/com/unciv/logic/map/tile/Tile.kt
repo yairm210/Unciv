@@ -370,7 +370,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     @Transient
-    private var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
+    internal var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = stateThisTile) =
         terrainUniqueMap.getMatchingUniques(uniqueType, state).any()
@@ -430,7 +430,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (getCity() == null) return false
         return isCityCenter()
                 || isWorked()
-                || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
+                || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, stateThisTile) == true
                 || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation)
     }
 
