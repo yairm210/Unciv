@@ -14,7 +14,6 @@ import com.unciv.utils.DebugUtils
 class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     private var cityButton: CityButton? = null
-    val tile = tileGroup.tile
 
     init {
         touchable = Touchable.childrenOnly
@@ -22,18 +21,18 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     }
 
     override fun act(delta: Float) {
-        if (tile.isCityCenter())
+        if (tileGroup.tile.isCityCenter())
             super.act(delta)
     }
 
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        if (tile.isCityCenter())
+        if (tileGroup.tile.isCityCenter())
             return super.hit(x, y, touchable)
         return null
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (tile.isCityCenter())
+        if (tileGroup.tile.isCityCenter())
             super.draw(batch, parentAlpha)
     }
 
@@ -48,7 +47,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
         if (tileGroup !is WorldTileGroup) return
 
-        val city = tile.getCity()
+        val city = tile().getCity()
 
         // There used to be a city here but it was razed
         if (city == null && cityButton != null) {
@@ -57,7 +56,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         }
 
         if (viewingCiv == null) return
-        if (city == null || !tile.isCityCenter()) return
+        if (city == null || !tileGroup.tile.isCityCenter()) return
         
         // Create (if not yet) and update city button
         if (cityButton == null) {
