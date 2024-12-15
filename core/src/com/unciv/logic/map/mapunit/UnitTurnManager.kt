@@ -88,7 +88,7 @@ class UnitTurnManager(val unit: MapUnit) {
                         && it.getUnpillagedImprovement() != null
                         && unit.civ.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
-                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
+                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits, tile.stateThisTile)
                     .sumOf { it.params[0].toInt() }
             }.maxByOrNull { it.second }
             ?: return

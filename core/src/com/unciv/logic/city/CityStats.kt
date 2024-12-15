@@ -351,8 +351,8 @@ class CityStats(val city: City) {
                 city.location == it.position
                         || city.isWorked(it)
                         || it.owningCity == city && (it.getUnpillagedTileImprovement()
-                    ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
-                        || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
+                    ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile) == true
+                        || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile))
             }
         for (tile in workedTiles) {
             if (tile.isBlockaded() && city.isWorked(tile)) {
