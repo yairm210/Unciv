@@ -349,7 +349,12 @@ object GameStarter {
             .map { it.key }
             .filter { it in usedCivNames }
 
-        for (player in chosenPlayers) {
+        val playersToAdd = if (newGameParameters.shufflePlayerOrder) {
+            chosenPlayers.toMutableList().apply { shuffle() }
+        } else {
+            chosenPlayers
+        }
+        for (player in playersToAdd) {
             val civ = Civilization(player.chosenCiv)
             when (player.chosenCiv) {
                 in usedMajorCivs, Constants.spectator -> {
