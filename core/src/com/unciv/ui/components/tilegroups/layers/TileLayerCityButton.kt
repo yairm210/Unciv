@@ -21,18 +21,18 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     }
 
     override fun act(delta: Float) {
-        if (tileGroup.tile.isCityCenter())
+        if (tile.isCityCenter())
             super.act(delta)
     }
 
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        if (tileGroup.tile.isCityCenter())
+        if (tile.isCityCenter())
             return super.hit(x, y, touchable)
         return null
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (tileGroup.tile.isCityCenter())
+        if (tile.isCityCenter())
             super.draw(batch, parentAlpha)
     }
 

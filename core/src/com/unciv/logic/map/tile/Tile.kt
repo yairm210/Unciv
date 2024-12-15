@@ -34,6 +34,8 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -836,8 +838,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
         // List hash is function of all its items, so the same items in the same order will always give the same hash
         cachedTerrainData = tileMap.tileUniqueMapCache.getOrPut(terrainNameList) {
-            TileMap.TerrainListData(UniqueMap(allTerrains.flatMap { it.uniqueObjects }),
-                terrainNameList.toSet())
+            TileMap.TerrainListData(
+                UniqueMap(allTerrains.flatMap { it.uniqueObjects }),
+                terrainNameList.toSet()
+                )
         }
     }
 
