@@ -74,8 +74,12 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
     internal val mapTypeSelectBox: TranslatedSelectBox
 
     init {
+        pad(10f)
         //defaults().pad(5f) - each nested table having the same can give 'stairs' effects,
         // better control directly. Besides, the first Labels/Buttons should have 10f to look nice
+        // 
+        // re ↑: after some reorganisation, padding the parent container works again
+        // and is the easiest alignment solution
         background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/MapOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
 
         val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
@@ -123,7 +127,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
         val mapTypeSelectWrapper = Table()  // wrap to center-align Label and SelectBox easier
         mapTypeSelectWrapper.add("{Map Type}:".toLabel()).left().expandX()
         mapTypeSelectWrapper.add(mapTypeSelectBox).right()
-        add(mapTypeSelectWrapper).pad(10f).fillX().row()
+        add(mapTypeSelectWrapper).padBottom(Constants.defaultFontSize * 1.5f).fillX().row()
         add(mapTypeSpecificTable).row()
     }
     

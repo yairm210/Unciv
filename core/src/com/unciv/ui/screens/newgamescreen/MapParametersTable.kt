@@ -81,7 +81,7 @@ class MapParametersTable(
         clear()
 
         skin = BaseScreen.skin
-        defaults().pad(5f, 5f)
+        defaults().padTop(10f)
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             val prompt = "Which options should be available to the random selection?"
             val width = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
