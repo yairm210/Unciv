@@ -128,7 +128,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
 
                 val innerBorderImage = ImageGetter.getImage(
-                    strings().orFallback { getBorder(borderShapeString,"Inner") }
+                    strings.orFallback { getBorder(borderShapeString,"Inner") }
                 ).setHexagonSize()
 
                 addActor(innerBorderImage)
@@ -137,7 +137,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 innerBorderImage.color = civOuterColor
 
                 val outerBorderImage = ImageGetter.getImage(
-                    strings().orFallback { getBorder(borderShapeString, "Outer") }
+                    strings.orFallback { getBorder(borderShapeString, "Outer") }
                 ).setHexagonSize()
 
                 addActor(outerBorderImage)

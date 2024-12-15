@@ -75,8 +75,17 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Transient
     var ruleset: Ruleset? = null
 
+    data class TerrainListData(
+        val uniques: UniqueMap,
+        val terrainNameSet: Set<String>
+    ){
+        companion object{
+            val EMPTY = TerrainListData(UniqueMap.EMPTY, emptySet())
+        }
+    }
+    
     @Transient
-    var tileUniqueMapCache = ConcurrentHashMap<List<String>, UniqueMap>()
+    var tileUniqueMapCache = ConcurrentHashMap<List<String>, TerrainListData>()
 
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding

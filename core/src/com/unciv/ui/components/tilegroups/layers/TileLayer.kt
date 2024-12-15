@@ -18,9 +18,10 @@ abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
         @Suppress("LeakingThis")
         setSize(size, size)
     }
-
-    fun tile(): Tile = tileGroup.tile
-    fun strings(): TileSetStrings = tileGroup.tileSetStrings
+ 
+    // these should not change
+    val tile: Tile = tileGroup.tile
+    val strings: TileSetStrings = tileGroup.tileSetStrings
 
     fun Image.setHexagonSize(scale: Float? = null): Image {
         this.setSize(tileGroup.hexagonImageWidth, this.height*tileGroup.hexagonImageWidth/this.width)

@@ -14,7 +14,6 @@ import com.unciv.utils.DebugUtils
 class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     private var cityButton: CityButton? = null
-    val tile = tileGroup.tile
 
     init {
         touchable = Touchable.childrenOnly
@@ -57,7 +56,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         }
 
         if (viewingCiv == null) return
-        if (city == null || !tile.isCityCenter()) return
+        if (city == null || !tileGroup.tile.isCityCenter()) return
         
         // Create (if not yet) and update city button
         if (cityButton == null) {
