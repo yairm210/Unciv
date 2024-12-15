@@ -76,7 +76,8 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
                 button.disable()
                 buyButtonOnClick(construction, stat)
             }
-            button.isEnabled = cityScreen.canCityBeChanged() &&
+            // allow puppets, since isConstructionPurchaseAllowed handles that and exceptions to that rule
+            button.isEnabled = cityScreen.canChangeState &&
                 city.cityConstructions.isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
             preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
         }
