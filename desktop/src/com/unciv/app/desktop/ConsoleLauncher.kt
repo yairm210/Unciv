@@ -8,6 +8,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MirroringType
 import com.unciv.logic.simulation.Simulation
 import com.unciv.models.metadata.*
 import com.unciv.models.ruleset.RulesetCache
@@ -68,6 +69,7 @@ internal object ConsoleLauncher {
             mapSize = MapSize.Small
             noRuins = true
             noNaturalWonders = true
+            mirroring = MirroringType.aroundCenterTile
         }
     }
 
