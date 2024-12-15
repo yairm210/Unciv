@@ -1,6 +1,7 @@
 ﻿package com.unciv.logic.automation.unit
 
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
