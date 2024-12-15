@@ -253,14 +253,18 @@ enum class NeighborDirection {
     Top, TopRight, TopLeft, Bottom, BottomLeft, BottomRight;
 
     companion object {
-        fun fromVector(vector2: Vector2): NeighborDirection? = when {
-            vector2.x == 1f && vector2.y == 1f -> Top
-            vector2.x == 0f && vector2.y == 1f -> TopRight
-            vector2.x == 1f && vector2.y == 0f -> TopLeft
-            vector2.x == -1f && vector2.y == -1f -> Bottom
-            vector2.x == 0f && vector2.y == -1f -> BottomLeft
-            vector2.x == -1f && vector2.y == 0f -> BottomRight
-            else -> null
+        fun fromVector(vector2: Vector2): NeighborDirection? {
+            val x = vector2.x.toInt()
+            val y = vector2.y.toInt()
+            return when (x) {
+                1 -> if (y == 1) Top // x == 1 && y == 1
+                    else TopLeft // x == 1 && y == 0
+                0 -> if (y == 1) TopRight // x == 0 && y == 1
+                    else BottomLeft // x == 0 && y == -1
+                -1 -> if (y == -1) Bottom // x == -1 && y == -1
+                    else BottomRight // x == -1 && y == 0
+                else -> null
+            }
         }
     }
 }
