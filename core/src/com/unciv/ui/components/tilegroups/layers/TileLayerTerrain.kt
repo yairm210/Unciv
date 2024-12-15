@@ -47,6 +47,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         return ImageGetter.imageExists(strings().getTile("$shownImprovement-Pillaged"))
     }
 
+    var previousTileImageLocationData: TileImageLocationData? = null
     private fun getTileBaseImageLocations(viewingCiv: Civilization?): List<String> {
 
         val isForceVisible = tileGroup.isForceVisible
@@ -75,6 +76,20 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             }
         }
 
+        // Anything that, if changed, would change the terrain images - optimization to avoid unnecessary work
+        val tileImageLocationData = TileImageLocationData(
+            viewingCiv,
+            isForceVisible,
+            shownImprovement,
+            shouldShowImprovement,
+            shouldShowResource,
+            tile.baseTerrain,
+            tile.naturalWonder,
+            tile.terrainFeatures,
+        )
+        if (previousTileImageLocationData == tileImageLocationData) return tileImageIdentifiers
+        else previousTileImageLocationData = tileImageLocationData
+
         val terrainImages = if (tile.naturalWonder != null)
             sequenceOf(tile.baseTerrain, tile.naturalWonder!!)
         else  sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
@@ -88,7 +103,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         return when {
             strings().tileSetConfig.ruleVariants[allTogether] != null -> baseHexagon + 
                     strings().tileSetConfig.ruleVariants[allTogether]!!.map { strings().getTile(it) } + edgeImages
-            ImageGetter.imageExists(allTogetherLocation) -> baseHexagon + allTogetherLocation + edgeImages
+            ImageGetter.imageExists(allTogetherLocation) -> 
+                baseHexagon + allTogetherLocation + edgeImages
             tile.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon) + edgeImages
             else -> baseHexagon + getTerrainImageLocations(terrainImages) + edgeImages + getImprovementAndResourceImages(resourceAndImprovementSequence)
         }
@@ -121,8 +137,21 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             return@filter true
         }.map { it.fileName }
     }
+    
+    data class TileImageLocationData(
+        val viewingCiv: Civilization?,
+        val isForceVisible: Boolean,
+        val shownImprovement: String?,
+        val shouldShowImprovement: Boolean,
+        val shouldShowResource: Boolean,
+        val baseTerrain: String,
+        val naturalWonder: String?,
+        val terrainFeatures: List<String>,
+
+        )
 
     private fun updateTileImage(viewingCiv: Civilization?) {
+        
         val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
         
         if (tileBaseImageLocations.size == tileImageIdentifiers.size) {
@@ -253,14 +282,18 @@ enum class NeighborDirection {
     Top, TopRight, TopLeft, Bottom, BottomLeft, BottomRight;
 
     companion object {
-        fun fromVector(vector2: Vector2): NeighborDirection? = when {
-            vector2.x == 1f && vector2.y == 1f -> Top
-            vector2.x == 0f && vector2.y == 1f -> TopRight
-            vector2.x == 1f && vector2.y == 0f -> TopLeft
-            vector2.x == -1f && vector2.y == -1f -> Bottom
-            vector2.x == 0f && vector2.y == -1f -> BottomLeft
-            vector2.x == -1f && vector2.y == 0f -> BottomRight
-            else -> null
+        fun fromVector(vector2: Vector2): NeighborDirection? {
+            val x = vector2.x.toInt()
+            val y = vector2.y.toInt()
+            return when (x) {
+                1 -> if (y == 1) Top // x == 1 && y == 1
+                    else TopLeft // x == 1 && y == 0
+                0 -> if (y == 1) TopRight // x == 0 && y == 1
+                    else BottomLeft // x == 0 && y == -1
+                -1 -> if (y == -1) Bottom // x == -1 && y == -1
+                    else BottomRight // x == -1 && y == 0
+                else -> null
+            }
         }
     }
 }
