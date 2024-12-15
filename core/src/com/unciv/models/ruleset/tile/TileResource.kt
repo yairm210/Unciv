@@ -37,7 +37,9 @@ class TileResource : RulesetStatsObject(), GameResource {
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
     
-    val isCityWide by lazy { hasUnique(UniqueType.CityResource) }
+    val isCityWide by lazy { hasUnique(UniqueType.CityResource, StateForConditionals.IgnoreConditionals) }
+
+    val isStockpiled by lazy { hasUnique(UniqueType.Stockpiled, StateForConditionals.IgnoreConditionals) }
 
     private var improvementsInitialized = false
     /** Cache collecting [improvement], [improvedBy] and [UniqueType.ImprovesResources] uniques on the improvements themselves. */
@@ -211,8 +213,6 @@ class TileResource : RulesetStatsObject(), GameResource {
 
         return true
     }
-
-    val isStockpiled by lazy { hasUnique(UniqueType.Stockpiled) }
 
     class DepositAmount {
         var sparse: Int = 1
