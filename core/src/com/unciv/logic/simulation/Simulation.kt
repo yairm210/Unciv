@@ -134,7 +134,7 @@ class Simulation(
             if (it.winner != null) {
                 numWins[it.winner!!]!!.inc()
                 winRateByVictory[it.winner!!]!![it.victoryType]!!.inc()
-                winTurnByVictory[it.winner!!]!![it.victoryType]!!.set(winTurnByVictory[it.winner!!]!![it.victoryType]!!.get() + it.turns)
+                winTurnByVictory[it.winner!!]!![it.victoryType]!!.add(it.turns)
             }
         }
         totalTurns = steps.sumOf { it.turns }
