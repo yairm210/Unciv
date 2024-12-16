@@ -71,7 +71,7 @@ object Fonts {
             descent / height }
         // For whatever reason, undershooting the adjustment slightly
         // causes rounding to work better
-        return ratio * fontSize.toFloat() + 0.10f
+        return ratio * fontSize.toFloat() + 2.25f
     }
 
     /**
