@@ -55,6 +55,7 @@ class Simulation(
         val jobs: ArrayList<Job> = ArrayList()
         println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
         + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName })
+        newGameInfo.gameParameters.shufflePlayerOrder = true
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
@@ -64,6 +65,7 @@ class Simulation(
                     gameInfo.nextTurn()
 
                     val step = SimulationStep(gameInfo)
+                    println("First: ${gameInfo.civilizations.first().civName}")
 
                     if (step.victoryType != null) {
                         step.winner = step.currentPlayer
