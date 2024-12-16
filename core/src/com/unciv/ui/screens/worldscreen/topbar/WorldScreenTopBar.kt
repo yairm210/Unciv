@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.darken
@@ -198,7 +200,9 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         private var selectedCivIcon = Group()
         private val selectedCivIconCell: Cell<Group>
         private val selectedCivLabel = "".toLabel()
+
         private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
+        private val menuButtonWrapper = Container(menuButton)
 
         init {
             // vertically align the Nation name by ascender height without descender:
@@ -225,9 +229,12 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             selectedCivLabel.onClick(onNationClick)
             selectedCivIcon.onClick(onNationClick)
 
-            add(menuButton).size(50f)
-            selectedCivIconCell = add(selectedCivIcon).padLeft(10f)
-            add(selectedCivLabel).padTop(descenderHeight)
+            menuButtonWrapper.size(Constants.headingFontSize * 1.5f);
+            menuButtonWrapper.center()
+            add(menuButtonWrapper)
+
+            selectedCivIconCell = add(selectedCivIcon).padLeft(Constants.defaultFontSize / 1.5f)
+            add(selectedCivLabel).padTop(descenderHeight).padLeft(Constants.defaultFontSize / 2.0f)
             pack()
         }
 
