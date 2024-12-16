@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.GUI
+import com.unciv.Constants
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
@@ -41,7 +42,7 @@ fun displayTab(
 
     val settings = optionsPopup.settings
 
-    add("Screen".toLabel(fontSize = 24)).colspan(2).row()
+    add("Screen".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addScreenOrientationSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
@@ -58,14 +59,14 @@ fun displayTab(
     }
 
     addSeparator()
-    add("Graphics".toLabel(fontSize = 24)).colspan(2).row()
+    add("Graphics".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     addSeparator()
-    add("UI".toLabel(fontSize = 24)).colspan(2).row()
+    add("UI".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     addNotificationScrollSelect(this, settings, optionsPopup.selectBoxMinWidth)
     addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
@@ -77,7 +78,7 @@ fun displayTab(
     addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addSeparator()
-    add("Visual Hints".toLabel(fontSize = 24)).colspan(2).row()
+    add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
     optionsPopup.addCheckbox(this, "Show suggested city locations for units that can found cities", settings.showSettlersSuggestedCityLocations, true) { settings.showSettlersSuggestedCityLocations = it }
@@ -89,7 +90,7 @@ fun displayTab(
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addSeparator()
-    add("Performance".toLabel(fontSize = 24)).colspan(2).row()
+    add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
         settings.continuousRendering = it

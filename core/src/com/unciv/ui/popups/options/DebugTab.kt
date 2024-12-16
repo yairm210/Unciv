@@ -49,36 +49,20 @@ fun debugTab(
         add(invalidInputLabel).colspan(2).row()
     }
 
-    add("Supercharged".toCheckBox(DebugUtils.SUPERCHARGED) {
-        DebugUtils.SUPERCHARGED = it
-    }).colspan(2).row()
-    add("View entire map".toCheckBox(DebugUtils.VISIBLE_MAP) {
-        DebugUtils.VISIBLE_MAP = it
-    }).colspan(2).row()
-    add("Show coordinates on tiles".toCheckBox(DebugUtils.SHOW_TILE_COORDS) {
-        DebugUtils.SHOW_TILE_COORDS = it
-    }).colspan(2).row()
-    add("Show tile image locations".toCheckBox(DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) {
-        DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it
-    }).colspan(2).row()
+    optionsPopup.addCheckbox(this, "Supercharged", DebugUtils.SUPERCHARGED) { DebugUtils.SUPERCHARGED = it }
+    optionsPopup.addCheckbox(this, "View entire map", DebugUtils.VISIBLE_MAP) { DebugUtils.VISIBLE_MAP = it }
+    optionsPopup.addCheckbox(this, "Show coordinates on tiles", DebugUtils.SHOW_TILE_COORDS) { DebugUtils.SHOW_TILE_COORDS = it }
+    optionsPopup.addCheckbox(this, "Show tile image locations", DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) { DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it }
 
     val curGameInfo = game.gameInfo
     if (curGameInfo != null) {
-        add("God mode (current game)".toCheckBox(curGameInfo.gameParameters.godMode) {
-            curGameInfo.gameParameters.godMode = it
-        }).colspan(2).row()
+        optionsPopup.addCheckbox(this, "God mode (current game)", curGameInfo.gameParameters.godMode) { curGameInfo.gameParameters.godMode = it }
     }
 
-    add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
-        UncivFiles.saveZipped = it
-    }).colspan(2).row()
-    add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
-        MapSaver.saveZipped = it
-    }).colspan(2).row()
-
-    add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
-        BaseScreen.enableSceneDebug = it
-    }).colspan(2).row()
+    optionsPopup.addCheckbox(this, "Save games compressed", UncivFiles.saveZipped) { UncivFiles.saveZipped = it }
+    optionsPopup.addCheckbox(this, "Save maps compressed", MapSaver.saveZipped) { MapSaver.saveZipped = it }
+    optionsPopup.addCheckbox(this, "Gdx Scene2D debug", BaseScreen.enableSceneDebug) { BaseScreen.enableSceneDebug = it }
+        
 
     add(Table().apply {
         add("Unique misspelling threshold".toLabel()).left().fillX()

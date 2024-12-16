@@ -2,6 +2,7 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
+import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.addSeparator
@@ -15,7 +16,7 @@ fun automationTab(optionsPopup: OptionsPopup
     defaults().pad(5f)
 
     val settings = optionsPopup.settings
-    add("Automation".toLabel(fontSize = 24)).colspan(2).row()
+    add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
         settings.autoAssignCityProduction = shouldAutoAssignCityProduction
@@ -56,7 +57,7 @@ fun automationTab(optionsPopup: OptionsPopup
     ) { settings.citiesAutoBombardAtEndOfTurn = it }
 
     addSeparator()
-    add("AutoPlay".toLabel(fontSize = 24)).colspan(2).row()
+    add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 //    fun addAutoPlaySections() {
 //        optionsPopup.addCheckbox(
 //            this,

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
+import com.unciv.Constants
 import com.unciv.logic.files.IMediaFinder
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -101,7 +102,7 @@ private fun addMultiplayerServerOptions(
 ) {
     val settings = optionsPopup.settings
 
-    val connectionToServerButton = "Check connection to server".toTextButton()
+    val connectionToServerButton = "Check connection".toTextButton()
 
     val textToShowForOnlineMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
         settings.multiplayer.server
@@ -115,7 +116,7 @@ private fun addMultiplayerServerOptions(
 
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).colspan(2).row()
+        }).colspan(2).padBottom(Constants.defaultFontSize / 2.0f).row()
     multiplayerServerTextField.onChange {
         fixTextFieldUrlOnType(multiplayerServerTextField)
         // we can't trim on 'fixTextFieldUrlOnType' for reasons
@@ -128,8 +129,7 @@ private fun addMultiplayerServerOptions(
     }
 
     serverIpTable.add(multiplayerServerTextField)
-        .minWidth(optionsPopup.stageToShowOn.width / 2)
-        .colspan(2).growX().padBottom(8f).row()
+        .minWidth(optionsPopup.stageToShowOn.width / 3).padRight(Constants.defaultFontSize.toFloat()).growX()
 
     serverIpTable.add(connectionToServerButton.onClick {
         val popup = Popup(optionsPopup.stageToShowOn).apply {
@@ -152,7 +152,7 @@ private fun addMultiplayerServerOptions(
                 popup.reuseWith("Failed!", true)
             }
         }
-    }).colspan(2).row()
+    }).row()
 
     if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
         val passwordTextField = UncivTextField(
