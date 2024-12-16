@@ -62,7 +62,7 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
         }
 
         val strategicResources = worldScreen.gameInfo.ruleset.tileResources.values
-            .filter { it.resourceType == ResourceType.Strategic && !it.hasUnique(UniqueType.CityResource) }
+            .filter { it.resourceType == ResourceType.Strategic && !it.isCityWide }
         for (resource in strategicResources) {
             val resourceImage = ImageGetter.getResourcePortrait(resource.name, iconSize)
             val resourceLabel = "0".toLabel()
@@ -101,7 +101,7 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
 
             resourcesWrapper.add(icon).padLeft(if (index == 0) 0f else extraPadBetweenResources)
 
-            if (!resource.isStockpiled())
+            if (!resource.isStockpiled)
                 label.setText(amount.tr())
             else {
                 val perTurn = civResourceSupply.firstOrNull { it.resource == resource }?.amount ?: 0

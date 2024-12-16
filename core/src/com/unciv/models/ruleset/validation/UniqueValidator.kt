@@ -170,7 +170,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
 
         if (unique.type in resourceUniques && conditional.type in resourceConditionals
-            && ruleset.tileResources[conditional.params.last()]?.hasUnique(UniqueType.CityResource) == true)
+            && ruleset.tileResources[conditional.params.last()]?.isCityWide == true)
             rulesetErrors.add(
                 "$prefix contains the conditional \"${conditional.text}\"," +
                     " which references a citywide resource. This is not a valid conditional for a resource uniques, " +

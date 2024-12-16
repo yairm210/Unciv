@@ -9,11 +9,12 @@ import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
-class TileResource : RulesetStatsObject() {
+class TileResource : RulesetStatsObject(), GameResource {
 
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
@@ -35,6 +36,10 @@ class TileResource : RulesetStatsObject() {
 
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
+    
+    val isCityWide by lazy { hasUnique(UniqueType.CityResource, StateForConditionals.IgnoreConditionals) }
+
+    val isStockpiled by lazy { hasUnique(UniqueType.Stockpiled, StateForConditionals.IgnoreConditionals) }
 
     private var improvementsInitialized = false
     /** Cache collecting [improvement], [improvedBy] and [UniqueType.ImprovesResources] uniques on the improvements themselves. */
@@ -208,8 +213,6 @@ class TileResource : RulesetStatsObject() {
 
         return true
     }
-
-    fun isStockpiled() = hasUnique(UniqueType.Stockpiled)
 
     class DepositAmount {
         var sparse: Int = 1
