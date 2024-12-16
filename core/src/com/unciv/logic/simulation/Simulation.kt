@@ -21,7 +21,7 @@ class Simulation(
     val simulationsPerThread: Int = 1,
     private val threadsNumber: Int = 1,
     private val maxTurns: Int = 500,
-    private val statTurn: Int = 100
+    private val statTurn: Int = -1
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
@@ -62,13 +62,15 @@ class Simulation(
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
-                    gameInfo.simulateMaxTurns = statTurn
+                    gameInfo.simulateMaxTurns = if(statTurn == -1) maxTurns else statTurn
                     gameInfo.simulateUntilWin = true
                     gameInfo.nextTurn()
-                    saveStat(gameInfo)
-
-                    gameInfo.simulateMaxTurns = maxTurns
-                    gameInfo.nextTurn()
+                    
+                    if (statTurn != -1) {
+                        saveStat(gameInfo)
+                        gameInfo.simulateMaxTurns = maxTurns
+                        gameInfo.nextTurn()
+                    }
 
                     val step = SimulationStep(gameInfo)
 
@@ -166,7 +168,8 @@ class Simulation(
                 outString += "$victory: $winsTurns    "
             }
             outString += "avg turns\n"
-            outString += "avgStat (turn $statTurn): ${avgStat[civ]!!.value/numSteps}\n"
+            if (statTurn != -1)
+                outString += "avgStat (turn $statTurn): ${avgStat[civ]!!.value/numSteps}\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"
