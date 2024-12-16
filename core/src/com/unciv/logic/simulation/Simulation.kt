@@ -115,7 +115,7 @@ class Simulation(
         for (civ in gameInfo.civilizations.filter { it.civName != Constants.spectator }) {
             val popsum = civ.cities.sumOf { it.population.population }
             //println("$civ $popsum")
-            sumStat[civ.civName]!![turn]!!.set(sumStat[civ.civName]!![turn]!!.get() + popsum)
+            sumStat[civ.civName]!![turn]!!.add(popsum)
         }
     }
 
