@@ -306,6 +306,7 @@ class GameSettings {
         Russian("ru", "RU"),
         Rusyn("uk", "UA", "rus"), // No specific locale for rus exists, so use closest for collator
         Serbian("sr", "RS"),
+        Shavian("en","Shaw"), // I haven't found too much information on the locale for this but this is what is listed in a few pages
         SimplifiedChinese("zh", "CN"),
         Slovak("sk", "SK"),
         Spanish("es", "ES"),
