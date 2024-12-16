@@ -58,6 +58,11 @@ object Fonts {
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.localName })
     }
 
+    fun getDescenderHeight(fontSize: Int): Float {
+        val ratio = font.run { getDescent() / (getAscent() + getDescent() + getCapHeight()) }
+        return ratio * fontSize.toFloat()
+    }
+
     /**
      * Turn a TextureRegion into a Pixmap.
      *

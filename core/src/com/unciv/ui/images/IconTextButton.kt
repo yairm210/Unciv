@@ -44,12 +44,10 @@ open class IconTextButton(
 
     init {
         pad(10f)
-        val descenderHeight = Fonts.fontImplementation.getMetrics().run {
-            descent / height } * fontSize.toFloat()
 
         // This handles weird rounding situations slightly
         // better for some reason that I don't understand
         labelCell.padTop(9.75f)
-        labelCell.padBottom(ceil(descenderHeight));
+        labelCell.padBottom(ceil(Fonts.getDescenderHeight(fontSize)));
     }
 }
