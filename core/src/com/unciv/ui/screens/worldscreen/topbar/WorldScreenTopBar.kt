@@ -205,17 +205,8 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         private val menuButtonWrapper = Container(menuButton)
 
         init {
-            // vertically align the Nation name by ascender height without descender:
-            //  Normal vertical centering uses the entire font height, but that looks off here because there's
-            //  few descenders in the typical Nation name. So we calculate an estimate of the descender height
-            //  in world coordinates (25 is the Label font size set below), then, since the cells themselves
-            //  have no default padding, we remove that much padding from the top of this entire Table, and
-            //  give the Label that much top padding in return. Approximated since we're ignoring 'leading'.
-            val descenderHeight = Fonts.fontImplementation.getMetrics().run { descent / height } * 25f
-
             left()
             pad(10f)
-            padTop((10f - descenderHeight).coerceAtLeast(0f))
 
             menuButton.color = Color.WHITE
             menuButton.onActivation(binding = KeyboardBinding.Menu) { WorldScreenMenuPopup(worldScreen) }
@@ -225,7 +216,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
                 worldScreen.openCivilopedia(worldScreen.selectedCiv.nation.makeLink())
             }
 
-            selectedCivLabel.setFontSize(25)
+            selectedCivLabel.setFontSize(Constants.headingFontSize)
             selectedCivLabel.onClick(onNationClick)
             selectedCivIcon.onClick(onNationClick)
 
@@ -234,7 +225,8 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             add(menuButtonWrapper)
 
             selectedCivIconCell = add(selectedCivIcon).padLeft(Constants.defaultFontSize / 1.5f)
-            add(selectedCivLabel).padTop(descenderHeight).padLeft(Constants.defaultFontSize / 2.0f)
+            add(selectedCivLabel).padTop(10f - Fonts.getDescenderHeight(Constants.headingFontSize))
+                .padLeft(Constants.defaultFontSize / 2.0f)
             pack()
         }
 

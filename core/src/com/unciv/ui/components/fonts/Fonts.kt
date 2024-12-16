@@ -58,9 +58,20 @@ object Fonts {
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.localName })
     }
 
+    /**
+     * Helper for v-centering the text of Icon – Label -type components:
+     *
+     * Normal vertical centering uses the entire font height. In reality,
+     * it is customary to align the centre from the baseline to the ascent
+     * with the centre of the other element.  This function estimates the
+     * correct amount to shift the text element.
+     */
     fun getDescenderHeight(fontSize: Int): Float {
-        val ratio = font.run { getDescent() / (getAscent() + getDescent() + getCapHeight()) }
-        return ratio * fontSize.toFloat()
+        val ratio = fontImplementation.getMetrics().run {
+            descent / height }
+        // For whatever reason, undershooting the adjustment slightly
+        // causes rounding to work better
+        return ratio * fontSize.toFloat() + 0.10f
     }
 
     /**

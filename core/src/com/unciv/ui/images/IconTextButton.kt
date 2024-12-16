@@ -44,10 +44,6 @@ open class IconTextButton(
 
     init {
         pad(10f)
-
-        // This handles weird rounding situations slightly
-        // better for some reason that I don't understand
-        labelCell.padTop(9.75f)
-        labelCell.padBottom(ceil(Fonts.getDescenderHeight(fontSize)));
+        labelCell.padTop(10f - Fonts.getDescenderHeight(fontSize));
     }
 }
