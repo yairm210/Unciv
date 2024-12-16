@@ -21,7 +21,7 @@ class Simulation(
     val simulationsPerThread: Int = 1,
     private val threadsNumber: Int = 1,
     private val maxTurns: Int = 500,
-    private val statTurn: Int = -1
+    private val statTurns: List<Int> = listOf()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
@@ -29,7 +29,7 @@ class Simulation(
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
-    var avgStat = mutableMapOf<String, MutableInt>()
+    var sumStat = mutableMapOf<String, MutableMap<Int, MutableInt>>()
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var winTurnByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var avgSpeed = 0f
@@ -42,7 +42,8 @@ class Simulation(
     init{
         for (civ in civilizations) {
             this.numWins[civ] = MutableInt(0)
-            this.avgStat[civ] = MutableInt(0)
+            for (turn in statTurns)
+                this.sumStat.getOrPut(civ) { mutableMapOf() }[turn] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
                 winRateByVictory[civ]!![victory] = MutableInt(0)
@@ -63,17 +64,23 @@ class Simulation(
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
-                    gameInfo.simulateMaxTurns = if(statTurn == -1) maxTurns else statTurn
                     gameInfo.simulateUntilWin = true
-                    gameInfo.nextTurn()
-                    
-                    if (statTurn != -1) {
+                    for (turn in statTurns) {
+                        gameInfo.simulateMaxTurns = turn
+                        gameInfo.nextTurn()
                         saveStat(gameInfo)
+                        val step = SimulationStep(gameInfo)
+                        if (step.victoryType != null)
+                            break
+                    }
+                    // check if Victory
+                    var step = SimulationStep(gameInfo)
+                    if (step.victoryType == null) {
                         gameInfo.simulateMaxTurns = maxTurns
                         gameInfo.nextTurn()
                     }
 
-                    val step = SimulationStep(gameInfo)
+                    step = SimulationStep(gameInfo)  // final game state
 
                     if (step.victoryType != null) {
                         step.winner = step.currentPlayer
@@ -104,11 +111,11 @@ class Simulation(
 
     @Synchronized
     fun saveStat(gameInfo: GameInfo) {
+        val turn = gameInfo.turns
         for (civ in gameInfo.civilizations.filter { it.civName != Constants.spectator }) {
-            var popsum = 0
-            civ.cities.forEach { city -> popsum += city.population.population }
+            val popsum = civ.cities.sumOf { it.population.population }
             //println("$civ $popsum")
-            avgStat[civ.civName]!!.set(avgStat[civ.civName]!!.get() + popsum)
+            sumStat[civ.civName]!![turn]!!.set(sumStat[civ.civName]!![turn]!!.get() + popsum)
         }
     }
 
@@ -169,8 +176,8 @@ class Simulation(
                 outString += "$victory: $winsTurns    "
             }
             outString += "avg turns\n"
-            if (statTurn != -1)
-                outString += "avgStat (turn $statTurn): ${avgStat[civ]!!.value.toFloat()/numSteps}\n"
+            for (turn in statTurns)
+                outString += "avgStat (@$turn): ${sumStat[civ]!![turn]!!.value.toFloat()/numSteps}\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"
