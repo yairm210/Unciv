@@ -1,42 +1,22 @@
 ## 4.14.16
 
-Resolved  - Paused music no longer resumes on game resume
+CPU performance improvements
 
-perf(minor): TileLayerCityButton faster "no-op" check
+UI: 
+- Better "close unit table" button 
+- Better options checkboxes, slider buttons, multiplayer server UI  - By Toxile
 
-perf: save more metadata per "list of terrains" for fast lookups, this time for edge tiles
-
-perf: save tile ref on each tile layer
-
-Revert "perf(tile-update): cache base data for tile rendering to only recompute when base data changes"
-
-perf(hit,act): local variables to save data (is null equality that hard to compute?! what's going on?!)
-
-perf(tile-update): cache base data for tile rendering to only recompute when base data changes
-
-perf: faster vector -> direction conversion
-
-Resolved  - "Tile provides yield without assigned population", "Adjacent enemy units ending their turn take [49] damage" accept tile/civ conditionals
-
-Resolved  - buy button active for puppets when civ can purchase items in puppets
-
-Better "close unit table" button - see 
-
-UI: standardised alignment and creation of options checkboxes, Unciv-themed slider buttons, multiplayer settings server text field layout and spacing  - By Toxile
+Bugfixes:
+- Buy button active when civ can purchase items in puppets
+- Paused music no longer resumes on game resume
 
 By SeventhM:
-- Add unified unique for gaining stats or stockpiles 
-- Use unit state for trigger conditionals for gaining new units 
-- Make pantheon cost respect game speed modifer 
+- Unified unique for gaining stats/stockpiles 
+- Pantheon cost respects game speed modifer 
 
-By itanasi:
-- Simulation: Save Stat support 
-- Quick edit so Simulation report is in consistent order 
-- Changes to provide Random Order of Civs in sims 
-
-Prevent incorrect settler retreat  - By EmperorPinguin
-
-Create CODE_OF_CONDUCT.md  - By JTech-Labs
+AI: 
+- Better Food Weights for citizen management - By itanasi
+- Prevent incorrect settler retreat - By EmperorPinguin
 
 ## 4.14.15
 

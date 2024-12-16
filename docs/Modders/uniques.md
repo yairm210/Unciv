@@ -117,6 +117,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Instantly gain [amount] [stockpile]"
+	Example: "Instantly gain [3] [Mana]"
+
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	Applicable to: Triggerable
+
 ??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
 
@@ -3430,6 +3436,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[speed]: The name of any speed.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
+*[stockpile]: The name of any stockpiled resource.
 *[stockpiledResource]: The name of any stockpiled resource.
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
