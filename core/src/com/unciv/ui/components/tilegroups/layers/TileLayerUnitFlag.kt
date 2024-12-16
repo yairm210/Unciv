@@ -151,7 +151,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         fillSlots(viewingCiv)
 
         if (viewingCiv != null) {
-            val unitsInTile = tile().getUnits()
+            val unitsInTile = tile.getUnits()
             val shouldBeHighlighted = unitsInTile.any()
                     && unitsInTile.first().civ.isAtWarWith(viewingCiv)
                     && isViewable(viewingCiv)

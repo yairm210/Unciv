@@ -156,9 +156,9 @@ class UncivSlider (
         stepChanged()   // Initialize tip formatting
 
         if (plusMinus) {
-            minusButton = "-".toLabel(ImageGetter.CHARCOAL, plusMinusFontSize)
+            minusButton = "-".toLabel(Color.WHITE, plusMinusFontSize)
                 .apply { setAlignment(Align.center) }
-                .surroundWithCircle(plusMinusCircleSize)
+                .surroundWithCircle(plusMinusCircleSize, true, BaseScreen.skin.getColor("color"))
             minusButton.onClick {
                 addToValue(-stepSize)
             }
@@ -172,9 +172,9 @@ class UncivSlider (
 
         if (plusMinus) {
             if (vertical) row()
-            plusButton = "+".toLabel(ImageGetter.CHARCOAL, plusMinusFontSize)
+            plusButton = "+".toLabel(Color.WHITE, plusMinusFontSize)
                 .apply { setAlignment(Align.center) }
-                .surroundWithCircle(plusMinusCircleSize)
+                .surroundWithCircle(plusMinusCircleSize, true, BaseScreen.skin.getColor("color"))
             plusButton.onClick {
                 addToValue(stepSize)
             }

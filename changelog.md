@@ -1,3 +1,23 @@
+## 4.14.16
+
+CPU performance improvements
+
+UI: 
+- Better "close unit table" button 
+- Better options checkboxes, slider buttons, multiplayer server UI  - By Toxile
+
+Bugfixes:
+- Buy button active when civ can purchase items in puppets
+- Paused music no longer resumes on game resume
+
+By SeventhM:
+- Unified unique for gaining stats/stockpiles 
+- Pantheon cost respects game speed modifer 
+
+AI: 
+- Better Food Weights for citizen management - By itanasi
+- Prevent incorrect settler retreat - By EmperorPinguin
+
 ## 4.14.15
 
 UI improvements:

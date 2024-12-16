@@ -18,6 +18,9 @@ object CivilianUnitAutomation {
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+        if (unit.hasUnique(UniqueType.FoundCity))
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
+
         if (tryRunAwayIfNeccessary(unit)) return
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
@@ -27,9 +30,6 @@ object CivilianUnitAutomation {
             if (tilesCanMoveTo.isNotEmpty())
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
-
-        if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (unit.isAutomatingRoadConnection())
             return unit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
@@ -158,7 +158,7 @@ object CivilianUnitAutomation {
     }
 
     /** Returns whether the civilian spends its turn hiding and not moving */
-    private fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
+    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys

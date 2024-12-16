@@ -31,7 +31,7 @@ object DiplomacyTurnManager {
             // Every cancelled trade can change this - if 1 resource is missing,
             // don't cancel all trades of that resource, only cancel one (the first one, as it happens, since they're added chronologically)
             val negativeCivResources = civInfo.getCivResourceSupply()
-                .filter { it.amount < 0 && !it.resource.isStockpiled() }.map { it.resource.name }
+                .filter { it.amount < 0 && !it.resource.isStockpiled }.map { it.resource.name }
 
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeOfferType.Luxury_Resource, TradeOfferType.Strategic_Resource)

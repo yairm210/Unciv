@@ -81,7 +81,7 @@ class ResourcesOverviewTab(
             return tile.countAsUnimproved()
         }
         val amount = get(resource, origin)?.amount ?: return null
-        val label = if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
+        val label = if (resource.isStockpiled && amount > 0) "+$amount".toLabel()
             else amount.toLabel()
         if (origin == ExtraInfoOrigin.Unimproved.name)
             label.onClick { overviewScreen.showOneTimeNotification(
@@ -92,7 +92,7 @@ class ResourcesOverviewTab(
 
     private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label {
         val total = filter { it.resource == resource }.sumOf { it.amount }
-        return if (resource.isStockpiled() && total > 0) "+$total".toLabel()
+        return if (resource.isStockpiled && total > 0) "+$total".toLabel()
         else total.toLabel()
     }
 
