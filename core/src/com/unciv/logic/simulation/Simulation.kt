@@ -68,10 +68,10 @@ class Simulation(
                     for (turn in statTurns) {
                         gameInfo.simulateMaxTurns = turn
                         gameInfo.nextTurn()
-                        saveStat(gameInfo)
                         val step = SimulationStep(gameInfo)
                         if (step.victoryType != null)
                             break
+                        saveStat(gameInfo)
                     }
                     // check if Victory
                     var step = SimulationStep(gameInfo)
