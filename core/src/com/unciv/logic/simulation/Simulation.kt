@@ -58,6 +58,7 @@ class Simulation(
         val jobs: ArrayList<Job> = ArrayList()
         println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
         + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName })
+        newGameInfo.gameParameters.shufflePlayerOrder = true
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
@@ -169,7 +170,7 @@ class Simulation(
             }
             outString += "avg turns\n"
             if (statTurn != -1)
-                outString += "avgStat (turn $statTurn): ${avgStat[civ]!!.value/numSteps}\n"
+                outString += "avgStat (turn $statTurn): ${avgStat[civ]!!.value.toFloat()/numSteps}\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"
