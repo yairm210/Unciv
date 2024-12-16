@@ -27,8 +27,10 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
@@ -521,11 +523,11 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeProvideResources -> {
                 val resourceName = unique.params[1]
                 val resource = ruleset.tileResources[resourceName] ?: return null
-                if (!resource.isStockpiled()) return null
+                if (!resource.isStockpiled) return null
 
                 return {
                     val amount = unique.params[0].toInt()
-                    civInfo.resourceStockpiles.add(resourceName, amount)
+                    civInfo.gainStockpiledResource(resourceName, amount)
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
@@ -540,11 +542,11 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeConsumeResources -> {
                 val resourceName = unique.params[1]
                 val resource = ruleset.tileResources[resourceName] ?: return null
-                if (!resource.isStockpiled()) return null
+                if (!resource.isStockpiled) return null
 
                 return {
                     val amount = unique.params[0].toInt()
-                    civInfo.resourceStockpiles.add(resourceName, -amount)
+                    civInfo.gainStockpiledResource(resourceName, -amount)
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
@@ -552,6 +554,25 @@ object UniqueTriggerActivation {
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, "ResourceIcons/$resourceName")
+                    true
+                }
+            }
+
+            UniqueType.OneTimeGainResource -> {
+                val resourceName = unique.params[1]
+                
+                val resource = Stat.safeValueOf(resourceName) ?:
+                SubStat.safeValueOf(resourceName) ?:
+                ruleset.tileResources[resourceName] ?: return null
+                if (resource is TileResource && !resource.isStockpiled) return null
+
+                return {
+                    var amount = unique.params[0].toInt()
+                    if (unique.isModifiedByGameSpeed()) {
+                        if (resource is Stat) amount = (amount * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
+                        else amount = (amount * civInfo.gameInfo.speed.modifier).roundToInt()
+                    }
+                    city?.addGameResource(resource, amount) ?: civInfo.addGameResource(resource, amount)
                     true
                 }
             }

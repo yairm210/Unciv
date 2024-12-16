@@ -262,11 +262,14 @@ object NextTurnAutomation {
         }
 
         val stateForConditionals = civInfo.state
-        while(civInfo.tech.freeTechs > 0) {
+        while (civInfo.tech.freeTechs > 0) {
             val costs = getGroupedResearchableTechs()
             if (costs.isEmpty()) return
-
-            val mostExpensiveTechs = costs[costs.size - 1]
+            
+            val mostExpensiveTechs = costs.lastOrNull{ 
+                // Ignore rows where all techs have 0 weight
+                it.any { it.getWeightForAiDecision(stateForConditionals) > 0 }
+            } ?: costs.last()
             val chosenTech = mostExpensiveTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
             civInfo.tech.getFreeTechnology(chosenTech.name)
         }
@@ -274,7 +277,9 @@ object NextTurnAutomation {
             val costs = getGroupedResearchableTechs()
             if (costs.isEmpty()) return
 
-            val cheapestTechs = costs[0]
+            val cheapestTechs = costs.firstOrNull{
+                // Ignore rows where all techs have 0 weight
+                it.any { it.getWeightForAiDecision(stateForConditionals) > 0 } }?: costs.first()
             //Do not consider advanced techs if only one tech left in cheapest group
             val techToResearch: Technology =
                 if (cheapestTechs.size == 1 || costs.size == 1) {

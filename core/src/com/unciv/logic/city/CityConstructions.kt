@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
@@ -434,7 +435,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (unique in costUniques) {
             val amount = unique.params[0].toInt()
             val resourceName = unique.params[1]
-            city.civ.resourceStockpiles.add(resourceName, -amount)
+            city.civ.gainStockpiledResource(resourceName, -amount)
         }
 
         if (construction !is Building) return
@@ -457,21 +458,25 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     /** Returns false if we tried to construct a unit but it has nowhere to go */
     fun completeConstruction(construction: INonPerpetualConstruction): Boolean {
-        val managedToConstruct = construction.postBuildEvent(this)
-        if (!managedToConstruct) return false
+        var unit: MapUnit? = null
+        if (construction is Building) construction.construct(this)
+        else if (construction is BaseUnit) {
+            unit = construction.construct(this, null)
+                ?: return false // unable to place unit
+        }
 
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
         if (construction.name == currentConstructionFromQueue)
             removeCurrentConstruction()
 
-        validateConstructionQueue() // if we've build e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
+        validateConstructionQueue() // if we've built e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
 
         construction as IRulesetObject // Always OK for INonPerpetualConstruction, but compiler doesn't know
 
         val buildingIcon = "BuildingIcons/${construction.name}"
         val pediaAction = CivilopediaAction(construction.makeLink())
-        val locationAction = if (construction is BaseUnit) MapUnitAction(city.location)
+        val locationAction = if (construction is BaseUnit) MapUnitAction(unit!!)
             else LocationAction(city.location)
         val locationAndPediaActions = listOf(locationAction, pediaAction)
 
@@ -665,8 +670,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             // postBuildEvent does the rest by calling cityConstructions.applyCreateOneImprovement
         }
 
-        if (!construction.postBuildEvent(this, stat))
-            return false // nothing built - no pay
+        if (construction is Building) construction.construct(this)
+        else if (construction is BaseUnit) {
+            construction.construct(this, stat) 
+                ?: return false  // nothing built - no pay
+        }
 
         if (!city.civ.gameInfo.gameParameters.godMode) {
             val constructionCost = construction.getStatBuyCost(city, stat)
@@ -697,7 +705,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 for (unique in costUniques) {
                     val amount = unique.params[0].toInt()
                     val resourceName = unique.params[1]
-                    city.civ.resourceStockpiles.add(resourceName, -amount)
+                    city.civ.gainStockpiledResource(resourceName, -amount)
                 }
             }
         }

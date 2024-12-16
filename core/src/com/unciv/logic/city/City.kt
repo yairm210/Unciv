@@ -17,12 +17,15 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.SubStat
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -91,7 +94,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
     }
 
-    var cityAIFocus: String = CityFocus.NoFocus.name
+    private var cityAIFocus: String = CityFocus.NoFocus.name
     fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
@@ -212,11 +215,38 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
     }
 
+    fun addGameResource(stat: GameResource, amount: Int) {
+        if (stat is TileResource) {
+            if (!stat.isStockpiled) return
+            if (!stat.isCityWide) civ.gainStockpiledResource(stat.name, amount)
+            else { /*TODO*/ }
+        }
+        when (stat) {
+            Stat.Production -> cityConstructions.addProductionPoints(amount)
+            Stat.Food, SubStat.StoredFood -> population.foodStored += amount
+            else -> civ.addGameResource(stat, amount)
+        }
+    }
+
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
             Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
             Stat.Food -> population.foodStored
             else -> civ.getStatReserve(stat)
+        }
+    }
+
+    fun getReserve(stat: GameResource): Int {
+        if (stat is TileResource && stat.isCityWide) {
+            return if (stat.isStockpiled) {
+                // TODO
+                0
+            } else 0
+        }
+        return when (stat) {
+            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
+            Stat.Food, SubStat.StoredFood -> population.foodStored
+            else -> civ.getReserve(stat)
         }
     }
 
@@ -385,15 +415,12 @@ class City : IsPartOfGameInfoSerialization, INamed {
         CityConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
-        if (getCenterTile().roadStatus == RoadStatus.None) {
-            val roadImprovement = getRuleset().roadImprovement
-            if (roadImprovement != null && roadImprovement.techRequired in civ.tech.techsResearched)
-                getCenterTile().roadStatus = RoadStatus.Road
-        } else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
-            val railroadImprovement = getRuleset().railroadImprovement
-            if (railroadImprovement != null && railroadImprovement.techRequired in civ.tech.techsResearched)
-                getCenterTile().roadStatus = RoadStatus.Railroad
+        val requiredRoad = when{
+            getRuleset().railroadImprovement?.let { it.techRequired == null || it.techRequired in civ.tech.techsResearched } == true -> RoadStatus.Railroad
+            getRuleset().roadImprovement?.let { it.techRequired == null || it.techRequired in civ.tech.techsResearched } == true -> RoadStatus.Road
+            else -> RoadStatus.None
         }
+        getCenterTile().setRoadStatus(requiredRoad, civ)
     }
 
     fun getGoldForSellingBuilding(buildingName: String) =

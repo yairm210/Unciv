@@ -147,7 +147,7 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
                 fontSize = 8,
                 fontColor = Color.WHITE,
                 alignment = Align.center)
-            val amountGroup = label.surroundWithCircle(size/2, true, Color.BLACK)
+            val amountGroup = label.surroundWithCircle(size/2, true, ImageGetter.CHARCOAL)
 
             label.y -= 0.5f
             amountGroup.x = width - amountGroup.width * 3 / 4
@@ -164,7 +164,7 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
 class PortraitTech(name: String, size: Float) : Portrait(Type.Tech, name, size) {
     override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
     override fun getDefaultImageTint(): Color =
-        ruleset.eras[ruleset.technologies[imageName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
+        ruleset.eras[ruleset.technologies[imageName]?.era()]?.getColor()?.darken(0.6f) ?: ImageGetter.CHARCOAL
 }
 
 class PortraitUnit(name: String, size: Float) : Portrait(Type.Unit, name, size) {
@@ -180,15 +180,15 @@ class PortraitUnavailableWonderForTechTree(name: String, size: Float) : Portrait
 }
 
 class PortraitUnique(name: String, size: Float) : Portrait(Type.Unique, name, size) {
-    override fun getDefaultImageTint(): Color = Color.BLACK
+    override fun getDefaultImageTint(): Color = ImageGetter.CHARCOAL
 }
 
 class PortraitReligion(name: String, size: Float) : Portrait(Type.Religion, name, size) {
-    override fun getDefaultImageTint(): Color = Color.BLACK
+    override fun getDefaultImageTint(): Color = ImageGetter.CHARCOAL
 }
 
 class PortraitUnitAction(name: String, size: Float) : Portrait(Type.UnitAction, name, size) {
-    override fun getDefaultImageTint(): Color = Color.BLACK
+    override fun getDefaultImageTint(): Color = ImageGetter.CHARCOAL
 }
 
 class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false) : Portrait(Type.Improvement, name, size) {
@@ -236,7 +236,7 @@ class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, si
     }
 
     override fun getDefaultInnerBackgroundTint(): Color = 
-        ruleset.nations[imageName]?.getOuterColor() ?: Color.BLACK
+        ruleset.nations[imageName]?.getOuterColor() ?: ImageGetter.CHARCOAL
 
     override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
     override fun getDefaultImageTint(): Color = ruleset.nations[imageName]?.getInnerColor() ?: Color.WHITE

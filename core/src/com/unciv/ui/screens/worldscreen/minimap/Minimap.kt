@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
@@ -58,12 +59,16 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             group.moveBy(padX, padY)
         }
 
-        scrollPositionIndicators = createScrollPositionIndicators()
-        scrollPositionIndicators.forEach(tileLayer::addActor)
 
         addActor(tileLayer)
         addActor(borderLayer)
         addActor(cityLayer)
+        
+        val scrollIndicatorLayer = Group().apply { touchable = Touchable.disabled } // Do not block!
+        scrollIndicatorLayer.setSize(width, height)
+        scrollPositionIndicators = createScrollPositionIndicators()
+        scrollPositionIndicators.forEach(scrollIndicatorLayer::addActor)
+        addActor(scrollIndicatorLayer)
 
         mapHolder.onViewportChangedListener = ::updateScrollPosition
     }
@@ -130,11 +135,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         // hex height = sqrt(3) / 2 * d / 2, number of rows = mapDiameter * 2
         height *= minimapTileSize * sqrt(3f) * 0.5f
         // hex width = 0.75 * d
-        width =
-                if (mapParameters.worldWrap)
-                    (width - 1f) * minimapTileSize * 0.75f
-                else
-                    width * minimapTileSize * 0.75f
+        width = if (mapParameters.worldWrap)    (width - 1f) * minimapTileSize * 0.75f
+                else                            width * minimapTileSize * 0.75f
 
         return Vector2(width, height)
     }

@@ -30,7 +30,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 class AskNumberPopup(
     screen: BaseScreen,
     label: String = "Please enter a number",
-    icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
+    icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(80f),
     defaultValue: String = "",
     amountButtons: List<Int> = listOf(),
     bounds: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),

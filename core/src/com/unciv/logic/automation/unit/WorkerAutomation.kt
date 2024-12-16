@@ -100,7 +100,9 @@ class WorkerAutomation(
 
             // If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
             // TODO: Replace this code entirely and change [chooseImprovement] to not continue building the improvement by default
-            if (reachedTile == tileToWork && reachedTile.improvementInProgress == Constants.fort && evaluateFortSurroundings(currentTile, false) <= 0) {
+            if (reachedTile == tileToWork
+                && reachedTile.improvementInProgress == Constants.fort
+                && evaluateFortSurroundings(currentTile, false) <= 0) {
                 debug("Replacing fort in progress with new improvement")
                 reachedTile.stopWorkingOnImprovement()
             }
@@ -525,6 +527,7 @@ class WorkerAutomation(
      * @return Yes the location is good for a Fort here
      */
     private fun evaluateFortSurroundings(tile: Tile, isCitadel: Boolean): Float {
+        
         // build on our land only
         if (tile.owningCity?.civ != civInfo &&
             // except citadel which can be built near-by
@@ -535,7 +538,7 @@ class WorkerAutomation(
         // no potential enemies
         if (enemyCivs.none()) return 0f
 
-        var valueOfFort = 2f
+        var valueOfFort = 1f
 
         if (civInfo.isCityState && civInfo.getAllyCiv() != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
 

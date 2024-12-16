@@ -99,7 +99,7 @@ class ReligiousBeliefsPickerScreen (
         }
 
         val changeReligionNameButton = Button(
-            ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(30f),
+            ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(30f),
             skin
         )
 

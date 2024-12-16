@@ -1,9 +1,7 @@
 package com.unciv.ui.screens.newgamescreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
@@ -15,6 +13,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 
 /**
  * A widget containing one expander for extension mods.
@@ -58,10 +57,9 @@ class ModCheckboxTable(
 
         for (mod in modRulesets.sortedBy { it.name }) {
             val checkBox = mod.name.toCheckBox(mod.name in mods)
-            checkBox.onChange {
-                if (checkBoxChanged(checkBox, it!!, mod)) {
-                    onUpdate(mod.name)
-                }
+            checkBox.onChange { 
+                // Checks are run in parallel thread to avoid ANRs
+                Concurrency.run { checkBoxChanged(checkBox, mod) }
             }
             checkBox.left()
             modWidgets += ModWithCheckBox(mod, checkBox)
@@ -108,7 +106,7 @@ class ModCheckboxTable(
 
         disableIncompatibleMods()
 
-        runComplexModCheck()
+        Concurrency.run { complexModCheckReturnsErrors() }
     }
 
     fun disableAllCheckboxes() {
@@ -124,49 +122,44 @@ class ModCheckboxTable(
         onUpdate("-")  // should match no mod
     }
 
-    private fun runComplexModCheck(): Boolean {
-        // Disable user input to avoid ANRs
-        val currentInputProcessor = Gdx.input.inputProcessor
-        Gdx.input.inputProcessor = null
-
+    /** Runs in parallel thread */ 
+    private fun complexModCheckReturnsErrors(): Boolean {
         // Check over complete combination of selected mods
         val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRulesetName)
         if (!complexModLinkCheck.isWarnUser()){
             savedModcheckResult = null
-            Gdx.input.inputProcessor = currentInputProcessor
             return false
         }
         savedModcheckResult = complexModLinkCheck.getErrorText()
         complexModLinkCheck.showWarnOrErrorToast(screen)
-
-        Gdx.input.inputProcessor = currentInputProcessor
         return complexModLinkCheck.isError()
     }
 
+    /** Runs in parallel thread so as not to block main thread - running complex mod check can be expensive */
     private fun checkBoxChanged(
         checkBox: CheckBox,
-        changeEvent: ChangeListener.ChangeEvent,
         mod: Ruleset
-    ): Boolean {
-        if (disableChangeEvents) return false
+    ) {
+        if (disableChangeEvents) return
 
         if (checkBox.isChecked) {
             // First the quick standalone check
             val modLinkErrors = mod.getErrorList()
             if (modLinkErrors.isError()) {
                 modLinkErrors.showWarnOrErrorToast(screen)
-                changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
-                return false
+                Concurrency.runOnGLThread { checkBox.isChecked = false } // Cancel event to reset to previous state
+                return
             }
 
             mods.add(mod.name)
 
             // Check over complete combination of selected mods
-            if (runComplexModCheck()) {
-                changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
+            if (complexModCheckReturnsErrors()) {
+                // Cancel event to reset to previous state
+                Concurrency.runOnGLThread { checkBox.isChecked = false } // Cancel event to reset to previous state
                 mods.remove(mod.name)
                 savedModcheckResult = null  // we just fixed it
-                return false
+                return
             }
 
         } else {
@@ -177,18 +170,20 @@ class ModCheckboxTable(
 
             mods.remove(mod.name)
 
-            if (runComplexModCheck()) {
-                changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
+            if (complexModCheckReturnsErrors()) {
+                // Cancel event to reset to previous state
+                Concurrency.runOnGLThread { checkBox.isChecked = true }
                 mods.add(mod.name)
                 savedModcheckResult = null  // we just fixed it
-                return false
+                return
             }
 
         }
 
-        disableIncompatibleMods()
-
-        return true
+        Concurrency.runOnGLThread { 
+            disableIncompatibleMods()
+            onUpdate(mod.name) // Only run if we can the checks and they succeeded
+        }
     }
 
     /** Deselect incompatible mods after [skipCheckBox] was selected.

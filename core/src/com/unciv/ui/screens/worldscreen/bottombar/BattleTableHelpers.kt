@@ -237,7 +237,7 @@ object BattleTableHelpers {
         val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
         if (UncivGame.Current.settings.continuousRendering) {
             damagedHealth.addAction(Actions.forever(Actions.sequence(
-                Actions.color(Color.BLACK, 0.7f),
+                Actions.color(ImageGetter.CHARCOAL, 0.7f),
                 Actions.color(Color.FIREBRICK, 0.7f)
             )))
         }
@@ -247,7 +247,7 @@ object BattleTableHelpers {
         val remainingHealthDot = ImageGetter.getWhiteDot()
         remainingHealthDot.color = Color.GREEN
 
-        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
+        addHealthToBar(ImageGetter.getDot(ImageGetter.CHARCOAL), maxHealth - currentHealth)
         addHealthToBar(damagedHealth, currentHealth - maxRemainingHealth)
         addHealthToBar(maybeDamagedHealth, maxRemainingHealth - minRemainingHealth)
         addHealthToBar(remainingHealthDot, minRemainingHealth)

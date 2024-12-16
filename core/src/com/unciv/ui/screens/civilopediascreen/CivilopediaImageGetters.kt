@@ -75,7 +75,7 @@ internal object CivilopediaImageGetters {
             }.surroundWithCircle(size)
             return null
         }
-        return tryImage("$policyBranchIconFolder/$name", Color.BLACK)
+        return tryImage("$policyBranchIconFolder/$name", ImageGetter.CHARCOAL)
             ?: tryImage("$policyIconFolder/$name", Color.BROWN)
     }
     val resource = { name: String, size: Float ->

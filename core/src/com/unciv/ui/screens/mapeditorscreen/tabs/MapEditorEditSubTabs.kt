@@ -224,7 +224,7 @@ class MapEditorEditImprovementsTab(
             val road = RoadStatus.entries.firstOrNull { r -> r.name == it }
             if (road != null)
                 editTab.setBrush(it, "Improvement/$it", handlerType = BrushHandlerType.Road) { tile ->
-                    tile.roadStatus = if (tile.roadStatus == road) RoadStatus.None else road
+                    tile.setRoadStatus(if (tile.roadStatus == road) RoadStatus.None else road, null)
                 }
             else
                 editTab.setBrush(it, "Improvement/$it") { tile ->

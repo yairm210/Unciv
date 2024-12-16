@@ -20,7 +20,8 @@ class Simulation(
     private val newGameInfo: GameInfo,
     val simulationsPerThread: Int = 1,
     private val threadsNumber: Int = 1,
-    private val maxTurns: Int = 500
+    private val maxTurns: Int = 500,
+    private val statTurns: List<Int> = listOf()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
@@ -28,7 +29,9 @@ class Simulation(
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
+    var sumStat = mutableMapOf<String, MutableMap<Int, MutableInt>>()
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
+    private var winTurnByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var avgSpeed = 0f
     private var avgDuration: Duration = Duration.ZERO
     private var totalTurns = 0
@@ -39,9 +42,14 @@ class Simulation(
     init{
         for (civ in civilizations) {
             this.numWins[civ] = MutableInt(0)
+            for (turn in statTurns)
+                this.sumStat.getOrPut(civ) { mutableMapOf() }[turn] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
                 winRateByVictory[civ]!![victory] = MutableInt(0)
+            winTurnByVictory[civ] = mutableMapOf()
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
+                winTurnByVictory[civ]!![victory] = MutableInt(0)
         }
     }
 
@@ -51,15 +59,28 @@ class Simulation(
         val jobs: ArrayList<Job> = ArrayList()
         println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
         + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName })
+        newGameInfo.gameParameters.shufflePlayerOrder = true
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
-                    gameInfo.simulateMaxTurns = maxTurns
                     gameInfo.simulateUntilWin = true
-                    gameInfo.nextTurn()
+                    for (turn in statTurns) {
+                        gameInfo.simulateMaxTurns = turn
+                        gameInfo.nextTurn()
+                        val step = SimulationStep(gameInfo)
+                        if (step.victoryType != null)
+                            break
+                        saveStat(gameInfo)
+                    }
+                    // check if Victory
+                    var step = SimulationStep(gameInfo)
+                    if (step.victoryType == null) {
+                        gameInfo.simulateMaxTurns = maxTurns
+                        gameInfo.nextTurn()
+                    }
 
-                    val step = SimulationStep(gameInfo)
+                    step = SimulationStep(gameInfo)  // final game state
 
                     if (step.victoryType != null) {
                         step.winner = step.currentPlayer
@@ -89,6 +110,16 @@ class Simulation(
     }
 
     @Synchronized
+    fun saveStat(gameInfo: GameInfo) {
+        val turn = gameInfo.turns
+        for (civ in gameInfo.civilizations.filter { it.civName != Constants.spectator }) {
+            val popsum = civ.cities.sumOf { it.population.population }
+            //println("$civ $popsum")
+            sumStat[civ.civName]!![turn]!!.add(popsum)
+        }
+    }
+
+    @Synchronized
     fun print(){
         getStats()
         println(text())
@@ -98,10 +129,12 @@ class Simulation(
         // win Rate
         numWins.values.forEach { it.value = 0 }
         winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
+        winTurnByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
         steps.forEach {
             if (it.winner != null) {
                 numWins[it.winner!!]!!.inc()
                 winRateByVictory[it.winner!!]!![it.victoryType]!!.inc()
+                winTurnByVictory[it.winner!!]!![it.victoryType]!!.add(it.turns)
             }
         }
         totalTurns = steps.sumOf { it.turns }
@@ -137,6 +170,14 @@ class Simulation(
                 outString += "$victory: $winsVictory%    "
             }
             outString += "\n"
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
+                val winsTurns =
+                    winTurnByVictory[civ]!![victory]!!.value / max(winRateByVictory[civ]!![victory]!!.value, 1)
+                outString += "$victory: $winsTurns    "
+            }
+            outString += "avg turns\n"
+            for (turn in statTurns)
+                outString += "avgStat (@$turn): ${sumStat[civ]!![turn]!!.value.toFloat()/numSteps}\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"

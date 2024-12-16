@@ -57,7 +57,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         innerTable.pad(5f)
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityStatsTable/InnerTable",
-            tintColor = Color.BLACK.cpy().apply { a = 0.8f }
+            tintColor = ImageGetter.CHARCOAL.cpy().apply { a = 0.8f }
         )
 
         upperTable.defaults().pad(2f)
@@ -198,7 +198,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         for (resourceSupply in CityResources.getCityResourcesAvailableToCity(city))
             resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
         for ((resource, amount) in resourceCounter)
-            if (resource.hasUnique(UniqueType.CityResource)) {
+            if (resource.isCityWide) {
                 resourceTable.add(amount.toLabel())
                 resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
                     .padRight(5f)
@@ -388,7 +388,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             val percent = gppCurrent / gppNeeded.toFloat()
 
             val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
-            progressBar.setBackground(Color.BLACK.cpy().apply { a = 0.8f })
+            progressBar.setBackground(ImageGetter.CHARCOAL.cpy().apply { a = 0.8f })
             progressBar.setProgress(Color.ORANGE, percent)
             progressBar.apply {
                 val bar = ImageGetter.getWhiteDot()

@@ -204,8 +204,6 @@ class NotificationsScroll(
             Align.bottomRight)
     }
     
-    private val serverIconsToIgnore = hashSetOf("NotificationIcons/RobotArm", "NotificationIcons/ServerRack", "NotificationIcons/DollarSign")
-
     private fun updateContent(
         notifications: List<Notification>,
         coveredNotificationsTop: Float,
@@ -266,9 +264,6 @@ class NotificationsScroll(
                 notificationsTable.add(header).right().row()
             }
             for (notification in categoryNotifications) {
-                // Temporarily ignore touhidurrr notifications
-                if (notification.icons.any { it in serverIconsToIgnore }) continue
-                
                 val item = ListItem(notification, backgroundDrawable)
                 itemWidths.add(item.itemWidth)
                 val itemCell = notificationsTable.add(item)
@@ -306,7 +301,7 @@ class NotificationsScroll(
                 .minHeight(2f).width(minCategoryLineWidth)
             add(Table().apply {
                 background = backgroundDrawable
-                val label = ColorMarkupLabel(category.name, Color.BLACK, fontSize = fontSize)
+                val label = ColorMarkupLabel(category.name, ImageGetter.CHARCOAL, fontSize = fontSize)
                 add(label)
                 captionWidth = prefWidth  // of this wrapper including background rims
                 captionWidth
@@ -353,7 +348,7 @@ class NotificationsScroll(
             }
 
             val maxLabelWidth = maxEntryWidth - (itemIconSize + 5f) * notification.icons.size - 10f
-            val label = WrappableLabel(notification.text, maxLabelWidth, Color.BLACK, labelFontSize, hideIcons = true)
+            val label = WrappableLabel(notification.text, maxLabelWidth, ImageGetter.CHARCOAL, labelFontSize, hideIcons = true)
             label.setAlignment(Align.center)
             if (label.prefWidth > maxLabelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
                 label.wrap = true
@@ -418,11 +413,11 @@ class NotificationsScroll(
                 .surroundWithCircle(restoreButtonSize, resizeActor = false)
             size(restoreButtonSize)
 
-            countLabel = "".toLabel(Color.BLACK, restoreButtonNumberFontSize, Align.center)
+            countLabel = "".toLabel(ImageGetter.CHARCOAL, restoreButtonNumberFontSize, Align.center)
             // not using surroundWithCircle for the count, as the centering will break if positioned within another IconCircleGroup (why?)
             labelInnerCircle = ImageGetter.getCircle(Color.WHITE, restoreButtonNumbersSize * 0.9f)
             labelInnerCircle.centerAtNumberPosition()
-            labelOuterCircle = ImageGetter.getCircle(Color.BLACK, restoreButtonNumbersSize)
+            labelOuterCircle = ImageGetter.getCircle(ImageGetter.CHARCOAL, restoreButtonNumbersSize)
             labelOuterCircle.centerAtNumberPosition()
             actor.addActor(labelOuterCircle)
             actor.addActor(labelInnerCircle)

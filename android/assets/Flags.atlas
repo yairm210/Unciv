@@ -242,65 +242,72 @@ FlagIcons/Rusyn
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Simplified_Chinese
+FlagIcons/Shavian
   rotate: false
   xy: 1364, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Spanish
+FlagIcons/Simplified_Chinese
   rotate: false
   xy: 1500, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Swedish
+FlagIcons/Spanish
   rotate: false
   xy: 1636, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Thai
+FlagIcons/Swedish
   rotate: false
   xy: 1500, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Traditional_Chinese
+FlagIcons/Thai
   rotate: false
   xy: 1636, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Turkish
+FlagIcons/Traditional_Chinese
   rotate: false
   xy: 1772, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Ukrainian
+FlagIcons/Turkish
   rotate: false
   xy: 1636, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Vietnamese
+FlagIcons/Ukrainian
   rotate: false
   xy: 1772, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Zulu
+FlagIcons/Vietnamese
   rotate: false
   xy: 1908, 276
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Zulu
+  rotate: false
+  xy: 1772, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

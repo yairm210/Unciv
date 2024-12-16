@@ -93,7 +93,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         constructionsQueueScrollPane.setOverscroll(false, false)
         constructionsQueueTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityConstructionTable/ConstructionsQueueTable",
-            tintColor = Color.BLACK
+            tintColor = ImageGetter.CHARCOAL
         )
 
         upperTable.defaults().left().top()
@@ -106,7 +106,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         availableConstructionsScrollPane.setOverscroll(false, false)
         availableConstructionsTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityConstructionTable/AvailableConstructionsTable",
-            tintColor = Color.BLACK
+            tintColor = ImageGetter.CHARCOAL
         )
         lowerTableScrollCell = lowerTable.add(availableConstructionsScrollPane).bottom()
         lowerTable.row()
@@ -332,7 +332,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             else construction.getResourceRequirementsPerTurn(city.state)
         for ((resourceName, amount) in constructionResource) {
             val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
-            text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()
+            text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled).tr()
         }
 
         table.defaults().pad(2f).minWidth(40f)
@@ -383,7 +383,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             else
                 BaseScreen.skinStrings.getUiBackground(
                     "CityScreen/CityConstructionTable/QueueEntry",
-                    tintColor = Color.BLACK
+                    tintColor = ImageGetter.CHARCOAL
                 )
     }
 
@@ -442,7 +442,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New")
-                .apply { color = Color.BLACK }.surroundWithCircle(40f)
+                .apply { color = ImageGetter.CHARCOAL }.surroundWithCircle(40f)
             addToQueueButton.onClick(UncivSound.Silent) {
                 // Since the pickConstructionButton.onClick adds the construction if it's selected,
                 // this effectively adds the construction even if it's unselected
@@ -502,7 +502,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             // Lazy because possibly not needed (highlight true, clearOthers false) and slightly costly
             BaseScreen.skinStrings.getUiBackground(
                 "CityScreen/CityConstructionTable/PickConstructionButton",
-                tintColor = Color.BLACK
+                tintColor = ImageGetter.CHARCOAL
             )
         }
 
@@ -585,7 +585,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         movePriority: (Int) -> Int
     ): Table {
         val button = Table()
-        button.add(ImageGetter.getArrowImage(arrowDirection).apply { color = Color.BLACK }.surroundWithCircle(40f))
+        button.add(ImageGetter.getArrowImage(arrowDirection).apply { color = ImageGetter.CHARCOAL }.surroundWithCircle(40f))
         button.touchable = Touchable.enabled
         // Don't bind the queue reordering keys here - those should affect only the selected entry, not all of them
         button.onActivation {
