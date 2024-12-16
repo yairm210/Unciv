@@ -156,9 +156,9 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         // kotlin Float division by Zero produces `Float.POSITIVE_INFINITY`, not an exception
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
         cultureString += when {
-            turnsToNextPolicy <= 0f -> " (!)" // Can choose policy right now
-            nextTurnStats.culture <= 0 -> " (${Fonts.infinity})" // when you start the game, you're not producing any culture
-            else -> " (" + ceil(turnsToNextPolicy).toInt().tr() + ")"
+            turnsToNextPolicy <= 0f -> " (!)" // Can choose policy right now
+            nextTurnStats.culture <= 0 -> " (${Fonts.infinity})" // when you start the game, you're not producing any culture
+            else -> " (" + Fonts.turn + " " + ceil(turnsToNextPolicy).toInt().tr() + ")"
         }
         return cultureString
     }
