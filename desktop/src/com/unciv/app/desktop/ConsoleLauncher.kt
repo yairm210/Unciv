@@ -79,7 +79,6 @@ internal object ConsoleLauncher {
             numberOfCityStates = 0
             speed = Speed.DEFAULT
             noBarbarians = true
-            shufflePlayerOrder = true
             players = ArrayList<Player>().apply {
                 civilizations.forEach { add(Player(it)) }
                 add(Player(Constants.spectator, PlayerType.Human))
