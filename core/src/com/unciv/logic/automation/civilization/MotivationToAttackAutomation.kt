@@ -81,7 +81,7 @@ object MotivationToAttackAutomation {
             modifiers.add(Pair("Close cities", 5f * personality.inverseModifierFocus(PersonalityValue.Aggressive, 1f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
-            modifiers.add(Pair("Research Agreement", -5f * personality.scaledFocus(PersonalityValue.Science) * personality.scaledFocus(PersonalityValue.Commerce)))
+            modifiers.add(Pair("Research Agreement", -5f * personality.modifierFocus(PersonalityValue.Science) * personality.modifierFocus(PersonalityValue.Commerce)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             modifiers.add(Pair("Declaration of Friendship", -10f * personality.modifierFocus(PersonalityValue.Loyal, .5f)))
@@ -97,7 +97,7 @@ object MotivationToAttackAutomation {
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.WaryOf) && diplomacyManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
             // Completely defensive civs will plan defensively and have a 0 here
-            modifiers.add(Pair("PlanningAttack", -diplomacyManager.getFlag(DiplomacyFlags.WaryOf) * personality.scaledFocus(PersonalityValue.Aggressive) / 2))
+            modifiers.add(Pair("PlanningAttack", -diplomacyManager.getFlag(DiplomacyFlags.WaryOf) * personality.modifierFocus(PersonalityValue.Aggressive) / 2))
         } else {
             val attacksPlanned = civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.WaryOf) && it.getFlag(DiplomacyFlags.WaryOf) < 0 }
             modifiers.add(Pair("PlanningAttackAgainstOtherCivs", -attacksPlanned * 5f * personality.inverseModifierFocus(PersonalityValue.Aggressive, .5f)))

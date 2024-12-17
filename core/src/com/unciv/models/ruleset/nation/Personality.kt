@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import kotlin.math.pow
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -93,34 +94,20 @@ class Personality: RulesetObject() {
     }
 
     /**
-     * Scales the value to a more meaningful range, where 10 is 2, and 5 is 1, and 0 is 0
+     * @param weight a value to multiplicatively rescale the outcomes (in range [0.5, 2] centered around 1 for default weight = 1)
+     * @return a modifier based off of the personality value and the weight given 
      */
-    fun scaledFocus(value: PersonalityValue): Float {
-        return nameToVariable(value).get() / 5
-    }
-
-    /**
-     * Inverse scales the value to a more meaningful range, where 0 is 2, and 5 is 1 and 10 is 0
-     */
-    fun inverseScaledFocus(value: PersonalityValue): Float {
-        return  (10 - nameToVariable(value).get()) / 5
-    }
-
-    /**
-     * @param weight a value between 0 and 1 that determines how much the modifier deviates from 1
-     * @return a modifier between 0 and 2 centered around 1 based off of the personality value and the weight given 
-     */
-    fun modifierFocus(value: PersonalityValue, weight: Float): Float {
-        return 1f + (scaledFocus(value) - 1) * weight
+    fun modifierFocus(value: PersonalityValue, weight: Float = 1f): Float {
+        return (1+weight).pow(nameToVariable(value).get()/10 - 1)
     }
 
     /**
      * An inverted version of [modifierFocus], a personality value of 0 becomes a 10, 8 becomes a 2, etc.
-     * @param weight a value between 0 and 1 that determines how much the modifier deviates from 1
-     * @return a modifier between 0 and 2 centered around 1 based off of the personality value and the weight given
+     * @param weight a value to multiplicatively rescale the outcomes (in range [0.5, 2] centered around 1 for default weight = 1)
+     * @return a modifier based off of the personality value and the weight given
      */
-    fun inverseModifierFocus(value: PersonalityValue, weight: Float): Float {
-        return 1f - (inverseScaledFocus(value) - 2) * weight
+    fun inverseModifierFocus(value: PersonalityValue, weight: Float = 1f): Float {
+        return 1f / modifierFocus(value, weight) 
     }
 
     /**
