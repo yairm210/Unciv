@@ -3,7 +3,7 @@ package com.unciv.logic.simulation
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 
-class SimulationStep (gameInfo: GameInfo, private val statTurns: List<Int> = listOf()) {
+class SimulationStep (gameInfo: GameInfo, statTurns: List<Int> = listOf()) {
     val civilizations = gameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
     var turns = gameInfo.turns
     var victoryType = gameInfo.getCurrentPlayerCivilization().victoryManager.getVictoryTypeAchieved()
