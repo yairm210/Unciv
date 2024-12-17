@@ -108,6 +108,8 @@ TODO: Might need better translation!
 - Hotseat `Lokalna više-korisnička igra`, `Lokalna igra više igrača` (Više-korisnička igra, Igra više igrača)
 - Stats `Statistike` (Prinosi)
 - Tile Damage `Šteta od polja`, (Poljska šteta, Poljna šteta)
+- Melee Water `Bliska Borba na Vodi`
+- WaterMelee `BliskaBorbaNaVodi`
 
 ### Unresolved Translation
 
@@ -163,6 +165,11 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Request `Zamolba`, `Molba`, `Tražiti`
 - Willing(ness) `Voljni`, `Voljnost`
 - non-fresh water `morska voda`, `slana voda`
+- Scout `Izviđač`
+- Explorer `Istraživač`
+- Cancel `Poništi`, `Otkaži` (Ukini)
+- Choose `Odaberi`, `Izaberi`
+- Select `Odaberi` (Izaberi)
 
 ### Untranslated words
 
@@ -210,28 +217,32 @@ e.g. trough gameplay or by revisiting properties file.
 Use of formal form:
 
 - In Civilopedia
-- When the game asks/tells something from/to player
+- When the game/gameplay asks/tells something from/to player
 - Victory screen and victory conditions
 
 Use of informal form:
 
-- In diplomacy
+- In diplomacy, both major and minor civs and quests of city states
 - Nation introduction during new game
 - When the player gives orders to game
-- Technology proverbs
-- When the gameplay asks/tells something from/to player
+- Technology and great building proverbs
+- New game screen lines
+- Map editor lines
+- Multiplayer screen lines
+- World Screen UI lines
+- City Screen lines
+- Technology UI lines
 
-Exceptions:
+Exceptions (use sparingly to retain consistency):
 
 - Use formal form where appropriate to avoid grammatical gender
 - Use formal form where appropriate to simplify grammar
-
-TODO: Use formal form for gameplay to simplify grammar and to avoid grammatical gender
+- Switch from formal or informal form where appropriate to make it sound more natural or consistent, e.g. UI prompt
 
 Examples (formal vs informal):
 
 - Vi vs Ti
-- Vas vs Tebe
+- Vas vs Tebe, te
 - Vama vs Tebi
 - Vam vs Ti
 - Vaš vs Tvoj
@@ -239,16 +250,24 @@ Examples (formal vs informal):
 - Vašeg vs Tvojeg
 - Vašu vs Tvoju
 - Vašom vs Tvojom
+- Vašoj vs Tvojoj
 - Vaši vs Tvoji
 - Vaše vs Tvoje
+- Ćete vs Ćeš
 
-- `*ite` vs - `*iš`, `*di`, `*ži`, `*ri`, `*zi`, `*ni`, `*ij` etc.
+- `*ite`, `*jeli` vs - `*iš` (e.g Želite, Željeli etc.)
+- `*ite` vs - `*di`, `*ži`, `*ri`, `*zi`, `*ni`, `*ti`, `*ji`, `*si` etc.
 - `*ajte` vs `*aj`
 - `*ete` vs `*eš`
 - `*ijte` vs - `*iješ`, `*ij` (e.g Dobij etc.)
 - `*ate` vs - `*aš` (e.g Trebate, Morate, Dobivate etc.)
-- `*jeli` vs - `*iš` (e.g Željeli etc.)
 - `*ili` vs - `*io/*la` (e.g Prekršili etc.)
+
+Use regex e.g. for `*iš` for quick find
+
+```regex
+\w+iš
+```
 
 ### Grammatical gender
 
@@ -304,10 +323,13 @@ When grammatical gender around a placeholder is needed we use majority gender of
 - [civFilter]
 - [currentPlayerCiv]
 - [unitType]
+- [civ], [civ1], [civ2]
 
 Feminine but not applicable:
 
 - [feature]
+- [allyCivName]
+- [enemyCivName]
 
 ### Masculine
 
@@ -373,7 +395,6 @@ Use 3rd gender in translation:
 - [techName]
 - [technologyName]
 - [building]
-- [nukeType]
 
 Mixed and not applicable:
 
@@ -381,6 +402,10 @@ Mixed and not applicable:
 - [terrainName]
 - [terrainFilter]
 - [Stats]
+
+Mixed and guess gender:
+
+- [nukeType]
 
 ### Guess gender
 
