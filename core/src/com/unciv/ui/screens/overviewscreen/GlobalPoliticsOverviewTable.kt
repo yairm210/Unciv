@@ -66,8 +66,8 @@ class GlobalPoliticsOverviewTable(
     }
 
     // Reusable sequences for the Civilizations to display
-    private var undefeatedCivs = sequenceOf<Civilization>()
-    private var defeatedCivs = sequenceOf<Civilization>()
+    private var undefeatedCivs = listOf<Civilization>()
+    private var defeatedCivs = listOf<Civilization>()
 
     private var relevantCivsCount = "?"  // includes unknown civs if player allowed to know
     private var showDiplomacyGroup = false
@@ -292,10 +292,10 @@ class GlobalPoliticsOverviewTable(
             else gameInfo.civilizations.count {
                 !it.isSpectator() && !it.isBarbarian && (persistableData.includeCityStates || !it.isCityState)
             }.tr()
-        undefeatedCivs = sequenceOf(viewingPlayer) +
+        undefeatedCivs = listOf(viewingPlayer) +
                 viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
         defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
-            .filter { it.isDefeated() }
+            .filter { it.isDefeated() }.toList()
 
         clear()
         fixedContent.clear()
@@ -373,7 +373,7 @@ class GlobalPoliticsOverviewTable(
         add("Turns until the next\ndiplomacy victory vote: [$turnsTillNextDiplomaticVote]".toLabel()).colspan(columns).row()
     }
 
-    private fun Table.addCivsCategory(columns: Int, aliveOrDefeated: String, civs: Sequence<Civilization>) {
+    private fun Table.addCivsCategory(columns: Int, aliveOrDefeated: String, civs: List<Civilization>) {
         addSeparator()
         val count = civs.count()
         add("Known and $aliveOrDefeated ([$count])".toLabel())
@@ -410,7 +410,7 @@ class GlobalPoliticsOverviewTable(
      *  @param freeSize Width and height this [Group] sizes itself to
      */
     private class DiplomacyGroup(
-        undefeatedCivs: Sequence<Civilization>,
+        undefeatedCivs: List<Civilization>,
         freeSize: Float
     ): Group() {
         private fun onCivClicked(civLines: HashMap<String, MutableSet<Actor>>, name: String) {
