@@ -261,9 +261,9 @@ Examples (formal vs informal):
 - `*ete` vs `*eš`
 - `*ijte` vs - `*iješ`, `*ij` (e.g Dobij etc.)
 - `*ate` vs - `*aš` (e.g Trebate, Morate, Dobivate etc.)
-- `*ili` vs - `*io/*la` (e.g Prekršili etc.)
+- `*ili` vs - `*io`, `*la` (e.g Prekršili etc.)
 
-Use regex e.g. for `*iš` for quick find
+Use regex for quick find, e.g. for `*iš`:
 
 ```regex
 \w+iš
@@ -285,7 +285,7 @@ Examples:
 - Njihovim vs Njihovom
 - Njihovog vs Njihove
 
-- `(a)`, `(la)`, `(ica)`, `(ice)`, `(kinjo)`, `(icom)`, `(jela)`, `(na)`, `(om)`, `(icom)`
+- `(a)`, `(la)`, `(ica)`, `(ice)`, `(kinjo)`, `(icom)`, `(jela)`, `(na)`, `(om)`, `(icom)` (All feminine)
 - `*io`, `*la`
 
 Exceptions:
@@ -296,13 +296,13 @@ Exceptions:
 
 Correct vs incorrect
 
-- Trenutačno vs Trenutno (are two different meanings)
+- Trenutačno vs Trenutno (Are two different meanings)
 - Molim vs Molimo
-- Ne može vs nemože
-- Ne smije vs nesmije
-- s vs sa (depends on orthography)
+- Ne može vs Nemože
+- Ne smije vs Nesmije
+- s vs sa (Depends on orthography)
 - s `[` vs sa `[`
-- Unikat vs Unikatno/i
+- Unikat vs Unikatno/i (Depends on context)
 - Check for double spaces
 
 [Table of Contents](#table-of-contents)
@@ -316,7 +316,7 @@ When grammatical gender around a placeholder is needed we use majority gender of
 
 - [year]
 - [nation]
-- [civName] (masculine if it's city state name)
+- [civName] (Masculine if it's city state name)
 - [civNames]
 - [otherCiv]
 - [otherCivName]
@@ -366,6 +366,7 @@ Masculine but not applicable:
 
 - [difficulty]
 - [combatantFilter]
+- [populationFilter]
 
 ### Third gender
 
@@ -396,16 +397,16 @@ Use 3rd gender in translation:
 - [technologyName]
 - [building]
 
-Mixed and not applicable:
+Mixed but use 3rd and masculine gender (depending on context) but not feminine:
+
+- [nukeType]
+
+Mixed but not applicable:
 
 - [terrain]
 - [terrainName]
 - [terrainFilter]
 - [Stats]
-
-Mixed and guess gender:
-
-- [nukeType]
 
 ### Guess gender
 
@@ -422,9 +423,6 @@ Try to guess gender depending on context:
 TODO: Which gender are these?</br>
 TODO: There are more placeholders in properties not handled here.
 
-- [thingToProduce]
-- [thingToSelect]
-- [populationFilter]
 - [costOrStrength]
 - [param]
 
@@ -445,12 +443,14 @@ TODO: There are more placeholders in properties not handled here.
 - [title]
 - [naturalWonder]
 - [name]
+- [thingToProduce]
+- [thingToSelect]
 
 [Table of Contents](#table-of-contents)
 
 ## City names
 
-TODO: Orthography and transliteration of city and person names is partially correct and done on best effort.
+TODO: Orthography and transliteration of city and person names is based on [Resources](#resources) and needs further checks.
 
 City names might have Croatian translation, if not the following rules apply:
 
@@ -503,17 +503,17 @@ Cities written in letter other than Latin or Cyrillic follow transliteration rul
 - Korea
 - Persia
 - Siam
+- Carthage
+- Songhai
+- Ethiopia
 
 ### Unknown letter
 
 TODO: Which letter was historically used by these? classify them and verify transliteration of cities.
 
 - Polynesia
-- Songhai
 - The Huns
-- Carthage
-- Byzantium
-- Ethiopia
+- Byzantine empire
 
 [Table of Contents](#table-of-contents)
 
