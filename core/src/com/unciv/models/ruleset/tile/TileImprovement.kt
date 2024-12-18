@@ -37,7 +37,8 @@ class TileImprovement : RulesetStatsObject() {
         val buildSpeedIncreases = unit.getMatchingUniques(UniqueType.ImprovementTimeIncrease, state, checkCivInfoUniques = true)
             .filter { matchesFilter(it.params[0], state) }
         val increase = buildSpeedIncreases.sumOf { it.params[1].toDouble() }.toFloat().toPercent()
-        val buildTime =  (civInfo.gameInfo.speed.improvementBuildLengthModifier * turnsToBuild / increase)
+        val buildTime = if (increase == 0f) 0f
+        else (civInfo.gameInfo.speed.improvementBuildLengthModifier * turnsToBuild / increase)
 
         return buildSpeedUniques.fold(buildTime) { calculatedTurnsToBuild, unique ->
                 calculatedTurnsToBuild * unique.params[0].toPercent()
