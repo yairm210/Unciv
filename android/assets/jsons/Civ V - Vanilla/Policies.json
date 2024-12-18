@@ -93,7 +93,7 @@
             {
                 "name": "Citizenship",
                 "uniques": [
-                    "Can build [All] improvements at a [25]% rate",
+                    "Can build [all] improvements at a [+25]% rate",
                     "Free [Worker] appears"
                 ],
                 "row": 1,
