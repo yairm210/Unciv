@@ -29,9 +29,7 @@ class Simulation(
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
-    private var summaryStats = HashMap<String, HashMap<Int, HashMap<String, MutableInt>>>() // [civ][turn][stat]=value
-    private val keySum = "sum"
-    private val keyNum = "num"
+    private var summaryStats = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var winTurnByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var avgSpeed = 0f
@@ -39,18 +37,22 @@ class Simulation(
     private var totalTurns = 0
     private var totalDuration: Duration = Duration.ZERO
     private var stepCounter: Int = 0
+    enum class Stat {
+        SUM,
+        NUM
+    }
 
 
     init{
         for (civ in civilizations) {
             this.numWins[civ] = MutableInt(0)
             for (turn in statTurns) {
-                this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[keySum] = MutableInt(0)
-                this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[keyNum] = MutableInt(0)
+                this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+                this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
             }
             val turn = -1 // end of game
-            this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[keySum] = MutableInt(0)
-            this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[keyNum] = MutableInt(0)
+            this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+            this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
                 winRateByVictory[civ]!![victory] = MutableInt(0)
@@ -141,14 +143,14 @@ class Simulation(
             for (civ in civilizations) {
                 for (turn in statTurns) {
                     if (it.turnStats[civ]!![turn]!!.value != -1) {
-                        summaryStats[civ]!![turn]!![keySum]!!.add(it.turnStats[civ]!![turn]!!.value)
-                        summaryStats[civ]!![turn]!![keyNum]!!.inc()
+                        summaryStats[civ]!![turn]!![Stat.SUM]!!.add(it.turnStats[civ]!![turn]!!.value)
+                        summaryStats[civ]!![turn]!![Stat.NUM]!!.inc()
                         //println("civ ${civ} @ ${turn} value ${it.turnStats[civ]!![turn]!!.value} avg ${summaryStats[civ]!![turn]!!["avg"]!!.value} numAvg ${summaryStats[civ]!![turn]!!["numAvg"]!!.value}")
                     }
                 }
                 val turn = -1 // end of game
-                summaryStats[civ]!![turn]!![keySum]!!.add(it.turnStats[civ]!![turn]!!.value)
-                summaryStats[civ]!![turn]!![keyNum]!!.inc()
+                summaryStats[civ]!![turn]!![Stat.SUM]!!.add(it.turnStats[civ]!![turn]!!.value)
+                summaryStats[civ]!![turn]!![Stat.NUM]!!.inc()
             }
         }
         totalTurns = steps.sumOf { it.turns }
@@ -192,11 +194,11 @@ class Simulation(
             outString += "avg turns\n"
             for (turn in statTurns) {
                 val turnStats = summaryStats[civ]!![turn]!!
-                outString += "@$turn: popsum avg=${turnStats[keySum]!!.value.toFloat() / turnStats[keyNum]!!.value.toFloat()} cnt=${turnStats[keyNum]!!.value}\n"
+                outString += "@$turn: popsum avg=${turnStats[Stat.SUM]!!.value.toFloat() / turnStats[Stat.NUM]!!.value.toFloat()} cnt=${turnStats[Stat.NUM]!!.value}\n"
             }
             val turn = -1 // end of match
             val turnStats = summaryStats[civ]!![turn]!!
-            outString += "@END: popsum avg=${turnStats[keySum]!!.value.toFloat()/turnStats[keyNum]!!.value.toFloat()} cnt=${turnStats[keyNum]!!.value}\n"
+            outString += "@END: popsum avg=${turnStats[Stat.SUM]!!.value.toFloat()/turnStats[Stat.NUM]!!.value.toFloat()} cnt=${turnStats[Stat.NUM]!!.value}\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"
