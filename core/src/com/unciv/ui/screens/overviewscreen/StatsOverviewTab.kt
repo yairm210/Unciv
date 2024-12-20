@@ -173,10 +173,8 @@ class StatsOverviewTab(
     private fun Table.addGoldSlider() {
         addSeparator()
         val sliderTable = Table()
-        sliderTable.add("Convert gold to science".toLabel()).row()
-
-        val slider = UncivSlider(0f, 1f, 0.1f,
-            initial = viewingPlayer.tech.goldPercentConvertedToScience,
+        val slider = UncivSlider("Convert gold to science", 0f, 1f, 0.1f,
+            viewingPlayer.tech.goldPercentConvertedToScience,
             getTipText = UncivSlider::formatPercent
         ) {
             viewingPlayer.tech.goldPercentConvertedToScience = it

@@ -43,8 +43,9 @@ class VictoryScreenReplay(
             .coerceAtMost(worldScreen.stage.width - 190f)
             .coerceAtLeast(120f)
         slider = UncivSlider(
+            "Turn",
             firstTurn.toFloat(), finalTurn.toFloat(), 1f,
-            initial = firstTurn.toFloat(),
+            firstTurn.toFloat(),
             sound = UncivSound.Silent,
             tipType = UncivSlider.TipType.None,
             onChange = this::sliderChanged

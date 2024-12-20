@@ -79,7 +79,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     private var bg = Image(
         BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
         BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-        BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)))
+        BaseScreen.skin.getColor("base-40")))
 
 
     init {

@@ -23,6 +23,10 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
     val selectBoxPressedShape = "select-box-pressed"
     val checkboxShape = "checkbox"
     val checkboxPressedShape = "checkbox-pressed"
+    val sliderBarShape = "slider-bar"
+    val layerContainerShape = "layer-container"
+    val tabShape = "tab"
+    val tabActiveShape = "tab-active"
 
     /**
      * Gets either a drawable which was defined inside skinConfig for the given path or the drawable

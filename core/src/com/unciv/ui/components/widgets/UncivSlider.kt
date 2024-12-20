@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.UncivSlider.Companion.formatPercent
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
@@ -42,6 +43,7 @@ import kotlin.math.sign
  * Note: No attempt is made to distinguish sources of value changes, so the initial setting
  * of the value when a screen is initialized will also trigger the 'tip'. This is intentional.
  *
+ * @param label         A string describing what the slider controls.
  * @param min           Initializes [Slider.min]
  * @param max           Initializes [Slider.max]
  * @param step          Initializes [Slider.stepSize]
@@ -54,12 +56,13 @@ import kotlin.math.sign
  * @param onChange      Optional lambda gets called with the current value on a user change (not when setting value programmatically).
  */
 class UncivSlider (
+    text: String,
     min: Float,
     max: Float,
     step: Float,
+    initial: Float,
     vertical: Boolean = false,
     plusMinus: Boolean = true,
-    initial: Float,
     sound: UncivSound = UncivSound.Slider,
     private val tipType: TipType = TipType.Permanent,
     private val getTipText: ((Float) -> String)? = null,
@@ -81,16 +84,20 @@ class UncivSlider (
     }
 
     // component widgets
-    private val slider = Slider(min, max, step, vertical, BaseScreen.skin)
-    private val minusButton: IconCircleGroup?
-    private val plusButton: IconCircleGroup?
-    private val tipLabel = "".toLabel(Color.LIGHT_GRAY)
+    private val label = text.toLabel()
+    private val tipLabel = "".toLabel()
     private val tipContainer: Container<Label> = Container(tipLabel)
     private val tipHideTask = object : Timer.Task() {
         override fun run() {
             hideTip()
         }
     }
+
+    private val sliderWrapper = Table(BaseScreen.skin)
+    private val slider = Slider(min, max, step, vertical, BaseScreen.skin)
+    private val minusButton: IconCircleGroup?
+    private val plusButton: IconCircleGroup?
+
 
     // copies of maliciously protected Slider members
     private var snapToValues: FloatArray? = null
@@ -150,41 +157,11 @@ class UncivSlider (
     private var blockListener = false
 
     init {
-        tipLabel.setOrigin(Align.center)
         tipContainer.touchable = Touchable.disabled
-
         stepChanged()   // Initialize tip formatting
 
-        if (plusMinus) {
-            minusButton = "-".toLabel(Color.WHITE, plusMinusFontSize)
-                .apply { setAlignment(Align.center) }
-                .surroundWithCircle(plusMinusCircleSize, true, BaseScreen.skin.getColor("color"))
-            minusButton.onClick {
-                addToValue(-stepSize)
-            }
-            add(minusButton).apply {
-                if (vertical) padBottom(padding) else padLeft(padding)
-            }
-            if (vertical) row()
-        } else minusButton = null
-
-        add(slider).pad(padding).fillY().growX()
-
-        if (plusMinus) {
-            if (vertical) row()
-            plusButton = "+".toLabel(Color.WHITE, plusMinusFontSize)
-                .apply { setAlignment(Align.center) }
-                .surroundWithCircle(plusMinusCircleSize, true, BaseScreen.skin.getColor("color"))
-            plusButton.onClick {
-                addToValue(stepSize)
-            }
-            add(plusButton).apply {
-                if (vertical) padTop(padding) else padRight(padding)
-            }
-        } else plusButton = null
-
-        row()
-        value = initial  // set initial value late so the tooltip can work with the layout
+        add(label).expandX().left()
+        value = initial // this implicitly adds the value label, see showTip()
 
         // Add the listener late so the setting of the initial value is silent
         slider.addListener(object : ChangeListener() {
@@ -202,6 +179,33 @@ class UncivSlider (
                 SoundPlayer.play(sound)
             }
         })
+
+        if (plusMinus) {
+            minusButton = "-".toLabel(Color.WHITE, plusMinusFontSize)
+                .apply { setAlignment(Align.center) }
+                .surroundWithCircle(plusMinusCircleSize, true, BaseScreen.skin.getColor("base-40"))
+            minusButton.onClick {
+                addToValue(-stepSize)
+            }
+            sliderWrapper.add(minusButton).padRight(padding);
+            if (vertical) row()
+        } else minusButton = null
+
+        sliderWrapper.add(slider).pad(padding).growX()
+
+        if (plusMinus) {
+            if (vertical) row()
+            plusButton = "+".toLabel(Color.WHITE, plusMinusFontSize)
+                .apply { setAlignment(Align.center) }
+                .surroundWithCircle(plusMinusCircleSize, true, BaseScreen.skin.getColor("base-40"))
+            plusButton.onClick {
+                addToValue(stepSize)
+            }
+            sliderWrapper.add(plusButton).padLeft(padding)
+        } else plusButton = null
+
+        add(sliderWrapper).colspan(3).growX()
+
     }
 
     // Helper for plus/minus button onClick, non-trivial only if setSnapToValues is used
@@ -312,14 +316,7 @@ class UncivSlider (
         tipContainer.pack()
         if (needsLayout()) pack()
         val pos = slider.localToParentCoordinates(Vector2(slider.width / 2, slider.height))
-        tipContainer.run {
-            setOrigin(Align.bottom)
-            setPosition(pos.x, pos.y, Align.bottom)
-            isTransform = true
-            color.a = 0.2f
-            setScale(0.05f)
-        }
-        addActor(tipContainer)
+        add(tipContainer).right().row()
         tipContainer.addAction(
             Actions.parallel(
                 Actions.fadeIn(tipAnimationDuration, Interpolation.fade),

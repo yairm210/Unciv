@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 
 class SkinConfig(initialCapacity: Int) {
-    var baseColor: Color = Color(0x004085bf)
-    var clearColor: Color = Color(0x000033ff)
+    var baseColor: Color = Color(0x2d3e84ff)
+    var clearColor: Color = Color(0x040a1dff)
     var defaultVariantTint: Color? = null
     var fallbackSkin: String? = Constants.defaultFallbackSkin
     var skinVariants: HashMap<String, SkinElement> = HashMap(initialCapacity)

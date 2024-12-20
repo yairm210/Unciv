@@ -187,11 +187,10 @@ class AdvancedTab(
     }
 
     private fun addFontSizeMultiplier(onFontChange: () -> Unit) {
-        add("Font size multiplier".toLabel()).left().fillX().padTop(5f)
-
         val fontSizeSlider = UncivSlider(
+            "Font size multiplier",
             0.7f, 1.5f, 0.05f,
-            initial = settings.fontSizeMultiplier
+            settings.fontSizeMultiplier
         ) {
             settings.fontSizeMultiplier = it
         }
@@ -199,20 +198,20 @@ class AdvancedTab(
             if (!fontSizeSlider.isDragging)
                 onFontChange()
         }
-        add(fontSizeSlider).pad(5f).padTop(10f).row()
+        add(fontSizeSlider).padTop(10f).colspan(2).growX().row()
     }
 
     private fun addMaxZoomSlider() {
-        add("Max zoom out".tr()).left().fillX().padTop(5f)
         val maxZoomSlider = UncivSlider(
+            "Max zoom out",
             2f, 6f, 1f,
-            initial = settings.maxWorldZoomOut
+            settings.maxWorldZoomOut
         ) {
             settings.maxWorldZoomOut = it
             if (GUI.isWorldLoaded())
                 GUI.getMap().reloadMaxZoom()
         }
-        add(maxZoomSlider).pad(5f).padTop(10f).row()
+        add(maxZoomSlider).padTop(10f).colspan(2).growX().row()
     }
 
     private fun addTranslationGeneration() {

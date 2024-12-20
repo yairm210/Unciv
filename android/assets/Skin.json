@@ -5,18 +5,42 @@
         "title": "Nativefont"
     },
     "com.badlogic.gdx.graphics.Color": {
-        "black": {
-            "r": 0,
-            "g": 0,
-            "b": 0,
-            "a": 1
-        },
-        "color": {
-            "r": 0.2,
-            "g": 0.3,
-            "b": 0.5,
-            "a": 1
-        },
+        "base-10": {"r": 0.086, "g": 0.098, "b": 0.145},
+        "base-20": {"r": 0.144, "g": 0.164, "b": 0.242},
+        "base-30": {"r": 0.189, "g": 0.215, "b": 0.318},
+        "base-40": {"r": 0.241, "g": 0.273, "b": 0.405},
+        "base-50": {"r": 0.296, "g": 0.336, "b": 0.498},
+        "base-60": {"r": 0.354, "g": 0.403, "b": 0.596},
+        "base-70": {"r": 0.444, "g": 0.489, "b": 0.669},
+        "base-80": {"r": 0.549, "g": 0.586, "b": 0.732},
+        "base-90": {"r": 0.658, "g": 0.686, "b": 0.797},
+        "base-100": {"r": 0.769, "g": 0.788, "b": 0.863},
+
+        "base-10-transparent": {"r": 0.086, "g": 0.098, "b": 0.145, "a": 0.925},
+        "base-20-transparent": {"r": 0.189, "g": 0.215, "b": 0.318, "a": 0.422},
+        "base-30-transparent": {"r": 0.241, "g": 0.273, "b": 0.405, "a": 0.422},
+        "base-40-transparent": {"r": 0.241, "g": 0.273, "b": 0.405, "a": 0.925},
+        "base-50-transparent": {"r": 0.296, "g": 0.336, "b": 0.498, "a": 0.925},
+        "base-60-transparent": {"r": 0.354, "g": 0.403, "b": 0.596, "a": 0.925},
+        "base-70-transparent": {"r": 0.444, "g": 0.489, "b": 0.669, "a": 0.925},
+        "base-80-transparent": {"r": 0.549, "g": 0.586, "b": 0.732, "a": 0.925},
+        "base-90-transparent": {"r": 0.658, "g": 0.686, "b": 0.797, "a": 0.925},
+        "base-100-transparent": {"r": 0.769, "g": 0.788, "b": 0.863, "a": 0.925},
+
+        "negative-40": { "hex": "#722d38" },
+        "negative-50": { "hex": "#833440" },
+        "negative-60": { "hex": "#943b48" },
+
+        "primary-50": { "hex": "#833440" },
+        "primary-60": { "hex": "#943b48" },
+        "primary-40": { "hex": "#722d38" },
+
+        "text-primary": { "hex": "#f4f4f4ff" },
+        "text-subdued": {"r": 0.686, "g": 0.733, "b": 0.918},
+        "text-interactive": {"r": 1, "g": 1, "b": 1},
+
+        "black": {"r": 0.024, "g": 0.027, "b": 0.035},
+
         "gray": {
             "r": 0.5,
             "g": 0.5,
@@ -57,12 +81,6 @@
             "r": 1,
             "g": 1,
             "b": 1,
-            "a": 1
-        },
-        "positive": {
-            "r": 0.12156863,
-            "g": 0.49411765,
-            "b": 0.21960784,
             "a": 1
         },
         "negative": {
@@ -139,45 +157,124 @@
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
-        "button-c": {
-            "name": "RoundedEdgeRectangle",
-            "color": "color"
+        "layer1-container": {
+            "name": "layer-container",
+            "color": "base-20"
         },
-        "button-p": {
-            "name": "RoundedEdgeRectangle",
-            "color": "pressed"
+        "layer1-transparent-container": {
+            "name": "layer-container",
+            "color": "base-20-transparent"
         },
-        "button-h": {
+        "layer2-container": {
+            "name": "layer-container",
+            "color": "base-30"
+        },
+        "layer2-transparent-container": {
+            "name": "layer-container",
+            "color": "base-30-transparent"
+        },
+
+        "button": {
             "name": "RoundedEdgeRectangle",
-            "color": "highlight"
+            "color": "base-50"
+        },
+        "button-down": {
+            "name": "RoundedEdgeRectangle",
+            "color": "base-40"
+        },
+        "button-hover": {
+            "name": "RoundedEdgeRectangle",
+            "color": "base-60"
         },
         "button-disabled": {
             "name": "RoundedEdgeRectangle",
-            "color": "disabled"
+            "color": "base-20"
         },
-        "button-positive": {
+
+        "button-main-menu": {
             "name": "RoundedEdgeRectangle",
-            "color": "positive"
+            "color": "base-50-transparent"
         },
+        "button-main-menu-down": {
+            "name": "RoundedEdgeRectangle",
+            "color": "base-40-transparent"
+        },
+        "button-main-menu-hover": {
+            "name": "RoundedEdgeRectangle",
+            "color": "base-60-transparent"
+        },
+        "button-main-menu-disabled": {
+            "name": "RoundedEdgeRectangle",
+            "color": "base-20-transparent"
+        },
+
+        "button-tab": {
+            "name": "tab",
+            "color": "base-40"
+        },
+        "button-tab-down": {
+            "name": "tab",
+            "color": "base-30"
+        },
+        "button-tab-hover": {
+            "name": "tab",
+            "color": "base-50"
+        },
+        "button-tab-disabled": {
+            "name": "tab",
+            "color": "base-20"
+        },
+
+        "button-tab-active": {
+            "name": "tab-active",
+            "color": "base-50"
+        },
+        "button-tab-active-down": {
+            "name": "tab-active",
+            "color": "base-40"
+        },
+        "button-tab-active-hover": {
+            "name": "tab-active",
+            "color": "base-60"
+        },
+        "button-tab-active-disabled": {
+            "name": "tab-active",
+            "color": "base-20"
+        },
+
+        "button-primary": {
+            "name": "RoundedEdgeRectangle",
+            "color": "primary-50"
+        },
+        "button-primary-down": {
+            "name": "RoundedEdgeRectangle",
+            "color": "primary-40"
+        },
+        "button-primary-hover": {
+            "name": "RoundedEdgeRectangle",
+            "color": "primary-60"
+        },
+
         "button-negative": {
             "name": "RoundedEdgeRectangle",
-            "color": "negative"
+            "color": "negative-50"
         },
         "button-negative-pressed": {
             "name": "RoundedEdgeRectangle",
-            "color": "negative-selected"
+            "color": "negative-40"
         },
         "button-negative-hover": {
             "name": "RoundedEdgeRectangle",
-            "color": "negative-highlight"
+            "color": "negative-60"
         },
+
         "checkbox-c": {
             "name": "Checkbox",
-            "color": "color"
+            "color": "base-50"
         },
         "checkbox-pressed-c": {
             "name": "Checkbox-pressed",
-            "color": "color"
+            "color": "base-50"
         },
         "checkbox-disabled-c": {
             "name": "Checkbox",
@@ -189,15 +286,15 @@
         },
         "list-c": {
             "name": "RectangleWithOutline",
-            "color": "color"
+            "color": "base-60"
         },
         "scrollbar-c": {
             "name": "Scrollbar",
-            "color": "color"
+            "color": "base-60"
         },
         "select-box-c": {
             "name": "Select-box",
-            "color": "color"
+            "color": "base-60"
         },
         "select-box-disabled": {
             "name": "Select-box",
@@ -205,7 +302,7 @@
         },
         "select-box-pressed-c": {
             "name": "Select-box-pressed",
-            "color": "color"
+            "color": "base-60"
         },
         "select-box-h": {
             "name": "Select-box",
@@ -215,41 +312,47 @@
             "name": "Scrollbar",
             "color": "default-clear"
         },
-        "slider-knob-c": {
-            "name": "Circle",
-            "color": "color"
+
+        "slider-knob": {
+            "name": "slider-knob",
+            "color": "base-50"
         },
-        "slider-horizontal-s": {
-            "name": "Rectangle",
-            "color": "selection"
+        "slider-horizontal-bar-filled": {
+            "name": "slider-bar",
+            "color": "base-50"
+        },
+        "slider-horizontal-bar-unfilled": {
+            "name": "slider-bar",
+            "color": "base-70"
         },
         "slider-vertical-s": {
             "name": "Rectangle",
             "color": "selection"
         },
-        "slider-knob-h": {
-            "name": "Circle",
-            "color": "highlight"
+        "slider-knob-hover": {
+            "name": "slider-knob",
+            "color": "base-60"
         },
-        "slider-horizontal-p": {
-            "name": "Rectangle",
-            "color": "pressed"
+        "slider-knob-down": {
+            "name": "slider-knob",
+            "color": "base-40"
         },
         "slider-vertical-p": {
             "name": "Rectangle",
             "color": "pressed"
         },
+
         "splitpane-horizontal-c": {
             "name": "RectangleWithOutline",
-            "color": "color"
+            "color": "base-60"
         },
         "splitpane-vertical-c": {
             "name": "RectangleWithOutline",
-            "color": "color"
+            "color": "base-60"
         },
         "textfield-c": {
             "name": "RoundedEdgeRectangle",
-            "color": "color"
+            "color": "base-60"
         },
         "selection": {
             "name": "Rectangle",
@@ -262,9 +365,24 @@
     },
     "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
         "default": {
-            "up": "button-c",
-            "down": "button-p",
-            "over": "button-h"
+            "up": "button",
+            "down": "button-down",
+            "over": "button-hover"
+        },
+        "main-menu": {
+            "up": "button-main-menu",
+            "down": "button-main-menu-down",
+            "over": "button-main-menu-hover"
+        },
+        "tab": {
+            "up": "button-tab",
+            "down": "button-tab-down",
+            "over": "button-tab-hover"
+        },
+        "tab-active": {
+            "up": "button-tab-active",
+            "down": "button-tab-active-down",
+            "over": "button-tab-active-hover"
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
@@ -274,7 +392,7 @@
             "checkboxOff": "checkbox-c",
             "checkboxOffDisabled": "checkbox-disabled-c",
             "font": "button",
-            "fontColor": "color",
+            "fontColor": "text-primary",
             "downFontColor": "pressed",
             "overFontColor": "highlight",
             "disabledFontColor": "gray"
@@ -283,7 +401,7 @@
     "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
         "default": {
             "font": "font",
-            "fontColor": "color"
+            "fontColor": "text-primary"
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
@@ -320,17 +438,18 @@
     },
     "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
         "default-horizontal": {
-            "knobOver": "slider-knob-h",
-            "knobDown": "slider-knob-h",
-            "background": "slider-horizontal-p",
-            "knob": "slider-knob-c",
-            "knobBefore": "slider-horizontal-s"
+            "knobOver": "slider-knob-hover",
+            "knobDown": "slider-knob-down",
+            "background": "slider-bar",
+            "knob": "slider-knob",
+            "knobAfter": "slider-horizontal-bar-unfilled",
+            "knobBefore": "slider-horizontal-bar-filled"
         },
         "default-vertical": {
-            "knobOver": "slider-knob-h",
-            "knobDown": "slider-knob-h",
+            "knobOver": "slider-knob-hover",
+            "knobDown": "slider-knob-down",
             "background": "slider-vertical-p",
-            "knob": "slider-knob-c",
+            "knob": "slider-knob",
             "knobBefore": "slider-vertical-s"
         }
     },
@@ -348,24 +467,24 @@
             "fontColor": "white",
             "downFontColor": "white",
             "overFontColor": "dark-gray",
-            "up": "button-c",
-            "down": "button-p",
-            "over": "button-h"
+            "up": "button",
+            "down": "button-down",
+            "over": "button-hover"
         },
         "positive": {
             "font": "button",
             "fontColor": "white",
             "downFontColor": "white",
             "overFontColor": "dark-gray",
-            "up": "button-positive",
-            "down": "button-p",
-            "over": "button-h"
+            "up": "button-primary",
+            "down": "button-primary-down",
+            "over": "button-primary-hover"
         },
         "negative": {
             "font": "button",
-            "fontColor": "white",
-            "downFontColor": "white",
-            "overFontColor": "white",
+            "fontColor": "text-primary",
+            "downFontColor": "text-primary",
+            "overFontColor": "text-primary",
             "up": "button-negative",
             "down": "button-negative-pressed",
             "over": "button-negative-hover"

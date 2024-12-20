@@ -30,7 +30,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     init {
         selectedConstructionTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/ConstructionInfoTable/SelectedConstructionTable",
-            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+            tintColor = BaseScreen.skin.getColor("base-40")
         )
         add(selectedConstructionTable).pad(2f).fill()
         background = BaseScreen.skinStrings.getUiBackground(

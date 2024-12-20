@@ -631,7 +631,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 .background(
                     BaseScreen.skinStrings.getUiBackground(
                         "CityScreen/CityConstructionTable/Header",
-                        tintColor = BaseScreen.skinStrings.skinConfig.baseColor
+                        tintColor = BaseScreen.skin.getColor("base-40")
                     )
                 )
                 .addCell(title.toLabel(fontSize = Constants.headingFontSize))

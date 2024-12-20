@@ -1,4 +1,4 @@
-﻿package com.unciv.ui.screens.mainmenuscreen
+package com.unciv.ui.screens.mainmenuscreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
@@ -30,6 +31,7 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -37,6 +39,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -89,24 +92,25 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         icon: String,
         binding: KeyboardBinding,
         function: () -> Unit
-    ): Table {
-        val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = skinStrings.getUiBackground(
-            "MainMenuScreen/MenuButton",
-            skinStrings.roundedEdgeRectangleShape,
-            skinStrings.skinConfig.baseColor
+    ): IconTextButton {
+        val button = IconTextButton(
+            text,
+            ImageGetter.getImage(icon),
+            32,
+            BaseScreen.skin.getColor("text-primary")
         )
-        table.add(ImageGetter.getImage(icon)).size(50f).padRight(20f)
-        table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
 
-        table.touchable = Touchable.enabled
-        table.onActivation(binding = binding) {
+        button.iconCell.size(Fonts.rem(2.0f))
+        button.labelCell.minWidth(Fonts.rem(10f)).expandX().left()
+        button.setStyle(BaseScreen.skin.get("main-menu", Button.ButtonStyle::class.java))
+
+        button.onActivation(binding = binding) {
             stopBackgroundMapGeneration()
             function()
         }
 
-        table.pack()
-        return table
+        button.pack()
+        return button
     }
 
     init {

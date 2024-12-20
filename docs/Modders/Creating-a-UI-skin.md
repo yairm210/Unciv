@@ -66,12 +66,11 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | General/ | TabbedPager | null | |
 | General/ | Tooltip | roundedEdgeRectangle | |
 | General/Popup/ | Background | null | |
-| General/Popup/ | InnerTable | null | |
+| General/Popup/ | InnerTable | layerContainer | |
 | LanguagePickerScreen/ | LanguageTable | null | |
 | LoadGameScreen/ | BottomTable | null | |
 | LoadGameScreen/ | TopTable | null | |
 | MainMenuScreen/ | Background | null | |
-| MainMenuScreen/ | MenuButton | roundedEdgeRectangle | |
 | MainMenuScreen/ | Version | roundedEdgeRectangle | |
 | MapEditor/MapEditorToolsDrawer/ | Handle | null | |
 | ModManagementOptions/ | ExpanderTab | null | |

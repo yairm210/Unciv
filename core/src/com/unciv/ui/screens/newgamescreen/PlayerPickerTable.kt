@@ -176,7 +176,7 @@ class PlayerPickerTable(
         playerTable.pad(5f)
         playerTable.background = BaseScreen.skinStrings.getUiBackground(
             "NewGameScreen/PlayerPickerTable/PlayerTable",
-            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.8f)
+            tintColor = BaseScreen.skin.getColor("base-20")
         )
 
         val nationTable = getNationTable(player)

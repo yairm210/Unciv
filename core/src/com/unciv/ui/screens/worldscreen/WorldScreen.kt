@@ -122,7 +122,7 @@ class WorldScreen(
     internal val nextTurnButton = NextTurnButton(this)
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply {
-        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
+        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = BaseScreen.skin.getColor("base-20"))
     }
     private var tutorialTaskTableHash = 0
 

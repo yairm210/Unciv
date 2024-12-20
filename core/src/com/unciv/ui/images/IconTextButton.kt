@@ -41,9 +41,7 @@ open class IconTextButton(
         }
     /** Table cell instance containing the [label]. */
     val labelCell: Cell<Label> = add(label)
-
     init {
-        pad(10f)
+        pad(fontSize / 3f, fontSize / 2f, fontSize / 3f, fontSize.toFloat() / 2f)
         labelCell.padTop(10f - Fonts.getDescenderHeight(fontSize));
-    }
 }

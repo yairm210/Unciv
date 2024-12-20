@@ -152,22 +152,19 @@ abstract class BaseScreen : Screen {
                 add("Select-box-pressed", skinStrings.getUiBackground("", skinStrings.selectBoxPressedShape), Drawable::class.java)
                 add("Checkbox", skinStrings.getUiBackground("", skinStrings.checkboxShape), Drawable::class.java)
                 add("Checkbox-pressed", skinStrings.getUiBackground("", skinStrings.checkboxPressedShape), Drawable::class.java)
+                add("slider-bar", skinStrings.getUiBackground("", skinStrings.sliderBarShape), Drawable::class.java)
+                add("slider-knob", ImageGetter.getCircleDrawable().apply { setMinSize(16f, 16f) }, Drawable::class.java)
+                add("layer-container", skinStrings.getUiBackground("", skinStrings.layerContainerShape), Drawable::class.java)
+                add("tab", skinStrings.getUiBackground("", skinStrings.tabShape), Drawable::class.java)
+                add("tab-active", skinStrings.getUiBackground("", skinStrings.tabActiveShape), Drawable::class.java)
                 load(Gdx.files.internal("Skin.json"))
             }
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font
-            skin.get(CheckBox.CheckBoxStyle::class.java).apply {
-                font = Fonts.font
-                fontColor = Color.WHITE
-            }
-            skin.get(Label.LabelStyle::class.java).apply {
-                font = Fonts.font
-                fontColor = Color.WHITE
-            }
+            skin.get(CheckBox.CheckBoxStyle::class.java).font = Fonts.font
+            skin.get(Label.LabelStyle::class.java).font = Fonts.font
             skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font
-            skin.get(SelectBox.SelectBoxStyle::class.java).apply {
-                font = Fonts.font
-                listStyle.font = Fonts.font
-            }
+            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font
+
             clearColor = skinStrings.skinConfig.clearColor
         }
     }

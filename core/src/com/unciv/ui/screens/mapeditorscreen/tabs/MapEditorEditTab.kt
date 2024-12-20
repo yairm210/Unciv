@@ -86,7 +86,9 @@ class MapEditorEditTab(
             defaults().pad(10f).left()
             add(brushLabel)
             brushCell = add().padLeft(0f)
-            brushSlider = UncivSlider(1f,6f,1f,
+            brushSlider = UncivSlider(
+                "Brush",
+                1f,6f,1f,
                 initial = 1f,
                 getTipText = { getBrushTip(it).tr() },
                 tipType = UncivSlider.TipType.Auto

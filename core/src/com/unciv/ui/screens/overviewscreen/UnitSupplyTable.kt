@@ -47,7 +47,7 @@ internal object UnitSupplyTable {
             it.defaults().pad(5f).fill(false)
             it.background = BaseScreen.skinStrings.getUiBackground(
                 "OverviewScreen/UnitOverviewTab/UnitSupplyTable",
-                tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.6f)
+                tintColor = BaseScreen.skin.getColor("base-20")
             )
             it.addLabeledValue("Base Supply", stats.getBaseUnitSupply())
             it.addLabeledValue("Cities", stats.getUnitSupplyFromCities())

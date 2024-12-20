@@ -294,7 +294,7 @@ class GameOptionsTable(
         if (maxValue < minValue) return
 
         lateinit var maxSlider: UncivSlider  // lateinit safe because the closure won't use it until the user operates a slider
-        val minSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = minField.get().toFloat()) {
+        val minSlider = UncivSlider("test", minValue.toFloat(), maxValue.toFloat(), 1f, minField.get().toFloat()) {
             val newMin = it.toInt()
             minField.set(newMin)
             if (newMin > maxSlider.value.toInt()) {
@@ -304,7 +304,7 @@ class GameOptionsTable(
             onChangeCallback?.invoke()
         }
         minSlider.isDisabled = locked
-        maxSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = maxField.get().toFloat()) {
+        maxSlider = UncivSlider("test", minValue.toFloat(), maxValue.toFloat(), 1f, maxField.get().toFloat()) {
             val newMax = it.toInt()
             maxField.set(newMax)
             if (newMax < minSlider.value.toInt()) {
@@ -340,8 +340,7 @@ class GameOptionsTable(
         val cityStatesAvailable = numberOfCityStates()
         if (cityStatesAvailable == 0) return
 
-        add("{City-States}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f, cityStatesAvailable.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
+        val slider = UncivSlider("{City-States}", 0f, cityStatesAvailable.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
             gameParameters.numberOfCityStates = it.toInt()
         }
         slider.isDisabled = locked
@@ -353,7 +352,7 @@ class GameOptionsTable(
             return null
 
         add("{Max Turns}:".toLabel()).left().expandX()
-        val slider = UncivSlider(100f, 1500f, 5f, initial = gameParameters.maxTurns.toFloat()) {
+        val slider = UncivSlider("{Max Turns}:", 100f, 1500f, 5f, initial = gameParameters.maxTurns.toFloat()) {
             gameParameters.maxTurns = it.toInt()
         }
         slider.isDisabled = locked

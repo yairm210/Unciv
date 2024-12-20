@@ -199,14 +199,14 @@ fun Group.addBorderAllowOpacity(size: Float, color: Color): Group {
 
 /** get background Image for a new separator */
 private fun getSeparatorImage(color: Color) = Image(ImageGetter.getWhiteDotDrawable().tint(
-    if (color.a != 0f) color else BaseScreen.skin.getColor("color") //0x334d80
+    if (color.a != 0f) color else BaseScreen.skin.getColor("base-40") //0x334d80
 ))
 
 /**
  * Create a horizontal separator as an empty Container with a colored background.
  * @param colSpan Optionally override [colspan][Cell.colspan] which defaults to the current column count.
  */
-fun Table.addSeparator(color: Color = BaseScreen.skin.getColor("color"), colSpan: Int = 0, height: Float = 1f): Cell<Image> {
+fun Table.addSeparator(color: Color = BaseScreen.skin.getColor("base-40"), colSpan: Int = 0, height: Float = 1f): Cell<Image> {
     if (!cells.isEmpty && !cells.last().isEndRow) row()
     val separator = getSeparatorImage(color)
     val cell = add(separator)
@@ -223,6 +223,21 @@ fun Table.addSeparator(color: Color = BaseScreen.skin.getColor("color"), colSpan
  */
 fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
     return add(getSeparatorImage(color)).width(width).fillY()
+}
+
+/**
+ * Sets the background Drawable of a Table based on its layer in the hierarchy.
+ * 0 is the true background and will have no effect if used.
+ * For convenience, layer 1 is default.
+ */
+fun Table.setLayer(layer: Int = 1, transparent: Boolean = false): Table {
+    if (layer == 0) return this
+    setBackground(BaseScreen.skin.getDrawable(when (layer) {
+        1 -> if (!transparent) "layer1-container" else "layer1-transparent-container"
+        2 -> if (!transparent) "layer2-container" else "layer2-transparent-container"
+        else -> "layer1-container"
+    }))
+    return this
 }
 
 /** Alternative to [Table].[add][Table] that returns the Table instead of the new Cell to allow a different way of chaining */
@@ -277,7 +292,7 @@ fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color,
 fun getCloseButton(
     size: Float = 50f,
     iconSize: Float = size - 20f,
-    circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
+    circleColor: Color = BaseScreen.skin.getColor("base-40"),
     overColor: Color = Color.RED,
     action: () -> Unit
 ): Group {
@@ -293,23 +308,35 @@ fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 fun Int.toLabel() = this.tr().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
-fun String.toLabel(fontColor: Color = Color.WHITE,
+fun String.toLabel(fontColor: Color = BaseScreen.skin.getColor("text-primary"),
                     fontSize: Int = Constants.defaultFontSize,
                     alignment: Int = Align.left,
                     hideIcons: Boolean = false): Label {
+    
     // We don't want to use setFontSize and setFontColor because they set the font,
-    //  which means we need to rebuild the font cache which means more memory allocation.
+    // which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
-    if (fontColor != Color.WHITE || fontSize != Constants.defaultFontSize) { // if we want the default we don't need to create another style
+    
+    // if we want the default we don't need to create another style
+    if (
+        fontColor != BaseScreen.skin.getColor("text-primary")
+        || fontSize != Constants.defaultFontSize
+    ) {
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
         if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
+
     return Label(this.tr(hideIcons), labelStyle).apply {
         setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
         setAlignment(alignment)
     }
 }
+
+fun String.toHeadingLabel() = this.toLabel(
+    BaseScreen.skin.getColor("text-interactive"),
+    Constants.headingFontSize
+)
 
 /**
  * Translate a [String] and make a [CheckBox] widget from it.

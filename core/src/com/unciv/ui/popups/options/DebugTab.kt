@@ -64,14 +64,13 @@ fun debugTab(
     optionsPopup.addCheckbox(this, "Gdx Scene2D debug", BaseScreen.enableSceneDebug) { BaseScreen.enableSceneDebug = it }
         
 
-    add(Table().apply {
-        add("Unique misspelling threshold".toLabel()).left().fillX()
-        add(
-            UncivSlider(0f, 0.5f, 0.05f, initial = RulesetCache.uniqueMisspellingThreshold.toFloat()) {
-                RulesetCache.uniqueMisspellingThreshold = it.toDouble()
-            }
-        ).minWidth(120f).pad(5f)
-    }).colspan(2).row()
+    add(
+        UncivSlider(
+        "Unique misspelling threshold",
+        0f, 0.5f, 0.05f,
+        RulesetCache.uniqueMisspellingThreshold.toFloat()
+        ) { RulesetCache.uniqueMisspellingThreshold = it.toDouble() }
+    ).padTop(10f).colspan(2).growX().row()
 
     val unlockTechsButton = "Unlock all techs".toTextButton()
     unlockTechsButton.onClick {

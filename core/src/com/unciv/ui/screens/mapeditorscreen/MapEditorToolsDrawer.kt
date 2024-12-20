@@ -48,7 +48,7 @@ class MapEditorToolsDrawer(
         add(arrowWrapper).align(Align.center).width(handleWidth).fillY().apply {  // the "handle"
             background = BaseScreen.skinStrings.getUiBackground(
                 "MapEditor/MapEditorToolsDrawer/Handle",
-                tintColor = BaseScreen.skin.getColor("color")
+                tintColor = BaseScreen.skin.getColor("base-40")
             )
         }
 

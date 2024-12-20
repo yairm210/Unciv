@@ -25,7 +25,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
     init {
         background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/TileInfoTable",
-            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+            tintColor = BaseScreen.skin.getColor("base-40")
         )
     }
 

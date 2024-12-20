@@ -175,7 +175,7 @@ class DetailedStatsPopup(
         val label = (if (showDetails) "-" else "+").toLabel()
         label.setAlignment(Align.center)
         val button = label
-            .surroundWithCircle(25f, color = BaseScreen.skinStrings.skinConfig.baseColor)
+            .surroundWithCircle(25f, color = BaseScreen.skin.getColor("base-40"))
             .surroundWithCircle(27f, false)
         button.onActivation(binding = KeyboardBinding.ShowStatDetails) {
             isDetailed = !isDetailed
