@@ -315,7 +315,6 @@ class UncivSlider (
         if (tipContainer.hasParent()) return
         tipContainer.pack()
         if (needsLayout()) pack()
-        val pos = slider.localToParentCoordinates(Vector2(slider.width / 2, slider.height))
         add(tipContainer).right().row()
         tipContainer.addAction(
             Actions.parallel(

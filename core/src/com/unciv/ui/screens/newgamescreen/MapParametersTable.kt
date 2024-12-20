@@ -19,6 +19,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
@@ -74,6 +75,7 @@ class MapParametersTable(
     var randomizeSeed = true
 
     init {
+        defaults().padBottom(9f)
         update()
     }
 
@@ -81,7 +83,6 @@ class MapParametersTable(
         clear()
 
         skin = BaseScreen.skin
-        defaults().padTop(10f)
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             val prompt = "Which options should be available to the random selection?"
             val width = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
@@ -96,6 +97,7 @@ class MapParametersTable(
         addResourceSelectBox()
         addWrappedCheckBoxes()
         addAdvancedSettings()
+        pack()
     }
 
     fun reseed() {
@@ -236,7 +238,7 @@ class MapParametersTable(
             mapParameters.mapSize = MapSize(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
         }
 
-        rectangularSizeTable.defaults().pad(5f)
+        rectangularSizeTable.defaults()
         rectangularSizeTable.add("{Width}:".toLabel()).grow().left()
         rectangularSizeTable.add(customMapWidth).right().row()
         rectangularSizeTable.add("{Height}:".toLabel()).grow().left()
@@ -295,58 +297,58 @@ class MapParametersTable(
         noRuinsCheckbox = "No Ancient Ruins".toCheckBox(mapParameters.noRuins) {
             mapParameters.noRuins = it
         }
-        add(noRuinsCheckbox).row()
+        add(noRuinsCheckbox).left().row()
     }
 
     private fun Table.addNoNaturalWondersCheckbox() {
         noNaturalWondersCheckbox = "No Natural Wonders".toCheckBox(mapParameters.noNaturalWonders) {
             mapParameters.noNaturalWonders = it
         }
-        add(noNaturalWondersCheckbox).row()
+        add(noNaturalWondersCheckbox).left().row()
     }
 
     private fun Table.addWorldWrapCheckbox() {
         worldWrapCheckbox = "World Wrap".toCheckBox(mapParameters.worldWrap) {
             mapParameters.worldWrap = it
         }
-        add(worldWrapCheckbox).row()
+        add(worldWrapCheckbox).left().row()
     }
 
     private fun Table.addStrategicBalanceCheckbox() {
         strategicBalanceCheckbox = "Strategic Balance".toCheckBox(mapParameters.strategicBalance) {
             mapParameters.strategicBalance = it
         }
-        add(strategicBalanceCheckbox).row()
+        add(strategicBalanceCheckbox).left().row()
     }
 
     private fun Table.addLegendaryStartCheckbox() {
         legendaryStartCheckbox = "Legendary Start".toCheckBox(mapParameters.legendaryStart) {
             mapParameters.legendaryStart = it
         }
-        add(legendaryStartCheckbox).row()
+        add(legendaryStartCheckbox).left().row()
     }
 
     private fun addWrappedCheckBoxes() {
         val worldWrapWarning = "World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
-                it.defaults().pad(5f,0f)
+                it.defaults().padBottom(Fonts.rem(0.5f))
                 it.addStrategicBalanceCheckbox()
                 it.addLegendaryStartCheckbox()
                 it.addNoRuinsCheckbox()
                 it.addNoNaturalWondersCheckbox()
                 it.addWorldWrapCheckbox()
                 it.add(worldWrapWarning.toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
-            }).pad(10f).padTop(10f).colspan(2).growX().row()
+            }).colspan(2).growX().left().row()
         } else {
             add(Table(skin).apply {
-                defaults().left().pad(2.5f)
+                defaults().padBottom(Fonts.rem(0.5f))
                 addStrategicBalanceCheckbox()
                 addLegendaryStartCheckbox()
                 addNoRuinsCheckbox()
                 addNoNaturalWondersCheckbox()
                 addWorldWrapCheckbox()
-            }).colspan(2).center().row()
+            }).colspan(2).left().row()
             add(worldWrapWarning.toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
         }
     }
@@ -355,12 +357,10 @@ class MapParametersTable(
         val expander = ExpanderTab("Advanced Settings", startsOutOpened = false) {
             addAdvancedControls(it)
         }
-        add(expander).pad(10f).padTop(10f).colspan(2).growX().row()
+        add(expander).colspan(2).growX().row()
     }
 
     private fun addAdvancedControls(table: Table) {
-        table.defaults().pad(5f)
-
         seedTextField = UncivTextField("RNG Seed", mapParameters.seed.tr())
         seedTextField.textFieldFilter = DigitsOnlyFilter()
 
@@ -374,18 +374,18 @@ class MapParametersTable(
         }
 
         table.add("RNG Seed".toLabel()).left()
-        table.add(seedTextField).fillX().padBottom(10f).row()
+        table.add(seedTextField).fillX().row()
 
         fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider {
             val slider = UncivSlider(text, min, max, (max - min) / 20, onChange = onChange, initial = getValue())
-            table.add(slider).fillX().row()
+            table.add(slider).growX().row()
             advancedSliders[slider] = getValue
             return slider
         }
 
         fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, step: Float, onChange: (value: Float)->Unit): UncivSlider {
             val slider = UncivSlider(text, min, max, step, onChange = onChange, initial = getValue())
-            table.add(slider).fillX().row()
+            table.add(slider).growX().row()
             advancedSliders[slider] = getValue
             return slider
         }
@@ -394,7 +394,7 @@ class MapParametersTable(
             val button = text.toTextButton()
             button.onClick { action.invoke(true) }
             if (shouldAddToTable)
-                table.add(button).colspan(2).padTop(10f).row()
+                table.add(button).colspan(2).row()
         }
 
         fun addCheckBox(text: String, initialState: Boolean, action: ((Boolean) -> Unit)) {

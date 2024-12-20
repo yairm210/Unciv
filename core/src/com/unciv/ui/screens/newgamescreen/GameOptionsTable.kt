@@ -20,14 +20,15 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.TabbedPager
@@ -42,12 +43,16 @@ class GameOptionsTable(
     private val isPortrait: Boolean = false,
     private val updatePlayerPickerTable: (desiredCiv: String) -> Unit,
     private val updatePlayerPickerRandomLabel: () -> Unit
-) : Table(BaseScreen.skin) {
+) : TabbedPager(
+    previousScreen.stage.width / 3 - Fonts.rem(1f),
+    previousScreen.stage.width / 3 - Fonts.rem(1f),
+    0f,
+    previousScreen.stage.height,
+    capacity = 3
+) {
     private var gameParameters = previousScreen.gameSetupInfo.gameParameters
     private var ruleset = previousScreen.ruleset
-    private val tabs: TabbedPager
     internal var locked = false
-
     private var baseRulesetHash = gameParameters.baseRuleset.hashCode()
 
     /** Holds the UI for the Extension Mods
@@ -66,22 +71,16 @@ class GameOptionsTable(
     private var baseRulesetSelectBox: TranslatedSelectBox? = null
 
     init {
-        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
+        // background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
         top()
-        defaults().pad(5f)
-        tabs = TabbedPager(
-            // These ought to be updated
-            this.width, this.width, 0f, previousScreen.stage.height,
-            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 3
-        )
-        tabs.addPage("Basic", basicTab())
-        tabs.addPage("Advanced", advancedTab())
-        tabs.addPage("Mods", modsTab())
+        padTop(Fonts.rem(1.0f))
+        setLayer()
+        addPage("Basic", basicTab().setLayer(2))
+        addPage("Advanced", advancedTab().setLayer(2))
+        addPage("Mods", modsTab().setLayer(2))
     }
 
     fun update() {
-        clear()
-
         // Mods may have changed (e.g. custom map selection)
         modCheckboxes.updateSelection()
         val newBaseRulesetHash = gameParameters.baseRuleset.hashCode()
@@ -90,26 +89,23 @@ class GameOptionsTable(
             modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
         }
 
-        add(tabs).grow()
-
-        tabs.selectPage(0) // Basic
-
+        selectPage(0) // Basic
         pack()
     }
 
     private fun basicTab(): Table = Table().apply {
-        pad(10f)
-        defaults().pad(5f)
+        defaults().padBottom(Fonts.rem(0.5f));
 
         addBaseRulesetSelectBox()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
         addEraSelectBox()
+
         // align left and right edges with other SelectBoxes but allow independent dropdown width
         add(Table().apply {
             val turnSlider = addMaxTurnsSlider()
             if (turnSlider != null)
-                add(turnSlider).padTop(10f).row()
+                add(turnSlider).colspan(2).growX().row()
             if (gameParameters.randomNumberOfPlayers) {
                 addMinMaxPlayersSliders()
             }
@@ -130,8 +126,7 @@ class GameOptionsTable(
     }
 
     private fun advancedTab(): Table = Table().apply {
-        pad(10f)
-        defaults().pad(5f)
+        defaults().padBottom(Fonts.rem(0.5f))
 
         addNoCityRazingCheckbox()
         addNoBarbariansCheckbox()
@@ -294,7 +289,7 @@ class GameOptionsTable(
         if (maxValue < minValue) return
 
         lateinit var maxSlider: UncivSlider  // lateinit safe because the closure won't use it until the user operates a slider
-        val minSlider = UncivSlider("test", minValue.toFloat(), maxValue.toFloat(), 1f, minField.get().toFloat()) {
+        val minSlider = UncivSlider(minText, minValue.toFloat(), maxValue.toFloat(), 1f, minField.get().toFloat()) {
             val newMin = it.toInt()
             minField.set(newMin)
             if (newMin > maxSlider.value.toInt()) {
@@ -304,7 +299,7 @@ class GameOptionsTable(
             onChangeCallback?.invoke()
         }
         minSlider.isDisabled = locked
-        maxSlider = UncivSlider("test", minValue.toFloat(), maxValue.toFloat(), 1f, maxField.get().toFloat()) {
+        maxSlider = UncivSlider(maxText, minValue.toFloat(), maxValue.toFloat(), 1f, maxField.get().toFloat()) {
             val newMax = it.toInt()
             maxField.set(newMax)
             if (newMax < minSlider.value.toInt()) {
@@ -315,15 +310,13 @@ class GameOptionsTable(
         }
         maxSlider.isDisabled = locked
 
-        add(minText.toLabel()).left().expandX()
         add(minSlider).padTop(10f).row()
-        add(maxText.toLabel()).left().expandX()
         add(maxSlider).padTop(10f).row()
     }
 
     private fun Table.addMinMaxPlayersSliders() {
         addLinkedMinMaxSliders(2, numberOfMajorCivs(),
-            "{Min number of Civilizations}:", "{Max number of Civilizations}:",
+            "{Min number of Civilizations}", "{Max number of Civilizations}",
             gameParameters::minNumberOfPlayers, gameParameters::maxNumberOfPlayers,
             updatePlayerPickerRandomLabel
         )
@@ -331,7 +324,7 @@ class GameOptionsTable(
 
     private fun Table.addMinMaxCityStatesSliders() {
         addLinkedMinMaxSliders( 0, numberOfCityStates(),
-            "{Min number of City-States}:", "{Max number of City-States}:",
+            "{Min number of City-States}", "{Max number of City-States}",
             gameParameters::minNumberOfCityStates, gameParameters::maxNumberOfCityStates
         )
     }
@@ -340,21 +333,25 @@ class GameOptionsTable(
         val cityStatesAvailable = numberOfCityStates()
         if (cityStatesAvailable == 0) return
 
-        val slider = UncivSlider("{City-States}", 0f, cityStatesAvailable.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
+        val slider = UncivSlider("{City-States}",
+        0f, cityStatesAvailable.toFloat(), 1f,
+        gameParameters.numberOfCityStates.toFloat()) {
             gameParameters.numberOfCityStates = it.toInt()
         }
+
         slider.isDisabled = locked
-        add(slider).padTop(10f).row()
+        add(slider).growX().padTop(10f).row()
     }
 
     private fun Table.addMaxTurnsSlider(): UncivSlider? {
         if (gameParameters.victoryTypes.none { ruleset.victories[it]?.enablesMaxTurns() == true })
             return null
 
-        add("{Max Turns}:".toLabel()).left().expandX()
-        val slider = UncivSlider("{Max Turns}:", 100f, 1500f, 5f, initial = gameParameters.maxTurns.toFloat()) {
-            gameParameters.maxTurns = it.toInt()
-        }
+        val slider = UncivSlider(
+            "{Max Turns}",
+            100f, 1500f, 5f,
+            gameParameters.maxTurns.toFloat()
+        ) { gameParameters.maxTurns = it.toInt() }
         slider.isDisabled = locked
         val snapValues = floatArrayOf(100f,150f,200f,250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
         slider.setSnapToValues(threshold = 125f, *snapValues)
@@ -362,7 +359,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?): TranslatedSelectBox {
-        add(text.toLabel(hideIcons = true)).left()
+        add(text.toLabel(hideIcons = true)).prefWidth(0f).left()
         val selectBox = TranslatedSelectBox(values, initialState)
         selectBox.isDisabled = locked
         selectBox.onChange {
@@ -370,7 +367,7 @@ class GameOptionsTable(
             if (changedValue != null) selectBox.setSelected(changedValue)
         }
         onChange(selectBox.selected.value)
-        add(selectBox).fillX().row()
+        add(selectBox).right().row()
         return selectBox
     }
 

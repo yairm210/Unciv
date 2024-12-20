@@ -25,9 +25,11 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -44,15 +46,14 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
  * @param previousScreen A [Screen][BaseScreen] where the player table is inserted, should provide [GameSetupInfo] as property, updated when a player is added/deleted/changed
  * @param gameParameters contains info about number of players.
- * @param blockWidth sets a width for the Civ "blocks". If too small a third of the stage is used.
+ * @param blockWidth sets a width for the Civ "blocks".
  */
 class PlayerPickerTable(
     val previousScreen: IPreviousScreen,
     var gameParameters: GameParameters,
-    blockWidth: Float = 0f
 ): Table() {
     val playerListTable = Table()
-    val civBlocksWidth = if (blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
+    val civBlocksWidth: Float
     private var randomNumberLabel: WrappableLabel? = null
 
     /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future. */
@@ -67,10 +68,19 @@ class PlayerPickerTable(
         for (player in gameParameters.players)
             player.playerId = "" // This is to stop people from getting other users' IDs and cheating with them in multiplayer games
 
+        civBlocksWidth = if ((previousScreen as? NewGameScreen)?.isNarrowerThan4to3() ?: false)
+            previousScreen.stage.width - Fonts.rem(1f)
+            else previousScreen.stage.width * 0.225f
+
         top()
-        add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
+        setLayer()
+        padTop(Fonts.rem(1f))
+       
+
+        add(ScrollPane(playerListTable).apply { setOverscroll(false, false) })
+            .prefWidth(civBlocksWidth)
         update()
-        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/PlayerPickerTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
+        // background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/PlayerPickerTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
     }
 
     /**
@@ -89,20 +99,22 @@ class PlayerPickerTable(
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in gameParameters.players) {
-            playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
+            playerListTable.add(getPlayerTable(player)).growX()
+                .padBottom(Fonts.rem(0.5f)).row()
         }
 
         val isRandomNumberOfPlayers = gameParameters.randomNumberOfPlayers
         if (isRandomNumberOfPlayers) {
             randomNumberLabel = WrappableLabel("", civBlocksWidth - 20f, Color.GOLD)
-            playerListTable.add(randomNumberLabel).fillX().pad(0f, 10f, 20f, 10f).row()
+            playerListTable.add(randomNumberLabel).growX()
+                .padBottom(Fonts.rem(0.5f)).row()
             updateRandomNumberLabel()
         }
 
         if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
-            val addPlayerButton = "+".toLabel(ImageGetter.CHARCOAL, 30)
+            val addPlayerButton = "+".toLabel(Color.WHITE, 30)
                 .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(50f)
+                .surroundWithCircle(40f, color = BaseScreen.skin.getColor("base-50"))
                 .onClick {
                     // no random mode - add first not spectator civ if still available
                     val player = if (noRandom || isRandomNumberOfPlayers) {
@@ -114,7 +126,7 @@ class PlayerPickerTable(
                     gameParameters.players.add(player)
                     update()
                 }
-            playerListTable.add(addPlayerButton).pad(10f)
+            playerListTable.add(addPlayerButton).pad(5f)
         }
 
         // enable start game when at least one human player and they're not alone
@@ -173,12 +185,13 @@ class PlayerPickerTable(
      */
     private fun getPlayerTable(player: Player): Table {
         val playerTable = Table()
-        playerTable.pad(5f)
-        playerTable.background = BaseScreen.skinStrings.getUiBackground(
-            "NewGameScreen/PlayerPickerTable/PlayerTable",
-            tintColor = BaseScreen.skin.getColor("base-20")
-        )
+        playerTable.pad(Fonts.rem(0.25f))
+        playerTable.setLayer(2)
 
+        // playerTable.background = BaseScreen.skinStrings.getUiBackground(
+        //     "NewGameScreen/PlayerPickerTable/PlayerTable",
+        //     tintColor = BaseScreen.skin.getColor("base-20")
+        // )
         val nationTable = getNationTable(player)
         playerTable.add(nationTable).left()
 
@@ -211,13 +224,13 @@ class PlayerPickerTable(
         }
 
         if (!locked) {
-            playerTable.add("-".toLabel(ImageGetter.CHARCOAL, 30, Align.center)
-                .surroundWithCircle(40f)
+            playerTable.add("-".toLabel(Color.WHITE, 30, Align.center)
+                .surroundWithCircle(40f, color = BaseScreen.skin.getColor("negative-50"))
                 .onClick {
                     gameParameters.players.remove(player)
                     update()
                 }
-            ).pad(5f).right()
+            ).right()
         }
 
         if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human)

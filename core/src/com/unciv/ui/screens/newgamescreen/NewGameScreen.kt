@@ -3,6 +3,7 @@ package com.unciv.ui.screens.newgamescreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -31,6 +32,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -69,10 +71,7 @@ class NewGameScreen(
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
         rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
-        playerPickerTable = PlayerPickerTable(
-            this, gameSetupInfo.gameParameters,
-            if (isPortrait) stage.width - 20f else 0f
-        )
+        playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
         newGameOptionsTable = GameOptionsTable(
             this, isPortrait,
             updatePlayerPickerTable = { desiredCiv -> playerPickerTable.update(desiredCiv) },
@@ -88,8 +87,8 @@ class NewGameScreen(
         if (isPortrait) initPortrait()
         else initLandscape()
 
-        bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-        topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
+        //bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        //topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
             rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
@@ -107,6 +106,7 @@ class NewGameScreen(
         }
 
         rightSideButton.setText("Start game!".tr())
+        rightSideButton.setStyle(BaseScreen.skin.get("positive", TextButton.TextButtonStyle::class.java))
         rightSideButton.onClick(this::startGameAvoidANRs)
     }
 
@@ -220,25 +220,22 @@ class NewGameScreen(
     /** Subtables may need an upper limit to their width - they can ask this function. */
     // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
     internal fun getColumnWidth() = floor(stage.width / (if (isNarrowerThan4to3()) 1 else 3))
+    internal fun getColumnHeight() = topTable.height
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
 
         topTable.add("Game Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f, 0f)
-        topTable.addSeparatorVertical(ImageGetter.CHARCOAL, 1f)
         topTable.add("Map Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
-        topTable.addSeparatorVertical(ImageGetter.CHARCOAL, 1f)
         topTable.add("Civilizations".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
-        topTable.addSeparator(Color.CLEAR, height = 1f)
+        topTable.addSeparator()
 
-        topTable.add(newGameOptionsTable).width(stage.width / 3).top()
-        topTable.addSeparatorVertical(Color.CLEAR, 1f)
-        topTable.add(ScrollPane(mapOptionsTable)
-                .apply { setOverscroll(false, false) })
-                .width(stage.width / 3).top()
-        topTable.addSeparatorVertical(Color.CLEAR, 1f)
-        topTable.add(playerPickerTable)  // No ScrollPane, PlayerPickerTable has its own
-                .width(stage.width / 3).top()
+        topTable.add(newGameOptionsTable).grow()
+            .pad(Fonts.rem(1f)).top()
+        topTable.add(ScrollPane(mapOptionsTable)).grow()
+            .pad(Fonts.rem(1f)).padLeft(0f).top()
+        topTable.add(playerPickerTable).grow()
+            .pad(Fonts.rem(1f)).padLeft(0f).top()
     }
 
     private fun initPortrait() {
@@ -246,16 +243,16 @@ class NewGameScreen(
 
         topTable.add(ExpanderTab("Game Options") {
             it.add(newGameOptionsTable).row()
-        }).expandX().fillX().row()
-        topTable.addSeparator(Color.DARK_GRAY, height = 1f)
+        }).growX().row()
+        topTable.addSeparator()
 
         topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
-        topTable.addSeparator(Color.DARK_GRAY, height = 1f)
+        topTable.addSeparator()
 
         topTable.add(ExpanderTab("Map Options") {
             it.add(mapOptionsTable).row()
         }).expandX().fillX().row()
-        topTable.addSeparator(Color.DARK_GRAY, height = 1f)
+        topTable.addSeparator()
 
         (playerPickerTable.playerListTable.parent as ScrollPane).setScrollingDisabled(true,true)
         topTable.add(ExpanderTab("Civilizations") {

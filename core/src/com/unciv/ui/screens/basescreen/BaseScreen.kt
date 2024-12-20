@@ -131,7 +131,7 @@ abstract class BaseScreen : Screen {
 
         /** Colour to use for empty sections of the screen.
          *  Gets overwritten by SkinConfig.clearColor after starting Unciv */
-        var clearColor = Color(0f, 0f, 0.2f, 1f)
+        var clearColor = Color(0f, 0f, 0.9f, 1f)
 
         lateinit var skin: Skin
         lateinit var skinStrings: SkinStrings

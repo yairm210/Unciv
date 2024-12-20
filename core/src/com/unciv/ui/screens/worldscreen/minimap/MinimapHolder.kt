@@ -109,4 +109,8 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    init {
+        pad(9f)
+        top().left()
+    }
 }

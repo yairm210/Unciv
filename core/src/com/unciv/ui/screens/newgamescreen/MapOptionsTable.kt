@@ -2,11 +2,15 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -23,6 +27,7 @@ class ScenarioSelectTable(val newGameScreen: NewGameScreen) : Table() {
     var scenarioSelectBox: TranslatedSelectBox? = null
     
     init {
+        setLayer()
         // Only the first so it's fast
         val firstScenarioFile = newGameScreen.game.files.getScenarioFiles().firstOrNull()
         if (firstScenarioFile != null) {
@@ -66,7 +71,7 @@ class ScenarioSelectTable(val newGameScreen: NewGameScreen) : Table() {
 class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
-    private var mapTypeSpecificTable = Table()
+    private var mapTypeSpecificTableCell: Cell<Actor?>
     internal val generatedMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.generated)
     private val randomMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.randomGenerated)
     private val savedMapOptionsTable = MapFileSelectTable(newGameScreen, mapParameters)
@@ -74,43 +79,44 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
     internal val mapTypeSelectBox: TranslatedSelectBox
 
     init {
-        pad(10f)
-        //defaults().pad(5f) - each nested table having the same can give 'stairs' effects,
-        // better control directly. Besides, the first Labels/Buttons should have 10f to look nice
-        // 
-        // re ↑: after some reorganisation, padding the parent container works again
-        // and is the easiest alignment solution
-        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/MapOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
+        pad(Fonts.rem(1f))
+        defaults().padBottom(Fonts.rem(0.5f))
+        top()
+        //background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/MapOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
 
+        setLayer()
         val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
         if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
         if (newGameScreen.game.files.getScenarioFiles().any()) mapTypes.add(MapGeneratedMainType.scenario)
 
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated)
 
+        add("{Map Type}:".toLabel()).expandX().left()
+        add(mapTypeSelectBox).right().row()
+
+        mapTypeSpecificTableCell = add().colspan(2).growX()
         fun updateOnMapTypeChange() {
-            mapTypeSpecificTable.clear()
             when (mapTypeSelectBox.selected.value) {
                 MapGeneratedMainType.custom -> {
                     mapParameters.type = MapGeneratedMainType.custom
-                    mapTypeSpecificTable.add(savedMapOptionsTable)
+                    mapTypeSpecificTableCell.setActor(savedMapOptionsTable)
                     savedMapOptionsTable.activateCustomMaps()
                     newGameScreen.unlockTables()
                 }
                 MapGeneratedMainType.generated -> {
                     mapParameters.name = ""
                     mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
-                    mapTypeSpecificTable.add(generatedMapOptionsTable)
+                    mapTypeSpecificTableCell.setActor(generatedMapOptionsTable)
                     newGameScreen.unlockTables()
                 }
                 MapGeneratedMainType.randomGenerated -> {
                     mapParameters.name = ""
-                    mapTypeSpecificTable.add(randomMapOptionsTable)
+                    mapTypeSpecificTableCell.setActor(randomMapOptionsTable)
                     newGameScreen.unlockTables()
                 }
                 MapGeneratedMainType.scenario -> {
                     mapParameters.name = ""
-                    mapTypeSpecificTable.add(scenarioOptionsTable)
+                    mapTypeSpecificTableCell.setActor(scenarioOptionsTable)
                     scenarioOptionsTable.selectScenario()
                     newGameScreen.lockTables()
                 }
@@ -121,14 +127,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
 
         // activate once, so the MapGeneratedMainType.generated controls show
         updateOnMapTypeChange()
-
         mapTypeSelectBox.onChange { updateOnMapTypeChange() }
-
-        val mapTypeSelectWrapper = Table()  // wrap to center-align Label and SelectBox easier
-        mapTypeSelectWrapper.add("{Map Type}:".toLabel()).left().expandX()
-        mapTypeSelectWrapper.add(mapTypeSelectBox).right()
-        add(mapTypeSelectWrapper).padBottom(Constants.defaultFontSize * 1.5f).fillX().row()
-        add(mapTypeSpecificTable).row()
     }
     
     fun getSelectedScenario(): ScenarioSelectTable.ScenarioData? {

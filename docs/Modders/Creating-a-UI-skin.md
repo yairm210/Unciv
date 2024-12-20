@@ -87,7 +87,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | NewGameScreen/NationTable/ | BorderTable | null | |
 | NewGameScreen/NationTable/ | RightInnerTable | null | |
 | NewGameScreen/NationTable/ | Title | null | |
-| NewGameScreen/PlayerPickerTable/ | PlayerTable | null | |
 | OverviewScreen/DiplomacyOverviewTab/ | CivTable | null | |
 | OverviewScreen/NotificationOverviewTable/ | Notification | roundedEdgeRectangle | |
 | OverviewScreen/ReligionOverviewTab/ | BeliefDescription | null | |

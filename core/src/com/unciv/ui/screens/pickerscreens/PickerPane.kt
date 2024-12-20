@@ -14,6 +14,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 
@@ -49,6 +50,7 @@ class PickerPane(
 
     init {
         bottomTable.add(closeButton).pad(10f)
+        bottomTable.setLayer()
 
         descriptionLabel.wrap = true
         val descriptionWithPad = Table()

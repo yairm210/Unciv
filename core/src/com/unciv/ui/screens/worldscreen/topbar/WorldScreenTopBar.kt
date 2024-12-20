@@ -10,10 +10,10 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
@@ -83,14 +83,16 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         defaults().center()
         setRound(false) // Prevent Table from doing internal rounding which would provoke gaps
 
-        val backColor = BaseScreen.skin.getColor("base-40")
-        statsTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/StatsTable", tintColor = backColor)
-        resourceTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/ResourceTable", tintColor = backColor)
+        setLayer()
 
-        val leftFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/LeftAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
-        leftFiller = BackgroundActor(leftFillerBG, Align.topLeft)
-        val rightFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/RightAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
-        rightFiller = BackgroundActor(rightFillerBG, Align.topRight)
+        // val backColor = BaseScreen.skin.getColor("base-40")
+        // statsTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/StatsTable", tintColor = backColor)
+        // resourceTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/ResourceTable", tintColor = backColor)
+
+        //val leftFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/LeftAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
+        leftFiller = BackgroundActor(getBackground(), Align.topLeft)
+        //val rightFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/RightAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
+        rightFiller = BackgroundActor(getBackground(), Align.topRight)
     }
 
     internal fun update(civInfo: Civilization) {
@@ -179,7 +181,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             }
 
             unitSupplyCell = add()
-            add(overviewButton).pad(10f)
+            add(overviewButton).padRight(Fonts.rem(0.5f))
             pack()
         }
 

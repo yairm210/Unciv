@@ -310,16 +310,17 @@ open class TabbedPager(
 
         // Measure header height, most likely its final value
         removePage(addPage("Dummy"))
-        add(headerScroll).padLeft(Fonts.rem(1f)).growX().minHeight(headerHeight)
+        add(headerScroll).growX().minHeight(headerHeight)
         headerDecorationRightCell = add()
         row()
         if (separatorColor != Color.CLEAR)
             addSeparator(separatorColor)
 
-        fixedContentScrollCell = add(fixedContentScroll)
-        fixedContentScrollCell.pad(Fonts.rem(1f)).padTop(0f).colspan(2).growX().row()
-
         add(contentScroll).pad(Fonts.rem(1f)).padTop(0f).colspan(2).grow().row()
+
+        fixedContentScrollCell = add(fixedContentScroll)
+        fixedContentScrollCell.padTop(0f).colspan(2).growX().row()
+
     }
 
     //endregion

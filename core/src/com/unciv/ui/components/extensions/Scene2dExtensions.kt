@@ -231,7 +231,13 @@ fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): C
  * For convenience, layer 1 is default.
  */
 fun Table.setLayer(layer: Int = 1, transparent: Boolean = false): Table {
-    if (layer == 0) return this
+    if (layer == 0)
+        if (!transparent) return this
+        else {
+            println("doing")
+            setBackground(BaseScreen.skin.getDrawable("base-transparent"))
+            return this
+        }
     setBackground(BaseScreen.skin.getDrawable(when (layer) {
         1 -> if (!transparent) "layer1-container" else "layer1-transparent-container"
         2 -> if (!transparent) "layer2-container" else "layer2-transparent-container"

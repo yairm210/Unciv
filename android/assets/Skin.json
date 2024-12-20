@@ -31,9 +31,9 @@
         "negative-50": { "hex": "#833440" },
         "negative-60": { "hex": "#943b48" },
 
-        "primary-50": { "hex": "#833440" },
-        "primary-60": { "hex": "#943b48" },
-        "primary-40": { "hex": "#722d38" },
+        "primary-50": { "hex": "#447d4f" },
+        "primary-60": { "hex": "#3e7248" },
+        "primary-40": { "hex": "#3b6644" },
 
         "text-primary": { "hex": "#f4f4f4ff" },
         "text-subdued": {"r": 0.686, "g": 0.733, "b": 0.918},
@@ -284,10 +284,16 @@
             "name": "Checkbox-pressed",
             "color": "disabled"
         },
-        "list-c": {
+
+        "list": {
+            "name": "RectangleWithOutline",
+            "color": "base-50"
+        },
+        "list-active": {
             "name": "RectangleWithOutline",
             "color": "base-60"
         },
+
         "scrollbar-c": {
             "name": "Scrollbar",
             "color": "base-60"
@@ -344,19 +350,25 @@
 
         "splitpane-horizontal-c": {
             "name": "RectangleWithOutline",
-            "color": "base-60"
+            "color": "base-50"
         },
         "splitpane-vertical-c": {
             "name": "RectangleWithOutline",
-            "color": "base-60"
+            "color": "base-50"
         },
-        "textfield-c": {
+
+        "textfield": {
+            "name": "RoundedEdgeRectangle",
+            "color": "base-50"
+        },
+        "textfield-active": {
             "name": "RoundedEdgeRectangle",
             "color": "base-60"
         },
-        "selection": {
+
+        "base-transparent": {
             "name": "Rectangle",
-            "color": "selection"
+            "color": "base-10-transparent"
         },
         "white": {
             "name": "Rectangle",
@@ -393,9 +405,9 @@
             "checkboxOffDisabled": "checkbox-disabled-c",
             "font": "button",
             "fontColor": "text-primary",
-            "downFontColor": "pressed",
-            "overFontColor": "highlight",
-            "disabledFontColor": "gray"
+            "downFontColor": "text-primary",
+            "overFontColor": "text-primary",
+            "disabledFontColor": "text-primary"
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
@@ -409,8 +421,8 @@
             "font": "font",
             "fontColorSelected": "white",
             "fontColorUnselected": "white",
-            "selection": "selection",
-            "background": "list-c"
+            "selection": "list-active",
+            "background": "list"
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
@@ -427,7 +439,7 @@
     "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
         "default": {
             "font": "font",
-            "fontColor": "white",
+            "fontColor": "text-primary",
             "background": "select-box-c",
             "scrollStyle": "select-box-scroll",
             "listStyle": "default",
@@ -464,18 +476,18 @@
     "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
         "default": {
             "font": "button",
-            "fontColor": "white",
-            "downFontColor": "white",
-            "overFontColor": "dark-gray",
+            "fontColor": "text-primary",
+            "downFontColor": "text-primary",
+            "overFontColor": "text-primary",
             "up": "button",
             "down": "button-down",
             "over": "button-hover"
         },
         "positive": {
             "font": "button",
-            "fontColor": "white",
-            "downFontColor": "white",
-            "overFontColor": "dark-gray",
+            "fontColor": "text-primary",
+            "downFontColor": "text-primary",
+            "overFontColor": "text-primary",
             "up": "button-primary",
             "down": "button-primary-down",
             "over": "button-primary-hover"
@@ -491,9 +503,9 @@
         },
         "disabled": {
             "font": "button",
-            "fontColor": "white",
-            "downFontColor": "white",
-            "overFontColor": "white",
+            "fontColor": "text-primary",
+            "downFontColor": "text-primary",
+            "overFontColor": "text-primary",
             "up": "button-disabled",
             "down": "button-disabled",
             "over": "button-disabled"
@@ -502,10 +514,10 @@
     "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
         "default": {
             "font": "font",
-            "fontColor": "white",
-            "background": "textfield-c",
+            "fontColor": "text-primary",
+            "background": "textfield",
             "cursor": "white",
-            "selection": "selection"
+            "selection": "textfield-active"
         }
     },
     "com.unciv.ui.screens.pickerscreens.PromotionScreenColors": {
