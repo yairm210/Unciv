@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
+import com.unciv.ui.components.fonts.Fonts
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
@@ -110,7 +111,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     init {
-        pad(9f)
+        pad(Fonts.rem(0.5f))
         top().left()
     }
 }
