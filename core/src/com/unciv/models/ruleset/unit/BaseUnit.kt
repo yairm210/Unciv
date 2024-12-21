@@ -118,15 +118,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     
     override fun hasUnique(uniqueType: UniqueType, state: StateForConditionals?): Boolean {
-        return super<RulesetObject>.hasUnique(uniqueType, state) || ::ruleset.isInitialized && type.hasUnique(uniqueType, state)
+        return super<RulesetObject>.hasUnique(uniqueType, state) ||
+            ::ruleset.isInitialized && type.hasUnique(uniqueType, state) ||
+            ::ruleset.isInitialized && ruleset.allUnitTypes?.hasUnique(uniqueType, state) == true
     }
 
     override fun hasUnique(uniqueTag: String, state: StateForConditionals?): Boolean {
-        return super<RulesetObject>.hasUnique(uniqueTag, state) || ::ruleset.isInitialized && type.hasUnique(uniqueTag, state)
+        return super<RulesetObject>.hasUnique(uniqueTag, state) ||
+            ::ruleset.isInitialized && type.hasUnique(uniqueTag, state) ||
+            ::ruleset.isInitialized && ruleset.allUnitTypes?.hasUnique(uniqueTag, state) == true
     }
 
     override fun hasTagUnique(tagUnique: String): Boolean {
-        return super<RulesetObject>.hasTagUnique(tagUnique) || ::ruleset.isInitialized && type.hasTagUnique(tagUnique) 
+        return super<RulesetObject>.hasTagUnique(tagUnique) ||
+            ::ruleset.isInitialized && type.hasTagUnique(tagUnique) ||
+            ::ruleset.isInitialized && ruleset.allUnitTypes?.hasTagUnique(tagUnique) == true
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
@@ -136,11 +142,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             return ourUniques
         }
         val typeUniques = type.getMatchingUniques(uniqueType, state)
+        val globalTypeUniques = ruleset.allUnitTypes?.getMatchingUniques(uniqueType, state) ?: emptySequence()
         // Memory optimization - very rarely do we actually get uniques from both sources,
         //   and sequence addition is expensive relative to the rare case that we'll actually need it
-        if (ourUniques.none()) return typeUniques
-        if (typeUniques.none()) return ourUniques
-        return ourUniques + type.getMatchingUniques(uniqueType, state)
+        if (ourUniques.none() && globalTypeUniques.none()) return typeUniques
+        if (typeUniques.none() && globalTypeUniques.none()) return ourUniques
+        if (typeUniques.none() && ourUniques.none()) return globalTypeUniques
+        return ourUniques + typeUniques + globalTypeUniques
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
@@ -150,11 +158,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             return ourUniques
         }
         val typeUniques = type.getMatchingUniques(uniqueTag, state)
+        val globalTypeUniques = ruleset.allUnitTypes?.getMatchingUniques(uniqueTag, state) ?: emptySequence()
         // Memory optimization - very rarely do we actually get uniques from both sources,
         //   and sequence addition is expensive relative to the rare case that we'll actually need it
-        if (ourUniques.none()) return typeUniques
-        if (typeUniques.none()) return ourUniques
-        return ourUniques + type.getMatchingUniques(uniqueTag, state)
+        if (ourUniques.none() && globalTypeUniques.none()) return typeUniques
+        if (typeUniques.none() && globalTypeUniques.none()) return ourUniques
+        if (typeUniques.none() && ourUniques.none()) return globalTypeUniques
+        return ourUniques + typeUniques + globalTypeUniques
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
