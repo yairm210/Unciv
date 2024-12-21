@@ -10,11 +10,6 @@ import java.util.zip.Deflater
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
-class UncivGZIPOutputStream : GZIPOutputStream {
-    constructor(out: OutputStream) : super(out) {
-        def.setLevel(Deflater.BEST_COMPRESSION)
-    }
-}
 
 object Gzip {
 
@@ -23,7 +18,11 @@ object Gzip {
 
     private fun compress(data: String): ByteArray {
         val bos = ByteArrayOutputStream(data.length)
-        val gzip = UncivGZIPOutputStream(bos)
+        val gzip = object : GZIPOutputStream(bos) {
+            init {
+                def.setLevel(Deflater.BEST_COMPRESSION)
+                }
+        }
         gzip.write(data.toByteArray())
         gzip.close()
         val compressed = bos.toByteArray()
