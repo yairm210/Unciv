@@ -20,7 +20,7 @@ object Gzip {
         val gzip = object : GZIPOutputStream(bos) {
             init {
                 def.setLevel(Deflater.BEST_COMPRESSION)
-                }
+            }
         }
         gzip.write(data.toByteArray())
         gzip.close()
