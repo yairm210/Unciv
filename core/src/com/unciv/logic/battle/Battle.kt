@@ -21,11 +21,13 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
@@ -257,8 +259,12 @@ object Battle {
                 if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
             val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
 
-            val stat = Stat.valueOf(unique.params[3])
-            civUnit.getCivInfo().addStat(stat, yieldAmount)
+            val resourceName = unique.params[3]
+            val resource = Stat.safeValueOf(resourceName) ?:
+            SubStat.safeValueOf(resourceName) ?:
+            civUnit.getCivInfo().gameInfo.ruleset.tileResources[resourceName]
+            if (resource == null) continue
+            civUnit.getCivInfo().addGameResource(resource, yieldAmount)
         }
 
         // CS friendship from killing barbarians
@@ -362,16 +368,34 @@ object Battle {
     ) {
         // implementation based on the description of the original civilopedia, see issue #4374
         if (plunderingUnit !is MapUnitCombatant) return
+        val civ = plunderingUnit.getCivInfo()
         val plunderedGoods = Stats()
 
         for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
             if (plunderedUnit.matchesFilter(unique.params[1])) {
                 val percentage = unique.params[0].toFloat()
-                plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * damageDealt)
+                val amount = percentage / 100f * damageDealt
+                val resourceName = unique.params[2]
+                val resource = Stat.safeValueOf(resourceName) ?:
+                SubStat.safeValueOf(resourceName) ?:
+                plunderedUnit.getCivInfo().gameInfo.ruleset.tileResources[resourceName]
+                if (resource == null) continue
+                if (resource is Stat) plunderedGoods.add(resource, amount)
+                else {
+                    val plunderedAmount = amount.roundToInt()
+                    civ.addGameResource(resource, plunderedAmount)
+                    val icon = if (resource is SubStat) resource.icon else "ResourceIcons/$resourceName"
+                    civ.addNotification(
+                        "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${resourceName}] from [${plunderedUnit.getName()}]",
+                        plunderedUnit.getTile().position,
+                        NotificationCategory.War,
+                        plunderingUnit.getName(), NotificationIcon.War, icon,
+                        if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
+                    )
+                }
             }
         }
 
-        val civ = plunderingUnit.getCivInfo()
         for ((key, value) in plunderedGoods) {
             val plunderedAmount = value.toInt()
             if (plunderedAmount == 0) continue
@@ -564,8 +588,13 @@ object Battle {
 
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
-            attackerCiv.addStat(
-                Stat.valueOf(unique.params[2]),
+            val resourceName = unique.params[2]
+            val resource = Stat.safeValueOf(resourceName) ?:
+            SubStat.safeValueOf(resourceName) ?:
+            attacker.getCivInfo().gameInfo.ruleset.tileResources[resourceName]
+            if (resource == null) continue
+            attackerCiv.addGameResource(
+                resource,
                 unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()
             )
         }

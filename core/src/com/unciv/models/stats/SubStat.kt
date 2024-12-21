@@ -1,9 +1,11 @@
 package com.unciv.models.stats
 
-enum class SubStat : GameResource {
-    GoldenAgePoints,
-    TotalCulture,
-    StoredFood,
+import com.unciv.logic.civilization.NotificationIcon
+
+enum class SubStat(val icon: String) : GameResource {
+    GoldenAgePoints(NotificationIcon.Happiness),
+    TotalCulture(NotificationIcon.Culture),
+    StoredFood(NotificationIcon.Food),
     ;
     companion object {
         val useableToBuy = setOf(GoldenAgePoints, StoredFood)
