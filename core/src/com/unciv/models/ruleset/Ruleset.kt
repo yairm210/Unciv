@@ -118,6 +118,8 @@ class Ruleset {
     val greatGeneralUnits by lazy {
         units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
     }
+    
+    val allUnitTypes by lazy { unitTypes["All"] }
 
     val tileRemovals by lazy { tileImprovements.values.filter { it.name.startsWith(Constants.remove) } }
     val nonRoadTileRemovals by lazy { tileRemovals.filter { rulesetImprovement ->
