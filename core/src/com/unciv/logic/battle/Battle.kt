@@ -369,26 +369,29 @@ object Battle {
         val plunderedGoods = Stats()
 
         for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
-            if (plunderedUnit.matchesFilter(unique.params[1])) {
-                val percentage = unique.params[0].toFloat()
-                val amount = percentage / 100f * damageDealt
-                val resourceName = unique.params[2]
-                val resource = plunderedUnit.getCivInfo().gameInfo.ruleset.getGameResource(resourceName)
-                    ?: continue
-                if (resource is Stat) plunderedGoods.add(resource, amount)
-                else {
-                    val plunderedAmount = amount.roundToInt()
-                    civ.addGameResource(resource, plunderedAmount)
-                    val icon = if (resource is SubStat) resource.icon else "ResourceIcons/$resourceName"
-                    civ.addNotification(
-                        "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${resourceName}] from [${plunderedUnit.getName()}]",
-                        plunderedUnit.getTile().position,
-                        NotificationCategory.War,
-                        plunderingUnit.getName(), NotificationIcon.War, icon,
-                        if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
-                    )
-                }
+            if (!plunderedUnit.matchesFilter(unique.params[1])) continue
+
+            val percentage = unique.params[0].toFloat()
+            val amount = percentage / 100f * damageDealt
+            val resourceName = unique.params[2]
+            val resource = plunderedUnit.getCivInfo().gameInfo.ruleset.getGameResource(resourceName)
+                ?: continue
+
+            if (resource is Stat) {
+                plunderedGoods.add(resource, amount)
+                continue // Notification and adding to the civ happens all at once for stats further down
             }
+
+            val plunderedAmount = amount.roundToInt()
+            civ.addGameResource(resource, plunderedAmount)
+            val icon = if (resource is SubStat) resource.icon else "ResourceIcons/$resourceName"
+            civ.addNotification(
+                "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${resourceName}] from [${plunderedUnit.getName()}]",
+                plunderedUnit.getTile().position,
+                NotificationCategory.War,
+                plunderingUnit.getName(), NotificationIcon.War, icon,
+                if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
+            )
         }
 
         for ((key, value) in plunderedGoods) {
