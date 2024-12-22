@@ -94,19 +94,33 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
     }
     
+    private class NeighborEdgeData(val neighbor: Tile, val direction: NeighborDirection?) {
+        var ourTerrains: Set<String> = emptySet()
+        var neighborTerrains: Set<String> = emptySet()
+        var edgeFiles: Sequence<String> = emptySequence()
+    }
+    
+    private val neighborEdgeDataList: Sequence<NeighborEdgeData> = if (!tile.isTilemapInitialized()) emptySequence()
+        else tile.neighbors.map {
+            val direction = NeighborDirection.fromVector(it.position.cpy().sub(tile.position))
+            NeighborEdgeData(it, direction)
+        }.toList().asSequence()
+    
+    
     private fun getEdgeTileLocations(): Sequence<String> {
         if (!tile.isTilemapInitialized()) // fake tile 
             return emptySequence()
-        return tile.neighbors
-            .flatMap { getMatchingEdges(tile, it) }
+        return neighborEdgeDataList
+            .flatMap { getMatchingEdges(it) }
     }
 
-    private fun getMatchingEdges(originTile: Tile, neighborTile: Tile): Sequence<String>{
-        val vectorToNeighbor =  neighborTile.position.cpy().sub(originTile.position)
-        val direction = NeighborDirection.fromVector(vectorToNeighbor)
-            ?: return emptySequence()
+    private fun getMatchingEdges(neighborEdgeData: NeighborEdgeData): Sequence<String>{
+        if (neighborEdgeData.ourTerrains == tile.cachedTerrainData.terrainNameSet
+            && neighborEdgeData.neighborTerrains == neighborEdgeData.neighbor.cachedTerrainData.terrainNameSet)
+                return neighborEdgeData.edgeFiles
         
-        val possibleEdgeImages = strings.edgeImagesByPosition[direction] ?: return emptySequence()
+        if (neighborEdgeData.direction == null) return emptySequence()
+        val possibleEdgeImages = strings.edgeImagesByPosition[neighborEdgeData.direction] ?: return emptySequence()
         
         // Required for performance - full matchesFilter is too expensive for something that needs to run every update()
         fun matchesFilterMinimal(originTile: Tile, filter: String): Boolean {
@@ -115,11 +129,17 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             return false
         }
 
-        return possibleEdgeImages.asSequence().filter {
-            if (!matchesFilterMinimal(originTile, it.originTileFilter)) return@filter false
-            if (!matchesFilterMinimal(neighborTile, it.destinationTileFilter)) return@filter false
+        val cachedSequence = possibleEdgeImages.filter {
+            if (!matchesFilterMinimal(tile, it.originTileFilter)) return@filter false
+            if (!matchesFilterMinimal(neighborEdgeData.neighbor, it.destinationTileFilter)) return@filter false
             return@filter true
-        }.map { it.fileName }
+        }.map { it.fileName }.asSequence()
+        
+        neighborEdgeData.ourTerrains = tile.cachedTerrainData.terrainNameSet
+        neighborEdgeData.neighborTerrains = neighborEdgeData.neighbor.cachedTerrainData.terrainNameSet
+        neighborEdgeData.edgeFiles = cachedSequence
+        
+        return cachedSequence
     }
 
     private fun updateTileImage(viewingCiv: Civilization?) {

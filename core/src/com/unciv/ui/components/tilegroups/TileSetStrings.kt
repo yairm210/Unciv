@@ -54,7 +54,7 @@ class TileSetStrings(
 
     // These need to be by lazy since the orFallback expects a tileset, which it may not get.
     val hexagon: String by lazy { orFallback { tileSetLocation + "Hexagon"} }
-    val hexagonList by lazy { listOf(hexagon) }
+    val hexagonList = listOf(hexagon) 
     val crosshatchHexagon by lazy { orFallback { tileSetLocation + "CrosshatchHexagon" } }
     val unexploredTile by lazy { orFallback { tileSetLocation + "UnexploredTile" } }
     val crosshair by lazy { orFallback { getString(tileSetLocation, "Crosshair") } }
