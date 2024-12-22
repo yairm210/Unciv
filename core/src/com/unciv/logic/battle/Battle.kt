@@ -259,11 +259,8 @@ object Battle {
                 if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
             val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
 
-            val resourceName = unique.params[3]
-            val resource = Stat.safeValueOf(resourceName) ?:
-            SubStat.safeValueOf(resourceName) ?:
-            civUnit.getCivInfo().gameInfo.ruleset.tileResources[resourceName]
-            if (resource == null) continue
+            val resource = civUnit.getCivInfo().gameInfo.ruleset.getGameResource(unique.params[3])
+                ?: continue
             civUnit.getCivInfo().addGameResource(resource, yieldAmount)
         }
 
@@ -376,10 +373,8 @@ object Battle {
                 val percentage = unique.params[0].toFloat()
                 val amount = percentage / 100f * damageDealt
                 val resourceName = unique.params[2]
-                val resource = Stat.safeValueOf(resourceName) ?:
-                SubStat.safeValueOf(resourceName) ?:
-                plunderedUnit.getCivInfo().gameInfo.ruleset.tileResources[resourceName]
-                if (resource == null) continue
+                val resource = plunderedUnit.getCivInfo().gameInfo.ruleset.getGameResource(resourceName)
+                    ?: continue
                 if (resource is Stat) plunderedGoods.add(resource, amount)
                 else {
                     val plunderedAmount = amount.roundToInt()
@@ -588,11 +583,8 @@ object Battle {
 
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
-            val resourceName = unique.params[2]
-            val resource = Stat.safeValueOf(resourceName) ?:
-            SubStat.safeValueOf(resourceName) ?:
-            attacker.getCivInfo().gameInfo.ruleset.tileResources[resourceName]
-            if (resource == null) continue
+            val resource = attacker.getCivInfo().gameInfo.ruleset.getGameResource(unique.params[2])
+                ?: continue
             attackerCiv.addGameResource(
                 resource,
                 unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()

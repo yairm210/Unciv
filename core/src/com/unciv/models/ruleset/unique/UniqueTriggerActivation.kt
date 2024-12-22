@@ -30,7 +30,6 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
@@ -561,9 +560,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeGainResource -> {
                 val resourceName = unique.params[1]
                 
-                val resource = Stat.safeValueOf(resourceName) ?:
-                SubStat.safeValueOf(resourceName) ?:
-                ruleset.tileResources[resourceName] ?: return null
+                val resource = ruleset.getGameResource(resourceName) ?: return null
                 if (resource is TileResource && !resource.isStockpiled) return null
 
                 return {
