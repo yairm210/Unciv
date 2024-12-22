@@ -1,3 +1,19 @@
+## 4.14.17
+
+perf (ANR): Only parse and sort civs in global politics table once
+
+Fix ANR caused by URL checking for Github URL with query
+
+Fix rare Android crash where we don't have permissions to copy external mods on app start
+
+Solve ANRs - play overlay music on another thread
+
+Add unique for increased improvement rates rather than decreased build times  - By SeventhM
+
+UI: various improvements mostly relating to centering and WorldScreenTopBar  - By Toxile
+
+Set Gzip compression level to `Deflater.BEST_COMPRESSION`  - By touhidurrr
+
 ## 4.14.16
 
 CPU performance improvements
