@@ -19,7 +19,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
@@ -146,8 +145,7 @@ open class TabbedPager(
         val button = IconTextButton(caption, icon, pager.headerFontSize, pager.headerFontColor).apply {
             name = caption // enable finding pages by untranslated caption without needing our own field
             setStyle(BaseScreen.skin.get("tab", Button.ButtonStyle::class.java))
-            if (icon != null)
-                if (iconSize != 0f) iconCell.size(iconSize)
+            if (icon != null && iconSize != 0f) iconCell.size(iconSize)
         }
         var buttonX = 0f
         var buttonW = 0f

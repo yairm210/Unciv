@@ -17,8 +17,8 @@
         "base-100": {"r": 0.769, "g": 0.788, "b": 0.863},
 
         "base-10-transparent": {"r": 0.086, "g": 0.098, "b": 0.145, "a": 0.925},
-        "base-20-transparent": {"r": 0.189, "g": 0.215, "b": 0.318, "a": 0.422},
-        "base-30-transparent": {"r": 0.241, "g": 0.273, "b": 0.405, "a": 0.422},
+        "base-20-transparent": {"r": 0.144, "g": 0.164, "b": 0.242, "a": 0.925},
+        "base-30-transparent": {"r": 0.189, "g": 0.215, "b": 0.318, "a": 0.925},
         "base-40-transparent": {"r": 0.241, "g": 0.273, "b": 0.405, "a": 0.925},
         "base-50-transparent": {"r": 0.296, "g": 0.336, "b": 0.498, "a": 0.925},
         "base-60-transparent": {"r": 0.354, "g": 0.403, "b": 0.596, "a": 0.925},
@@ -26,6 +26,9 @@
         "base-80-transparent": {"r": 0.549, "g": 0.586, "b": 0.732, "a": 0.925},
         "base-90-transparent": {"r": 0.658, "g": 0.686, "b": 0.797, "a": 0.925},
         "base-100-transparent": {"r": 0.769, "g": 0.788, "b": 0.863, "a": 0.925},
+
+        "base-20-transparent-stacked": {"r": 0.189, "g": 0.215, "b": 0.318, "a": 0.422},
+        "base-30-transparent-stacked": {"r": 0.241, "g": 0.273, "b": 0.405, "a": 0.422},
 
         "negative-40": { "hex": "#722d38" },
         "negative-50": { "hex": "#833440" },
@@ -36,8 +39,8 @@
         "primary-40": { "hex": "#3b6644" },
 
         "text-primary": { "hex": "#f4f4f4ff" },
-        "text-subdued": {"r": 0.686, "g": 0.733, "b": 0.918},
-        "text-interactive": {"r": 1, "g": 1, "b": 1},
+        "text-subdued": {"r": 0.769, "g": 0.788, "b": 0.863, "a": 0.675},
+        "text-interactive": { "hex": "#ffffffff" },
 
         "black": {"r": 0.024, "g": 0.027, "b": 0.035},
 
@@ -157,6 +160,15 @@
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
+        "base-container": {
+            "name": "layer-container",
+            "color": "base-10"
+        },
+        "base-container-transparent": {
+            "name": "layer-container",
+            "color": "base-10-transparent"
+        },
+
         "layer1-container": {
             "name": "layer-container",
             "color": "base-20"
@@ -165,6 +177,11 @@
             "name": "layer-container",
             "color": "base-20-transparent"
         },
+        "layer1-transparent-stacked-container": {
+            "name": "layer-container",
+            "color": "base-20-transparent-stacked"
+        },
+        
         "layer2-container": {
             "name": "layer-container",
             "color": "base-30"
@@ -172,6 +189,10 @@
         "layer2-transparent-container": {
             "name": "layer-container",
             "color": "base-30-transparent"
+        },
+        "layer2-transparent-container": {
+            "name": "layer-container",
+            "color": "base-30-transparent-stacked"
         },
 
         "button": {
@@ -365,11 +386,6 @@
             "name": "RoundedEdgeRectangle",
             "color": "base-60"
         },
-
-        "base-transparent": {
-            "name": "Rectangle",
-            "color": "base-10-transparent"
-        },
         "white": {
             "name": "Rectangle",
             "color": "white"
@@ -379,22 +395,26 @@
         "default": {
             "up": "button",
             "down": "button-down",
-            "over": "button-hover"
+            "over": "button-hover",
+            "disabled": "button-tab-disabled"
         },
         "main-menu": {
             "up": "button-main-menu",
             "down": "button-main-menu-down",
-            "over": "button-main-menu-hover"
+            "over": "button-main-menu-hover",
+            "disabled": "button-tab-disabled"
         },
         "tab": {
             "up": "button-tab",
             "down": "button-tab-down",
-            "over": "button-tab-hover"
+            "over": "button-tab-hover",
+            "disabled": "button-tab-disabled"
         },
         "tab-active": {
             "up": "button-tab-active",
             "down": "button-tab-active-down",
-            "over": "button-tab-active-hover"
+            "over": "button-tab-active-hover",
+            "disabled": "button-tab-disabled"
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
@@ -500,15 +520,6 @@
             "up": "button-negative",
             "down": "button-negative-pressed",
             "over": "button-negative-hover"
-        },
-        "disabled": {
-            "font": "button",
-            "fontColor": "text-primary",
-            "downFontColor": "text-primary",
-            "overFontColor": "text-primary",
-            "up": "button-disabled",
-            "down": "button-disabled",
-            "over": "button-disabled"
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {

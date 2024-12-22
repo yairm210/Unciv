@@ -52,26 +52,14 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
      *                  separate alpha value, it will be applied to a clone of either color.
      */
     fun getUiBackground(path: String, default: String? = null, tintColor: Color? = null): NinePatchDrawable {
-        val locationForDefault = skinLocation + default
-        val locationByName = skinLocation + path
         val skinVariant = skinConfig.skinVariants[path]
-        val locationByConfigVariant = if (skinVariant?.image != null) skinLocation + skinVariant.image else null
+        
         val tint = (skinVariant?.tint ?: skinConfig.defaultVariantTint ?: tintColor)?.run {
             if (skinVariant?.alpha == null) this
             else cpy().apply { a = skinVariant.alpha }
         }
         
-        val location = when {
-            locationByConfigVariant != null && ImageGetter.ninePatchImageExists(locationByConfigVariant) ->
-                locationByConfigVariant
-            ImageGetter.ninePatchImageExists(locationByName) ->
-                locationByName
-            default != null && ImageGetter.ninePatchImageExists(locationForDefault) ->
-                locationForDefault
-            else ->
-                null
-        }
-        
+        val location = getNinePatchLocation(path, default)
         if (location != null) {
             return ImageGetter.getNinePatch(location, tint)
         }
@@ -100,6 +88,33 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
         }
         return ImageGetter.getNinePatch(fallbackLocation, fallbackTint)
     }
+
+    /*
+     * Split-off from getUIBackground() to separately check
+     * whether a skin variant exists easier
+     */
+    fun getNinePatchLocation(path: String, default: String? = null): String? {
+        val locationForDefault = skinLocation + default
+        val locationByName = skinLocation + path
+        val locationByConfigVariant =
+            if (skinConfig.skinVariants[path]?.image != null)
+                skinLocation + skinConfig.skinVariants[path]!!.image
+            else null 
+
+        return when {
+            locationByConfigVariant != null && ImageGetter.ninePatchImageExists(locationByConfigVariant) ->
+                locationByConfigVariant
+            ImageGetter.ninePatchImageExists(locationByName) ->
+                locationByName
+            default != null && ImageGetter.ninePatchImageExists(locationForDefault) ->
+                locationForDefault
+            else ->
+                null
+        }
+    }
+
+    /* An alias for getNinePatchLocation that only cares for valid or null, and returns a Boolean */
+    fun ninePatchExists(path: String): Boolean = (getNinePatchLocation(path) != null)
 
     fun getUIColor(path: String, default: Color? = null) =
             skinConfig.skinVariants[path]?.tint

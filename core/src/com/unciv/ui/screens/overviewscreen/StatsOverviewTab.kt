@@ -11,6 +11,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toHeadingLabel
+import com.unciv.ui.components.extensions.setLayer
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.images.ImageGetter
@@ -22,16 +25,19 @@ class StatsOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
-    private val happinessTable = Table()
+    private val happinessTable = buildStatTable()
     private val unhappinessTable = UnhappinessTable()
-    private val goldAndSliderTable = Table()
-    private val goldTable = Table()
-    private val scienceTable = Table()
-    private val cultureTable = Table()
-    private val faithTable = Table()
-    private val greatPeopleTable = Table()
-    private val scoreTable = Table()
+    private val goldAndSliderTable: Table?
+    private val goldTable: Table
+    private val scienceTable = buildStatTable()
+    private val cultureTable = buildStatTable()
+    private val faithTable = buildStatTable()
+    private val greatPeopleTable = buildStatTable()
+    private val scoreTable = buildStatTable()
     private val isReligionEnabled = gameInfo.isReligionEnabled()
+
+    private val useGoldAndSliderTable =
+        gameInfo.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience)
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         overviewScreen.game.settings.addCompletedTutorialTask("See your stats breakdown")
@@ -39,28 +45,28 @@ class StatsOverviewTab(
     }
 
     init {
-        val tablePadding = 30f  // Padding around each of the stat tables
+        val tablePadding = Fonts.rem(1f)  // Padding between each of the stat tables
         defaults().pad(tablePadding).top()
 
-        happinessTable.defaults().pad(5f)
-        goldTable.defaults().pad(5f)
-        scienceTable.defaults().pad(5f)
-        cultureTable.defaults().pad(5f)
-        faithTable.defaults().pad(5f)
-        greatPeopleTable.defaults().pad(5f)
-        scoreTable.defaults().pad(5f)
         unhappinessTable.update()
 
-        goldAndSliderTable.add(goldTable).row()
-        if (gameInfo.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience))
+        if (useGoldAndSliderTable) {
+            goldAndSliderTable = buildStatTable()
+            goldTable = Table()
+            goldAndSliderTable.add(goldTable).row()
             goldAndSliderTable.addGoldSlider()
+        } else {
+            goldAndSliderTable = null
+            goldTable = buildStatTable()
+        }
 
         update()
 
         val allStatTables = sequence {
             yield(happinessTable)
             if (unhappinessTable.show) yield(unhappinessTable)
-            yield(goldAndSliderTable)
+            if (useGoldAndSliderTable) yield(goldAndSliderTable!!)
+            else yield(goldTable)
             yield(scienceTable)
             yield(cultureTable)
             if (isReligionEnabled) yield(faithTable)
@@ -102,17 +108,19 @@ class StatsOverviewTab(
         updateScoreTable()
     }
 
-    private fun Table.addHeading(label: String) {
-        clear()
-        add(label.toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
-        addSeparator()
+    private fun buildStatTable() = Table().apply {
+        setLayer()
+        pad(Fonts.rem(1f))
+        defaults().space(Fonts.rem(0.5f))
     }
+
     private fun Table.addLabeledValue(label: String, value: Float) {
         val roundedValue = value.roundToInt()
         if (roundedValue == 0) return
         add(label.toLabel(hideIcons = true)).left()
         add(roundedValue.toLabel()).right().row()
     }
+
     private fun Table.addTotal(value: Float) {
         add("Total".toLabel()).left()
         add(value.roundToInt().toLabel()).right()
@@ -120,7 +128,8 @@ class StatsOverviewTab(
     }
 
     private fun updateHappinessTable() = happinessTable.apply {
-        addHeading("Happiness")
+        add("Happiness".toHeadingLabel()).left()
+        addSeparator(colSpan = 2)
         val happinessBreakdown = viewingPlayer.stats.getHappinessBreakdown()
         for ((key, value) in happinessBreakdown)
             addLabeledValue(key, value)
@@ -133,7 +142,10 @@ class StatsOverviewTab(
         private val uniques: Set<Unique>
 
         init {
-            defaults().pad(5f)
+            defaults().space(Fonts.rem(0.5f))
+            pad(Fonts.rem(1f))
+            setLayer()
+
             uniques = sequenceOf(
                     UniqueType.ConditionalBetweenHappiness,
                     UniqueType.ConditionalBelowHappiness
@@ -149,8 +161,8 @@ class StatsOverviewTab(
             add(ImageGetter.getStatIcon("Malcontent"))
                 .size(Constants.headingFontSize.toFloat())
                 .right().padRight(1f)
-            add("Unhappiness".toLabel(fontSize = Constants.headingFontSize)).left()
-            addSeparator()
+            add("Unhappiness".toHeadingLabel()).left()
+            addSeparator(colSpan = 2)
 
             add(MarkupRenderer.render(
                 uniques.map { FormattedLine(it) },
@@ -161,7 +173,8 @@ class StatsOverviewTab(
     }
 
     private fun Table.updateStatTable(stat: Stat, statMap: StatMap) {
-        addHeading(stat.name)
+        add(stat.name.toHeadingLabel()).left()
+        addSeparator(colSpan = 2)
         var total = 0f
         for ((source, stats) in statMap) {
             addLabeledValue(source, stats[stat])

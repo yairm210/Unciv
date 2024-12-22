@@ -250,7 +250,11 @@ class NotificationsScroll(
             .height(coveredNotificationsTop * inverseScaleFactor)
         notificationsTable.row()
 
-        val backgroundDrawable = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
+        val backgroundDrawable
+            = BaseScreen.skinStrings.getUiBackground(
+                "WorldScreen/Notification",
+                BaseScreen.skinStrings.roundedEdgeRectangleShape,
+                tintColor = BaseScreen.skin.getColor("text-primary"))
 
         val orderedNotifications = (additionalNotification + notifications.asReversed())
             .groupBy { it.category }

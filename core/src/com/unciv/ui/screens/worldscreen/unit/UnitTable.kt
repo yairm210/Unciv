@@ -26,8 +26,8 @@ import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table() {
-    private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
-    private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
+    private val prevIdleUnitButton = IdleUnitButton(this, worldScreen.mapHolder, true)
+    private val nextIdleUnitButton = IdleUnitButton(this, worldScreen.mapHolder, false)
     private val unitIconHolder = Table()
     private val unitNameLabel = "".toLabel(fontSize = 24)
     private val unitIconNameGroup = Table()
@@ -76,22 +76,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         selectedUnitIsConnectingRoad = false
     }
 
-    private var bg = Image(
-        BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
-        BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-        BaseScreen.skin.getColor("base-40")))
-
-
     init {
-        pad(Fonts.rem(0.5f))
-        top().right()
-
         touchable = Touchable.enabled
-        setLayer(1, false)
-        //background = BaseScreen.skinStrings.getUiBackground(
-        //    "WorldScreen/UnitTable", BaseScreen.skinStrings.roundedEdgeRectangleMidShape
-        //)
-        addActor(bg)
+        setLayer(1, true, false, "WorldScreen/UnitTable")
 
         promotionsTable.touchable = Touchable.enabled
 
@@ -99,8 +86,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             selectUnit()
             worldScreen.shouldUpdate = true
             this@UnitTable.isVisible = false
-        }.surroundWithCircle(30f, resizeActor = false, color = BaseScreen.clearColor).surroundWithThinCircle(Color.WHITE)
-        deselectUnitButton.keyShortcuts.clear() // This is the only place we don't want the BACK keyshortcut getCloseButton assigns
+        }.surroundWithCircle(30f, resizeActor = false, color = BaseScreen.clearColor)
+            .surroundWithThinCircle(Color.WHITE)
+        // This is the only place we don't want the BACK keyshortcut getCloseButton assigns
+        deselectUnitButton.keyShortcuts.clear()
         addActor(deselectUnitButton)
 
         add(Table().apply {
@@ -125,8 +114,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 if (position != null)
                     worldScreen.mapHolder.setCenterPosition(position, immediately = false, selectUnit = false)
             }
-        }).expand()
+        })
 
+        setPosition(Fonts.rem(0.5f), Fonts.rem(0.5f))
     }
 
     fun update() {
@@ -308,8 +298,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         pack()
         deselectUnitButton.setPosition(width - deselectUnitButton.width*3/4, height - deselectUnitButton.height*3/4)
         deselectUnitButton.toFront()
-        bg.setSize(width-3f, height-3f)
-        bg.center(this)
+        //bg.setSize(width-3f, height-3f)
+        // bg.center(this)
         selectedUnitHasChanged = false
     }
 

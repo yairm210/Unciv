@@ -8,7 +8,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
-import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.ui.components.input.onClick
@@ -23,10 +23,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
     var selectedCiv = worldScreen.selectedCiv
 
     init {
-        background = BaseScreen.skinStrings.getUiBackground(
-            "WorldScreen/TileInfoTable",
-            tintColor = BaseScreen.skin.getColor("base-40")
-        )
+        setLayer(1, true, custom = "WorldScreen/TileInfoTable")
     }
 
     internal fun updateTileTable(tile: Tile?) {
@@ -47,7 +44,6 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         }
 
         pack()
-        addBorderAllowOpacity(1f, Color.WHITE)
     }
 
     private fun getStatsTable(tile: Tile): Table {

@@ -45,36 +45,15 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * Collection of extension functions mostly for libGdx widgets
  */
 
-private class RestorableTextButtonStyle(
-    baseStyle: TextButtonStyle,
-    val restoreStyle: ButtonStyle
-) : TextButtonStyle(baseStyle)
-
-//todo ButtonStyle *does* have a `disabled` Drawable, and Button ignores touches in disabled state anyway - all this is a wrong approach
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
-    touchable = Touchable.disabled
     isDisabled = true
-    val oldStyle = style
-    if (oldStyle is RestorableTextButtonStyle) return
-    val disabledStyle = BaseScreen.skin.get("disabled", TextButtonStyle::class.java)
-    style = RestorableTextButtonStyle(disabledStyle, oldStyle)
 }
 /** Enable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.enable() {
-    val oldStyle = style
-    if (oldStyle is RestorableTextButtonStyle) {
-        style = oldStyle.restoreStyle
-    }
     isDisabled = false
-    touchable = Touchable.enabled
 }
-/** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties,
- *  or returns the corresponding state.
- *
- *  Do not confuse with Gdx' builtin [isDisabled][Button.isDisabled] property,
- *  which is more appropriate to toggle On/Off buttons, while this one is good for 'click-to-do-something' buttons.
- */
+
 var Button.isEnabled: Boolean
     get() = touchable == Touchable.enabled
     set(value) = if (value) enable() else disable()
@@ -199,7 +178,7 @@ fun Group.addBorderAllowOpacity(size: Float, color: Color): Group {
 
 /** get background Image for a new separator */
 private fun getSeparatorImage(color: Color) = Image(ImageGetter.getWhiteDotDrawable().tint(
-    if (color.a != 0f) color else BaseScreen.skin.getColor("base-40") //0x334d80
+    if (color.a != 0f) color else BaseScreen.skin.getColor("base-40")
 ))
 
 /**
@@ -228,19 +207,29 @@ fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): C
 /**
  * Sets the background Drawable of a Table based on its layer in the hierarchy.
  * 0 is the true background and will have no effect if used.
- * For convenience, layer 1 is default.
+ *
+ * @param layer the layer, where 0 is the 2 is the topmost.
+ * @param transparent transparent layering, used for world-screen and some other effects.
+ * @param stacked when multiple transparent layers are used, set this to true to compensate for stacking.
+ * @param custom allows custom skins to override the layer background
+ * @return the table, for chaining
  */
-fun Table.setLayer(layer: Int = 1, transparent: Boolean = false): Table {
-    if (layer == 0)
-        if (!transparent) return this
-        else {
-            println("doing")
-            setBackground(BaseScreen.skin.getDrawable("base-transparent"))
-            return this
-        }
+fun Table.setLayer(
+    layer: Int = 1,
+    transparent: Boolean = false,
+    stacked: Boolean = false,
+    custom: String = ""
+): Table {
+    if (!custom.isBlank() && BaseScreen.skinStrings.ninePatchExists(custom)) {
+        BaseScreen.skinStrings.getUiBackground(custom, tintColor = BaseScreen.skin.getColor("base-20"))
+        return this
+    }
     setBackground(BaseScreen.skin.getDrawable(when (layer) {
-        1 -> if (!transparent) "layer1-container" else "layer1-transparent-container"
-        2 -> if (!transparent) "layer2-container" else "layer2-transparent-container"
+        0 -> if (!transparent) "base-container" else "base-container-transparent"
+        1 -> if (!transparent) "layer1-container"
+            else if (!stacked) "layer1-transparent-container" else "layer1-transparent-stacked-container"
+        2 -> if (!transparent) "layer2-container"
+            else if (!stacked) "layer2-transparent-container" else "layer2-transparent-stacked-container"
         else -> "layer1-container"
     }))
     return this
