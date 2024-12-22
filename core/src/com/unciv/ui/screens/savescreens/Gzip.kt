@@ -5,23 +5,17 @@ import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
-import java.util.zip.Deflater
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-
 
 object Gzip {
 
     fun zip(data: String): String = encode(compress(data))
-    fun unzip(data: String): String = decompress(decode(data))
+    fun unzip(data: String): String  = decompress(decode(data))
 
     private fun compress(data: String): ByteArray {
         val bos = ByteArrayOutputStream(data.length)
-        val gzip = object : GZIPOutputStream(bos) {
-            init {
-                def.setLevel(Deflater.BEST_COMPRESSION)
-            }
-        }
+        val gzip = GZIPOutputStream(bos)
         gzip.write(data.toByteArray())
         gzip.close()
         val compressed = bos.toByteArray()
