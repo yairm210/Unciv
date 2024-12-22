@@ -220,6 +220,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             if (!stat.isStockpiled) return
             if (!stat.isCityWide) civ.gainStockpiledResource(stat.name, amount)
             else { /*TODO*/ }
+            return
         }
         when (stat) {
             Stat.Production -> cityConstructions.addProductionPoints(amount)
