@@ -630,8 +630,10 @@ class MusicController {
         isLooping: Boolean = false,
         fadeIn: Boolean = false
     ) {
-        val file = getMatchingFiles(folder, name).firstOrNull() ?: return
-        playOverlay(file, volume, isLooping, fadeIn)
+        Concurrency.run { // no reason for this to run on GL thread
+            val file = getMatchingFiles(folder, name).firstOrNull() ?: return@run
+            playOverlay(file, volume, isLooping, fadeIn)
+        }
     }
 
     /** Called for Leader Voices */

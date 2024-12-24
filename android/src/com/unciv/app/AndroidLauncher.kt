@@ -11,6 +11,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import java.io.File
+import java.lang.Exception
 
 open class AndroidLauncher : AndroidApplication() {
 
@@ -65,9 +66,11 @@ open class AndroidLauncher : AndroidApplication() {
         val externalPath = getExternalFilesDir(null)?.path ?: return
         val externalModsDir = File("$externalPath/mods")
 
-        // Copy external mod directory (with data user put in it) to internal (where it can be read)
-        if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
-        if (externalModsDir.exists()) externalModsDir.copyRecursively(internalModsDir, true)
+        try { // Rarely we get a kotlin.io.AccessDeniedException, if so - no biggie
+            // Copy external mod directory (with data user put in it) to internal (where it can be read)
+            if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
+            if (externalModsDir.exists()) externalModsDir.copyRecursively(internalModsDir, true)
+        } catch (ex: Exception) {}
     }
 
     override fun onPause() {

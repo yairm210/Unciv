@@ -1,16 +1,19 @@
 
 # Croatian translation notes
 
-Notes about grammar, transliteration, orthography, consistent use of words, links, hints etc</br>
+Notes about grammar, transliteration, orthography, consistent use of words, links, hints etc.</br>
 This document provides short hints only for Croatian translation and is by no means a complete guide.
 
+## Table of Contents
+
 - [Croatian translation notes](#croatian-translation-notes)
+  - [Table of Contents](#table-of-contents)
   - [Tricky English words and translation of words](#tricky-english-words-and-translation-of-words)
     - [Resolved Translation](#resolved-translation)
     - [Unresolved Translation](#unresolved-translation)
     - [Wording Consistency](#wording-consistency)
-    - [Untranslated](#untranslated)
-  - [Grammar Translation Consistency](#grammar-translation-consistency)
+    - [Untranslated words](#untranslated-words)
+  - [Grammar and translation consistency](#grammar-and-translation-consistency)
     - [Formal and informal forms](#formal-and-informal-forms)
     - [Grammatical gender](#grammatical-gender)
     - [Other grammar](#other-grammar)
@@ -23,13 +26,15 @@ This document provides short hints only for Croatian translation and is by no me
     - [Unresolved gender](#unresolved-gender)
     - [Gender not applicable](#gender-not-applicable)
   - [City names](#city-names)
-    - [English cities](#english-cities)
-    - [Countries using Latin letter](#countries-using-latin-letter)
-    - [Cyrillic city names](#cyrillic-city-names)
-    - [Other letters](#other-letters)
-    - [Unknown](#unknown)
-    - [Resources](#resources)
-    - [Gotcha's](#gotchas)
+    - [Cities written in English](#cities-written-in-english)
+    - [Cities written in Latin letter](#cities-written-in-latin-letter)
+    - [Cities written in Cyrillic letter](#cities-written-in-cyrillic-letter)
+    - [Cities written in other letters](#cities-written-in-other-letters)
+    - [Unknown letter](#unknown-letter)
+  - [Resources](#resources)
+    - [Hints](#hints)
+    - [Links](#links)
+  - [Gotcha's](#gotchas)
 
 ## Tricky English words and translation of words
 
@@ -100,13 +105,15 @@ Words outside brackets are hints as to when highlighted word should be used.
 TODO: Might need better translation!
 
 - Paradrop `Skok padobranom`
-- Hotseat `Lokalna više-korisnička igra`, `Lokalna igra više igrača` (Više-korisnička igra, igra više igrača)
-- Stats `Statistike`
-- Tile Damage `Šteta od polja`, (Poljska šteta)
+- Hotseat `Lokalna više-korisnička igra`, `Lokalna igra više igrača` (Više-korisnička igra, Igra više igrača)
+- Stats `Statistike` (Prinosi)
+- Tile Damage `Šteta od polja`, (Poljska šteta, Poljna šteta)
+- Melee Water `Bliska Borba na Vodi`
+- WaterMelee `BliskaBorbaNaVodi`
 
 ### Unresolved Translation
 
-Not yet translated words, mostly because no sane translation exits to Croatian language
+Not yet translated words, mostly because no sane translation exits to Croatian language.
 
 - None
 
@@ -157,8 +164,14 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Needed `Potrebno`
 - Request `Zamolba`, `Molba`, `Tražiti`
 - Willing(ness) `Voljni`, `Voljnost`
+- non-fresh water `morska voda`, `slana voda`
+- Scout `Izviđač`
+- Explorer `Istraživač`
+- Cancel `Poništi`, `Otkaži` (Ukini)
+- Choose `Odaberi`, `Izaberi`
+- Select `Odaberi` (Izaberi)
 
-### Untranslated
+### Untranslated words
 
 Where needed, deliberately not translated due to UI size limitations,
 shorter synonymous word is used instead in these cases.
@@ -166,7 +179,7 @@ shorter synonymous word is used instead in these cases.
 - AI `Robot`, `Umjetna inteligencija`
 
 Deliberately not translated because translation is for informational purposes only,
-in official Croatian language these are written in their original form but read differently.
+in official Croatian language these are written in their original form but are pronounced differently.
 
 - Angkor Wat (Gradski Hram)
 - Chichen Itza (Na zdencu čarobnjaka vode)
@@ -174,7 +187,7 @@ in official Croatian language these are written in their original form but read 
 - Wat (Hram)
 - Notre Dame (Naše Gospe)
 
-Deliberately not translated because these words retain their writting even though pronounced
+Deliberately not translated because these names retain their writing even though pronounced
 differently.
 
 - Wu Zetian
@@ -192,37 +205,44 @@ Borrowed translation because no translation exists
 
 - Hakkapeliitta
 
-## Grammar Translation Consistency
+[Table of Contents](#table-of-contents)
 
-Section outlining what is to be continuously checked for consistency
+## Grammar and translation consistency
+
+Section outlining what is to be continuously checked for consistency,
+e.g. trough gameplay or by revisiting properties file.
 
 ### Formal and informal forms
 
 Use of formal form:
 
 - In Civilopedia
-- When the game asks/tells something from/to player
+- When the game/gameplay asks/tells something from/to player
 - Victory screen and victory conditions
 
 Use of informal form:
 
-- In diplomacy
+- In diplomacy, both major and minor civs and quests of city states
 - Nation introduction during new game
 - When the player gives orders to game
-- Technology proverbs
-- When the gameplay asks/tells something from/to player
+- Technology and great building proverbs
+- New game screen lines
+- Map editor lines
+- Multiplayer screen lines
+- World Screen UI lines
+- City Screen lines
+- Technology UI lines
 
-Exceptions:
+Exceptions (use sparingly to retain consistency):
 
 - Use formal form where appropriate to avoid grammatical gender
 - Use formal form where appropriate to simplify grammar
-
-TODO: Use formal form for gameplay to simplify grammar and to avoid grammatical gender
+- Switch from formal or informal form where appropriate to make it sound more natural or consistent, e.g. UI prompt
 
 Examples (formal vs informal):
 
 - Vi vs Ti
-- Vas vs Tebe
+- Vas vs Tebe, te
 - Vama vs Tebi
 - Vam vs Ti
 - Vaš vs Tvoj
@@ -230,16 +250,24 @@ Examples (formal vs informal):
 - Vašeg vs Tvojeg
 - Vašu vs Tvoju
 - Vašom vs Tvojom
+- Vašoj vs Tvojoj
 - Vaši vs Tvoji
 - Vaše vs Tvoje
+- Ćete vs Ćeš
 
-- `*ite` vs - `*iš`, `*di`, `*ži`, `*ri`, `*zi`, `*ni`, `*ij` etc.
+- `*ite`, `*jeli` vs - `*iš` (e.g Želite, Željeli etc.)
+- `*ite` vs - `*di`, `*ži`, `*ri`, `*zi`, `*ni`, `*ti`, `*ji`, `*si` etc.
 - `*ajte` vs `*aj`
 - `*ete` vs `*eš`
-- `*ijte` vs - `*iješ`, `*ij` (Dobij etc.)
-- `*ate` vs - `*aš` (Trebate, Morate, Dobivate etc.)
-- `*jeli` vs - `*iš` (Željeli etc.)
-- `*ili` vs - `*io/*la` (Prekršili etc.)
+- `*ijte` vs - `*iješ`, `*ij` (e.g Dobij etc.)
+- `*ate` vs - `*aš` (e.g Trebate, Morate, Dobivate etc.)
+- `*ili` vs - `*io`, `*la` (e.g Prekršili etc.)
+
+Use regex for quick find, e.g. for `*iš`:
+
+```regex
+\w+iš
+```
 
 ### Grammatical gender
 
@@ -257,7 +285,7 @@ Examples:
 - Njihovim vs Njihovom
 - Njihovog vs Njihove
 
-- `(a)`, `(la)`, `(ica)`, `(ice)`, `(kinjo)`, `(icom)`, `(jela)`, `(na)`, `(om)`, `(icom)`
+- `(a)`, `(la)`, `(ica)`, `(ice)`, `(kinjo)`, `(icom)`, `(jela)`, `(na)`, `(om)`, `(icom)` (All feminine)
 - `*io`, `*la`
 
 Exceptions:
@@ -268,35 +296,40 @@ Exceptions:
 
 Correct vs incorrect
 
-- Trenutačno vs Trenutno
+- Trenutačno vs Trenutno (Are two different meanings)
 - Molim vs Molimo
-- Ne može vs nemože
-- Ne smije vs nesmije
-- s vs sa
+- Ne može vs Nemože
+- Ne smije vs Nesmije
+- s vs sa (Depends on orthography)
 - s `[` vs sa `[`
-- Unikat vs Unikatno/i
+- Unikat vs Unikatno/i (Depends on context)
 - Check for double spaces
+
+[Table of Contents](#table-of-contents)
 
 ## Placeholder genders
 
-When grammatical gender is needed we use majority gender of a placeholder.</br>
-`not applicable` subsection, means a placeholder has gender but is not needed or used in translation
+When grammatical gender around a placeholder is needed we use majority gender of the placeholder.</br>
+"not applicable" subsection, means a placeholder has gender but is not needed or used in translation.
 
 ### Feminine
 
 - [year]
 - [nation]
-- [civName] (masculine if it's city state name)
+- [civName] (Masculine if it's city state name)
 - [civNames]
 - [otherCiv]
 - [otherCivName]
 - [civFilter]
 - [currentPlayerCiv]
 - [unitType]
+- [civ], [civ1], [civ2]
 
-Feminine but not applicable
+Feminine but not applicable:
 
 - [feature]
+- [allyCivName]
+- [enemyCivName]
 
 ### Masculine
 
@@ -329,10 +362,11 @@ Feminine but not applicable
 - [turnsToExpansion]
 - [promotion]
 
-Masculine but not applicable
+Masculine but not applicable:
 
 - [difficulty]
 - [combatantFilter]
+- [populationFilter]
 
 ### Third gender
 
@@ -344,7 +378,7 @@ Masculine but not applicable
 
 ### Mixed gender
 
-Use 3rd gender in translation
+Use 3rd gender in translation:
 
 - [wonder]
 - [buildingName]
@@ -362,9 +396,12 @@ Use 3rd gender in translation
 - [techName]
 - [technologyName]
 - [building]
+
+Mixed but use 3rd and masculine gender (depending on context) but not feminine:
+
 - [nukeType]
 
-Mixed and not applicable
+Mixed but not applicable:
 
 - [terrain]
 - [terrainName]
@@ -372,6 +409,8 @@ Mixed and not applicable
 - [Stats]
 
 ### Guess gender
+
+Try to guess gender depending on context:
 
 - [baseUnitFilter]
 - [civWideStat]
@@ -381,12 +420,9 @@ Mixed and not applicable
 
 ### Unresolved gender
 
-TODO: Which gender are these?
-TODO: There are more filters
+TODO: Which gender are these?</br>
+TODO: There are more placeholders in properties not handled here.
 
-- [thingToProduce]
-- [thingToSelect]
-- [populationFilter]
 - [costOrStrength]
 - [param]
 
@@ -407,14 +443,18 @@ TODO: There are more filters
 - [title]
 - [naturalWonder]
 - [name]
+- [thingToProduce]
+- [thingToSelect]
+
+[Table of Contents](#table-of-contents)
 
 ## City names
 
-TODO: Orthography and transliteration of city and person names is partially correct and done on best effort.
+TODO: Orthography and transliteration of city and person names is based on [Resources](#resources) and needs further checks.
 
 City names might have Croatian translation, if not the following rules apply:
 
-### English cities
+### Cities written in English
 
 English city names retain their English writing
 
@@ -422,7 +462,7 @@ English city names retain their English writing
 - America
 - Celts
 
-### Countries using Latin letter
+### Cities written in Latin letter
 
 City names are written the same as in origin language.</br>
 For cities of native Americans the language and letter of their conquerors is used.
@@ -441,7 +481,7 @@ For cities of native Americans the language and letter of their conquerors is us
 - Inca
 - The Maya
 
-### Cyrillic city names
+### Cities written in Cyrillic letter
 
 Cities are written the same as in origin language, Cyrillic letter is simply converted to Latin letter,
 taking care about pronunciation.
@@ -449,9 +489,9 @@ taking care about pronunciation.
 - Russia
 - Mongolia
 
-### Other letters
+### Cities written in other letters
 
-Cities written in letter other than Latin or Cyrillic follow transliteration rules
+Cities written in letter other than Latin or Cyrillic follow transliteration rules.
 
 - Babylon
 - Greece
@@ -463,27 +503,36 @@ Cities written in letter other than Latin or Cyrillic follow transliteration rul
 - Korea
 - Persia
 - Siam
-
-### Unknown
-
-TODO: Which letter was historically used by these? classify them.
-
-- Polynesia
-- Songhai
-- The Huns
 - Carthage
-- Byzantium
+- Songhai
 - Ethiopia
 
-### Resources
+### Unknown letter
 
-The following resources were helpful for translation of cities and personal names
+TODO: Which letter was historically used by these? classify them and verify transliteration of cities.
+
+- Polynesia
+- The Huns
+- Byzantine empire
+
+[Table of Contents](#table-of-contents)
+
+## Resources
+
+The following resources were helpful for translation of cities and personal names:
+
+### Hints
 
 - wikipedia
-- google maps in local language first (origin country of a city), and Croatian language if local language letter is not Latin
+- google maps in local language first (origin country of a city), google maps in Croatian language if local language
+  letter is not Latin
 - search engines
 - The Bible (e.g. Babylonian and Egyptian cities)
 - Country local lexicons
+- Deep web
+
+### Links
+
 - [Strana osobna i zemljopisna imena](https://jezicni-savjeti.com.hr/strana-osobna-i-zemljopisna-imena/)
 - [Pisanje stranih imena](https://www.lektire.hr/pisanje-stranih-imena/)
 - [Pisanje stranih imena](https://sjedi5.com/pisanje-stranih-imena/)
@@ -495,9 +544,11 @@ The following resources were helpful for translation of cities and personal name
 - [Geek pravopis](https://geek.hr/pravopis/)
 - [Encyclopedia Iranica](https://iranicaonline.org/)
 
-### Gotcha's
+[Table of Contents](#table-of-contents)
 
-- Some city names have modern names, we should retain historical names and not use modern ones
+## Gotcha's
+
+- Some city names have modern names, we should retain historical names and not use modern ones.
 
 - Borrowed translation should be get rid of non Croatian letters and combinations of letters like:
   W, Y, CH, SH, replacing them with: V, J, Č, Š etc. but only if that's orthographically correct and
@@ -505,3 +556,5 @@ The following resources were helpful for translation of cities and personal name
 
 - Note that other slavic countries like Serbia, Macedonia, Slovakia etc. use different transliteration
   rules so they're not appropriate for translation but exceptions exist that can help. (e.g by using wikipedia)
+
+[Table of Contents](#table-of-contents)

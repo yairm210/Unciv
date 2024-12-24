@@ -582,6 +582,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "Can build [improvementFilter] improvements at a [relativeAmount]% rate"
+	Example: "Can build [All Road] improvements at a [+20]% rate"
+
+	Applicable to: Global, Unit
+
 ??? example  "Gain a free [buildingName] [cityFilter]"
 	Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building
 	Example: "Gain a free [Library] [in all cities]"
@@ -1603,6 +1608,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
 	Example: "[+20]% construction time for [All Road] improvements"
+
+	Applicable to: Global, Unit
+
+??? example  "Can build [improvementFilter] improvements at a [relativeAmount]% rate"
+	Example: "Can build [All Road] improvements at a [+20]% rate"
 
 	Applicable to: Global, Unit
 

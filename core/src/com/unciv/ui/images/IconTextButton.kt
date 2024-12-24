@@ -7,8 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
+import kotlin.math.floor
+import kotlin.math.ceil
 
 /**
  * Translate a [String] and make a [Button] widget from it, with control over font size, font colour, an optional icon, and custom formatting.
@@ -32,10 +35,15 @@ open class IconTextButton(
             val size = fontSize.toFloat()
             icon.setSize(size, size)
             icon.setOrigin(Align.center)
-            add(icon).size(size).padRight(size / 3)
+            add(icon).size(size).padRight(size / 3.0f)
         } else {
-            add()
+            add().padRight(fontSize / 2f)
         }
     /** Table cell instance containing the [label]. */
     val labelCell: Cell<Label> = add(label)
+
+    init {
+        pad(10f)
+        labelCell.padTop(10f - Fonts.getDescenderHeight(fontSize));
+    }
 }

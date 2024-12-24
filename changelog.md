@@ -1,3 +1,18 @@
+## 4.14.17
+
+Fixed ANRs for:
+- URL checking for Github URL with query
+- Global politics table
+- Playing overlay music in city screen
+
+Flank attack unique works with 'vs' conditionals
+
+Fix rare Android crash where we don't have permissions to copy external mods on app start
+
+Add unique for increased improvement rates rather than decreased build times  - By SeventhM
+
+UI: various improvements mostly relating to centering and WorldScreenTopBar  - By Toxile
+
 ## 4.14.16
 
 CPU performance improvements

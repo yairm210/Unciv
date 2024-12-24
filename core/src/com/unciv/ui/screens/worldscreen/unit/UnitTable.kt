@@ -304,6 +304,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         pack()
         deselectUnitButton.setPosition(width - deselectUnitButton.width*3/4, height - deselectUnitButton.height*3/4)
+        deselectUnitButton.toFront()
         bg.setSize(width-3f, height-3f)
         bg.center(this)
         selectedUnitHasChanged = false

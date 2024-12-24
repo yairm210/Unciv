@@ -84,7 +84,7 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
         val yearText = YearTextUtil.toYearText(
             civInfo.gameInfo.getYear(), civInfo.isLongCountDisplay()
         )
-        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns.tr() + " | " + yearText)
+        turnsLabel.setText(Fonts.turn + " " + civInfo.gameInfo.turns.tr() + " | " + yearText)
 
         resourcesWrapper.clearChildren()
         val civResources = civInfo.getCivResourcesByName()
