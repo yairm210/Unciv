@@ -33,8 +33,8 @@ object DeclareWar {
 
         notifyOfWar(diplomacyManager, declareWarReason)
 
-        onWarDeclared(diplomacyManager, true)
-        onWarDeclared(otherCivDiplomacy, false)
+        onWarDeclared(diplomacyManager, true, declareWarReason.warType)
+        onWarDeclared(otherCivDiplomacy, false, declareWarReason.warType)
 
         changeOpinions(diplomacyManager, declareWarReason)
 
@@ -127,7 +127,7 @@ object DeclareWar {
     }
 
     /** Everything that happens to both sides equally when war is declared by one side on the other */
-    private fun onWarDeclared(diplomacyManager: DiplomacyManager, isOffensiveWar: Boolean) {
+    private fun onWarDeclared(diplomacyManager: DiplomacyManager, isOffensiveWar: Boolean, warType: WarType) {
         // Cancel all trades.
         for (trade in diplomacyManager.trades)
             for (offer in trade.theirOffers.filter { it.duration > 0 && it.name != Constants.defensivePact})
@@ -147,10 +147,11 @@ object DeclareWar {
             removeDefensivePacts(diplomacyManager)
         }
         diplomacyManager.diplomaticStatus = DiplomaticStatus.War
-
+        
+        // Defensive pact chains are not allowed now
         if (diplomacyManager.civInfo.isMajorCiv()) {
-            if (!isOffensiveWar && !civAtWarWith.isCityState)
-                callInDefensivePactAllies(diplomacyManager)
+            if (!isOffensiveWar && warType != WarType.DefensivePactWar && !civAtWarWith.isCityState)
+                callInDefensivePactAllies(diplomacyManager)                
             callInCityStateAllies(diplomacyManager)
         }
 

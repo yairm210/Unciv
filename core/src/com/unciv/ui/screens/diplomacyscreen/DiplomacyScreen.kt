@@ -282,20 +282,22 @@ class DiplomacyScreen(
             && otherCivDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
             && !otherCivDiploManager.otherCiv().isAtWarWith(viewingCiv) }
             .map { it.otherCiv() }.toMutableList()
-        // Go through and find all of the defensive pact chains and add them to the list
-        var listIndex = 0
-        while (listIndex < otherCivDefensivePactList.size) {
-            messageLines += if (viewingCiv.knows(otherCivDefensivePactList[listIndex]))
-                "[${otherCivDefensivePactList[listIndex].civName}] will also join them in the war"
-            else "An unknown civilization will also join them in the war"
-
-            // Add their defensive pact allies
-            otherCivDefensivePactList.addAll(otherCivDefensivePactList[listIndex].diplomacy.values
-                .filter { diploChain -> diploChain.diplomaticStatus == DiplomaticStatus.DefensivePact
-                    && !otherCivDefensivePactList.contains(diploChain.otherCiv())
-                    && diploChain.otherCiv() != viewingCiv && diploChain.otherCiv() != otherCiv
-                    && !diploChain.otherCiv().isAtWarWith(viewingCiv) }
-                .map { it.otherCiv() })
+            
+            // Defensive pact chains are not allowed now
+            var listIndex = 0
+            while (listIndex < otherCivDefensivePactList.size) {
+                messageLines += if (viewingCiv.knows(otherCivDefensivePactList[listIndex]))
+                    "[${otherCivDefensivePactList[listIndex].civName}] will also join them in the war"
+                else "An unknown civilization will also join them in the war"
+                /*
+                // Add their defensive pact allies
+                otherCivDefensivePactList.addAll(otherCivDefensivePactList[listIndex].diplomacy.values
+                    .filter { diploChain -> diploChain.diplomaticStatus == DiplomaticStatus.DefensivePact
+                        && !otherCivDefensivePactList.contains(diploChain.otherCiv())
+                        && diploChain.otherCiv() != viewingCiv && diploChain.otherCiv() != otherCiv
+                        && !diploChain.otherCiv().isAtWarWith(viewingCiv) }
+                    .map { it.otherCiv() })
+                */
             listIndex++
         }
 
