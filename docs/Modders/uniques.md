@@ -983,18 +983,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]"
-	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]"
+	Example: "Earn [3]% of the damage done to [City] units as [Mana]"
 
 	Applicable to: Global, Unit
 
-??? example  "Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately"
-	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Gold] immediately"
+??? example  "Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately"
+	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Mana] immediately"
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]"
-	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Gold]"
+??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
 
@@ -1389,8 +1389,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
-??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion"
-	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
+??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion"
+	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Mana] when killed within 4 tiles of a city following this religion"
 
 	Applicable to: FollowerBelief
 
@@ -1978,18 +1978,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]"
-	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]"
+	Example: "Earn [3]% of the damage done to [City] units as [Mana]"
 
 	Applicable to: Global, Unit
 
-??? example  "Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately"
-	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Gold] immediately"
+??? example  "Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately"
+	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Mana] immediately"
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]"
-	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Gold]"
+??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
 

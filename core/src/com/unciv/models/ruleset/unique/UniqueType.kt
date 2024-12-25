@@ -910,20 +910,7 @@ enum class UniqueType(
 
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.MetaModifier,
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
-
     
-    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when [victoryType] Victory is enabled>"))
-    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
-
-    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when religion is enabled>"))
-    HiddenWithoutReligion("Hidden when religion is disabled",
-        UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
-        flags = UniqueFlag.setOfHiddenToUsers),
-    
-    @Deprecated("As of 4.13.19", ReplaceWith("Only available <when espionage is enabled>"))
-    HiddenWithoutEspionage("Hidden when espionage is disabled", UniqueTarget.Building,
-        flags = UniqueFlag.setOfHiddenToUsers),
-
     AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
         UniqueTarget.Promotion, UniqueTarget.Policy, flags = UniqueFlag.setOfHiddenToUsers),
     
@@ -970,6 +957,13 @@ enum class UniqueType(
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
+
+    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when [victoryType] Victory is enabled>"), DeprecationLevel.ERROR)
+    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
+    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when religion is enabled>"), DeprecationLevel.ERROR)
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial, flags = UniqueFlag.setOfHiddenToUsers),
+    @Deprecated("As of 4.13.19", ReplaceWith("Only available <when espionage is enabled>"), DeprecationLevel.ERROR)
+    HiddenWithoutEspionage("Hidden when espionage is disabled", UniqueTarget.Building, flags = UniqueFlag.setOfHiddenToUsers),
     @Deprecated("As of 4.13.15", ReplaceWith("for [civFilter] Civilizations"), DeprecationLevel.ERROR)
     ConditionalCivFilterOld("for [civFilter]", UniqueTarget.Conditional),
     @Deprecated("As of 4.13.2", ReplaceWith("[This Unit] gains [amount] movement"), DeprecationLevel.ERROR)

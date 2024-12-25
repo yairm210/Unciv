@@ -565,7 +565,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
-    /** Used by [UniqueType.HiddenWithoutVictoryType], implementation in Civilopedia, OverviewScreen and to exclude e.g. from Quests */
+    /** Used by [UniqueType.ConditionalVictoryEnabled], implementation in Civilopedia, OverviewScreen and to exclude e.g. from Quests */
     VictoryT("victoryType",
         "Domination", "The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names"
     ) {

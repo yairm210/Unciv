@@ -1,16 +1,14 @@
 ## 4.14.18
 
-undo
+Performance - Faster map update on click
 
-Cache edge images for faster update()s on all tilegroups (e.g. unit click)
-
-Resolved  - "close unit table" button does not cycle units
+"close unit table" button does not cycle units
 
 By SeventhM:
 - Allow stat from battle uniques to also give stockpiles 
 - Fix gaining resources twice when it is gained from a city 
 
-By czyh2022:
+By czyh2022 (NEW!):
 - Allow civs to trade with each other before settling their first cities 
 - Delete duplicate trade denied message 
 - Cancel the chain reaction of defense pact 
