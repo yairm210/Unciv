@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 object AirUnitAutomation {
 
     fun automateFighter(unit: MapUnit) {
-        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+        if (unit.health <= 75) return // Wait and heal
 
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
         // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
@@ -90,7 +90,7 @@ object AirUnitAutomation {
     }
 
     fun automateBomber(unit: MapUnit) {
-        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+        if (unit.health <= 75) return // Wait and heal
 
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
