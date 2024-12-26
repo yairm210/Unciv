@@ -502,7 +502,7 @@
 	{
 		"name": "Air Targeting I",
 		"prerequisites": ["Interception I","Siege I","Bombardment I","Dogfighting I"],
-		"uniques": ["[+33]% Strength <vs [Water] units>"],
+		"uniques": ["[+33]% Strength <vs [Water] units>", "[-99]% weight to this choice for AI decisions"],
 		"unitTypes": ["Fighter","Bomber"],
         "column": 20,
         "row": 1
@@ -519,7 +519,7 @@
 	{
 		"name": "Sortie",
 		"prerequisites": ["Interception II", "Dogfighting II"],
-		"uniques": ["[1] extra interceptions may be made per turn"],
+		"uniques": ["[1] extra interceptions may be made per turn", "[-100]% weight to this choice for AI decisions"],
 		"unitTypes": ["Fighter"],
         "column": 21,
         "row": 2
