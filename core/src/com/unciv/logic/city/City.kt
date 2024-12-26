@@ -212,6 +212,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
     
     fun gainStockpiledResource(resourceName: String, amount: Int) {
+        
         resourceStockpiles.add(resourceName, amount)
     }
 
@@ -253,6 +254,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (stat is TileResource) {
             if (!stat.isStockpiled) return 0
             if (stat.isCityWide) return resourceStockpiles[stat.name]
+            else return civ.resourceStockpiles[stat.name]
         }
         return when (stat) {
             Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
