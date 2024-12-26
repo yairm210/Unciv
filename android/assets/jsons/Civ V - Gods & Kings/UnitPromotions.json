@@ -528,7 +528,7 @@
 	{
 		"name": "Operational Range",
 		"prerequisites": ["Interception I", "Dogfighting I", "Siege I", "Bombardment I"],
-		"uniques": ["[+33]% Strength <vs cities>", "[-50]% weight to this choice for AI decisions"],
+		"uniques": ["[+33]% Strength <vs cities>", "[-90]% weight to this choice for AI decisions"],
 		"uniques": ["[+2] Range", ],
 		"unitTypes": ["Fighter","Bomber"],
         "column": 21,
