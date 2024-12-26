@@ -502,7 +502,7 @@
 	{
 		"name": "Air Targeting I",
 		"prerequisites": ["Interception I","Siege I","Bombardment I","Dogfighting I"],
-		"uniques": ["[+33]% Strength <vs [Water] units>", "[-99]% weight to this choice for AI decisions"],
+		"uniques": ["[+33]% Strength <vs [Water] units>", "[-100]% weight to this choice for AI decisions"],
 		"unitTypes": ["Fighter","Bomber"],
         "column": 20,
         "row": 1
