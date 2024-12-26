@@ -446,7 +446,7 @@
 	{
 		"name": "Evasion",
 		"prerequisites": ["Siege II", "Bombardment II"],
-		"uniques": ["Damage taken from interception reduced by [50]%"],
+		"uniques": ["Damage taken from interception reduced by [50]%", "[+200]% weight to this choice for AI decisions"],
 		"unitTypes": ["Bomber"],
         "column": 17,
         "row": 4
