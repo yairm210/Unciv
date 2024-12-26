@@ -281,22 +281,15 @@ class DiplomacyScreen(
             otherCivDiploManager -> otherCivDiploManager.otherCiv() != viewingCiv
             && otherCivDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
             && !otherCivDiploManager.otherCiv().isAtWarWith(viewingCiv) }
-            .map { it.otherCiv() }.toMutableList()
-        // Go through and find all of the defensive pact chains and add them to the list
-        var listIndex = 0
-        while (listIndex < otherCivDefensivePactList.size) {
-            messageLines += if (viewingCiv.knows(otherCivDefensivePactList[listIndex]))
-                "[${otherCivDefensivePactList[listIndex].civName}] will also join them in the war"
-            else "An unknown civilization will also join them in the war"
+            .map { it.otherCiv() }
 
-            // Add their defensive pact allies
-            otherCivDefensivePactList.addAll(otherCivDefensivePactList[listIndex].diplomacy.values
-                .filter { diploChain -> diploChain.diplomaticStatus == DiplomaticStatus.DefensivePact
-                    && !otherCivDefensivePactList.contains(diploChain.otherCiv())
-                    && diploChain.otherCiv() != viewingCiv && diploChain.otherCiv() != otherCiv
-                    && !diploChain.otherCiv().isAtWarWith(viewingCiv) }
-                .map { it.otherCiv() })
-            listIndex++
+        // Defensive pact chains are not allowed now
+        for (civ in otherCivDefensivePactList) {
+            messageLines += if (viewingCiv.knows(civ)) {
+                "[${civ.civName}] will also join them in the war"
+            } else {
+                "An unknown civilization will also join them in the war"
+            }
         }
 
         // Tell the player that their defensive pacts will be canceled.
