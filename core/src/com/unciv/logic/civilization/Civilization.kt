@@ -866,7 +866,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun addGameResource(stat: GameResource, amount: Int) {
-        if (stat is TileResource && !stat.isCityWide && stat.isStockpiled) gainStockpiledResource(stat.name, amount)
+        if (stat is TileResource && stat.isStockpiled) gainStockpiledResource(stat.name, amount)
         when (stat) {
             Stat.Culture -> { policies.addCulture(amount)
                 if (amount > 0) totalCultureForContests += amount }
@@ -879,6 +879,11 @@ class Civilization : IsPartOfGameInfoSerialization {
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead
         }
+    }
+
+    fun gainStockpiledResource(resource: TileResource, amount: Int) {
+        if (resource.isCityWide) return
+        resourceStockpiles.add(resource.name, amount)
     }
     
     fun gainStockpiledResource(resourceName: String, amount: Int) {

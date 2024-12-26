@@ -231,8 +231,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun addGameResource(stat: GameResource, amount: Int) {
         if (stat is TileResource) {
             if (!stat.isStockpiled) return
-            if (!stat.isCityWide) civ.gainStockpiledResource(stat.name, amount)
-            else gainStockpiledResource(stat.name, amount)
+            gainStockpiledResource(stat, amount)
             return
         }
         when (stat) {
