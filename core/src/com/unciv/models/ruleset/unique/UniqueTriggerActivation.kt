@@ -526,7 +526,8 @@ object UniqueTriggerActivation {
 
                 return {
                     val amount = unique.params[0].toInt()
-                    civInfo.gainStockpiledResource(resourceName, amount)
+                    if (city != null) city.gainStockpiledResource(resource, amount)
+                    else civInfo.gainStockpiledResource(resourceName, amount)
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
@@ -545,7 +546,8 @@ object UniqueTriggerActivation {
 
                 return {
                     val amount = unique.params[0].toInt()
-                    civInfo.gainStockpiledResource(resourceName, -amount)
+                    if (city != null) city.gainStockpiledResource(resource, -amount)
+                    else civInfo.gainStockpiledResource(resourceName, -amount)
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
