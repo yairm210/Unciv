@@ -7,24 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.city.City
-import com.unciv.logic.city.CityFlags
-import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.CityResources
-import com.unciv.logic.city.GreatPersonPointsBreakdown
+import com.unciv.logic.city.*
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toGroup
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
@@ -67,7 +57,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         innerTable.pad(5f)
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityStatsTable/InnerTable",
-            tintColor = Color.BLACK.cpy().apply { a = 0.8f }
+            tintColor = ImageGetter.CHARCOAL.cpy().apply { a = 0.8f }
         )
 
         upperTable.defaults().pad(2f)
@@ -199,11 +189,13 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         lowerTable.add(turnsToExpansionString.toLabel()).row()
         lowerTable.add(turnsToPopString.toLabel()).row()
 
-        val tableWithIcons = Table()
+        val tableWithIcons = Table() // Each row has a SINGLE actor
         tableWithIcons.defaults().pad(2f)
         if (city.isInResistance()) {
-            tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
-            tableWithIcons.add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
+            tableWithIcons.add(Table().apply {
+                add(ImageGetter.getImage("StatIcons/Resistance")).size(20f).padRight(2f)
+                add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel())
+            })
         }
 
         val resourceTable = Table()
@@ -212,7 +204,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         for (resourceSupply in CityResources.getCityResourcesAvailableToCity(city))
             resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
         for ((resource, amount) in resourceCounter)
-            if (resource.hasUnique(UniqueType.CityResource)) {
+            if (resource.isCityWide) {
                 resourceTable.add(amount.toLabel())
                 resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
                     .padRight(5f)
@@ -230,11 +222,13 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             else -> null to null
         }
         if (wltkLabel != null) {
-            tableWithIcons.add(wltkIcon!!).size(20f).padRight(5f)
+            tableWithIcons.add(Table().apply {
+                add(wltkIcon!!).size(20f).padRight(5f)
+                add(wltkLabel).row()
+            })
             wltkLabel.onClick {
                 cityScreen.openCivilopedia("Tutorial/We Love The King Day")
             }
-            tableWithIcons.add(wltkLabel).row()
         }
 
         lowerTable.add(tableWithIcons).row()
@@ -389,7 +383,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
             val info = Table()
 
-            info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
+            val greatPerson = city.getRuleset().units[greatPersonName] ?: continue
+            info.add(ImageGetter.getUnitIcon(greatPerson, Color.GOLD).toGroup(20f))
                 .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
 
@@ -399,7 +394,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             val percent = gppCurrent / gppNeeded.toFloat()
 
             val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
-            progressBar.setBackground(Color.BLACK.cpy().apply { a = 0.8f })
+            progressBar.setBackground(ImageGetter.CHARCOAL.cpy().apply { a = 0.8f })
             progressBar.setProgress(Color.ORANGE, percent)
             progressBar.apply {
                 val bar = ImageGetter.getWhiteDot()

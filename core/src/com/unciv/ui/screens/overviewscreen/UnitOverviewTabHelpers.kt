@@ -57,6 +57,7 @@ open class UnitOverviewTabHelpers {
         return when {
             unit.action == null -> workerText
             unit.isFortified() -> UnitActionType.Fortify.value
+            unit.isGuarding() -> UnitActionType.Guard.value
             unit.isMoving() -> "Moving"
             unit.isAutomated() && workerText != null -> "[$workerText] ${Fonts.automate}"
             else -> unit.action
@@ -73,7 +74,7 @@ open class UnitOverviewTabHelpers {
             val enable = canEnable && unitAction.action != null
             val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
             val selectKey = getUnitIdentifier(unit, unitToUpgradeTo)
-            val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
+            val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo,
                 if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
             upgradeIcon.onClick {
                 UnitUpgradeMenu(actionContext.overviewScreen.stage, upgradeIcon, unit, unitAction, enable) {

@@ -39,6 +39,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -287,19 +288,18 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         civilizations.add(it)
         it.gameInfo = this
         it.setNationTransient()
+        it.cache.updateState()
         it.cache.updateViewableTiles()
         it.setTransients()
     }
 
     fun isReligionEnabled(): Boolean {
-        val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
-                || ruleset.modOptions.hasUnique(UniqueType.DisableReligion))
-        return !religionDisabledByRuleset
+        if (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)) return false
+        if (ruleset.modOptions.hasUnique(UniqueType.DisableReligion)) return false
+        return true
     }
 
-    fun isEspionageEnabled(): Boolean {
-        return gameParameters.espionageEnabled
-    }
+    fun isEspionageEnabled(): Boolean = gameParameters.espionageEnabled
 
     private fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
@@ -538,7 +538,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return true
     }
 
-    /** Generate a notification pointing out resources.
+    /** Generate a notification pointing out resources. Only researched Resources are considered.
      * @param maxDistance from next City, default removes distance limitation.
      * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
      * @return `null` if no resources were found, otherwise a Notification instance.
@@ -550,6 +550,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         maxDistance: Int = Int.MAX_VALUE,
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
+
+        val resource = ruleset.tileResources[resourceName] ?: return null
+        if (!civ.tech.isRevealed(resource)) {
+            return null
+        }
+        
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city
@@ -642,7 +648,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
-        for (civInfo in civilizations) civInfo.setNationTransient()
+        for (civInfo in civilizations) {
+            civInfo.setNationTransient()
+            civInfo.cache.updateState()
+        }
         // must be done before updating tileMap, since unit uniques depend on civ uniques depend on allied city-state uniques depend on diplomacy
         for (civInfo in civilizations) {
             for (diplomacyManager in civInfo.diplomacy.values) {

@@ -31,8 +31,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.utils.randomWeighted
 import kotlin.random.Random
 
 class QuestManager : IsPartOfGameInfoSerialization {
@@ -770,7 +770,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         val resourcesOnMap = civ.gameInfo.tileMap.values.asSequence().mapNotNull { it.resource }.distinct()
         val viewableResourcesForChallenger = resourcesOnMap.map { ruleset.tileResources[it]!! }
-                .filter { it.revealedBy == null || challenger.tech.isResearched(it.revealedBy!!) }
+                .filter { challenger.tech.isRevealed(it) }
 
         val notOwnedResources = viewableResourcesForChallenger.filter {
             it.resourceType != ResourceType.Bonus &&
@@ -790,7 +790,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                     building.isWonder
                     && challenger.tech.isResearched(building)
                     // Can't be disabled
-                    && !building.isHiddenBySettings(civ.gameInfo)
+                    && !building.isUnavailableBySettings(civ.gameInfo)
                     // Can't be a unique wonder
                     && building.uniqueTo == null
                     // Big loop last: Exists or more than 25% built anywhere
@@ -825,7 +825,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 .distinct()
                 // The hidden test is already done by getGreatPeople for the civ-specific units,
                 // repeat for the replaced one we'll be asking for
-                .filterNot { it in existingGreatPeople || it.isHiddenBySettings(civ.gameInfo) }
+                .filterNot { it in existingGreatPeople || it.isUnavailableBySettings(civ.gameInfo) }
                 .toList()
 
         return greatPeople.randomOrNull()

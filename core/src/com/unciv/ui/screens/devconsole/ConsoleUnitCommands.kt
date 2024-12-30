@@ -19,9 +19,15 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "remove" to ConsoleAction("unit remove") { console, _ ->
-            val unit = console.getSelectedUnit()
-            unit.destroy()
+        "remove" to ConsoleAction("unit remove [all]") { console, params ->
+            if (params.isNotEmpty() && params[0].equals("all")) {
+                for (civ in console.gameInfo.civilizations)
+                    for (unit in civ.units.getCivUnits())
+                        unit.destroy()
+            } else {
+                val unit = console.getSelectedUnit()
+                unit.destroy()
+            }
             DevConsoleResponse.OK
         },
 

@@ -134,6 +134,19 @@ class GlobalUniquesTests {
     }
 
     @Test
+    fun statsFromTilesMultifilter() {
+        game.makeHexagonalMap(2)
+        val civInfo = game.addCiv()
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
+        val building = game.createBuilding("[+4 Gold] from [{${Constants.grassland}} {Farm}] tiles [in all cities]")
+        city.cityConstructions.addBuilding(building)
+
+        val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
+        tile2.setImprovement("Farm")
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).gold == 4f)
+    }
+    
+    @Test
     fun statsFromTilesWithout() {
         game.makeHexagonalMap(3)
         val civInfo = game.addCiv()
@@ -523,7 +536,8 @@ class GlobalUniquesTests {
     fun growthPercentBonusTest() {
         val civInfo = game.addCiv()
         val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
-        val building = game.createBuilding("[+100]% growth [in all cities]")
+        // City has 2 food from center -2 from pop, so total of 0
+        val building = game.createBuilding("[+100]% growth [in all cities]", "[+2 Food]")
         city.cityConstructions.addBuilding(building)
 
         city.cityStats.update()

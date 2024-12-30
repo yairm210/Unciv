@@ -14,6 +14,6 @@ class RuinReward : RulesetObject() {
 
     override fun makeLink() = "" //No own category on Civilopedia screen
 
-    override fun isHiddenBySettings(gameInfo: GameInfo) =
-        gameInfo.difficulty in excludedDifficulties || super.isHiddenBySettings(gameInfo)
+    override fun isUnavailableBySettings(gameInfo: GameInfo) =
+        gameInfo.difficulty in excludedDifficulties || super.isUnavailableBySettings(gameInfo)
 }

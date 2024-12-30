@@ -21,11 +21,13 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
@@ -169,19 +171,17 @@ object Battle {
         fun triggerVictoryUniques(ourUnit: MapUnitCombatant, enemy: MapUnitCombatant) {
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
                 ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
-            for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
-                if (unique.getModifiers(UniqueType.TriggerUponDefeatingUnit).any { enemy.unit.matchesFilter(it.params[0]) })
-                    UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
+            for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals)
+                    { enemy.unit.matchesFilter(it.params[0]) })
+                UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
 
         fun triggerDamageUniquesForUnit(triggeringUnit: MapUnitCombatant, enemy: MapUnitCombatant, combatAction: CombatAction){
             val stateForConditionals = StateForConditionals(civInfo = triggeringUnit.getCivInfo(),
                 ourCombatant = triggeringUnit, theirCombatant = enemy, tile = attackedTile, combatAction = combatAction)
 
-            for (unique in triggeringUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDamagingUnit, stateForConditionals)){
-                if (unique.getModifiers(UniqueType.TriggerUponDamagingUnit).none { enemy.matchesFilter(it.params[0]) })
-                    continue
-
+            for (unique in triggeringUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDamagingUnit, stateForConditionals)
+                    { enemy.matchesFilter(it.params[0]) }){
                 if (unique.params[0] == Constants.targetUnit){
                     UniqueTriggerActivation.triggerUnique(unique, enemy.unit, triggerNotificationText = "due to our [${enemy.getName()}] being damaged by a [${triggeringUnit.getName()}]")
                 } else {
@@ -259,8 +259,9 @@ object Battle {
                 if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
             val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
 
-            val stat = Stat.valueOf(unique.params[3])
-            civUnit.getCivInfo().addStat(stat, yieldAmount)
+            val resource = civUnit.getCivInfo().gameInfo.ruleset.getGameResource(unique.params[3])
+                ?: continue
+            civUnit.getCivInfo().addGameResource(resource, yieldAmount)
         }
 
         // CS friendship from killing barbarians
@@ -344,14 +345,14 @@ object Battle {
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
 
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
-                if (unique.modifiers.any { it.params[0].toInt() <= defenderDamageDealt })
-                    UniqueTriggerActivation.triggerUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
+                    { it.params[0].toInt() <= defenderDamageDealt })
+                UniqueTriggerActivation.triggerUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
 
         if (defender is MapUnitCombatant)
-            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
-                if (unique.modifiers.any { it.params[0].toInt() <= attackerDamageDealt })
-                    UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
+                    { it.params[0].toInt() <= attackerDamageDealt })
+                UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
@@ -364,16 +365,35 @@ object Battle {
     ) {
         // implementation based on the description of the original civilopedia, see issue #4374
         if (plunderingUnit !is MapUnitCombatant) return
+        val civ = plunderingUnit.getCivInfo()
         val plunderedGoods = Stats()
 
         for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
-            if (plunderedUnit.matchesFilter(unique.params[1])) {
-                val percentage = unique.params[0].toFloat()
-                plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * damageDealt)
+            if (!plunderedUnit.matchesFilter(unique.params[1])) continue
+
+            val percentage = unique.params[0].toFloat()
+            val amount = percentage / 100f * damageDealt
+            val resourceName = unique.params[2]
+            val resource = plunderedUnit.getCivInfo().gameInfo.ruleset.getGameResource(resourceName)
+                ?: continue
+
+            if (resource is Stat) {
+                plunderedGoods.add(resource, amount)
+                continue // Notification and adding to the civ happens all at once for stats further down
             }
+
+            val plunderedAmount = amount.roundToInt()
+            civ.addGameResource(resource, plunderedAmount)
+            val icon = if (resource is SubStat) resource.icon else "ResourceIcons/$resourceName"
+            civ.addNotification(
+                "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${resourceName}] from [${plunderedUnit.getName()}]",
+                plunderedUnit.getTile().position,
+                NotificationCategory.War,
+                plunderingUnit.getName(), NotificationIcon.War, icon,
+                if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
+            )
         }
 
-        val civ = plunderingUnit.getCivInfo()
         for ((key, value) in plunderedGoods) {
             val plunderedAmount = value.toInt()
             if (plunderedAmount == 0) continue
@@ -485,7 +505,7 @@ object Battle {
                 if (!attacker.unit.baseUnit.movesLikeAirUnits && !(attacker.isMelee() && defender.isDefeated()))
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
-            if (unit.isFortified() || unit.isSleeping())
+            if (unit.isFortified() || unit.isSleeping() || unit.isGuarding())
                 attacker.unit.action = null // but not, for instance, if it's Set Up - then it should definitely keep the action!
         } else if (attacker is CityCombatant) {
             attacker.city.attackedThisTurn = true
@@ -535,7 +555,7 @@ object Battle {
             for (unit in greatGeneralUnits) {
                 val greatGeneralPointsBonus = thisCombatant
                     .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
-                    .filter { unit.matchesFilter(it.params[0]) }
+                    .filter { unit.matchesFilter(it.params[0], stateForConditionals) }
                     .sumOf { it.params[1].toDouble() }
                 val greatGeneralPointsModifier = 1.0 + greatGeneralPointsBonus / 100
 
@@ -566,8 +586,10 @@ object Battle {
 
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
-            attackerCiv.addStat(
-                Stat.valueOf(unique.params[2]),
+            val resource = attacker.getCivInfo().gameInfo.ruleset.getGameResource(unique.params[2])
+                ?: continue
+            attackerCiv.addGameResource(
+                resource,
                 unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()
             )
         }
@@ -640,7 +662,8 @@ object Battle {
         if (defender.unit.isEmbarked()) return false
         if (defender.unit.cache.cannotMove) return false
         if (defender.unit.isEscorting()) return false // running away and leaving the escorted unit defeats the purpose of escorting
-
+        if (defender.unit.isGuarding()) return false // guarding this post and will fight to the death!
+        
         // Promotions have no effect as per what I could find in available documentation
         val fromTile = defender.getTile()
         val attackerTile = attacker.getTile()

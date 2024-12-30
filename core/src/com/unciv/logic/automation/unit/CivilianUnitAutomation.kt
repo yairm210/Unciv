@@ -18,6 +18,9 @@ object CivilianUnitAutomation {
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+        if (unit.hasUnique(UniqueType.FoundCity))
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
+
         if (tryRunAwayIfNeccessary(unit)) return
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
@@ -27,9 +30,6 @@ object CivilianUnitAutomation {
             if (tilesCanMoveTo.isNotEmpty())
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
-
-        if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (unit.isAutomatingRoadConnection())
             return unit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
@@ -104,8 +104,8 @@ object CivilianUnitAutomation {
         }
 
         // Great engineer -> Try to speed up wonder construction
-        if ((unit.hasUnique(UniqueType.CanSpeedupConstruction)
-                || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction))) {
+        if (unit.hasUnique(UniqueType.CanSpeedupConstruction)
+                || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction)) {
             val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
             if (wonderCanBeSpedUpEventually)
                 return
@@ -139,6 +139,14 @@ object CivilianUnitAutomation {
         //  ages?
 
         if (SpecificUnitAutomation.automateImprovementPlacer(unit)) return
+        
+        val goldenAgeAction = UnitActions.getUnitActions(unit, UnitActionType.TriggerUnique)
+            .filter { it.action != null && it.associatedUnique?.type in listOf(UniqueType.OneTimeEnterGoldenAge,
+                UniqueType.OneTimeEnterGoldenAgeTurns) }.firstOrNull()
+        if (goldenAgeAction != null) {
+            goldenAgeAction.action?.invoke()
+            return
+        }
 
         return // The AI doesn't know how to handle unknown civilian units
     }
@@ -150,7 +158,7 @@ object CivilianUnitAutomation {
     }
 
     /** Returns whether the civilian spends its turn hiding and not moving */
-    private fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
+    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys

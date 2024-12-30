@@ -1291,7 +1291,7 @@
 		"cost": 400,
 		"requiredTech": "Pharmaceuticals",
 		"promotions": ["Amphibious"],
-		"uniques": ["[+1] Sight <when [Embarked]>", "Defense bonus when embarked"],
+		"uniques": ["[+1] Sight <when [Embarked]>", "[+100]% Strength <when defending> <when [Embarked]>"],
 		"attackSound": "shot"
 	},
 	{
@@ -1623,7 +1623,7 @@
             "May found a religion <by consuming this unit> <if it hasn't used other actions yet>",
             "May enhance a religion <by consuming this unit>  <if it hasn't used other actions yet>",
 			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
-			"Unbuildable", "Religious Unit", "Hidden when religion is disabled",
+			"Unbuildable", "Religious Unit", "Only available <when religion is enabled>",
 			"Takes your religion over the one in their birth city"],
 		"movement": 2,
 		"religiousStrength": 1000
@@ -1663,7 +1663,7 @@
             "Can Spread Religion <for [4] movement> <[2] times> <after which this unit is consumed>",
             "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
 			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
-			"[-1] Sight", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
+			"[-1] Sight", "Unbuildable", "Religious Unit", "Only available <when religion is enabled>"],
 		"movement": 4,
 		"religiousStrength": 1000
 	},
@@ -1673,7 +1673,7 @@
 		"uniques": ["Prevents spreading of religion to the city it is next to",
 			"Can remove other religions from cities <in [Friendly] tiles> <once> <after which this unit is consumed>",
             "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
-			"[+1] Sight", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
+			"[+1] Sight", "Only available <when religion is enabled>", "Unbuildable", "Religious Unit"
 		],
 		"movement": 3
 	},

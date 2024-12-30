@@ -3,7 +3,6 @@ package com.unciv.logic.city
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -116,7 +115,7 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
         }
 
         // And last, the GPP-type-specific GreatPersonEarnedFaster Unique
-        val stateForConditionals = StateForConditionals(city)
+        val stateForConditionals = city.state
         for (unique in city.civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
             val gppName = unique.params[0]
             if (gppName !in allNames) continue // No sense applying a percentage without base points

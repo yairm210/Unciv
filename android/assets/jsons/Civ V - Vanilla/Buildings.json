@@ -152,7 +152,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Engineer": 1},
 		"isWonder": true,
-		"uniques": ["[-25]% construction time for [All] improvements","[2] free [Worker] units appear"],
+		"uniques": ["Can build [all] improvements at a [+25]% rate","[2] free [Worker] units appear"],
 		"requiredTech": "Masonry",
 		"quote": "'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.' - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
@@ -933,7 +933,7 @@
 		"cost": 750,
 		"isNationalWonder": true,
 		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion",
-			"Hidden when [Scientific] Victory is disabled", "Cannot be hurried"],
+			"Only available <when [Scientific] Victory is enabled>", "Cannot be hurried"],
 		"requiredTech": "Rocketry"
 	},
 
@@ -956,7 +956,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 2},
 		"requiredTech": "Globalization",
-		"uniques": ["Triggers voting for the Diplomatic Victory", "Hidden when [Diplomatic] Victory is disabled", "Triggers a global alert upon completion"],
+		"uniques": ["Triggers voting for the Diplomatic Victory", "Only available <when [Diplomatic] Victory is enabled>", "Triggers a global alert upon completion"],
 		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.' - Kofi Annan"
 	},
 
@@ -967,7 +967,7 @@
 		"cost": 1500,
 		"isNationalWonder": true,
 		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start",
-			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled", "Cannot be hurried"]
+			"Triggers a Cultural Victory upon completion", "Only available <when [Cultural] Victory is enabled>", "Cannot be hurried"]
 	}
 
 ]

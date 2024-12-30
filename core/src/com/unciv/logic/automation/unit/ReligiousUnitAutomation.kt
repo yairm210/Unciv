@@ -105,17 +105,11 @@ object ReligiousUnitAutomation {
         }
 
         if (destinationCity == null) return
-        var destinationTile = destinationCity.getCenterTile()
-
-        if (!unit.movement.canReach(destinationTile)
-            // Wait for the addInCapital units to go to the city!
-            || CivilianUnitAutomation.shouldClearTileForAddInCapitalUnits(unit, destinationTile)) {
-            destinationTile = destinationTile.neighbors
+        val destinationTile = destinationCity.getCenterTile().neighbors
                 .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
                 ?: return
-        }
 
         unit.movement.headTowards(destinationTile)
 

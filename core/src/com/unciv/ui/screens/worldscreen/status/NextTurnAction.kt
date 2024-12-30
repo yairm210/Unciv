@@ -8,6 +8,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
@@ -21,7 +22,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 
 enum class NextTurnAction(protected val text: String, val color: Color) {
-    Default("", Color.BLACK) {
+    Default("", ImageGetter.CHARCOAL) {
         override val icon get() = null
         override fun isChoice(worldScreen: WorldScreen) = false
     },

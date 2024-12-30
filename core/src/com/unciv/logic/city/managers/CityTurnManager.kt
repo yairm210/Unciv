@@ -124,10 +124,9 @@ class CityTurnManager(val city: City) {
             val removedPopulation =
                     1 + city.civ.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
                         .sumOf { it.params[0].toInt() - 1 }
-            city.population.addPopulation(-1 * removedPopulation)
 
-            if (city.population.population <= 0) {
-                city.espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
+            if (city.population.population <= removedPopulation) {
+                city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
                 city.civ.addNotification(
                     "[${city.name}] has been razed to the ground!",
                     city.location, NotificationCategory.General,
@@ -135,6 +134,7 @@ class CityTurnManager(val city: City) {
                 )
                 city.destroyCity()
             } else { //if not razed yet:
+                city.population.addPopulation(-removedPopulation)
                 if (city.population.foodStored >= city.population.getFoodToNextPopulation()) { //if surplus in the granary...
                     city.population.foodStored =
                             city.population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold

@@ -4,6 +4,7 @@ package com.unciv.logic.map.mapunit.movement
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -138,11 +139,16 @@ class UnitMovement(val unit: MapUnit) {
 
         while (true) {
             newTilesToCheck.clear()
+            fun isUnfriendlyCityState(tile:Tile): Boolean = tile.getOwner().let { it != null && it.isCityState
+                    && it.getDiplomacyManager(unit.civ)?.isRelationshipLevelLT(RelationshipLevel.Friend) == true }
 
-            var tilesByPreference = tilesToCheck.sortedBy { it.aerialDistanceTo(destination) }
-            // Avoid embarkation when possible
-            if (unit.type.isLandUnit()) tilesByPreference = tilesByPreference.sortedByDescending { it.isLand }
-
+            // When comparing booleans, we get false first, so we need to negate the isLand / isCityState checks
+            // By order of preference: 1. Land tiles 2. Aerial distance 3. Not city states
+            val comparison: Comparator<Tile> = if (unit.type.isLandUnit())
+                compareBy({!it.isLand}, {it.aerialDistanceTo(destination)}, ::isUnfriendlyCityState)
+            else compareBy({it.aerialDistanceTo(destination)}, ::isUnfriendlyCityState)
+            
+            val tilesByPreference = tilesToCheck.sortedWith(comparison)
 
             for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {
@@ -333,8 +339,8 @@ class UnitMovement(val unit: MapUnit) {
             || otherUnit.cache.cannotMove  // redundant, line below would cover it too
             || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
 
-        if (!canMoveTo(reachableTile, canSwap = true)) return false
-        if (!otherUnit.movement.canMoveTo(ourPosition, canSwap = true)) return false
+        if (!canMoveTo(reachableTile, allowSwap = true)) return false
+        if (!otherUnit.movement.canMoveTo(ourPosition, allowSwap = true)) return false
         // All clear!
         return true
     }
@@ -376,7 +382,7 @@ class UnitMovement(val unit: MapUnit) {
             unit.removeFromTile() // we "teleport" them away
             unit.putInTile(allowedTile)
             // Cancel sleep or fortification if forcibly displaced - for now, leave movement / auto / explore orders
-            if (unit.isSleeping() || unit.isFortified())
+            if (unit.isSleeping() || unit.isFortified() || unit.isGuarding())
                 unit.action = null
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
 
@@ -435,7 +441,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
-        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping())
+        if (unit.isFortified() || unit.isGuarding() || unit.isSetUpForSiege() || unit.isSleeping())
             unit.action = null // un-fortify/un-setup/un-sleep after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
@@ -583,7 +589,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canMoveTo] if it has one.
      * Leave it as default unless you know what [canMoveTo] does.
      */
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, canSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
         if (unit.baseUnit.movesLikeAirUnits)
             return canAirUnitMoveTo(tile, unit)
 
@@ -595,15 +601,15 @@ class UnitMovement(val unit: MapUnit) {
             return false
 
         if (includeOtherEscortUnit && unit.isEscorting()
-            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough,canSwap, includeOtherEscortUnit = false))
+            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
             return false
 
         return if (unit.isCivilian())
-            (tile.civilianUnit == null || (canSwap && tile.civilianUnit!!.owner == unit.owner))
+            (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner))
                 && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
         // can skip checking for airUnit since not a city
-            (tile.militaryUnit == null || (canSwap && tile.militaryUnit!!.owner == unit.owner))
+            (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner))
                 && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
     }
 

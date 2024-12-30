@@ -6,7 +6,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -16,8 +15,6 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameInfoSerializationVersion
 import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
@@ -321,11 +318,10 @@ class UncivFiles(
     }
 
     //endregion
+    
     //region Scenarios
-
     val scenarioFolder = "scenarios"
     fun getScenarioFiles() = sequence {
-
         for (mod in RulesetCache.values) {
             val modFolder = mod.folderLocation ?: continue
             val scenarioFolder = modFolder.child(scenarioFolder)
@@ -334,22 +330,6 @@ class UncivFiles(
                     yield(Pair(file, mod))
         }
     }
-
-    fun loadScenario(gameFile: FileHandle): GameInfo {
-        val game = loadGameFromFile(gameFile)
-        game.civilizations.removeAll { it.isSpectator() }
-        for (civ in game.civilizations)
-            civ.diplomacy.remove(Constants.spectator)
-        if (game.civilizations.none { it.isHuman() })
-            game.civilizations.first { it.isMajorCiv() }.playerType = PlayerType.Human
-
-        game.currentPlayerCiv = game.civilizations.first { it.playerType == PlayerType.Human }
-        game.currentPlayer = game.currentPlayerCiv.civName
-        TurnManager(game.currentPlayerCiv).startTurn()
-
-        return game
-    }
-
     //endregion
     
     //region Mod caching
@@ -394,11 +374,6 @@ class UncivFiles(
          * Platform dependent saver-loader to custom system locations
          */
         var saverLoader: PlatformSaverLoader = PlatformSaverLoader.None
-            get() {
-                if (field.javaClass.simpleName == "DesktopSaverLoader" && LinuxX11SaverLoader.isRequired())
-                    field = LinuxX11SaverLoader()
-                return field
-            }
 
         /** Specialized function to access settings before Gdx is initialized.
          *

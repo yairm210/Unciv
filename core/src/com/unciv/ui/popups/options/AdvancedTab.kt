@@ -35,6 +35,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.withoutItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -52,7 +53,7 @@ class AdvancedTab(
         defaults().pad(5f)
 
         addAutosaveTurnsSelectBox()
-        addSeparator(Color.GRAY)
+        addSeparator()
 
         if (Display.hasCutout())
             addCutoutCheckbox()
@@ -62,14 +63,14 @@ class AdvancedTab(
 
         addFontFamilySelect(onFontChange)
         addFontSizeMultiplier(onFontChange)
-        addSeparator(Color.GRAY)
+        addSeparator()
 
         addMaxZoomSlider()
 
         addEasterEggsCheckBox()
 
         addEnlargeNotificationsCheckBox()
-        addSeparator(Color.GRAY)
+        addSeparator()
 
         addSetUserId()
 
@@ -351,13 +352,10 @@ class AdvancedTab(
     }
 
     private fun addEasterEggsCheckBox() {
-        val checkbox = "Enable Easter Eggs".toCheckBox(settings.enableEasterEggs) { settings.enableEasterEggs = it }
-        add(checkbox).colspan(2).row()
+        optionsPopup.addCheckbox(this, "Enable Easter Eggs", settings.enableEasterEggs) { settings.enableEasterEggs = it }
     }
 
     private fun addEnlargeNotificationsCheckBox() {
-        val checkbox = "Enlarge selected notifications"
-            .toCheckBox(settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
-        add(checkbox).colspan(2).row()
+        optionsPopup.addCheckbox(this, "Enlarge selected notifications", settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
     }
 }

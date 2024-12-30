@@ -20,7 +20,6 @@ import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -34,15 +33,20 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val city = cityConstructions.city
     private val civInfo = city.civ
 
+    private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
+    private val cityState = city.state
+    private val cityStats = city.cityStats
+
     private val personality = civInfo.getPersonality()
 
-    private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(city))
+    private val constructionsToAvoid = personality.getMatchingUniques(UniqueType.WillNotBuild, cityState)
         .map{ it.params[0] }
     private fun shouldAvoidConstruction (construction: IConstruction): Boolean {
+        val stateForConditionals = cityState
         for (toAvoid in constructionsToAvoid) {
-            if (construction is Building && construction.matchesFilter(toAvoid))
+            if (construction is Building && construction.matchesFilter(toAvoid, stateForConditionals))
                 return true
-            if (construction is BaseUnit && construction.matchesFilter(toAvoid))
+            if (construction is BaseUnit && construction.matchesFilter(toAvoid, stateForConditionals))
                 return true
         }
         return false
@@ -86,10 +90,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     private val cityIsOverAverageProduction = city.cityStats.currentCityStats.production >= averageProduction
 
-    private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
-    private val cityState = StateForConditionals(city)
-    private val cityStats = city.cityStats
-
     private data class ConstructionChoice(val choice: String, var choiceModifier: Float,
                                           val remainingWork: Int, val production: Int)
 
@@ -128,6 +128,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 when {
                     PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science.name
                     PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
+                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture.name
+                    PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith.name
                     else -> PerpetualConstruction.idle.name
                 }
             } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {
@@ -245,11 +247,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             }.filterBuildable()
         if (workerEquivalents.none()) return // for mods with no worker units
 
-        // Dedicate 1.5 workers for the first 5 cities, from then on only build one worker for every city.
-        val numberOfWorkersWeWant = if (cities <= 5) (cities * 1.5f) else 7.5f + ((cities - 5))
+        // Dedicate 1 worker for the first city (CS), then 1.5 workers for the first 5 cities, from then on build one more worker for every city.
+        val numberOfWorkersWeWant = if (cities <= 1) 1f else if (cities <= 5) (cities * 1.5f) else 7.5f + ((cities - 5))
 
         if (workers < numberOfWorkersWeWant) {
-            val modifier = numberOfWorkersWeWant / (workers + 0.4f) // The worse our worker to city ratio is, the more desperate we are
+            val modifier = numberOfWorkersWeWant / (workers + 0.17f) // The worse our worker to city ratio is, the more desperate we are
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
         }
     }

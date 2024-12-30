@@ -15,10 +15,6 @@ New Unciv logo made by u-ndefined on Discord
 
 Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
 
-Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
-
-Unless otherwise specified, units for the [AbsoluteUnits unitset](https://github.com/letstalkaboutdune/AbsoluteUnits) are made by [letstalkaboutdune](https://github.com/letstalkaboutdune) and are licensed under Creative Commons Attribution 4.0 International
-
 Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
@@ -165,7 +161,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Religion](https://thenounproject.com/icon/preach-53064) by Bruno Gätjens González adapted for Missionary
 -   [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
 
-### Units - extra AbsoluteUnits tileset images
+### Units - AbsoluteUnits unitset images
+
+Unless otherwise specified, units for the [AbsoluteUnits unitset](https://github.com/letstalkaboutdune/AbsoluteUnits) are made by [letstalkaboutdune](https://github.com/letstalkaboutdune) and are licensed under Creative Commons Attribution 4.0 International
 
 Barbarian variants by Pelo, made for [Playable Barbarians](https://github.com/Jaba583/Playable-Barbarians):
 
@@ -179,10 +177,21 @@ Barbarian variants by Pelo, made for [Playable Barbarians](https://github.com/Ja
 - Trireme-Barbarians
 - Musketman-Barbarians
 
-## By Basil
+By Basil:
 
 - Worker-Barbarians
 
+### HexaRealm
+
+Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
+
+
+HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset):
+
+- Coast-Land edge tiles
+- Coast-Ocean edge tiles
+- Lake-Land edge tiles
+- Krakatoa (based on The Bucketeer's tile)
 
 ### Resources
 
@@ -767,6 +776,12 @@ Barbarian variants by Pelo, made for [Playable Barbarians](https://github.com/Ja
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
 - [Galileo Donatello](https://en.wikipedia.org/wiki/File:Galileo_Donato.jpg) for the "Meet another civilization" tutorial: Public domain
+- [ServerRack](https://thenounproject.com/icon/server-rack-922717/) by Chad Remsing
+- [RobotArm] (https://thenounproject.com/icon/robot-7300306/) by Faizal khusein
+- [RobotHeadSquare] (https://thenounproject.com/icon/robot-head-6356754/) by Ahmad Arzaha
+- [RobotHeadRect] (https://thenounproject.com/icon/robot-1704106/) by suib icon
+- [Bobot] by reallybasicname in the Discord
+- [DollarSign] (https://thenounproject.com/icon/dollar-sign-6466560/) by Ahmad Arzaha
 
 ### Main menu
 
@@ -851,7 +866,7 @@ The following audio is from https://pixabay.com/ [Pixabay License](https://pixab
 
 ## Visual effects
 
-The fireworks on the City screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
+The fireworks on the City Screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
 All differences and edits done by the Unciv team.
 License quoted:
 ```

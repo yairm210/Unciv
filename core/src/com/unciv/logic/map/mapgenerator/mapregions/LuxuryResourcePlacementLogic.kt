@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.randomWeighted
+import com.unciv.utils.randomWeighted
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -366,7 +366,7 @@ object LuxuryResourcePlacementLogic {
         val averageFertilityDensity =
             regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.size }.toFloat()
         for (region in regions) {
-            var targetLuxuries = 1
+            var targetLuxuries = 2
             if (tileMap.mapParameters.getLegendaryStart())
                 targetLuxuries++
             if (region.totalFertility / region.tiles.size.toFloat() < averageFertilityDensity) {

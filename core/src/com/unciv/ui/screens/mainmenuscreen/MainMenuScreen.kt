@@ -1,5 +1,7 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
@@ -26,6 +28,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
@@ -168,12 +171,6 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { game.pushScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
-        if (game.files.getScenarioFiles().any()){
-            val scenarioTable = getMenuButton("Scenarios", "OtherIcons/Scenarios", KeyboardBinding.Scenarios)
-            { game.pushScreen(ScenarioScreen()) }
-            column2.add(scenarioTable).row()
-        }
-
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
             { openOptionsPopup() }
         optionsTable.onLongPress { openOptionsPopup(withDebug = true) }
@@ -198,18 +195,46 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             game.popScreen()
         }
 
-        val helpButton = "?".toLabel(fontSize = 48)
+        val civilopediaButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
             .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
             .surroundWithCircle(64f, resizeActor = false)
-        helpButton.touchable = Touchable.enabled
+        civilopediaButton.touchable = Touchable.enabled
         // Passing the binding directly to onActivation gives you a size 26 tooltip...
-        helpButton.onActivation { openCivilopedia() }
-        helpButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
-        helpButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
-        helpButton.setPosition(30f, 30f)
-        stage.addActor(helpButton)
+        civilopediaButton.onActivation { openCivilopedia() }
+        civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
+        civilopediaButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
+        civilopediaButton.setPosition(30f, 30f)
+        stage.addActor(civilopediaButton)
+
+        val rightSideButtons = Table().apply { defaults().pad(10f) }
+        val discordButton = ImageGetter.getImage("OtherIcons/Discord")
+            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
+            .surroundWithThinCircle(Color.WHITE)
+            .onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
+        rightSideButtons.add(discordButton)
+
+        val githubButton = ImageGetter.getImage("OtherIcons/Github")
+            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
+            .surroundWithThinCircle(Color.WHITE)
+            .onActivation { Gdx.net.openURI("https://github.com/yairm210/Unciv") }
+        rightSideButtons.add(githubButton)
+        
+        rightSideButtons.pack()
+        rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
+        stage.addActor(rightSideButtons)
+
+
+        val versionLabel = "{Version} ${UncivGame.VERSION.text}".toLabel()
+        versionLabel.setAlignment(Align.center)
+        val versionTable = Table()
+        versionTable.background = skinStrings.getUiBackground("MainMenuScreen/Version",
+            skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a=0.7f })
+        versionTable.add(versionLabel)
+        versionTable.pack()
+        versionTable.setPosition(stage.width/2, 10f, Align.bottom)
+        stage.addActor(versionTable)
     }
 
     private fun startBackgroundMapGeneration() {

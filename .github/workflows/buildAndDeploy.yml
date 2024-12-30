@@ -201,10 +201,10 @@ jobs:
 
           wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
 
-          wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/eclipse
+          wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jre/hotspot/normal/eclipse
           ./gradlew desktop:packrLinux64
 
-          wget -q -O jdk-windows-64.zip https://api.adoptium.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/eclipse
+          wget -q -O jdk-windows-64.zip https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jre/hotspot/normal/eclipse
           ./gradlew desktop:packrWindows64
 
       - name: Upload packed zips
@@ -216,6 +216,7 @@ jobs:
             deploy/Unciv-Linux64.zip
 
   build-msi:
+    continue-on-error: true
     needs: packr-build
     runs-on: windows-latest
 

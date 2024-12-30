@@ -32,7 +32,7 @@ class UpgradeTests {
 
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
-        val triggerUnique = Unique("This Unit upgrades for free including special upgrades")
+        val triggerUnique = Unique("[This Unit] upgrades for free including special upgrades")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
@@ -47,7 +47,7 @@ class UpgradeTests {
 
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
-        val triggerUnique = Unique("This Unit upgrades for free including special upgrades")
+        val triggerUnique = Unique("[This Unit] upgrades for free including special upgrades")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
@@ -68,7 +68,7 @@ class UpgradeTests {
         Assert.assertFalse("Unit should not be able to upgrade to special unit",
             upgradeActions.any { (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo })
 
-        val triggerUnique = Unique("This Unit upgrades for free")
+        val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 
@@ -89,7 +89,7 @@ class UpgradeTests {
 
         Assert.assertTrue(upgradeActions.count() == 2)
 
-        val triggerUnique = Unique("This Unit upgrades for free")
+        val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
 

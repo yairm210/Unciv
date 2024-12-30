@@ -24,12 +24,11 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.utils.randomWeighted
 import kotlin.random.Random
 
 object NextTurnAutomation {
@@ -262,12 +261,15 @@ object NextTurnAutomation {
             return researchableTechs.toSortedMap().values.toList()
         }
 
-        val stateForConditionals = StateForConditionals(civInfo)
-        while(civInfo.tech.freeTechs > 0) {
+        val stateForConditionals = civInfo.state
+        while (civInfo.tech.freeTechs > 0) {
             val costs = getGroupedResearchableTechs()
             if (costs.isEmpty()) return
-
-            val mostExpensiveTechs = costs[costs.size - 1]
+            
+            val mostExpensiveTechs = costs.lastOrNull{ 
+                // Ignore rows where all techs have 0 weight
+                it.any { it.getWeightForAiDecision(stateForConditionals) > 0 }
+            } ?: costs.last()
             val chosenTech = mostExpensiveTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
             civInfo.tech.getFreeTechnology(chosenTech.name)
         }
@@ -275,7 +277,9 @@ object NextTurnAutomation {
             val costs = getGroupedResearchableTechs()
             if (costs.isEmpty()) return
 
-            val cheapestTechs = costs[0]
+            val cheapestTechs = costs.firstOrNull{
+                // Ignore rows where all techs have 0 weight
+                it.any { it.getWeightForAiDecision(stateForConditionals) > 0 } }?: costs.first()
             //Do not consider advanced techs if only one tech left in cheapest group
             val techToResearch: Technology =
                 if (cheapestTechs.size == 1 || costs.size == 1) {
@@ -351,7 +355,7 @@ object NextTurnAutomation {
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
                 else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }
-                    .randomWeighted { it.getWeightForAiDecision(StateForConditionals(civInfo)) }
+                    .randomWeighted { it.getWeightForAiDecision(civInfo.state) }
 
             civInfo.policies.adopt(policyToAdopt)
         }
@@ -402,7 +406,7 @@ object NextTurnAutomation {
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
-                        && it.requiredResources(StateForConditionals(civInfo, city)).contains(resource)
+                        && it.requiredResources(city.state).contains(resource)
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()
@@ -538,8 +542,8 @@ object NextTurnAutomation {
             }) return
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
-                    personality.getMatchingUniques(UniqueType.WillNotBuild, StateForConditionals(civInfo))
-                        .none { unique -> it.matchesFilter(unique.params[0]) } }
+                    personality.getMatchingUniques(UniqueType.WillNotBuild, civInfo.state)
+                        .none { unique -> it.matchesFilter(unique.params[0], civInfo.state) } }
         if (settlerUnits.isEmpty()) return
 
         if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first
@@ -647,13 +651,16 @@ object NextTurnAutomation {
     fun getClosestCities(civ1: Civilization, civ2: Civilization): CityDistance? {
         if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
             return null
+        
+        var minDistance: CityDistance? = null
 
-        val cityDistances = arrayListOf<CityDistance>()
         for (civ1city in civ1.cities)
-            for (civ2city in civ2.cities)
-                cityDistances += CityDistance(civ1city, civ2city,
-                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile()))
+            for (civ2city in civ2.cities){
+                val currentDistance = civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())
+                if (minDistance == null || currentDistance < minDistance.aerialDistance)
+                    minDistance = CityDistance(civ1city, civ2city, currentDistance)
+                }
 
-        return cityDistances.minByOrNull { it.aerialDistance }!!
+        return minDistance
     }
 }

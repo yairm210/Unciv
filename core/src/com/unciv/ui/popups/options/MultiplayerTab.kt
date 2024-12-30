@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
+import com.unciv.Constants
 import com.unciv.logic.files.IMediaFinder
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -16,7 +17,6 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.format
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
@@ -27,24 +27,24 @@ import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.toGdxArray
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
 fun multiplayerTab(
     optionsPopup: OptionsPopup
-): Table {
-    val tab = Table(BaseScreen.skin)
-    tab.pad(10f)
-    tab.defaults().pad(5f)
+) = Table(BaseScreen.skin).apply {
+    pad(10f)
+    defaults().pad(5f)
 
     val settings = optionsPopup.settings
 
     optionsPopup.addCheckbox(
-        tab, "Enable multiplayer status button in singleplayer games",
+        this, "Enable multiplayer status button in singleplayer games",
         settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
     )
 
-    addSeparator(tab)
+    addSeparator()
 
     val curRefreshSelect = RefreshSelect(
         "Update status of currently played game every:",
@@ -53,7 +53,7 @@ fun multiplayerTab(
         GameSetting.MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY,
         settings
     )
-    addSelectAsSeparateTable(tab, curRefreshSelect)
+    addSelectAsSeparateTable(this, curRefreshSelect)
 
     val allRefreshSelect = RefreshSelect(
         "In-game, update status of all games every:",
@@ -62,39 +62,37 @@ fun multiplayerTab(
         GameSetting.MULTIPLAYER_ALL_GAME_REFRESH_DELAY,
         settings
     )
-    addSelectAsSeparateTable(tab, allRefreshSelect)
+    addSelectAsSeparateTable(this, allRefreshSelect)
 
-    addSeparator(tab)
+    addSeparator()
 
     // at the moment the notification service only exists on Android
     val turnCheckerSelect: RefreshSelect?
     if (Gdx.app.type == Application.ApplicationType.Android) {
-        turnCheckerSelect = addTurnCheckerOptions(tab, optionsPopup)
-        addSeparator(tab)
+        turnCheckerSelect = addTurnCheckerOptions(this, optionsPopup)
+        addSeparator()
     } else {
         turnCheckerSelect = null
     }
 
     val sounds = IMediaFinder.LabeledSounds().getLabeledSounds()
-    addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in your currently open game:",
+    addSelectAsSeparateTable(this, SettingsSelect("Sound notification for when it's your turn in your currently open game:",
         sounds,
         GameSetting.MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND,
         settings
     ))
 
-    addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in any other game:",
+    addSelectAsSeparateTable(this, SettingsSelect("Sound notification for when it's your turn in any other game:",
         sounds,
         GameSetting.MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND,
         settings
     ))
 
-    addSeparator(tab)
+    addSeparator()
 
-    addMultiplayerServerOptions(tab, optionsPopup,
+    addMultiplayerServerOptions(this, optionsPopup,
         listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect)
     )
-
-    return tab
 }
 
 private fun addMultiplayerServerOptions(
@@ -104,7 +102,7 @@ private fun addMultiplayerServerOptions(
 ) {
     val settings = optionsPopup.settings
 
-    val connectionToServerButton = "Check connection to server".toTextButton()
+    val connectionToServerButton = "Check connection".toTextButton()
 
     val textToShowForOnlineMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
         settings.multiplayer.server
@@ -118,7 +116,7 @@ private fun addMultiplayerServerOptions(
 
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).colspan(2).row()
+        }).colspan(2).padBottom(Constants.defaultFontSize / 2.0f).row()
     multiplayerServerTextField.onChange {
         fixTextFieldUrlOnType(multiplayerServerTextField)
         // we can't trim on 'fixTextFieldUrlOnType' for reasons
@@ -131,8 +129,7 @@ private fun addMultiplayerServerOptions(
     }
 
     serverIpTable.add(multiplayerServerTextField)
-        .minWidth(optionsPopup.stageToShowOn.width / 2)
-        .colspan(2).growX().padBottom(8f).row()
+        .minWidth(optionsPopup.stageToShowOn.width / 3).padRight(Constants.defaultFontSize.toFloat()).growX()
 
     serverIpTable.add(connectionToServerButton.onClick {
         val popup = Popup(optionsPopup.stageToShowOn).apply {
@@ -362,6 +359,3 @@ private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<
     tab.add(table).growX().fillX().row()
 }
 
-private fun addSeparator(tab: Table) {
-    tab.addSeparator(BaseScreen.skinStrings.skinConfig.baseColor.brighten(0.1f))
-}

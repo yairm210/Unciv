@@ -25,7 +25,10 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
@@ -147,6 +150,10 @@ class Ruleset {
         newRuleset.add(this)
         return newRuleset
     }
+
+    fun getGameResource(resourceName: String): GameResource? = Stat.safeValueOf(resourceName)
+        ?: SubStat.safeValueOf(resourceName)
+        ?: tileResources[resourceName]
 
     private inline fun <reified T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>(items.size)

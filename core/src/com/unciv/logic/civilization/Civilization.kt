@@ -8,7 +8,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
@@ -49,8 +48,10 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -86,6 +87,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var nation: Nation
+    
+    @Transient
+    var state = StateForConditionals.EmptyState
 
     @Transient
     val units = UnitManager(this)
@@ -168,9 +172,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
-
-    /* AI section */
-    val tacticalAI = TacticalAI()
 
     var notifications = ArrayList<Notification>()
 
@@ -452,8 +453,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
 
         for (resourceSupply in detailedCivResources) {
-            if (resourceSupply.resource.isStockpiled()) continue
-            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, StateForConditionals(this))) continue
+            if (resourceSupply.resource.isStockpiled) continue
+            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, state)) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
                 newResourceSupplyList.add(resourceSupply.copy())
@@ -476,7 +477,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
         for (entry in getCivResourceSupply())
-            if (!entry.resource.isStockpiled())
+            if (!entry.resource.isStockpiled)
                 hashMap[entry.resource.name] = entry.amount
         for ((key, value) in resourceStockpiles)
             hashMap[key] = value
@@ -513,14 +514,14 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
-        StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals = state) =
+        getMatchingUniques(uniqueType, stateForConditionals).any()
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(this)
+        stateForConditionals: StateForConditionals = state
     ): Sequence<Unique> = sequence {
         yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
@@ -540,33 +541,31 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getTriggeredUniques(
         trigger: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(this)
+        stateForConditionals: StateForConditionals = state,
+        triggerFilter: (Unique) -> Boolean = { true }
     ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
+        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
         yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter) }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, stateForConditionals))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals))
-        yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals, triggerFilter))
+        yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
-
-    @Transient
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
-
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, state: StateForConditionals? = this.state, multiFilter: Boolean = true): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
 
-    fun matchesSingleFilter(filter: String): Boolean {
+    fun matchesSingleFilter(filter: String, state: StateForConditionals? = this.state): Boolean {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
-            else -> nation.matchesFilter(filter)
+            else -> nation.matchesFilter(filter, state, false)
         }
     }
 
@@ -583,7 +582,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun getEquivalentBuilding(baseBuilding: Building): Building {
-        if (baseBuilding.replaces != null)
+        if (baseBuilding.replaces != null
+                && baseBuilding.replaces in gameInfo.ruleset.buildings)
             return getEquivalentBuilding(baseBuilding.replaces!!)
 
         for (building in cache.uniqueBuildings)
@@ -622,6 +622,17 @@ class Civilization : IsPartOfGameInfoSerialization {
             if (unit.replaces == baseUnit.name)
                 return unit
         return baseUnit
+    }
+
+    fun capitalCityIndicator(city: City? = null): Building? {
+        val stateForConditionals = if (city?.civ == this) city.state
+        else if (city == null) state
+        else StateForConditionals(this, city)
+        val indicatorBuildings = gameInfo.ruleset.buildings.values.asSequence()
+            .filter { it.hasUnique(UniqueType.IndicatesCapital, stateForConditionals) }
+
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && matchesFilter(it.uniqueTo!!, stateForConditionals) }
+        return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 
     override fun toString(): String = civName // for debug
@@ -784,8 +795,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
-        tacticalAI.init(this)
-
         cache.setTransients()
     }
 
@@ -856,6 +865,26 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    fun addGameResource(stat: GameResource, amount: Int) {
+        if (stat is TileResource && !stat.isCityWide && stat.isStockpiled) gainStockpiledResource(stat.name, amount)
+        when (stat) {
+            Stat.Culture -> { policies.addCulture(amount)
+                if (amount > 0) totalCultureForContests += amount }
+            Stat.Science -> tech.addScience(amount)
+            Stat.Gold -> addGold(amount)
+            Stat.Faith -> { religionManager.storedFaith += amount
+                if (amount > 0) totalFaithForContests += amount }
+            SubStat.GoldenAgePoints -> goldenAges.addHappiness(amount)
+            else -> {}
+            // Food and Production wouldn't make sense to be added nationwide
+            // Happiness cannot be added as it is recalculated again, use a unique instead
+        }
+    }
+    
+    fun gainStockpiledResource(resourceName: String, amount: Int) {
+        resourceStockpiles.add(resourceName, amount)
+    }
+
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
             Stat.Culture -> policies.storedCulture
@@ -865,6 +894,22 @@ class Civilization : IsPartOfGameInfoSerialization {
             }
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
+            else -> 0
+        }
+    }
+
+    fun getReserve(stat: GameResource): Int {
+        if (stat is TileResource && !stat.isCityWide && stat.isStockpiled)
+            return resourceStockpiles[stat.name]
+        return when (stat) {
+            Stat.Culture -> policies.storedCulture
+            Stat.Science -> {
+                if (tech.currentTechnology() == null) 0
+                else tech.researchOfTech(tech.currentTechnology()!!.name)
+            }
+            Stat.Gold -> gold
+            Stat.Faith -> religionManager.storedFaith
+            SubStat.GoldenAgePoints -> goldenAges.storedHappiness
             else -> 0
         }
     }
@@ -931,10 +976,10 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun moveCapitalTo(city: City?, oldCapital: City?) {
         // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
-        val newCapitalIndicator = city?.capitalCityIndicator()
+        val newCapitalIndicator = if (city == null) null else capitalCityIndicator(city)
         if (newCapitalIndicator != null) {
             // move new capital
-            city.cityConstructions.addBuilding(newCapitalIndicator)
+            city!!.cityConstructions.addBuilding(newCapitalIndicator)
             city.isBeingRazed = false // stop razing the new capital if it was being razed
 
             // move the buildings with MovedToNewCapital unique
@@ -951,8 +996,8 @@ class Civilization : IsPartOfGameInfoSerialization {
             }
         }
 
-        val oldCapitalIndicator = oldCapital?.capitalCityIndicator()
-        if (oldCapitalIndicator != null) oldCapital.cityConstructions.removeBuilding(oldCapitalIndicator)
+        val oldCapitalIndicator = if (oldCapital == null) null else capitalCityIndicator(oldCapital)
+        if (oldCapitalIndicator != null) oldCapital!!.cityConstructions.removeBuilding(oldCapitalIndicator)
     }
 
     /** @param oldCapital `null` when destroying, otherwise old capital */

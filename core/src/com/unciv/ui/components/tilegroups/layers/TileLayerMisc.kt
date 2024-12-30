@@ -1,6 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -49,12 +50,7 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     // For different unit views, we want to effectively "ignore" the terrain and color it by special view
-    private val terrainOverlay = ImageGetter.getImage(strings().hexagon).setHexagonSize()
-
-    init {
-        terrainOverlay.isVisible = false
-        addActor(terrainOverlay)
-    }
+    private var terrainOverlay: Image? = ImageGetter.getImage(strings.hexagon).setHexagonSize()
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
@@ -66,6 +62,8 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             workedIcon!!.hit(coords.x, coords.y, touchable)
         }
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
     private val yields = YieldGroup().apply {
         // Unlike resource or improvement this is created and added only once,
@@ -110,11 +108,11 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         for (arrowToAdd in arrowsToDraw) {
             val targetTile = arrowToAdd.targetTile
             var targetPos = Vector2(targetTile.position)
-            if (tile().tileMap.mapParameters.worldWrap)
+            if (tile.tileMap.mapParameters.worldWrap)
                 targetPos = HexMath.getUnwrappedNearestTo(targetPos,
-                    tile().position, tile().tileMap.maxLongitude)
+                    tile.position, tile.tileMap.maxLongitude)
             val targetRelative = HexMath.hex2WorldCoords(targetPos)
-                .sub(HexMath.hex2WorldCoords(tile().position))
+                .sub(HexMath.hex2WorldCoords(tile.position))
 
             val targetDistance = sqrt(targetRelative.x.pow(2) + targetRelative.y.pow(2))
             val targetAngle = atan2(targetRelative.y, targetRelative.x)
@@ -141,9 +139,9 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
         // If improvement has changed, force new icon next time it is needed
-        val improvementToShow = tile().getShownImprovement(viewingCiv)
+        val improvementToShow = tile.getShownImprovement(viewingCiv)
         val newImprovementPlusPillagedID = if (improvementToShow==null) null
-        else if (tile().improvementIsPillaged) "$improvementToShow-Pillaged"
+        else if (tile.improvementIsPillaged) "$improvementToShow-Pillaged"
         else improvementToShow
 
         if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
@@ -154,7 +152,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
         // Get new icon when needed
         if (improvementPlusPillagedID != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, dim = false, isPillaged = tile().improvementIsPillaged)
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, dim = false, isPillaged = tile.improvementIsPillaged)
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y -= 12 // bottom
@@ -170,14 +168,14 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         val effectiveVisible = when {
             tileGroup.isForceVisible -> show
             show && viewingCiv == null -> true
-            show && tile().hasViewableResource(viewingCiv!!) -> true
+            show && tile.hasViewableResource(viewingCiv!!) -> true
             else -> false
         }
 
         // If resource has changed (e.g. tech researched) - force new icon next time it's needed
-        if (resourceName != tile().resource || resourceAmount != tile().resourceAmount) {
-            resourceName = tile().resource
-            resourceAmount = tile().resourceAmount
+        if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
+            resourceName = tile.resource
+            resourceAmount = tile.resourceAmount
             resourceIcon?.remove()
             resourceIcon = null
         }
@@ -215,8 +213,8 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
-            val label = this.tile().position.toPrettyString()
-            startingLocationIcons.add(label.toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+            val label = this.tile.position.toPrettyString()
+            startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
                 setOrigin(Align.center)
                 center(tileGroup)
@@ -230,7 +228,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             })
         }
 
-        val tilemap = tile().tileMap
+        val tilemap = tile.tileMap
 
         if (tilemap.startingLocationsByNation.isEmpty())
             return
@@ -239,7 +237,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         // Sorted so major get precedence and to make the display deterministic, otherwise you could get
         // different stacking order of the same nations in the same editing session
         val nations = tilemap.startingLocationsByNation.asSequence()
-            .filter { tile() in it.value }
+            .filter { tile in it.value }
             .filter { it.key in tilemap.ruleset!!.nations } // Ignore missing nations
             .map { it.key to tilemap.ruleset!!.nations[it.key]!! }
             .sortedWith(compareBy({ it.second.isCityState }, { it.first }))
@@ -267,7 +265,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         // Add a Label with the total count for this tile
         if (nations.size > 3) {
             // Tons of locations for this tile - display number in red, behind the top three
-            startingLocationIcons.add(nations.size.tr().toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+            startingLocationIcons.add(nations.size.tr().toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
                 setOrigin(Align.center)
                 center(tileGroup)
@@ -297,9 +295,9 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         if (effectiveVisible) yields.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile().stats.getTileStats(tileGroup.city, viewingCiv, localUniqueCache))
+                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv, localUniqueCache))
             else
-                setStats(tile().stats.getTileStats(viewingCiv, localUniqueCache))
+                setStats(tile.stats.getTileStats(viewingCiv, localUniqueCache))
             toFront()
             centerX(tileGroup)
             isVisible = true
@@ -334,28 +332,30 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     /** Activates a colored semitransparent overlay. [color] is cloned, brightened by 0.3f and an alpha of 0.4f applied. */
-    fun overlayTerrain(color: Color) {
-        terrainOverlay.color = color.brighten(0.3f).apply { a = 0.4f }
-        terrainOverlay.isVisible = true
-        determineVisibility()
-    }
+    fun overlayTerrain(color: Color) = overlayTerrainInner(color.brighten(0.3f).apply { a = 0.4f })
 
     /** Activates a colored semitransparent overlay. [color] is cloned and [alpha] applied. No brightening unlike the overload without explicit alpha! */
-    fun overlayTerrain(color: Color, alpha: Float) {
-        terrainOverlay.color = color.cpy().apply { a = alpha }
-        terrainOverlay.isVisible = true
+    fun overlayTerrain(color: Color, alpha: Float) = overlayTerrainInner(color.cpy().apply { a = alpha })
+    
+    private fun overlayTerrainInner(color: Color) {
+        if (terrainOverlay == null){
+            terrainOverlay = ImageGetter.getImage(strings.hexagon).setHexagonSize()
+            addActor(terrainOverlay)
+        }
+        terrainOverlay?.color = color
         determineVisibility()
     }
 
     fun hideTerrainOverlay() {
-        terrainOverlay.isVisible = false
+        terrainOverlay?.remove()
+        terrainOverlay = null
         determineVisibility()
     }
 
 
     fun addArrow(targetTile: Tile, type: MapArrowType) {
-        if (targetTile.position != tile().position)
-            arrowsToDraw.add(MapArrow(targetTile, type, strings()))
+        if (targetTile.position != tile.position)
+            arrowsToDraw.add(MapArrow(targetTile, type, strings))
     }
 
     fun resetArrows() {
@@ -398,7 +398,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
                 || hexOutlineIcon != null
                 || arrows.isNotEmpty()
                 || startingLocationIcons.isNotEmpty()
-                || terrainOverlay.isVisible
+                || terrainOverlay != null
     }
 
     fun reset(localUniqueCache: LocalUniqueCache) {

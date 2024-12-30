@@ -93,7 +93,7 @@
             {
                 "name": "Citizenship",
                 "uniques": [
-                    "[-25]% construction time for [All] improvements",
+                    "Can build [all] improvements at a [+25]% rate",
                     "Free [Worker] appears",
                     "[-100]% weight to this choice for AI decisions"
                 ],
@@ -222,7 +222,8 @@
         "uniques": [
             "[+100]% Production when constructing [Shrine] buildings [in all cities]",
             "[+100]% Production when constructing [Temple] buildings [in all cities]",
-            "Only available <before adopting [Rationalism]>"
+            "Only available <before adopting [Rationalism]>",
+            "[-100]% weight to this choice for AI decisions <when religion is disabled>"
         ],
         "policies": [
             {
@@ -283,7 +284,10 @@
             "Domination": 5,
             "Scientific": 5
         },
-        "uniques": ["[-25]% City-State Influence degradation"],
+        "uniques": [
+            "[-25]% City-State Influence degradation",
+            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>"
+        ],
         "policies": [
             {
                 "name": "Philantropy",

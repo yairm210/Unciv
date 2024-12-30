@@ -143,6 +143,7 @@ object TechnologyDescriptions {
         }
 
         for (unique in tech.uniqueObjects) {
+            if (unique.isHiddenToUsers()) continue
             yield(
                 when {
                     unique.type == UniqueType.EnablesCivWideStatProduction ->

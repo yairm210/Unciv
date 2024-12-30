@@ -6,14 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.components.tilegroups.layers.TileLayerBorders
-import com.unciv.ui.components.tilegroups.layers.TileLayerCityButton
-import com.unciv.ui.components.tilegroups.layers.TileLayerFeatures
-import com.unciv.ui.components.tilegroups.layers.TileLayerMisc
-import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
-import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitSprite
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
+import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -55,8 +48,8 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
 
     init {
-        isTransform = false // performance helper - nothing here is rotated or scaled
         this.setSize(groupSize, groupSize)
+        this.isTransform = false // Cannot be a NonTransformGroup as this causes font-rendered terrain to be upside-down
 
         this.addActor(layerTerrain)
         this.addActor(layerFeatures)

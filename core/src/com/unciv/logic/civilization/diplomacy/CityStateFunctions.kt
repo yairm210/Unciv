@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.diplomacy
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
@@ -24,8 +25,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.utils.randomWeighted
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
@@ -34,7 +35,7 @@ import kotlin.random.Random
 class CityStateFunctions(val civInfo: Civilization) {
 
     /** Attempts to initialize the city state, returning true if successful. */
-    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Sequence<String>): Boolean {
+    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<String>): Boolean {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
@@ -56,8 +57,9 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
             val possibleUnits = ruleset.units.values.filter {
                 return@filter !it.availableInEra(ruleset, startingEra) // Not from the start era or before
-                    && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
+                    && it.uniqueTo != null && it.uniqueTo !in usedMajorCivs // Must be from a major civ not in the game
                         // Note that this means that units unique to a civ *filter* instead of a civ *name* will not be provided
+                    && ruleset.nations[it.uniqueTo]?.isMajorCiv == true // don't take unique units from other city states / barbs
                     && ruleset.unitTypes[it.unitType]!!.isLandUnit()
                     && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
             }
@@ -153,7 +155,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 city.cityConstructions.getConstructableUnits()
                 .filter { !it.isCivilian() && it.isLandUnit && it.uniqueTo == null }
                 // Does not make us go over any resource quota
-                .filter { it.getResourceRequirementsPerTurn(StateForConditionals(civInfo = receivingCiv)).none {
+                .filter { it.getResourceRequirementsPerTurn(receivingCiv.state).none {
                     it.value > 0 && receivingCiv.getResourceAmount(it.key) < it.value
                 } }
                 .toList().randomOrNull()
@@ -371,18 +373,22 @@ class CityStateFunctions(val civInfo: Civilization) {
             return
 
         otherCiv.addGold(-getDiplomaticMarriageCost())
+        
         val notificationLocation = civInfo.getCapital()!!.location
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
             notificationLocation,
             NotificationCategory.Diplomacy, civInfo.civName,
             NotificationIcon.Diplomacy, otherCiv.civName)
+        
         for (civ in civInfo.gameInfo.civilizations.filter { it != otherCiv })
             civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civInfo.civName}], bringing them under their control.",
                 notificationLocation,
                 NotificationCategory.Diplomacy, civInfo.civName,
                 NotificationIcon.Diplomacy, otherCiv.civName)
+        
         for (unit in civInfo.units.getCivUnits())
             unit.gift(otherCiv)
+        
 
         // Make sure this CS can never be liberated
         civInfo.gameInfo.getCities().filter {
@@ -393,6 +399,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         for (city in civInfo.cities) {
+            city.espionage.removeAllPresentSpies(SpyFleeReason.CityTakenOverByMarriage)
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
         }
@@ -682,7 +689,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         // Even if we aren't *technically* protectors, we *can* still be pissed you attacked our allies*
         val allyCivName = civInfo.getAllyCiv()
         val allyCiv = if (allyCivName != null) civInfo.gameInfo.getCivilization(allyCivName) else null
-        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs()){
+        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs() && allyCiv.knows(attacker)){
             val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
             // Less than if we were protectors
             allyDiplomacy.addModifier(DiplomaticModifiers.AttackedAlliedMinor, -10f)

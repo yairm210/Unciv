@@ -109,8 +109,9 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
      *  @throws IllegalStateException if called on uninitialized instance
      */
     fun play(): Boolean {
-        check(state.canPlay && music != null) {
-            "MusicTrackController.play called on uninitialized instance"
+        if (!state.canPlay || music == null) {
+            clear() // reset to correct state
+            return false
         }
 
         // Unexplained observed exception: Gdx.Music.play fails with

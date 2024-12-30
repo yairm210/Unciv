@@ -38,7 +38,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() = compareBy<City, String>(collator) { it.name.tr(hideIcons = true) }
         override fun getHeaderActor(iconSize: Float) =
-                ImageGetter.getUnitIcon("Settler")
+                ImageGetter.getImage("UnitIcons/Settler").apply { color = ImageGetter.CHARCOAL }
                 .surroundWithCircle(iconSize)
         override fun getEntryValue(item: City) = 0  // make sure that `stat!!` in the super isn't used
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =

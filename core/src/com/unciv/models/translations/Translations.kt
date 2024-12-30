@@ -333,11 +333,12 @@ object TranslationActiveModsCache {
  *                  - phrases between curly braces are translated individually
  *                  Additionally, they may contain conditionals between '<' and '>'
  *  @param      hideIcons disables auto-inserting icons for ruleset objects (but not Stats)
+ *  @param      hideStats disables auto-inserting icons for Stats (but not rulset objects)
  *  @return     The translated string
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(hideIcons: Boolean = false): String {
+fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
     val language: String = UncivGame.Current.settings.language
 
     // '<' and '>' checks for quick 'no' answer, regex to ensure that no one accidentally put '><' and ruined things
@@ -359,7 +360,7 @@ fun String.tr(hideIcons: Boolean = false): String {
     if (curlyBracketsEncounteredFirst) // Translating partial sentences
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr(hideIcons) }
 
-    return translateIndividualWord(language, hideIcons)
+    return translateIndividualWord(language, hideIcons, hideStats)
 }
 
 
@@ -471,7 +472,7 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 
 
 /** No brackets of any kind, just a single word */
-private fun String.translateIndividualWord(language: String, hideIcons: Boolean): String {
+private fun String.translateIndividualWord(language: String, hideIcons: Boolean, hideStats: Boolean): String {
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
     val translation = UncivGame.Current.translations.getText(
@@ -481,7 +482,7 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean)
     }
 
     val stat = Stat.safeValueOf(this)
-    if (stat != null) return stat.character + translation
+    if (!hideStats && stat != null) return stat.character + translation
 
     if (!hideIcons && FontRulesetIcons.rulesetObjectNameToChar.containsKey(this))
         return FontRulesetIcons.rulesetObjectNameToChar[this]!! + translation

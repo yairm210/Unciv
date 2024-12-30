@@ -1,5 +1,6 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
@@ -20,6 +21,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
     private var previousTileOwner: Civilization? = null
     private val borderSegments = HashMap<Tile, BorderSegment>()
@@ -126,7 +128,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
 
                 val innerBorderImage = ImageGetter.getImage(
-                    strings().orFallback { getBorder(borderShapeString,"Inner") }
+                    strings.orFallback { getBorder(borderShapeString,"Inner") }
                 ).setHexagonSize()
 
                 addActor(innerBorderImage)
@@ -135,7 +137,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 innerBorderImage.color = civOuterColor
 
                 val outerBorderImage = ImageGetter.getImage(
-                    strings().orFallback { getBorder(borderShapeString, "Outer") }
+                    strings.orFallback { getBorder(borderShapeString, "Outer") }
                 ).setHexagonSize()
 
                 addActor(outerBorderImage)

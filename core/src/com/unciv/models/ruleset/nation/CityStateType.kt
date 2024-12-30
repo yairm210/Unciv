@@ -14,7 +14,7 @@ class CityStateType: INamed {
     var allyBonusUniques = ArrayList<String>()
     val allyBonusUniqueMap by lazy { allyBonusUniques.toUniqueMap() }
     private fun ArrayList<String>.toUniqueMap() =
-        UniqueMap(asSequence().map { Unique(it, sourceObjectType = UniqueTarget.CityState) })
+        UniqueMap(asSequence().map { Unique(it, sourceObjectType = UniqueTarget.CityState, sourceObjectName = name) })
 
     var color: List<Int> = listOf(255,255,255)
     private val colorObject by lazy { colorFromRGB(color) }

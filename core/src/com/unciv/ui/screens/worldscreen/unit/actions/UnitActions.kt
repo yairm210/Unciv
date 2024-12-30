@@ -78,6 +78,7 @@ object UnitActions {
         UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
         UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepActions,
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
+        UnitActionType.Guard to UnitActionsFromUniques::getGuardActions,
         UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
         UnitActionType.ConstructImprovement to UnitActionsFromUniques::getBuildingImprovementsActions,
         UnitActionType.ConnectRoad to UnitActionsFromUniques::getConnectRoadActions,
@@ -295,7 +296,7 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.addSleepActions(unit: MapUnit, tile: Tile) {
-        if (unit.isFortified() || unit.canFortify() || !unit.hasMovement()) return
+        if (unit.isFortified() || unit.canFortify() || unit.isGuarding() || !unit.hasMovement()) return
         if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
 
         yield(UnitAction(UnitActionType.Sleep,
@@ -381,8 +382,11 @@ object UnitActions {
             type = UnitActionType.Wait,
             useFrequency = 65f, // Preferably have this on the first page
             action = {
-                unit.due = false
-                GUI.getWorldScreen().switchToNextUnit()
+                // If it's on, skips to next unit due to worldScreen.switchToNextUnit() in activateAction
+                // We don't want to switch twice since then we skip units :)
+                if (!UncivGame.Current.settings.autoUnitCycle)
+                    GUI.getWorldScreen().switchToNextUnit()
+                unit.due = false 
             }
         ))
     }

@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.components.extensions.randomWeighted
+import com.unciv.utils.randomWeighted
 import com.unciv.utils.Log
 import com.unciv.utils.Tag
 import kotlin.math.abs

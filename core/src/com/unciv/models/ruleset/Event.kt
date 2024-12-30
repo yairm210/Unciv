@@ -41,19 +41,8 @@ class EventChoice : ICivilopediaText, RulesetObject() {
     /** Keyboard support - not user-rebindable, mod control only. Will be [parsed][KeyCharAndCode.parse], so Gdx key names will work. */
     val keyShortcut = ""
     
-    @Deprecated("as of 4.13.4", ReplaceWith("uniques"))
-    var triggeredUniques = ArrayList<String>()
-    @Deprecated("as of 4.13.4", ReplaceWith("uniqueObjects"))
-    val triggeredUniqueObjects by lazy { triggeredUniques.map { Unique(it) } }
-
-    @Deprecated("as of 4.13.4", ReplaceWith("uniques"))
-    var conditions = ArrayList<String>()
-    @Deprecated("as of 4.13.4", ReplaceWith("uniqueObjects"))
-    val conditionObjects by lazy { conditions.map { Unique(it) } }
 
     fun matchesConditions(stateForConditionals: StateForConditionals): Boolean {
-        if (conditionObjects.any { !Conditionals.conditionalApplies(null, it, stateForConditionals) })
-            return false
         if (hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(stateForConditionals) })
@@ -64,7 +53,7 @@ class EventChoice : ICivilopediaText, RulesetObject() {
     fun triggerChoice(civ: Civilization, unit: MapUnit? = null): Boolean {
         var success = false
         val stateForConditionals = StateForConditionals(civ, unit = unit)
-        val triggerUniques = uniqueObjects.filter { it.isTriggerable } + triggeredUniqueObjects 
+        val triggerUniques = uniqueObjects.filter { it.isTriggerable }
         for (unique in triggerUniques.flatMap { it.getMultiplied(stateForConditionals) })
             if (UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit)) success = true
         return success

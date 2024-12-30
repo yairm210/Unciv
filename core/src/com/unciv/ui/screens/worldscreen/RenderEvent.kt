@@ -6,6 +6,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toTextButton
@@ -69,10 +70,7 @@ class RenderEvent(
 
         val lines = (
             choice.civilopediaText.asSequence()
-                + choice.triggeredUniqueObjects.asSequence()
-                    .filterNot { it.isHiddenToUsers() }
-                    .map { FormattedLine(it) }
-                + choice.uniqueObjects.filter { it.isTriggerable }
+                + choice.uniqueObjects.filter { it.isTriggerable || it.type == UniqueType.Comment }
                     .filterNot { it.isHiddenToUsers() }
                     .map { FormattedLine(it) }
             ).asIterable()

@@ -23,7 +23,6 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
@@ -375,7 +374,7 @@ class WorldScreen(
             else bottomTileInfoTable.selectedCiv = viewingCiv
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
+            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
 
             battleTable.update()
 
@@ -461,7 +460,7 @@ class WorldScreen(
             if (viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
                 game.settings.addCompletedTutorialTask("Create a trade route")
         }
-        val stateForConditionals = StateForConditionals(viewingCiv)
+        val stateForConditionals = viewingCiv.state
         return gameInfo.ruleset.events.values.firstOrNull {
             it.presentation == Event.Presentation.Floating &&
                 it.isAvailable(stateForConditionals)

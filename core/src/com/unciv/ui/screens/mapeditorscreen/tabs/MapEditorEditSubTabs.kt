@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.mapeditorscreen.tabs
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -12,16 +11,13 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.Terrain
-import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.tile.*
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
@@ -228,7 +224,7 @@ class MapEditorEditImprovementsTab(
             val road = RoadStatus.entries.firstOrNull { r -> r.name == it }
             if (road != null)
                 editTab.setBrush(it, "Improvement/$it", handlerType = BrushHandlerType.Road) { tile ->
-                    tile.roadStatus = if (tile.roadStatus == road) RoadStatus.None else road
+                    tile.setRoadStatus(if (tile.roadStatus == road) RoadStatus.None else road, null)
                 }
             else
                 editTab.setBrush(it, "Improvement/$it") { tile ->
@@ -471,9 +467,8 @@ class MapEditorEditRiversTab(
         }.makeTileGroup()
     private fun getRemoveRiverIcon() =
         ImageGetter.getCrossedImage(getTileGroupWithRivers(RiverEdge.All), iconSize)
-    private fun getRiverIcon(edge: RiverEdge) = Group().apply {
+    private fun getRiverIcon(edge: RiverEdge) = NonTransformGroup().apply {
         // wrap same as getRemoveRiverIcon so the icons align the same (using getTileGroupWithRivers directly works but looks ugly - reason unknown to me)
-        isTransform = false
         setSize(iconSize, iconSize)
         val tileGroup = getTileGroupWithRivers(edge)
         tileGroup.center(this)

@@ -51,6 +51,8 @@ object AirUnitAutomation {
 
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
+        if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
+
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
         val pathsToCities = unit.movement.getAerialPathsToCities()
@@ -76,7 +78,6 @@ object AirUnitAutomation {
 
         // no city needs fighters to defend, so let's attack stuff from the closest possible location
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
-
     }
 
     private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>): Boolean {
@@ -96,6 +97,8 @@ object AirUnitAutomation {
         if (unit.health <= 90 || (unit.health < 100 && !unit.civ.isAtWar())) {
             return // Wait and heal
         }
+
+        if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 

@@ -19,7 +19,7 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
-        classpath("com.android.tools.build:gradle:8.2.2")
+        classpath("com.android.tools.build:gradle:8.5.0")
     }
 }
 
@@ -60,6 +60,7 @@ project(":desktop") {
 
     dependencies {
         "implementation"(project(":core"))
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion")
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
@@ -90,22 +91,24 @@ project(":server") {
 
 }
 
-project(":android") {
-    apply(plugin = "com.android.application")
-    apply(plugin = "kotlin-android")
+if (System.getenv("ANDROID_HOME") != null) {
+    project(":android") {
+        apply(plugin = "com.android.application")
+        apply(plugin = "kotlin-android")
 
-    val natives by configurations.creating
+        val natives by configurations.creating
 
-    dependencies {
-        "implementation"(project(":core"))
-        // Not sure why I had to add this in for the upgrade to 1.12.1 to work, we can probably remove this later since it's contained in core
-        "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-        "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
-        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
-        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
-        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
-        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
+        dependencies {
+            "implementation"(project(":core"))
+            // Not sure why I had to add this in for the upgrade to 1.12.1 to work, we can probably remove this later since it's contained in core
+            "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
+            "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
+            "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
+            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
+            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
+            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
+        }
     }
 }
 

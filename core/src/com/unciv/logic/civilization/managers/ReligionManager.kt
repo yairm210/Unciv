@@ -9,13 +9,13 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import java.lang.Integer.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class ReligionManager : IsPartOfGameInfoSerialization {
@@ -107,8 +107,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             || religionState == ReligionState.Pantheon // any subsequent pantheons before founding a religion
             || (religionState == ReligionState.Religion || religionState == ReligionState.EnhancedReligion) // any belief adding outside of great prophet use
 
-    fun faithForPantheon(additionalCivs: Int = 0) =
-        civInfo.gameInfo.ruleset.modOptions.constants.pantheonBase + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * civInfo.gameInfo.ruleset.modOptions.constants.pantheonGrowth
+    fun faithForPantheon(additionalCivs: Int = 0): Int {
+        val gameInfo = civInfo.gameInfo
+        val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null }
+        val cost = gameInfo.ruleset.modOptions.constants.pantheonBase + numCivs * gameInfo.ruleset.modOptions.constants.pantheonGrowth
+        return (cost * gameInfo.speed.faithCostModifier).roundToInt()
+    }
 
     /** Used for founding the pantheon and for each time the player gets additional pantheon beliefs
      * before forming a religion */
@@ -403,7 +407,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
         for (belief in beliefs)
-            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(StateForConditionals(civInfo)) })
+            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) })
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats

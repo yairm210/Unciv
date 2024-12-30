@@ -81,8 +81,7 @@ object MotivationToAttackAutomation {
             modifiers.add(Pair("Close cities", 5f * personality.inverseModifierFocus(PersonalityValue.Aggressive, 1f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
-            modifiers.add(Pair("Research Agreement", -5f * personality.modifierFocus(PersonalityValue.Loyal, .2f)
-                * personality.scaledFocus(PersonalityValue.Science) * personality.modifierFocus(PersonalityValue.Commerce, .3f)))
+            modifiers.add(Pair("Research Agreement", -5f * personality.scaledFocus(PersonalityValue.Science) * personality.scaledFocus(PersonalityValue.Commerce)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             modifiers.add(Pair("Declaration of Friendship", -10f * personality.modifierFocus(PersonalityValue.Loyal, .5f)))
@@ -105,7 +104,7 @@ object MotivationToAttackAutomation {
         }
 
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
-            modifiers.add(Pair("Receiving trade resources", -8f * personality.modifierFocus(PersonalityValue.Commerce, .5f) * personality.modifierFocus(PersonalityValue.Loyal, .2f)))
+            modifiers.add(Pair("Receiving trade resources", -8f * personality.modifierFocus(PersonalityValue.Commerce, .5f)))
 
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
@@ -117,9 +116,9 @@ object MotivationToAttackAutomation {
         if (targetCiv.isCityState) {
             modifiers.add(Pair("Protectors", -targetCiv.cityStateFunctions.getProtectorCivs().size * 3f))
             if (targetCiv.cityStateFunctions.getProtectorCivs().contains(civInfo))
-                modifiers.add(Pair("Under our protection", -15 * personality.modifierFocus(PersonalityValue.Loyal, .8f)))
+                modifiers.add(Pair("Under our protection", -15 * personality.modifierFocus(PersonalityValue.Diplomacy, .8f)))
             if (targetCiv.getAllyCiv() == civInfo.civName)
-                modifiers.add(Pair("Allied City-state", -20 * personality.modifierFocus(PersonalityValue.Loyal, .8f))) // There had better be a DAMN good reason
+                modifiers.add(Pair("Allied City-state", -20 * personality.modifierFocus(PersonalityValue.Diplomacy, .8f))) // There had better be a DAMN good reason
         }
 
         addWonderBasedMotivations(targetCiv, modifiers)
@@ -202,7 +201,7 @@ object MotivationToAttackAutomation {
             // still possible for AI to declare war for isolated city
             else -> 0f
         }
-        return relationshipModifier * diplomacyManager.civInfo.getPersonality().modifierFocus(PersonalityValue.Diplomacy, .3f)
+        return relationshipModifier * diplomacyManager.civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f)
     }
 
     private fun getRelativeTechModifier(civInfo: Civilization, otherCiv: Civilization): Float {
@@ -215,7 +214,7 @@ object MotivationToAttackAutomation {
             relativeTech > -9 -> -5f
             else -> -10f
         }
-        return relativeTechModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Science, .2f)
+        return relativeTechModifier
     }
 
     private fun getProductionRatioModifier(civInfo: Civilization, otherCiv: Civilization): Float {
@@ -234,7 +233,7 @@ object MotivationToAttackAutomation {
             productionRatio > .25f -> -10f
             else -> -15f
         }
-        return productionRatioModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Production, .2f)
+        return productionRatioModifier
     }
 
     private fun getScoreRatioModifier(otherCiv: Civilization, civInfo: Civilization): Float {
@@ -253,7 +252,7 @@ object MotivationToAttackAutomation {
             scoreRatio > .25f -> -5f
             else -> -10f
         }
-        return scoreRatioModifier
+        return scoreRatioModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Culture, .3f)
     }
 
     private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Float {
@@ -297,7 +296,7 @@ object MotivationToAttackAutomation {
             combatStrengthRatio > .4f -> -20f
             else -> -40f
         }
-        return combatStrengthModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Military, .2f)
+        return combatStrengthModifier
     }
 
     private fun hasNoUnitsThatCanAttackCityWithoutDying(civInfo: Civilization, theirCity: City) = civInfo.units.getCivUnits().filter { it.isMilitary() }.none {

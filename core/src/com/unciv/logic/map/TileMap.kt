@@ -12,11 +12,12 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.components.extensions.addToMapOfSets
-import com.unciv.ui.components.extensions.contains
+import com.unciv.utils.addToMapOfSets
+import com.unciv.utils.contains
 import java.lang.Integer.max
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
@@ -74,8 +75,17 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Transient
     var ruleset: Ruleset? = null
 
+    data class TerrainListData(
+        val uniques: UniqueMap,
+        val terrainNameSet: Set<String>
+    ){
+        companion object{
+            val EMPTY = TerrainListData(UniqueMap.EMPTY, emptySet())
+        }
+    }
+    
     @Transient
-    var tileUniqueMapCache = ConcurrentHashMap<List<String>, UniqueMap>()
+    var tileUniqueMapCache = ConcurrentHashMap<List<String>, TerrainListData>()
 
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
@@ -565,6 +575,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
         unit.currentTile = currentTile  // temporary
+        unit.cache.state = StateForConditionals(unit)
         if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
 
         // if it's not suitable, try to find another tile nearby
@@ -642,6 +653,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
                 unit.owner = newNation.name
                 unit.civ = newCiv
+                unit.setTransients(newCiv.gameInfo.ruleset)
             }
         }
         for (element in startingLocations.filter { it.nation != player.chosenCiv }) {

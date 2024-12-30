@@ -7,19 +7,9 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeOfferType
-import com.unciv.logic.trade.TradeOfferType.Agreement
-import com.unciv.logic.trade.TradeOfferType.City
-import com.unciv.logic.trade.TradeOfferType.Gold
-import com.unciv.logic.trade.TradeOfferType.Gold_Per_Turn
-import com.unciv.logic.trade.TradeOfferType.Introduction
-import com.unciv.logic.trade.TradeOfferType.Luxury_Resource
-import com.unciv.logic.trade.TradeOfferType.Strategic_Resource
-import com.unciv.logic.trade.TradeOfferType.Technology
-import com.unciv.logic.trade.TradeOfferType.Treaty
-import com.unciv.logic.trade.TradeOfferType.WarDeclaration
-import com.unciv.logic.trade.TradeOfferType.values
+import com.unciv.logic.trade.TradeOfferType.*
+import com.unciv.logic.trade.TradeOffersList
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.disable
@@ -52,12 +42,12 @@ class OffersListScroll(
 
     /**
      * @param offersToDisplay The offers which should be displayed as buttons
-     * @param otherOffers The list of other side's offers to compare with whether these offers are unique
+     * @param otherSideOffers The list of other side's offers to compare with whether these offers are unique
      * @param untradableOffers Things we got from sources that we can't trade on, displayed for completeness - should be aggregated per resource to "All" origin
      */
     fun update(
         offersToDisplay: TradeOffersList,
-        otherOffers: TradeOffersList,
+        otherSideOffers: TradeOffersList,
         untradableOffers: ResourceSupplyList = ResourceSupplyList.emptyList,
         ourCiv: Civilization,
         theirCiv: Civilization
@@ -65,7 +55,7 @@ class OffersListScroll(
         table.clear()
         expanderTabs.clear()
 
-        for (offerType in values()) {
+        for (offerType in TradeOfferType.entries) {
             val labelName = when(offerType) {
                 Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
@@ -82,7 +72,7 @@ class OffersListScroll(
             }
         }
 
-        for (offerType in values()) {
+        for (offerType in TradeOfferType.entries) {
             val offersOfType = offersToDisplay.filter { it.type == offerType }
                 .sortedWith(compareBy(
                     { if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0 },
@@ -100,7 +90,7 @@ class OffersListScroll(
                     Luxury_Resource, Strategic_Resource ->
                         ImageGetter.getResourcePortrait(offer.name, 30f)
                     WarDeclaration ->
-                        ImageGetter.getNationPortrait(UncivGame.Current.gameInfo!!.ruleset.nations[offer.name]!!, 30f)
+                        ImageGetter.getNationPortrait(ourCiv.gameInfo.ruleset.nations[offer.name]!!, 30f)
                     else -> null
                 }
                 val tradeButton = IconTextButton(tradeLabel, tradeIcon).apply {
@@ -124,7 +114,7 @@ class OffersListScroll(
 
                     // highlight unique suggestions
                     if (offerType in listOf(Luxury_Resource, Strategic_Resource)
-                            && otherOffers.all { it.type != offer.type || it.name != offer.name })
+                            && otherSideOffers.all { it.type != offer.type || it.name != offer.name || it.amount < 0}) // we can 'have' negative amounts of resources 
                         tradeButton.color = Color.GREEN
 
                     tradeButton.onClick {
@@ -132,7 +122,7 @@ class OffersListScroll(
                         onOfferClicked(offer.copy(amount = amountTransferred))
                     }
                 }
-                else tradeButton.disable()  // for instance we have negative gold
+                else tradeButton.disable()  // for instance, we have negative gold
 
 
                 if (expanderTabs.containsKey(offerType))

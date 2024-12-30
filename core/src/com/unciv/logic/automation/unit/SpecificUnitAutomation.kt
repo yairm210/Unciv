@@ -1,6 +1,7 @@
 ﻿package com.unciv.logic.automation.unit
 
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -191,9 +192,13 @@ object SpecificUnitAutomation {
             return
         }
 
+        val shouldSettle = (unit.getTile() == bestCityLocation && unit.hasMovement())
+        if (shouldSettle) return foundCityAction.action.invoke()
+        //Settle if we're already on the best tile, before looking if we should retreat from barbarians
+        if (tryRunAwayIfNeccessary(unit)) return 
         unit.movement.headTowards(bestCityLocation)
-        if (unit.getTile() == bestCityLocation && unit.hasMovement())
-            foundCityAction.action.invoke()
+        if (shouldSettle) foundCityAction.action.invoke() 
+        //TODO: evaluate 1-tile move with settle on same turn as "safe"
     }
 
     /** @return whether there was any progress in placing the improvement. A return value of `false`

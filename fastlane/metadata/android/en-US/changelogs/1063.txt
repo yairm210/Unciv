@@ -1,0 +1,9 @@
+Modding: 'upon gaining/losing the [promotion] status/promotion' triggers now work correctly
+
+Allow AI to use perpetual culture/faith conversions
+
+Added version number to main menu
+
+By itanasi:
+- New 'Guard' action for units that can retreat from combat 
+- Align Civilopedia on Idle Units and Wait command to current behavior

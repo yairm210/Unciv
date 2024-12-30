@@ -195,6 +195,7 @@ object GameStarter {
             val startingEraNumber = ruleset.eras[gameSetupInfo.gameParameters.startingEra]!!.eraNumber
             for (tech in ruleset.technologies.values) {
                 if (ruleset.eras[tech.era()]!!.eraNumber >= startingEraNumber) continue
+                if (civInfo.tech.isUnresearchable(tech)) continue
                 civInfo.addTechSilently(tech.name)
             }
 
@@ -348,7 +349,12 @@ object GameStarter {
             .map { it.key }
             .filter { it in usedCivNames }
 
-        for (player in chosenPlayers) {
+        val playersToAdd = if (newGameParameters.shufflePlayerOrder) {
+            chosenPlayers.toMutableList().apply { shuffle() }
+        } else {
+            chosenPlayers
+        }
+        for (player in playersToAdd) {
             val civ = Civilization(player.chosenCiv)
             when (player.chosenCiv) {
                 in usedMajorCivs, Constants.spectator -> {
@@ -428,7 +434,7 @@ object GameStarter {
             //Trigger any global or nation uniques that should triggered.
             //We may need the starting location for some uniques, which is why we're doing it now
             val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
-            for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ) })
+            for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ.state) })
                 UniqueTriggerActivation.triggerUnique(unique, civ, tile = startingLocation)
         }
     }

@@ -31,10 +31,16 @@ class TileImprovement : RulesetStatsObject() {
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
+        
         val buildSpeedUniques = unit.getMatchingUniques(UniqueType.SpecificImprovementTime, state, checkCivInfoUniques = true)
-                .filter { matchesFilter(it.params[1]) }
-        return buildSpeedUniques
-            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.speed.improvementBuildLengthModifier) { calculatedTurnsToBuild, unique ->
+            .filter { matchesFilter(it.params[1], state) }
+        val buildSpeedIncreases = unit.getMatchingUniques(UniqueType.ImprovementTimeIncrease, state, checkCivInfoUniques = true)
+            .filter { matchesFilter(it.params[0], state) }
+        val increase = buildSpeedIncreases.sumOf { it.params[1].toDouble() }.toFloat().toPercent()
+        val buildTime = if (increase == 0f) 0f
+        else (civInfo.gameInfo.speed.improvementBuildLengthModifier * turnsToBuild / increase)
+
+        return buildSpeedUniques.fold(buildTime) { calculatedTurnsToBuild, unique ->
                 calculatedTurnsToBuild * unique.params[0].toPercent()
             }.roundToInt()
             .coerceAtLeast(1)
@@ -69,21 +75,26 @@ class TileImprovement : RulesetStatsObject() {
         || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { terrain.matchesFilter(it.params[0]) }
 
 
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
-    fun matchesFilter(filter: String): Boolean =
-        cachedMatchesFilterResult.getOrPut(filter) { MultiFilter.multiFilter(filter, ::matchesSingleFilter ) }
+    fun matchesFilter(filter: String, tileState: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
+            matchesSingleFilter(it) ||
+                tileState != null && hasUnique(it, tileState) ||
+                tileState == null && hasTagUnique(it)
+        })
+        else matchesSingleFilter(filter) ||
+            tileState != null && hasUnique(filter, tileState) ||
+            tileState == null && hasTagUnique(filter)
+    }
 
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
-            name -> true
-            replaces -> true
-            in Constants.all -> true
+            "all", "All" -> true
             "Improvement" -> true // For situations involving tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
-            else -> uniqueMap.hasTagUnique(filter)
+            else -> filter == name || filter == replaces // 2 string equalities is better than hashmap lookup
         }
     }
 

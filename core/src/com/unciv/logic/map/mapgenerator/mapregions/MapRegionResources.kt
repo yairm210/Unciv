@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.randomWeighted
+import com.unciv.utils.randomWeighted
 import kotlin.random.Random
 
 /** This class deals with the internals of *how* to place resources in tiles

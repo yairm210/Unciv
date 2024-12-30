@@ -21,9 +21,9 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.utils.randomWeighted
 
 object UnitAutomation {
 
@@ -67,10 +67,8 @@ object UnitAutomation {
 
         val tileWithRuinOrEncampment = unit.viewableTiles
             .firstOrNull {
-                (
-                        (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent())
-                                || it.improvement == Constants.barbarianEncampment
-                        )
+                (it.getTileImprovement()?.isAncientRuinsEquivalent() == true
+                                || it.improvement == Constants.barbarianEncampment)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
         unit.movement.headTowards(tileWithRuinOrEncampment)
@@ -138,7 +136,7 @@ object UnitAutomation {
         if (upgradeUnits.none()) return false // for resource reasons, usually
         val upgradedUnit = upgradeUnits.minBy { it.cost }
 
-        if (upgradedUnit.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)).keys.any { !unit.requiresResource(it) }) {
+        if (upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state).keys.any { !unit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
@@ -159,10 +157,10 @@ object UnitAutomation {
             if (!unit.civ.tech.isResearched(baseUnit))
                 return true
             return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                .any { !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit)) }
+                .any { !it.conditionalsApply(unit.cache.state) }
         }
 
-        return unit.baseUnit.getRulesetUpgradeUnits(StateForConditionals(unit.civ, unit = unit))
+        return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)
             .map { unit.civ.getEquivalentUnit(it) }
             .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) }
     }
@@ -186,7 +184,7 @@ object UnitAutomation {
                 .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
             if (availablePromotions.none()) break
             val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
-            val stateForConditionals = StateForConditionals(unit)
+            val stateForConditionals = unit.cache.state
             
             val chosenPromotion = if (freePromotions.isNotEmpty()) freePromotions.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
             else availablePromotions.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
@@ -321,23 +319,25 @@ object UnitAutomation {
             val otherUnit = retreatTile.militaryUnit
             if (otherUnit == null) {
                 // See if we can retreat to the tile
-                if (unit.movement.canMoveTo(retreatTile)) {
-                    unit.movement.moveToTile(retreatTile)
-                    return true
-                }
+                if (!unit.movement.canMoveTo(retreatTile)) continue
+                unit.movement.moveToTile(retreatTile)
+                return true
             } else if (otherUnit.civ == unit.civ) {
                 // The tile is taken, lets see if we want to swap retreat to it
-                if (otherUnit.health > 80) {
-                    if (otherUnit.baseUnit.isRanged()) {
-                        // Don't swap ranged units closer than they have to be
-                        val range = otherUnit.baseUnit.range
-                        if (ourDistanceToClosestEnemy < range)
-                            continue
-                    }
-                    if (unit.movement.canUnitSwapTo(retreatTile)) {
+                if (otherUnit.health <= 80) continue
+                if (otherUnit.baseUnit.isRanged()) {
+                    // Don't swap ranged units closer than they have to be
+                    val range = otherUnit.baseUnit.range
+                    if (ourDistanceToClosestEnemy < range)
+                        continue
+                }
+                if (unit.movement.canUnitSwapTo(retreatTile)) {
+                    unit.movement.headTowards(retreatTile) // we need to move through the intermediate tiles
+                    // if nothing changed
+                    if (unit.currentTile.neighbors.contains(otherUnit.currentTile) && unit.movement.canUnitSwapTo(retreatTile)) {
                         unit.movement.swapMoveToTile(retreatTile)
-                        return true
                     }
+                    return true
                 }
             }
         }
@@ -397,7 +397,7 @@ object UnitAutomation {
         }
 
         val bestTilesForHealing = tilesByHealingRate.maxByOrNull { it.key }!!.value
-        val bestTileForHealing = bestTilesForHealing.maxByOrNull { it.getDefensiveBonus() }!!
+        val bestTileForHealing = bestTilesForHealing.maxByOrNull { it.getDefensiveBonus(unit = unit) }!!
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
         if (currentUnitTile != bestTileForHealing
@@ -451,7 +451,7 @@ object UnitAutomation {
                     || (!onlyPillageToHeal && it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
-        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false) }!!
+        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false, unit) }!!
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 

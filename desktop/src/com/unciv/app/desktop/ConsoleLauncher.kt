@@ -8,6 +8,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MirroringType
 import com.unciv.logic.simulation.Simulation
 import com.unciv.models.metadata.*
 import com.unciv.models.ruleset.RulesetCache
@@ -68,18 +69,18 @@ internal object ConsoleLauncher {
             mapSize = MapSize.Small
             noRuins = true
             noNaturalWonders = true
+            mirroring = MirroringType.aroundCenterTile
         }
     }
 
-    private fun getGameParameters(civilization1: String, civilization2: String): GameParameters {
+    private fun getGameParameters(vararg civilizations: String): GameParameters {
         return GameParameters().apply {
             difficulty = "Prince"
             numberOfCityStates = 0
             speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
-                add(Player(civilization1))
-                add(Player(civilization2))
+                civilizations.forEach { add(Player(it)) }
                 add(Player(Constants.spectator, PlayerType.Human))
             }
         }

@@ -11,8 +11,8 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.components.extensions.withItem
-import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.utils.withItem
+import com.unciv.utils.withoutItem
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
@@ -109,6 +109,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         if (city.getMatchingUniques(UniqueType.NullifiesGrowth).any())
             return
 
+        // Hard block growth when using Avoid Growth, cap stored food
+        if (city.avoidGrowth) {
+            foodStored = foodNeededToGrow
+            return
+        }
+
         // growth!
         foodStored -= foodNeededToGrow
         val percentOfFoodCarriedOver =
@@ -124,9 +130,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     }
 
     fun addPopulation(count: Int) {
-        val changedAmount =
-            if (population + count < 0) -population
-            else count
+        val changedAmount = count.coerceAtLeast(1 - population)
         population += changedAmount
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {

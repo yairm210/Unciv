@@ -6,7 +6,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -158,9 +157,9 @@ class CityStats(val city: City) {
         return stats
     }
 
-    private fun getGrowthBonus(totalFood: Float): StatMap {
+    fun getGrowthBonus(totalFood: Float): StatMap {
         val growthSources = StatMap()
-        val stateForConditionals = StateForConditionals(city.civ, city)
+        val stateForConditionals = city.state
         // "[amount]% growth [cityFilter]"
         for (unique in city.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals = stateForConditionals)) {
             if (!city.matchesFilter(unique.params[1])) continue
@@ -304,8 +303,9 @@ class CityStats(val city: City) {
     }
 
     private fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
-        if (construction is Building) return construction.matchesFilter(filter)
-        if (construction is BaseUnit) return construction.matchesFilter(filter)
+        val state = city.state
+        if (construction is Building) return construction.matchesFilter(filter, state)
+        if (construction is BaseUnit) return construction.matchesFilter(filter, state)
         return false
     }
 
@@ -351,8 +351,8 @@ class CityStats(val city: City) {
                 city.location == it.position
                         || city.isWorked(it)
                         || it.owningCity == city && (it.getUnpillagedTileImprovement()
-                    ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
-                        || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
+                    ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile) == true
+                        || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile))
             }
         for (tile in workedTiles) {
             if (tile.isBlockaded() && city.isWorked(tile)) {
@@ -589,12 +589,13 @@ class CityStats(val city: City) {
 
         val growthNullifyingUnique = city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
         if (growthNullifyingUnique != null) {
-            // Note that negative food will also be nullified. Pretty sure that's conform civ V, but haven't checked.
-            val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
-            newFinalStatList.add(
-                growthNullifyingUnique.getSourceNameForUser(),
-                Stats(food = amountToRemove.toFloat())
-            )
+            // Does not nullify negative growth (starvation)
+            val currentGrowth = newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
+            if (currentGrowth > 0)
+                newFinalStatList.add(
+                    growthNullifyingUnique.getSourceNameForUser(),
+                    Stats(food = -currentGrowth.toFloat())
+                )
         }
 
         if (city.isInResistance())

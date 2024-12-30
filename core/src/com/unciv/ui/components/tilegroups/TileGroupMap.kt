@@ -7,14 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.components.tilegroups.layers.TileLayerBorders
-import com.unciv.ui.components.tilegroups.layers.TileLayerCityButton
-import com.unciv.ui.components.tilegroups.layers.TileLayerFeatures
-import com.unciv.ui.components.tilegroups.layers.TileLayerMisc
-import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
-import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitSprite
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
+import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import kotlin.math.max
 import kotlin.math.min
@@ -32,6 +25,7 @@ class TileGroupMap<T: TileGroup>(
     val worldWrap: Boolean = false,
     tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
+    
     companion object {
         /** Vertical size of a hex in world coordinates, or the distance between the centers of any two opposing edges
          *  (the hex is oriented so it has corners to the left and right of the center and its upper and lower bounds are horizontal edges) */
@@ -129,15 +123,24 @@ class TileGroupMap<T: TileGroup>(
             cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x, group.y) })
         }
 
-        for (group in baseLayers) addActor(group)
-        for (group in featureLayers) addActor(group)
-        for (group in borderLayers) addActor(group)
-        for (group in miscLayers) addActor(group)
-        for (group in pixelUnitLayers) addActor(group)
-        for (group in circleFogCrosshairLayers) addActor(group)
-        for (group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
-        for (group in unitLayers) addActor(group) // Aaand units above everything else.
-        for (group in cityButtonLayers) addActor(group) // city buttons + clickability
+        val layerLists = listOf(
+            baseLayers,
+            featureLayers,
+            borderLayers,
+            miscLayers,
+            pixelUnitLayers,
+            circleFogCrosshairLayers,
+            tileGroups, // The above layers are for the visual layers, this is for the clickability of the tile
+            unitLayers,  // Aaand units above everything else.
+            cityButtonLayers
+        )
+        
+        // Resize the children list ONCE instead of multiple times with item copying between them
+        children.ensureCapacity(layerLists.sumOf { it.count() })
+        for (layer in layerLists) 
+            for (group in layer) 
+                addActor(group)
+        
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well

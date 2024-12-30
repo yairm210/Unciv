@@ -3,8 +3,6 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.ruleset.nation.PersonalityValue
 
@@ -71,12 +69,8 @@ class TradeRequest : IsPartOfGameInfoSerialization {
             requestingCivDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedJoinWarOffer, if (decliningCiv.isAI()) 5 else 10)
 
         if (trade.isPeaceTreaty()) requestingCivDiploManager.setFlag(DiplomacyFlags.DeclinedPeace, 3)
-
-        requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request",
-            NotificationCategory.Trade, decliningCiv.civName, NotificationIcon.Trade)
     }
-
-
+    
     lateinit var requestingCiv: String
 
     /** Their offers are what they offer us, and our offers are what they want in return */

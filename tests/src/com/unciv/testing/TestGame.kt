@@ -136,6 +136,7 @@ class TestGame {
         civInfo.gameInfo = gameInfo
         civInfo.setNameForUnitTests(nation.name)
         if (isPlayer) civInfo.playerType = PlayerType.Human
+        civInfo.cache.updateState()
         gameInfo.civilizations.add(civInfo)
         civInfo.setTransients()
 
@@ -153,6 +154,7 @@ class TestGame {
         nation.name = Constants.barbarians
         barbarianCivilization.nation = nation
         barbarianCivilization.gameInfo = gameInfo
+        barbarianCivilization.cache.updateState()
         gameInfo.civilizations.add(barbarianCivilization)
         return barbarianCivilization
     }
@@ -161,11 +163,10 @@ class TestGame {
         civInfo: Civilization,
         tile: Tile,
         replacePalace: Boolean = false,
-        initialPopulation: Int = 0
+        initialPopulation: Int = 1
     ): City {
         val city = CityFounder().foundCity(civInfo, tile.position)
-        if (initialPopulation != 1)
-            city.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
+        city.population.addPopulation(initialPopulation - 1)
 
         if (replacePalace && civInfo.cities.size == 1) {
             // Add a capital indicator without any other stats

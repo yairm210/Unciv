@@ -22,6 +22,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.images.PortraitPromotion
 
@@ -239,22 +240,9 @@ class RulesetValidator(val ruleset: Ruleset) {
         // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
-                
-                for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
-                    lines += uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, true)
-                
-                if (choice.conditions.isNotEmpty())
-                    lines.add("Event choice 'conditions' field is deprecated, " +
-                            "please replace with 'Only available' or 'Not availble' uniques in 'uniques' field", 
-                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
-                
-                if (choice.triggeredUniques.isNotEmpty())
-                    lines.add("Event choice 'triggered uniques' field is deprecated, " +
-                            "please place the triggers in the 'uniques' field",
-                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
-                
                 uniqueValidator.checkUniques(choice, lines, true, tryFixUnknownUniques)
             }
+            uniqueValidator.checkUniques(event, lines, true, tryFixUnknownUniques)
         }
     }
 
@@ -737,9 +725,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         if (innerColorLuminance > outerColorLuminance) { // inner is brighter
             innerLerpColor = Color.WHITE
-            outerLerpColor = Color.BLACK
+            outerLerpColor = ImageGetter.CHARCOAL
         } else {
-            innerLerpColor = Color.BLACK
+            innerLerpColor = ImageGetter.CHARCOAL
             outerLerpColor = Color.WHITE
         }
 

@@ -163,16 +163,14 @@ class ModManagementScreen private constructor(
         if (isPortrait) initPortrait()
         else initLandscape()
         showLoadingImage()
-
+        
         if (installedModInfo.isEmpty())
             refreshInstalledModInfo()
+        
         refreshInstalledModTable()
 
-        if (onlineModInfo.isEmpty())
-            reloadOnlineMods()
-        else
-            refreshOnlineModTable()
-
+        refreshOnlineModTable() // Refresh table - chances are we have cached data...
+        reloadOnlineMods() //... and still try to get fresh data from online
     }
 
     private fun initPortrait() {
@@ -272,12 +270,7 @@ class ModManagementScreen private constructor(
         }
     }
 
-    private fun reloadOnlineMods() {
-        onlineModsTable.clear()
-        onlineModInfo.clear()
-        onlineModsTable.add(getDownloadFromUrlButton()).padBottom(15f).row()
-        tryDownloadPage(1)
-    }
+    private fun reloadOnlineMods() = tryDownloadPage(1)
 
     /** background worker: querying GitHub for Mods (repos with 'unciv-mod' in its topics)
      *
@@ -312,9 +305,6 @@ class ModManagementScreen private constructor(
             if (stopBackgroundTasks) return
             repo.name = repo.name.repoNameToFolderName()
 
-            if (onlineModInfo.containsKey(repo.name))
-                continue // we already got this mod in a previous download, since one has been added in between
-
             val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
             val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
                 it.lastUpdated != "" && it.lastUpdated != repo.pushed_at
@@ -346,6 +336,7 @@ class ModManagementScreen private constructor(
 
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
+            modButtons.remove(mod) // Remove *cached* mod button since we have NEW DATA
             onlineModsTable.add(getCachedModButton(mod)).row()
         }
 
@@ -423,15 +414,19 @@ class ModManagementScreen private constructor(
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                val repo = GithubAPI.Repo.parseUrl(textField.text)
-                if (repo == null) {
-                    ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
-                    actualDownloadButton.setText("Download".tr())
-                    actualDownloadButton.enable()
-                } else
-                    downloadMod(repo, {
-                        actualDownloadButton.setText("{Downloading...} ${it}%".tr())
-                    }) { popup.close() }
+                Concurrency.run {
+                    val repo = GithubAPI.Repo.parseUrl(textField.text)
+                    if (repo == null) {
+                        Concurrency.runOnGLThread {
+                            ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
+                            actualDownloadButton.setText("Download".tr())
+                            actualDownloadButton.enable()
+                        }
+                    } else
+                        downloadMod(repo, {
+                            actualDownloadButton.setText("{Downloading...} ${it}%".tr())
+                        }) { popup.close() }
+                }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
