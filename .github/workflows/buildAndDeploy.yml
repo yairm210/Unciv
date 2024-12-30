@@ -216,6 +216,7 @@ jobs:
             deploy/Unciv-Linux64.zip
 
   build-msi:
+    continue-on-error: true
     needs: packr-build
     runs-on: windows-latest
 
