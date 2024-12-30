@@ -10,7 +10,7 @@ import com.unciv.models.ruleset.Ruleset
  */
 interface IPreviousScreen {
     val gameSetupInfo: GameSetupInfo
-    var stage: Stage
+    val stage: Stage
     val ruleset: Ruleset
 
     // Having `fun setRightSideButtonEnabled(boolean: Boolean)` part of this interface gives a warning:
