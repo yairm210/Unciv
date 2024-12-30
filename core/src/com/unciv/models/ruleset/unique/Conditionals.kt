@@ -110,7 +110,7 @@ object Conditionals {
             UniqueType.ConditionalTutorialsEnabled -> UncivGame.Current.settings.showTutorials
             UniqueType.ConditionalTutorialCompleted -> conditional.params[0] in UncivGame.Current.settings.tutorialTasksCompleted
 
-            UniqueType.ConditionalCivFilter, UniqueType.ConditionalCivFilterOld -> checkOnCiv { matchesFilter(conditional.params[0], state) }
+            UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(conditional.params[0], state) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
             UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
             UniqueType.ConditionalWithResource -> state.getResourceAmount(conditional.params[0]) > 0

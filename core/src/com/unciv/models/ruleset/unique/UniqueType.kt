@@ -133,6 +133,7 @@ enum class UniqueType(
     RoadMaintenance("[relativeAmount]% maintenance on road & railroads", UniqueTarget.Global),
     NoImprovementMaintenanceInSpecificTiles("No Maintenance costs for improvements in [tileFilter] tiles", UniqueTarget.Global),
     SpecificImprovementTime("[relativeAmount]% construction time for [improvementFilter] improvements", UniqueTarget.Global, UniqueTarget.Unit),
+    ImprovementTimeIncrease("Can build [improvementFilter] improvements at a [relativeAmount]% rate", UniqueTarget.Global, UniqueTarget.Unit),
 
     /// Building Maintenance
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable,
@@ -448,10 +449,10 @@ enum class UniqueType(
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
 
     // Gains from battle
-    DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
-    CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
-    KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
-    KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
+    DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]", UniqueTarget.Unit, UniqueTarget.Global),
+    CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately", UniqueTarget.Unit, UniqueTarget.Global),
+    KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]", UniqueTarget.Unit, UniqueTarget.Global),
+    KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
     KillUnitCapture("May capture killed [mapUnitFilter] units", UniqueTarget.Unit),
 
     // XP
@@ -672,8 +673,6 @@ enum class UniqueType(
 
     /////// civ conditionals
     ConditionalCivFilter("for [civFilter] Civilizations", UniqueTarget.Conditional),
-    @Deprecated("As of 4.13.15", ReplaceWith("for [civFilter] Civilizations"))
-    ConditionalCivFilterOld("for [civFilter]", UniqueTarget.Conditional),
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
@@ -809,6 +808,7 @@ enum class UniqueType(
     OneTimeConsumeResources("Instantly consumes [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
     OneTimeProvideResources("Instantly provides [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
 
+    OneTimeGainResource("Instantly gain [amount] [stockpile]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
@@ -910,20 +910,7 @@ enum class UniqueType(
 
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.MetaModifier,
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
-
     
-    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when [victoryType] Victory is enabled>"))
-    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
-
-    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when religion is enabled>"))
-    HiddenWithoutReligion("Hidden when religion is disabled",
-        UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial,
-        flags = UniqueFlag.setOfHiddenToUsers),
-    
-    @Deprecated("As of 4.13.19", ReplaceWith("Only available <when espionage is enabled>"))
-    HiddenWithoutEspionage("Hidden when espionage is disabled", UniqueTarget.Building,
-        flags = UniqueFlag.setOfHiddenToUsers),
-
     AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
         UniqueTarget.Promotion, UniqueTarget.Policy, flags = UniqueFlag.setOfHiddenToUsers),
     
@@ -970,6 +957,15 @@ enum class UniqueType(
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
+
+    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when [victoryType] Victory is enabled>"), DeprecationLevel.ERROR)
+    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
+    @Deprecated("As of 4.13.18", ReplaceWith("Only available <when religion is enabled>"), DeprecationLevel.ERROR)
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, UniqueTarget.Tutorial, flags = UniqueFlag.setOfHiddenToUsers),
+    @Deprecated("As of 4.13.19", ReplaceWith("Only available <when espionage is enabled>"), DeprecationLevel.ERROR)
+    HiddenWithoutEspionage("Hidden when espionage is disabled", UniqueTarget.Building, flags = UniqueFlag.setOfHiddenToUsers),
+    @Deprecated("As of 4.13.15", ReplaceWith("for [civFilter] Civilizations"), DeprecationLevel.ERROR)
+    ConditionalCivFilterOld("for [civFilter]", UniqueTarget.Conditional),
     @Deprecated("As of 4.13.2", ReplaceWith("[This Unit] gains [amount] movement"), DeprecationLevel.ERROR)
     OneTimeUnitGainMovementOld("This Unit gains [amount] movement", UniqueTarget.UnitTriggerable),
     @Deprecated("As of 4.13.2", ReplaceWith("[This Unit] loses the [promotion] promotion"), DeprecationLevel.ERROR)

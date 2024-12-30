@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeForTranslationWriter
 import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.equalsPlaceholderText
 
@@ -468,7 +469,15 @@ enum class UniqueParameterType(
 
     /** Used by [UniqueType.OneTimeConsumeResources], [UniqueType.OneTimeProvideResources], [UniqueType.CostsResources], [UniqueType.UnitActionStockpileCost], implementation not centralized */
     StockpiledResource("stockpiledResource", "Mana", "The name of any stockpiled resource") {
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.filter { it.value.isStockpiled() }.keys
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.filter { it.value.isStockpiled }.keys
+    },
+
+    /** Used by [UniqueType.OneTimeGainResource], implementation not centralized */
+    Stockpile("stockpile", "Mana", "The name of any stockpiled resource") {
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
+            return ruleset.tileResources.filter { it.value.isStockpiled }.keys +
+                Stat.entries.map { it.name } + SubStat.StoredFood.name + SubStat.GoldenAgePoints.name
+        }
     },
 
     /** Used by [UniqueType.ImprovesResources], implemented by [com.unciv.models.ruleset.tile.TileResource.matchesFilter] */
@@ -556,7 +565,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
-    /** Used by [UniqueType.HiddenWithoutVictoryType], implementation in Civilopedia, OverviewScreen and to exclude e.g. from Quests */
+    /** Used by [UniqueType.ConditionalVictoryEnabled], implementation in Civilopedia, OverviewScreen and to exclude e.g. from Quests */
     VictoryT("victoryType",
         "Domination", "The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names"
     ) {

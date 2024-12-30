@@ -28,23 +28,23 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     private fun getTerrainImageLocations(terrainSequence: Sequence<String>): List<String> {
         val allTerrains = terrainSequence.joinToString("+")
-        if (strings().tileSetConfig.ruleVariants.containsKey(allTerrains))
-            return strings().tileSetConfig.ruleVariants[allTerrains]!!.map { strings().getTile(it) }
-        val allTerrainTile = strings().getTile(allTerrains)
+        if (strings.tileSetConfig.ruleVariants.containsKey(allTerrains))
+            return strings.tileSetConfig.ruleVariants[allTerrains]!!.map { strings.getTile(it) }
+        val allTerrainTile = strings.getTile(allTerrains)
         return if (ImageGetter.imageExists(allTerrainTile)) listOf(allTerrainTile)
-        else terrainSequence.map { strings().orFallback { getTile(it) } }.toList()
+        else terrainSequence.map { strings.orFallback { getTile(it) } }.toList()
     }
 
     private fun getImprovementAndResourceImages(resourceAndImprovementSequence: Sequence<String>): List<String> {
-        val altogether = resourceAndImprovementSequence.joinToString("+").let { strings().getTile(it) }
+        val altogether = resourceAndImprovementSequence.joinToString("+").let { strings.getTile(it) }
         return if (ImageGetter.imageExists(altogether)) listOf(altogether)
-        else resourceAndImprovementSequence.map { strings().orFallback { getTile(it) } }.toList()
+        else resourceAndImprovementSequence.map { strings.orFallback { getTile(it) } }.toList()
     }
 
     private fun usePillagedImprovementImage(tile: Tile, viewingCiv: Civilization?): Boolean {
         if (!tile.improvementIsPillaged || !UncivGame.Current.settings.showPixelImprovements) return false
         val shownImprovement = tile.getShownImprovement(viewingCiv) ?: return false
-        return ImageGetter.imageExists(strings().getTile("$shownImprovement-Pillaged"))
+        return ImageGetter.imageExists(strings.getTile("$shownImprovement-Pillaged"))
     }
 
     private fun getTileBaseImageLocations(viewingCiv: Civilization?): List<String> {
@@ -52,10 +52,10 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         val isForceVisible = tileGroup.isForceVisible
 
         if (viewingCiv == null && !isForceVisible)
-            return strings().hexagonList
+            return strings.hexagonList
 
-        val baseHexagon = if (strings().tileSetConfig.useColorAsBaseTerrain)
-            listOf(strings().hexagon)
+        val baseHexagon = if (strings.tileSetConfig.useColorAsBaseTerrain)
+            listOf(strings.hexagon)
         else emptyList()
 
         val tile = tileGroup.tile
@@ -80,46 +80,66 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         else  sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
         val edgeImages = getEdgeTileLocations()
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
-        val allTogetherLocation = strings().getTile(allTogether)
+        val allTogetherLocation = strings.getTile(allTogether)
 
         // If the tilesetconfig *explicitly* lists the terrains+improvements etc, we can't know where in that list to place the edges
         //   So we default to placing them over everything else.
         // If there is no explicit list, then we can know to place them between the terrain and the improvement
         return when {
-            strings().tileSetConfig.ruleVariants[allTogether] != null -> baseHexagon + 
-                    strings().tileSetConfig.ruleVariants[allTogether]!!.map { strings().getTile(it) } + edgeImages
+            strings.tileSetConfig.ruleVariants[allTogether] != null -> baseHexagon + 
+                    strings.tileSetConfig.ruleVariants[allTogether]!!.map { strings.getTile(it) } + edgeImages
             ImageGetter.imageExists(allTogetherLocation) -> baseHexagon + allTogetherLocation + edgeImages
             tile.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon) + edgeImages
             else -> baseHexagon + getTerrainImageLocations(terrainImages) + edgeImages + getImprovementAndResourceImages(resourceAndImprovementSequence)
         }
     }
     
+    private class NeighborEdgeData(val neighbor: Tile, val direction: NeighborDirection?) {
+        var ourTerrains: Set<String> = emptySet()
+        var neighborTerrains: Set<String> = emptySet()
+        var edgeFiles: Sequence<String> = emptySequence()
+    }
+    
+    private val neighborEdgeDataList: Sequence<NeighborEdgeData> = if (!tile.isTilemapInitialized()) emptySequence()
+        else tile.neighbors.map {
+            val direction = NeighborDirection.fromVector(it.position.cpy().sub(tile.position))
+            NeighborEdgeData(it, direction)
+        }.toList().asSequence()
+    
+    
     private fun getEdgeTileLocations(): Sequence<String> {
-        val tile = tile()
         if (!tile.isTilemapInitialized()) // fake tile 
             return emptySequence()
-        return tile.neighbors
-            .flatMap { getMatchingEdges(tile, it) }
+        return neighborEdgeDataList
+            .flatMap { getMatchingEdges(it) }
     }
 
-    private fun getMatchingEdges(originTile: Tile, neighborTile: Tile): Sequence<String>{
-        val vectorToNeighbor =  neighborTile.position.cpy().sub(originTile.position)
-        val direction = NeighborDirection.fromVector(vectorToNeighbor)
-            ?: return emptySequence()
-        val possibleEdgeFiles = strings().edgeImagesByPosition[direction] ?: return emptySequence()
+    private fun getMatchingEdges(neighborEdgeData: NeighborEdgeData): Sequence<String>{
+        if (neighborEdgeData.ourTerrains == tile.cachedTerrainData.terrainNameSet
+            && neighborEdgeData.neighborTerrains == neighborEdgeData.neighbor.cachedTerrainData.terrainNameSet)
+                return neighborEdgeData.edgeFiles
+        
+        if (neighborEdgeData.direction == null) return emptySequence()
+        val possibleEdgeImages = strings.edgeImagesByPosition[neighborEdgeData.direction] ?: return emptySequence()
         
         // Required for performance - full matchesFilter is too expensive for something that needs to run every update()
         fun matchesFilterMinimal(originTile: Tile, filter: String): Boolean {
-            if (originTile.allTerrains.any { it.name == filter }) return true
+            if (originTile.cachedTerrainData.terrainNameSet.contains(filter)) return true
             if (originTile.getBaseTerrain().type.name == filter) return true
             return false
         }
 
-        return possibleEdgeFiles.asSequence().filter {
-            if (!matchesFilterMinimal(originTile, it.originTileFilter)) return@filter false
-            if (!matchesFilterMinimal(neighborTile, it.destinationTileFilter)) return@filter false
+        val cachedSequence = possibleEdgeImages.filter {
+            if (!matchesFilterMinimal(tile, it.originTileFilter)) return@filter false
+            if (!matchesFilterMinimal(neighborEdgeData.neighbor, it.destinationTileFilter)) return@filter false
             return@filter true
-        }.map { it.fileName }
+        }.map { it.fileName }.asSequence()
+        
+        neighborEdgeData.ourTerrains = tile.cachedTerrainData.terrainNameSet
+        neighborEdgeData.neighborTerrains = neighborEdgeData.neighbor.cachedTerrainData.terrainNameSet
+        neighborEdgeData.edgeFiles = cachedSequence
+        
+        return cachedSequence
     }
 
     private fun updateTileImage(viewingCiv: Civilization?) {
@@ -140,7 +160,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
             val locationToCheck =
                     if (tileGroup.tile.owningCity != null)
-                        strings().getOwnedTileImageLocation(baseLocation, tileGroup.tile.getOwner()!!)
+                        strings.getOwnedTileImageLocation(baseLocation, tileGroup.tile.getOwner()!!)
                     else baseLocation
 
             val existingImages = ArrayList<String>()
@@ -160,8 +180,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             tileBaseImages.add(image)
             addActor(image)
 
-            if (strings().tileSetConfig.tileScales.isNotEmpty()) {
-                val scale = strings().tileSetConfig.tileScales[baseLocation.takeLastWhile { it != '/' }]
+            if (strings.tileSetConfig.tileScales.isNotEmpty()) {
+                val scale = strings.tileSetConfig.tileScales[baseLocation.takeLastWhile { it != '/' }]
                 image.setHexagonSize(scale)
             } else {
                 image.setHexagonSize()
@@ -175,21 +195,21 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         val colorPillagedTile = isViewable && tile.isPillaged() && !usePillagedImprovementImage(tile, viewingCiv)
 
         val baseTerrainColor = when {
-            colorPillagedTile && strings().tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
+            colorPillagedTile && strings.tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
                 .getColor().lerp(Color.BROWN, 0.6f)
             colorPillagedTile -> Color.WHITE.cpy().lerp(Color.BROWN, 0.6f)
-            strings().tileSetConfig.useColorAsBaseTerrain && !isViewable -> tile.getBaseTerrain()
-                .getColor().lerp(strings().tileSetConfig.fogOfWarColor, 0.6f)
-            strings().tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
+            strings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tile.getBaseTerrain()
+                .getColor().lerp(strings.tileSetConfig.fogOfWarColor, 0.6f)
+            strings.tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
                 .getColor()
-            !isViewable -> Color.WHITE.cpy().lerp(strings().tileSetConfig.fogOfWarColor, 0.6f)
+            !isViewable -> Color.WHITE.cpy().lerp(strings.tileSetConfig.fogOfWarColor, 0.6f)
             else -> Color.WHITE.cpy()
         }
 
         val color = when {
             colorPillagedTile -> Color.WHITE.cpy().lerp(Color.RED.cpy(), 0.5f)
             !isViewable -> Color.WHITE.cpy()
-                .lerp(strings().tileSetConfig.fogOfWarColor, 0.6f)
+                .lerp(strings.tileSetConfig.fogOfWarColor, 0.6f)
             else -> Color.WHITE.cpy()
         }
 
@@ -198,9 +218,9 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     private fun updateRivers(displayBottomRight: Boolean, displayBottom: Boolean, displayBottomLeft: Boolean) {
-        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, strings().bottomRightRiver)
-        bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, strings().bottomRiver)
-        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, strings().bottomLeftRiver)
+        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, strings.bottomRightRiver)
+        bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, strings.bottomRiver)
+        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, strings.bottomLeftRiver)
     }
 
     private fun updateRiver(currentImage: Image?, shouldDisplay: Boolean, imageName: String): Image? {
@@ -244,8 +264,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     private fun getNaturalWonderBackupImage(baseHexagon: List<String>): List<String> =
-            if (strings().tileSetConfig.useSummaryImages) baseHexagon + strings().naturalWonder
-            else baseHexagon + strings().orFallback{ getTile(tileGroup.tile.naturalWonder!!) }
+            if (strings.tileSetConfig.useSummaryImages) baseHexagon + strings.naturalWonder
+            else baseHexagon + strings.orFallback{ getTile(tileGroup.tile.naturalWonder!!) }
 
 }
 
@@ -253,14 +273,18 @@ enum class NeighborDirection {
     Top, TopRight, TopLeft, Bottom, BottomLeft, BottomRight;
 
     companion object {
-        fun fromVector(vector2: Vector2): NeighborDirection? = when {
-            vector2.x == 1f && vector2.y == 1f -> Top
-            vector2.x == 0f && vector2.y == 1f -> TopRight
-            vector2.x == 1f && vector2.y == 0f -> TopLeft
-            vector2.x == -1f && vector2.y == -1f -> Bottom
-            vector2.x == 0f && vector2.y == -1f -> BottomLeft
-            vector2.x == -1f && vector2.y == 0f -> BottomRight
-            else -> null
+        fun fromVector(vector2: Vector2): NeighborDirection? {
+            val x = vector2.x.toInt()
+            val y = vector2.y.toInt()
+            return when (x) {
+                1 -> if (y == 1) Top // x == 1 && y == 1
+                    else TopLeft // x == 1 && y == 0
+                0 -> if (y == 1) TopRight // x == 0 && y == 1
+                    else BottomLeft // x == 0 && y == -1
+                -1 -> if (y == -1) Bottom // x == -1 && y == -1
+                    else BottomRight // x == -1 && y == 0
+                else -> null
+            }
         }
     }
 }

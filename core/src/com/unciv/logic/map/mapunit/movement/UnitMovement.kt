@@ -4,6 +4,7 @@ package com.unciv.logic.map.mapunit.movement
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -138,11 +139,16 @@ class UnitMovement(val unit: MapUnit) {
 
         while (true) {
             newTilesToCheck.clear()
+            fun isUnfriendlyCityState(tile:Tile): Boolean = tile.getOwner().let { it != null && it.isCityState
+                    && it.getDiplomacyManager(unit.civ)?.isRelationshipLevelLT(RelationshipLevel.Friend) == true }
 
-            var tilesByPreference = tilesToCheck.sortedBy { it.aerialDistanceTo(destination) }
-            // Avoid embarkation when possible
-            if (unit.type.isLandUnit()) tilesByPreference = tilesByPreference.sortedByDescending { it.isLand }
-
+            // When comparing booleans, we get false first, so we need to negate the isLand / isCityState checks
+            // By order of preference: 1. Land tiles 2. Aerial distance 3. Not city states
+            val comparison: Comparator<Tile> = if (unit.type.isLandUnit())
+                compareBy({!it.isLand}, {it.aerialDistanceTo(destination)}, ::isUnfriendlyCityState)
+            else compareBy({it.aerialDistanceTo(destination)}, ::isUnfriendlyCityState)
+            
+            val tilesByPreference = tilesToCheck.sortedWith(comparison)
 
             for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {

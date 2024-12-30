@@ -198,7 +198,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         for (resourceSupply in CityResources.getCityResourcesAvailableToCity(city))
             resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
         for ((resource, amount) in resourceCounter)
-            if (resource.hasUnique(UniqueType.CityResource)) {
+            if (resource.isCityWide) {
                 resourceTable.add(amount.toLabel())
                 resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
                     .padRight(5f)

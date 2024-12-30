@@ -117,6 +117,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Instantly gain [amount] [stockpile]"
+	Example: "Instantly gain [3] [Mana]"
+
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	Applicable to: Triggerable
+
 ??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
 
@@ -576,6 +582,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "Can build [improvementFilter] improvements at a [relativeAmount]% rate"
+	Example: "Can build [All Road] improvements at a [+20]% rate"
+
+	Applicable to: Global, Unit
+
 ??? example  "Gain a free [buildingName] [cityFilter]"
 	Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building
 	Example: "Gain a free [Library] [in all cities]"
@@ -972,18 +983,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]"
-	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]"
+	Example: "Earn [3]% of the damage done to [City] units as [Mana]"
 
 	Applicable to: Global, Unit
 
-??? example  "Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately"
-	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Gold] immediately"
+??? example  "Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately"
+	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Mana] immediately"
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]"
-	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Gold]"
+??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
 
@@ -1378,8 +1389,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
-??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion"
-	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
+??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion"
+	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Mana] when killed within 4 tiles of a city following this religion"
 
 	Applicable to: FollowerBelief
 
@@ -1597,6 +1608,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
 	Example: "[+20]% construction time for [All Road] improvements"
+
+	Applicable to: Global, Unit
+
+??? example  "Can build [improvementFilter] improvements at a [relativeAmount]% rate"
+	Example: "Can build [All Road] improvements at a [+20]% rate"
 
 	Applicable to: Global, Unit
 
@@ -1962,18 +1978,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]"
-	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]"
+	Example: "Earn [3]% of the damage done to [City] units as [Mana]"
 
 	Applicable to: Global, Unit
 
-??? example  "Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately"
-	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Gold] immediately"
+??? example  "Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately"
+	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Mana] immediately"
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]"
-	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Gold]"
+??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
 
@@ -3430,6 +3446,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[speed]: The name of any speed.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
+*[stockpile]: The name of any stockpiled resource.
 *[stockpiledResource]: The name of any stockpiled resource.
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.

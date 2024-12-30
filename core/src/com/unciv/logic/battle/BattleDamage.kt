@@ -33,13 +33,8 @@ object BattleDamage {
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction, tileToAttackFrom: Tile): Counter<String> {
         val modifiers = Counter<String>()
 
+        val conditionalState = getStateForConditionals(combatAction, combatant, enemy)
         val civInfo = combatant.getCivInfo()
-        val attackedTile =
-            if (combatAction == CombatAction.Attack) enemy.getTile()
-            else combatant.getTile()
-
-        val conditionalState = StateForConditionals(civInfo, city = (combatant as? CityCombatant)?.city, ourCombatant = combatant, theirCombatant = enemy,
-            attackedTile = attackedTile, combatAction = combatAction)
 
         if (combatant is MapUnitCombatant) {
 
@@ -71,6 +66,26 @@ object BattleDamage {
         }
 
         return modifiers
+    }
+
+    private fun getStateForConditionals(
+        combatAction: CombatAction,
+        combatant: ICombatant,
+        enemy: ICombatant,
+    ): StateForConditionals {
+        val attackedTile =
+            if (combatAction == CombatAction.Attack) enemy.getTile()
+            else combatant.getTile()
+
+        val conditionalState = StateForConditionals(
+            combatant.getCivInfo(),
+            city = (combatant as? CityCombatant)?.city,
+            ourCombatant = combatant,
+            theirCombatant = enemy,
+            attackedTile = attackedTile,
+            combatAction = combatAction
+        )
+        return conditionalState
     }
 
     private fun addUnitUniqueModifiers(combatant: MapUnitCombatant, enemy: ICombatant, conditionalState: StateForConditionals,
@@ -124,7 +139,7 @@ object BattleDamage {
         defender: ICombatant, tileToAttackFrom: Tile
     ): Counter<String> {
         val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack, tileToAttackFrom)
-
+        
         if (attacker is MapUnitCombatant) {
 
             addTerrainAttackModifiers(attacker, defender, tileToAttackFrom, modifiers)
@@ -143,7 +158,8 @@ object BattleDamage {
                     var flankingBonus = BattleConstants.BASE_FLANKING_BONUS
 
                     // e.g., Discipline policy - https://civilization.fandom.com/wiki/Discipline_(Civ5)
-                    for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true))
+                    for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true,
+                            stateForConditionals = getStateForConditionals(CombatAction.Attack, attacker, defender)))
                         flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
                         (flankingBonus * numberOfOtherAttackersSurroundingDefender).toInt()
@@ -212,8 +228,7 @@ object BattleDamage {
 
             if (defender.unit.isEmbarked()) {
                 // embarked units get no defensive modifiers apart from this unique
-                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true)
-                )
+                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true))
                     modifiers["Embarked"] = BattleConstants.EMBARKED_DEFENCE_BONUS
 
                 return modifiers

@@ -34,6 +34,8 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -156,7 +158,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         private set
 
     @Transient
-    var terrainUniqueMap = UniqueMap.EMPTY
+    var cachedTerrainData = TileMap.TerrainListData.EMPTY
         private set
 
     @Transient
@@ -370,13 +372,13 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     @Transient
-    private var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
+    internal var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = stateThisTile) =
-        terrainUniqueMap.getMatchingUniques(uniqueType, state).any()
+        cachedTerrainData.uniques.hasMatchingUnique(uniqueType, state)
     /** Get all uniques of this type that any TERRAIN on this tile has */
     fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = stateThisTile ): Sequence<Unique> {
-        return terrainUniqueMap.getMatchingUniques(uniqueType, stateForConditionals)
+        return cachedTerrainData.uniques.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
@@ -430,7 +432,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (getCity() == null) return false
         return isCityCenter()
                 || isWorked()
-                || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
+                || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, stateThisTile) == true
                 || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation)
     }
 
@@ -835,8 +837,11 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         val terrainNameList = allTerrains.map { it.name }.toList()
 
         // List hash is function of all its items, so the same items in the same order will always give the same hash
-        terrainUniqueMap = tileMap.tileUniqueMapCache.getOrPut(terrainNameList) {
-            UniqueMap(allTerrains.flatMap { it.uniqueObjects })
+        cachedTerrainData = tileMap.tileUniqueMapCache.getOrPut(terrainNameList) {
+            TileMap.TerrainListData(
+                UniqueMap(allTerrains.flatMap { it.uniqueObjects }),
+                terrainNameList.toSet()
+                )
         }
     }
 

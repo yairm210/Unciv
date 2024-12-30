@@ -59,6 +59,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 return@filter !it.availableInEra(ruleset, startingEra) // Not from the start era or before
                     && it.uniqueTo != null && it.uniqueTo !in usedMajorCivs // Must be from a major civ not in the game
                         // Note that this means that units unique to a civ *filter* instead of a civ *name* will not be provided
+                    && ruleset.nations[it.uniqueTo]?.isMajorCiv == true // don't take unique units from other city states / barbs
                     && ruleset.unitTypes[it.unitType]!!.isLandUnit()
                     && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
             }

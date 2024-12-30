@@ -19,6 +19,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 /** The unit flag is the synbol that appears behind the map unit - circle regularly, shield when defending, etc */
 class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
+    private var noIcons = true
     private var civilianUnitIcon: UnitIconGroup? = null
     private var militaryUnitIcon: UnitIconGroup? = null
 
@@ -27,14 +28,17 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     }
 
     override fun act(delta: Float) { // No 'snapshotting' since we trust it will remain the same
-        if (civilianUnitIcon == null && militaryUnitIcon == null)
+        if (noIcons)
             return
         for (child in children)
             child.act(delta)
     }
 
     // For perf profiling
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (noIcons) return
+        super.draw(batch, parentAlpha)
+    }
 
     private fun clearSlots() {
         civilianUnitIcon?.remove()
@@ -139,6 +143,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
         civilianUnitIcon = newUnitIcon(0, tileGroup.tile.civilianUnit, isCivilianShown, viewingCiv)
         militaryUnitIcon = newUnitIcon(1, tileGroup.tile.militaryUnit, isMilitaryShown, viewingCiv)
+        noIcons = civilianUnitIcon == null && militaryUnitIcon == null
     }
 
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
@@ -146,7 +151,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         fillSlots(viewingCiv)
 
         if (viewingCiv != null) {
-            val unitsInTile = tile().getUnits()
+            val unitsInTile = tile.getUnits()
             val shouldBeHighlighted = unitsInTile.any()
                     && unitsInTile.first().civ.isAtWarWith(viewingCiv)
                     && isViewable(viewingCiv)
@@ -159,6 +164,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     fun reset() {
         clearSlots()
+        noIcons = true
     }
 
 }

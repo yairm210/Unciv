@@ -133,6 +133,8 @@ class MusicController {
         Silence(true),
         /** Music fades to pause or is paused. Continue with chooseTrack or resume. */
         Pause(showTrack = true),
+        /** Indicates that the music should resume when reopened */
+        PauseOnShutdown,
         /** Fade out then [Cleanup] */
         Shutdown
     }
@@ -285,7 +287,7 @@ class MusicController {
             }
             ControllerState.Cleanup ->
                 shutdown()  // stops timer/sets Idle so this will not repeat
-            ControllerState.Pause ->
+            ControllerState.Pause, ControllerState.PauseOnShutdown ->
                 current?.timerTick()
         }
     }
@@ -522,11 +524,11 @@ class MusicController {
      *
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-out. Clamped to 1/1000..1000.
      */
-    fun pause(speedFactor: Float = 1f) {
+    fun pause(speedFactor: Float = 1f, onShutdown: Boolean = false) {
         Log.debug("MusicTrackController.pause called")
 
-        if (!state.canPause) return
-        state = ControllerState.Pause
+        if (!state.canPause) return // for example, we're already in "pause" and we activated "pause on shutdown"
+        state = if (onShutdown) ControllerState.PauseOnShutdown else ControllerState.Pause
 
         val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
         current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
@@ -534,6 +536,10 @@ class MusicController {
             next!!.startFade(MusicTrackController.State.FadeOut)
 
         pauseOverlay()
+    }
+    
+    fun resumeFromShutdown(){
+        if (state == ControllerState.PauseOnShutdown) resume()
     }
 
     /**
@@ -544,8 +550,10 @@ class MusicController {
      */
     fun resume(speedFactor: Float = 1f) {
         Log.debug("MusicTrackController.resume called")
-        if (state == ControllerState.Pause && current != null
-            && current!!.state.canPlay && current!!.music != null) {
+        if ((state == ControllerState.Pause || state == ControllerState.PauseOnShutdown)
+                && current != null
+                && current!!.state.canPlay
+                && current!!.music != null) {
             val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
             current!!.startFade(MusicTrackController.State.FadeIn, fadingStep)
             // this may circumvent a PlaySingle, but -
@@ -622,8 +630,10 @@ class MusicController {
         isLooping: Boolean = false,
         fadeIn: Boolean = false
     ) {
-        val file = getMatchingFiles(folder, name).firstOrNull() ?: return
-        playOverlay(file, volume, isLooping, fadeIn)
+        Concurrency.run { // no reason for this to run on GL thread
+            val file = getMatchingFiles(folder, name).firstOrNull() ?: return@run
+            playOverlay(file, volume, isLooping, fadeIn)
+        }
     }
 
     /** Called for Leader Voices */

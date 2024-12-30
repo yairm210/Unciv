@@ -50,7 +50,7 @@ object BuildingDescriptions {
             for ((resourceName, amount) in getResourceRequirementsPerTurn(city.state)) {
                 val available = city.getAvailableResourceAmount(resourceName)
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
-                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
+                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled)
 
                 translatedLines += if (showAdditionalInfo) "$consumesString ({[$available] available})".tr()
                 else consumesString.tr()
@@ -187,7 +187,7 @@ object BuildingDescriptions {
             textList += FormattedLine()
             val resource = ruleset.tileResources[requiredResource]
             textList += FormattedLine(
-                requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
+                requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
                 link="Resources/$requiredResource", color="#F42" )
         }
 

@@ -1,3 +1,53 @@
+## 4.14.18
+
+Performance - Faster map update on click
+
+"close unit table" button does not cycle units
+
+By SeventhM:
+- Allow stat from battle uniques to also give stockpiles 
+- Fix gaining resources twice when it is gained from a city 
+
+By czyh2022 (NEW!):
+- Allow civs to trade with each other before settling their first cities 
+- Delete duplicate trade denied message 
+- Cancel the chain reaction of defense pact 
+
+## 4.14.17
+
+Fixed ANRs for:
+- URL checking for Github URL with query
+- Global politics table
+- Playing overlay music in city screen
+
+Flank attack unique works with 'vs' conditionals
+
+Fix rare Android crash where we don't have permissions to copy external mods on app start
+
+Add unique for increased improvement rates rather than decreased build times  - By SeventhM
+
+UI: various improvements mostly relating to centering and WorldScreenTopBar  - By Toxile
+
+## 4.14.16
+
+CPU performance improvements
+
+UI: 
+- Better "close unit table" button 
+- Better options checkboxes, slider buttons, multiplayer server UI  - By Toxile
+
+Bugfixes:
+- Buy button active when civ can purchase items in puppets
+- Paused music no longer resumes on game resume
+
+By SeventhM:
+- Unified unique for gaining stats/stockpiles 
+- Pantheon cost respects game speed modifer 
+
+AI: 
+- Better Food Weights for citizen management - By itanasi
+- Prevent incorrect settler retreat - By EmperorPinguin
+
 ## 4.14.15
 
 UI improvements:

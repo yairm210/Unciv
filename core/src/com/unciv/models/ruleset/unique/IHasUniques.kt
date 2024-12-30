@@ -128,12 +128,6 @@ interface IHasUniques : INamed {
                                 && !Conditionals.conditionalApplies(null, it, stateForConditionals) } })
             return true
         
-        if (!gameInfo.isReligionEnabled() && hasUnique(UniqueType.HiddenWithoutReligion)) return true
-        if (!gameInfo.isEspionageEnabled() && hasUnique(UniqueType.HiddenWithoutEspionage)) return true
-        
-        
-        if (getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
-            .any { it.params[0] !in gameInfo.gameParameters.victoryTypes }) return true
         return false
     }
 
@@ -153,7 +147,7 @@ interface IHasUniques : INamed {
     ): Boolean {
         if (hasUnique(UniqueType.HiddenFromCivilopedia)) return true
         if (gameInfo != null && isUnavailableBySettings(gameInfo)) return true
-        if (gameInfo == null && hasUnique(UniqueType.HiddenWithoutReligion) && ruleset!!.beliefs.isEmpty()) return true
+        if (gameInfo == null && ruleset!!.beliefs.isEmpty()) return true
         return false
     }
     /** Overload of [isHiddenFromCivilopedia] for use in actually game-agnostic parts of Civilopedia */
