@@ -57,7 +57,7 @@ internal object DesktopLauncher {
         Fonts.fontImplementation = DesktopFont()
 
         // Setup Desktop saver-loader
-        UncivFiles.saverLoader = DesktopSaverLoader()
+        UncivFiles.saverLoader = if (LinuxX11SaverLoader.isRequired()) LinuxX11SaverLoader() else DesktopSaverLoader()
         UncivFiles.preferExternalStorage = false
 
         // Solves a rendering problem in specific GPUs and drivers.
