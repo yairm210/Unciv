@@ -91,6 +91,7 @@ class AlertPopup(
             AlertType.CityConquered -> addCityConquered()
             AlertType.CityTraded -> addCityTraded()
             AlertType.BorderConflict -> addBorderConflict()
+            AlertType.BorderOccupation -> addBorderOccupation()
             AlertType.DemandToStopSettlingCitiesNear -> addDemandToStopSettlingCitiesNear()
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> addCitySettledNearOtherCivDespiteOurPromise()
             AlertType.DemandToStopSpreadingReligion -> addDemandToStopSpreadingReligion()
@@ -117,6 +118,14 @@ class AlertPopup(
         addGoodSizedLabel("Remove your troops in our border immediately!")
         addCloseButton("Sorry.", KeyboardBinding.Confirm)
         addCloseButton("Never!", KeyboardBinding.Cancel)
+    }
+    
+    private fun addBorderOccupation() {
+        val civInfo = getCiv(popupAlert.value)
+        addLeaderName(civInfo)
+        addGoodSizedLabel("You are occupying our territory!")
+        addCloseButton("Yes.", KeyboardBinding.Confirm)
+        addCloseButton("No.", KeyboardBinding.Cancel)
     }
 
     private fun addBulliedOrAttackedProtectedOrAlliedMinor() {
