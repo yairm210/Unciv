@@ -608,7 +608,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 -   [Eye of Horus](https://thenounproject.com/icon/eye%20of%20horus-92471) By Lilit Kalachyan for Egypt
 -   [Russia](https://thenounproject.com/icon/russia-64137) By Eugen Belyakoff
 -   [Dragon Head](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/China.png) By Ravignir for China
--   [Lion](https://thenounproject.com/icon/lion-912735) By parkjisun for Babylon
+-   [Lamassu](https://thenounproject.com/icon/lamassu-118987/) By Jason Dilworth for Babylon
 -   [Omega](https://thenounproject.com/icon/omega-1925519) By icon 54 for Greece
 -   [Shield](https://thenounproject.com/icon/American%20shield-5825) By Nathan Driskell for America
 -   [Fleaur de Lis](https://thenounproject.com/icon/fleur%20de-78672) By Jessika Gadoury for France
