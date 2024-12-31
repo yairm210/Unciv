@@ -123,7 +123,7 @@ class AlertPopup(
     private fun addTilesStolen() {
         val civInfo = getCiv(popupAlert.value)
         addLeaderName(civInfo)
-        addGoodSizedLabel("Those lands were not yours to take. This has not gone unnoticed")
+        addGoodSizedLabel("Those lands were not yours to take. This has not gone unnoticed.")
         addCloseButton()
     }
 
