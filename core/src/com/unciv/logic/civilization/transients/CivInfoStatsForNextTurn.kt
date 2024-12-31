@@ -326,11 +326,11 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         statMap.add("Natural Wonders", statsPerNaturalWonder.times(civInfo.naturalWonders.size))
 
-        if (statMap.contains(UniqueTarget.CityState.name)) {
+        if (statMap.contains(Constants.cityStates)) {
             for (unique in civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
                 val bonusPercent = unique.params[0].toPercent()
                 val bonusStat = Stat.valueOf(unique.params[1])
-                statMap[UniqueTarget.CityState.name]!![bonusStat] *= bonusPercent
+                statMap[Constants.cityStates]!![bonusStat] *= bonusPercent
             }
         }
 
