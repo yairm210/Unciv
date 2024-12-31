@@ -91,7 +91,7 @@ class AlertPopup(
             AlertType.CityConquered -> addCityConquered()
             AlertType.CityTraded -> addCityTraded()
             AlertType.BorderConflict -> addBorderConflict()
-            AlertType.BorderOccupation -> addBorderOccupation()
+            AlertType.TilesStolen -> addTilesStolen()
             AlertType.DemandToStopSettlingCitiesNear -> addDemandToStopSettlingCitiesNear()
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> addCitySettledNearOtherCivDespiteOurPromise()
             AlertType.DemandToStopSpreadingReligion -> addDemandToStopSpreadingReligion()
@@ -120,10 +120,10 @@ class AlertPopup(
         addCloseButton("Never!", KeyboardBinding.Cancel)
     }
     
-    private fun addBorderOccupation() {
+    private fun addTilesStolen() {
         val civInfo = getCiv(popupAlert.value)
         addLeaderName(civInfo)
-        addGoodSizedLabel("You are occupying our territory!")
+        addGoodSizedLabel("You stole some of our territory!")
         addCloseButton("Yes.", KeyboardBinding.Confirm)
         addCloseButton("No.", KeyboardBinding.Cancel)
     }

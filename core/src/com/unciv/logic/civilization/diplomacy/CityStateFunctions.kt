@@ -540,17 +540,6 @@ class CityStateFunctions(val civInfo: Civilization) {
                     diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
                 }
             }
-            
-            // If citystate gets tile stolen from another civ, then the civ gets a diplomacy Influence debuffer.
-            if (diplomacy.hasModifier(DiplomaticModifiers.StealingTerritory) && diplomacy.isRelationshipLevelLT(RelationshipLevel.Friend)) {
-                diplomacy.addInfluence(-25f)
-                if (!diplomacy.hasFlag(DiplomacyFlags.BorderOccupation)) {
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderOccupation, civInfo.civName))
-                    
-                    // to only show popup once.
-                    diplomacy.setFlag(DiplomacyFlags.BorderOccupation, -1)
-                }
-            }
         }
     }
 

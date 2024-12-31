@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
@@ -1106,6 +1107,16 @@ object UniqueTriggerActivation {
                             // decrease relations for -10 pt/tile
                             otherCiv.getDiplomacyManagerOrMeet(civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                             civsToNotify.add(otherCiv)
+                        }
+                        // check if civ has steal a tile from a citystate 
+                        if (otherCiv != null && otherCiv.isCityState) {
+                            // create this varibale diplomacyCityState for more readability
+                            val diplomacyCityState = otherCiv.getDiplomacyManager(civInfo)!!
+                            diplomacyCityState.addInfluence(-15f)
+
+                            if (!diplomacyCityState.hasFlag(DiplomacyFlags.TilesStolen)) {
+                                civInfo.popupAlerts.add(PopupAlert(AlertType.TilesStolen, otherCiv.civName))
+                            }
                         }
                         cityToAddTo.expansion.takeOwnership(tileToTakeOver)
                     }

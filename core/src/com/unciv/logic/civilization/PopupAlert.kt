@@ -11,7 +11,7 @@ enum class AlertType : IsPartOfGameInfoSerialization {
     CityConquered,
     CityTraded,
     BorderConflict,
-    BorderOccupation,
+    TilesStolen,
 
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
