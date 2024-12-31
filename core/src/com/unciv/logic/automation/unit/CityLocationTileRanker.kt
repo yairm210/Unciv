@@ -24,6 +24,7 @@ object CityLocationTileRanker {
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
     fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
+        val distanceModifier = 2.7f // percentage penalty per aerial distance
         val range =  if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -43,7 +44,9 @@ object CityLocationTileRanker {
 
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
-                val tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                val distanceScore = (unit.currentTile.aerialDistanceTo(it) * distanceModifier).coerceIn(0f, 99f)
+                tileValue *= (100 - distanceScore) / 100
                 if (tileValue >= minimumValue)
                     bestTilesToFoundCity.tileRankMap[it] = tileValue
 
@@ -90,7 +93,7 @@ object CityLocationTileRanker {
         val onCoast = newCityTile.isCoastalTile()
         val onHill = newCityTile.isHill()
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
-        // Only count a luxary resource that we don't have yet as unique once
+        // Only count a luxury resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
         if (onCoast) tileValue += 3
@@ -99,7 +102,12 @@ object CityLocationTileRanker {
         // Observatories are good, but current implementation not mod-friendly
         if (isNextToMountain) tileValue += 5
         // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
-        if (newCityTile.isAdjacentToRiver()) tileValue += 20
+        if (newCityTile.isAdjacentToRiver()) {
+            if (civ.isAI())
+                tileValue += 20
+            else
+                tileValue += 10
+        }
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
