@@ -250,7 +250,11 @@ class NotificationsScroll(
             .height(coveredNotificationsTop * inverseScaleFactor)
         notificationsTable.row()
 
-        val backgroundDrawable = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
+        val backgroundDrawable
+            = BaseScreen.skinStrings.getUiBackground(
+                "WorldScreen/Notification",
+                BaseScreen.skinStrings.roundedEdgeRectangleShape,
+                tintColor = BaseScreen.skin.getColor("text-primary"))
 
         val orderedNotifications = (additionalNotification + notifications.asReversed())
             .groupBy { it.category }
@@ -409,7 +413,7 @@ class NotificationsScroll(
 
         init {
             actor = ImageGetter.getImage("OtherIcons/Notifications")
-                .surroundWithCircle(restoreButtonSize * 0.9f, color = BaseScreen.skinStrings.skinConfig.baseColor)
+                .surroundWithCircle(restoreButtonSize * 0.9f, color = BaseScreen.skin.getColor("base-40"))
                 .surroundWithCircle(restoreButtonSize, resizeActor = false)
             size(restoreButtonSize)
 

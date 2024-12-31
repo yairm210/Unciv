@@ -5,19 +5,17 @@ import com.unciv.GUI
 import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 fun automationTab(optionsPopup: OptionsPopup
 ): Table = Table(BaseScreen.skin).apply {
-    pad(10f)
-    defaults().pad(5f)
+    defaults().padBottom(5f)
 
     val settings = optionsPopup.settings
-    add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
+    optionsPopup.addCategoryHeading(this, "Automation", true)
     optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
         settings.autoAssignCityProduction = shouldAutoAssignCityProduction
         val worldScreen = GUI.getWorldScreenIfActive()
@@ -56,8 +54,7 @@ fun automationTab(optionsPopup: OptionsPopup
         settings.citiesAutoBombardAtEndOfTurn, false
     ) { settings.citiesAutoBombardAtEndOfTurn = it }
 
-    addSeparator()
-    add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+    optionsPopup.addCategoryHeading(this, "AutoPlay")
 //    fun addAutoPlaySections() {
 //        optionsPopup.addCheckbox(
 //            this,
@@ -134,15 +131,14 @@ private fun addAutoPlayMaxTurnsSlider(
     settings: GameSettings,
     selectBoxMinWidth: Float
 ) {
-    table.add("Multi-turn AutoPlay amount".toLabel()).left().fillX()
-
     val minimapSlider = UncivSlider(
+        "Multi-turn AutoPlay amount",
         1f, 200f, 1f,
-        initial = settings.autoPlay.autoPlayMaxTurns.toFloat()
+        settings.autoPlay.autoPlayMaxTurns.toFloat()
     ) {
         val turns = it.toInt()
         settings.autoPlay.autoPlayMaxTurns = turns
     }
-    table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(minimapSlider).padTop(10f).colspan(2).growX().row()
 }
 

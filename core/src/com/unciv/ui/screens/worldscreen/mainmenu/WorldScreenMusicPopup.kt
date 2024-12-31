@@ -49,9 +49,9 @@ class WorldScreenMusicPopup(
         // Make the list flat but with mouse-over highlighting and visual click-down feedback
         // by making them buttons instead of labels, but with a style that has no NinePatches
         // as backgrounds, just tinted whiteDot. As default, but skinnable.
-        val up = sk.getUiBackground("WorldScreenMusicPopup/TrackList/Up", tintColor = skin.getColor("color"))
+        val up = sk.getUiBackground("WorldScreenMusicPopup/TrackList/Up", tintColor = skin.getColor("base-40"))
         val down = sk.getUiBackground("WorldScreenMusicPopup/TrackList/Down", tintColor = skin.getColor("positive"))
-        val over = sk.getUiBackground("WorldScreenMusicPopup/TrackList/Over", tintColor = skin.getColor("highlight"))
+        val over = sk.getUiBackground("WorldScreenMusicPopup/TrackList/Over", tintColor = skin.getColor("base-80"))
         trackStyle = TextButton.TextButtonStyle(up, down, null, Fonts.font)
         trackStyle.over = over
         trackStyle.disabled = up

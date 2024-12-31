@@ -31,7 +31,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
     init {
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityScreenTileTable/InnerTable",
-            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+            tintColor = BaseScreen.skin.getColor("base-40")
         )
         add(innerTable).pad(2f).fill()
         background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityScreenTileTable/Background", tintColor = Color.WHITE)

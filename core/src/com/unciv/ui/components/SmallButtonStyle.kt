@@ -21,10 +21,10 @@ class SmallButtonStyle : TextButton.TextButtonStyle(BaseScreen.skin[TextButton.T
     }
 
     init {
-        val upColor = BaseScreen.skin.getColor("color")
-        val downColor = BaseScreen.skin.getColor("pressed")
-        val overColor = BaseScreen.skin.getColor("highlight")
-        val disabledColor = BaseScreen.skin.getColor("disabled")
+        val upColor = BaseScreen.skin.getColor("base-40")
+        val downColor = BaseScreen.skin.getColor("base-60")
+        val overColor = BaseScreen.skin.getColor("base-80")
+        val disabledColor = BaseScreen.skin.getColor("base-40")
         // UiElementDocsWriter inspects source, which is why this isn't prettified better
         val shape = BaseScreen.run {
             // Let's use _one_ skinnable background lookup but with different tints

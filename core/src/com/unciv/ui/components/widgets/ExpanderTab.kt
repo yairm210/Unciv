@@ -79,7 +79,7 @@ class ExpanderTab(
         header.background(
             BaseScreen.skinStrings.getUiBackground(
                 "General/ExpanderTab",
-                tintColor = BaseScreen.skinStrings.skinConfig.baseColor
+                tintColor = BaseScreen.skin.getColor("base-40")
             )
         )
         if (icon != null) header.add(icon)

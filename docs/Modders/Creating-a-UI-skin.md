@@ -66,12 +66,11 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | General/ | TabbedPager | null | |
 | General/ | Tooltip | roundedEdgeRectangle | |
 | General/Popup/ | Background | null | |
-| General/Popup/ | InnerTable | null | |
+| General/Popup/ | InnerTable | layerContainer | |
 | LanguagePickerScreen/ | LanguageTable | null | |
 | LoadGameScreen/ | BottomTable | null | |
 | LoadGameScreen/ | TopTable | null | |
 | MainMenuScreen/ | Background | null | |
-| MainMenuScreen/ | MenuButton | roundedEdgeRectangle | |
 | MainMenuScreen/ | Version | roundedEdgeRectangle | |
 | MapEditor/MapEditorToolsDrawer/ | Handle | null | |
 | ModManagementOptions/ | ExpanderTab | null | |
@@ -88,7 +87,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | NewGameScreen/NationTable/ | BorderTable | null | |
 | NewGameScreen/NationTable/ | RightInnerTable | null | |
 | NewGameScreen/NationTable/ | Title | null | |
-| NewGameScreen/PlayerPickerTable/ | PlayerTable | null | |
 | OverviewScreen/DiplomacyOverviewTab/ | CivTable | null | |
 | OverviewScreen/NotificationOverviewTable/ | Notification | roundedEdgeRectangle | |
 | OverviewScreen/ReligionOverviewTab/ | BeliefDescription | null | |
@@ -135,9 +133,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/ | BattleTable | null | |
 | WorldScreen/ | Notification | roundedEdgeRectangle | |
 | WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
-| WorldScreen/ | TileInfoTable | null | |
 | WorldScreen/ | TutorialTaskTable | null | |
-| WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
 | WorldScreen/CityButton/ | AirUnitTable | roundedEdgeRectangleSmall | |
 | WorldScreen/CityButton/ | AirUnitTableBorder | roundedEdgeRectangleSmall | |
 | WorldScreen/CityButton/ | DefenceTable | roundedTopEdgeRectangleSmall | |

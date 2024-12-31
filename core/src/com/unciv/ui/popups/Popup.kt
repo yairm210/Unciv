@@ -138,8 +138,8 @@ open class Popup(
 
         //todo topTable and bottomTable _could_ be separately skinnable - but would need care so rounded edges work
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
-            "General/Popup/InnerTable",
-            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+            "General/Popup/InnerTable", BaseScreen.skinStrings.layerContainerShape,
+            tintColor = BaseScreen.skin.getColor("base-10-transparent")
         )
         innerTable.touchable = Touchable.enabled
 

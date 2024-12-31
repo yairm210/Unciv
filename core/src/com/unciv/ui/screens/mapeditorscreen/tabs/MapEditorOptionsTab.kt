@@ -114,11 +114,10 @@ class MapEditorOptionsTab(
         }
         add(overlayFileButton).fillX().row()
 
-        overlayAlphaSlider = UncivSlider(0f, 1f, 0.05f, initial = editorScreen.overlayAlpha) {
-            editorScreen.overlayAlpha = it
-        }
+        overlayAlphaSlider = UncivSlider("Overlay opacity",
+        0f, 1f, 0.05f,
+        editorScreen.overlayAlpha) { editorScreen.overlayAlpha = it }
         add(Table().apply {
-            add("Overlay opacity:".toLabel(alignment = Align.left)).left()
             add(overlayAlphaSlider).right()
         }).row()
     }

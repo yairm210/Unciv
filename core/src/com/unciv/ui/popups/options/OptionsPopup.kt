@@ -10,8 +10,12 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.getCloseButton
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.toHeadingLabel
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.widgets.TabbedPager
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.hasOpenPopups
@@ -60,48 +64,48 @@ class OptionsPopup(
         screen.run {
             selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
             tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
-            tabMinWidth = 0.6f * stage.width
+            tabMinWidth = 0.4f * stage.width
             tabMaxHeight = 0.8f * stage.height
         }
         tabs = TabbedPager(
             tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
-            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8
+            headerFontSize = 20, backgroundColor = Color.CLEAR, capacity = 8
         )
         add(tabs).pad(0f).grow().row()
 
         tabs.addPage(
             "About",
-            aboutTab(),
+            aboutTab().pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getExternalImage("Icon.png"), 24f
         )
         tabs.addPage(
             "Display",
-            displayTab(this, ::reloadWorldAndOptions),
+            displayTab(this, ::reloadWorldAndOptions).pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f
         )
         tabs.addPage(
             "Gameplay",
-            gameplayTab(this),
+            gameplayTab(this).pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getImage("OtherIcons/Options"), 24f
         )
         tabs.addPage(
             "Automation",
-            automationTab(this),
+            automationTab(this).pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getImage("OtherIcons/NationSwap"), 24f
         )
         tabs.addPage(
             "Language",
-            LanguageTab(this, ::reloadWorldAndOptions),
+            LanguageTab(this, ::reloadWorldAndOptions).pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getImage("FlagIcons/${settings.language}"), 24f
         )
         tabs.addPage(
             "Sound",
-            soundTab(this),
+            soundTab(this).pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getImage("OtherIcons/Speaker"), 24f
         )
         tabs.addPage(
             "Multiplayer",
-            multiplayerTab(this),
+            multiplayerTab(this).pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
         )
 
@@ -115,16 +119,16 @@ class OptionsPopup(
 
         tabs.addPage(
             "Advanced",
-            AdvancedTab(this, ::reloadWorldAndOptions),
+            AdvancedTab(this, ::reloadWorldAndOptions).pad(Fonts.rem(1f)).setLayer(1, true),
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 
         if (RulesetCache.size > BaseRuleset.values().size) {
-            val content = ModCheckTab(screen)
+            val content = ModCheckTab(screen).pad(Fonts.rem(1f)).setLayer(1, true)
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
         if (withDebug || Gdx.input.areSecretKeysPressed()) {
-            tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f)
+            tabs.addPage("Debug", debugTab(this).pad(Fonts.rem(1f)).setLayer(1, true), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f)
         }
 
         tabs.decorateHeader(getCloseButton {
@@ -192,6 +196,19 @@ class OptionsPopup(
         }
         if (newRow) table.add(checkbox).colspan(2).left().row()
         else table.add(checkbox).left()
+    }
+
+    /**
+     * Adds a large Label and a divider to divide options
+     * into groups in the various options tabs.
+     */
+    internal fun addCategoryHeading(
+        table: Table,
+        text: String,
+        isFirst: Boolean = false
+    ) {
+        table.add(text.toHeadingLabel()).padTop(Fonts.rem(if (!isFirst) 2f else 0f)).left().colspan(2).row()
+        table.addSeparator()
     }
 
     internal fun addCheckbox(

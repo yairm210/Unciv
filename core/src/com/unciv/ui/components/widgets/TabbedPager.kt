@@ -19,11 +19,11 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.scrollTo
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -72,8 +72,7 @@ open class TabbedPager(
     maximumHeight: Float = Float.MAX_VALUE,
     private val headerFontSize: Int = Constants.defaultFontSize,
     private val headerFontColor: Color = Color.WHITE,
-    private val highlightColor: Color = Color.BLUE,
-    backgroundColor: Color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f),
+    backgroundColor: Color = BaseScreen.skin.getColor("base-40"),
     private val headerPadding: Float = 10f,
     separatorColor: Color = Color.CLEAR,
     private val shortcutScreen: BaseScreen? = null,
@@ -145,11 +144,8 @@ open class TabbedPager(
 
         val button = IconTextButton(caption, icon, pager.headerFontSize, pager.headerFontColor).apply {
             name = caption // enable finding pages by untranslated caption without needing our own field
-            if (icon != null) {
-                if (iconSize != 0f)
-                    iconCell.size(iconSize)
-                iconCell.padRight(pager.headerPadding * 0.5f)
-            }
+            setStyle(BaseScreen.skin.get("tab", Button.ButtonStyle::class.java))
+            if (icon != null && iconSize != 0f) iconCell.size(iconSize)
         }
         var buttonX = 0f
         var buttonW = 0f
@@ -307,20 +303,22 @@ open class TabbedPager(
         dimW = DimensionMeasurement.from(minimumWidth, maximumWidth, screenWidth)
         dimH = DimensionMeasurement.from(minimumHeight, maximumHeight, screenHeight)
 
-        background = BaseScreen.skinStrings.getUiBackground("General/TabbedPager", tintColor = backgroundColor)
+        background = BaseScreen.skinStrings.getUiBackground(
+            "General/TabbedPager", tintColor = backgroundColor)
 
-        header.defaults().pad(headerPadding, headerPadding * 0.5f)
         // Measure header height, most likely its final value
         removePage(addPage("Dummy"))
         add(headerScroll).growX().minHeight(headerHeight)
-        headerDecorationRightCell = add().pad(0f)
+        headerDecorationRightCell = add()
         row()
         if (separatorColor != Color.CLEAR)
             addSeparator(separatorColor)
 
+        add(contentScroll).pad(Fonts.rem(1f)).padTop(0f).colspan(2).grow().row()
+
         fixedContentScrollCell = add(fixedContentScroll)
-        fixedContentScrollCell.colspan(2).growX().row()
-        add(contentScroll).colspan(2).grow().row()
+        fixedContentScrollCell.padTop(0f).colspan(2).growX().row()
+
     }
 
     //endregion
@@ -369,7 +367,7 @@ open class TabbedPager(
         if (activePage != -1) {
             val page = pages[activePage]
             (page.content as? IPageExtensions)?.deactivated(activePage, page.caption, this)
-            page.button.color = Color.WHITE
+            page.button.style = BaseScreen.skin.get("tab", Button.ButtonStyle::class.java)
             fixedContentScroll.actor = null
             page.scrollX = contentScroll.scrollX
             page.scrollY = contentScroll.scrollY
@@ -380,7 +378,7 @@ open class TabbedPager(
 
         if (index != -1) {
             val page = pages[index]
-            page.button.color = highlightColor
+            page.button.style = BaseScreen.skin.get("tab-active", Button.ButtonStyle::class.java)
 
             if (page.scrollAlign != 0) {
                 if (Align.isCenterHorizontal(page.scrollAlign))

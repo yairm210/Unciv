@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
+import com.unciv.ui.components.fonts.Fonts
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
@@ -67,15 +68,15 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
 
         internalMinimapWrapper.background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/Minimap/Background",
-            tintColor = Color.GRAY
+            tintColor = BaseScreen.skin.getColor("base-20")
         )
         internalMinimapWrapper.pack()
 
         val externalMinimapWrapper = Table()
-        externalMinimapWrapper.add(internalMinimapWrapper).pad(5f)
+        externalMinimapWrapper.add(internalMinimapWrapper).pad(3f)
         externalMinimapWrapper.background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/Minimap/Border",
-            tintColor = Color.WHITE
+            tintColor = BaseScreen.skin.getColor("base-50")
         )
         externalMinimapWrapper.pack()
 
@@ -109,4 +110,9 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+
+    init {
+        pad(Fonts.rem(0.5f))
+        top().left()
+    }
 }

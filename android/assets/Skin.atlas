@@ -6,7 +6,7 @@ filter: Linear, Linear
 repeat: none
 Skins/Minimal/checkbox
   rotate: false
-  xy: 291, 23
+  xy: 291, 29
   size: 31, 31
   split: 0, 0, 0, 0
   orig: 31, 31
@@ -14,15 +14,23 @@ Skins/Minimal/checkbox
   index: -1
 Skins/Minimal/checkbox-pressed
   rotate: false
-  xy: 252, 23
+  xy: 252, 29
   size: 31, 31
   split: 0, 0, 0, 0
   orig: 31, 31
   offset: 0, 0
   index: -1
+Skins/Minimal/layer-container
+  rotate: false
+  xy: 64, 4
+  size: 10, 10
+  split: 3, 3, 3, 3
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
 Skins/Minimal/rectangleWithOutline
   rotate: false
-  xy: 64, 5
+  xy: 362, 37
   size: 3, 3
   split: 0, 0, 0, 0
   orig: 3, 3
@@ -30,7 +38,7 @@ Skins/Minimal/rectangleWithOutline
   index: -1
 Skins/Minimal/roundedEdgeRectangle
   rotate: false
-  xy: 4, 4
+  xy: 4, 10
   size: 52, 50
   split: 19, 20, 19, 21
   pad: 12, 13, 7, 7
@@ -39,7 +47,7 @@ Skins/Minimal/roundedEdgeRectangle
   index: -1
 Skins/Minimal/roundedEdgeRectangle-mid
   rotate: false
-  xy: 110, 16
+  xy: 110, 22
   size: 38, 38
   split: 17, 17, 15, 15
   pad: 17, 17, -1, -1
@@ -48,7 +56,7 @@ Skins/Minimal/roundedEdgeRectangle-mid
   index: -1
 Skins/Minimal/roundedEdgeRectangle-mid-border
   rotate: false
-  xy: 64, 16
+  xy: 64, 22
   size: 38, 38
   split: 18, 18, 18, 18
   orig: 38, 38
@@ -56,7 +64,7 @@ Skins/Minimal/roundedEdgeRectangle-mid-border
   index: -1
 Skins/Minimal/roundedEdgeRectangle-small
   rotate: false
-  xy: 330, 30
+  xy: 330, 36
   size: 24, 24
   split: 10, 10, 10, 10
   pad: 10, 10, 2, 2
@@ -65,7 +73,7 @@ Skins/Minimal/roundedEdgeRectangle-small
   index: -1
 Skins/Minimal/roundedTopEdgeRectangle-small
   rotate: false
-  xy: 394, 42
+  xy: 394, 48
   size: 24, 12
   split: 10, 10, 10, 0
   pad: 10, 10, -1, -1
@@ -74,7 +82,7 @@ Skins/Minimal/roundedTopEdgeRectangle-small
   index: -1
 Skins/Minimal/roundedTopEdgeRectangle-small-border
   rotate: false
-  xy: 362, 42
+  xy: 362, 48
   size: 24, 12
   split: 10, 10, 10, 0
   orig: 24, 12
@@ -82,7 +90,7 @@ Skins/Minimal/roundedTopEdgeRectangle-small-border
   index: -1
 Skins/Minimal/select-box
   rotate: false
-  xy: 204, 24
+  xy: 204, 30
   size: 40, 30
   split: 7, 9, 7, 7
   orig: 40, 30
@@ -90,9 +98,33 @@ Skins/Minimal/select-box
   index: -1
 Skins/Minimal/select-box-pressed
   rotate: false
-  xy: 156, 24
+  xy: 156, 30
   size: 40, 30
   split: 7, 9, 7, 7
   orig: 40, 30
+  offset: 0, 0
+  index: -1
+Skins/Minimal/slider-bar
+  rotate: false
+  xy: 82, 11
+  size: 12, 3
+  split: 3, 3, 0, 0
+  orig: 12, 3
+  offset: 0, 0
+  index: -1
+Skins/Minimal/tab
+  rotate: false
+  xy: 448, 46
+  size: 14, 14
+  split: 0, 0, 0, 0
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+Skins/Minimal/tab-active
+  rotate: false
+  xy: 426, 46
+  size: 14, 14
+  split: 0, 0, 0, 3
+  orig: 14, 14
   offset: 0, 0
   index: -1

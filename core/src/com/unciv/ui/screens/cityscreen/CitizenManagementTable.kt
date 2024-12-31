@@ -17,8 +17,8 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
     fun update() {
         clear()
 
-        val colorSelected = BaseScreen.skin.getColor("selection")
-        val colorButton = BaseScreen.skin.getColor("color")
+        val colorSelected = BaseScreen.skin.getColor("base-90")
+        val colorButton = BaseScreen.skin.getColor("base-40")
 
         val topTable = Table() // holds 2 buttons
         // effectively a button, but didn't want to rewrite TextButton style

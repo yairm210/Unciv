@@ -243,7 +243,7 @@ class UncivTooltip <T: Actor>(
 
             if (!(always || GUI.keyboardAvailable) || text.isEmpty()) return
 
-            val labelColor = BaseScreen.skinStrings.skinConfig.baseColor
+            val labelColor = BaseScreen.skin.getColor("base-40")
             val label = if (hideIcons) text.toLabel(labelColor, fontSize = 38, hideIcons = true)
                 else ColorMarkupLabel(text, labelColor, fontSize = 38)
             label.setAlignment(Align.center)

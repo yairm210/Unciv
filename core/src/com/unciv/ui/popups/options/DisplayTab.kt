@@ -13,15 +13,16 @@ import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skin
@@ -37,12 +38,11 @@ fun displayTab(
     optionsPopup: OptionsPopup,
     onChange: () -> Unit,
 ) = Table(skin).apply {
-    pad(10f)
-    defaults().pad(2.5f)
+    defaults().padTop(Fonts.rem(0.5f))
 
     val settings = optionsPopup.settings
 
-    add("Screen".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+    optionsPopup.addCategoryHeading(this, "Screen", true)
 
     addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addScreenOrientationSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
@@ -58,15 +58,13 @@ fun displayTab(
         addScrollSpeedSlider(this, settings, optionsPopup.selectBoxMinWidth)
     }
 
-    addSeparator()
-    add("Graphics".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+    optionsPopup.addCategoryHeading(this, "Graphics")
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
-    addSeparator()
-    add("UI".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+    optionsPopup.addCategoryHeading(this, "UI")
 
     addNotificationScrollSelect(this, settings, optionsPopup.selectBoxMinWidth)
     addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
@@ -77,8 +75,7 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Never close popups by clicking outside", settings.forbidPopupClickBehindToClose, false) { settings.forbidPopupClickBehindToClose = it }
     addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
-    addSeparator()
-    add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+    optionsPopup.addCategoryHeading(this, "Visual Hints")
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
     optionsPopup.addCheckbox(this, "Show suggested city locations for units that can found cities", settings.showSettlersSuggestedCityLocations, true) { settings.showSettlersSuggestedCityLocations = it }
@@ -89,8 +86,7 @@ fun displayTab(
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
-    addSeparator()
-    add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+    optionsPopup.addCategoryHeading(this, "Performance")
 
     optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
         settings.continuousRendering = it
@@ -107,8 +103,6 @@ fun displayTab(
 }
 
 private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Minimap size".toLabel()).left().fillX()
-
     // The meaning of the values needs a formula to be synchronized between here and
     // [Minimap.init]. It goes off-10%-11%..29%-30%-35%-40%-45%-50% - and the percentages
     // correspond roughly to the minimap's proportion relative to screen dimensions.
@@ -121,8 +115,9 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
         }
     }
     val minimapSlider = UncivSlider(
+        "Minimap size",
         0f, 25f, 1f,
-        initial = if (settings.showMinimap) settings.minimapSize.toFloat() else 0f,
+        if (settings.showMinimap) settings.minimapSize.toFloat() else 0f,
         getTipText = getTipText
     ) {
         val size = it.toInt()
@@ -133,48 +128,47 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
         }
         GUI.setUpdateWorldOnNextRender()
     }
-    table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(minimapSlider).colspan(2).growX().row()
 }
 
 private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Map panning speed".toLabel()).left().fillX()
-
     val scrollSpeedSlider = UncivSlider(
-        0.2f, 25f, 0.2f, initial = settings.mapPanningSpeed
+        "Map panning speed",
+        0.2f, 25f, 0.2f,
+        settings.mapPanningSpeed
     ) {
         settings.mapPanningSpeed = it
         settings.save()
         if (GUI.isWorldLoaded())
             GUI.getMap().mapPanningSpeed = settings.mapPanningSpeed
     }
-    table.add(scrollSpeedSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(scrollSpeedSlider).colspan(2).growX().row()
 }
 
 private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Unit icon opacity".toLabel()).left().fillX()
-
     val getTipText: (Float) -> String = {"%.0f".format(it*100) + "%"}
 
     val unitIconAlphaSlider = UncivSlider(
+        "Unit icon opacity",
         0f, 1f, 0.1f, initial = settings.unitIconOpacity, getTipText = getTipText
     ) {
         settings.unitIconOpacity = it
         GUI.setUpdateWorldOnNextRender()
     }
-    table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(unitIconAlphaSlider).padTop(10f).colspan(2).growX().row()
 }
 
 private fun addPediaUnitArtSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Size of Unitset art in Civilopedia".toLabel()).left().fillX()
 
     val unitArtSizeSlider = UncivSlider(
+        "Size of Unitset art in Civilopedia",
         0f, 360f, 1f, initial = settings.pediaUnitArtSize
     ) {
         settings.pediaUnitArtSize = it
         GUI.setUpdateWorldOnNextRender()
     }
     unitArtSizeSlider.setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
-    table.add(unitArtSizeSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(unitArtSizeSlider).padTop(10f).colspan(2).growX().row()
 }
 
 private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
@@ -193,14 +187,14 @@ private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectB
         Display.setScreenMode(mode.getId(), settings)
     }
 
-    table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(selectBox).minWidth(selectBoxMinWidth).right().row()
 }
 
 private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
     table.add("Screen Size".toLabel()).left().fillX()
 
     val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.entries.map { it.name }, settings.screenSize.name)
-    table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).right().row()
 
     screenSizeSelectBox.onChange {
         settings.screenSize = ScreenSize.valueOf(screenSizeSelectBox.selected.value)
@@ -223,7 +217,7 @@ private fun addScreenOrientationSelectBox(table: Table, settings: GameSettings, 
         onOrientationChange()
     }
 
-    table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(selectBox).minWidth(selectBoxMinWidth).right().row()
 }
 
 private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onTilesetChange: () -> Unit) {
@@ -235,7 +229,7 @@ private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxM
     for (tileset in tileSets) tileSetArray.add(tileset)
     tileSetSelectBox.items = tileSetArray
     tileSetSelectBox.selected = settings.tileSet
-    table.add(tileSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(tileSetSelectBox).minWidth(selectBoxMinWidth).right().row()
 
     val unitSets = ImageGetter.getAvailableUnitsets()
 
@@ -262,7 +256,7 @@ private fun addUnitSetSelectBox(table: Table, settings: GameSettings, selectBoxM
     for (unitset in unitSets) unitSetArray.add(unitset)
     unitSetSelectBox.items = unitSetArray
     unitSetSelectBox.selected = settings.unitSet ?: nullValue
-    table.add(unitSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(unitSetSelectBox).minWidth(selectBoxMinWidth).right().row()
 
     unitSetSelectBox.onChange {
         settings.unitSet = if (unitSetSelectBox.selected != nullValue) unitSetSelectBox.selected else null
@@ -281,7 +275,7 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
     for (skin in skins) skinArray.add(skin)
     skinSelectBox.items = skinArray
     skinSelectBox.selected = settings.skin
-    table.add(skinSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(skinSelectBox).minWidth(selectBoxMinWidth).right().row()
 
     skinSelectBox.onChange {
         settings.skin = skinSelectBox.selected
@@ -305,7 +299,7 @@ private fun addResetTutorials(table: Table, settings: GameSettings) {
                 resetTutorialsButton.clearListeners()
             }.open(true)
     }
-    table.add(resetTutorialsButton).center().row()
+    table.add(resetTutorialsButton).right().row()
 }
 
 private fun addNotificationScrollSelect(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
@@ -315,7 +309,7 @@ private fun addNotificationScrollSelect(table: Table, settings: GameSettings, se
         NotificationsScroll.UserSetting.entries.map { it.name },
         settings.notificationScroll
     )
-    table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    table.add(selectBox).minWidth(selectBoxMinWidth).right().row()
 
     selectBox.onChange {
         settings.notificationScroll = selectBox.selected.value

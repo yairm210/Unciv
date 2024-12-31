@@ -225,8 +225,7 @@ class MapEditorViewTab(
         if (tile.resource != null && (tile.resourceAmount > 0 || tile.tileResource.resourceType == ResourceType.Strategic)) {
             renderedInfo.addSeparator(Color.GRAY)
             renderedInfo.add(Table().apply {
-                add("Resource abundance".toLabel(alignment = Align.left)).left().growX()
-                val slider = UncivSlider(0f, 42f, 1f,
+                val slider = UncivSlider("Resource abundance", 0f, 42f, 1f,
                     initial = tile.resourceAmount.toFloat()
                 ) {
                     tile.resourceAmount = it.toInt()
@@ -234,7 +233,7 @@ class MapEditorViewTab(
                     editorScreen.isDirty = true
                 }
                 slider.setSnapToValues(threshold = 5f, 0f,1f,2f,3f,4f,5f,6f,7f,8f,9f,10f,12f,15f,20f,30f,40f)
-                add(slider).right().minWidth(80f).fillX().padTop(15f)
+                add(slider).growX().padTop(10f)
             }).fillX()
         }
 

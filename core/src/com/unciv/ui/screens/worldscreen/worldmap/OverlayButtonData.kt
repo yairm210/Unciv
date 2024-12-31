@@ -50,7 +50,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, I
         if (!isParadrop) {
             val numberCircle = unitToTurnsToDestination.values.maxOrNull()!!.tr().toLabel(fontSize = 14)
                 .apply { setAlignment(Align.center) }
-                .surroundWithCircle(smallerCircleSizes - 2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
+                .surroundWithCircle(smallerCircleSizes - 2, color = BaseScreen.skin.getColor("base-40"))
                 .surroundWithCircle(smallerCircleSizes, false)
             moveHereButton.addActor(numberCircle)
         }

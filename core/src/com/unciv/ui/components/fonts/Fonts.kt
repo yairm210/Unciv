@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.Constants
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.fonts.Fonts.extractPixmapFromTextureRegion
@@ -73,6 +74,13 @@ object Fonts {
         // causes rounding to work better
         return ratio * fontSize.toFloat() + 2.25f
     }
+
+    /**
+     *  Utility for standardised, flexible, and dynamic spacing.
+     *  @param from The desired spacing in rem.
+     *  @return The true spacing to add via pad() or other functions.
+     */
+    fun rem(from: Float): Float = from * Constants.defaultFontSize.toFloat()
 
     /**
      * Turn a TextureRegion into a Pixmap.

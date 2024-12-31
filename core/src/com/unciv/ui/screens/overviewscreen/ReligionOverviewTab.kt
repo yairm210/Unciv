@@ -197,7 +197,7 @@ class ReligionOverviewTab(
         }.apply {
             background = BaseScreen.skinStrings.getUiBackground(
                 "OverviewScreen/ReligionOverviewTab/BeliefDescription",
-                tintColor = BaseScreen.skinStrings.skinConfig.baseColor
+                tintColor = BaseScreen.skin.getColor("base-40")
             )
         }
 }

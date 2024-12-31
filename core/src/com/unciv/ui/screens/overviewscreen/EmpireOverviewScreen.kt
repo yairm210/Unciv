@@ -6,6 +6,7 @@ import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.components.extensions.getCloseButton
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -40,8 +41,9 @@ class EmpireOverviewScreen(
         tabbedPager = TabbedPager(
             stage.width, stage.width,
             centerAreaHeight, centerAreaHeight,
-            separatorColor = Color.WHITE,
+            separatorColor = BaseScreen.skin.getColor("text-subdued"),
             capacity = EmpireOverviewCategories.entries.size)
+        tabbedPager.setLayer(0)
 
         for (category in EmpireOverviewCategories.entries) {
             val tabState = category.testState(viewingPlayer)

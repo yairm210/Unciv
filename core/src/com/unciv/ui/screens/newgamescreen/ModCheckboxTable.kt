@@ -86,7 +86,7 @@ class ModCheckboxTable(
         baseRuleset = newBaseRuleset
         savedModcheckResult = null
         clear()
-        mods.clear()  // We'll regenerate this from checked widgets
+        mods.clear() // We'll regenerate this from checked widgets
 
         val compatibleMods = modWidgets
             .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
@@ -95,14 +95,8 @@ class ModCheckboxTable(
 
         for (mod in compatibleMods) {
             if (mod.widget.isChecked) mods += mod.mod.name
+            add(mod.widget).row()
         }
-
-        add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods") {
-            it.defaults().pad(5f,0f)
-            for (mod in compatibleMods) {
-                it.add(mod.widget).row()
-            }
-        }).pad(expanderPadOther).padTop(expanderPadTop).growX().row()
 
         disableIncompatibleMods()
 

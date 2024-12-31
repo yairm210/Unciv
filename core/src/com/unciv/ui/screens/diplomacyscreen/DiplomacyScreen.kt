@@ -56,7 +56,7 @@ class DiplomacyScreen(
         private const val closeButtonPad = 10f
     }
 
-    private val highlightColor: Color = clearColor.cpy().lerp(skin.getColor("color"), 0.333f)
+    private val highlightColor: Color = skin.getColor("base-100")
 
     private val leftSideTable = Table().apply {
         background = skinStrings.getUiBackground("DiplomacyScreen/LeftSide", tintColor = clearColor)

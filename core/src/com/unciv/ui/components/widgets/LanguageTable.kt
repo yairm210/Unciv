@@ -25,8 +25,8 @@ import java.util.Locale
  *  @see addLanguageTables
  */
 internal class LanguageTable(val language: String, val percentComplete: Int) : Table() {
-    private val baseColor = BaseScreen.skinStrings.skinConfig.baseColor
-    private val darkBaseColor = baseColor.darken(0.5f)
+    private val baseColor = BaseScreen.skin.getColor("base-40")
+    private val darkBaseColor = BaseScreen.skin.getColor("base-40")
 
     init{
         pad(10f)

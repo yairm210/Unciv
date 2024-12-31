@@ -12,6 +12,7 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.setLayer
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
@@ -24,8 +25,8 @@ import kotlin.math.floor
 fun soundTab(
     optionsPopup: OptionsPopup
 ): Table = Table(BaseScreen.skin).apply {
-    pad(10f)
     defaults().pad(5f)
+    setLayer(1, true)
 
     val settings = optionsPopup.settings
     val music = UncivGame.Current.musicController
@@ -73,16 +74,15 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
 }
 
 private fun Table.addVolumeSlider(text: String, initial: Float, silent: Boolean = false, onChange: (Float)->Unit) {
-    add(text.tr()).left().fillX()
-
     val volumeSlider = UncivSlider(
+        text,
         0f, 1.0f, 0.05f,
         initial = initial,
         sound = if (silent) UncivSound.Silent else UncivSound.Slider,
         getTipText = UncivSlider::formatPercent,
         onChange = onChange
     )
-    add(volumeSlider).pad(5f).row()
+    add(volumeSlider).padTop(10f).colspan(2).growX().row()
 }
 
 private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) =
@@ -131,9 +131,8 @@ private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: Mus
         "%.0f".format(posToLength(it))
     }
 
-    table.add("Pause between tracks".tr()).left().fillX()
-
     val pauseLengthSlider = UncivSlider(
+        "Pause between tracks",
         0f, 30f, 1f,
         initial = lengthToPos(music.silenceLength),
         sound = UncivSound.Silent,
@@ -142,7 +141,7 @@ private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: Mus
         music.silenceLength = posToLength(it)
         settings.pauseBetweenTracks = music.silenceLength.toInt()
     }
-    table.add(pauseLengthSlider).pad(5f).row()
+    table.add(pauseLengthSlider).padTop(10f).colspan(2).growX().row()
 }
 
 private fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {

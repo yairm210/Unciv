@@ -46,7 +46,7 @@ class ResourcesOverviewTab(
     private fun getTurnImage(vertical: Boolean) =
         ImageGetter.getImage("OtherIcons/Turn right")
             .apply {
-                color = BaseScreen.skinStrings.skinConfig.baseColor
+                color = BaseScreen.skin.getColor("base-40")
                 if (vertical)
                     rotateBy(90f)
             }
