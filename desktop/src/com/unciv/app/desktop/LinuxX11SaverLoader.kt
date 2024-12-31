@@ -1,7 +1,9 @@
-package com.unciv.logic.files
+package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.logic.files.FileChooser
+import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.utils.Concurrency
 import java.awt.GraphicsEnvironment
 import java.io.File
@@ -24,8 +26,8 @@ class LinuxX11SaverLoader : PlatformSaverLoader {
                 if (suggestedLocation.startsWith(File.separator)) Gdx.files.absolute(suggestedLocation)
                 else if (Gdx.files.external(suggestedLocation).parent().exists()) Gdx.files.external(suggestedLocation)
                 else UncivGame.Current.files.getLocalFile(suggestedLocation)
-            FileChooser.createSaveDialog(stage, "Save game", startLocation) {
-                success, file ->
+            
+            FileChooser.createSaveDialog(stage, "Save game", startLocation) { success, file ->
                 if (!success)
                     onError(PlatformSaverLoader.Cancelled())
                 else

@@ -1,11 +1,11 @@
 package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
 import kotlin.math.pow
@@ -15,7 +15,7 @@ open class TileGroup(
     var tile: Tile,
     val tileSetStrings: TileSetStrings,
     groupSize: Float = TileGroupMap.groupSize + 4
-) : NonTransformGroup() {
+) : Group() {
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -49,6 +49,7 @@ open class TileGroup(
 
     init {
         this.setSize(groupSize, groupSize)
+        this.isTransform = false // Cannot be a NonTransformGroup as this causes font-rendered terrain to be upside-down
 
         this.addActor(layerTerrain)
         this.addActor(layerFeatures)
