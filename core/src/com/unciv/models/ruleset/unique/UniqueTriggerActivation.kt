@@ -1111,7 +1111,7 @@ object UniqueTriggerActivation {
                         // check if civ has steal a tile from a citystate 
                         if (otherCiv != null && otherCiv.isCityState) {
                             // create this varibale diplomacyCityState for more readability
-                            val diplomacyCityState = otherCiv.getDiplomacyManager(civInfo)!!
+                            val diplomacyCityState = otherCiv.getDiplomacyManagerOrMeet(civInfo)
                             diplomacyCityState.addInfluence(-15f)
 
                             if (!diplomacyCityState.hasFlag(DiplomacyFlags.TilesStolen)) {
