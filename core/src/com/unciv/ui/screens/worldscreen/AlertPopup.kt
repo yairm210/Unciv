@@ -123,9 +123,8 @@ class AlertPopup(
     private fun addTilesStolen() {
         val civInfo = getCiv(popupAlert.value)
         addLeaderName(civInfo)
-        addGoodSizedLabel("You stole some of our territory!")
-        addCloseButton("Yes.", KeyboardBinding.Confirm)
-        addCloseButton("No.", KeyboardBinding.Cancel)
+        addGoodSizedLabel("Those lands were not yours to take. This has not gone unnoticed")
+        addCloseButton()
     }
 
     private fun addBulliedOrAttackedProtectedOrAlliedMinor() {
