@@ -1114,8 +1114,11 @@ object UniqueTriggerActivation {
                             val diplomacyCityState = otherCiv.getDiplomacyManagerOrMeet(civInfo)
                             diplomacyCityState.addInfluence(-15f)
 
+                            
+
                             if (!diplomacyCityState.hasFlag(DiplomacyFlags.TilesStolen)) {
                                 civInfo.popupAlerts.add(PopupAlert(AlertType.TilesStolen, otherCiv.civName))
+                                diplomacyCityState.setFlag(DiplomacyFlags.TilesStolen, 1)
                             }
                         }
                         cityToAddTo.expansion.takeOwnership(tileToTakeOver)
