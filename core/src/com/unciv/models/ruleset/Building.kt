@@ -96,16 +96,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun getStatPercentageBonuses(city: City?, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         val stats = percentStatBonus?.clone() ?: Stats()
-        val civInfo = city?.civ ?: return stats  // initial stats
-        
+        if (city == null) return stats  // initial stats
+
         val conditionalState = city.state
 
-        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.StatPercentFromObject)) {
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2], conditionalState))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.AllStatsPercentFromObject)) {
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.AllStatsPercentFromObject)) {
             if (!matchesFilter(unique.params[1], conditionalState)) continue
             for (stat in Stat.entries) {
                 stats.add(stat, unique.params[0].toFloat())

@@ -305,7 +305,8 @@ fun String.toLabel(fontColor: Color = Color.WHITE,
         labelStyle.fontColor = fontColor
         if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(hideIcons), labelStyle).apply {
+    val translatedText = this.tr(hideIcons) 
+    return Label(translatedText, labelStyle).apply {
         setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
         setAlignment(alignment)
     }
