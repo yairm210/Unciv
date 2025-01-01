@@ -57,10 +57,10 @@ class TileStatFunctions(val tile: Tile) {
         val listOfStats = getTerrainStatsBreakdown(stateForConditionals)
 
         val improvement = tile.getUnpillagedTileImprovement()
-        val improvementStats = improvement?.cloneStats() ?: Stats()
+        val improvementStats = improvement?.cloneStats() ?: Stats.ZERO // If improvement==null, will never be added to
 
         val road = tile.getUnpillagedRoadImprovement()
-        val roadStats = road?.cloneStats() ?: Stats()
+        val roadStats = road?.cloneStats() ?: Stats.ZERO
 
         if (city != null) {
             val statsFromTilesUniques =
