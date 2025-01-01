@@ -1,3 +1,19 @@
+## 4.14.19
+
+Memory performance improvements
+
+City-state stat percent bonuses apply correctly
+
+More uniques work with "in this city" conditional
+
+Terrain images in fonts no longer flipped
+
+Pathfinding: Avoid unfriendly city state tiles when this doesn't affect movement speed 
+
+Change Babylon's image to Lamassu  - By SpacedOutChicken
+
+Let AI choose healing promotions - By EmperorPinguin
+
 ## 4.14.18
 
 Performance - Faster map update on click
