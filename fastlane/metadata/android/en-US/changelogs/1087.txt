@@ -1,35 +1,13 @@
+Memory performance improvements
 
-
-perf(memory): Don't recreate terrain lists all the time, use the same list
-
-perf: Convert tile percentage categories to EnumMap for both speed and memory
-
-perf: Remove Stat creation when improvement/road is null
-
-perf: Remove memory allocations when get/setting individual stats
-
-Resolved  - City-state stat bonuses apply correctly
-
-Disable minify :\
-
-Release version even if MSI is not built
-
-chore: remove dead loadScenario function (happens via new game screen)
-
-Move LinuxX11SaverLoader to Desktop as should be
-
-Enable minify! #experimental
-
-Better proguard rules to enable r8 minification
+City-state stat percent bonuses apply correctly
 
 More uniques work with "in this city" conditional
 
-Resolved  - terrain fonts no longer flipped
+Terrain images in fonts no longer flipped
 
-Pathfinding: Avoid unfriendly city state tiles when this doesn't affect movement speed - 
+Pathfinding: Avoid unfriendly city state tiles when this doesn't affect movement speed 
 
 Change Babylon's image to Lamassu  - By SpacedOutChicken
 
-Let AI choose healing promotions  - By EmperorPinguin
-
-fix UncivServer.xyz info in Multiplayer.md  - By touhidurrr
+Let AI choose healing promotions - By EmperorPinguin
