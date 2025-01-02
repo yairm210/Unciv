@@ -146,13 +146,14 @@ class AlertPopup(
                 "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.civName}] will make a fine addition to my own."
         }
         addGoodSizedLabel(text).row()
-
-        addCloseButton("THIS MEANS WAR!", KeyboardBinding.Confirm) {
+        
+        if (!player.isAtWarWith(bullyOrAttacker)) {
+            addCloseButton("THIS MEANS WAR!", KeyboardBinding.Confirm) {
             player.getDiplomacyManager(bullyOrAttacker)!!.sideWithCityState()
             val warReason = if (popupAlert.type == AlertType.AttackedAllyMinor) WarType.AlliedCityStateWar else WarType.ProtectedCityStateWar
             player.getDiplomacyManager(bullyOrAttacker)!!.declareWar(DeclareWarReason(warReason, cityState))
             cityState.getDiplomacyManager(player)!!.influence += 20f // You went to war for us!!
-        }.row()
+        }.row()}
 
         addCloseButton("You'll pay for this!", KeyboardBinding.Confirm) {
             player.getDiplomacyManager(bullyOrAttacker)!!.sideWithCityState()
