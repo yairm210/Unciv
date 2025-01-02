@@ -12,4 +12,4 @@ Grok Java ou Kotlin? Junte-se a nós em https://github.com/yairm210/Unciv.
 
 O mundo está à espera! Vai transformar a sua civilização num império que resistirá ao tempo?
 
-A permissão de 'ter acesso total à rede' é necessária para downloads iniciados pelo usuário e a funcionalidade multiplayer. Todas as outras permissões listadas são incluídas automaticamente pela API utilizada para implementar as notificações de turno no multiplayer. As permissões de rede são utilizadas para listar mods, descarregar mods, descarregar música e carregar/transferir jogos no multiplayer. Nenhuma outra comunicação com a Internet é iniciada pelo Unciv.
+A permissão de 'ter acesso total à rede' é necessária para downloads iniciados pelo usuário e a funcionalidade multijogador. Todas as outras permissões listadas são incluídas automaticamente pela API utilizada para implementar as notificações de turno no multijogador. As permissões de rede são utilizadas para listar mods, descarregar mods, descarregar música e carregar/transferir jogos no multijogador. Nenhuma outra comunicação com a Internet é iniciada pelo Unciv.
