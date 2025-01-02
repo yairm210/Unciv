@@ -81,6 +81,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val pad = 10f
     private val posFromEdge = CityScreen.posFromEdge
     private val stageHeight = cityScreen.stage.height
+    
+    private val highlightColor = Color.GREEN.darken(0.3f)
 
     /** Gets or sets visibility of [both widgets][CityConstructionsTable] */
     var isVisible: Boolean
@@ -151,9 +153,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
         buttonsTable.clear()
         buyButtonFactory.addBuyButtons(buttonsTable, construction) {
-            it.padRight(5f)
+            it.padRight(10f)
         }
-        // priority buttons
+        // priority buttons and remove button
         val queue = cityScreen.city.cityConstructions.constructionQueue
         if (selectedQueueEntry >= 0 && selectedQueueEntry < queue.size) {
             val constructionName = queue[selectedQueueEntry]
@@ -162,7 +164,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             buttonsTable.add(button).padRight(5f)
             if (selectedQueueEntry != queue.lastIndex && cityScreen.canCityBeChanged())
                 buttonsTable.add(getLowerPriorityButton(selectedQueueEntry, constructionName, cityScreen.city)).padRight(5f)
-            else buttonsTable.add() 
+            else buttonsTable.add().width(45f)
+            if (cityScreen.canCityBeChanged() && !queueExpander.isOpen && selectedQueueEntry in 1..4)
+                buttonsTable.add(getRemoveFromQueueButton(selectedQueueEntry, cityScreen.city)).padLeft(10f)
         }
     }
 
@@ -191,24 +195,20 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (queue.size > 1) {
             queueExpander.innerTable.clear()
             queueExpander.headerContent.clear()
-            queueExpander.setText(if (queue.size <= 4) "Queue".tr() else "")
-            
+            queueExpander.header.pad(0f)
+            queueExpander.setText("Queue".tr())
             queue.forEachIndexed { i, constructionName ->
                 // The first entry is already displayed as "Current construction"
                 if (i != 0) {
                     queueExpander.innerTable.add(getQueueEntry(i, constructionName))
                         .expandX().fillX().row()
-                    if (i != queue.size - 1)
+                    if (i != queue.size - 1) {
                         queueExpander.innerTable.addSeparator()
-                    if (i < 5) {
-                        val image = ImageGetter.getConstructionPortrait(constructionName, 40f)
-                        image.touchable = Touchable.disabled
-                        queueExpander.headerContent.add(image).padRight(5f)
-                    }
-                    if (i == 5) {
-                        queueExpander.headerContent.add("(+{${queue.size-i}})".toLabel())
                     }
                 }
+            }
+            if (!queueExpander.isOpen) {
+                updateQueuePreview(queue)
             }
             constructionsQueueTable.add(queueExpander).fillX().pad(2f)
         }
@@ -216,6 +216,27 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         constructionsQueueScrollPane.layout()
         constructionsQueueScrollPane.scrollY = queueScrollY
         constructionsQueueScrollPane.updateVisualScroll()
+    }
+
+    private fun updateQueuePreview(queue: MutableList<String>) {
+        queueExpander.header.pad(-5f, 0f, -5f, 0f)
+        queueExpander.setText(if (queue.size <= 4) "Queue".tr() else "")
+        queue.forEachIndexed { i, constructionName ->
+            if (i in 1..4) {
+                val color = if (selectedQueueEntry == i) highlightColor else BaseScreen.skinStrings.skinConfig.baseColor
+                val image = ImageGetter.getConstructionPortrait(constructionName, 40f).surroundWithCircle(54f, false, color)
+                image.onClick {
+                    cityScreen.selectConstruction(constructionName)
+                    selectedQueueEntry = i
+                    // hack: keep expander closed (can't stop click event propagation to parent)
+                    queueExpander.toggle()
+                }
+                queueExpander.headerContent.add(image)
+            }
+            if (i == 5) {
+                queueExpander.headerContent.add("(+{${queue.size - i}})".toLabel())
+            }
+        }
     }
 
     private fun getConstructionButtonDTOs(): ArrayList<ConstructionButtonDTO> {
@@ -399,7 +420,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             if (highlight)
                 BaseScreen.skinStrings.getUiBackground(
                     "CityScreen/CityConstructionTable/QueueEntrySelected",
-                    tintColor = Color.GREEN.darken(0.5f)
+                    tintColor = highlightColor
                 )
             else
                 BaseScreen.skinStrings.getUiBackground(
@@ -531,7 +552,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             if (highlight)
                 BaseScreen.skinStrings.getUiBackground(
                     "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
-                    tintColor = Color.GREEN.darken(0.5f)
+                    tintColor = highlightColor
                 )
             else unselected
 
