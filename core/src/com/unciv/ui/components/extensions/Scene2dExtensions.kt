@@ -33,10 +33,7 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.*
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -53,7 +50,8 @@ private class RestorableTextButtonStyle(
 //todo ButtonStyle *does* have a `disabled` Drawable, and Button ignores touches in disabled state anyway - all this is a wrong approach
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
-    touchable = Touchable.disabled
+    /** We want disabled buttons to "swallow" the click so that things behind aren't activated, so we don't change touchable
+       The action won't be activated due to [ActorAttachments.activate] checking the isDisabled property */
     isDisabled = true
     val oldStyle = style
     if (oldStyle is RestorableTextButtonStyle) return
@@ -67,7 +65,6 @@ fun Button.enable() {
         style = oldStyle.restoreStyle
     }
     isDisabled = false
-    touchable = Touchable.enabled
 }
 /** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties,
  *  or returns the corresponding state.

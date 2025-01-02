@@ -468,7 +468,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == Constants.river) return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
-        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter, observingCiv) }
+        return neighbors.any { neighbor -> neighbor.matchesFilter(terrainFilter, observingCiv) }
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
