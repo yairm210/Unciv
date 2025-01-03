@@ -108,6 +108,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         )
 
         upperTable.defaults().left().top()
+        
+        // The construction queue is collapsed by default, so there's more vertical space for the
+        // available-constructions-table. When the user decides to expand the
+        // queue, we can use the majority of available vertical space (3/4 of stage height)!
+        // Landscape on Android benefits most from this UX/UI optimization.
+        // Effectively, the available-construction-table takes almost all available vertical space
+        // by default, and by expancing the construction queue, the user changes precedence to the
+        // construction queue.
         upperTable.add(constructionsQueueScrollPane).padBottom(pad).maxHeight(stageHeight*3/4).row()
         upperTable.add(buttonsTable).padBottom(pad).row()
         
@@ -158,13 +166,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
         // priority buttons and remove button
         val queue = cityScreen.city.cityConstructions.constructionQueue
-        if (selectedQueueEntry >= 0 && selectedQueueEntry < queue.size) {
+        if (selectedQueueEntry in 0..<queue.size && queue.size > 1) {
             val constructionName = queue[selectedQueueEntry]
-            
+
             val raiseButton = getRaisePriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
             raiseButton.setEnabled(cityScreen.canCityBeChanged() && selectedQueueEntry > 0)
             buttonsTable.add(raiseButton).padRight(5f)
-            
+
             val lowerButton = getLowerPriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
             lowerButton.setEnabled(selectedQueueEntry != queue.lastIndex && cityScreen.canCityBeChanged())
             buttonsTable.add(lowerButton).padRight(5f)
@@ -204,7 +212,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 if (i != 0) {
                     queueExpander.innerTable.add(getQueueEntry(i, constructionName))
                         .expandX().fillX().row()
-                    if (i != queue.size - 1) {
+                    if (i != queue.lastIndex) {
                         queueExpander.innerTable.addSeparator()
                     }
                 }
@@ -413,12 +421,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun selectQueueEntry(constructionQueueIndex: Int, onBeforeUpdate: () -> Unit = {}) {
-        if (constructionQueueIndex !in 0..<cityScreen.city.cityConstructions.constructionQueue.size) {
+        if (constructionQueueIndex in 0..<cityScreen.city.cityConstructions.constructionQueue.size) {
+            cityScreen.selectConstructionFromQueue(constructionQueueIndex)
+            selectedQueueEntry = constructionQueueIndex
+        } else {
             selectedQueueEntry = -1
-            return
         }    
-        cityScreen.selectConstructionFromQueue(constructionQueueIndex)
-        selectedQueueEntry = constructionQueueIndex
         onBeforeUpdate()
         cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
         ensureQueueEntryVisible()
@@ -672,7 +680,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
             cityScreen.clearSelection()
             cityScreen.city.reassignPopulation()
-            // select next entry in list
+            // select next entry in list if available
             selectQueueEntry(constructionQueueIndex)
         }
         return tab
