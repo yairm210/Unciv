@@ -499,6 +499,9 @@ class CityScreen(
     internal fun hasFreeBuilding(building: Building) =
         city.civ.civConstructions.hasFreeBuilding(city, building)
 
+    fun selectConstructionFromQueue(index: Int) {
+        selectConstruction(city.cityConstructions.constructionQueue[index])
+    }
     fun selectConstruction(name: String) {
         selectConstruction(city.cityConstructions.getConstruction(name))
     }

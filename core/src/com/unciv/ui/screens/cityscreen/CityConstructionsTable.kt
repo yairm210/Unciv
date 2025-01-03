@@ -397,24 +397,31 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         table.touchable = Touchable.enabled
 
-        fun selectQueueEntry(onBeforeUpdate: () -> Unit) {
-            cityScreen.selectConstruction(constructionName)
-            selectedQueueEntry = constructionQueueIndex
-            onBeforeUpdate()
-            cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
-            ensureQueueEntryVisible()
+        table.onClick { selectQueueEntry(constructionQueueIndex) }
+        if (cityScreen.canCityBeChanged()) {
+            table.onRightClick {
+                selectQueueEntry(constructionQueueIndex) {
+                    CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
+                        cityScreen.city.reassignPopulation()
+                        cityScreen.update()
+                    }
+                }
+            }
         }
 
-        table.onClick { selectQueueEntry {} }
-        if (cityScreen.canCityBeChanged())
-            table.onRightClick { selectQueueEntry {
-                CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
-                    cityScreen.city.reassignPopulation()
-                    cityScreen.update()
-                }
-            } }
-
         return table
+    }
+
+    private fun selectQueueEntry(constructionQueueIndex: Int, onBeforeUpdate: () -> Unit = {}) {
+        if (constructionQueueIndex !in 0..<cityScreen.city.cityConstructions.constructionQueue.size) {
+            selectedQueueEntry = -1
+            return
+        }    
+        cityScreen.selectConstructionFromQueue(constructionQueueIndex)
+        selectedQueueEntry = constructionQueueIndex
+        onBeforeUpdate()
+        cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
+        ensureQueueEntryVisible()
     }
 
     private fun highlightQueueEntry(queueEntry: Table, highlight: Boolean) {
@@ -665,7 +672,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
             cityScreen.clearSelection()
             cityScreen.city.reassignPopulation()
-            cityScreen.update()
+            // select next entry in list
+            selectQueueEntry(constructionQueueIndex)
         }
         return tab
     }
