@@ -31,6 +31,7 @@ import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.setEnabled
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
@@ -153,18 +154,21 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
         buttonsTable.clear()
         buyButtonFactory.addBuyButtons(buttonsTable, construction) {
-            it.padRight(10f)
+            it.width(120f).padRight(10f)
         }
         // priority buttons and remove button
         val queue = cityScreen.city.cityConstructions.constructionQueue
         if (selectedQueueEntry >= 0 && selectedQueueEntry < queue.size) {
             val constructionName = queue[selectedQueueEntry]
-            val button = getRaisePriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
-            button.isVisible = cityScreen.canCityBeChanged() && selectedQueueEntry > 0
-            buttonsTable.add(button).padRight(5f)
-            if (selectedQueueEntry != queue.lastIndex && cityScreen.canCityBeChanged())
-                buttonsTable.add(getLowerPriorityButton(selectedQueueEntry, constructionName, cityScreen.city)).padRight(5f)
-            else buttonsTable.add().width(45f)
+            
+            val raiseButton = getRaisePriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
+            raiseButton.setEnabled(cityScreen.canCityBeChanged() && selectedQueueEntry > 0)
+            buttonsTable.add(raiseButton).padRight(5f)
+            
+            val lowerButton = getLowerPriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
+            lowerButton.setEnabled(selectedQueueEntry != queue.lastIndex && cityScreen.canCityBeChanged())
+            buttonsTable.add(lowerButton).padRight(5f)
+            
             if (cityScreen.canCityBeChanged() && !queueExpander.isOpen && selectedQueueEntry in 1..4)
                 buttonsTable.add(getRemoveFromQueueButton(selectedQueueEntry, cityScreen.city)).padLeft(10f)
         }
@@ -189,8 +193,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     .expandX().fillX().row()
         else
             constructionsQueueTable.add("Pick a construction".toLabel()).pad(2f).row()
-
-        constructionsQueueTable.addSeparator()
 
         if (queue.size > 1) {
             queueExpander.innerTable.clear()

@@ -225,6 +225,15 @@ fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): C
     return add(getSeparatorImage(color)).width(width).fillY()
 }
 
+/**
+ * When using Tables as touchables, much like buttons,
+ * this function renders them disabled: faded and not touchable.
+ */
+fun Table.setEnabled(enabled: Boolean) {
+    color.a = if (enabled) 1f else 0.5f
+    touchable = if (enabled) Touchable.enabled else Touchable.disabled 
+}
+
 /** Alternative to [Table].[add][Table] that returns the Table instead of the new Cell to allow a different way of chaining */
 fun <T : Actor> Table.addCell(actor: T): Table {
     add(actor)
