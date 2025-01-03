@@ -38,7 +38,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         rotation = 90f
     }
     private var headerIconClickArea = Table()
-    private var isOpen = true
+    private var isOpen = !cityScreen.isCrampedPortrait()
     
     private val detailedStatsButton = "Stats".toTextButton().apply {
         labelCell.pad(10f)
@@ -104,6 +104,9 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             miniStatsTable.add(icon).size(27f).padRight(3f)
             val valueToDisplay = if (stat == Stat.Happiness) city.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
+            if (cityScreen.isCrampedPortrait() && stat == Stat.Gold) {
+                miniStatsTable.row()
+            }
         }
         upperTable.add(miniStatsTable).expandX()
         upperTable.addSeparator()
@@ -125,7 +128,10 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         headerIcon.rotation = if(isOpen) 90f else 0f
         
         innerTable.clear()
-        innerTable.add(upperTable).expandX()
+        val upperCell = innerTable.add(upperTable).expandX()
+        if (cityScreen.isCrampedPortrait()) {
+            upperCell.right()
+        }
         innerTable.add(headerIconClickArea).row()
         val lowerCell = if (isOpen) {
             innerTable.add(lowerPane).colspan(2)
