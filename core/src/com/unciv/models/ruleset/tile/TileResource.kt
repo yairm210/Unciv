@@ -36,11 +36,9 @@ class TileResource : RulesetStatsObject(), GameResource {
 
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
-    
-    @delegate:Transient
+
     val isCityWide by lazy { hasUnique(UniqueType.CityResource, StateForConditionals.IgnoreConditionals) }
 
-    @delegate:Transient
     val isStockpiled by lazy { hasUnique(UniqueType.Stockpiled, StateForConditionals.IgnoreConditionals) }
 
     private var improvementsInitialized = false

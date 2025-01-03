@@ -210,11 +210,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
     fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
-    
-    fun gainStockpiledResource(resourceName: String, amount: Int) {
-        
-        resourceStockpiles.add(resourceName, amount)
-    }
 
     fun gainStockpiledResource(resource: TileResource, amount: Int) {
         if (resource.isCityWide) resourceStockpiles.add(resource.name, amount)
