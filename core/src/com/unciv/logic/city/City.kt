@@ -213,7 +213,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     fun gainStockpiledResource(resource: TileResource, amount: Int) {
         if (resource.isCityWide) resourceStockpiles.add(resource.name, amount)
-        else civ.gainStockpiledResource(resource.name, amount)
+        else civ.resourceStockpiles.add(resource.name, amount)
     }
 
     fun addStat(stat: Stat, amount: Int) {
@@ -249,7 +249,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (stat is TileResource) {
             if (!stat.isStockpiled) return 0
             if (stat.isCityWide) return resourceStockpiles[stat.name]
-            else return civ.resourceStockpiles[stat.name]
+            return civ.resourceStockpiles[stat.name]
         }
         return when (stat) {
             Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)

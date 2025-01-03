@@ -866,7 +866,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun addGameResource(stat: GameResource, amount: Int) {
-        if (stat is TileResource && stat.isStockpiled) gainStockpiledResource(stat.name, amount)
+        if (stat is TileResource && stat.isStockpiled) gainStockpiledResource(stat, amount)
         when (stat) {
             Stat.Culture -> { policies.addCulture(amount)
                 if (amount > 0) totalCultureForContests += amount }
@@ -884,10 +884,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun gainStockpiledResource(resource: TileResource, amount: Int) {
         if (resource.isCityWide) return
         resourceStockpiles.add(resource.name, amount)
-    }
-    
-    fun gainStockpiledResource(resourceName: String, amount: Int) {
-        resourceStockpiles.add(resourceName, amount)
     }
 
     fun getStatReserve(stat: Stat): Int {
