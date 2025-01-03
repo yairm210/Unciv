@@ -79,7 +79,8 @@ object CivilianUnitAutomation {
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
         // Great writer -> Hurry policy  if late game
-        if (isLateGame) {
+        // Also expend our idle great persons in case of war, otherwise the AI loses them in combat 
+        if (isLateGame || unit.civ.isAtWar()) {
             val hurriedResearch = UnitActions.invokeUnitAction(unit, UnitActionType.HurryResearch)
             if (hurriedResearch) return
 
