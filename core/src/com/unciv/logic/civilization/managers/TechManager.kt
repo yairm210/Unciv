@@ -417,66 +417,66 @@ class TechManager : IsPartOfGameInfoSerialization {
         val previousEra = civInfo.getEra()
         updateEra()
         val currentEra = civInfo.getEra()
-        if (previousEra != currentEra) {
-            if(showNotification) {
-                if(!civInfo.isSpectator())
-                    civInfo.addNotification(
-                        "You have entered the [$currentEra]!",
-                        NotificationCategory.General,
-                        NotificationIcon.Science
+        if (previousEra == currentEra) return
+        
+        if (showNotification) {
+            if (!civInfo.isSpectator())
+                civInfo.addNotification(
+                    "You have entered the [$currentEra]!",
+                    NotificationCategory.General,
+                    NotificationIcon.Science
+                )
+            if (civInfo.isMajorCiv()) {
+                for (knownCiv in civInfo.getKnownCivsWithSpectators()) {
+                    knownCiv.addNotification(
+                        "[${civInfo.civName}] has entered the [$currentEra]!",
+                        NotificationCategory.General, civInfo.civName, NotificationIcon.Science
                     )
-                if (civInfo.isMajorCiv()) {
-                    for (knownCiv in civInfo.getKnownCivsWithSpectators()) {
-                        knownCiv.addNotification(
-                            "[${civInfo.civName}] has entered the [$currentEra]!",
-                            NotificationCategory.General, civInfo.civName, NotificationIcon.Science
-                        )
-                    }
-                }
-                for (policyBranch in getRuleset().policyBranches.values.filter {
-                    it.era == currentEra.name && civInfo.policies.isAdoptable(it)
-                }) {
-                    if (!civInfo.isSpectator())
-                        civInfo.addNotification(
-                            "[${policyBranch.name}] policy branch unlocked!",
-                            PolicyAction(policyBranch.name),
-                            NotificationCategory.General,
-                            NotificationIcon.Culture
-                        )
                 }
             }
-
-            val erasPassed = getRuleset().eras.values
-                .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
-                .sortedBy { it.eraNumber }
-
-
-            for (era in erasPassed)
-                for (unique in era.uniqueObjects)
-                    if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
-                        UniqueTriggerActivation.triggerUnique(
-                            unique,
-                            civInfo,
-                            triggerNotificationText = "due to entering the [${era.name}]"
-                        )
-
-            val eraNames = erasPassed.map { it.name }.toHashSet()
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
-                for (eraName in eraNames)
-                    if (unique.getModifiers(UniqueType.TriggerUponEnteringEra).any { it.params[0] == eraName })
-                        UniqueTriggerActivation.triggerUnique(
-                            unique,
-                            civInfo,
-                            triggerNotificationText = "due to entering the [$eraName]"
-                        )
-
-            // The unfiltered version
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
-                UniqueTriggerActivation.triggerUnique(
-                    unique,
-                    civInfo,
-                    triggerNotificationText = "due to entering the [${currentEra.name}]")
+            
+            for (policyBranch in getRuleset().policyBranches.values.filter {
+                it.era == currentEra.name && civInfo.policies.isAdoptable(it)
+            }) {
+                if (!civInfo.isSpectator())
+                    civInfo.addNotification(
+                        "[${policyBranch.name}] policy branch unlocked!",
+                        PolicyAction(policyBranch.name),
+                        NotificationCategory.General,
+                        NotificationIcon.Culture
+                    )
+            }
         }
+
+        val erasPassed = getRuleset().eras.values
+            .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
+            .sortedBy { it.eraNumber }
+
+        for (era in erasPassed)
+            for (unique in era.uniqueObjects)
+                if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
+                    UniqueTriggerActivation.triggerUnique(
+                        unique,
+                        civInfo,
+                        triggerNotificationText = "due to entering the [${era.name}]"
+                    )
+
+        val eraNames = erasPassed.map { it.name }.toHashSet()
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
+            for (eraName in eraNames)
+                if (unique.getModifiers(UniqueType.TriggerUponEnteringEra).any { it.params[0] == eraName })
+                    UniqueTriggerActivation.triggerUnique(
+                        unique,
+                        civInfo,
+                        triggerNotificationText = "due to entering the [$eraName]"
+                    )
+
+        // The unfiltered version
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
+            UniqueTriggerActivation.triggerUnique(
+                unique,
+                civInfo,
+                triggerNotificationText = "due to entering the [${currentEra.name}]")
     }
 
     private fun updateEra() {

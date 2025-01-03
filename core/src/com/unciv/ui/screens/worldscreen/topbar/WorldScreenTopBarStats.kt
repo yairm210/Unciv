@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.worldscreen.topbar
 
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
@@ -27,7 +26,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
 
     private val goldLabel = "0".toLabel(colorFromRGB(225, 217, 71)) // #ed1947
     private val goldPerTurnLabel = "+0"
-        .toLabel(colorFromRGB(225, 217, 71), 12)
+        .toLabel(colorFromRGB(225, 217, 71), 14)
 
     private val scienceLabel = "0".toLabel(colorFromRGB(78, 140, 151)) // #4e8c97
     private val happinessLabel = "0".toLabel()
@@ -35,7 +34,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
 
     private val faithLabel = "0".toLabel(colorFromRGB(168, 196, 241)) // #a8c4f1
     private val faithPerTurnLabel = "+0"
-        .toLabel(colorFromRGB(168, 196, 241), 12)
+        .toLabel(colorFromRGB(168, 196, 241), 14)
 
     private val happinessContainer = Group()
 
@@ -95,7 +94,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
 
 
         addStat("Gold", goldLabel, EmpireOverviewCategories.Stats, true)
-        addPerTurnLabel(goldPerTurnLabel);
+        addPerTurnLabel(goldPerTurnLabel)
 
         addStat("Science", scienceLabel) { TechPickerScreen(worldScreen.selectedCiv) }
 
