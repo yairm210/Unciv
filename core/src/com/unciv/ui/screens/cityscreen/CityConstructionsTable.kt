@@ -155,7 +155,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         upperTable.pack()
         // Need to reposition when height changes as setPosition's alignment does not persist, it's just a readability shortcut to calculate bottomLeft
         upperTable.setPosition(posFromEdge, stageHeight - posFromEdge, Align.topLeft)
-        lowerTableScrollCell.maxHeight(max(20f, stageHeight - upperTable.height - 2 * posFromEdge))
+        lowerTableScrollCell.maxHeight(
+            (stageHeight - upperTable.height - 2 * posFromEdge).coerceAtLeast(20f)
+        )
     }
 
     private fun updateButtons(construction: IConstruction?) {
