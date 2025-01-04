@@ -69,9 +69,9 @@ object CityResources {
     fun getAvailableResourceAmount(city: City, resourceName: String): Int {
         val resource = city.getRuleset().tileResources[resourceName] ?: return 0
 
-        if (resource.isCityWide)
-            return getCityResourcesAvailableToCity(city).asSequence().filter { it.resource == resource }.sumOf { it.amount }
-        return city.civ.getResourceAmount(resourceName)
+        if (!resource.isCityWide) return city.civ.getResourceAmount(resourceName)
+        if (resource.isStockpiled) return city.resourceStockpiles[resourceName]
+        return getCityResourcesAvailableToCity(city).asSequence().filter { it.resource == resource }.sumOf { it.amount }
     }
 
     private fun addResourcesFromTiles(city: City, resourceModifer: HashMap<String, Float>, cityResources: ResourceSupplyList) {

@@ -435,7 +435,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (unique in costUniques) {
             val amount = unique.params[0].toInt()
             val resourceName = unique.params[1]
-            city.civ.gainStockpiledResource(resourceName, -amount)
+            val resource = city.civ.gameInfo.ruleset.tileResources[resourceName] ?: continue
+            city.gainStockpiledResource(resource, -amount)
         }
 
         if (construction !is Building) return
@@ -705,7 +706,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 for (unique in costUniques) {
                     val amount = unique.params[0].toInt()
                     val resourceName = unique.params[1]
-                    city.civ.gainStockpiledResource(resourceName, -amount)
+                    val resource = city.civ.gameInfo.ruleset.tileResources[resourceName] ?: continue
+                    city.gainStockpiledResource(resource, -amount)
                 }
             }
         }
