@@ -52,6 +52,7 @@ enum class DiplomacyFlags {
     DeclinedJoinWarOffer,
     ResearchAgreement,
     BorderConflict,
+    TilesStolen,
 
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
