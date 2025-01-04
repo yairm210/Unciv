@@ -16,6 +16,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -73,6 +74,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
+    
+    var resourceStockpiles = Counter<String>()
 
     /** All tiles that this city controls */
     var tiles = HashSet<Vector2>()
@@ -136,6 +139,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
         toReturn.lockedTiles = lockedTiles
+        toReturn.resourceStockpiles = resourceStockpiles.clone()
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.foundingCiv = foundingCiv
@@ -207,6 +211,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
     fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
 
+    fun gainStockpiledResource(resource: TileResource, amount: Int) {
+        if (resource.isCityWide) resourceStockpiles.add(resource.name, amount)
+        else civ.resourceStockpiles.add(resource.name, amount)
+    }
+
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
             Stat.Production -> cityConstructions.addProductionPoints(amount)
@@ -218,8 +227,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun addGameResource(stat: GameResource, amount: Int) {
         if (stat is TileResource) {
             if (!stat.isStockpiled) return
-            if (!stat.isCityWide) civ.gainStockpiledResource(stat.name, amount)
-            else { /*TODO*/ }
+            gainStockpiledResource(stat, amount)
             return
         }
         when (stat) {
@@ -238,11 +246,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     fun getReserve(stat: GameResource): Int {
-        if (stat is TileResource && stat.isCityWide) {
-            return if (stat.isStockpiled) {
-                // TODO
-                0
-            } else 0
+        if (stat is TileResource) {
+            if (!stat.isStockpiled) return 0
+            if (stat.isCityWide) return resourceStockpiles[stat.name]
+            return civ.resourceStockpiles[stat.name]
         }
         return when (stat) {
             Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)

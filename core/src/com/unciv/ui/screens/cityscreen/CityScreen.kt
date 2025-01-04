@@ -167,6 +167,13 @@ class CityScreen(
 
         globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
         globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
+
+        if (isPortrait()) mapScrollPane.apply {
+            // center scrolling so city center sits more to the bottom right
+            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
+            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
+            updateVisualScroll()
+        }
     }
 
     override fun getCivilopediaRuleset() = selectedCiv.gameInfo.ruleset
@@ -182,12 +189,6 @@ class CityScreen(
 
         // Rest of screen: Map of surroundings
         updateTileGroups()
-        if (isPortrait()) mapScrollPane.apply {
-            // center scrolling so city center sits more to the bottom right
-            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
-            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
-            updateVisualScroll()
-        }
     }
 
     internal fun updateWithoutConstructionAndMap() {
@@ -216,16 +217,25 @@ class CityScreen(
         cityPickerTable.setPosition(centeredX, exitCityButton.top + 10f, Align.bottom)
 
         // Top right of screen: Stats / Specialists
-        var statsHeight = stage.height - posFromEdge * 2
-        if (selectedTile != null)
-            statsHeight -= tileTable.height + 10f
-        if (selectedConstruction != null)
-            statsHeight -= selectedConstructionTable.height + 10f
-        cityStatsTable.update(statsHeight)
-        cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
+        updateCityStats()
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
+
+    }
+
+    private fun updateCityStats() {
+        var statsHeight = stage.height - posFromEdge * 2
+        if (selectedTile != null)
+            statsHeight -= tileTable.top + 10f
+        if (selectedConstruction != null)
+            statsHeight -= selectedConstructionTable.top + 10f
+        cityStatsTable.update(statsHeight)
+        cityStatsTable.setPosition(
+            stage.width - posFromEdge,
+            stage.height - posFromEdge,
+            Align.topRight
+        )
     }
 
     fun canCityBeChanged(): Boolean {
@@ -332,9 +342,21 @@ class CityScreen(
         }
 
         razeCityButtonHolder.pack()
-        val centerX = if (!isPortrait()) stage.width / 2
-            else constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
-        razeCityButtonHolder.setPosition(centerX, stage.height - 20f, Align.top)
+        if(isCrampedPortrait()) {
+            // cramped portrait: move raze button down to city picker
+            val centerX = cityPickerTable.x + cityPickerTable.width / 2 - razeCityButtonHolder.width / 2
+            razeCityButtonHolder.setPosition(centerX, cityPickerTable.y + cityPickerTable.height + 10)
+            // and also re-position the tooltips, which would otherwise be covered
+            tileTable.setPosition(stage.width - posFromEdge, razeCityButtonHolder.top + 10f, Align.bottomRight)
+            selectedConstructionTable.setPosition(stage.width - posFromEdge, razeCityButtonHolder.top + 10f, Align.bottomRight)
+            updateCityStats() // limit city stats height according to the tooltips
+        } else {
+            val centerX = if (isPortrait())
+                constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
+            else
+                stage.width / 2
+            razeCityButtonHolder.setPosition(centerX, stage.height - 20f, Align.top)
+        }
         stage.addActor(razeCityButtonHolder)
     }
 
@@ -477,6 +499,9 @@ class CityScreen(
     internal fun hasFreeBuilding(building: Building) =
         city.civ.civConstructions.hasFreeBuilding(city, building)
 
+    fun selectConstructionFromQueue(index: Int) {
+        selectConstruction(city.cityConstructions.constructionQueue[index])
+    }
     fun selectConstruction(name: String) {
         selectConstruction(city.cityConstructions.getConstruction(name))
     }

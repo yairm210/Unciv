@@ -355,7 +355,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             newDetailedCivResources.subtractResourceRequirements(
                 unit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
 
-        newDetailedCivResources.removeAll { it.resource.hasUnique(UniqueType.CityResource) }
+        newDetailedCivResources.removeAll { it.resource.isCityWide }
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return

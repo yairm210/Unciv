@@ -224,7 +224,7 @@ object Battle {
         if (!captureMilitaryUnitSuccess)
             postBattleMoveToAttackedTile(attacker, defender, attackedTile)
 
-        reduceAttackerMovementPointsAndAttacks(attacker, defender)
+        reduceAttackerMovementPointsAndAttacks(attacker, defender, attackedTile)
 
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
 
@@ -489,16 +489,17 @@ object Battle {
         }
     }
 
-    private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
+    private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
             // If captured this civilian, doesn't count as attack
             // And we've used a movement already
-            if(defender.isCivilian() && attacker.getTile() == defender.getTile()) {
-                return
-            }
+            if (defender.isCivilian() && attacker.getTile() == defender.getTile()) return
+            
+            val stateForConditionals = StateForConditionals(attacker, defender, attackedTile, CombatAction.Attack)
             unit.attacksThisTurn += 1
-            if (unit.hasUnique(UniqueType.CanMoveAfterAttacking) || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
+            if (unit.hasUnique(UniqueType.CanMoveAfterAttacking, stateForConditionals) 
+                || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...
@@ -689,7 +690,7 @@ object Battle {
         defender.unit.putInTile(toTile)
         defender.unit.mostRecentMoveType = UnitMovementMemoryType.UnitWithdrew
         // and count 1 attack for attacker but leave it in place
-        reduceAttackerMovementPointsAndAttacks(attacker, defender)
+        reduceAttackerMovementPointsAndAttacks(attacker, defender, fromTile)
 
         val attackerName = attacker.getName()
         val defenderName = defender.getName()
