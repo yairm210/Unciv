@@ -1,24 +1,18 @@
-## 4.14.20
+## 4.15.0
 
-Resolved  - "free building" unique respects civ replacement buildings
+Modding:
+- "Costs [amount] [stockpiledResource]" works for improvements
+- "free building" unique respects replacement buildings
+- Adjacency checks do not check the current tile
+- Allow city level stockpiles - By SeventhM
 
-Fix water adjacency test
+UI:
+- Larger 'per turn' text for gold and faith
+- disabled buttons no longer cause click-through
+- Improved city screen queue - By sulai
+- Edit Babylon's icon - By SpacedOutChicken
 
-Larger 'per turn' text for gold and faith
-
-Resolved  - Adjacency checks are only for adjacent tiles, and not also for this tile
-
-chore: Early exit moveToNewEra
-
-Resolved  - disabled buttons no longer cause click-through
-
-Updated CityStateFunction.tk so that city states, will get angry at you, if you steal their lands   - By Emandac
-
-Improved city screen queue  - By sulai
-
-Allow for city level stockpiles to actually function  - By SeventhM
-
-Edit Babylon's icon  - By SpacedOutChicken
+City states will get angry at you if you steal their lands - By Emandac
 
 ## 4.14.19
 

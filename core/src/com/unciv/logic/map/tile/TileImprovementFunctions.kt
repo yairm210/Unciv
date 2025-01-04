@@ -255,8 +255,10 @@ class TileImprovementFunctions(val tile: Tile) {
     ) {
         val stateForConditionals = StateForConditionals(civ, unit = unit, tile = tile)
         
-        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, stateForConditionals))
-            civ.gainStockpiledResource(unique.params[1], -unique.params[0].toInt())
+        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+            val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
+            civ.gainStockpiledResource(resource, -unique.params[0].toInt())
+        }
 
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
             && it.conditionalsApply(stateForConditionals) })
