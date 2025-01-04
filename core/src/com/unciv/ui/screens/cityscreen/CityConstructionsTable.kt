@@ -3,9 +3,11 @@ package com.unciv.ui.screens.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
@@ -235,12 +237,24 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             if (i in 1..4) {
                 val color = if (selectedQueueEntry == i) highlightColor else BaseScreen.skinStrings.skinConfig.baseColor
                 val image = ImageGetter.getConstructionPortrait(constructionName, 40f).surroundWithCircle(54f, false, color)
-                image.onClick {
-                    cityScreen.selectConstruction(constructionName)
-                    selectedQueueEntry = i
-                    // hack: keep expander closed (can't stop click event propagation to parent)
-                    queueExpander.toggle()
-                }
+                image.addListener(object: ClickListener() {
+                    // Calling event.stop() to prevent click propagation to the parent,
+                    // the expander header.
+                    // We are using touchDown and touchUp here, because event.stop()
+                    // won't work on the click() callback alone. This is because a click consists
+                    // of both a touch down and touch up.
+                    override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                        event.stop()
+                        return super.touchDown(event, x, y, pointer, button)
+                    }
+                    override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
+                        cityScreen.selectConstruction(constructionName)
+                        selectedQueueEntry = i
+                        cityScreen.update()
+                        event.stop()
+                        super.touchUp(event, x, y, pointer, button)
+                    }
+                })
                 queueExpander.headerContent.add(image)
             }
             if (i == 5) {
