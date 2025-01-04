@@ -270,8 +270,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
             // We shouldn't try to build wonders in undeveloped cities and empires
-            if (building.isWonder && !cityIsOverAverageProduction) continue
-            if (building.isWonder && civInfo.cities.size < 3) continue
+            if (building.isWonder && (!cityIsOverAverageProduction || civInfo.cities.sumOf { it.population.population } < 12)) continue
             addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building, localUniqueCache))
         }
     }
