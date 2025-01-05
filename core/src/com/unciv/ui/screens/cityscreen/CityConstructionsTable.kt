@@ -103,7 +103,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             tintColor = ImageGetter.CHARCOAL
         )
         queueExpander = ExpanderTab(
-            "Queue", 
+            "Construction queue", 
             onChange = { cityScreen.update() },
             startsOutOpened = false,
             defaultPad = 0f
@@ -210,7 +210,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             queueExpander.innerTable.clear()
             queueExpander.headerContent.clear()
             queueExpander.header.pad(0f)
-            queueExpander.setText("Queue".tr())
+            queueExpander.setText("Construction queue".tr())
             queue.forEachIndexed { i, constructionName ->
                 // The first entry is already displayed as "Current construction"
                 if (i != 0) {
@@ -441,6 +441,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             cityScreen.selectConstructionFromQueue(constructionQueueIndex)
             selectedQueueEntry = constructionQueueIndex
         } else {
+            cityScreen.clearSelection()
             selectedQueueEntry = -1
         }    
         onBeforeUpdate()
@@ -696,8 +697,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
             cityScreen.clearSelection()
             cityScreen.city.reassignPopulation()
-            // select next entry in list if available
-            selectQueueEntry(constructionQueueIndex)
+            // Select next entry in list if available.
+            // If the last one was deleted, select the new last one.
+            selectQueueEntry(constructionQueueIndex.coerceAtMost(city.cityConstructions.constructionQueue.lastIndex)) { }
         }
         return tab
     }
