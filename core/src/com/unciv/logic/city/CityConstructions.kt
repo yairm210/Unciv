@@ -861,12 +861,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun raisePriority(constructionQueueIndex: Int): Int {
+        if (constructionQueueIndex == 0) return constructionQueueIndex // Already first
         constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
         return constructionQueueIndex - 1
     }
 
     // Lowering == Highering next element in queue
     fun lowerPriority(constructionQueueIndex: Int): Int {
+        if (constructionQueueIndex >= constructionQueue.size - 1) return constructionQueueIndex // Already last
         raisePriority(constructionQueueIndex + 1)
         return constructionQueueIndex + 1
     }
