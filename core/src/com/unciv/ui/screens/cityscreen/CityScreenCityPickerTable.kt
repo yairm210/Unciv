@@ -8,6 +8,7 @@ import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 
@@ -65,7 +66,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             )
         }
 
-        cityNameTable.add(currentCityLabel)
+        cityNameTable.add(currentCityLabel).padTopDescent()
 
         val garrison = city.getGarrison()
         if (garrison != null) {

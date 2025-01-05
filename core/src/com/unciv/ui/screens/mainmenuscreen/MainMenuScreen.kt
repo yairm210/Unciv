@@ -38,6 +38,7 @@ import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
@@ -98,6 +99,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         )
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(20f)
         table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
+            .padTopDescent()
 
         table.touchable = Touchable.enabled
         table.onActivation(binding = binding) {

@@ -10,8 +10,6 @@ import com.unciv.Constants
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
-import kotlin.math.floor
-import kotlin.math.ceil
 
 /**
  * Translate a [String] and make a [Button] widget from it, with control over font size, font colour, an optional icon, and custom formatting.
@@ -44,6 +42,11 @@ open class IconTextButton(
 
     init {
         pad(10f)
-        labelCell.padTop(10f - Fonts.getDescenderHeight(fontSize));
+        // aligned with icon
+        labelCell.padTopDescent()
     }
+}
+
+fun Cell<Label>.padTopDescent(): Cell<Label> {
+    return padTop(Fonts.getDescenderHeight(Fonts.ORIGINAL_FONT_SIZE.toInt()) * actor.fontScaleY)
 }
