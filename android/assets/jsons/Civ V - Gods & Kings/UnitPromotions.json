@@ -577,7 +577,7 @@
 	// Mixed
 	{
 		"name": "Cover I",
-		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>"],
+		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>", "[-90]% weight to this choice for AI decisions"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"],
         "column": 24,
         "row": 1
