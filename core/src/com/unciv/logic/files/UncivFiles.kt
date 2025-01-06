@@ -383,8 +383,14 @@ class UncivFiles(
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
             val file = FileHandle(baseDirectory + File.separator + SETTINGS_FILE_NAME)
-            return if (file.exists()) json().fromJsonFile(GameSettings::class.java, file)
-            else GameSettings().apply { isFreshlyCreated = true }
+            if (file.exists()){
+                try {
+                    return json().fromJson(GameSettings::class.java, file)
+                } catch (ex: Exception) {
+                    Log.error("Exception while deserializing GameSettings JSON", ex)
+                }
+            }
+            return GameSettings().apply { isFreshlyCreated = true }
         }
 
         /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
