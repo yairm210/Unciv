@@ -47,6 +47,10 @@ open class IconTextButton(
     }
 }
 
+/**
+ * Intended for labels in tables that also contain icons, to ensure
+ * the label vertically aligns correctly to the icon, respecting the baseline of the text.
+ */
 fun Cell<Label>.padTopDescent(): Cell<Label> {
     return padTop(Fonts.getDescenderHeight(Fonts.ORIGINAL_FONT_SIZE.toInt()) * actor.fontScaleY)
 }
