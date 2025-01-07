@@ -84,40 +84,19 @@ class WorkerAutomation(
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)
 
         if (tileToWork != currentTile && tileToWork != null) {
-            headTowardsTileToWork(unit, tileToWork, localUniqueCache)
+            headTowardsTileToWork(unit, tileToWork)
             return
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
 
-        if (tileToWork == currentTile && tileHasWorkToDo(currentTile, unit, localUniqueCache)) {
+        if (tileToWork == currentTile && tileHasWorkToDo(currentTile, unit, localUniqueCache)) 
             workOnCurrentTile(unit)
-        }
 
-        if (unit.cache.hasUniqueToCreateWaterImprovements) {
-            // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
-            if (automateWorkBoats(unit)) return
-        }
+        // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
+        if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return
 
-        val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
-        for (city in unit.civ.cities) {
-            citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
-                .count { tile -> tile.isLand
-                        && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
-                        && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) }
-        }
-
-        val closestUndevelopedCity = unit.civ.cities.asSequence()
-            .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
-            .sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
-
-        if (closestUndevelopedCity != null && closestUndevelopedCity != currentTile.owningCity) {
-            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
-            val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
-            if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
-            return
-        }
+        if (tryHeadTowardsUndevelopedCity(unit, localUniqueCache, currentTile)) return
 
         // Nothing to do, try again to connect cities
         if (roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect)) return
@@ -129,6 +108,36 @@ class WorkerAutomation(
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
+    }
+
+    private fun tryHeadTowardsUndevelopedCity(
+        unit: MapUnit,
+        localUniqueCache: LocalUniqueCache,
+        currentTile: Tile
+    ): Boolean {
+        val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
+        
+        for (city in unit.civ.cities) {
+            citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
+                .count { tile ->
+                    tile.isLand
+                            && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
+                            && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache))
+                }
+        }
+
+        val closestUndevelopedCity = unit.civ.cities.asSequence()
+            .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
+            .sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }
+            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
+
+        if (closestUndevelopedCity != null && closestUndevelopedCity != currentTile.owningCity) {
+            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
+            val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
+            if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
+            return true
+        }
+        return false
     }
 
     private fun workOnCurrentTile(unit: MapUnit) {
@@ -151,7 +160,6 @@ class WorkerAutomation(
     private fun headTowardsTileToWork(
         unit: MapUnit,
         tileToWork: Tile,
-        localUniqueCache: LocalUniqueCache
     ) {
         debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
         val currentTile = unit.getTile()
@@ -183,25 +191,7 @@ class WorkerAutomation(
         
         // If there's move still left, perform action
         // Unit may stop due to Enemy Unit within walking range during doAction() call
-        
-        // TODO: Check diff with workOnCurrentTile - they should be merged
-        if (reachedTile.isPillaged()) {
-            debug("WorkerAutomation: $unit -> repairs $reachedTile")
-            UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
-            return
-        }
-        
-        if (reachedTile.improvementInProgress == null && reachedTile.isLand
-            && tileHasWorkToDo(reachedTile, unit, localUniqueCache)
-        ) {
-            debug("WorkerAutomation: $unit -> start improving $reachedTile")
-            reachedTile.startWorkingOnImprovement(
-                tileRankings[reachedTile]!!.bestImprovement!!,
-                civInfo,
-                unit
-            )
-            return
-        }
+        workOnCurrentTile(unit)
     }
 
 
