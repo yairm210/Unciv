@@ -1,0 +1,39 @@
+
+
+chore: split checkFileNames into subfunctions
+
+chore: reduce automateWorkerAction complexity even more
+
+chore: reduce automateWorkerAction complexity
+
+Show total number of cities in city table
+
+Fixed tests again dammit
+
+Specify the problematic interception translations
+
+chore: renamed all "distance to tiles" to "movement"
+
+Avoid ANRs when loading games
+
+Resolve rare crash for corrupted game settings
+
+Resolved  - Queue items remain in bounds
+
+Fix tests
+
+More generic battle notifications
+
+More generic battle notifications
+
+.
+
+New battle damage messages - to be translated before we move to the new format
+
+Added battle damage translation line when attacker is undamaged
+
+Added battle damage translation line when attacker is undamaged
+
+By sulai:
+- Add GoogleMaps-like pinching 
+- Tweak UI city screen 
