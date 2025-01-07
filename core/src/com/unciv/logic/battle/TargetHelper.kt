@@ -30,7 +30,7 @@ object TargetHelper {
             if (unit.baseUnit.isMelee() && unit.isEscorting()) {
                 val escortingUnit = unit.getOtherEscortUnit()!!
                 if (!escortingUnit.movement.canReachInCurrentTurn(reachableTile)
-                    || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalDistance <= 0f) 
+                    || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalMovement <= 0f) 
                     continue
             }
 
@@ -76,7 +76,7 @@ object TargetHelper {
                 val movementPointsToExpendBeforeAttack =
                     if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
                 val movementLeft =
-                    unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
+                    unit.currentMovement - distance.totalMovement - movementPointsToExpendBeforeAttack
                 Pair(tile, movementLeft)
             }
             // still got leftover movement points after all that, to attack

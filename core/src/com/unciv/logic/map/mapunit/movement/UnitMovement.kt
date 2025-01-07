@@ -17,7 +17,7 @@ class UnitMovement(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
 
-    class ParentTileAndTotalDistance(val tile: Tile, val parentTile: Tile, val totalDistance: Float)
+    class ParentTileAndTotalMovement(val tile: Tile, val parentTile: Tile, val totalMovement: Float)
 
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
 
@@ -26,7 +26,7 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
-    fun getDistanceToTilesAtPosition(
+    fun getMovementToTilesAtPosition(
         position: Vector2,
         unitMovement: Float,
         considerZoneOfControl: Boolean = true,
@@ -40,7 +40,7 @@ class UnitMovement(val unit: MapUnit) {
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
         val unitTile = if (position == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[position]
-        distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, unitTile, 0f)
+        distanceToTiles[unitTile] = ParentTileAndTotalMovement(unitTile, unitTile, 0f)
 
         // If I can't move my only option is to stay...
         if (unitMovement == 0f || unit.cache.cannotMove) return distanceToTiles
@@ -57,7 +57,7 @@ class UnitMovement(val unit: MapUnit) {
                     if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !neighbor.isExplored(unit.civ) ->
-                            distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
+                            distanceToTiles[tileToCheck]!!.totalMovement + 1f  // If we don't know then we just guess it to be 1.
                         !passThroughCache.getOrPut(neighbor) { canPassThrough(neighbor) } -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
@@ -67,12 +67,12 @@ class UnitMovement(val unit: MapUnit) {
                             val movementCost = movementCostCache.getOrPut(key) {
                                 MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
                             }
-                            distanceToTiles[tileToCheck]!!.totalDistance + movementCost
+                            distanceToTiles[tileToCheck]!!.totalMovement + movementCost
                         }
                     }
 
                     val currentBestPath = distanceToTiles[neighbor]
-                    if (currentBestPath == null || currentBestPath.totalDistance > totalDistanceToTile) { // this is the new best path
+                    if (currentBestPath == null || currentBestPath.totalMovement > totalDistanceToTile) { // this is the new best path
                         val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
                             minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
                         else unitMovement
@@ -84,7 +84,7 @@ class UnitMovement(val unit: MapUnit) {
                         // In Civ V, you can always travel between adjacent tiles, even if you don't technically
                         // have enough movement points - it simply depletes what you have
 
-                        distanceToTiles[neighbor] = ParentTileAndTotalDistance(neighbor, tileToCheck, totalDistanceToTile)
+                        distanceToTiles[neighbor] = ParentTileAndTotalMovement(neighbor, tileToCheck, totalDistanceToTile)
                     }
                 }
 
@@ -155,7 +155,7 @@ class UnitMovement(val unit: MapUnit) {
                     getDistanceToTiles(true, passThroughCache, movementCostCache) // check cache
                 }
                 else {
-                    getDistanceToTilesAtPosition(
+                    getMovementToTilesAtPosition(
                         tileToCheck.position,
                         unitMaxMovement,
                         false,
@@ -243,7 +243,7 @@ class UnitMovement(val unit: MapUnit) {
             in destinationNeighbors -> currentTile // We're right nearby anyway, no need to move
             else -> destinationNeighbors
                 .filter { distanceToTiles.containsKey(it) && canMoveTo(it) }
-                .minByOrNull { distanceToTiles.getValue(it).totalDistance } // we can get a little closer
+                .minByOrNull { distanceToTiles.getValue(it).totalMovement } // we can get a little closer
                 ?: currentTile // We can't get closer...
         }
     }
@@ -715,7 +715,7 @@ class UnitMovement(val unit: MapUnit) {
 //        if (cacheResults != null) {
 //            return cacheResults
 //        }
-        val distanceToTiles = getDistanceToTilesAtPosition(
+        val distanceToTiles = getMovementToTilesAtPosition(
             unit.currentTile.position,
             unit.currentMovement,
             considerZoneOfControl,
@@ -850,7 +850,7 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 }
 
-class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalDistance>() {
+class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
     fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile))
             throw Exception("Can't reach this tile!")

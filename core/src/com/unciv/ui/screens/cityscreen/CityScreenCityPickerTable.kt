@@ -54,7 +54,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
-        val currentCityLabel = city.run { "{$name} (${population.population})" }
+        val currentCityLabel = city.name
             .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor(), hideIcons = true)
         if (cityScreen.canChangeState) currentCityLabel.onClick {
             CityRenamePopup(
@@ -66,7 +66,12 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             )
         }
 
-        cityNameTable.add(currentCityLabel).padTopDescent()
+        currentCityLabel.setEllipsis(true)
+        cityNameTable.add(currentCityLabel).minWidth(0f).padTopDescent()
+        
+        val currentCityPop = city.run { " (${population.population})" }
+            .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor(), hideIcons = true)
+        cityNameTable.add(currentCityPop).padTopDescent()
 
         val garrison = city.getGarrison()
         if (garrison != null) {

@@ -121,7 +121,7 @@ object UnitAutomation {
                 }
 
         val reachableTilesMaxWalkingDistance = reachableTiles
-                .filter { it.value.totalDistance == unit.currentMovement
+                .filter { it.value.totalMovement == unit.currentMovement
                         && unit.getDamageFromTerrain(it.key) <= 0 // Don't end turn on damaging terrain for no good reason
                         && (!stayInTerritory || it.key.getOwner() == unit.civ) }
         if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
@@ -447,7 +447,7 @@ object UnitAutomation {
         if (unit.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
-            .filter { it.value.totalDistance < unit.currentMovement }.keys
+            .filter { it.value.totalMovement < unit.currentMovement }.keys
             .filter { unit.movement.canMoveTo(it) && UnitActionsPillage.canPillage(unit, it)
                     && (it.canPillageTileImprovement()
                     || (!onlyPillageToHeal && it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
@@ -471,7 +471,7 @@ object UnitAutomation {
      *  Tiles attack from which would result in instant death of the [unit] are ignored. */
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
-        val unitDistanceToTiles = unit.movement.getDistanceToTilesAtPosition(
+        val unitDistanceToTiles = unit.movement.getMovementToTilesAtPosition(
                 unit.getTile().position,
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )

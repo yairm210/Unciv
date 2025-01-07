@@ -14,6 +14,7 @@ import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -85,7 +86,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val posFromEdge = CityScreen.posFromEdge
     private val stageHeight = cityScreen.stage.height
     
-    private val highlightColor = Color.GREEN.darken(0.3f)
+    private val highlightColor = Color.GREEN.darken(0.4f)
 
     /** Gets or sets visibility of [both widgets][CityConstructionsTable] */
     var isVisible: Boolean
@@ -103,9 +104,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             tintColor = ImageGetter.CHARCOAL
         )
         queueExpander = ExpanderTab(
-            "Queue", 
+            "Construction queue", 
             onChange = { cityScreen.update() },
-            startsOutOpened = false,
+            startsOutOpened = cityScreen.game.settings.screenSize >= GameSettings.ScreenSize.Large,
             defaultPad = 0f
         )
 
@@ -210,7 +211,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             queueExpander.innerTable.clear()
             queueExpander.headerContent.clear()
             queueExpander.header.pad(0f)
-            queueExpander.setText("Queue".tr())
+            queueExpander.setText("Construction queue".tr())
             queue.forEachIndexed { i, constructionName ->
                 // The first entry is already displayed as "Current construction"
                 if (i != 0) {
@@ -234,9 +235,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun updateQueuePreview(queue: MutableList<String>) {
         queueExpander.header.pad(-5f, 0f, -5f, 0f)
-        queueExpander.setText(if (queue.size <= 4) "Queue".tr() else "")
+        queueExpander.setText(if (queue.size <= 3) "Queue".tr() else "")
         queue.forEachIndexed { i, constructionName ->
-            if (i in 1..4) {
+            if (i in 1..3) {
                 val color = if (selectedQueueEntry == i) highlightColor else BaseScreen.skinStrings.skinConfig.baseColor
                 val image = ImageGetter.getConstructionPortrait(constructionName, 40f).surroundWithCircle(54f, false, color)
                 image.addListener(object: ClickListener() {
@@ -259,7 +260,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 })
                 queueExpander.headerContent.add(image)
             }
-            if (i == 5) {
+            if (i == 4) {
                 queueExpander.headerContent.add("(+{${queue.size - i}})".toLabel())
             }
         }
@@ -416,6 +417,15 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         table.add(ImageGetter.getConstructionPortrait(constructionName, 40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
+        if (queueExpander.isOpen) {
+            if (constructionQueueIndex > 0 && cityScreen.canCityBeChanged()){
+                table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()}
+            else table.add().right()
+            if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex && cityScreen.canCityBeChanged())
+                table.add(getLowerPriorityButton(constructionQueueIndex, constructionName, city)).right()
+            else table.add().right()
+        }
+
         if (cityScreen.canCityBeChanged()) table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
         else table.add().right()
 
@@ -441,6 +451,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             cityScreen.selectConstructionFromQueue(constructionQueueIndex)
             selectedQueueEntry = constructionQueueIndex
         } else {
+            cityScreen.clearSelection()
             selectedQueueEntry = -1
         }    
         onBeforeUpdate()
@@ -696,8 +707,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
             cityScreen.clearSelection()
             cityScreen.city.reassignPopulation()
-            // select next entry in list if available
-            selectQueueEntry(constructionQueueIndex)
+            // Select next entry in list if available.
+            // If the last one was deleted, select the new last one.
+            selectQueueEntry(constructionQueueIndex.coerceAtMost(city.cityConstructions.constructionQueue.lastIndex)) { }
         }
         return tab
     }

@@ -47,7 +47,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                     actionContext.game.pushScreen(CityScreen(item))
                 }
         override fun getTotalsActor(items: Iterable<City>) =
-                "Total".toLabel()
+                "{Total} ${items.count()}".toLabel()
     },
 
     Status {
