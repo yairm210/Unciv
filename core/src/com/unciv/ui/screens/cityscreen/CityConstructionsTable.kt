@@ -14,6 +14,7 @@ import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -85,7 +86,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val posFromEdge = CityScreen.posFromEdge
     private val stageHeight = cityScreen.stage.height
     
-    private val highlightColor = Color.GREEN.darken(0.3f)
+    private val highlightColor = Color.GREEN.darken(0.4f)
 
     /** Gets or sets visibility of [both widgets][CityConstructionsTable] */
     var isVisible: Boolean
@@ -105,7 +106,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         queueExpander = ExpanderTab(
             "Construction queue", 
             onChange = { cityScreen.update() },
-            startsOutOpened = false,
+            startsOutOpened = cityScreen.game.settings.screenSize >= GameSettings.ScreenSize.Large,
             defaultPad = 0f
         )
 
@@ -415,6 +416,15 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         else table.add().minWidth(5f)
         table.add(ImageGetter.getConstructionPortrait(constructionName, 40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
+
+        if (queueExpander.isOpen) {
+            if (constructionQueueIndex > 0 && cityScreen.canCityBeChanged()){
+                table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()}
+            else table.add().right()
+            if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex && cityScreen.canCityBeChanged())
+                table.add(getLowerPriorityButton(constructionQueueIndex, constructionName, city)).right()
+            else table.add().right()
+        }
 
         if (cityScreen.canCityBeChanged()) table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
         else table.add().right()
