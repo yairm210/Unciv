@@ -56,7 +56,6 @@ Words outside brackets are hints as to when highlighted word should be used.
 - Default `Zadano`, `Uobičajeno`
 - Exploring `Istraživati`, `Otkrivati`
 - Move `Pokreni`, `Pomakni`, `Premjesti`
-- Raid `Upasti u/na`
 - Annex `Pripojiti`, `Aneksirati`
 - Capital `Prijestolnica`
 - Capital City `Glavni grad`
@@ -104,6 +103,7 @@ Words outside brackets are hints as to when highlighted word should be used.
 
 TODO: Might need better translation!
 
+- Raid `Upasti u/na`
 - Paradrop `Skok padobranom`
 - Hotseat `Lokalna više-korisnička igra`, `Lokalna igra više igrača` (Više-korisnička igra, Igra više igrača)
 - Stats `Statistike` (Prinosi)
@@ -445,6 +445,7 @@ TODO: There are more placeholders in properties not handled here.
 - [name]
 - [thingToProduce]
 - [thingToSelect]
+- [battleAction]
 
 [Table of Contents](#table-of-contents)
 
