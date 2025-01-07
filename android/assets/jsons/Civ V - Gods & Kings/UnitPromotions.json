@@ -13,7 +13,7 @@
 	// Ranged+Siege
 	{
 		"name": "Accuracy I",
-		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>", "[-90]% weight to this choice for AI decisions"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"],
         "column": 1,
         "row": 1
@@ -37,7 +37,7 @@
 
 	{
 		"name": "Barrage I",
-		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>", "[-90]% weight to this choice for AI decisions"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"],
         "column": 2,
         "row": 1
@@ -87,7 +87,7 @@
 	// Melee, Mounted+Armor
 	{
 		"name": "Shock I",
-		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>", "[-90]% weight to this choice for AI decisions"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"],
         "column": 4,
         "row": 1
@@ -111,7 +111,7 @@
 
 	{
 		"name": "Drill I",
-		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>", "[-90]% weight to this choice for AI decisions"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"],
         "column": 5,
         "row": 1
@@ -151,7 +151,7 @@
 	{
 		"name": "Formation I",
 		"prerequisites": ["Shock II","Drill II"], // G&K also has Accuracy II & Barrage II as possible prerequisites for this, but I couldn't find a source for the unittypes
-		"uniques": ["[+33]% Strength <vs [Mounted] units>"],
+		"uniques": ["[+33]% Strength <vs [Mounted] units>", "[-50]% weight to this choice for AI decisions"],
 		"unitTypes": ["Sword","Gunpowder","Mounted"],
         "column": 7,
         "row": 2
@@ -192,7 +192,7 @@
 	{
 		"name": "Medic",
 		"prerequisites": ["Shock I", "Drill I", "Scouting II", "Survivalism II"],
-		"uniques": ["All adjacent units heal [+5] HP when healing"],
+		"uniques": ["All adjacent units heal [+5] HP when healing", "[-50]% weight to this choice for AI decisions"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Scout"],
         "column": 10, // after scout base
         "row": 1
@@ -577,7 +577,7 @@
 	// Mixed
 	{
 		"name": "Cover I",
-		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>"],
+		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>", "[-90]% weight to this choice for AI decisions"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"],
         "column": 24,
         "row": 1
