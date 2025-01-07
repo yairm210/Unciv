@@ -200,7 +200,7 @@ object NextTurnAutomation {
         else 0
         value += ourInfluence / 10
 
-        if (civInfo.gold < 100 && ourInfluence < 30) {
+        if (ourInfluence < 30) {
             // Consider bullying for cash
             value -= 5
         }
@@ -227,13 +227,9 @@ object NextTurnAutomation {
 
     private fun protectCityStates(civInfo: Civilization) {
         for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState }) {
-            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
-            val isAtLeastFriend = diplomacyManager.isRelationshipLevelGE(RelationshipLevel.Friend)
-            if (isAtLeastFriend && state.cityStateFunctions.otherCivCanPledgeProtection(civInfo)) {
-                state.cityStateFunctions.addProtectorCiv(civInfo)
-            } else if (!isAtLeastFriend && state.cityStateFunctions.otherCivCanWithdrawProtection(civInfo)) {
-                state.cityStateFunctions.removeProtectorCiv(civInfo)
-            }
+            if (state.cityStateFunctions.otherCivCanPledgeProtection(civInfo))
+                state.cityStateFunctions.addProtectorCiv(civInfo) 
+            //Always pledge to protect, as it makes it harder for others to demand tribute, and grants +10 resting Influence
         }
     }
 
