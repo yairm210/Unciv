@@ -235,9 +235,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun updateQueuePreview(queue: MutableList<String>) {
         queueExpander.header.pad(-5f, 0f, -5f, 0f)
-        queueExpander.setText(if (queue.size <= 4) "Queue".tr() else "")
+        queueExpander.setText(if (queue.size <= 3) "Queue".tr() else "")
         queue.forEachIndexed { i, constructionName ->
-            if (i in 1..4) {
+            if (i in 1..3) {
                 val color = if (selectedQueueEntry == i) highlightColor else BaseScreen.skinStrings.skinConfig.baseColor
                 val image = ImageGetter.getConstructionPortrait(constructionName, 40f).surroundWithCircle(54f, false, color)
                 image.addListener(object: ClickListener() {
@@ -260,7 +260,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 })
                 queueExpander.headerContent.add(image)
             }
-            if (i == 5) {
+            if (i == 4) {
                 queueExpander.headerContent.add("(+{${queue.size - i}})".toLabel())
             }
         }
