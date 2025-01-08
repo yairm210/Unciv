@@ -23,7 +23,7 @@ open class ZoomGestureListener(
             object : GestureDetector.GestureAdapter() {
 
                 private var pinchCenter: Vector2? = null
-                private var initialDistance = 0f
+                private var lastDistance = 0f
                 
                 override fun pinch(
                     stageInitialPointer1: Vector2,
@@ -33,13 +33,17 @@ open class ZoomGestureListener(
                 ): Boolean {
                     if (pinchCenter == null) {
                         pinchCenter = stageInitialPointer1.cpy().add(stageInitialPointer2).scl(.5f)
-                        initialDistance = stageInitialPointer1.dst(stageInitialPointer2)
+                        lastDistance = stageInitialPointer1.dst(stageInitialPointer2)
                     }
                     val currentCenter = stagePointer1.cpy().add(stagePointer2).scl(.5f)
                     val delta = currentCenter.cpy().sub(pinchCenter)
-                    pinchCenter = currentCenter.cpy()
                     this@ZoomGestureListener.pinch(delta)
-                    this@ZoomGestureListener.zoom(initialDistance, stagePointer1.dst(stagePointer2))
+                    pinchCenter = currentCenter.cpy()
+                    
+                    val currentDistance = stagePointer1.dst(stagePointer2)
+                    this@ZoomGestureListener.zoom(currentDistance / lastDistance, currentCenter)
+                    lastDistance = currentDistance
+                    
                     return true
                 }
 
@@ -83,7 +87,9 @@ open class ZoomGestureListener(
     }
 
     open fun scrolled(amountX: Float, amountY: Float): Boolean { return false }
-    open fun zoom(initialDistance: Float, distance: Float) {}
+    /** [focus] in stage coordinates */
+    open fun zoom(delta: Float, focus: Vector2) {}
+    /** [delta] in stage coordinates */
     open fun pinch(delta: Vector2) {}
     open fun pinchStop() {}
 }
