@@ -43,7 +43,7 @@ class UnitType() : RulesetObject() {
         get() {
             if (::ruleset.isInitialized) return iUniqueMap
             else if (uniqueObjects.isEmpty()) return field
-            else if (uniqueMap.isEmpty()) field = uniqueMapProvider()
+            else if (field.isEmpty()) field = uniqueMapProvider()
 
             return field
         }
