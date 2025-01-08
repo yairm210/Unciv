@@ -133,16 +133,15 @@ object CityLocationTileRanker {
                 // If it is not higher the settler may get stuck when it ranks the same tile differently
                 // as it moves away from the city and doesn't include it in the calculation
                 // and values it higher than when it moves closer to the city
-                distanceToCity == 7 -> 2f
                 distanceToCity == 6 -> 4f
                 distanceToCity == 5 -> 8f // Settling further away sacrifices tempo
-                distanceToCity == 4 -> 6f
+                distanceToCity == 4 -> 4f
                 distanceToCity == 3 -> -25f
                 distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
             // We want a defensive ring around our capital
-            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
+            if (city.civ == civ) distanceToCityModifier += if (city.isCapital()) 3 * (15 - newCityTile.aerialDistanceTo(city.getCenterTile())).coerceIn(0, 11) else 0
             modifier += distanceToCityModifier
         }
         return modifier
