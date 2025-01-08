@@ -447,7 +447,7 @@ class WorkerAutomation(
 
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
 
-        var isResourceImprovedByNewImprovement = tile.resource != null && tile.tileResource.isImprovedBy(improvementName)
+        var isResourceImprovedByNewImprovement = tile.hasViewableResource(civInfo) && tile.tileResource.isImprovedBy(improvementName)
 
         if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
