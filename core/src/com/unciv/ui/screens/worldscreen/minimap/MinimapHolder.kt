@@ -54,7 +54,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         this.clear()
         minimap = Minimap(mapHolder, minimapSize, civInfo)
         val wrappedMinimap = getWrappedMinimap()
-        add(getToggleIcons()).align(Align.bottom)
+        add(getToggleIcons(wrappedMinimap.height)).align(Align.bottom)
             .height(wrappedMinimap.height).padRight(5f) // Spread equally over the side
         add(wrappedMinimap)
         pack()
@@ -83,9 +83,14 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     /** @return Layout table for the little green map overlay toggle buttons, show to the left of the minimap. */
-    private fun getToggleIcons(): Table {
+    private fun getToggleIcons(minimapHeight: Float): Table {
         val toggleIconTable = Table()
-        toggleIconTable.defaults().padTop(5f)
+        
+        val availableForPadding = minimapHeight - (movementsImageButton.height + yieldImageButton.height + 
+                populationImageButton.height + resourceImageButton.height)
+        val paddingBetweenElements = (availableForPadding/3).coerceIn(0f, 5f)
+        
+        toggleIconTable.defaults().padTop(paddingBetweenElements)
 
         toggleIconTable.add(movementsImageButton).row()
         toggleIconTable.add(yieldImageButton).row()
