@@ -132,6 +132,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Gain [amount]-[amount] [stat]"
 	Example: "Gain [3]-[3] [Culture]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Triggerable
 
 ??? example  "Gain enough Faith for a Pantheon"

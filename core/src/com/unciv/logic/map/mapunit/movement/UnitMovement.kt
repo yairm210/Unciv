@@ -106,6 +106,7 @@ class UnitMovement(val unit: MapUnit) {
             val damageFreePath = getShortestPath(destination, true)
             if (damageFreePath.isNotEmpty()) return damageFreePath
         }
+        
         if (destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || canPassThrough(it) }) {
             // edge case where this all of the tiles around the destination are
             // explored and known the unit can't pass through any of thoes tiles so we know a priori that no path exists
@@ -183,15 +184,15 @@ class UnitMovement(val unit: MapUnit) {
                         pathfindingCache.setShortestPathCache(destination, path)
 
                         return path
-                    } else {
-                        if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                        if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
-                            !canMoveToCache.getOrPut(reachableTile) { canMoveTo(reachableTile) })
-                        // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
-                            continue
-                        movementTreeParents[reachableTile] = tileToCheck
-                        newTilesToCheck.add(reachableTile)
                     }
+                    
+                    if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
+                    if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
+                        !canMoveToCache.getOrPut(reachableTile) { canMoveTo(reachableTile) })
+                    // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                        continue
+                    movementTreeParents[reachableTile] = tileToCheck
+                    newTilesToCheck.add(reachableTile)
                 }
             }
 
