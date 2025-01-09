@@ -91,7 +91,7 @@ class WorkerAutomation(
         if (currentTile.improvementInProgress != null) return // we're working!
 
         if (tileToWork == currentTile && tileHasWorkToDo(currentTile, unit, localUniqueCache)) 
-            workOnCurrentTile(unit)
+            startWorkOnCurrentTile(unit)
 
         // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
         if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return
@@ -140,18 +140,18 @@ class WorkerAutomation(
         return false
     }
 
-    private fun workOnCurrentTile(unit: MapUnit) {
+    private fun startWorkOnCurrentTile(unit: MapUnit) {
         val currentTile = unit.currentTile
-        val tileRankings = tileRankings[currentTile]!!
-        if (tileRankings.repairImprovment!!) {
+        val tileRanking = tileRankings[currentTile]!!
+        if (tileRanking.repairImprovment == true) {
             debug("WorkerAutomation: $unit -> repairs $currentTile")
             UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
             return
         }
         
-        if (tileRankings.bestImprovement != null) {
+        if (tileRanking.bestImprovement != null) {
             debug("WorkerAutomation: $unit} -> start improving $currentTile")
-            return currentTile.startWorkingOnImprovement(tileRankings.bestImprovement!!, civInfo, unit)
+            return currentTile.startWorkingOnImprovement(tileRanking.bestImprovement!!, civInfo, unit)
         } else {
             throw IllegalStateException("We didn't find anything to improve on this tile even though there was supposed to be something to improve!")
         }
@@ -189,9 +189,12 @@ class WorkerAutomation(
 
         if (!unit.hasMovement() || reachedTile != tileToWork) return
         
-        // If there's move still left, perform action
+        // If there's move still left, and this is even a tile we want, perform action
         // Unit may stop due to Enemy Unit within walking range during doAction() call
-        workOnCurrentTile(unit)
+
+        // tileRankings is updated in getBasePriority, which is only called if isAutomationWorkableTile is true
+        // Meaning, there are tiles we can't/shouldn't work, and they won't even be in tileRankings
+        if (unit.currentTile in tileRankings) startWorkOnCurrentTile(unit)
     }
 
 
