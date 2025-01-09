@@ -184,6 +184,7 @@ class Ruleset {
         globalUniques = GlobalUniques().apply {
             uniques.addAll(globalUniques.uniques)
             uniques.addAll(ruleset.globalUniques.uniques)
+            unitUniques.addAll(ruleset.globalUniques.unitUniques)
         }
         ruleset.modOptions.nationsToRemove
             .flatMap { nationToRemove ->
