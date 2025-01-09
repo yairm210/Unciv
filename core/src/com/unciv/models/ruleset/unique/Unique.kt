@@ -266,7 +266,7 @@ open class UniqueMap() {
         addUniques(uniques.asIterable())
     }
 
-    fun isEmpty(): Boolean get() = innerUniqueMap.isEmpty()
+    fun isEmpty(): Boolean = innerUniqueMap.isEmpty()
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     open fun addUnique(unique: Unique) {
