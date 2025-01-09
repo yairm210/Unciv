@@ -173,7 +173,7 @@ open class ZoomableScrollPane(
         return zoomListener.isZooming
     }
 
-    inner class ZoomListener : ZoomGestureListener() {
+    inner class ZoomListener : ZoomGestureListener({ Vector2(stage.width, stage.height) }) {
 
         inner class ZoomAction : TemporalAction() {
 
@@ -243,33 +243,22 @@ open class ZoomableScrollPane(
             }
         }
 
-        override fun pinch(delta: Vector2) {
+        override fun pinch(translation: Vector2, scaleChange: Float) {
             if (!isZooming) {
                 isZooming = true
                 onZoomStartListener?.invoke()
             }
             scrollTo(
-                scrollX - delta.x / scaleX,
-                scrollY + delta.y / scaleY,
+                scrollX - translation.x / scaleX,
+                scrollY + translation.y / scaleY,
                 true
             )
+            zoom(scaleX * scaleChange)
         }
 
         override fun pinchStop() {
             isZooming = false
             onZoomStopListener?.invoke()
-        }
-
-        override fun zoom(delta: Float, focus: Vector2) {
-            // correct map position to zoom in to the focus point
-            val dx = (stage.width / 2 - focus.x) * (delta - 1) / scaleX
-            val dy = (stage.height / 2 - focus.y) * (delta - 1) / scaleY
-            scrollTo(
-                scrollX - dx,
-                scrollY + dy,
-                true
-            )
-            zoom(scaleX * delta)
         }
 
         override fun scrolled(amountX: Float, amountY: Float): Boolean {
