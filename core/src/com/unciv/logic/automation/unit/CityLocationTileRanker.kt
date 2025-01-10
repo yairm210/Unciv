@@ -24,7 +24,7 @@ object CityLocationTileRanker {
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
     fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
-        val distanceModifier = 2.7f // percentage penalty per aerial distance from unit (Settler)
+        val distanceModifier = 3f // percentage penalty per aerial distance from unit (Settler)
         val range = if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
