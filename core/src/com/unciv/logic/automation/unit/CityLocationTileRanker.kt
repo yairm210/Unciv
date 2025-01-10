@@ -24,7 +24,7 @@ object CityLocationTileRanker {
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
     fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
-        val distanceModifier = 2.7f // percentage penalty per aerial distance
+        val distanceModifier = 2.7f // percentage penalty per aerial distance from unit (Settler)
         val range = if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -102,24 +102,13 @@ object CityLocationTileRanker {
         // Observatories are good, but current implementation not mod-friendly
         if (isNextToMountain) tileValue += 5
         // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
-        if (newCityTile.isAdjacentToRiver()) {
-            if (civ.isAI())
-                tileValue += 20
-            else
-                tileValue += 10
-        }
+        if (newCityTile.isAdjacentToRiver()) tileValue += 20
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (civ.isAI()) {
-            // let AI cheat and see future resources
-            if (newCityTile.resource != null) tileValue -= 4
-            if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
-        } else {
-            // human recommendations don't use non-viewable resources
-            if (newCityTile.hasViewableResource(civ)) tileValue -= 4
-            if (newCityTile.hasViewableResource(civ) && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
-        }
+        if (newCityTile.resource != null) tileValue -= 4
+        if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
+
         // Settling on bonus resources tends to waste a food
         // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
@@ -170,18 +159,10 @@ object CityLocationTileRanker {
         // Don't settle near but not on the coast
         if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
         // Check if there are any new unique luxury resources
-        if (civ.isHuman()) {
-            if (rankTile.hasViewableResource(civ) && rankTile.tileResource.resourceType == ResourceType.Luxury
-                && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
-                locationSpecificTileValue += 10
-                newUniqueLuxuryResources.add(rankTile.resource!!)
-            }
-        } else {
-            if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
-                && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
-                locationSpecificTileValue += 10
-                newUniqueLuxuryResources.add(rankTile.resource!!)
-            }
+        if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
+            && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
+            locationSpecificTileValue += 10
+            newUniqueLuxuryResources.add(rankTile.resource!!)
         }
 
         // Check if everything else has been calculated, if so return it
