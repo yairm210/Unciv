@@ -1,6 +1,5 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
