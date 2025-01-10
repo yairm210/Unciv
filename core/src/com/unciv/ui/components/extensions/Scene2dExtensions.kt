@@ -293,6 +293,28 @@ fun getCloseButton(
     return closeButton
 }
 
+/**
+ * Adds a white-circled (x) close button to [parent], positioned to the top right,
+ * slightly shifted outwards.
+ */
+fun addRoundCloseButton(
+    parent: Group? = null,
+    size: Float = 30f,
+    iconSize: Float = size - 15f,
+    circleColor: Color = Color.CLEAR,
+    overColor: Color = Color.RED,
+    action: () -> Unit
+): Group {
+    val button = getCloseButton(size, iconSize, circleColor, overColor, action)
+        .surroundWithCircle(size, false, BaseScreen.clearColor)
+        .surroundWithCircle(size+4f, false, Color.WHITE)
+    if (parent != null) {
+        parent.addActor(button)
+        button.setPosition(parent.width - button.width*3/4, parent.height - button.height*3/4)
+    }
+    return button
+}
+
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
