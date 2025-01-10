@@ -134,10 +134,9 @@ object CityLocationTileRanker {
                 // as it moves away from the city and doesn't include it in the calculation
                 // and values it higher than when it moves closer to the city
                 distanceToCity == 6 -> 4f
-                distanceToCity == 5 -> 8f // Settling further away sacrifices tempo
-                distanceToCity == 4 -> 4f
-                distanceToCity == 3 -> -25f
-                distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
+                distanceToCity == 5 -> 9f // Settling further away sacrifices tempo
+                distanceToCity == 4 -> 3f
+                distanceToCity < 4 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
             // We want a defensive ring around our capital
