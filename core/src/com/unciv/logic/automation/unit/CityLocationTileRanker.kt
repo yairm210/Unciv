@@ -172,19 +172,13 @@ object CityLocationTileRanker {
         // Check if there are any new unique luxury resources
         if (civ.isHuman()) {
             if (rankTile.hasViewableResource(civ) && rankTile.tileResource.resourceType == ResourceType.Luxury
-                && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(
-                    rankTile.resource
-                ))
-            ) {
+                && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
                 locationSpecificTileValue += 10
                 newUniqueLuxuryResources.add(rankTile.resource!!)
             }
         } else {
             if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
-                && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(
-                    rankTile.resource
-                ))
-            ) {
+                && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
                 locationSpecificTileValue += 10
                 newUniqueLuxuryResources.add(rankTile.resource!!)
             }
