@@ -108,7 +108,6 @@ object CityLocationTileRanker {
         // If we build the city on a resource tile, then we can't build any special improvements on it
         if (newCityTile.resource != null) tileValue -= 4
         if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
-
         // Settling on bonus resources tends to waste a food
         // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
