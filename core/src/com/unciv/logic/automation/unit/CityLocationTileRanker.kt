@@ -139,7 +139,7 @@ object CityLocationTileRanker {
                 distanceToCity < 4 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
-            val rankDistanceToCapital = city.isCapital() && newCityTile.aerialDistanceTo(city.getCenterTile()) > 3 //exlude first 3 rings
+            val rankDistanceToCapital = city.isCapital() && newCityTile.aerialDistanceTo(city.getCenterTile()) > 3 //exclude first 3 rings
             // We want a defensive ring around our capital
             if (city.civ == civ) distanceToCityModifier += if (rankDistanceToCapital) 3 * (15 - newCityTile.aerialDistanceTo(city.getCenterTile())).coerceAtLeast(0) else 0
             modifier += distanceToCityModifier
