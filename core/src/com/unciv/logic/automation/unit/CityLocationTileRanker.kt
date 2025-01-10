@@ -26,16 +26,10 @@ object CityLocationTileRanker {
      */
     fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
         val distanceModifier = 2.7f // percentage penalty per aerial distance
-        val range =  if (distanceToSearch != null) distanceToSearch else {
-            if (unit.civ.isHuman()) {
-                val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
-                else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-                (9 - distanceFromHome).coerceIn(2, 5)
-            } else {
-                val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
-                else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-                (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
-            }
+        val range = if (distanceToSearch != null) distanceToSearch else {
+            val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
+            else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+            (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
         }
         val nearbyCities = unit.civ.gameInfo.getCities()
             .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 7 + range }
