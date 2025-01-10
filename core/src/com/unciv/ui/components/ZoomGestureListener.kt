@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 open class ZoomGestureListener(
     halfTapSquareSize: Float, tapCountInterval: Float, longPressDuration: Float, maxFlingDelay: Float
 ) : EventListener {
-    val detector: GestureDetector
-    var event: InputEvent? = null
+    
+    private val detector: GestureDetector
 
     constructor() : this(20f, 0.4f, 1.1f, Int.MAX_VALUE.toFloat())
 
@@ -22,22 +22,29 @@ open class ZoomGestureListener(
             maxFlingDelay,
             object : GestureDetector.GestureAdapter() {
 
-                override fun zoom(initialDistance: Float, distance: Float): Boolean {
-                    this@ZoomGestureListener.zoom(initialDistance, distance)
-                    return true
-                }
-
+                private var pinchCenter: Vector2? = null
+                private var initialDistance = 0f
+                
                 override fun pinch(
                     stageInitialPointer1: Vector2,
                     stageInitialPointer2: Vector2,
                     stagePointer1: Vector2,
                     stagePointer2: Vector2
                 ): Boolean {
-                    this@ZoomGestureListener.pinch()
+                    if (pinchCenter == null) {
+                        pinchCenter = stageInitialPointer1.cpy().add(stageInitialPointer2).scl(.5f)
+                        initialDistance = stageInitialPointer1.dst(stageInitialPointer2)
+                    }
+                    val currentCenter = stagePointer1.cpy().add(stagePointer2).scl(.5f)
+                    val delta = currentCenter.cpy().sub(pinchCenter)
+                    pinchCenter = currentCenter.cpy()
+                    this@ZoomGestureListener.pinch(delta)
+                    this@ZoomGestureListener.zoom(initialDistance, stagePointer1.dst(stagePointer2))
                     return true
                 }
 
                 override fun pinchStop() {
+                    pinchCenter = null
                     this@ZoomGestureListener.pinchStop()
                 }
             })
@@ -61,12 +68,10 @@ open class ZoomGestureListener(
                     detector.reset()
                     return false
                 }
-                this.event = event
                 detector.touchUp(event.stageX, event.stageY, event.pointer, event.button)
                 return true
             }
             InputEvent.Type.touchDragged -> {
-                this.event = event
                 detector.touchDragged(event.stageX, event.stageY, event.pointer)
                 return true
             }
@@ -79,6 +84,6 @@ open class ZoomGestureListener(
 
     open fun scrolled(amountX: Float, amountY: Float): Boolean { return false }
     open fun zoom(initialDistance: Float, distance: Float) {}
-    open fun pinch() {}
+    open fun pinch(delta: Vector2) {}
     open fun pinchStop() {}
 }

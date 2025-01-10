@@ -224,7 +224,7 @@ object Battle {
         if (!captureMilitaryUnitSuccess)
             postBattleMoveToAttackedTile(attacker, defender, attackedTile)
 
-        reduceAttackerMovementPointsAndAttacks(attacker, defender)
+        reduceAttackerMovementPointsAndAttacks(attacker, defender, attackedTile)
 
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
 
@@ -417,33 +417,35 @@ object Battle {
     ) {
         if (attacker.getCivInfo() != defender.getCivInfo()) {
             // If what happened was that a civilian unit was captured, that's dealt with in the captureCivilianUnit function
-            val (whatHappenedIcon, whatHappenedString) = when {
+            val (battleActionIcon, battleActionString) = when {
                 attacker !is CityCombatant && attacker.isDefeated() ->
-                    NotificationIcon.War to " was destroyed while attacking"
+                    NotificationIcon.War to "was destroyed while attacking"
                 !defender.isDefeated() ->
-                    NotificationIcon.War to " has attacked"
+                    NotificationIcon.War to "has attacked"
                 defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian ->
-                    NotificationIcon.War to " has raided"
+                    NotificationIcon.War to "has raided"
                 defender.isCity() && attacker.isMelee() ->
-                    NotificationIcon.War to " has captured"
+                    NotificationIcon.War to "has captured"
                 else ->
-                    NotificationIcon.Death to " has destroyed"
+                    NotificationIcon.Death to "has destroyed"
             }
             val attackerString =
                     if (attacker.isCity()) "Enemy city [" + attacker.getName() + "]"
                     else "An enemy [" + attacker.getName() + "]"
+            
             val defenderString =
                     if (defender.isCity())
                         if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
+            
             val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
             val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
-            val notificationString = attackerString + attackerHurtString + whatHappenedString + defenderString + defenderHurtString
+            val notificationString = "[{$attackerString}{$attackerHurtString}] [$battleActionString] [{$defenderString}{$defenderHurtString}]"
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
             val locations = LocationAction(attackedTile.position, attackerTile?.position)
-            defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, whatHappenedIcon, defenderIcon)
+            defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, battleActionIcon, defenderIcon)
         }
     }
 
@@ -489,16 +491,17 @@ object Battle {
         }
     }
 
-    private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
+    private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
             // If captured this civilian, doesn't count as attack
             // And we've used a movement already
-            if(defender.isCivilian() && attacker.getTile() == defender.getTile()) {
-                return
-            }
+            if (defender.isCivilian() && attacker.getTile() == defender.getTile()) return
+            
+            val stateForConditionals = StateForConditionals(attacker, defender, attackedTile, CombatAction.Attack)
             unit.attacksThisTurn += 1
-            if (unit.hasUnique(UniqueType.CanMoveAfterAttacking) || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
+            if (unit.hasUnique(UniqueType.CanMoveAfterAttacking, stateForConditionals) 
+                || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...
@@ -689,7 +692,7 @@ object Battle {
         defender.unit.putInTile(toTile)
         defender.unit.mostRecentMoveType = UnitMovementMemoryType.UnitWithdrew
         // and count 1 attack for attacker but leave it in place
-        reduceAttackerMovementPointsAndAttacks(attacker, defender)
+        reduceAttackerMovementPointsAndAttacks(attacker, defender, fromTile)
 
         val attackerName = attacker.getName()
         val defenderName = defender.getName()

@@ -1,3 +1,32 @@
+## 4.15.1
+
+Show total number of cities in city table
+
+Avoid ANRs when loading games
+
+Resolve rare crash for corrupted game settings
+
+By sulai:
+- Add GoogleMaps-like pinching (!!!)
+- Tweak UI city screen
+- Correct alignment of text to icons
+
+## 4.15.0
+
+Modding:
+- "Costs [amount] [stockpiledResource]" works for improvements
+- "free building" unique respects replacement buildings
+- Adjacency checks do not check the current tile
+- Allow city level stockpiles - By SeventhM
+
+UI:
+- Larger 'per turn' text for gold and faith
+- disabled buttons no longer cause click-through
+- Improved city screen queue - By sulai
+- Edit Babylon's icon - By SpacedOutChicken
+
+City states will get angry at you if you steal their lands - By Emandac
+
 ## 4.14.19
 
 Memory performance improvements

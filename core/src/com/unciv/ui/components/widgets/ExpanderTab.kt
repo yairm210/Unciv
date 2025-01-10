@@ -54,6 +54,7 @@ class ExpanderTab(
     }
 
     val header = Table(skin)  // Header with label and icon, touchable to show/hide
+    val headerContent = Table()
     private val headerLabel = title.toLabel(fontSize = fontSize, hideIcons = true)
     private val headerIcon = ImageGetter.getImage(arrowImage)
     private val contentWrapper = Table()  // Wrapper for innerTable, this is what will be shown/hidden
@@ -83,7 +84,8 @@ class ExpanderTab(
             )
         )
         if (icon != null) header.add(icon)
-        header.add(headerLabel).expandX()
+        header.add(headerLabel)
+        header.add(headerContent).growX()
         header.add(headerIcon).size(arrowSize).align(Align.center)
         header.touchable= Touchable.enabled
         header.onActivation { toggle() }
@@ -93,7 +95,7 @@ class ExpanderTab(
         defaults().growX()
         contentWrapper.defaults().growX().pad(defaultPad)
         innerTable.defaults().growX()
-        add(header).fillY().row()
+        add(header).fill().row()
         add(contentWrapper)
         contentWrapper.add(innerTable)      // update will revert this
         initContent?.invoke(innerTable)

@@ -254,18 +254,23 @@ class TileImprovementFunctions(val tile: Tile) {
         unit: MapUnit? = null
     ) {
         val stateForConditionals = StateForConditionals(civ, unit = unit, tile = tile)
+        
+        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+            val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
+            civ.gainStockpiledResource(resource, -unique.params[0].toInt())
+        }
 
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
             && it.conditionalsApply(stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0], StateForConditionals(civ, unit = unit, tile = tile)) })
+            { improvement.matchesFilter(it.params[0], stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         if (unit == null) return
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0], StateForConditionals(civ, unit = unit, tile = tile)) })
+            { improvement.matchesFilter(it.params[0], stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }
 

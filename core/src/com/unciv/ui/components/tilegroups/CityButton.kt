@@ -28,6 +28,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.widgets.BorderedTable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
@@ -314,7 +315,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         }
 
         val cityName = city.name.toLabel(fontColor = textColor, alignment = Align.center, hideIcons = true)
-        table.add(cityName).growY().center()
+        table.add(cityName).growY().center().padTopDescent()
 
         if (!forPopup) {
             val cityReligion = city.religion.getMajorityReligion()

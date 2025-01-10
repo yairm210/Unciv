@@ -136,13 +136,14 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun addFreeBuildings(building: Building, amount: Int) {
+        val equivalentBuilding = civInfo.getEquivalentBuilding(building)
         for (city in civInfo.cities.take(amount)) {
-            if (freeSpecificBuildingsProvided.contains(building.name, city.id)
+            if (freeSpecificBuildingsProvided.contains(equivalentBuilding.name, city.id)
                 || city.cityConstructions.containsBuildingOrEquivalent(building.name)) continue
 
-            freeSpecificBuildingsProvided.addToMapOfSets(building.name, city.id)
-            addFreeBuilding(city.id, building.name)
-            city.cityConstructions.completeConstruction(building)
+            freeSpecificBuildingsProvided.addToMapOfSets(equivalentBuilding.name, city.id)
+            addFreeBuilding(city.id, equivalentBuilding.name)
+            city.cityConstructions.completeConstruction(equivalentBuilding)
         }
     }
 

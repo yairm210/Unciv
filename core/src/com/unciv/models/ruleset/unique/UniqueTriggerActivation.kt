@@ -527,7 +527,8 @@ object UniqueTriggerActivation {
 
                 return {
                     val amount = unique.params[0].toInt()
-                    civInfo.gainStockpiledResource(resourceName, amount)
+                    if (city != null) city.gainStockpiledResource(resource, amount)
+                    else civInfo.gainStockpiledResource(resource, amount)
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
@@ -546,7 +547,8 @@ object UniqueTriggerActivation {
 
                 return {
                     val amount = unique.params[0].toInt()
-                    civInfo.gainStockpiledResource(resourceName, -amount)
+                    if (city != null) city.gainStockpiledResource(resource, -amount)
+                    else civInfo.gainStockpiledResource(resource, -amount)
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
@@ -670,8 +672,9 @@ object UniqueTriggerActivation {
                 ) return null
 
 
-                val finalStatAmount = (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
-                                civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
+                val randomValue = tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt())
+                val finalStatAmount = if (unique.isModifiedByGameSpeed()) (randomValue * civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
+                                            else randomValue
 
                 return {
                     val stats = Stats().add(stat, finalStatAmount.toFloat())

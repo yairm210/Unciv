@@ -246,11 +246,16 @@ open class ZoomableScrollPane(
             }
         }
 
-        override fun pinch() {
+        override fun pinch(delta: Vector2) {
             if (!isZooming) {
                 isZooming = true
                 onZoomStartListener?.invoke()
             }
+            scrollTo(
+                scrollX - delta.x,
+                scrollY + delta.y,
+                true
+            )
         }
 
         override fun pinchStop() {
@@ -317,8 +322,6 @@ open class ZoomableScrollPane(
 
             //clamp() call is missing here but it doesn't seem to make any big difference in this case
 
-            if ((isScrollX && deltaX != 0f || isScrollY && deltaY != 0f))
-                cancelTouchFocus()
         }
 
         override fun panStop(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {

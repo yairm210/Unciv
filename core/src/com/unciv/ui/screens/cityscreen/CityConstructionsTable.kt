@@ -1,16 +1,20 @@
 package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -30,6 +34,7 @@ import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.setEnabled
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
@@ -68,6 +73,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val upperTable = Table(BaseScreen.skin)
     private val constructionsQueueScrollPane: ScrollPane
     private val constructionsQueueTable = Table()
+    private val queueExpander: ExpanderTab
     private val buttonsTable = Table()
     private val buyButtonFactory = BuyButtonFactory(cityScreen)
 
@@ -79,6 +85,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val pad = 10f
     private val posFromEdge = CityScreen.posFromEdge
     private val stageHeight = cityScreen.stage.height
+    
+    private val highlightColor = Color.GREEN.darken(0.4f)
 
     /** Gets or sets visibility of [both widgets][CityConstructionsTable] */
     var isVisible: Boolean
@@ -95,13 +103,25 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             "CityScreen/CityConstructionTable/ConstructionsQueueTable",
             tintColor = ImageGetter.CHARCOAL
         )
+        queueExpander = ExpanderTab(
+            "Construction queue", 
+            onChange = { cityScreen.update() },
+            startsOutOpened = cityScreen.game.settings.screenSize >= GameSettings.ScreenSize.Large,
+            defaultPad = 0f
+        )
 
         upperTable.defaults().left().top()
-        upperTable.add(constructionsQueueScrollPane)
-            .maxHeight(stageHeight / 3 - 10f)
-            .padBottom(pad).row()
+        
+        // The construction queue is collapsed by default, so there's more vertical space for the
+        // available-constructions-table. When the user decides to expand the
+        // queue, we can use the majority of available vertical space (3/4 of stage height)!
+        // Landscape on Android benefits most from this UX/UI optimization.
+        // Effectively, the available-construction-table takes almost all available vertical space
+        // by default, and by expancing the construction queue, the user changes precedence to the
+        // construction queue.
+        upperTable.add(constructionsQueueScrollPane).padBottom(pad).maxHeight(stageHeight*3/4).row()
         upperTable.add(buttonsTable).padBottom(pad).row()
-
+        
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
         availableConstructionsScrollPane.setOverscroll(false, false)
         availableConstructionsTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -136,7 +156,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         upperTable.pack()
         // Need to reposition when height changes as setPosition's alignment does not persist, it's just a readability shortcut to calculate bottomLeft
         upperTable.setPosition(posFromEdge, stageHeight - posFromEdge, Align.topLeft)
-        lowerTableScrollCell.maxHeight(stageHeight - upperTable.height - 2 * posFromEdge)
+        lowerTableScrollCell.maxHeight(
+            (stageHeight - upperTable.height - 2 * posFromEdge).coerceAtLeast(20f)
+        )
     }
 
     private fun updateButtons(construction: IConstruction?) {
@@ -145,7 +167,23 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
         buttonsTable.clear()
         buyButtonFactory.addBuyButtons(buttonsTable, construction) {
-            it.padRight(5f)
+            it.width(120f).padRight(10f)
+        }
+        // priority buttons and remove button
+        val queue = cityScreen.city.cityConstructions.constructionQueue
+        if (selectedQueueEntry in 0..<queue.size && queue.size > 1) {
+            val constructionName = queue[selectedQueueEntry]
+
+            val raiseButton = getRaisePriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
+            raiseButton.setEnabled(cityScreen.canCityBeChanged() && selectedQueueEntry > 0)
+            buttonsTable.add(raiseButton).padRight(5f)
+
+            val lowerButton = getLowerPriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
+            lowerButton.setEnabled(selectedQueueEntry != queue.lastIndex && cityScreen.canCityBeChanged())
+            buttonsTable.add(lowerButton).padRight(5f)
+            
+            if (cityScreen.canCityBeChanged() && !queueExpander.isOpen && selectedQueueEntry in 1..4)
+                buttonsTable.add(getRemoveFromQueueButton(selectedQueueEntry, cityScreen.city)).padLeft(10f)
         }
     }
 
@@ -169,25 +207,63 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         else
             constructionsQueueTable.add("Pick a construction".toLabel()).pad(2f).row()
 
-        constructionsQueueTable.addSeparator()
-
         if (queue.size > 1) {
-            constructionsQueueTable.add(getHeader("Construction queue")).fillX()
-            constructionsQueueTable.addSeparator()
+            queueExpander.innerTable.clear()
+            queueExpander.headerContent.clear()
+            queueExpander.header.pad(0f)
+            queueExpander.setText("Construction queue".tr())
             queue.forEachIndexed { i, constructionName ->
                 // The first entry is already displayed as "Current construction"
                 if (i != 0) {
-                    constructionsQueueTable.add(getQueueEntry(i, constructionName))
+                    queueExpander.innerTable.add(getQueueEntry(i, constructionName))
                         .expandX().fillX().row()
-                    if (i != queue.size - 1)
-                        constructionsQueueTable.addSeparator()
+                    if (i != queue.lastIndex) {
+                        queueExpander.innerTable.addSeparator()
+                    }
                 }
             }
+            if (!queueExpander.isOpen) {
+                updateQueuePreview(queue)
+            }
+            constructionsQueueTable.add(queueExpander).fillX().pad(2f)
         }
 
         constructionsQueueScrollPane.layout()
         constructionsQueueScrollPane.scrollY = queueScrollY
         constructionsQueueScrollPane.updateVisualScroll()
+    }
+
+    private fun updateQueuePreview(queue: MutableList<String>) {
+        queueExpander.header.pad(-5f, 0f, -5f, 0f)
+        queueExpander.setText(if (queue.size <= 3) "Queue".tr() else "")
+        queue.forEachIndexed { i, constructionName ->
+            if (i in 1..3) {
+                val color = if (selectedQueueEntry == i) highlightColor else BaseScreen.skinStrings.skinConfig.baseColor
+                val image = ImageGetter.getConstructionPortrait(constructionName, 40f).surroundWithCircle(54f, false, color)
+                image.addListener(object: ClickListener() {
+                    // Calling event.stop() to prevent click propagation to the parent,
+                    // the expander header.
+                    // We are using touchDown and touchUp here, because event.stop()
+                    // won't work on the click() callback alone. This is because a click consists
+                    // of both a touch down and touch up.
+                    override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                        event.stop()
+                        return super.touchDown(event, x, y, pointer, button)
+                    }
+                    override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
+                        cityScreen.selectConstruction(constructionName)
+                        selectedQueueEntry = i
+                        cityScreen.update()
+                        event.stop()
+                        super.touchUp(event, x, y, pointer, button)
+                    }
+                })
+                queueExpander.headerContent.add(image)
+            }
+            if (i == 4) {
+                queueExpander.headerContent.add("(+{${queue.size - i}})".toLabel())
+            }
+        }
     }
 
     private fun getConstructionButtonDTOs(): ArrayList<ConstructionButtonDTO> {
@@ -341,36 +417,46 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         table.add(ImageGetter.getConstructionPortrait(constructionName, 40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
-        if (constructionQueueIndex > 0 && cityScreen.canCityBeChanged())
-            table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()
-        else table.add().right()
-        if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex && cityScreen.canCityBeChanged())
-            table.add(getLowerPriorityButton(constructionQueueIndex, constructionName, city)).right()
-        else table.add().right()
+        if (queueExpander.isOpen) {
+            if (constructionQueueIndex > 0 && cityScreen.canCityBeChanged()){
+                table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()}
+            else table.add().right()
+            if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex && cityScreen.canCityBeChanged())
+                table.add(getLowerPriorityButton(constructionQueueIndex, constructionName, city)).right()
+            else table.add().right()
+        }
 
         if (cityScreen.canCityBeChanged()) table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
         else table.add().right()
 
         table.touchable = Touchable.enabled
 
-        fun selectQueueEntry(onBeforeUpdate: () -> Unit) {
-            cityScreen.selectConstruction(constructionName)
-            selectedQueueEntry = constructionQueueIndex
-            onBeforeUpdate()
-            cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
-            ensureQueueEntryVisible()
+        table.onClick { selectQueueEntry(constructionQueueIndex) }
+        if (cityScreen.canCityBeChanged()) {
+            table.onRightClick {
+                selectQueueEntry(constructionQueueIndex) {
+                    CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
+                        cityScreen.city.reassignPopulation()
+                        cityScreen.update()
+                    }
+                }
+            }
         }
 
-        table.onClick { selectQueueEntry {} }
-        if (cityScreen.canCityBeChanged())
-            table.onRightClick { selectQueueEntry {
-                CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
-                    cityScreen.city.reassignPopulation()
-                    cityScreen.update()
-                }
-            } }
-
         return table
+    }
+
+    private fun selectQueueEntry(constructionQueueIndex: Int, onBeforeUpdate: () -> Unit = {}) {
+        if (constructionQueueIndex in 0..<cityScreen.city.cityConstructions.constructionQueue.size) {
+            cityScreen.selectConstructionFromQueue(constructionQueueIndex)
+            selectedQueueEntry = constructionQueueIndex
+        } else {
+            cityScreen.clearSelection()
+            selectedQueueEntry = -1
+        }    
+        onBeforeUpdate()
+        cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
+        ensureQueueEntryVisible()
     }
 
     private fun highlightQueueEntry(queueEntry: Table, highlight: Boolean) {
@@ -378,7 +464,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             if (highlight)
                 BaseScreen.skinStrings.getUiBackground(
                     "CityScreen/CityConstructionTable/QueueEntrySelected",
-                    tintColor = Color.GREEN.darken(0.5f)
+                    tintColor = highlightColor
                 )
             else
                 BaseScreen.skinStrings.getUiBackground(
@@ -510,7 +596,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             if (highlight)
                 BaseScreen.skinStrings.getUiBackground(
                     "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
-                    tintColor = Color.GREEN.darken(0.5f)
+                    tintColor = highlightColor
                 )
             else unselected
 
@@ -621,7 +707,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
             cityScreen.clearSelection()
             cityScreen.city.reassignPopulation()
-            cityScreen.update()
+            // Select next entry in list if available.
+            // If the last one was deleted, select the new last one.
+            selectQueueEntry(constructionQueueIndex.coerceAtMost(city.cityConstructions.constructionQueue.lastIndex)) { }
         }
         return tab
     }
@@ -639,19 +727,25 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun ensureQueueEntryVisible() {
-        // Ensure the selected queue entry stays visible, and if moved to the "current" top slot, that the header is visible too
-        // This uses knowledge about how we build constructionsQueueTable without re-evaluating that stuff:
-        // Every odd row is a separator, cells have no padding, and there's one header on top and another between selectedQueueEntries 0 and 1
-        val button = constructionsQueueTable.cells[if (selectedQueueEntry == 0) 2 else 2 * selectedQueueEntry + 4].actor
-        val buttonOrHeader = if (selectedQueueEntry == 0) constructionsQueueTable.cells[0].actor else button
-        // The 4f includes the two separators on top/bottom of the entry/header (the y offset we'd need cancels out with constructionsQueueTable.y being 2f as well):
-        val height = buttonOrHeader.y + buttonOrHeader.height - button.y + 4f
-        // Alternatively, scrollTo(..., true, true) would keep the selection as centered as possible:
-        constructionsQueueScrollPane.scrollTo(2f, button.y, button.width, height)
+        getSelectedQueueButton()?.let {
+            constructionsQueueScrollPane.scrollTo(2f, it.y, it.width, it.height, true, true)
+        }
+    }
+
+    private fun getSelectedQueueButton(): Actor? {
+        if (selectedQueueEntry == 0) {
+            return constructionsQueueTable.cells[0].actor
+        }
+        if (selectedQueueEntry > 0 && selectedQueueEntry < cityScreen.city.cityConstructions.constructionQueue.size) {
+            // *2 because it's always the entry and a separator
+            return queueExpander.innerTable.cells[selectedQueueEntry * 2 - 2].actor
+        }
+        return null
     }
 
     private fun resizeAvailableConstructionsScrollPane() {
-        availableConstructionsScrollPane.height = min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight)
+        availableConstructionsScrollPane.height = 
+            min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight)
         lowerTable.pack()
     }
 
@@ -660,7 +754,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         list: ArrayList<Table>,
         prefWidth: Float,
         toggleKey: KeyboardBinding,
-        startsOutOpened: Boolean = true
+        startsOutOpened: Boolean = !cityScreen.isCrampedPortrait()
     ) {
         if (list.isEmpty()) return
 
