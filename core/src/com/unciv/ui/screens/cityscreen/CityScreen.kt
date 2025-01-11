@@ -156,9 +156,9 @@ class CityScreen(
 
         addTiles()
 
-        stage.addActor(cityStatsTable)
         // If we are spying then we shoulden't be able to see their construction screen.
         constructionsTable.addActorsToStage()
+        stage.addActor(cityStatsTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(tileTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
@@ -200,7 +200,7 @@ class CityScreen(
 
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
-            !isPortrait() -> 0f
+            !isPortrait() || isCrampedPortrait() -> 0f
             selectedTile != null -> tileTable.packIfNeeded().width
             selectedConstruction != null -> selectedConstructionTable.packIfNeeded().width
             else -> posFromEdge

@@ -93,13 +93,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         promotionsTable.touchable = Touchable.enabled
 
-        deselectUnitButton = getCloseButton(30f, 15f, Color.CLEAR, Color.RED) {
+        deselectUnitButton = addRoundCloseButton(this) {
             selectUnit()
             worldScreen.shouldUpdate = true
             this@UnitTable.isVisible = false
-        }.surroundWithCircle(30f, resizeActor = false, color = BaseScreen.clearColor).surroundWithThinCircle(Color.WHITE)
+        }
         deselectUnitButton.keyShortcuts.clear() // This is the only place we don't want the BACK keyshortcut getCloseButton assigns
-        addActor(deselectUnitButton)
 
         add(Table().apply {
             val moveBetweenUnitsTable = Table().apply {
