@@ -469,6 +469,9 @@ class Autosaves(val files: UncivFiles) {
     }
 
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
+        // get GameSettings to check the maxAutosavesStored in the autoSave function
+        val settings = files.getGeneralSettings()
+        
         try {
             files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
@@ -486,7 +489,8 @@ class Autosaves(val files: UncivFiles) {
             fun getAutosaves(): Sequence<FileHandle> {
                 return files.getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
             }
-            while (getAutosaves().count() > 10) {
+            // added the plus 1 to avoid player choosing 6,11,21,51,101, etc.. in options.
+            while (getAutosaves().count() > settings.maxAutosavesStored+1) {
                 val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
                 files.deleteSave(saveToDelete.name())
             }

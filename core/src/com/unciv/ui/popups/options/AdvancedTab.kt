@@ -51,6 +51,8 @@ class AdvancedTab(
     init {
         pad(10f)
         defaults().pad(5f)
+        
+        addmaxAutosavesStored()
 
         addAutosaveTurnsSelectBox()
         addSeparator()
@@ -90,6 +92,23 @@ class AdvancedTab(
             optionsPopup.settings.androidHideSystemUi = it
             Display.setSystemUiVisibility(hide = it)
             optionsPopup.reopenAfterDisplayLayoutChange()
+        }
+    }
+    
+    private fun addmaxAutosavesStored() {
+        add("Maximum Autosave turns stored".toLabel()).left().fillX()
+        
+        val maxAutosavesStoredSelectBox = SelectBox<Int>(skin)
+        val maxAutosavesStoredArray = Array<Int>()
+        maxAutosavesStoredArray.addAll(1,2,5,10,15,20,35,50,100,150,200,250,500,1000)
+        maxAutosavesStoredSelectBox.items = maxAutosavesStoredArray
+        maxAutosavesStoredSelectBox.selected = settings.maxAutosavesStored
+        
+        add(maxAutosavesStoredSelectBox).pad(10f).row()
+        
+        maxAutosavesStoredSelectBox.onChange {
+            settings.maxAutosavesStored = maxAutosavesStoredSelectBox.selected
+            println(settings.maxAutosavesStored)
         }
     }
 
