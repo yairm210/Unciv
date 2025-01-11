@@ -97,9 +97,15 @@ object UnitActionsReligion {
                 for (unique in unit.getMatchingUniques(UniqueType.StatsWhenSpreading, checkCivInfoUniques = true)) {
                     unit.civ.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
+                val previousReligion = city.religion.getMajorityReligion()
                 city.religion.addPressure(unit.religion!!, getPressureAddedFromSpread(unit))
                 if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
+                
+                val newReligion = city.religion.getMajorityReligion()
+                if (previousReligion != newReligion && newReligion != null && city.civ != unit.civ) {
+                    city.civ.addNotification("[${unit.civ.civName}]'s [${unit.name}] has converted [${city.name}] to [${newReligion.name}]!", NotificationCategory.Religion)
+                }
 
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
 
