@@ -259,7 +259,11 @@ class TestGame {
     fun createTileImprovement(vararg uniques: String) =
         createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
     fun createUnitType(vararg uniques: String) =
-        createRulesetObject(ruleset.unitTypes, *uniques) { UnitType() }
+        createRulesetObject(ruleset.unitTypes, *uniques) {
+            val unitType = UnitType()
+            unitType.ruleset = ruleset
+            unitType
+        }
     fun createUnitPromotion(vararg uniques: String) =
         createRulesetObject(ruleset.unitPromotions, *uniques) { Promotion() }
 }

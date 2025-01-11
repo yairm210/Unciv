@@ -645,6 +645,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         for (building in ruleset.buildings.values)
             building.ruleset = ruleset
 
+        for (type in ruleset.unitTypes.values)
+            type.ruleset = ruleset
+
         // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this

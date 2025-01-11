@@ -292,7 +292,15 @@ With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% G
 [link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/GlobalUniques.json)
 
 GlobalUniques defines uniques that apply globally. e.g. Vanilla rulesets define the effects of Unhappiness here.
-Only the `uniques` field is used, but a name must still be set (the Ruleset validator might display it).
+
+It has the following structure:
+
+| Attribute   | Type            | Default         | Notes                                                                                       |
+|-------------|-----------------|-----------------|---------------------------------------------------------------------------------------------|
+| name        | String          | "GlobalUniques" | The name field is not used, but still must be set (the Ruleset validator might display it). |
+| uniques     | List of Strings | empty           | List of [unique abilities](../../uniques) that apply globally                               |
+| unitUniques | List of Strings | empty           | List of [unique abilities](../../uniques) that applies to each unit                         |
+
 When extension rulesets define GlobalUniques, all uniques are merged. At the moment there is no way to change/remove uniques set by a base mod.
 
 ## Tutorials.json
