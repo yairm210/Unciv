@@ -56,6 +56,7 @@ class GameSettings {
     var pauseBetweenTracks = 10
 
     var turnsBetweenAutosaves = 1
+    var maxAutosavesStored = 10
     var tileSet: String = Constants.defaultTileset
     var unitSet: String? = Constants.defaultUnitset
     var skin: String = Constants.defaultSkin

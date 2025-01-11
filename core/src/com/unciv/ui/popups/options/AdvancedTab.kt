@@ -51,6 +51,8 @@ class AdvancedTab(
     init {
         pad(10f)
         defaults().pad(5f)
+        
+        addMaxAutosavesStored()
 
         addAutosaveTurnsSelectBox()
         addSeparator()
@@ -92,7 +94,22 @@ class AdvancedTab(
             optionsPopup.reopenAfterDisplayLayoutChange()
         }
     }
-
+    
+    private fun addMaxAutosavesStored() {
+        add("Number of autosave files stored".toLabel()).left().fillX()
+        
+        val maxAutosavesStoredSelectBox = SelectBox<Int>(skin)
+        val maxAutosavesStoredArray = Array<Int>()
+        maxAutosavesStoredArray.addAll(1,2,5,10,15,20,35,50,100,150,200,250)
+        maxAutosavesStoredSelectBox.items = maxAutosavesStoredArray
+        maxAutosavesStoredSelectBox.selected = settings.maxAutosavesStored
+        
+        add(maxAutosavesStoredSelectBox).pad(10f).row()
+        
+        maxAutosavesStoredSelectBox.onChange {
+            settings.maxAutosavesStored = maxAutosavesStoredSelectBox.selected
+        }
+    }
 
     private fun addAutosaveTurnsSelectBox() {
         add("Turns between autosaves".toLabel()).left().fillX()

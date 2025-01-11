@@ -469,6 +469,9 @@ class Autosaves(val files: UncivFiles) {
     }
 
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
+        // get GameSettings to check the maxAutosavesStored in the autoSave function
+        val settings = files.getGeneralSettings()
+        
         try {
             files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
@@ -486,7 +489,11 @@ class Autosaves(val files: UncivFiles) {
             fun getAutosaves(): Sequence<FileHandle> {
                 return files.getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
             }
-            while (getAutosaves().count() > 10) {
+            // added the plus 1 to avoid player choosing 6,11,21,51,101, etc.. in options.
+//          // with the old version with 10 has example, it would start overriding after 9 instead of 10.
+            // like from autosave-1 to autosave-9 after the autosave-9 the autosave-1 would override to autosave-2.
+            // For me it should be after autosave-10 that it should start overriding old autosaves.
+            while (getAutosaves().count() > settings.maxAutosavesStored+1) {
                 val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
                 files.deleteSave(saveToDelete.name())
             }
