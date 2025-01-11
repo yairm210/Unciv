@@ -141,7 +141,7 @@ object CityLocationTileRanker {
             }
             val rankDistanceToCapital = city.isCapital() && distanceToCity > 3 //exclude first 3 rings
             // We want a defensive ring around our capital
-            if (city.civ == civ) distanceToCityModifier += if (rankDistanceToCapital) 3 * (15 - distanceToCity).coerceAtLeast(0) else 0
+            if (city.civ == civ) distanceToCityModifier += if (rankDistanceToCapital) 3 * (10 - distanceToCity).coerceAtLeast(0) else 0
             modifier += distanceToCityModifier
         }
         return modifier
