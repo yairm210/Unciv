@@ -24,7 +24,6 @@ import com.unciv.utils.Tag
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class TileDataMap : HashMap<Vector2, MapGenTileData>() {
 
@@ -240,7 +239,7 @@ class MapRegions (val ruleset: Ruleset) {
 
         // Sort regions by fertility so the worse regions get to pick first
         val sortedRegions = regions.sortedBy { it.totalFertility }
-        for (region in sortedRegions) findStart(region)
+        for (region in sortedRegions) RegionStartFinder.findStart(region, tileData)
         for (region in regions) {
             StartNormalizer.normalizeStart(tileMap[region.startPosition!!], tileMap, tileData, ruleset, isMinorCiv = false)
         }
@@ -429,222 +428,13 @@ class MapRegions (val ruleset: Ruleset) {
         tileData.placeImpact(ImpactType.Bonus,   tile, 3)
     }
 
-    /** Attempts to find a good start close to the center of [region]. Calls setRegionStart with the position*/
-    private fun findStart(region: Region) {
-        // Establish center bias rects
-        val centerRect = getCentralRectangle(region.rect, 0.33f)
-        val middleRect = getCentralRectangle(region.rect, 0.67f)
-
-        // Priority: 1. Adjacent to river, 2. Adjacent to coast or fresh water, 3. Other.
-        // First check center rect, then middle. Only check the outer area if no good sites found
-        val riverTiles = HashSet<Vector2>()
-        val wetTiles = HashSet<Vector2>()
-        val dryTiles = HashSet<Vector2>()
-        val fallbackTiles = HashSet<Vector2>()
-
-        // First check center
-        val centerTiles = region.tileMap.getTilesInRectangle(centerRect)
-        for (tile in centerTiles) {
-            if (tileData[tile.position]!!.isTwoFromCoast)
-                continue // Don't even consider tiles two from coast
-            if (region.continentID != -1 && region.continentID != tile.getContinent())
-                continue // Wrong continent
-            if (tile.isLand && !tile.isImpassible()) {
-                evaluateTileForStart(tile)
-                if (tile.isAdjacentToRiver())
-                    riverTiles.add(tile.position)
-                else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
-                    wetTiles.add(tile.position)
-                else
-                    dryTiles.add(tile.position)
-            }
-        }
-        // Did we find a good start position?
-        for (list in sequenceOf(riverTiles, wetTiles, dryTiles)) {
-            if (list.any { tileData[it]!!.isGoodStart }) {
-                setRegionStart(region, list
-                        .filter { tileData[it]!!.isGoodStart }.maxByOrNull { tileData[it]!!.startScore }!!)
-                return
-            }
-            if (list.isNotEmpty()) // Save the best not-good-enough spots for later fallback
-                fallbackTiles.add(list.maxByOrNull { tileData[it]!!.startScore }!!)
-        }
-
-        // Now check middle donut
-        val middleDonut = region.tileMap.getTilesInRectangle(middleRect).filterNot { it in centerTiles }
-        riverTiles.clear()
-        wetTiles.clear()
-        dryTiles.clear()
-        for (tile in middleDonut) {
-            if (tileData[tile.position]!!.isTwoFromCoast)
-                continue // Don't even consider tiles two from coast
-            if (region.continentID != -1 && region.continentID != tile.getContinent())
-                continue // Wrong continent
-            if (tile.isLand && !tile.isImpassible()) {
-                evaluateTileForStart(tile)
-                if (tile.isAdjacentToRiver())
-                    riverTiles.add(tile.position)
-                else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
-                    wetTiles.add(tile.position)
-                else
-                    dryTiles.add(tile.position)
-            }
-        }
-        // Did we find a good start position?
-        for (list in sequenceOf(riverTiles, wetTiles, dryTiles)) {
-            if (list.any { tileData[it]!!.isGoodStart }) {
-                setRegionStart(region, list
-                        .filter { tileData[it]!!.isGoodStart }.maxByOrNull { tileData[it]!!.startScore }!!)
-                return
-            }
-            if (list.isNotEmpty()) // Save the best not-good-enough spots for later fallback
-                fallbackTiles.add(list.maxByOrNull { tileData[it]!!.startScore }!!)
-        }
-
-        // Now check the outer tiles. For these we don't care about rivers, coasts etc
-        val outerDonut = region.tileMap.getTilesInRectangle(region.rect).filterNot { it in centerTiles || it in middleDonut}
-        dryTiles.clear()
-        for (tile in outerDonut) {
-            if (region.continentID != -1 && region.continentID != tile.getContinent())
-                continue // Wrong continent
-            if (tile.isLand && !tile.isImpassible()) {
-                evaluateTileForStart(tile)
-                dryTiles.add(tile.position)
-            }
-        }
-        // Were any of them good?
-        if (dryTiles.any { tileData[it]!!.isGoodStart }) {
-            // Find the one closest to the center
-            val center = region.rect.getCenter(Vector2())
-            setRegionStart(region,
-                    dryTiles.filter { tileData[it]!!.isGoodStart }.minByOrNull {
-                        (region.tileMap.getIfTileExistsOrNull(center.x.roundToInt(), center.y.roundToInt()) ?: region.tileMap.values.first())
-                                .aerialDistanceTo(
-                                        region.tileMap.getIfTileExistsOrNull(it.x.toInt(), it.y.toInt()) ?: region.tileMap.values.first()
-                                ) }!!)
-            return
-        }
-        if (dryTiles.isNotEmpty())
-            fallbackTiles.add(dryTiles.maxByOrNull { tileData[it]!!.startScore }!!)
-
-        // Fallback time. Just pick the one with best score
-        val fallbackPosition = fallbackTiles.maxByOrNull { tileData[it]!!.startScore }
-        if (fallbackPosition != null) {
-            setRegionStart(region, fallbackPosition)
-            return
-        }
-
-        // Something went extremely wrong and there is somehow no place to start. Spawn some land and start there
-        val panicPosition = region.rect.getPosition(Vector2())
-        val panicTerrain = ruleset.terrains.values.first { it.type == TerrainType.Land }.name
-        region.tileMap[panicPosition].baseTerrain = panicTerrain
-        region.tileMap[panicPosition].setTerrainFeatures(listOf())
-        setRegionStart(region, panicPosition)
-    }
 
     /** @returns the region most similar to a region of [type] */
     private fun getFallbackRegion(type: String, candidates: List<Region>): Region {
         return candidates.maxByOrNull { it.terrainCounts[type] ?: 0 }!!
     }
 
-    private fun setRegionStart(region: Region, position: Vector2) {
-        region.startPosition = position
-        setCloseStartPenalty(region.tileMap[position])
-    }
 
-    /** @returns a scaled according to [proportion] Rectangle centered over [originalRect] */
-    private fun getCentralRectangle(originalRect: Rectangle, proportion: Float): Rectangle {
-        val scaledRect = Rectangle(originalRect)
-
-        scaledRect.width = (originalRect.width * proportion)
-        scaledRect.height = (originalRect.height * proportion)
-        scaledRect.x = originalRect.x + (originalRect.width - scaledRect.width) / 2
-        scaledRect.y = originalRect.y + (originalRect.height - scaledRect.height) / 2
-
-        // round values
-        scaledRect.x = scaledRect.x.roundToInt().toFloat()
-        scaledRect.y = scaledRect.y.roundToInt().toFloat()
-        scaledRect.width = scaledRect.width.roundToInt().toFloat()
-        scaledRect.height = scaledRect.height.roundToInt().toFloat()
-
-        return scaledRect
-    }
-
-    private fun setCloseStartPenalty(tile: Tile) {
-        for ((ring, penalty) in closeStartPenaltyForRing) {
-            for (outerTile in tile.getTilesAtDistance(ring).map { it.position })
-                tileData[outerTile]!!.addCloseStartPenalty(penalty)
-        }
-    }
-
-    /** Evaluates a tile for starting position, setting isGoodStart and startScore in
-     *  MapGenTileData. Assumes that all tiles have corresponding MapGenTileData. */
-    private fun evaluateTileForStart(tile: Tile) {
-        val localData = tileData[tile.position]!!
-
-        var totalFood = 0
-        var totalProd = 0
-        var totalGood = 0
-        var totalJunk = 0
-        var totalRivers = 0
-        var totalScore = 0
-
-        if (tile.isCoastalTile()) totalScore += 40
-
-        // Go through all rings
-        for (ring in 1..3) {
-            // Sum up the values for this ring
-            for (outerTile in tile.getTilesAtDistance(ring)) {
-                val outerTileData = tileData[outerTile.position]!!
-                if (outerTileData.isJunk)
-                    totalJunk++
-                else {
-                    if (outerTileData.isFood) totalFood++
-                    if (outerTileData.isProd) totalProd++
-                    if (outerTileData.isGood) totalGood++
-                    if (outerTile.isAdjacentToRiver()) totalRivers++
-                }
-            }
-            // Check for minimum levels. We still keep on calculating final score in case of failure
-            if (totalFood < minimumFoodForRing[ring]!!
-                    || totalProd < minimumProdForRing[ring]!!
-                    || totalGood < minimumGoodForRing[ring]!!) {
-                localData.isGoodStart = false
-            }
-
-            // Ring-specific scoring
-            when (ring) {
-                1 -> {
-                    val foodScore = firstRingFoodScores[totalFood]
-                    val prodScore = firstRingProdScores[totalProd]
-                    totalScore += foodScore + prodScore + totalRivers + (totalGood * 2) - (totalJunk * 3)
-                }
-                2 -> {
-                    val foodScore = if (totalFood > 10) secondRingFoodScores.last()
-                    else secondRingFoodScores[totalFood]
-                    val effectiveTotalProd = if (totalProd >= totalFood * 2) totalProd
-                    else (totalFood + 1) / 2 // Can't use all that production without food
-                    val prodScore = if (effectiveTotalProd > 5) secondRingProdScores.last()
-                    else secondRingProdScores[effectiveTotalProd]
-                    totalScore += foodScore + prodScore + totalRivers+ (totalGood * 2) - (totalJunk * 3)
-                }
-                else -> {
-                    totalScore += totalFood + totalProd + totalGood + totalRivers - (totalJunk * 2)
-                }
-            }
-        }
-        // Too much junk?
-        if (totalJunk > maximumJunk) {
-            localData.isGoodStart = false
-        }
-
-        // Finally check if this is near another start
-        if (localData.closeStartPenalty > 0) {
-            localData.isGoodStart = false
-            totalScore -= (totalScore * localData.closeStartPenalty) / 100
-        }
-        localData.startScore = totalScore
-    }
 
     fun placeResourcesAndMinorCivs(tileMap: TileMap, minorCivs: List<Civilization>) {
         placeNaturalWonderImpacts(tileMap)
