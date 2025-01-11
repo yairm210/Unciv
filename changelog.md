@@ -1,3 +1,16 @@
+## 4.15.1
+
+Show total number of cities in city table
+
+Avoid ANRs when loading games
+
+Resolve rare crash for corrupted game settings
+
+By sulai:
+- Add GoogleMaps-like pinching (!!!)
+- Tweak UI city screen
+- Correct alignment of text to icons
+
 ## 4.15.0
 
 Modding:

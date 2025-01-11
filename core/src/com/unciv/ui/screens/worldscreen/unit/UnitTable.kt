@@ -19,6 +19,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
@@ -104,7 +105,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             val moveBetweenUnitsTable = Table().apply {
                 add(prevIdleUnitButton)
                 unitIconNameGroup.add(unitIconHolder)
-                unitIconNameGroup.add(unitNameLabel).apply { Fonts.font.descent }
+                unitIconNameGroup.add(unitNameLabel).padTopDescent()
                 unitIconHolder.touchable = Touchable.enabled
                 unitNameLabel.touchable = Touchable.enabled
                 add(unitIconNameGroup)

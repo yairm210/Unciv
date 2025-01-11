@@ -84,88 +84,19 @@ class WorkerAutomation(
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)
 
         if (tileToWork != currentTile && tileToWork != null) {
-            debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
-            
-            val reachedTile = unit.movement.headTowards(tileToWork)
-            
-            if (tileToWork in reachedTile.neighbors
-                && unit.movement.canMoveTo(tileToWork, allowSwap = true)
-                && !unit.movement.canMoveTo(tileToWork, allowSwap = false)
-                && unit.movement.canUnitSwapTo(tileToWork)) {
-                // There must be a unit on the target tile! Let's swap with it.
-                unit.movement.swapMoveToTile(tileToWork)
-            }
-            
-            if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
-
-            // If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
-            // TODO: Replace this code entirely and change [chooseImprovement] to not continue building the improvement by default
-            if (reachedTile == tileToWork
-                && reachedTile.improvementInProgress == Constants.fort
-                && evaluateFortSurroundings(currentTile, false) <= 0) {
-                debug("Replacing fort in progress with new improvement")
-                reachedTile.stopWorkingOnImprovement()
-            }
-
-            // If there's move still left, perform action
-            // Unit may stop due to Enemy Unit within walking range during doAction() call
-            if (unit.hasMovement() && reachedTile == tileToWork) {
-                if (reachedTile.isPillaged()) {
-                    debug("WorkerAutomation: $unit -> repairs $reachedTile")
-                    UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
-                    return
-                }
-                if (reachedTile.improvementInProgress == null && reachedTile.isLand
-                        && tileHasWorkToDo(reachedTile, unit, localUniqueCache)
-                ) {
-                    debug("WorkerAutomation: $unit -> start improving $reachedTile")
-                    return reachedTile.startWorkingOnImprovement(tileRankings[reachedTile]!!.bestImprovement!!, civInfo, unit)
-                }
-            }
+            headTowardsTileToWork(unit, tileToWork)
             return
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
 
-        if (tileToWork == currentTile && tileHasWorkToDo(currentTile, unit, localUniqueCache)) {
-            val tileRankings = tileRankings[currentTile]!!
-            if (tileRankings.repairImprovment!!) {
-                debug("WorkerAutomation: $unit -> repairs $currentTile")
-                UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
-                return
-            }
-            if (tileRankings.bestImprovement != null) {
-                debug("WorkerAutomation: $unit} -> start improving $currentTile")
-                return currentTile.startWorkingOnImprovement(tileRankings.bestImprovement!!, civInfo, unit)
-            } else {
-                throw IllegalStateException("We didn't find anything to improve on this tile even though there was supposed to be something to improve!")
-            }
-        }
+        if (tileToWork == currentTile && tileHasWorkToDo(currentTile, unit, localUniqueCache)) 
+            startWorkOnCurrentTile(unit)
 
-        if (unit.cache.hasUniqueToCreateWaterImprovements) {
-            // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
-            if (automateWorkBoats(unit)) return
-        }
+        // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
+        if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return
 
-        val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
-        for (city in unit.civ.cities) {
-            citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
-                .count { tile -> tile.isLand
-                        && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
-                        && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) }
-        }
-
-        val closestUndevelopedCity = unit.civ.cities.asSequence()
-            .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
-            .sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
-
-        if (closestUndevelopedCity != null && closestUndevelopedCity != currentTile.owningCity) {
-            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
-            val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
-            if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
-            return
-        }
+        if (tryHeadTowardsUndevelopedCity(unit, localUniqueCache, currentTile)) return
 
         // Nothing to do, try again to connect cities
         if (roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect)) return
@@ -178,7 +109,94 @@ class WorkerAutomation(
         if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
-    
+
+    private fun tryHeadTowardsUndevelopedCity(
+        unit: MapUnit,
+        localUniqueCache: LocalUniqueCache,
+        currentTile: Tile
+    ): Boolean {
+        val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
+        
+        for (city in unit.civ.cities) {
+            citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
+                .count { tile ->
+                    tile.isLand
+                            && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
+                            && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache))
+                }
+        }
+
+        val closestUndevelopedCity = unit.civ.cities.asSequence()
+            .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
+            .sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }
+            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
+
+        if (closestUndevelopedCity != null && closestUndevelopedCity != currentTile.owningCity) {
+            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
+            val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
+            if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
+            return true
+        }
+        return false
+    }
+
+    private fun startWorkOnCurrentTile(unit: MapUnit) {
+        val currentTile = unit.currentTile
+        val tileRanking = tileRankings[currentTile]!!
+        if (tileRanking.repairImprovment == true) {
+            debug("WorkerAutomation: $unit -> repairs $currentTile")
+            UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
+            return
+        }
+        
+        if (tileRanking.bestImprovement != null) {
+            debug("WorkerAutomation: $unit} -> start improving $currentTile")
+            return currentTile.startWorkingOnImprovement(tileRanking.bestImprovement!!, civInfo, unit)
+        } else {
+            throw IllegalStateException("We didn't find anything to improve on this tile even though there was supposed to be something to improve!")
+        }
+    }
+
+    private fun headTowardsTileToWork(
+        unit: MapUnit,
+        tileToWork: Tile,
+    ) {
+        debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
+        val currentTile = unit.getTile()
+        val reachedTile = unit.movement.headTowards(tileToWork)
+
+        if (tileToWork in reachedTile.neighbors
+            && unit.movement.canMoveTo(tileToWork, allowSwap = true)
+            && !unit.movement.canMoveTo(tileToWork, allowSwap = false)
+            && unit.movement.canUnitSwapTo(tileToWork)
+        ) {
+            // There must be a unit on the target tile! Let's swap with it.
+            unit.movement.swapMoveToTile(tileToWork)
+        }
+
+        if (reachedTile != currentTile)  // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
+            unit.doAction()
+
+        // If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
+        // TODO: Replace this code entirely and change [chooseImprovement] to not continue building the improvement by default
+        if (reachedTile == tileToWork
+            && reachedTile.improvementInProgress == Constants.fort
+            && evaluateFortSurroundings(currentTile, false) <= 0
+        ) {
+            debug("Replacing fort in progress with new improvement")
+            reachedTile.stopWorkingOnImprovement()
+        }
+
+        if (!unit.hasMovement() || reachedTile != tileToWork) return
+        
+        // If there's move still left, and this is even a tile we want, perform action
+        // Unit may stop due to Enemy Unit within walking range during doAction() call
+
+        // tileRankings is updated in getBasePriority, which is only called if isAutomationWorkableTile is true
+        // Meaning, there are tiles we can't/shouldn't work, and they won't even be in tileRankings
+        if (unit.currentTile in tileRankings) startWorkOnCurrentTile(unit)
+    }
+
 
     /**
      * Looks for a worthwhile tile to improve

@@ -20,7 +20,7 @@ class NextTurnButton(
 ) : IconTextButton("", null, 30) {
     private var nextTurnAction = NextTurnAction.Default
     init {
-        labelCell.pad(10f)
+        pad(15f)
         onActivation { nextTurnAction.action(worldScreen) }
         onRightClick { NextTurnMenu(stage, this, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)

@@ -2,7 +2,7 @@
     {
         "name": "discover cultural artifacts",
         "notification": "We have discovered cultural artifacts in the ruins! (+20 culture)",
-        "uniques": ["Gain [20] [Culture]"],
+        "uniques": ["Gain [20] [Culture] <(modified by game speed)>"],
         "color": "#cf8ff7"
     },
     {
@@ -31,7 +31,7 @@
     {
         "name": "a stash of gold",
         "notification": "",  // trigger notification only
-        "uniques": ["Gain [50]-[100] [Gold]"],
+        "uniques": ["Gain [50]-[100] [Gold] <(modified by game speed)>"],
         "color": "#ffeb7f"
     },
     {
