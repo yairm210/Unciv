@@ -30,6 +30,7 @@ object BackwardCompatibility {
 
         // Mod decided you can't repair things anymore - get rid of old pillaged improvements
         removeOldPillagedImprovements()
+        removeMissingLastSeenImprovements()
 
         handleMissingReferencesForEachCity()
 
@@ -67,6 +68,13 @@ object BackwardCompatibility {
                     tile.improvementIsPillaged = false
                 }
             }
+    }
+
+    private fun GameInfo.removeMissingLastSeenImprovements() {
+        for (civ in civilizations)
+            for ((vector,improvementName) in civ.lastSeenImprovement.toList())
+                if (!ruleset.tileImprovements.containsKey(improvementName))
+                    civ.lastSeenImprovement.remove(vector)
     }
 
     private fun GameInfo.handleMissingReferencesForEachCity() {
