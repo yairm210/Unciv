@@ -42,7 +42,7 @@ object UseGoldAutomation {
         val knownCityStates = civ.getKnownCivs().filter { it.isCityState && MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civ, it, 0f) <= 0 }.toList()
 
         // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
-        if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
+        if (civ.gold >= 330 && civ.getHappiness() > 0 && (civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold) || civ.hasUnique(UniqueType.CityStateCanBeBoughtForGoldOld))) {
             for (cityState in knownCityStates.toList() ) {  // Materialize sequence as diplomaticMarriage may kill a CS
                 if (cityState.cityStateFunctions.canBeMarriedBy(civ))
                     cityState.cityStateFunctions.diplomaticMarriage(civ)
