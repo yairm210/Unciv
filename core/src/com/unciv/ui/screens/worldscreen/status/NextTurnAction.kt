@@ -120,7 +120,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.viewingCiv.units.shouldGoToDueUnit()
         override fun action(worldScreen: WorldScreen) =
-            worldScreen.switchToNextUnit()
+            worldScreen.switchToNextUnit(resetDue = false)
     },
     MoveAutomatedUnits("Move automated units", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =

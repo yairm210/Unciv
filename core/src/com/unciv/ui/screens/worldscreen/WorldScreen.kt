@@ -58,6 +58,7 @@ import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
+import com.unciv.ui.screens.worldscreen.status.UnitWaitButton
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
@@ -120,7 +121,8 @@ class WorldScreen(
     private val bottomTileInfoTable = TileInfoTable(this)
     internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton(this)
-    private val statusButtons = StatusButtons(nextTurnButton)
+    private val unitWaitButton = UnitWaitButton(this, nextTurnButton)
+    private val statusButtons = StatusButtons(nextTurnButton, unitWaitButton)
     private val tutorialTaskTable = Table().apply {
         background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
     }
@@ -639,9 +641,9 @@ class WorldScreen(
         }
     }
 
-    fun switchToNextUnit() {
+    fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
-        if (bottomUnitTable.selectedUnit != null)
+        if (bottomUnitTable.selectedUnit != null && resetDue)
             bottomUnitTable.selectedUnit!!.due = false
         val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
@@ -666,6 +668,7 @@ class WorldScreen(
 
     private fun updateGameplayButtons() {
         nextTurnButton.update()
+        unitWaitButton.update()
 
         updateAutoPlayStatusButton()
         updateMultiplayerStatusButton()

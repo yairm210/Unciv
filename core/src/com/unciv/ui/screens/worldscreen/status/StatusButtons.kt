@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Disposable
 
 class StatusButtons(
     nextTurnButton: NextTurnButton,
+    unitWaitButton: UnitWaitButton,
     autoPlayStatusButton: AutoPlayStatusButton? = null,
     multiplayerStatusButton: MultiplayerStatusButton? = null
 ) : HorizontalGroup(), Disposable {
@@ -25,7 +26,6 @@ class StatusButtons(
             }
         }
     
-
     init {
         space(10f)
         right()
@@ -38,6 +38,7 @@ class StatusButtons(
         if (multiplayerStatusButton != null) {
             addActor(multiplayerStatusButton)
         }
+        addActor(unitWaitButton)
         addActor(nextTurnButton)
     }
 

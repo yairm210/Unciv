@@ -25,8 +25,6 @@ class NextTurnButton(
         onRightClick { NextTurnMenu(stage, this, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
-        // Let unit actions override this for command "Wait".
-        keyShortcuts.add(KeyboardBinding.Wait, -99)
     }
 
     fun update() {
@@ -61,4 +59,7 @@ class NextTurnButton(
     private fun getNextTurnAction(worldScreen: WorldScreen) =
         // Guaranteed to return a non-null NextTurnAction because the last isChoice always returns true
         NextTurnAction.entries.first { it.isChoice(worldScreen) }
+    
+    fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit
+    
 }
