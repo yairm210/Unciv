@@ -164,13 +164,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
             }
             // Fallback spread resources function - used when generating maps in map editor
-            runAndMeasure("spreadResources") {
-                spreadResources(map)
-            }
+            runAndMeasure("spreadResources") { spreadResources(map) }
         }
-        runAndMeasure("spreadAncientRuins") {
-            spreadAncientRuins(map)
-        }
+        runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
         
         mirror(map)
 

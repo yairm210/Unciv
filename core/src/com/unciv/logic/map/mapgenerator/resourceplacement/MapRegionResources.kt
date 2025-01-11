@@ -1,5 +1,9 @@
-package com.unciv.logic.map.mapgenerator.mapregions
+package com.unciv.logic.map.mapgenerator.resourceplacement
 
+import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.ImpactType
+import com.unciv.logic.map.mapgenerator.mapregions.TileDataMap
+import com.unciv.logic.map.mapgenerator.mapregions.anonymizeUnique
+import com.unciv.logic.map.mapgenerator.mapregions.getTerrainRule
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -25,9 +29,9 @@ object MapRegionResources {
     ): Map<TileResource, Int> {
         if (tileList.none() || resourceOptions.isEmpty()) return mapOf()
         val impactType = when (resourceOptions.first().resourceType) {
-            ResourceType.Strategic -> MapRegions.ImpactType.Strategic
-            ResourceType.Bonus -> MapRegions.ImpactType.Bonus
-            ResourceType.Luxury -> MapRegions.ImpactType.Luxury
+            ResourceType.Strategic -> ImpactType.Strategic
+            ResourceType.Bonus -> ImpactType.Bonus
+            ResourceType.Luxury -> ImpactType.Luxury
         }
         val conditionalTerrain = StateForConditionals(attackedTile = tileList.firstOrNull())
         val weightings = resourceOptions.associateWith {
@@ -85,9 +89,9 @@ object MapRegionResources {
         var amountAdded = 0
         var ratioProgress = 1f
         val impactType = when (resource.resourceType) {
-            ResourceType.Luxury -> MapRegions.ImpactType.Luxury
-            ResourceType.Strategic -> MapRegions.ImpactType.Strategic
-            ResourceType.Bonus -> MapRegions.ImpactType.Bonus
+            ResourceType.Luxury -> ImpactType.Luxury
+            ResourceType.Strategic -> ImpactType.Strategic
+            ResourceType.Bonus -> ImpactType.Bonus
         }
 
         for (tile in tiles) {
@@ -133,6 +137,5 @@ object MapRegionResources {
             mapOf()
     }
 
-
-
 }
+
