@@ -20,19 +20,27 @@ object RegionStartFinder {
 
     /** Attempts to find a good start close to the center of [region]. Calls setRegionStart with the position*/
     internal fun findStart(region: Region, tileData: TileDataMap) {
-        // Establish center bias rects
-        val centerRect = getCentralRectangle(region.rect, 0.33f)
-        val middleRect = getCentralRectangle(region.rect, 0.67f)
-
+        val fallbackTiles = HashSet<Vector2>()
         // Priority: 1. Adjacent to river, 2. Adjacent to coast or fresh water, 3. Other.
+
         // First check center rect, then middle. Only check the outer area if no good sites found
+        val centerTiles = region.tileMap.getTilesInRectangle(getCentralRectangle(region.rect, 0.33f))
+        if (findGoodPosition(centerTiles, region, tileData, fallbackTiles)) return
+        
+        val middleDonut = region.tileMap.getTilesInRectangle(getCentralRectangle(region.rect, 0.67f)).filterNot { it in centerTiles }
+        if (findGoodPosition(middleDonut, region, tileData, fallbackTiles)) return 
+
+        // Now check the outer tiles. For these we don't care about rivers, coasts etc
+        val outerDonut = region.tileMap.getTilesInRectangle(region.rect).filterNot { it in centerTiles || it in middleDonut}
+        if (findEdgePosition(outerDonut, region, tileData, fallbackTiles)) return
+        
+        findFallbackPosition(fallbackTiles, tileData, region)
+    }
+
+    private fun findGoodPosition(centerTiles: Sequence<Tile>, region: Region, tileData: TileDataMap, fallbackTiles: HashSet<Vector2>): Boolean {
         val riverTiles = HashSet<Vector2>()
         val wetTiles = HashSet<Vector2>()
         val dryTiles = HashSet<Vector2>()
-        val fallbackTiles = HashSet<Vector2>()
-
-        // First check center
-        val centerTiles = region.tileMap.getTilesInRectangle(centerRect)
         for (tile in centerTiles) {
             if (tileData[tile.position]!!.isTwoFromCoast)
                 continue // Don't even consider tiles two from coast
@@ -53,47 +61,22 @@ object RegionStartFinder {
             if (list.any { tileData[it]!!.isGoodStart }) {
                 setRegionStart(region, list
                     .filter { tileData[it]!!.isGoodStart }.maxByOrNull { tileData[it]!!.startScore }!!, tileData)
-                return
+                return true
             }
             if (list.isNotEmpty()) // Save the best not-good-enough spots for later fallback
                 fallbackTiles.add(list.maxByOrNull { tileData[it]!!.startScore }!!)
         }
+        return false
+    }
 
-        // Now check middle donut
-        val middleDonut = region.tileMap.getTilesInRectangle(middleRect).filterNot { it in centerTiles }
-        riverTiles.clear()
-        wetTiles.clear()
-        dryTiles.clear()
-        for (tile in middleDonut) {
-            if (tileData[tile.position]!!.isTwoFromCoast)
-                continue // Don't even consider tiles two from coast
-            if (region.continentID != -1 && region.continentID != tile.getContinent())
-                continue // Wrong continent
-            if (tile.isLand && !tile.isImpassible()) {
-                evaluateTileForStart(tile, tileData)
-                if (tile.isAdjacentToRiver())
-                    riverTiles.add(tile.position)
-                else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
-                    wetTiles.add(tile.position)
-                else
-                    dryTiles.add(tile.position)
-            }
-        }
-        // Did we find a good start position?
-        for (list in sequenceOf(riverTiles, wetTiles, dryTiles)) {
-            if (list.any { tileData[it]!!.isGoodStart }) {
-                setRegionStart(region, list
-                    .filter { tileData[it]!!.isGoodStart }.maxByOrNull { tileData[it]!!.startScore }!!, tileData
-                )
-                return
-            }
-            if (list.isNotEmpty()) // Save the best not-good-enough spots for later fallback
-                fallbackTiles.add(list.maxByOrNull { tileData[it]!!.startScore }!!)
-        }
 
-        // Now check the outer tiles. For these we don't care about rivers, coasts etc
-        val outerDonut = region.tileMap.getTilesInRectangle(region.rect).filterNot { it in centerTiles || it in middleDonut}
-        dryTiles.clear()
+    private fun findEdgePosition(
+        outerDonut: Sequence<Tile>,
+        region: Region,
+        tileData: TileDataMap,
+        fallbackTiles: HashSet<Vector2>
+    ): Boolean {
+        val dryTiles = HashSet<Vector2>()
         for (tile in outerDonut) {
             if (region.continentID != -1 && region.continentID != tile.getContinent())
                 continue // Wrong continent
@@ -106,20 +89,33 @@ object RegionStartFinder {
         if (dryTiles.any { tileData[it]!!.isGoodStart }) {
             // Find the one closest to the center
             val center = region.rect.getCenter(Vector2())
+            val closestToCenter = dryTiles.filter { tileData[it]!!.isGoodStart }
+                .minByOrNull {
+                (region.tileMap.getIfTileExistsOrNull(center.x.roundToInt(), center.y.roundToInt())
+                    ?: region.tileMap.values.first())
+                    .aerialDistanceTo(
+                        region.tileMap.getIfTileExistsOrNull(it.x.toInt(), it.y.toInt())
+                            ?: region.tileMap.values.first()
+                    )
+            }!!
+            
             setRegionStart(
                 region,
-                dryTiles.filter { tileData[it]!!.isGoodStart }.minByOrNull {
-                    (region.tileMap.getIfTileExistsOrNull(center.x.roundToInt(), center.y.roundToInt()) ?: region.tileMap.values.first())
-                        .aerialDistanceTo(
-                            region.tileMap.getIfTileExistsOrNull(it.x.toInt(), it.y.toInt()) ?: region.tileMap.values.first()
-                        ) }!!,
+                closestToCenter,
                 tileData
             )
-            return
+            return true
         }
         if (dryTiles.isNotEmpty())
             fallbackTiles.add(dryTiles.maxByOrNull { tileData[it]!!.startScore }!!)
+        return false
+    }
 
+    private fun findFallbackPosition(
+        fallbackTiles: HashSet<Vector2>,
+        tileData: TileDataMap,
+        region: Region
+    ) {
         // Fallback time. Just pick the one with best score
         val fallbackPosition = fallbackTiles.maxByOrNull { tileData[it]!!.startScore }
         if (fallbackPosition != null) {
@@ -134,7 +130,6 @@ object RegionStartFinder {
         region.tileMap[panicPosition].setTerrainFeatures(listOf())
         setRegionStart(region, panicPosition, tileData)
     }
-
     
     /** @returns a scaled according to [proportion] Rectangle centered over [originalRect] */
     private fun getCentralRectangle(originalRect: Rectangle, proportion: Float): Rectangle {
