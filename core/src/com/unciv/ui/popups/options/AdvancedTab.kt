@@ -108,7 +108,6 @@ class AdvancedTab(
         
         maxAutosavesStoredSelectBox.onChange {
             settings.maxAutosavesStored = maxAutosavesStoredSelectBox.selected
-            println(settings.maxAutosavesStored)
         }
     }
 
