@@ -464,6 +464,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         val players = gameInfo.gameParameters.players.size
         return bigIslands >= players
     }
+    
+    fun usingArchipelagoRegions(): Boolean {
+        val totalLand = continentSizes.values.sum().toFloat()
+        val largestContinent = continentSizes.values.maxOf { it }.toFloat()
+        return largestContinent / totalLand < 0.25f
+    }
 
     //endregion
     //region State-Changing Methods

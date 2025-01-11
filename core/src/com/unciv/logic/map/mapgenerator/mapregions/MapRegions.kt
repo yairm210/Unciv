@@ -84,15 +84,13 @@ class MapRegions (val ruleset: Ruleset) {
     }
 
     private val regions = ArrayList<Region>()
-    private var usingArchipelagoRegions = false
     private val tileData = TileDataMap()
+    
 
     /** Creates [numRegions] number of balanced regions for civ starting locations. */
     fun generateRegions(tileMap: TileMap, numRegions: Int) {
         if (numRegions <= 0) return // Don't bother about regions, probably map editor
         if (tileMap.continentSizes.isEmpty()) throw Exception("No Continents on this map!")
-        val totalLand = tileMap.continentSizes.values.sum().toFloat()
-        val largestContinent = tileMap.continentSizes.values.maxOf { it }.toFloat()
 
         val radius = if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth)
             tileMap.mapParameters.mapSize.radius.toFloat()
@@ -103,8 +101,7 @@ class MapRegions (val ruleset: Ruleset) {
 
         // Lots of small islands - just split ut the map in rectangles while ignoring Continents
         // 25% is chosen as limit so Four Corners maps don't fall in this category
-        if (largestContinent / totalLand < 0.25f) {
-            usingArchipelagoRegions = true
+        if (tileMap.usingArchipelagoRegions()) {
             // Make a huge rectangle covering the entire map
             val hugeRect = Region(tileMap, mapRect, -1) // -1 meaning ignore continent data
             hugeRect.affectedByWorldWrap = false // Might as well start at the seam
@@ -655,7 +652,7 @@ class MapRegions (val ruleset: Ruleset) {
         placeNaturalWonderImpacts(tileMap)
 
         val (cityStateLuxuries, randomLuxuries) = LuxuryResourcePlacementLogic.assignLuxuries(regions, tileData, ruleset)
-        MinorCivPlacer.placeMinorCivs(regions, tileMap, minorCivs, usingArchipelagoRegions, tileData, ruleset)
+        MinorCivPlacer.placeMinorCivs(regions, tileMap, minorCivs, tileData, ruleset)
         LuxuryResourcePlacementLogic.placeLuxuries(regions, tileMap, tileData, ruleset, cityStateLuxuries, randomLuxuries)
         placeStrategicAndBonuses(tileMap)
     }
@@ -710,7 +707,7 @@ class MapRegions (val ruleset: Ruleset) {
                 unique.type == UniqueType.MinorDepositWeighting }) {
                 // Weed out some clearly impossible rules straight away to save time later
                 if (rule.modifiers.any { conditional ->
-                        (conditional.type == UniqueType.ConditionalOnWaterMaps && !usingArchipelagoRegions) ||
+                        (conditional.type == UniqueType.ConditionalOnWaterMaps && !tileMap.usingArchipelagoRegions()) ||
                         (conditional.type == UniqueType.ConditionalInRegionOfType && regions.none { region -> region.type == conditional.params[0] }) ||
                         (conditional.type == UniqueType.ConditionalInRegionExceptOfType && regions.all { region -> region.type == conditional.params[0] })
                     } )
@@ -720,6 +717,7 @@ class MapRegions (val ruleset: Ruleset) {
                     ruleLists[simpleRule] = ArrayList()
             }
         }
+        
         // Make up some rules for placing strategics in a fallback situation
         if (fallbackStrategic) {
             val interestingTerrains = strategicResources.flatMap { it.terrainsCanBeFoundOn }.map { ruleset.terrains[it]!! }.toSet()
