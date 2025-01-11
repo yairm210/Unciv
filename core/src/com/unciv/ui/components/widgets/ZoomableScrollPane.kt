@@ -19,7 +19,6 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.ZoomGestureListener
 import com.unciv.ui.components.input.KeyboardPanningListener
-import kotlin.math.sqrt
 
 
 open class ZoomableScrollPane(
@@ -174,7 +173,7 @@ open class ZoomableScrollPane(
         return zoomListener.isZooming
     }
 
-    inner class ZoomListener : ZoomGestureListener() {
+    inner class ZoomListener : ZoomGestureListener({ Vector2(stage.width, stage.height) }) {
 
         inner class ZoomAction : TemporalAction() {
 
@@ -204,8 +203,6 @@ open class ZoomableScrollPane(
         }
 
         private var zoomAction: ZoomAction? = null
-        private var lastInitialDistance = 0f
-        var lastScale = 1f
         var isZooming = false
 
         fun zoomOut(zoomMultiplier: Float = 0.82f) {
@@ -246,30 +243,22 @@ open class ZoomableScrollPane(
             }
         }
 
-        override fun pinch(delta: Vector2) {
+        override fun pinch(translation: Vector2, scaleChange: Float) {
             if (!isZooming) {
                 isZooming = true
                 onZoomStartListener?.invoke()
             }
             scrollTo(
-                scrollX - delta.x,
-                scrollY + delta.y,
+                scrollX - translation.x / scaleX,
+                scrollY + translation.y / scaleY,
                 true
             )
+            zoom(scaleX * scaleChange)
         }
 
         override fun pinchStop() {
             isZooming = false
             onZoomStopListener?.invoke()
-        }
-
-        override fun zoom(initialDistance: Float, distance: Float) {
-            if (lastInitialDistance != initialDistance) {
-                lastInitialDistance = initialDistance
-                lastScale = scaleX
-            }
-            val scale: Float = sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
-            zoom(scale)
         }
 
         override fun scrolled(amountX: Float, amountY: Float): Boolean {
