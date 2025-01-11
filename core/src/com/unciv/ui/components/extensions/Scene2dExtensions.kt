@@ -298,20 +298,15 @@ fun getCloseButton(
  * slightly shifted outwards.
  */
 fun addRoundCloseButton(
-    parent: Group? = null,
-    size: Float = 30f,
-    iconSize: Float = size - 15f,
-    circleColor: Color = Color.CLEAR,
-    overColor: Color = Color.RED,
+    parent: Group,
     action: () -> Unit
 ): Group {
-    val button = getCloseButton(size, iconSize, circleColor, overColor, action)
+    val size = 30f
+    val button = getCloseButton(size, size-15f, Color.CLEAR, Color.RED, action = action)
         .surroundWithCircle(size, false, BaseScreen.clearColor)
         .surroundWithCircle(size+4f, false, Color.WHITE)
-    if (parent != null) {
-        parent.addActor(button)
-        button.setPosition(parent.width - button.width*3/4, parent.height - button.height*3/4)
-    }
+    parent.addActor(button)
+    button.setPosition(parent.width - button.width*3/4, parent.height - button.height*3/4)
     return button
 }
 
