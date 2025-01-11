@@ -52,7 +52,7 @@ class AdvancedTab(
         pad(10f)
         defaults().pad(5f)
         
-        addmaxAutosavesStored()
+        addMaxAutosavesStored()
 
         addAutosaveTurnsSelectBox()
         addSeparator()
@@ -95,8 +95,8 @@ class AdvancedTab(
         }
     }
     
-    private fun addmaxAutosavesStored() {
-        add("Maximum autosave turns stored".toLabel()).left().fillX()
+    private fun addMaxAutosavesStored() {
+        add("Number of autosave files stored".toLabel()).left().fillX()
         
         val maxAutosavesStoredSelectBox = SelectBox<Int>(skin)
         val maxAutosavesStoredArray = Array<Int>()
