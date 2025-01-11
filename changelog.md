@@ -1,22 +1,16 @@
 ## 4.15.2
 
-Fixed tests
+Added notification when enemy religion spread converts a city 
 
-Added notification when enemy religion spread converts a city
-
-chore(modding): Rename Austrian unique to remove trailing dot
-
-Add "has denied your trade request" notification
-
-Fixed bug due to recent function unification
-
-LibGDX 1.13.1
-
-Chore: Slight getShortestPath simplification
+Added "has denied your trade request" notification 
 
 Ruins stat gifts modified by game speed
 
 Fixed padding for map view icons for small minimaps
+
+Fixed rare crash
+
+Remove invalid "last seen improvements"
 
 By sulai:
 - Tweaks for Screen Size small-portrait 
