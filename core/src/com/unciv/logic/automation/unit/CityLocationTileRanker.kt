@@ -24,7 +24,8 @@ object CityLocationTileRanker {
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
     fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
-        val range =  if (distanceToSearch != null) distanceToSearch else {
+        val distanceModifier = 3f // percentage penalty per aerial distance from unit (Settler)
+        val range = if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
@@ -43,7 +44,9 @@ object CityLocationTileRanker {
 
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
-                val tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                val distanceScore = (unit.currentTile.aerialDistanceTo(it) * distanceModifier).coerceIn(0f, 99f)
+                tileValue *= (100 - distanceScore) / 100
                 if (tileValue >= minimumValue)
                     bestTilesToFoundCity.tileRankMap[it] = tileValue
 
@@ -90,7 +93,7 @@ object CityLocationTileRanker {
         val onCoast = newCityTile.isCoastalTile()
         val onHill = newCityTile.isHill()
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
-        // Only count a luxary resource that we don't have yet as unique once
+        // Only count a luxury resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
         if (onCoast) tileValue += 3
