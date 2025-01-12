@@ -225,7 +225,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
     fun getMajorityReligionName(): String? {
         if (followers.isEmpty()) return null
-        val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
+        val religionWithMaxPressure = followers.maxByOrNull { it.value }!!.key
         return when {
             religionWithMaxPressure == Constants.noReligionName -> null
             followers[religionWithMaxPressure] >= city.population.population / 2 -> religionWithMaxPressure
