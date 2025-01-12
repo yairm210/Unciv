@@ -76,7 +76,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             buildingText += specialConstruction?.getProductionTooltip(city)
                     ?: cityConstructions.getTurnsToConstructionString(construction)
 
-            add(Label(buildingText, BaseScreen.skin)).row()  // already translated
+            add(Label(buildingText, BaseScreen.skin)).expandX().row()  // already translated
 
             val description = when (construction) {
                 is BaseUnit -> construction.getDescription(city)
@@ -88,7 +88,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
 
             val descriptionLabel = Label(description, BaseScreen.skin)  // already translated
             descriptionLabel.wrap = true
-            add(descriptionLabel).colspan(2).width(stage.width / 4)
+            add(descriptionLabel).colspan(2).width(stage.width / if(cityScreen.isCrampedPortrait()) 3 else 4)
 
             if (cityConstructions.isBuilt(construction.name)) {
                 showSellButton(construction)

@@ -161,12 +161,11 @@ class WorldScreen(
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         stage.addActor(bottomUnitTable)
+        stage.addActor(unitActionsTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width / 3
         battleTable.x = stage.width / 3
         stage.addActor(battleTable)
-
-        stage.addActor(unitActionsTable)
 
         val tileToCenterOn: Vector2 =
                 when {

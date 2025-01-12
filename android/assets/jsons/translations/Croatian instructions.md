@@ -103,7 +103,7 @@ Words outside brackets are hints as to when highlighted word should be used.
 
 TODO: Might need better translation!
 
-- Raid `Upasti u/na`
+- Raid `Izvršiti prepad`, `Upasti u/na` (Izvršiti raciju)
 - Paradrop `Skok padobranom`
 - Hotseat `Lokalna više-korisnička igra`, `Lokalna igra više igrača` (Više-korisnička igra, Igra više igrača)
 - Stats `Statistike` (Prinosi)
@@ -367,6 +367,7 @@ Masculine but not applicable:
 - [difficulty]
 - [combatantFilter]
 - [populationFilter]
+- [battleAction]
 
 ### Third gender
 
@@ -445,7 +446,6 @@ TODO: There are more placeholders in properties not handled here.
 - [name]
 - [thingToProduce]
 - [thingToSelect]
-- [battleAction]
 
 [Table of Contents](#table-of-contents)
 

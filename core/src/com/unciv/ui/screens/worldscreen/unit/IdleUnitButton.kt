@@ -43,7 +43,6 @@ class IdleUnitButton (
                 unitToSelect = idleUnits.elementAt(index)
             }
 
-            unitToSelect.due = false
             tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
             unitTable.selectUnit(unitToSelect)
             unitTable.worldScreen.shouldUpdate = true

@@ -35,11 +35,6 @@ class UnitTurnManager(val unit: MapUnit) {
         if (!unit.hasUnitMovedThisTurn() || unit.hasUnique(UniqueType.HealsEvenAfterAction))
             healUnit()
 
-        if (unit.action != null && unit.health > 99)
-            if (unit.isActionUntilHealed()) {
-                unit.action = null // wake up when healed
-            }
-
         if (unit.isPreparingParadrop() || unit.isPreparingAirSweep())
             unit.action = null
 
@@ -156,6 +151,11 @@ class UnitTurnManager(val unit: MapUnit) {
                     it.militaryUnit != null && it in unit.civ.viewableTiles && it.militaryUnit!!.civ.isAtWarWith(unit.civ)
                 }
         )  unit.action = null
+
+        if (unit.action != null && unit.health > 99)
+            if (unit.isActionUntilHealed()) {
+                unit.action = null // wake up when healed
+            }
 
         val tileOwner = unit.getTile().getOwner()
         if (tileOwner != null

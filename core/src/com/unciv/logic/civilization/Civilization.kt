@@ -208,7 +208,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasExplored(tile: Tile) = tile.isExplored(this)
 
-    private val lastSeenImprovement = LastSeenImprovement()
+    val lastSeenImprovement = LastSeenImprovement()
 
     // To correctly determine "game over" condition as clarified in #4707
     var hasEverOwnedOriginalCapital: Boolean = false

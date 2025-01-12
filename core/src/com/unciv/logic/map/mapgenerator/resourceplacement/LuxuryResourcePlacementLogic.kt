@@ -1,7 +1,9 @@
-package com.unciv.logic.map.mapgenerator.mapregions
+package com.unciv.logic.map.mapgenerator.resourceplacement
 
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapgenerator.mapregions.*
+import com.unciv.logic.map.mapgenerator.mapregions.isWaterOnlyResource
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -20,7 +22,7 @@ object LuxuryResourcePlacementLogic {
 
     /** Assigns a luxury to each region. No luxury can be assigned to too many regions.
      *  Some luxuries are earmarked for city states. The rest are randomly distributed or
-     *  don't occur att all in the map */
+     *  don't occur at all in the map */
     fun assignLuxuries(regions: ArrayList<Region>, tileData: TileDataMap, ruleset: Ruleset): Pair<List<String>, List<String>> {
 
         // If there are any weightings defined in json, assume they are complete. If there are none, use flat weightings instead
@@ -33,7 +35,7 @@ object LuxuryResourcePlacementLogic {
             regions.size > 8 -> 2
             else -> 1
         }
-        val targetCityStateLuxuries = 3 // was probably intended to be "if (tileData.size > 5000) 4 else 3"
+        
         val assignableLuxuries = ruleset.tileResources.values.filter {
             it.resourceType == ResourceType.Luxury &&
                 !it.hasUnique(UniqueType.LuxurySpecialPlacement) &&
@@ -67,7 +69,7 @@ object LuxuryResourcePlacementLogic {
 
 
         val cityStateLuxuries = assignCityStateLuxuries(
-            targetCityStateLuxuries,
+            3, // was probably intended to be "if (tileData.size > 5000) 4 else 3",
             assignableLuxuries,
             amountRegionsWithLuxury,
             fallbackWeightings
