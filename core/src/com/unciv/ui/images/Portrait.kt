@@ -1,6 +1,7 @@
 package com.unciv.ui.images
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -95,6 +96,9 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
             else -> getDefaultImage().apply { color = getDefaultImageTint() }
         }
     }
+    
+    // Overridable so portraits can use circle images from their texture to minimize texture swapping
+    protected open fun getCircleImage() = ImageGetter.getCircle()
 
     /** Border / background */
     private fun getMainBackground() : Group {
@@ -105,14 +109,16 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
             val ratioH = image.height / backgroundImage.height
             image.setSize((size + borderSize)*ratioW, (size + borderSize)*ratioH)
             return backgroundImage.toGroup(size + borderSize)
-
         } else {
             image.setSize(size*0.75f, size*0.75f)
 
-            val bg = Group().apply { isTransform = false }
+            val bg = object: Group(){
+                init { apply { isTransform = false } }
+                override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+            }
 
-            val circleInner = ImageGetter.getCircle()
-            val circleOuter = ImageGetter.getCircle()
+            val circleInner = getCircleImage()
+            val circleOuter = getCircleImage()
 
             circleInner.setSize(size, size)
             circleOuter.setSize(size + borderSize, size + borderSize)
@@ -159,20 +165,29 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
 
     override fun getDefaultInnerBackgroundTint(): Color =
         ruleset.tileResources[imageName]?.resourceType?.getColor() ?: Color.WHITE
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 class PortraitTech(name: String, size: Float) : Portrait(Type.Tech, name, size) {
     override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
     override fun getDefaultImageTint(): Color =
         ruleset.eras[ruleset.technologies[imageName]?.era()]?.getColor()?.darken(0.6f) ?: ImageGetter.CHARCOAL
+
+    override fun getCircleImage(): Image = ImageGetter.getImage("TechIcons/Circle")
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 class PortraitUnit(name: String, size: Float) : Portrait(Type.Unit, name, size) {
     override fun getDefaultImageTint(): Color = Color.BLACK
+    override fun getCircleImage() = ImageGetter.getImage("OtherIcons/ConstructionCircle")
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 class PortraitBuilding(name: String, size: Float) : Portrait(Type.Building, name, size) {
     override fun getDefaultImageTint(): Color = Color.BLACK
+    override fun getCircleImage() = ImageGetter.getImage("OtherIcons/ConstructionCircle")
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 class PortraitUnavailableWonderForTechTree(name: String, size: Float) : Portrait(Type.Building, name, size) {
@@ -218,6 +233,8 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
             return getColorFromStats(improvement)
         return Color.WHITE
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, size, size*0.1f) {
