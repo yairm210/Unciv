@@ -11,23 +11,9 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitWaitButton(
     private val worldScreen: WorldScreen,
-    private val nextTurnButton: NextTurnButton
+    private val statusButtons: StatusButtons
 ) : IconTextButton("Wait", ImageGetter.getUnitActionPortrait("Wait")) {
 
-    private val originalWidth = width
-    private val originalHeight = height
-    
-    private var isGone: Boolean = true
-        set(value) {
-            field = value
-            isVisible = isGone
-            if (isGone) {
-                setSize(0f, 0f) // TODO
-            } else {
-                setSize(originalWidth, originalHeight)
-            }
-        }
-    
     init {
         onActivation { 
             worldScreen.switchToNextUnit(resetDue = true)
@@ -37,12 +23,14 @@ class UnitWaitButton(
     }
 
     fun update() {
-        isGone = nextTurnButton.isVisible && nextTurnButton.isNextUnitAction()
-        isEnabled = nextTurnButton.isEnabled 
-        if (isVisible && isEnabled) addTooltip(KeyboardBinding.Wait) else addTooltip("")
+        val nextTurnButton = statusButtons.nextTurnButton
+        val visible = nextTurnButton.isVisible
+            && nextTurnButton.isNextUnitAction()
+            && worldScreen.bottomUnitTable.selectedUnit?.run { due && hasMovement() } == true
+        statusButtons.unitWaitButton = if (visible) this else null
+        isEnabled = nextTurnButton.isEnabled
+        if (isEnabled) addTooltip(KeyboardBinding.Wait) else addTooltip("")
         pack()
     }
-    
-    
 
 }

@@ -121,8 +121,8 @@ class WorldScreen(
     private val bottomTileInfoTable = TileInfoTable(this)
     internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton(this)
-    private val unitWaitButton = UnitWaitButton(this, nextTurnButton)
-    private val statusButtons = StatusButtons(nextTurnButton, unitWaitButton)
+    private val statusButtons = StatusButtons(nextTurnButton)
+    private val unitWaitButton = UnitWaitButton(this, statusButtons)
     private val tutorialTaskTable = Table().apply {
         background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
     }
