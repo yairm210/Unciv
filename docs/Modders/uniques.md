@@ -410,8 +410,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns."
-	Example: "Can spend Gold to annex or puppet a City-State that has been your ally for [3] turns."
+??? example  "Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns"
+	Example: "Can spend Gold to annex or puppet a City-State that has been your Ally for [3] turns"
 
 	Applicable to: Global
 

@@ -1,3 +1,25 @@
+## 4.15.2
+
+Added notification when enemy religion spread converts a city 
+
+Added "has denied your trade request" notification 
+
+Ruins stat gifts modified by game speed
+
+Fixed padding for map view icons for small minimaps
+
+Fixed rare crash
+
+Remove invalid "last seen improvements"
+
+By sulai:
+- Tweaks for Screen Size small-portrait 
+- Map pinching, revised 
+
+Hide invisible resources for AI - By EmperorPinguin
+
+Move Until Healed wake up to startTurn so Fortify lasts until start of turn - By itanasi
+
 ## 4.15.1
 
 Show total number of cities in city table

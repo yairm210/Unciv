@@ -14,7 +14,7 @@ object MinorCivPlacer {
      *  Note: can silently fail to place all city states if there is too little room.
      *  Currently our GameStarter fills out with random city states, Civ V behavior is to
      *  forget about the discarded city states entirely. */
-    fun placeMinorCivs(regions: List<Region>, tileMap: TileMap, civs: List<Civilization>, usingArchipelagoRegions: Boolean, tileData: TileDataMap, ruleset: Ruleset) {
+    fun placeMinorCivs(regions: List<Region>, tileMap: TileMap, civs: List<Civilization>, tileData: TileDataMap, ruleset: Ruleset) {
         if (civs.isEmpty()) return
 
         // Some but not all city states are assigned to regions directly. Determine the CS density.
@@ -25,7 +25,7 @@ object MinorCivPlacer {
         val uninhabitedCoastal = ArrayList<Tile>()
         val uninhabitedHinterland = ArrayList<Tile>()
         val civAssignedToUninhabited = ArrayList<Civilization>()
-        if (!usingArchipelagoRegions) {
+        if (!tileMap.usingArchipelagoRegions()) {
             spreadCityStatesBetweenHabitedAndUninhabited(
                 tileMap,
                 regions,

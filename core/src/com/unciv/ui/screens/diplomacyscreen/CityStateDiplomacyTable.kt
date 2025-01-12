@@ -306,7 +306,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     }
 
     private fun getDiplomaticMarriageButton(otherCiv: Civilization): TextButton? {
-        if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGold))
+        if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGold) && !viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGoldOld))
             return null
 
         val diplomaticMarriageButton =
