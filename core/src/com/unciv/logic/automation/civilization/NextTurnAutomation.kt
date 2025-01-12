@@ -182,11 +182,12 @@ object NextTurnAutomation {
         if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
         }
-        if (civInfo.getHappiness() < 5 && cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
-            value += 10 - civInfo.getHappiness()
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
+            if (civInfo.getHappiness() < 10)
+                value += 10 - civInfo.getHappiness()
             value += civPersonality[PersonalityValue.Happiness].toInt() - 5
         }
-        if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
             value += 5
             value += civPersonality[PersonalityValue.Food].toInt() - 5
         }
@@ -198,7 +199,7 @@ object NextTurnAutomation {
         val ourInfluence = if (civInfo.knows(cityState))
             cityState.getDiplomacyManager(civInfo)!!.getInfluence().toInt()
         else 0
-        value += ourInfluence / 10
+        value += minOf(10, ourInfluence / 10) // don't let this spiral out of control
 
         if (ourInfluence < 30) {
             // Consider bullying for cash
