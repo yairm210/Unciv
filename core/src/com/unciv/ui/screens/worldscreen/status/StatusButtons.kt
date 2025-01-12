@@ -38,12 +38,6 @@ class StatusButtons(
         wrapReverse()
         wrapSpace(10f)
         rowRight()
-        if (autoPlayStatusButton != null) {
-            addActor(autoPlayStatusButton)
-        }
-        if (multiplayerStatusButton != null) {
-            addActor(multiplayerStatusButton)
-        }
         addActor(nextTurnButton)
     }
 

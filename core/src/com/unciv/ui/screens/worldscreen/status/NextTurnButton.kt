@@ -44,6 +44,8 @@ class NextTurnButton(
             || (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip("")
+        
+        worldScreen.unitWaitButton.update()
     }
 
     internal fun updateButton(nextTurnAction: NextTurnAction) {
