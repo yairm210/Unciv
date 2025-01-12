@@ -28,7 +28,7 @@ class UnitWaitButton(
             && nextTurnButton.isNextUnitAction()
         statusButtons.unitWaitButton = if (visible) this else null
         isEnabled = nextTurnButton.isEnabled
-            && worldScreen.bottomUnitTable.selectedUnit?.run { due && hasMovement() } == true
+            && worldScreen.bottomUnitTable.selectedUnit?.run { due && isIdle() } == true
         if (isEnabled) addTooltip(KeyboardBinding.Wait) else addTooltip("")
         pack()
     }

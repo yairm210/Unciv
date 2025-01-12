@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.status
 
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.utils.Disposable
 
@@ -24,11 +25,15 @@ class StatusButtons(
         }
     var unitWaitButton: UnitWaitButton? = null
         set(button) {
-            unitWaitButton?.remove()
+            // wait button is wrapped in container, remove that container
+            unitWaitButton?.parent?.remove()
             field = button
             if (button != null) {
+                // fix uneven spacing applied by HorizontalGroup.wrap()
+                val container = Container(button)
+                container.padBottom(nextTurnButton.height - button.height)
                 // insert next to next-turn-button
-                addActorAt(children.indexOf(nextTurnButton, true), button)
+                addActorAt(children.indexOf(nextTurnButton, true), container)
             }
         }
     
