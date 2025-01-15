@@ -19,6 +19,7 @@ class NextTurnButton(
     private val worldScreen: WorldScreen
 ) : IconTextButton("", null, 30) {
     private var nextTurnAction = NextTurnAction.Default
+    private var waitButton = false
     init {
         pad(15f)
         onActivation { nextTurnAction.action(worldScreen) }
@@ -29,6 +30,11 @@ class NextTurnButton(
 
     fun update() {
         nextTurnAction = getNextTurnAction(worldScreen)
+        waitButton = nextTurnAction == NextTurnAction.NextUnit &&
+            !worldScreen.game.settings.checkForDueUnitsCycles &&
+            worldScreen.bottomUnitTable.selectedUnit != null
+        if (waitButton)
+            nextTurnAction = NextTurnAction.WaitUnit
         updateButton(nextTurnAction)
         val autoPlay = worldScreen.autoPlay
         if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
@@ -43,7 +49,12 @@ class NextTurnButton(
         isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay"
             || (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
-        if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip("")
+        if (isEnabled) {
+            if (waitButton)
+                addTooltip(KeyboardBinding.Wait)
+            else
+                addTooltip(KeyboardBinding.NextTurn)
+        } else addTooltip("")
         
         worldScreen.smallUnitButton.update()
     }
@@ -51,17 +62,25 @@ class NextTurnButton(
     internal fun updateButton(nextTurnAction: NextTurnAction) {
         label.setText(nextTurnAction.getText(worldScreen).tr())
         label.color = nextTurnAction.color
-        if (nextTurnAction.icon != null && ImageGetter.imageExists(nextTurnAction.icon!!))
+        if (waitButton) {
+            iconCell.setActor(ImageGetter.getUnitActionPortrait(nextTurnAction.icon!!, 30f))
+        } else if (nextTurnAction.icon != null && ImageGetter.imageExists(nextTurnAction.icon!!))
             iconCell.setActor(ImageGetter.getImage(nextTurnAction.icon).apply { setSize(30f) })
         else
             iconCell.clearActor()
         pack()
+        keyShortcuts.clear()
+        // don't register KeyboardBinding.Wait here, or else you'll double fire from the Unit Action
+        if (!waitButton) {
+            keyShortcuts.add(KeyboardBinding.NextTurn)
+            keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
+        }
     }
 
     private fun getNextTurnAction(worldScreen: WorldScreen) =
         // Guaranteed to return a non-null NextTurnAction because the last isChoice always returns true
         NextTurnAction.entries.first { it.isChoice(worldScreen) }
     
-    fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit
+    fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit || nextTurnAction == NextTurnAction.WaitUnit
     
 }

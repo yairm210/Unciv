@@ -122,6 +122,12 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun action(worldScreen: WorldScreen) =
             worldScreen.switchToNextUnit(resetDue = false)
     },
+    WaitUnit("Wait Order", Color.LIGHT_GRAY) {
+        override fun isChoice(worldScreen: WorldScreen) = false
+        override fun action(worldScreen: WorldScreen) =
+            worldScreen.switchToNextUnit(resetDue = true)
+        override val icon = "Wait"
+    },
     MoveAutomatedUnits("Move automated units", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.isMoveAutomatedUnits()

@@ -13,7 +13,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 class SmallUnitButton(
     private val worldScreen: WorldScreen,
     private val statusButtons: StatusButtons
-) : IconTextButton("", null, fontColor = NextTurnAction.NextTurn.color) {
+) : IconTextButton("", null, fontColor = NextTurnAction.NextUnit.color) {
 
     private val nextLabel = "Next"
     private val waitLabel = "Wait"
@@ -26,6 +26,7 @@ class SmallUnitButton(
     }
 
     fun update() {
+        keyShortcuts.clear()
         isWait = worldScreen.game.settings.checkForDueUnitsCycles // refresh value
         if(isWait) {
             label.setText(waitLabel.tr())
@@ -35,8 +36,9 @@ class SmallUnitButton(
         } else {
             label.setText(nextLabel.tr())
             iconCell.setActor(ImageGetter.getImage(NextTurnAction.NextUnit.icon!!).apply { setSize(20f) })
+            keyShortcuts.add(KeyboardBinding.NextTurn)
             keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
-            addTooltip(KeyboardBinding.NextTurnAlternate)
+            addTooltip(KeyboardBinding.NextTurn)  // matches NextTurnButton
         }
         val nextTurnButton = statusButtons.nextTurnButton
         val visible = nextTurnButton.isVisible
