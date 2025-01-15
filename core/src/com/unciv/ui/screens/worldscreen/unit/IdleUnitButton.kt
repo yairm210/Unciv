@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import com.unciv.ui.components.input.onClick
@@ -32,6 +33,7 @@ class IdleUnitButton (
         add(image).size(imageSize).pad(10f,20f)
         enable()
         keyShortcuts.add(keyShortcutBind)
+        addTooltip(keyShortcutBind)
         onActivation {
 
             val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
