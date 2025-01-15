@@ -72,7 +72,11 @@ class NextTurnButton(
         // the NextTurn phase is disabled.
         val count = worldScreen.viewingCiv.units.getDueUnits().count()
         if (count > 0 && nextTurnAction in listOf(NextUnit, NextTurn)) {
-            unitsDueLabel.setText("[$count] units due".tr())
+            var text = if (worldScreen.game.settings.checkForDueUnitsCycles) 
+                "[$count] units idle" 
+            else 
+                "[$count] units due"
+            unitsDueLabel.setText(text.tr())
             unitsDueCell.setActor(unitsDueLabel)
         }
         else {
