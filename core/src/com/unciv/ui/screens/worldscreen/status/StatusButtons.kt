@@ -23,10 +23,10 @@ class StatusButtons(
                 addActorAt(0, button)
             }
         }
-    var unitWaitButton: UnitWaitButton? = null
+    var smallUnitButton: SmallUnitButton? = null
         set(button) {
             // wait button is wrapped in container, remove that container
-            unitWaitButton?.parent?.remove()
+            smallUnitButton?.parent?.remove()
             field = button
             if (button != null) {
                 // fix uneven spacing applied by HorizontalGroup.wrap()
