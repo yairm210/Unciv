@@ -84,7 +84,7 @@ class WorkerAutomation(
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)
 
         if (tileToWork != currentTile && tileToWork != null) {
-            headTowardsTileToWork(unit, tileToWork)
+            headTowardsTileToWork(unit, tileToWork, localUniqueCache)
             return
         }
 
@@ -160,6 +160,7 @@ class WorkerAutomation(
     private fun headTowardsTileToWork(
         unit: MapUnit,
         tileToWork: Tile,
+        localUniqueCache: LocalUniqueCache
     ) {
         debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
         val currentTile = unit.getTile()
@@ -194,7 +195,8 @@ class WorkerAutomation(
 
         // tileRankings is updated in getBasePriority, which is only called if isAutomationWorkableTile is true
         // Meaning, there are tiles we can't/shouldn't work, and they won't even be in tileRankings
-        if (unit.currentTile in tileRankings) startWorkOnCurrentTile(unit)
+        if (tileHasWorkToDo(unit.currentTile, unit, localUniqueCache))
+            startWorkOnCurrentTile(unit)
     }
 
 

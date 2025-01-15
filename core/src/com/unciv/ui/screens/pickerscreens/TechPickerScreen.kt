@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -52,7 +53,9 @@ class TechPickerScreen(
      * Having this be a separate table allows us to leave the TopTable as is (that is: auto-width to fit the scrollPane)
      *  leaving us the juicy small tech tree right in the center.
      */
-    private val techTable = Table()
+    private val techTable = object : Table(){
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    }
 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = ruleset.technologies.keys
@@ -463,5 +466,4 @@ class TechPickerScreen(
             rightSideButton.disable()
         }
     }
-
 }
