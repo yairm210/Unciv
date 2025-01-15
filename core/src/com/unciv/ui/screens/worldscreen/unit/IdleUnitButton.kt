@@ -9,11 +9,15 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 
 class IdleUnitButton (
     internal val unitTable: UnitTable,
     private val tileMapHolder: WorldMapHolder,
-    val previous: Boolean
+    val previous: Boolean,
+    private val keyShortcutBind: KeyboardBinding
 ) : Table() {
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
@@ -27,10 +31,11 @@ class IdleUnitButton (
         }
         add(image).size(imageSize).pad(10f,20f)
         enable()
-        onClick {
+        keyShortcuts.add(keyShortcutBind)
+        onActivation {
 
             val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
-            if (idleUnits.none()) return@onClick
+            if (idleUnits.none()) return@onActivation
 
             val unitToSelect: MapUnit
             if (unitTable.selectedUnit == null || !idleUnits.contains(unitTable.selectedUnit!!))

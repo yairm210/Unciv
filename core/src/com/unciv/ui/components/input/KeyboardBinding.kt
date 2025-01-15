@@ -48,6 +48,8 @@ enum class KeyboardBinding(
     EmpireOverview(Category.WorldScreen),
     MusicPlayer(Category.WorldScreen, KeyCharAndCode.ctrl('m')),
     DeveloperConsole(Category.WorldScreen, '`'),
+    PrevIdleButton(Category.WorldScreen, ','),
+    NextIdleButton(Category.WorldScreen, '/'),
 
     /*
      * These try to be faithful to default Civ5 key bindings as found in several places online
