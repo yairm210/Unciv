@@ -32,7 +32,7 @@ If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a p
 - **Linux** - [itch.io](https://yairm210.itch.io/unciv), Flatpak via [Flathub](https://flathub.org/apps/details/io.github.yairm210.unciv), or [AUR](https://aur.archlinux.org/packages/unciv-bin)
 - **Windows** - [Grab the MSI](https://github.com/yairm210/Unciv/releases/latest/download/Unciv.msi), or get from [itch.io](https://yairm210.itch.io/unciv), [Chocolatey](https://community.chocolatey.org/packages/unciv), or [Scoop](https://github.com/Calinou/scoop-games)
 - **Raspberry Pi** - [Pi-apps](https://github.com/Botspot/pi-apps)
-- **MacOS** - Via [MacPorts](https://ports.macports.org/port/unciv/) or install [with this guide](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/) 
+- **MacOS** - Via [MacPorts](https://ports.macports.org/port/unciv/) or install [with this guide](https://yairm210.github.io/Unciv/docs/Other/Installing-on-macOS/) 
 - Jars, APKs and Windows/Linux builds also available in [Releases](https://github.com/yairm210/Unciv/releases) (run jar with `java -jar Unciv.jar`) - *not recommended* since we update frequently and you will quickly become out-of-date
 - [Build from scratch](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/) if that's your thing
 
@@ -48,11 +48,11 @@ In this order:
 
 ## Contributing
 
-Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
+Programmers start [here](https://yairm210.github.io/Unciv/docs/Developers/Building-Locally/)!
 
-Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)!
+Translators start [here](https://yairm210.github.io/Unciv/docs/Other/Translating/)!
 
-Modders start [here](https://yairm210.github.io/Unciv/Modders/Mods/)!
+Modders start [here](https://yairm210.github.io/Unciv/docs/Modders/Mods/)!
 
 You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
