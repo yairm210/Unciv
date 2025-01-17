@@ -48,8 +48,8 @@ enum class KeyboardBinding(
     EmpireOverview(Category.WorldScreen),
     MusicPlayer(Category.WorldScreen, KeyCharAndCode.ctrl('m')),
     DeveloperConsole(Category.WorldScreen, '`'),
-    PrevIdleButton(Category.WorldScreen, ','),
-    NextIdleButton(Category.WorldScreen, '/'),
+    PrevIdleButton(Category.WorldScreen, "Idle Prev",','),
+    NextIdleButton(Category.WorldScreen, "Idle Next", '.'),
 
     /*
      * These try to be faithful to default Civ5 key bindings as found in several places online
@@ -106,7 +106,7 @@ enum class KeyboardBinding(
     Automate(Category.UnitActions, 'm'),
     ConnectRoad(Category.UnitActions, "Connect road", 'c'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),
-    StopMovement(Category.UnitActions,"Stop movement", '.'),
+    StopMovement(Category.UnitActions,"Stop movement", 'm'),
     ShowUnitDestination(Category.UnitActions, "Show unit destination", 'j'),
     Sleep(Category.UnitActions, 'f'),
     SleepUntilHealed(Category.UnitActions,"Sleep until healed", 'h'),
