@@ -17,8 +17,6 @@ import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.status.NextTurnAction.Default
-import com.unciv.ui.screens.worldscreen.status.NextTurnAction.NextTurn
-import com.unciv.ui.screens.worldscreen.status.NextTurnAction.NextUnit
 import com.unciv.utils.Concurrency
 
 class NextTurnButton(
@@ -60,28 +58,17 @@ class NextTurnButton(
         label.setText(nextTurnAction.getText(worldScreen).tr())
         label.color = nextTurnAction.color
         if (nextTurnAction.icon != null && ImageGetter.imageExists(nextTurnAction.icon!!))
-            iconCell.setActor(ImageGetter.getImage(nextTurnAction.icon).apply { setSize(30f) })
+            iconCell.setActor(ImageGetter.getImage(nextTurnAction.icon).apply { 
+                setSize(30f)
+                color = nextTurnAction.color
+            })
         else
             iconCell.clearActor()
-        
-        // Show due units in next-unit and next-turn phase, encouraging the player to give order to
-        // idle units.
-        // It also serves to inform new players that the NextUnit-Button cycles units. That's easy
-        // to grasp, because the number doesn't change when repeatedly clicking the button.
-        // We also show due units on the NextTurn button, so players see due units in case the
-        // the NextTurn phase is disabled.
-        val count = worldScreen.viewingCiv.units.getDueUnits().count()
-        if (count > 0 && nextTurnAction in listOf(NextUnit, NextTurn)) {
-            var text = if (worldScreen.game.settings.checkForDueUnitsCycles) 
-                "[$count] units idle" 
-            else 
-                "[$count] units due"
-            unitsDueLabel.setText(text.tr())
+
+        nextTurnAction.getSubText(worldScreen)?.let {
+            unitsDueLabel.setText(it.tr())
             unitsDueCell.setActor(unitsDueLabel)
-        }
-        else {
-            unitsDueCell.clearActor()
-        }
+        } ?: unitsDueCell.clearActor()
         
         pack()
     }
