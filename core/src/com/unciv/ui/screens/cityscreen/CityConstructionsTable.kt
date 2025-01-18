@@ -215,7 +215,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         // always show queue expander, even when empty, in order to keep lowerTable at constant position
         queueExpander.innerTable.clear()
         queueExpander.headerContent.clear()
-        queueExpander.headerIcon.isVisible = queue.size >= 2
+        queueExpander.isHeaderIconVisible = queue.size >= 2
         queueExpander.header.pad(0f)
         queueExpander.setText("Construction queue".tr())
         queue.forEachIndexed { i, constructionName ->

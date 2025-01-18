@@ -58,7 +58,7 @@ class ExpanderTab(
     val header = Table(skin)  // Header with label and icon, touchable to show/hide
     val headerContent = Table()
     private val headerLabel = title.toLabel(fontSize = fontSize, hideIcons = true)
-    val headerIcon = ImageGetter.getImage(arrowImage)
+    private val headerIcon = ImageGetter.getImage(arrowImage)
     private val contentWrapper = Table()  // Wrapper for innerTable, this is what will be shown/hidden
 
     /** The container where the client should add the content to toggle */
@@ -72,6 +72,10 @@ class ExpanderTab(
             field = value
             update()
         }
+
+    var isHeaderIconVisible: Boolean
+        get() = headerIcon.isVisible
+        set(value) { headerIcon.isVisible = value }
 
     init {
         header.defaults().pad(headerPad)
