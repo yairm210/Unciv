@@ -1,28 +1,10 @@
 ## 4.15.3
 
-Fixed unique buildings/improvements with zeroed stat not showing before vs after
-
-4.15.2-patch1
-
-Fix worker improvement crash 
-
-Fix Detekt error
-
-Fix Detekt error
-
-Tech picker screen performance - ~45% of render time decreased with texture swap minimization tricks
+Tech screen performance improvements
 
 Notification for city conversion when removing heresy
 
-chore: Split RegionStartFinder.findStart into subfunctions
-
-chore: Move region start functions into their own class
-
-chore: Split strategic+bonus resource placement into subfunctions in its own class
-
-chore: MapRegions simplification - usingArchipelagoRegions is now a TileMap function
-
-chore: minor Battle.kt simplification
+Fixed unique buildings/improvements with zeroed stat not showing before vs after
 
 By sulai:
 - Show "x units due" on Big Button, setting for cycling units 
