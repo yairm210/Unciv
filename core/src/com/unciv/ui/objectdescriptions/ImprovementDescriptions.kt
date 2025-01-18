@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
@@ -21,9 +22,9 @@ object ImprovementDescriptions {
     fun getDifferences(
         ruleset: Ruleset, originalImprovement: TileImprovement, replacementImprovement: TileImprovement
     ): Sequence<FormattedLine> = sequence {
-        for ((key, value) in replacementImprovement)
-            if (value != originalImprovement[key])
-                yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalImprovement[key].toInt()}]".tr(), indent=1))
+        for (stat in Stat.entries) // Do not iterate on object since that excludes zero values
+            if (replacementImprovement[stat] != originalImprovement[stat])
+                yield(FormattedLine( stat.name.tr() + " " +"[${replacementImprovement[stat].toInt()}] vs [${originalImprovement[stat].toInt()}]".tr(), indent=1))
 
         for (terrain in replacementImprovement.terrainsCanBeBuiltOn)
             if (terrain !in originalImprovement.terrainsCanBeBuiltOn)
