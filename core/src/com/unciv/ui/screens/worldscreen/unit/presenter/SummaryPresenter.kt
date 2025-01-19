@@ -8,9 +8,12 @@ class SummaryPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
     
     override val position: Vector2? = null
 
+    override fun update() {
+        unitTable.closeButton.isVisible = false
+    }
+    
     override fun updateWhenNeeded() {
         unitTable.apply {
-            closeButton.isVisible = false
             descriptionTable.clear()
          
             unitNameLabel.setText("Units".tr())
