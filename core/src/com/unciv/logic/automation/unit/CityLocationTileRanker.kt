@@ -103,8 +103,8 @@ object CityLocationTileRanker {
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.resource != null) tileValue -= 4
-        if (newCityTile.resource != null && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
+        if (newCityTile.hasViewableResource(civ)) tileValue -= 4
+        if (newCityTile.hasViewableResource(civ) && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
         // Settling on bonus resources tends to waste a food
         // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
@@ -155,7 +155,7 @@ object CityLocationTileRanker {
         // Don't settle near but not on the coast
         if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
         // Check if there are any new unique luxury resources
-        if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
+        if (rankTile.hasViewableResource(civ) && rankTile.tileResource.resourceType == ResourceType.Luxury
             && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
             locationSpecificTileValue += 10
             newUniqueLuxuryResources.add(rankTile.resource!!)
@@ -167,7 +167,7 @@ object CityLocationTileRanker {
 
         var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
 
-        if (rankTile.resource != null) {
+        if (rankTile.hasViewableResource(civ)) {
             rankTileValue += when (rankTile.tileResource.resourceType) {
                 ResourceType.Bonus -> 2f
                 ResourceType.Strategic -> 1.2f * rankTile.resourceAmount

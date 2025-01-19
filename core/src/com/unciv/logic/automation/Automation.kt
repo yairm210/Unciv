@@ -58,8 +58,6 @@ object Automation {
             // probably due to badly configured personalities not properly weighing food vs non-food yields
             if (city.population.population < 5)
                 return 2f
-            if (surplusFood > city.population.getFoodToNextPopulation() / (10 * speed))
-                return 0.75f // get Growth just under Production
             return 1.5f
         }
         // Human weights. May be different since AI Happiness is always "easier"

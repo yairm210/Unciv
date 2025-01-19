@@ -161,12 +161,11 @@ class WorldScreen(
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         stage.addActor(bottomUnitTable)
+        stage.addActor(unitActionsTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width / 3
         battleTable.x = stage.width / 3
         stage.addActor(battleTable)
-
-        stage.addActor(unitActionsTable)
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -639,9 +638,9 @@ class WorldScreen(
         }
     }
 
-    fun switchToNextUnit() {
+    fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
-        if (bottomUnitTable.selectedUnit != null)
+        if (bottomUnitTable.selectedUnit != null && resetDue)
             bottomUnitTable.selectedUnit!!.due = false
         val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {

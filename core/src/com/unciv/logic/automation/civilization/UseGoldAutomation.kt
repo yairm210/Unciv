@@ -6,7 +6,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -28,7 +27,7 @@ object UseGoldAutomation {
             if (construction !is INonPerpetualConstruction) continue
             val statBuyCost = construction.getStatBuyCost(city, Stat.Gold) ?: continue
             if (!city.cityConstructions.isConstructionPurchaseAllowed(construction, Stat.Gold, statBuyCost)) continue
-            if (civ.gold < statBuyCost / 3) continue
+            if (civ.gold < statBuyCost * 3) continue
             city.cityConstructions.purchaseConstruction(construction, 0, true)
         }
 
@@ -42,7 +41,7 @@ object UseGoldAutomation {
         val knownCityStates = civ.getKnownCivs().filter { it.isCityState && MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civ, it, 0f) <= 0 }.toList()
 
         // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
-        if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
+        if (civ.gold >= 330 && civ.getHappiness() > 0 && (civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold) || civ.hasUnique(UniqueType.CityStateCanBeBoughtForGoldOld))) {
             for (cityState in knownCityStates.toList() ) {  // Materialize sequence as diplomaticMarriage may kill a CS
                 if (cityState.cityStateFunctions.canBeMarriedBy(civ))
                     cityState.cityStateFunctions.diplomaticMarriage(civ)
@@ -50,17 +49,7 @@ object UseGoldAutomation {
             }
         }
 
-        if (civ.gold < 250) return  // skip checks if tryGainInfluence will bail anyway
-        if (civ.wantsToFocusOn(Victory.Focus.Culture)) {
-            for (cityState in knownCityStates.filter { it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
-                val diploManager = cityState.getDiplomacyManager(civ)!!
-                if (diploManager.getInfluence() < 40) { // we want to gain influence with them
-                    tryGainInfluence(civ, cityState)
-                }
-            }
-        }
-
-        if (civ.gold < 250 || knownCityStates.none()) return
+        if (civ.gold < 500 || knownCityStates.none()) return // skip checks if tryGainInfluence will bail anyway
         val cityState = knownCityStates
             .filter { it.getAllyCiv() != civ.civName }
             .associateWith { NextTurnAutomation.valueCityStateAlliance(civ, it, true) }
@@ -166,15 +155,15 @@ object UseGoldAutomation {
     }
 
     private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
-        if (civInfo.gold < 250) return // Save up
-        if (cityState.getDiplomacyManager(civInfo)!!.getInfluence() >= 20
-            && civInfo.gold < 500) {
-            // Only make a small investment if we have a bit of influence already to build off of so we don't waste our money
-            cityState.cityStateFunctions.receiveGoldGift(civInfo, 250)
-            return
-        }
-        if (civInfo.gold < 500) return // It's not worth it to invest now, wait until you have enough for 2
-        cityState.cityStateFunctions.receiveGoldGift(civInfo, 500)
+        if (civInfo.gold < 500) return // Save up, giving 500 gold in one go typically grants +5 influence compared to giving 2×250 gold
+        val influence = cityState.getDiplomacyManager(civInfo)!!.getInfluence()
+        val stopSpending =  influence > 60 + 2 * NextTurnAutomation.valueCityStateAlliance(civInfo, cityState, true)
+        // Don't go into a gold gift race: be content with friendship for cheap, or use the gold on more productive uses,
+        // for example upgrading an army to conquer the player who's contesting our city states
+        if (influence < 10 || stopSpending) return
+        // Only make an investment if we got our Pledge to Protect influence at the highest level
+        if (civInfo.gold >= 1000) cityState.cityStateFunctions.receiveGoldGift(civInfo, 1000)
+        else cityState.cityStateFunctions.receiveGoldGift(civInfo, 500)
         return
     }
 

@@ -83,7 +83,12 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         isVisible = true
         pack()
-        addBorderAllowOpacity(1f, Color.WHITE)
+
+        addBorderAllowOpacity(2f, Color.WHITE)
+        addRoundCloseButton(this) {
+            isVisible = false
+        }
+
     }
 
     private fun tryGetAttacker(): ICombatant? {

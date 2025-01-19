@@ -84,7 +84,7 @@ class WorkerAutomation(
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)
 
         if (tileToWork != currentTile && tileToWork != null) {
-            headTowardsTileToWork(unit, tileToWork)
+            headTowardsTileToWork(unit, tileToWork, localUniqueCache)
             return
         }
 
@@ -160,6 +160,7 @@ class WorkerAutomation(
     private fun headTowardsTileToWork(
         unit: MapUnit,
         tileToWork: Tile,
+        localUniqueCache: LocalUniqueCache
     ) {
         debug("WorkerAutomation: %s -> head towards %s", unit.toString(), tileToWork)
         val currentTile = unit.getTile()
@@ -194,7 +195,8 @@ class WorkerAutomation(
 
         // tileRankings is updated in getBasePriority, which is only called if isAutomationWorkableTile is true
         // Meaning, there are tiles we can't/shouldn't work, and they won't even be in tileRankings
-        if (unit.currentTile in tileRankings) startWorkOnCurrentTile(unit)
+        if (tileHasWorkToDo(unit.currentTile, unit, localUniqueCache))
+            startWorkOnCurrentTile(unit)
     }
 
 
@@ -450,7 +452,7 @@ class WorkerAutomation(
 
         val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
 
-        var isResourceImprovedByNewImprovement = tile.resource != null && tile.tileResource.isImprovedBy(improvementName)
+        var isResourceImprovedByNewImprovement = tile.hasViewableResource(civInfo) && tile.tileResource.isImprovedBy(improvementName)
 
         if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile

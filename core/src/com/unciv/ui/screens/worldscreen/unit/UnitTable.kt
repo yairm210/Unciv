@@ -15,6 +15,7 @@ import com.unciv.models.Spy
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitIconGroup
@@ -27,8 +28,8 @@ import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table() {
-    private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
-    private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
+    private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true, KeyboardBinding.PrevIdleButton)
+    private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false, KeyboardBinding.NextIdleButton)
     private val unitIconHolder = Table()
     private val unitNameLabel = "".toLabel(fontSize = 24)
     private val unitIconNameGroup = Table()
@@ -93,13 +94,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         promotionsTable.touchable = Touchable.enabled
 
-        deselectUnitButton = getCloseButton(30f, 15f, Color.CLEAR, Color.RED) {
+        deselectUnitButton = addRoundCloseButton(this) {
             selectUnit()
             worldScreen.shouldUpdate = true
             this@UnitTable.isVisible = false
-        }.surroundWithCircle(30f, resizeActor = false, color = BaseScreen.clearColor).surroundWithThinCircle(Color.WHITE)
+        }
         deselectUnitButton.keyShortcuts.clear() // This is the only place we don't want the BACK keyshortcut getCloseButton assigns
-        addActor(deselectUnitButton)
 
         add(Table().apply {
             val moveBetweenUnitsTable = Table().apply {
