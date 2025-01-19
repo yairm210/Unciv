@@ -402,30 +402,30 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val rejectionReasons =
                 (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
-            if (rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) {
-                val workDone = getWorkDone(constructionName)
-                if (construction is Building) {
-                    // Production put into wonders gets refunded
-                    if (construction.isWonder && workDone != 0) {
-                        city.civ.addGold(workDone)
-                        city.civ.addNotification(
-                            "Excess production for [$constructionName] converted to [$workDone] gold",
-                            city.location,
-                            NotificationCategory.Production,
-                            NotificationIcon.Gold, "BuildingIcons/${constructionName}")
-                    }
-                } else if (construction is BaseUnit) {
-                    // Production put into upgradable units gets put into upgraded version
-                    val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(city.state)
-                        .map { city.civ.getEquivalentUnit(it) }
-                        .filter { it.isBuildable(this) }
-                        .minByOrNull { it.cost }
-                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
-                        inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
-                    }
+            if (!rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) continue
+            
+            val workDone = getWorkDone(constructionName)
+            if (construction is Building) {
+                // Production put into wonders gets refunded
+                if (construction.isWonder && workDone != 0) {
+                    city.civ.addGold(workDone)
+                    city.civ.addNotification(
+                        "Excess production for [$constructionName] converted to [$workDone] gold",
+                        city.location,
+                        NotificationCategory.Production,
+                        NotificationIcon.Gold, "BuildingIcons/${constructionName}")
                 }
-                inProgressConstructions.remove(constructionName)
+            } else if (construction is BaseUnit) {
+                // Production put into upgradable units gets put into upgraded version
+                val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(city.state)
+                    .map { city.civ.getEquivalentUnit(it) }
+                    .filter { it.isBuildable(this) }
+                    .minByOrNull { it.cost }
+                if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
+                    inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
+                }
             }
+            inProgressConstructions.remove(constructionName)
         }
     }
 
