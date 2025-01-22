@@ -53,8 +53,8 @@ class UnitMovementTests {
     fun addFakeUnit(unitType: UnitType, uniques: List<String> = listOf()): MapUnit {
         val baseUnit = BaseUnit()
         baseUnit.unitType = unitType.name
-        baseUnit.setRuleset(testGame.ruleset)
         baseUnit.uniques.addAll(uniques)
+        baseUnit.setRuleset(testGame.ruleset)
 
         val unit = MapUnit()
         unit.name = baseUnit.name
