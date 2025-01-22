@@ -28,8 +28,10 @@ import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table() {
-    private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true, KeyboardBinding.PrevIdleButton)
-    private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false, KeyboardBinding.NextIdleButton)
+    private val prevIdleUnitButton =
+        IdleUnitButton(this, worldScreen.mapHolder, true, KeyboardBinding.PrevIdleButton)
+    private val nextIdleUnitButton =
+        IdleUnitButton(this, worldScreen.mapHolder, false, KeyboardBinding.NextIdleButton)
     private val unitIconHolder = Table()
     private val unitNameLabel = "".toLabel(fontSize = 24)
     private val unitIconNameGroup = Table()
