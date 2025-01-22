@@ -149,9 +149,10 @@ class TileImprovementFunctions(val tile: Tile) {
             tile.lastTerrain.unbuildable && !improvement.canBeBuiltOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
 
             // Can't build if any terrain specifically prevents building this improvement
-            tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).none {
-                    unique -> improvement.matchesFilter(unique.params[0], StateForConditionals(tile = tile))
-            } -> false
+            tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).toList()
+                .let { it.any() && it.none {
+                        unique -> improvement.matchesFilter(unique.params[0], StateForConditionals(tile = tile))
+                } } -> false
 
             // Can't build if the improvement specifically prevents building on some present feature
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
