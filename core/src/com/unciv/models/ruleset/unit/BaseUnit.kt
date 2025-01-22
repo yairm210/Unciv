@@ -70,17 +70,24 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     val costFunctions = BaseUnitCost(this)
 
     lateinit var ruleset: Ruleset
+        private set
 
-    @delegate:Transient
-    val rulesetUniqueObjects: List<Unique> by lazy {
+    fun setRuleset(ruleset: Ruleset) {
+        this.ruleset = ruleset
         val list = ArrayList(uniques)
         list.addAll(ruleset.globalUniques.unitUniques)
         list.addAll(type.uniques)
-        uniqueObjectsProvider(list)
+        rulesetUniqueObjects = uniqueObjectsProvider(list)
+        rulesetUniqueMap = uniqueMapProvider(rulesetUniqueObjects) // Has global uniques by the unique objects already
     }
 
-    @delegate:Transient
-    val rulesetUniqueMap: UniqueMap by lazy { uniqueMapProvider(rulesetUniqueObjects) } // Has global uniques by the unique objects already
+    @Transient
+    var rulesetUniqueObjects: List<Unique> = ArrayList()
+        private set
+
+    @Transient
+    var rulesetUniqueMap: UniqueMap = UniqueMap()
+        private set
 
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
     fun getShortDescription(uniqueExclusionFilter: Unique.() -> Boolean = {false}) = BaseUnitDescriptions.getShortDescription(this, uniqueExclusionFilter)

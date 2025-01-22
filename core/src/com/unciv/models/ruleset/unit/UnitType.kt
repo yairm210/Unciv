@@ -2,8 +2,6 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions.getUnitTypeCivilopediaTextLines
 
@@ -17,38 +15,6 @@ enum class UnitMovementType { // The types of tiles the unit can by default ente
 class UnitType() : RulesetObject() {
     private var movementType: String? = null
     private val unitMovementType: UnitMovementType? by lazy { if (movementType == null) null else UnitMovementType.valueOf(movementType!!) }
-    @Transient lateinit var ruleset: Ruleset
-
-    @delegate:Transient
-    private val iUniqueObjects: List<Unique> by lazy {
-        uniqueObjectsProvider(uniques + ruleset.globalUniques.unitUniques)
-    }
-
-    @delegate:Transient
-    private val iUniqueMap: UniqueMap by lazy { uniqueMapProvider(iUniqueObjects) } // Has global uniques by the unique objects already
-
-    @Transient
-    override var uniqueObjects: List<Unique> = emptyList()
-        get() {
-            if (::ruleset.isInitialized) return iUniqueObjects
-            else if (uniques.isEmpty()) return field
-            else if (field.isEmpty()) field = uniqueObjectsProvider()
-
-            return field
-        }
-        private set
-
-    @Transient
-    override var uniqueMap: UniqueMap = UniqueMap()
-        get() {
-            if (::ruleset.isInitialized) return iUniqueMap
-            else if (uniqueObjects.isEmpty()) return field
-            else if (field.isEmpty()) field = uniqueMapProvider()
-
-            return field
-        }
-        private set
-
     override fun getUniqueTarget() = UniqueTarget.UnitType
     override fun makeLink() = "UnitType/$name"
 

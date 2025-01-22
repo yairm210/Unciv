@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -54,7 +53,7 @@ class UnitMovementTests {
     fun addFakeUnit(unitType: UnitType, uniques: List<String> = listOf()): MapUnit {
         val baseUnit = BaseUnit()
         baseUnit.unitType = unitType.name
-        baseUnit.ruleset = testGame.ruleset
+        baseUnit.setRuleset(testGame.ruleset)
         baseUnit.uniques.addAll(uniques)
 
         val unit = MapUnit()
