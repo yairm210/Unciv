@@ -18,7 +18,12 @@ object CivilianUnitAutomation {
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
-        if (unit.hasUnique(UniqueType.FoundCity))
+        // To allow "found city" actions that can only trigger a limited number of times
+        val settlerUnique = 
+            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity).firstOrNull() ?: 
+            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundPuppetCity).firstOrNull()
+        
+        if (settlerUnique != null)
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (tryRunAwayIfNeccessary(unit)) return
