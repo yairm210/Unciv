@@ -233,7 +233,12 @@
   {
     "name": "Idle Units",
     "steps": [
-      "Clicking 'Next unit' again will skip this unit for now and cycle back to it later this turn.\nIf you don't want to move a unit, you can command it to 'Wait' this turn.\nIf you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.\nIf you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units."
+      "Clicking 'Next unit' move to the next unit in the queue.",
+        "If you don't want to move a unit, you can command it to 'Wait' this turn. This be default is the same as clicking 'Next unit'",
+        "If you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.",
+        "If you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units.",
+        "If you'd rather 'Next unit' cycle the units and not mark them as Done, you can change it in the Options -> Gameplay menu.",
+        "You can also cycle through the idle units using the left and right triangles on the Unit Table in the lower left of the screen."
     ]
   },
   {
