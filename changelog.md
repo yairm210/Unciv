@@ -4,13 +4,7 @@ Greeting stats translated correctly in notifications
 
 Multiplayer screen correctly handles errors when downloading mods
 
-chore: Simplified validateInProgressConstructions
-
-chore: Simplified updateAllyForCityState
-
-chore: Split CityStateFunctions.cityStateAttacked into subfunctions
-
-Resolved  - "Cannot attack" accepts "vs" conditionals
+"Cannot attack" accepts "vs" conditionals
 
 By SeventhM:
 - Add a field for global unit uniques 
@@ -20,8 +14,7 @@ By SeventhM:
 Added an UniqueType to Found puppet city. - By Emandac
 
 By itanasi:
-- Set Avoid Growth=false on capture 
-- Changes 
+- Set Avoid Growth=false on city capture
 
 ## 4.15.3
 
