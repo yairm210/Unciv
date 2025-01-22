@@ -155,7 +155,7 @@ object UnitActions {
 
         addExplorationActions(unit)
 
-        addWaitAction(unit)
+        addSkipAction(unit)
 
         // From here we have actions defaulting to the second page
         if (unit.isMoving()) {
@@ -377,10 +377,11 @@ object UnitActions {
         ))
     }
 
-    private suspend fun SequenceScope<UnitAction>.addWaitAction(unit: MapUnit) {
+    // should mark unit as due=false and not cycle back in the queue
+    private suspend fun SequenceScope<UnitAction>.addSkipAction(unit: MapUnit) {
         yield(UnitAction(
-            type = UnitActionType.Wait,
-            useFrequency = 65f, // Preferably have this on the first page
+            type = UnitActionType.Skip,
+            useFrequency = 0f, // Last on first page (defaultPage=0)
             action = {
                 // If it's on, skips to next unit due to worldScreen.switchToNextUnit() in activateAction
                 // We don't want to switch twice since then we skip units :)

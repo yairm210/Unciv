@@ -17,23 +17,23 @@ class SmallUnitButton(
 ) : IconTextButton("", null, fontColor = NextTurnAction.NextUnit.color) {
 
     private val nextLabel = "Cycle"
-    private val waitLabel = "Wait"
-    private var isWait = worldScreen.game.settings.checkForDueUnitsCycles
+    private val skipLabel = "Skip"
+    private var isSkip = worldScreen.game.settings.checkForDueUnitsCycles
     
     init {
         onActivation { 
-            worldScreen.switchToNextUnit(resetDue = isWait)
+            worldScreen.switchToNextUnit(resetDue = isSkip)
         }
     }
 
     fun update() {
         keyShortcuts.clear()
-        isWait = worldScreen.game.settings.checkForDueUnitsCycles // refresh value
-        if(isWait) {
-            label.setText(waitLabel.tr())
-            iconCell.setActor(ImageGetter.getUnitActionPortrait(waitLabel, 20f))
-            keyShortcuts.add(KeyboardBinding.Wait)
-            addTooltip(KeyboardBinding.Wait)
+        isSkip = worldScreen.game.settings.checkForDueUnitsCycles // refresh value
+        if(isSkip) {
+            label.setText(skipLabel.tr())
+            iconCell.setActor(ImageGetter.getImage("OtherIcons/Skip2").apply { setSize(20f) })
+            //keyShortcuts.add(KeyboardBinding.Skip) // don't double binding
+            addTooltip(KeyboardBinding.Skip)
         } else {
             label.setText(nextLabel.tr())
             iconCell.setActor(ImageGetter.getImage("OtherIcons/Loading").apply { setSize(20f) })

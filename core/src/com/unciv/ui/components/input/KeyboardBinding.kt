@@ -135,7 +135,7 @@ enum class KeyboardBinding(
     EnhanceReligion(Category.UnitActions,"Enhance a Religion", 'g'),
     DisbandUnit(Category.UnitActions,"Disband unit", KeyCharAndCode.DEL),
     GiftUnit(Category.UnitActions,"Gift unit", KeyCharAndCode.UNKNOWN),
-    Wait(Category.UnitActions, 'z'),
+    Skip(Category.UnitActions, 'z'),
     ShowAdditionalActions(Category.UnitActions,"Show more", Input.Keys.PAGE_DOWN),
     HideAdditionalActions(Category.UnitActions,"Back", Input.Keys.PAGE_UP),
     AddInCapital(Category.UnitActions, "Add in capital", 'g'),
