@@ -99,6 +99,8 @@ class CityConquestFunctions(val city: City) {
         Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+        city.avoidGrowth = false // reset settings
+        city.setCityFocus(CityFocus.NoFocus) // reset settings
         if (city.population.population > 1)
             city.population.addPopulation(-1 - city.population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         city.reassignAllPopulation()
@@ -136,6 +138,7 @@ class CityConquestFunctions(val city: City) {
     fun annexCity() {
         city.isPuppet = false
         if (!city.isInResistance()) city.shouldReassignPopulation = true
+        city.avoidGrowth = false
         city.setCityFocus(CityFocus.NoFocus)
         city.cityStats.update()
         GUI.setUpdateWorldOnNextRender()
