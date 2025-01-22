@@ -1,3 +1,28 @@
+## 4.15.4
+
+Greeting stats translated correctly in notifications
+
+Multiplayer screen correctly handles errors when downloading mods
+
+chore: Simplified validateInProgressConstructions
+
+chore: Simplified updateAllyForCityState
+
+chore: Split CityStateFunctions.cityStateAttacked into subfunctions
+
+Resolved  - "Cannot attack" accepts "vs" conditionals
+
+By SeventhM:
+- Add a field for global unit uniques 
+- Allow building improvements on terrains that only allow some improvements when it has multiple uniques 
+- Add conditional for when you aren't in a golden age 
+
+Added an UniqueType to Found puppet city. - By Emandac
+
+By itanasi:
+- Set Avoid Growth=false on capture 
+- Changes 
+
 ## 4.15.3
 
 Tech screen performance improvements
