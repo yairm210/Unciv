@@ -238,8 +238,8 @@ class TestGame {
     fun createBaseUnit(unitType: String = createUnitType().name, vararg uniques: String) =
         createRulesetObject(ruleset.units, *uniques) {
             val baseUnit = BaseUnit()
-            baseUnit.setRuleset(gameInfo.ruleset)
             baseUnit.unitType = unitType
+            baseUnit.setRuleset(gameInfo.ruleset)
             baseUnit
         }
     fun createBelief(type: BeliefType = BeliefType.Any, vararg uniques: String) =
