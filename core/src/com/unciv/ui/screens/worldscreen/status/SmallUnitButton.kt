@@ -31,7 +31,7 @@ class SmallUnitButton(
         isSkip = worldScreen.game.settings.checkForDueUnitsCycles // refresh value
         if(isSkip) {
             label.setText(skipLabel.tr())
-            iconCell.setActor(ImageGetter.getImage("OtherIcons/Skip2").apply { setSize(20f) })
+            iconCell.setActor(ImageGetter.getImage("OtherIcons/Skip").apply { setSize(20f) })
             //keyShortcuts.add(KeyboardBinding.Skip) // don't double binding
             addTooltip(KeyboardBinding.Skip)
         } else {
