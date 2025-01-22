@@ -1621,6 +1621,13 @@ UnitIcons/Circle
   orig: 178, 178
   offset: 0, 0
   index: -1
+OtherIcons/ConstructionCircle
+  rotate: false
+  xy: 4, 1362
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
 UnitIcons/Companion Cavalry
   rotate: false
   xy: 406, 732

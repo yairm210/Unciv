@@ -1,3 +1,19 @@
+## 4.15.3
+
+Tech screen performance improvements
+
+Notification for city conversion when removing heresy
+
+Fixed unique buildings/improvements with zeroed stat not showing before vs after
+
+By sulai:
+- Show "x units due" on Big Button, setting for cycling units 
+- Constructions table: avoid vertical movement of lower table 
+
+Added option to change the Maximum Autosave turns stored - By Emandac
+
+Add hotkey for Idle Unit cycle buttons - By itanasi
+
 ## 4.15.2
 
 Added notification when enemy religion spread converts a city 

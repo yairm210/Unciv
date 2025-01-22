@@ -27,6 +27,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * @param defaultPad Padding between content and wrapper.
  * @param headerPad Default padding for the header Table.
  * @param expanderWidth If set initializes header width
+ * @param expanderHeight If set initializes header height
  * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
  * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size)
  * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
@@ -39,6 +40,7 @@ class ExpanderTab(
     defaultPad: Float = 10f,
     headerPad: Float = 10f,
     expanderWidth: Float = 0f,
+    expanderHeight: Float = 0f,
     private val persistenceID: String? = null,
     toggleKey: KeyboardBinding = KeyboardBinding.None,
     private val onChange: (() -> Unit)? = null,
@@ -71,8 +73,14 @@ class ExpanderTab(
             update()
         }
 
+    var isHeaderIconVisible: Boolean
+        get() = headerIcon.isVisible
+        set(value) { headerIcon.isVisible = value }
+
     init {
         header.defaults().pad(headerPad)
+        if (expanderHeight > 0f)
+            header.defaults().height(expanderHeight)
         headerIcon.setSize(arrowSize, arrowSize)
         headerIcon.setOrigin(Align.center)
         headerIcon.rotation = 0f
