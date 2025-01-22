@@ -39,8 +39,11 @@ object UnitActionsFromUniques {
      * (no movement left, too close to another city).
      */
     internal fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
-        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity)
-            .firstOrNull() ?: return null
+        // FoundPuppetCity is to found a puppet city for modding.
+        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit,
+            UniqueType.FoundCity).firstOrNull() ?: 
+            UnitActionModifiers.getUsableUnitActionUniques(unit,
+            UniqueType.FoundPuppetCity).firstOrNull() ?: return null
 
         if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
@@ -54,12 +57,19 @@ object UnitActionsFromUniques {
         ) == true }
         val foundAction = {
             if (unit.civ.playerType != PlayerType.AI)
-                UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-            unit.civ.addCity(tile.position, unit)
+                // Now takes on the text of the unique.
+                UncivGame.Current.settings.addCompletedTutorialTask(
+                    unique.text)
+            // Get the city to be able to change it into puppet, for modding.
+            val city = unit.civ.addCity(tile.position, unit)
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()
             GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
+            // If unit has FoundPuppetCity make it into a puppet city.
+            if (unique.type == UniqueType.FoundPuppetCity) {
+                city.isPuppet = true
+            }
         }
 
         if (unit.civ.playerType == PlayerType.AI)
