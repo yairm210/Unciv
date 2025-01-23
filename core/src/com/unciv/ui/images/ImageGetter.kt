@@ -92,8 +92,6 @@ object ImageGetter {
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
         atlases.clear()
-        yieldPixmapPacker.dispose()
-        yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
     }
 
     fun reloadImages() = setNewRuleset(ruleset)
@@ -102,6 +100,9 @@ object ImageGetter {
     fun setNewRuleset(ruleset: Ruleset) {
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
+
+        yieldPixmapPacker.dispose()
+        yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
 
         // Load base
         loadModAtlases("", Gdx.files.internal(""))
