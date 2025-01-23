@@ -47,6 +47,63 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
     }
 }
 
+class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size){
+    private val yields = YieldGroup().apply {
+        // Unlike resource or improvement this is created and added only once,
+        // It's the contents that get updated
+        isVisible = false
+        setOrigin(Align.center)
+        setScale(0.7f)
+        y = tileGroup.height * 0.25f - height / 2
+        // Adding YieldGroup to miscLayerGroup
+        this@TileLayerYield.addActor(this)
+    }
+    
+    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+        val showTileYields = if (tileGroup is WorldTileGroup) UncivGame.Current.settings.showTileYields else true
+        updateYieldIcon(viewingCiv, showTileYields, localUniqueCache)
+    }
+
+    // JN updating display of tile yields
+    private fun updateYieldIcon(
+        viewingCiv: Civilization?,
+        show: Boolean,
+        localUniqueCache: LocalUniqueCache
+    ) {
+        val effectiveVisible = show &&
+                !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
+                !(viewingCiv == null && tileGroup.isForceVisible) // main menu background
+
+        // Hiding yield icons (in order to update)
+        yields.isVisible = false
+        if (effectiveVisible) yields.run {
+            // Update YieldGroup Icon
+            if (tileGroup is CityTileGroup)
+                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv, localUniqueCache))
+            else
+                setStats(tile.stats.getTileStats(viewingCiv, localUniqueCache))
+            toFront()
+            centerX(tileGroup)
+            isVisible = true
+        }
+    }
+
+    fun setYieldVisible(isVisible: Boolean) {
+        yields.isVisible = isVisible
+        this.isVisible = isVisible // don't try rendering the layer if there's nothing in it
+    }
+    
+    fun dimYields(dim: Boolean) { yields.color.a = if (dim) 0.5f else 1f }
+
+    fun reset(localUniqueCache: LocalUniqueCache) {
+        updateYieldIcon(null, false, localUniqueCache)
+    }
+
+    override fun act(delta: Float) {}
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     // For different unit views, we want to effectively "ignore" the terrain and color it by special view
@@ -64,17 +121,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-
-    private val yields = YieldGroup().apply {
-        // Unlike resource or improvement this is created and added only once,
-        // It's the contents that get updated
-        isVisible = false
-        setOrigin(Align.center)
-        setScale(0.7f)
-        y = tileGroup.height * 0.25f - height / 2
-        // Adding YieldGroup to miscLayerGroup
-        this@TileLayerMisc.addActor(this)
-    }
 
     /** Array list of all arrows to draw from this tile on the next update. */
     private val arrowsToDraw = ArrayList<MapArrow>()
@@ -280,29 +326,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
     }
 
-    // JN updating display of tile yields
-    private fun updateYieldIcon(
-        viewingCiv: Civilization?,
-        show: Boolean,
-        localUniqueCache: LocalUniqueCache
-    ) {
-        val effectiveVisible = show &&
-                !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
-                !(viewingCiv == null && tileGroup.isForceVisible) // main menu background
-
-        // Hiding yield icons (in order to update)
-        yields.isVisible = false
-        if (effectiveVisible) yields.run {
-            // Update YieldGroup Icon
-            if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv, localUniqueCache))
-            else
-                setStats(tile.stats.getTileStats(viewingCiv, localUniqueCache))
-            toFront()
-            centerX(tileGroup)
-            isVisible = true
-        }
-    }
 
     fun removeWorkedIcon() {
         workedIcon?.remove()
@@ -364,26 +387,19 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
     fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
-    fun dimYields(dim: Boolean) { yields.color.a = if (dim) 0.5f else 1f }
     fun dimPopulation(dim: Boolean) { workedIcon?.color?.a = if (dim) 0.4f else 1f }
 
-    fun setYieldVisible(isVisible: Boolean) {
-        yields.isVisible = isVisible
-        determineVisibility()
-    }
 
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
 
         var showResourcesAndImprovements = true
-        var showTileYields = true
 
         if (tileGroup is WorldTileGroup) {
             showResourcesAndImprovements = UncivGame.Current.settings.showResourcesAndImprovements
-            showTileYields = UncivGame.Current.settings.showTileYields
         }
+        
 
         updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
-        updateYieldIcon(viewingCiv, showTileYields, localUniqueCache)
         updateResourceIcon(viewingCiv, showResourcesAndImprovements)
         if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
@@ -391,8 +407,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     override fun determineVisibility() {
-        isVisible = yields.isVisible
-                || resourceIcon?.isVisible == true
+        isVisible = resourceIcon?.isVisible == true
                 || improvementIcon?.isVisible == true
                 || workedIcon != null
                 || hexOutlineIcon != null
@@ -401,9 +416,8 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
                 || terrainOverlay != null
     }
 
-    fun reset(localUniqueCache: LocalUniqueCache) {
+    fun reset() {
         updateImprovementIcon(null, false)
-        updateYieldIcon(null, false, localUniqueCache)
         updateResourceIcon(null, false)
         updateStartingLocationIcon(false)
         clearArrows()
