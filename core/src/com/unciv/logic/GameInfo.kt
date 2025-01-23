@@ -39,7 +39,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -640,7 +639,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         removeMissingModReferences()
 
         for (baseUnit in ruleset.units.values)
-            baseUnit.ruleset = ruleset
+            baseUnit.setRuleset(ruleset)
 
         for (building in ruleset.buildings.values)
             building.ruleset = ruleset

@@ -29,8 +29,10 @@ import com.unciv.ui.screens.worldscreen.unit.presenter.UnitPresenter
 import java.awt.Label
 
 class UnitTable(val worldScreen: WorldScreen) : Table() {
-    internal val prevIdleUnitButton = IdleUnitButton(this, worldScreen.mapHolder, true, KeyboardBinding.PrevIdleButton)
-    internal val nextIdleUnitButton = IdleUnitButton(this, worldScreen.mapHolder, false, KeyboardBinding.NextIdleButton)
+    private val prevIdleUnitButton =
+        IdleUnitButton(this, worldScreen.mapHolder, true, KeyboardBinding.PrevIdleButton)
+    private val nextIdleUnitButton =
+        IdleUnitButton(this, worldScreen.mapHolder, false, KeyboardBinding.NextIdleButton)
     internal val unitIconHolder = Table()
     internal val unitNameLabel = "".toLabel(fontSize = 24).apply { setAlignment(Label.CENTER) }
     internal val unitIconNameGroup = Table()

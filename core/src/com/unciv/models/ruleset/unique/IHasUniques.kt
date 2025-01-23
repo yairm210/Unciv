@@ -21,12 +21,18 @@ interface IHasUniques : INamed {
     val uniqueMap: UniqueMap
 
     fun uniqueObjectsProvider(): List<Unique> {
+        return uniqueObjectsProvider(uniques)
+    }
+    fun uniqueMapProvider(): UniqueMap {
+        return uniqueMapProvider(uniqueObjects)
+    }
+    fun uniqueObjectsProvider(uniques: List<String>): List<Unique> {
         if (uniques.isEmpty()) return emptyList()
         return uniques.map { Unique(it, getUniqueTarget(), name) }
     }
-    fun uniqueMapProvider(): UniqueMap {
+    fun uniqueMapProvider(uniqueObjects: List<Unique>): UniqueMap {
         val newUniqueMap = UniqueMap()
-        if (uniques.isNotEmpty())
+        if (uniqueObjects.isNotEmpty())
             newUniqueMap.addUniques(uniqueObjects)
         return newUniqueMap
     }

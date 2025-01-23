@@ -1,3 +1,37 @@
+## 4.15.4
+
+Greeting stats translated correctly in notifications
+
+Multiplayer screen correctly handles errors when downloading mods
+
+"Cannot attack" accepts "vs" conditionals
+
+By SeventhM:
+- Add a field for global unit uniques 
+- Allow building improvements on terrains that only allow some improvements when it has multiple uniques 
+- Add conditional for when you aren't in a golden age 
+
+Added an UniqueType to Found puppet city. - By Emandac
+
+By itanasi:
+- Set Avoid Growth=false on city capture
+
+## 4.15.3
+
+Tech screen performance improvements
+
+Notification for city conversion when removing heresy
+
+Fixed unique buildings/improvements with zeroed stat not showing before vs after
+
+By sulai:
+- Show "x units due" on Big Button, setting for cycling units 
+- Constructions table: avoid vertical movement of lower table 
+
+Added option to change the Maximum Autosave turns stored - By Emandac
+
+Add hotkey for Idle Unit cycle buttons - By itanasi
+
 ## 4.15.2
 
 Added notification when enemy religion spread converts a city 
