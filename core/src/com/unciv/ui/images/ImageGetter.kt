@@ -3,10 +3,12 @@ package com.unciv.ui.images
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.NinePatch
+import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -25,6 +27,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.skins.SkinCache
+import com.unciv.models.stats.Stat
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.center
@@ -54,6 +57,30 @@ object ImageGetter {
     lateinit var atlas: TextureAtlas
     private val atlases = HashMap<String, TextureAtlas>()
     var ruleset = Ruleset()
+    
+    // Performance improvement - "pack" the stat images together with the circle to the same texture
+    // This allows modded stat icons to not require texture swaps when rendering leading to it being ~50x faster 
+    private var yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
+    private var yieldAtlas = yieldPixmapPacker.generateTextureAtlas(TextureFilter.MipMapLinearLinear, TextureFilter.MipMapLinearLinear, true)
+    fun getStatWithBackground(statName: String): TextureRegionDrawable? {
+        if (textureRegionDrawables.containsKey(statName)) return textureRegionDrawables[statName]
+        
+        for (stat in Stat.entries) { // pack all images
+            val actor =
+                getStatIcon(stat.name).surroundWithCircle(100f)
+                    .apply { circle.color = CHARCOAL; circle.color.a = 0.5f }
+                    .apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
+            // By flipping the y axis when *generating the pixmap* we can ensure that when *rendering* we can have isTransform=false :)
+            yieldPixmapPacker.pack(stat.name, FontRulesetIcons.getPixmapFromActorBase(actor, 100, 100))
+        }
+        yieldAtlas = yieldPixmapPacker.generateTextureAtlas(TextureFilter.MipMapLinearLinear, TextureFilter.MipMapLinearLinear, true)
+        for (region in yieldAtlas.regions) {
+            val drawable = TextureRegionDrawable(region)
+            textureRegionDrawables[region.name] = drawable
+        }
+        return textureRegionDrawables[statName]
+    }
+    
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
@@ -65,6 +92,8 @@ object ImageGetter {
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
         atlases.clear()
+        yieldPixmapPacker.dispose()
+        yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
     }
 
     fun reloadImages() = setNewRuleset(ruleset)
