@@ -42,6 +42,7 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
     @Suppress("LeakingThis") val layerBorders = TileLayerBorders(this, groupSize)
     @Suppress("LeakingThis") val layerMisc = TileLayerMisc(this, groupSize)
+    @Suppress("LeakingThis") val layerResource = TileLayerResource(this, groupSize)
     @Suppress("LeakingThis") val layerYield = TileLayerYield(this, groupSize)
     @Suppress("LeakingThis") val layerOverlay = TileLayerOverlay(this, groupSize)
     @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
@@ -53,6 +54,7 @@ open class TileGroup(
         layerFeatures,
         layerBorders,
         layerMisc,
+        layerResource,
         layerYield,
         layerOverlay,
         layerUnitArt,
@@ -79,6 +81,7 @@ open class TileGroup(
         layerTerrain.reset()
         layerBorders.reset()
         layerMisc.reset()
+        layerResource.reset()
         layerYield.reset(localUniqueCache)
         layerOverlay.reset()
         layerUnitArt.reset()

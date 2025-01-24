@@ -104,6 +104,68 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
+
+class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size){
+
+    private var resourceName: String? = null
+    private var resourceAmount: Int = -1
+    private var resourceIcon: Actor? = null
+
+    private fun updateResourceIcon(viewingCiv: Civilization?, show: Boolean) {
+        // This could change on any turn, since resources need certain techs to reveal them
+        val effectiveVisible = when {
+            tileGroup.isForceVisible -> show
+            show && viewingCiv == null -> true
+            show && tile.hasViewableResource(viewingCiv!!) -> true
+            else -> false
+        }
+
+        // If resource has changed (e.g. tech researched) - force new icon next time it's needed
+        if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
+            resourceName = tile.resource
+            resourceAmount = tile.resourceAmount
+            resourceIcon?.remove()
+            resourceIcon = null
+        }
+
+        // Get a fresh Icon if and only if necessary
+        if (resourceName != null && effectiveVisible && resourceIcon == null) {
+            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f, resourceAmount)
+            icon.center(tileGroup)
+            icon.x -= 22 // left
+            icon.y += 10 // top
+            addActor(icon)
+            resourceIcon = icon
+        }
+
+        resourceIcon?.isVisible = effectiveVisible
+
+
+        if (resourceIcon!=null){
+            val isViewable = viewingCiv == null || isViewable(viewingCiv)
+            dimResource(!isViewable)
+        }
+    }
+
+    fun reset() {
+        updateResourceIcon(null, false)
+    }
+
+    fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
+    
+    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+        val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
+            UncivGame.Current.settings.showResourcesAndImprovements else true
+
+        updateResourceIcon(viewingCiv, showResourcesAndImprovements)
+    }
+
+    override fun determineVisibility() {
+        isVisible = resourceIcon?.isVisible == true
+    }
+}
+
+
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     // For different unit views, we want to effectively "ignore" the terrain and color it by special view
@@ -127,10 +189,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private val arrows = HashMap<Tile, ArrayList<Actor>>()
 
     private var hexOutlineIcon: Actor? = null
-
-    private var resourceName: String? = null
-    private var resourceAmount: Int = -1
-    private var resourceIcon: Actor? = null
 
     private var workedIcon: Actor? = null
 
@@ -207,42 +265,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
 
         improvementIcon?.isVisible = show
-    }
-
-    private fun updateResourceIcon(viewingCiv: Civilization?, show: Boolean) {
-        // This could change on any turn, since resources need certain techs to reveal them
-        val effectiveVisible = when {
-            tileGroup.isForceVisible -> show
-            show && viewingCiv == null -> true
-            show && tile.hasViewableResource(viewingCiv!!) -> true
-            else -> false
-        }
-
-        // If resource has changed (e.g. tech researched) - force new icon next time it's needed
-        if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
-            resourceName = tile.resource
-            resourceAmount = tile.resourceAmount
-            resourceIcon?.remove()
-            resourceIcon = null
-        }
-
-        // Get a fresh Icon if and only if necessary
-        if (resourceName != null && effectiveVisible && resourceIcon == null) {
-            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f, resourceAmount)
-            icon.center(tileGroup)
-            icon.x -= 22 // left
-            icon.y += 10 // top
-            addActor(icon)
-            resourceIcon = icon
-        }
-
-        resourceIcon?.isVisible = effectiveVisible
-
-
-        if (resourceIcon!=null){
-            val isViewable = viewingCiv == null || isViewable(viewingCiv)
-            dimResource(!isViewable)
-        }
     }
 
     private fun updateStartingLocationIcon(show: Boolean) {
@@ -386,29 +408,22 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
-    fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
     fun dimPopulation(dim: Boolean) { workedIcon?.color?.a = if (dim) 0.4f else 1f }
 
 
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
 
-        var showResourcesAndImprovements = true
-
-        if (tileGroup is WorldTileGroup) {
-            showResourcesAndImprovements = UncivGame.Current.settings.showResourcesAndImprovements
-        }
-        
+        val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
+            UncivGame.Current.settings.showResourcesAndImprovements else true
 
         updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
-        updateResourceIcon(viewingCiv, showResourcesAndImprovements)
         if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
         updateArrows()
     }
 
     override fun determineVisibility() {
-        isVisible = resourceIcon?.isVisible == true
-                || improvementIcon?.isVisible == true
+        isVisible = improvementIcon?.isVisible == true
                 || workedIcon != null
                 || hexOutlineIcon != null
                 || arrows.isNotEmpty()
@@ -418,7 +433,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     fun reset() {
         updateImprovementIcon(null, false)
-        updateResourceIcon(null, false)
         updateStartingLocationIcon(false)
         clearArrows()
     }
