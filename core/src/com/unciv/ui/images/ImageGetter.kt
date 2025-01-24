@@ -100,18 +100,24 @@ object ImageGetter {
 
     private fun setupStatImages() {
         // Performance improvement - "pack" the stat images together with the circle to the same texture
-        // This allows modded stat icons to not require texture swaps when rendering leading to it being ~50x faster 
-        val yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
+        // This allows modded stat icons to not require texture swaps when rendering leading to it being ~50x faster
+        fun getActor(statName: String) =
+            getStatIcon(statName).surroundWithCircle(100f)
+                .apply { circle.color = CHARCOAL; circle.color.a = 0.5f }
+        
+        val nameToActorList = Stat.entries.map { it.name to getActor(it.name) }
+        
+        packTexture(nameToActorList)
+    }
 
-        for (stat in Stat.entries) { // pack all images
-            val actor =
-                getStatIcon(stat.name).surroundWithCircle(100f)
-                    .apply { circle.color = CHARCOAL; circle.color.a = 0.5f }
-                    .apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
-            // By flipping the y axis when *generating the pixmap* we can ensure that when *rendering* we can have isTransform=false :)
-            yieldPixmapPacker.pack(stat.name, FontRulesetIcons.getPixmapFromActorBase(actor, 100, 100))
+    private fun packTexture(nameToActorList: List<Pair<String, IconCircleGroup>>) {
+        val pixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
+        for ((name, actor) in nameToActorList) {
+            actor.apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
+            pixmapPacker.pack(name, FontRulesetIcons.getPixmapFromActorBase(actor, 100, 100))
         }
-        val yieldAtlas = yieldPixmapPacker.generateTextureAtlas(
+
+        val yieldAtlas = pixmapPacker.generateTextureAtlas(
             TextureFilter.MipMapLinearLinear,
             TextureFilter.MipMapLinearLinear,
             true
@@ -120,7 +126,7 @@ object ImageGetter {
             val drawable = TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
         }
-        yieldPixmapPacker.dispose()
+        pixmapPacker.dispose()
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
