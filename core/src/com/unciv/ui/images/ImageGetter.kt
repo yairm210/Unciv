@@ -58,28 +58,7 @@ object ImageGetter {
     private val atlases = HashMap<String, TextureAtlas>()
     var ruleset = Ruleset()
     
-    // Performance improvement - "pack" the stat images together with the circle to the same texture
-    // This allows modded stat icons to not require texture swaps when rendering leading to it being ~50x faster 
-    private var yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
-    private var yieldAtlas = yieldPixmapPacker.generateTextureAtlas(TextureFilter.MipMapLinearLinear, TextureFilter.MipMapLinearLinear, true)
-    fun getStatWithBackground(statName: String): TextureRegionDrawable? {
-        if (textureRegionDrawables.containsKey(statName)) return textureRegionDrawables[statName]
-        
-        for (stat in Stat.entries) { // pack all images
-            val actor =
-                getStatIcon(stat.name).surroundWithCircle(100f)
-                    .apply { circle.color = CHARCOAL; circle.color.a = 0.5f }
-                    .apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
-            // By flipping the y axis when *generating the pixmap* we can ensure that when *rendering* we can have isTransform=false :)
-            yieldPixmapPacker.pack(stat.name, FontRulesetIcons.getPixmapFromActorBase(actor, 100, 100))
-        }
-        yieldAtlas = yieldPixmapPacker.generateTextureAtlas(TextureFilter.MipMapLinearLinear, TextureFilter.MipMapLinearLinear, true)
-        for (region in yieldAtlas.regions) {
-            val drawable = TextureRegionDrawable(region)
-            textureRegionDrawables[region.name] = drawable
-        }
-        return textureRegionDrawables[statName]
-    }
+    fun getStatWithBackground(statName: String): TextureRegionDrawable? = textureRegionDrawables[statName]
     
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
@@ -101,9 +80,6 @@ object ImageGetter {
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
 
-        yieldPixmapPacker.dispose()
-        yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
-
         // Load base
         loadModAtlases("", Gdx.files.internal(""))
 
@@ -118,10 +94,37 @@ object ImageGetter {
 
         BaseScreen.setSkin()
         FontRulesetIcons.addRulesetImages(ruleset)
+        
+        setupStatImages()
+    }
+
+    private fun setupStatImages() {
+        // Performance improvement - "pack" the stat images together with the circle to the same texture
+        // This allows modded stat icons to not require texture swaps when rendering leading to it being ~50x faster 
+        val yieldPixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
+
+        for (stat in Stat.entries) { // pack all images
+            val actor =
+                getStatIcon(stat.name).surroundWithCircle(100f)
+                    .apply { circle.color = CHARCOAL; circle.color.a = 0.5f }
+                    .apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
+            // By flipping the y axis when *generating the pixmap* we can ensure that when *rendering* we can have isTransform=false :)
+            yieldPixmapPacker.pack(stat.name, FontRulesetIcons.getPixmapFromActorBase(actor, 100, 100))
+        }
+        val yieldAtlas = yieldPixmapPacker.generateTextureAtlas(
+            TextureFilter.MipMapLinearLinear,
+            TextureFilter.MipMapLinearLinear,
+            true
+        )
+        for (region in yieldAtlas.regions) {
+            val drawable = TextureRegionDrawable(region)
+            textureRegionDrawables[region.name] = drawable
+        }
+        yieldPixmapPacker.dispose()
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
-    fun loadModAtlases(mod: String, folder: FileHandle) {
+    private fun loadModAtlases(mod: String, folder: FileHandle) {
         // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
         val controlFile = folder.child("Atlases.json")
         val fileNames = (if (controlFile.exists()) json().fromJson(Array<String>::class.java, controlFile)
