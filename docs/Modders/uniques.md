@@ -1579,6 +1579,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Founds a new city"
 	Applicable to: UnitAction
 
+??? example  "Founds a new puppet city"
+	Applicable to: UnitAction
+
 ??? example  "Can instantly construct a [improvementFilter] improvement"
 	Example: "Can instantly construct a [All Road] improvement"
 
@@ -2823,6 +2826,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;during a Golden Age&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when not in a Golden Age&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;during We Love The King Day&gt;"

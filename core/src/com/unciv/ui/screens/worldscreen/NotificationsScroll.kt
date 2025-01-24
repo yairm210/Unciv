@@ -547,4 +547,8 @@ class NotificationsScroll(
         userSetting = newSetting
         GUI.getSettings().notificationScroll = newSetting.name
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun act(delta: Float) = super.act(delta)
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
 }

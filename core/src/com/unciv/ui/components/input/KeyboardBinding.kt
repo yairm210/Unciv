@@ -103,7 +103,7 @@ enum class KeyboardBinding(
     // Unit actions - name MUST correspond to UnitActionType.name because the shorthand constructor
     // there looks up bindings here by name - which also means we must not use UnitActionType
     // here as it will not be guaranteed to already be fully initialized.
-    SwapUnits(Category.UnitActions,"Swap units", 'y'),
+    SwapUnits(Category.UnitActions, "Swap units", 'y'),
     Automate(Category.UnitActions, 'm'),
     ConnectRoad(Category.UnitActions, "Connect road", 'c'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),

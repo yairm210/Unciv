@@ -33,8 +33,7 @@ class IdleUnitButton (
         add(image).size(imageSize).pad(10f,20f)
         enable()
         keyShortcuts.add(keyShortcutBind)
-        addTooltip(keyShortcutBind)
-        onActivation {
+        onActivation (binding = keyShortcutBind) {
 
             val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
             if (idleUnits.none()) return@onActivation

@@ -102,6 +102,7 @@ class TileGroupMap<T: TileGroup>(
         val featureLayers = ArrayList<TileLayerFeatures>(numberOfTilegroups)
         val borderLayers = ArrayList<TileLayerBorders>(numberOfTilegroups)
         val miscLayers = ArrayList<TileLayerMisc>(numberOfTilegroups)
+        val yieldLayers = ArrayList<TileLayerYield>(numberOfTilegroups)
         val pixelUnitLayers = ArrayList<TileLayerUnitSprite>(numberOfTilegroups)
         val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>(numberOfTilegroups)
         val unitLayers = ArrayList<TileLayerUnitFlag>(numberOfTilegroups)
@@ -117,6 +118,7 @@ class TileGroupMap<T: TileGroup>(
             featureLayers.add(group.layerFeatures.apply { setPosition(group.x, group.y) })
             borderLayers.add(group.layerBorders.apply { setPosition(group.x, group.y) })
             miscLayers.add(group.layerMisc.apply { setPosition(group.x, group.y) })
+            yieldLayers.add(group.layerYield.apply { setPosition(group.x, group.y) })
             pixelUnitLayers.add(group.layerUnitArt.apply { setPosition(group.x, group.y) })
             circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x, group.y) })
             unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x, group.y) })
@@ -128,6 +130,7 @@ class TileGroupMap<T: TileGroup>(
             featureLayers,
             borderLayers,
             miscLayers,
+            yieldLayers,
             pixelUnitLayers,
             circleFogCrosshairLayers,
             tileGroups, // The above layers are for the visual layers, this is for the clickability of the tile
