@@ -96,6 +96,7 @@ object ImageGetter {
         FontRulesetIcons.addRulesetImages(ruleset)
         
         setupStatImages()
+        setupResourcePortraits()
     }
 
     private fun setupStatImages() {
@@ -107,14 +108,19 @@ object ImageGetter {
         
         val nameToActorList = Stat.entries.map { it.name to getActor(it.name) }
         
-        packTexture(nameToActorList)
+        packTexture(nameToActorList, 100)
+    }
+    
+    private fun setupResourcePortraits() {
+        val nameToActorList = ruleset.tileResources.values.map { it.name to getResourcePortrait(it.name, 100f, borderSize = 10f) }
+        packTexture(nameToActorList, 120)
     }
 
-    private fun packTexture(nameToActorList: List<Pair<String, IconCircleGroup>>) {
+    private fun packTexture(nameToActorList: List<Pair<String, Group>>, size: Int) {
         val pixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
         for ((name, actor) in nameToActorList) {
             actor.apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
-            pixmapPacker.pack(name, FontRulesetIcons.getPixmapFromActorBase(actor, 100, 100))
+            pixmapPacker.pack(name, FontRulesetIcons.getPixmapFromActorBase(actor, size, size))
         }
 
         val yieldAtlas = pixmapPacker.generateTextureAtlas(
@@ -316,8 +322,8 @@ object ImageGetter {
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
 
-    fun getResourcePortrait(resourceName: String, size: Float, amount: Int = 0): Group =
-        PortraitResource(resourceName, size, amount)
+    fun getResourcePortrait(resourceName: String, size: Float, borderSize: Float = 2f): Group =
+        PortraitResource(resourceName, size, borderSize)
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
