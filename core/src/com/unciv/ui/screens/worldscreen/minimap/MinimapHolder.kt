@@ -2,9 +2,11 @@ package com.unciv.ui.screens.worldscreen.minimap
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
@@ -55,11 +57,14 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         this.clear()
         minimap = Minimap(mapHolder, minimapSize, civInfo)
         val wrappedMinimap = getWrappedMinimap()
-        add(getToggleIcons(wrappedMinimap.height)).align(Align.bottom)
-            .height(wrappedMinimap.height).padRight(5f) // Spread equally over the side
-        add(wrappedMinimap)
+        add(getToggleIcons(wrappedMinimap.height))
+            .bottom()
+            .padRight(5f)
+        add(wrappedMinimap).bottom()
         pack()
         if (stage != null) x = stage.width - width
+        
+        addListener(ResizeDragListener(civInfo))
     }
 
     private fun getWrappedMinimap(): Table {
@@ -117,4 +122,33 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
     override fun act(delta: Float){} // No actions
+
+    inner class ResizeDragListener(val civInfo: Civilization?): DragListener() {
+        private val originalSize = Vector2()
+        private var downX: Float = 0f
+        private var downY: Float = 0f
+        override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+            originalSize.x = minimap.width
+            originalSize.y = minimap.height
+            downX = event.stageX
+            downY = event.stageY
+            return super.touchDown(event, x, y, pointer, button)
+        }
+        override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
+            super.touchDragged(event, x, y, pointer)
+            if (!isDragging)
+                return
+            val targetSize = Vector2(stage.width - event.stageX, event.stageY)
+            // performant way to get the map updated, not changing settings
+            minimapSize = minimap.getClosestMinimapSize(targetSize)
+            rebuild(civInfo) // re-create views
+            civInfo?.let { minimap.update(it) } // update map
+            minimap.mapHolder.onViewportChanged() // update scroll position
+        }
+        override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
+            super.touchUp(event, x, y, pointer, button)
+            worldScreen.game.settings.minimapSize = minimapSize
+            GUI.setUpdateWorldOnNextRender() // full update
+        }
+    }
 }

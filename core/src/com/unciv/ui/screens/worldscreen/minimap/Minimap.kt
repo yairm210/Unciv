@@ -117,6 +117,20 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         return smallerWorldDimension * mapSizePercent / 100 / effectiveRadius
     }
 
+    /**
+     * returns the closest mini map size for [targetSize] in pixels.
+     */
+    fun getClosestMinimapSize(targetSize: Vector2): Int {
+        val max = 30
+        for (size in 0..max) {
+            val calculatedSize = calcMinimapSize(size)
+            if (targetSize.x < calculatedSize.x && targetSize.y < calculatedSize.y) {
+                return size
+            }
+        }
+        return max
+    }
+    
     private fun calcMinimapSize(minimapSize: Int): Vector2 {
         val minimapTileSize = calcMinTileSize(minimapSize)
         var height: Float
