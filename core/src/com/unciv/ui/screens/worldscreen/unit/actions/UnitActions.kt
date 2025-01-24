@@ -377,7 +377,7 @@ object UnitActions {
         ))
     }
 
-    // should mark unit as due=false and not cycle back in the queue
+    // Skip one turn: marks a unit as due=false and doesn't cycle back in the queue
     private suspend fun SequenceScope<UnitAction>.addSkipAction(unit: MapUnit) {
         yield(UnitAction(
             type = UnitActionType.Skip,

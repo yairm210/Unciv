@@ -180,7 +180,7 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("DisbandUnit") }, false, defaultPage = 1),
     GiftUnit("Gift unit",
         { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Silent, defaultPage = 1),
-    Skip("Skip Unit",
+    Skip("Skip turn",
         { ImageGetter.getUnitActionPortrait("Skip") }, UncivSound.Silent, defaultPage = 0),
     ShowAdditionalActions("Show more",
         { ImageGetter.getUnitActionPortrait("ShowMore") }, false),
