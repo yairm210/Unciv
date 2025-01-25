@@ -82,7 +82,7 @@ object WorldMapTileUpdater {
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
                     && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
-                    group.layerMisc.dimImprovement(true)
+                    group.layerImprovement.dimImprovement(true)
             }
         }
 
@@ -241,7 +241,7 @@ object WorldMapTileUpdater {
         for (group in tileGroups.values) {
             group.layerOverlay.reset()
             if (!group.tile.isCityCenter())
-                group.layerMisc.dimImprovement(true)
+                group.layerImprovement.dimImprovement(true)
             group.layerCityButton.moveDown()
         }
         for (city in worldScreen.gameInfo.getCities()) {

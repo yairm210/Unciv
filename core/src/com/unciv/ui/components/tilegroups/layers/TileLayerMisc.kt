@@ -179,6 +179,55 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
+class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size){
+    private var improvementPlusPillagedID: String? = null
+    var improvementIcon: Actor? = null
+        private set  // Getter public for BattleTable to display as City Combatant
+
+    
+    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+        val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
+            UncivGame.Current.settings.showResourcesAndImprovements else true
+
+        updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
+    }
+
+    fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
+
+    private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
+        // If improvement has changed, force new icon next time it is needed
+        val improvementToShow = tile.getShownImprovement(viewingCiv)
+        val newImprovementPlusPillagedID = if (improvementToShow==null) null
+        else if (tile.improvementIsPillaged) "$improvementToShow-Pillaged"
+        else improvementToShow
+
+        if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
+            improvementPlusPillagedID = newImprovementPlusPillagedID
+            improvementIcon?.remove()
+            improvementIcon = null
+        }
+
+        // Get new icon when needed
+        if (improvementPlusPillagedID != null && show && improvementIcon == null) {
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, dim = false, isPillaged = tile.improvementIsPillaged)
+            icon.center(tileGroup)
+            icon.x -= 22 // left
+            icon.y -= 12 // bottom
+            addActor(icon)
+            improvementIcon = icon
+        }
+
+        improvementIcon?.isVisible = show
+    }
+
+    override fun determineVisibility() {
+        isVisible = improvementIcon?.isVisible == true
+    }
+
+    fun reset() {
+        updateImprovementIcon(null, false)
+    }
+}
 
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
@@ -205,10 +254,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private var hexOutlineIcon: Actor? = null
 
     private var workedIcon: Actor? = null
-
-    private var improvementPlusPillagedID: String? = null
-    var improvementIcon: Actor? = null
-        private set  // Getter public for BattleTable to display as City Combatant
 
     private val startingLocationIcons = mutableListOf<Actor>()
 
@@ -253,32 +298,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             // https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/scenes/scene2d/utils/Cullable.html
             // .getCullingArea returns null for both miscLayerGroup and worldMapHolder. Don't know where it's happening. Somewhat rare, and fixing it may have a hefty performance cost.
         }
-    }
-
-    private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
-        // If improvement has changed, force new icon next time it is needed
-        val improvementToShow = tile.getShownImprovement(viewingCiv)
-        val newImprovementPlusPillagedID = if (improvementToShow==null) null
-        else if (tile.improvementIsPillaged) "$improvementToShow-Pillaged"
-        else improvementToShow
-
-        if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
-            improvementPlusPillagedID = newImprovementPlusPillagedID
-            improvementIcon?.remove()
-            improvementIcon = null
-        }
-
-        // Get new icon when needed
-        if (improvementPlusPillagedID != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, dim = false, isPillaged = tile.improvementIsPillaged)
-            icon.center(tileGroup)
-            icon.x -= 22 // left
-            icon.y -= 12 // bottom
-            addActor(icon)
-            improvementIcon = icon
-        }
-
-        improvementIcon?.isVisible = show
     }
 
     private fun updateStartingLocationIcon(show: Boolean) {
@@ -421,24 +440,17 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         arrowsToDraw.clear()
     }
 
-    fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
     fun dimPopulation(dim: Boolean) { workedIcon?.color?.a = if (dim) 0.4f else 1f }
 
 
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
-
-        val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
-            UncivGame.Current.settings.showResourcesAndImprovements else true
-
-        updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
         if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
         updateArrows()
     }
 
     override fun determineVisibility() {
-        isVisible = improvementIcon?.isVisible == true
-                || workedIcon != null
+        isVisible = workedIcon != null
                 || hexOutlineIcon != null
                 || arrows.isNotEmpty()
                 || startingLocationIcons.isNotEmpty()
@@ -446,7 +458,6 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     fun reset() {
-        updateImprovementIcon(null, false)
         updateStartingLocationIcon(false)
         clearArrows()
     }
