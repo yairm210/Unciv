@@ -183,7 +183,8 @@ class PortraitUnitAction(name: String, size: Float) : Portrait(Type.UnitAction, 
     override fun getDefaultImageTint(): Color = ImageGetter.CHARCOAL
 }
 
-class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false) : Portrait(Type.Improvement, name, size) {
+class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false, borderSize: Float = 2f)
+    : Portrait(Type.Improvement, name, size, borderSize) {
 
     init {
         if (dim) {

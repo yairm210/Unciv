@@ -97,6 +97,7 @@ object ImageGetter {
         
         setupStatImages()
         setupResourcePortraits()
+        setupImprovementPortraits()
     }
 
     private fun setupStatImages() {
@@ -113,6 +114,11 @@ object ImageGetter {
     
     private fun setupResourcePortraits() {
         val nameToActorList = ruleset.tileResources.values.map { it.name to getResourcePortrait(it.name, 100f, borderSize = 10f) }
+        packTexture(nameToActorList, 120)
+    }
+
+    private fun setupImprovementPortraits() {
+        val nameToActorList = ruleset.tileImprovements.values.map { it.name to getImprovementPortrait(it.name, 100f, borderSize = 10f) }
         packTexture(nameToActorList, 120)
     }
 
@@ -327,8 +333,8 @@ object ImageGetter {
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false): Portrait =
-        PortraitImprovement(improvementName, size, dim, isPillaged)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false, borderSize: Float = 2f): Portrait =
+        PortraitImprovement(improvementName, size, dim, isPillaged, borderSize)
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait = PortraitUnitAction(actionName, size)
 

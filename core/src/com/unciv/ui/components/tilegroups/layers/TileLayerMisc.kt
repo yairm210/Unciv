@@ -209,7 +209,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
         // Get new icon when needed
         if (improvementPlusPillagedID != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, dim = false, isPillaged = tile.improvementIsPillaged)
+            val icon = ImageGetter.getImage(improvementToShow!!).apply { setSize(24f) }
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y -= 12 // bottom
