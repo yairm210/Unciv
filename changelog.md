@@ -1,3 +1,33 @@
+## 4.15.5
+
+Prerender the "pillaged improvement" icon as well
+
+perf(render): Converted improvement images to prerendered images
+
+perf(render): Separate improvement icons to different layer
+
+perf(render): Create dynamic texture for resources so swaps are only done on resource layer when we need the number (strategic resources)
+
+chore: Genericify on-the-fly texture packing to be source agnostic
+
+chore: Stat image setup separated to a distinct function - we don't need to keep it around!
+
+perf(render): Separate resource icons into separate layer
+
+Correctly reset pixmap packer when loading a new ruleset
+
+perf(render): Yields rendered from a dynamically created texture
+
+perf(render): Separate yields to different tile layer
+
+chore: Added debug passthrough functions to rendered elements
+
+Resolved  - Automation handles "Found City" uniques with limited uses correctly
+
+By sulai:
+- UnitTable: show a summary when no unit is selected 
+- Fix sticky tooltips 
+
 ## 4.15.4
 
 Greeting stats translated correctly in notifications
