@@ -638,9 +638,9 @@ class WorldScreen(
         }
     }
 
-    fun switchToNextUnit() {
+    fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
-        if (bottomUnitTable.selectedUnit != null)
+        if (bottomUnitTable.selectedUnit != null && resetDue)
             bottomUnitTable.selectedUnit!!.due = false
         val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {

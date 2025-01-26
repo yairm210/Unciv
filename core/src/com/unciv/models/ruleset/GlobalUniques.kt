@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 class GlobalUniques: RulesetObject() {
     override var name = "GlobalUniques"
 
+    var unitUniques: ArrayList<String> = ArrayList()
     override fun getUniqueTarget() = UniqueTarget.Global
     override fun makeLink() = "" // No own category on Civilopedia screen
 

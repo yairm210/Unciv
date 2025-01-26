@@ -48,6 +48,8 @@ enum class KeyboardBinding(
     EmpireOverview(Category.WorldScreen),
     MusicPlayer(Category.WorldScreen, KeyCharAndCode.ctrl('m')),
     DeveloperConsole(Category.WorldScreen, '`'),
+    PrevIdleButton(Category.WorldScreen, "Idle Prev",','),
+    NextIdleButton(Category.WorldScreen, "Idle Next", '.'),
 
     /*
      * These try to be faithful to default Civ5 key bindings as found in several places online
@@ -100,11 +102,11 @@ enum class KeyboardBinding(
     // Unit actions - name MUST correspond to UnitActionType.name because the shorthand constructor
     // there looks up bindings here by name - which also means we must not use UnitActionType
     // here as it will not be guaranteed to already be fully initialized.
-    SwapUnits(Category.UnitActions,"Swap units", 'y'),
+    SwapUnits(Category.UnitActions, "Swap units", 'y'),
     Automate(Category.UnitActions, 'm'),
     ConnectRoad(Category.UnitActions, "Connect road", 'c'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),
-    StopMovement(Category.UnitActions,"Stop movement", '.'),
+    StopMovement(Category.UnitActions,"Stop movement", 'm'),
     ShowUnitDestination(Category.UnitActions, "Show unit destination", 'j'),
     Sleep(Category.UnitActions, 'f'),
     SleepUntilHealed(Category.UnitActions,"Sleep until healed", 'h'),

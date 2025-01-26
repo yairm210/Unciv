@@ -12,7 +12,6 @@ import com.unciv.models.translations.Translations.Companion.getNumberFormatFromL
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
@@ -38,6 +37,7 @@ class GameSettings {
     var showSettlersSuggestedCityLocations: Boolean = true
 
     var checkForDueUnits: Boolean = true
+    var checkForDueUnitsCycles: Boolean = false
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
     var longTapMove: Boolean = true
@@ -56,6 +56,7 @@ class GameSettings {
     var pauseBetweenTracks = 10
 
     var turnsBetweenAutosaves = 1
+    var maxAutosavesStored = 10
     var tileSet: String = Constants.defaultTileset
     var unitSet: String? = Constants.defaultUnitset
     var skin: String = Constants.defaultSkin

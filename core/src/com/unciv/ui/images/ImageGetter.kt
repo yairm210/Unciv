@@ -3,10 +3,12 @@ package com.unciv.ui.images
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.NinePatch
+import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -25,6 +27,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.skins.SkinCache
+import com.unciv.models.stats.Stat
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.center
@@ -54,6 +57,9 @@ object ImageGetter {
     lateinit var atlas: TextureAtlas
     private val atlases = HashMap<String, TextureAtlas>()
     var ruleset = Ruleset()
+    
+    fun getStatWithBackground(statName: String): TextureRegionDrawable? = textureRegionDrawables[statName]
+    
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
@@ -88,10 +94,56 @@ object ImageGetter {
 
         BaseScreen.setSkin()
         FontRulesetIcons.addRulesetImages(ruleset)
+        
+        setupStatImages()
+        setupResourcePortraits()
+        setupImprovementPortraits()
+    }
+
+    private fun setupStatImages() {
+        // Performance improvement - "pack" the stat images together with the circle to the same texture
+        // This allows modded stat icons to not require texture swaps when rendering leading to it being ~50x faster
+        fun getActor(statName: String) =
+            getStatIcon(statName).surroundWithCircle(100f)
+                .apply { circle.color = CHARCOAL; circle.color.a = 0.5f }
+        
+        val nameToActorList = Stat.entries.map { it.name to getActor(it.name) }
+        
+        packTexture(nameToActorList, 100)
+    }
+    
+    private fun setupResourcePortraits() {
+        val nameToActorList = ruleset.tileResources.values.map { it.name to getResourcePortrait(it.name, 100f, borderSize = 10f) }
+        packTexture(nameToActorList, 120)
+    }
+
+    private fun setupImprovementPortraits() {
+        val nameToActorList = ruleset.tileImprovements.values.map { it.name to getImprovementPortrait(it.name, 100f, borderSize = 10f) }
+        val pillagedActorList = ruleset.tileImprovements.values.map { (it.name + "-Pillaged") to getImprovementPortrait(it.name, 100f, isPillaged = true, borderSize = 10f) }
+        packTexture(nameToActorList + pillagedActorList, 120)
+    }
+
+    private fun packTexture(nameToActorList: List<Pair<String, Group>>, size: Int) {
+        val pixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
+        for ((name, actor) in nameToActorList) {
+            actor.apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
+            pixmapPacker.pack(name, FontRulesetIcons.getPixmapFromActorBase(actor, size, size))
+        }
+
+        val yieldAtlas = pixmapPacker.generateTextureAtlas(
+            TextureFilter.MipMapLinearLinear,
+            TextureFilter.MipMapLinearLinear,
+            true
+        )
+        for (region in yieldAtlas.regions) {
+            val drawable = TextureRegionDrawable(region)
+            textureRegionDrawables[region.name] = drawable
+        }
+        pixmapPacker.dispose()
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
-    fun loadModAtlases(mod: String, folder: FileHandle) {
+    private fun loadModAtlases(mod: String, folder: FileHandle) {
         // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
         val controlFile = folder.child("Atlases.json")
         val fileNames = (if (controlFile.exists()) json().fromJson(Array<String>::class.java, controlFile)
@@ -277,13 +329,13 @@ object ImageGetter {
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
 
-    fun getResourcePortrait(resourceName: String, size: Float, amount: Int = 0): Group =
-        PortraitResource(resourceName, size, amount)
+    fun getResourcePortrait(resourceName: String, size: Float, borderSize: Float = 2f): Group =
+        PortraitResource(resourceName, size, borderSize)
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false): Portrait =
-        PortraitImprovement(improvementName, size, dim, isPillaged)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false, borderSize: Float = 2f): Portrait =
+        PortraitImprovement(improvementName, size, false, isPillaged, borderSize)
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait = PortraitUnitAction(actionName, size)
 
