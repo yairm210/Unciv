@@ -119,7 +119,8 @@ object ImageGetter {
 
     private fun setupImprovementPortraits() {
         val nameToActorList = ruleset.tileImprovements.values.map { it.name to getImprovementPortrait(it.name, 100f, borderSize = 10f) }
-        packTexture(nameToActorList, 120)
+        val pillagedActorList = ruleset.tileImprovements.values.map { (it.name + "-Pillaged") to getImprovementPortrait(it.name, 100f, isPillaged = true, borderSize = 10f) }
+        packTexture(nameToActorList + pillagedActorList, 120)
     }
 
     private fun packTexture(nameToActorList: List<Pair<String, Group>>, size: Int) {
@@ -333,8 +334,8 @@ object ImageGetter {
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false, borderSize: Float = 2f): Portrait =
-        PortraitImprovement(improvementName, size, dim, isPillaged, borderSize)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false, borderSize: Float = 2f): Portrait =
+        PortraitImprovement(improvementName, size, false, isPillaged, borderSize)
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait = PortraitUnitAction(actionName, size)
 
