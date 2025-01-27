@@ -6,11 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.NinePatch
-import com.badlogic.gdx.graphics.g2d.PixmapPacker
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g2d.*
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -30,16 +26,7 @@ import com.unciv.models.skins.SkinCache
 import com.unciv.models.stats.Stat
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.NonTransformGroup
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.centerX
-import com.unciv.ui.components.extensions.centerY
-import com.unciv.ui.components.extensions.setFontColor
-import com.unciv.ui.components.extensions.setFontSize
-import com.unciv.ui.components.extensions.setSize
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.surroundWithThinCircle
-import com.unciv.ui.components.extensions.toGroup
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
@@ -77,10 +64,12 @@ object ImageGetter {
         atlases.clear()
     }
 
-    fun reloadImages() = setNewRuleset(ruleset)
+    fun reloadImages() = setNewRuleset(ruleset, buildTempAtlases = false)
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
-    fun setNewRuleset(ruleset: Ruleset, ignoreIfModsAreEqual: Boolean = false) {
+    fun setNewRuleset(ruleset: Ruleset, ignoreIfModsAreEqual: Boolean = false, 
+                      /** The temp atlases are a rendering optimization, and are not required except for map rendering */
+                      buildTempAtlases: Boolean = true) {
         if (ignoreIfModsAreEqual && ruleset.mods == ImageGetter.ruleset.mods)
             return
             
@@ -102,10 +91,13 @@ object ImageGetter {
         BaseScreen.setSkin()
         FontRulesetIcons.addRulesetImages(ruleset)
         
-        disposeTempAtlases()
-        setupStatImages()
-        setupResourcePortraits()
-        setupImprovementPortraits()
+        if (buildTempAtlases) {
+            // We purposefully do not dispose() of the old temp atlases, as they may be used in another screen that we could resume
+            println("Building temp atlases for ${visualMods.joinToString()}")
+            setupStatImages()
+            setupResourcePortraits()
+            setupImprovementPortraits()
+        }
     }
     
     // We want this with a delay of a few seconds because *the current screen* might still be using this image
@@ -118,7 +110,7 @@ object ImageGetter {
                 toDispose.forEach { it.dispose() }
             }
         }
-        
+
     }
 
     private fun setupStatImages() {

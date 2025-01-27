@@ -385,7 +385,7 @@ class NewGameScreen(
 
         ruleset.clear()
         ruleset.add(newRuleset)
-        ImageGetter.setNewRuleset(ruleset)
+        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
 
         if (updateUI) newGameOptionsTable.updateRuleset(ruleset)
