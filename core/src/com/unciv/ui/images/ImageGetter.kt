@@ -80,7 +80,10 @@ object ImageGetter {
     fun reloadImages() = setNewRuleset(ruleset)
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
-    fun setNewRuleset(ruleset: Ruleset) {
+    fun setNewRuleset(ruleset: Ruleset, ignoreIfModsAreEqual: Boolean = false) {
+        if (ignoreIfModsAreEqual && ruleset.mods == ImageGetter.ruleset.mods)
+            return
+            
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
 
