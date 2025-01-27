@@ -794,6 +794,12 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 -   [Package](https://thenounproject.com/icon/package-1886048) by shashank singh for Mods
 -   [scenario planning](https://thenounproject.com/icon/scenario-6569968) by nicolas for Scenarios
 
+### WorldScreen
+
+- [Reduce](https://www.flaticon.com/free-icon/reduce_1817377) by Freepik
+- [Increase](https://www.flaticon.com/free-icon/increase_1817463) by Freepik
+- [Corner](https://www.flaticon.com/authors/muhamad-ulum) by Muhamad Ulum
+
 ## Sound credits
 
 Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
