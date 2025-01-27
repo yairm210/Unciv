@@ -87,7 +87,7 @@ class WorldScreen(
     val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
-    /** When set, causes the screen to update in the next [render][BaseScreen.render] event */
+    /** When set, causes the screen to update in the next [render][render] event */
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
@@ -445,8 +445,8 @@ class WorldScreen(
         updateGameplayButtons()
 
         val coveredNotificationsTop = stage.height - statusButtons.y
-        val coveredNotificationsBottom = bottomTileInfoTable.height +
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
+        val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
+//                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
         notificationsScroll.update(viewingCiv.notifications, coveredNotificationsTop, coveredNotificationsBottom)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
