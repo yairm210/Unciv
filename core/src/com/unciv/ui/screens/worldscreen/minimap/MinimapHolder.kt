@@ -20,7 +20,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 
-private const val fl = 150f
+private const val SHOW_ICONS_MINIMAP_SIZE = 100f
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
@@ -71,8 +71,8 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         
         val stack = Stack()
         stack.add(wrappedMinimap)
-        stack.addInTable(getCornerHandleIcon()).size(30f).pad(10f).top().left()
-        stack.addInTable(getMaximizeToggleButton(civInfo)).size(30f).pad(10f).bottom().right()
+        stack.addInTable(getCornerHandleIcon()).size(20f).pad(8f).top().left()
+        stack.addInTable(getMaximizeToggleButton(civInfo)).size(40f).bottom().right() // more click area
         add(stack).bottom()
         
         pack()
@@ -87,24 +87,38 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         minimap.mapHolder.onViewportChanged() // update scroll position
     }
 
-    private fun getMaximizeToggleButton(civInfo: Civilization?): Image {
+    private fun getMaximizeToggleButton(civInfo: Civilization?): Actor {
+
         // when maximized, collapse map when a location was clicked
         if (maximized) {
             minimap.onClick { maximized = false }
         }
+
+        val toggle = fun() {
+            maximized = !maximized
+            minimapSize = if (maximized && stage!=null) {
+                minimap.getClosestMinimapSize(Vector2(stage.width, stage.height)) - 2
+            } else {
+                worldScreen.game.settings.minimapSize
+            }
+            rebuildAndUpdateMap(civInfo)
+        }
+
         val name = if(maximized) "Reduce" else "Increase"
-        return ImageGetter.getImage("OtherIcons/$name").apply {
-            // if the minimap is very small, hide icon to keep vision on map,
-            // but keep it functional when clicking on it
-            color.a = if(minimap.width > 150f || minimap.height > 150f) 1f else 0f
-            onActivation { 
-                maximized = !maximized
-                minimapSize = if (maximized) {
-                    minimap.getClosestMinimapSize(Vector2(stage.width, stage.height)) - 2
-                } else {
-                    worldScreen.game.settings.minimapSize
+        val image = ImageGetter.getImage("OtherIcons/$name")
+        // table provides larger click area
+        return Table().apply {
+            add(image).expand().size(20f).pad(8f).bottom().right()
+            touchable = Touchable.enabled
+            onActivation(toggle)
+            // map is really small: use whole minimap area as click area to maximize map
+            if (!shouldShowMapButtons()) {
+                isVisible = false
+                minimap.touchable = Touchable.disabled
+                this@MinimapHolder.apply { 
+                    touchable = Touchable.enabled
+                    onClick(toggle)
                 }
-                rebuildAndUpdateMap(civInfo)
             }
         }
     }
@@ -112,9 +126,12 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private fun getCornerHandleIcon(): Image {
         return ImageGetter.getImage("OtherIcons/Corner").apply {
             touchable = Touchable.disabled
-            isVisible = !maximized && (minimap.width > 150f || minimap.height > 150f)
+            isVisible = !maximized && shouldShowMapButtons()
         }
     }
+
+    private fun shouldShowMapButtons() = minimapSize > 0 &&  
+        (minimap.width > SHOW_ICONS_MINIMAP_SIZE || minimap.height > SHOW_ICONS_MINIMAP_SIZE)
 
     private fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
@@ -190,7 +207,6 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
                 return
             dragged = true
             val targetSize = Vector2(stage.width - event.stageX, event.stageY)
-            // performant way to get the map updated, not changing settings
             minimapSize = minimap.getClosestMinimapSize(targetSize)
             rebuildAndUpdateMap(civInfo)
         }
