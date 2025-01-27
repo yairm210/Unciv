@@ -93,6 +93,7 @@ object ImageGetter {
         
         if (buildTempAtlases) {
             // We purposefully do not dispose() of the old temp atlases, as they may be used in another screen that we could resume
+            // This DOES cause a mild memory leak if a user switches rulesets a lot, but the alternative is getting black images for dead textures...
             println("Building temp atlases for ${visualMods.joinToString()}")
             setupStatImages()
             setupResourcePortraits()
