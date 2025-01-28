@@ -20,8 +20,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 
-private const val SHOW_ICONS_MINIMAP_SIZE = 100f
-
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
     private var minimapSize = Int.MIN_VALUE
@@ -129,8 +127,8 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         }
     }
 
-    private fun shouldShowMapButtons() = minimapSize > 0 &&  
-        (minimap.width > SHOW_ICONS_MINIMAP_SIZE || minimap.height > SHOW_ICONS_MINIMAP_SIZE)
+    private fun shouldShowMapButtons() = minimapSize > 0 && 
+        (minimap.width > 100f || minimap.height > 100f)
 
     private fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
@@ -189,17 +187,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     override fun act(delta: Float){} // No actions
 
     inner class ResizeDragListener(val civInfo: Civilization?): DragListener() {
-        private val originalSize = Vector2()
-        private var downX: Float = 0f
-        private var downY: Float = 0f
         private var dragged = false
-        override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-            originalSize.x = minimap.width
-            originalSize.y = minimap.height
-            downX = event.stageX
-            downY = event.stageY
-            return super.touchDown(event, x, y, pointer, button)
-        }
         override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
             super.touchDragged(event, x, y, pointer)
             if (!isDragging || maximized)
