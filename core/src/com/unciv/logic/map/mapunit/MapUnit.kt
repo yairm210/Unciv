@@ -714,30 +714,30 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        if (updateCivViewableTiles && oldViewableTiles != viewableTiles
+        
+        val shouldUpdateTiles = updateCivViewableTiles && oldViewableTiles != viewableTiles
                 // Don't bother updating if all previous and current viewable tiles are within our borders
-                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
-                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })) {
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles } 
+                || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })
 
-            val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
-            if (unfilteredTriggeredUniques.isNotEmpty()) {
-                val newlyExploredTiles = viewableTiles.filter {
-                    !it.isExplored(civ)
-                }
-                for (tile in newlyExploredTiles) {
-                    val state = cache.state
-                    for (unique in unfilteredTriggeredUniques) {
-                        if (unique.getModifiers(UniqueType.TriggerUponDiscoveringTile)
-                                .any { tile.matchesFilter(it.params[0], civ) }
-                            && unique.conditionalsApply(state)
-                        )
-                            UniqueTriggerActivation.triggerUnique(unique, this)
-                    }
+        if (!shouldUpdateTiles) return
+        
+        val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
+        if (unfilteredTriggeredUniques.isNotEmpty()) {
+            val newlyExploredTiles = viewableTiles.filter { !it.isExplored(civ) }
+            for (tile in newlyExploredTiles) {
+                val state = cache.state
+                for (unique in unfilteredTriggeredUniques) {
+                    if (unique.getModifiers(UniqueType.TriggerUponDiscoveringTile)
+                            .any { tile.matchesFilter(it.params[0], civ) }
+                        && unique.conditionalsApply(state)
+                    )
+                        UniqueTriggerActivation.triggerUnique(unique, this)
                 }
             }
-
-            civ.cache.updateViewableTiles(explorerPosition)
         }
+
+        civ.cache.updateViewableTiles(explorerPosition)
     }
 
     /** Can accept a negative number to gain movement points */
@@ -778,6 +778,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val currentTile = getTile()
+        
         if (isMoving()) {
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
