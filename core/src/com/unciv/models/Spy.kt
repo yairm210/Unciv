@@ -419,5 +419,5 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /** Anti-save-scum: Deterministic random from city and turn
      *  @throws NullPointerException for spies in the hideout */
-    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt()
+    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt() + name.hashCode()
 }
