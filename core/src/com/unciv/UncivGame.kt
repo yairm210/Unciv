@@ -218,6 +218,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             for (screen in screenStack) screen.dispose()
             screenStack.clear()
 
+            ImageGetter.setNewRuleset(newGameInfo.ruleset)
             worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
             Gdx.input.inputProcessor = null // Avoid ANRs while loading
             val newWorldScreen = WorldScreen(newGameInfo, autoPlay, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
