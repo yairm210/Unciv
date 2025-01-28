@@ -798,7 +798,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 
 - [Reduce](https://www.flaticon.com/free-icon/reduce_1817377) by Freepik
 - [Increase](https://www.flaticon.com/free-icon/increase_1817463) by Freepik
-- [Corner](https://www.flaticon.com/authors/muhamad-ulum) by Muhamad Ulum
+- [Corner](https://www.flaticon.com/free-icon/corner_11390067) by Muhamad Ulum
 
 ## Sound credits
 

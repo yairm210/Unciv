@@ -97,30 +97,29 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         val toggle = fun() {
             maximized = !maximized
             minimapSize = if (maximized && stage!=null) {
-                minimap.getClosestMinimapSize(Vector2(stage.width, stage.height)) - 2
+                minimap.getClosestMinimapSize(Vector2(stage.width, stage.height), touchInside = true)
             } else {
                 worldScreen.game.settings.minimapSize
             }
             rebuildAndUpdateMap(civInfo)
         }
-
-        val name = if(maximized) "Reduce" else "Increase"
-        val image = ImageGetter.getImage("OtherIcons/$name")
-        // table provides larger click area
-        return Table().apply {
-            add(image).expand().size(20f).pad(8f).bottom().right()
+        
+        val table = Table()
+        if(shouldShowMapButtons()) {
+            // table provides larger click area. we want the resize icon to be small to not cover the map    
+            val name = if(maximized) "Reduce" else "Increase"
+            val image = ImageGetter.getImage("OtherIcons/$name")
+            table.add(image).expand().size(20f).pad(8f).bottom().right()
+            table.touchable = Touchable.enabled
+            table.onActivation(toggle)
+        } else {
+            // map is really small: use whole MinimapHolder as click area to maximize map
+            table.isVisible = false
+            minimap.touchable = Touchable.disabled
             touchable = Touchable.enabled
             onActivation(toggle)
-            // map is really small: use whole minimap area as click area to maximize map
-            if (!shouldShowMapButtons()) {
-                isVisible = false
-                minimap.touchable = Touchable.disabled
-                this@MinimapHolder.apply { 
-                    touchable = Touchable.enabled
-                    onClick(toggle)
-                }
-            }
         }
+        return table
     }
 
     private fun getCornerHandleIcon(): Image {
