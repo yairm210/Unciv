@@ -593,7 +593,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (promotions.promotions.contains(filter)) return true
                 // Badly optimized, but it's rare that statuses is even non-empty
                 // Statuses really should be converted to a hashmap
-                if (getStatus(name) != null) return true 
+                if (hasStatus(name)) return true 
                 return false
             }
         }
@@ -660,11 +660,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
         
-        for (status in statuses){
-            status.setTransients(this)
-            statusMap[status.name] = status
-        }
-
         updateUniques()
         if (action == UnitActionType.Automate.value){
             automated = true
@@ -674,7 +669,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun updateUniques() {
         val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
-            statuses.flatMap { it.uniques }
+            statusMap.values.flatMap { it.uniques }
         val uniqueSources = baseUnit.rulesetUniqueObjects.asSequence() + otherUniqueSources
         
         tempUniquesMap = UniqueMap(uniqueSources)
@@ -1046,7 +1041,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
     
-    fun getStatus(name:String): UnitStatus? = statuses.firstOrNull { it.name == name }
+    fun getStatus(name:String): UnitStatus? = statusMap[name]
     fun hasStatus(name:String): Boolean = getStatus(name) != null
     
     fun setStatus(name:String, turns:Int){
@@ -1069,9 +1064,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
     
     fun removeStatus(name:String){
-        val wereRemoved = statuses.removeAll { it.name == name }
-        statusMap.remove(name)
-        if (!wereRemoved) return
+        val removed = statusMap.remove(name)
+        statuses.removeAll { it.name == name }
+        if (removed == null) return
         
         updateUniques()
 

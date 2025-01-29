@@ -124,7 +124,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f))
                     .padBottom(2f)
 
-            for (status in unit.statuses) {
+            for (status in unit.statusMap.values) {
                 val group = ImageGetter.getPromotionPortrait(status.name)
                 val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8)
                     .surroundWithCircle(15f, color = ImageGetter.CHARCOAL)
