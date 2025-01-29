@@ -909,6 +909,7 @@ enum class UniqueType(
     TriggerUponLosingHealth("upon losing at least [amount] HP in a single attack", UniqueTarget.UnitTriggerCondition),
     TriggerUponEndingTurnInTile("upon ending a turn in a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
     TriggerUponDiscoveringTile("upon discovering a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
+    TriggerUponEnteringTile("upon entering a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
 
     //endregion
 

@@ -313,7 +313,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
-    val unitMovementTypes = UnitMovementType.entries.map { it.name }.toSet()
+    private val unitMovementTypes = UnitMovementType.entries.map { it.name }.toSet()
     private fun addUnitTypeErrors(
         lines: RulesetErrorList,
         tryFixUnknownUniques: Boolean

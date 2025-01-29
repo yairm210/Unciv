@@ -897,7 +897,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val promotion = unique.params[0]
             promotions.addPromotion(promotion, true)
         }
-
+        
+        val triggeredUniques = getTriggeredUniques(UniqueType.TriggerUponEnteringTile) { tile.matchesFilter(it.params[0]) }
+        for (triggeredUnique in triggeredUniques) 
+            UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
+            
         updateVisibleTiles(true, currentTile.position)
     }
 
