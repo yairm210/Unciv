@@ -513,7 +513,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val resourceTable = Table().apply { isTransform = false }
 
         val textColor = if (constructionButtonDTO.rejectionReason == null) Color.WHITE else Color.RED
-        constructionTable.add(construction.name.toLabel(fontColor = textColor, hideIcons = true).apply { wrap=true })
+
+        val statIcons = if (construction is Building)
+            " " + Stat.entries.filter { construction.isStatRelated(it, cityScreen.city) }.map { it.character }.joinToString("")
+        else ""
+        
+        val constructionNameText = "${construction.name.tr(hideIcons = true)}$statIcons"
+
+        constructionTable.add(constructionNameText.toLabel(fontColor = textColor, hideIcons = true).apply { wrap=true })
             .width(cityScreen.stage.width/5).expandX().left().row()
 
         resourceTable.add(constructionButtonDTO.buttonText.toLabel()).expandX().left()
