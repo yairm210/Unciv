@@ -1,3 +1,13 @@
+## 4.15.5
+
+Huge rendering performance changes for modded images - merely "major" change for non-modded images
+
+Automation handles "Found City" uniques with limited uses correctly
+
+By sulai:
+- UnitTable: show a summary when no unit is selected 
+- Fix sticky tooltips 
+
 ## 4.15.4
 
 Greeting stats translated correctly in notifications

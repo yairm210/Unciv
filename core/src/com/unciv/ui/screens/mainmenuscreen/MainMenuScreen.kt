@@ -122,7 +122,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
         val baseRuleset = RulesetCache.getVanillaRuleset()
-        ImageGetter.ruleset = baseRuleset
+        ImageGetter.setNewRuleset(baseRuleset)
 
         if (game.settings.enableEasterEggs) {
             val holiday = HolidayDates.getHolidayByDate()
@@ -263,7 +263,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 })
 
             launchOnGLThread { // for GL context
-                ImageGetter.setNewRuleset(backgroundMapRuleset)
+                ImageGetter.setNewRuleset(backgroundMapRuleset, ignoreIfModsAreEqual = true)
                 val mapHolder = EditorMapHolder(
                     this@MainMenuScreen,
                     newMap
@@ -314,7 +314,6 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             } else {
                 GUI.resetToWorldScreen()
                 GUI.getWorldScreen().popups.filterIsInstance<WorldScreenMenuPopup>().forEach(Popup::close)
-                ImageGetter.setNewRuleset(game.gameInfo!!.ruleset)
             }
         } else {
             QuickSave.autoLoadGame(this)
@@ -376,7 +375,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stopBackgroundMapGeneration()
         val ruleset = getCivilopediaRuleset()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
-        ImageGetter.setNewRuleset(ruleset)
+        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
         setSkin()
         openCivilopedia(ruleset, link = link)
     }
@@ -384,6 +383,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     override fun recreate(): BaseScreen {
         stopBackgroundMapGeneration()
         return MainMenuScreen()
+    }
+
+    override fun resume() {
+        startBackgroundMapGeneration()
     }
 
     // We contain a map...

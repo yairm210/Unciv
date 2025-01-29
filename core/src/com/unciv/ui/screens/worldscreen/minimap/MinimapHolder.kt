@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.minimap
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
@@ -114,4 +115,6 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
+    override fun act(delta: Float){} // No actions
 }

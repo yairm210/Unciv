@@ -217,10 +217,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         private fun getIdleUnitsText(worldScreen: WorldScreen): String? {
             val count = worldScreen.viewingCiv.units.getDueUnits().count()
             if (count > 0) {
-                return if (worldScreen.game.settings.checkForDueUnitsCycles)
-                    "[$count] units idle"
-                else
-                    "[$count] units due"
+                return "[$count] units idle"
             }
             return null
         }

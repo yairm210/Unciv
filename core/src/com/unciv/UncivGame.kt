@@ -218,6 +218,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             for (screen in screenStack) screen.dispose()
             screenStack.clear()
 
+            ImageGetter.setNewRuleset(newGameInfo.ruleset)
             worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
             Gdx.input.inputProcessor = null // Avoid ANRs while loading
             val newWorldScreen = WorldScreen(newGameInfo, autoPlay, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
@@ -242,7 +243,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     /** The new game info may have different mods or rulesets, which may use different resources that need to be loaded. */
     private suspend fun initializeResources(newGameInfo: GameInfo) {
         withGLContext {
-            ImageGetter.setNewRuleset(newGameInfo.ruleset)
+            ImageGetter.setNewRuleset(newGameInfo.ruleset, true)
         }
         val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
         musicController.setModList(fullModList)
@@ -337,7 +338,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
         val ruleset = worldScreen.gameInfo.ruleset
         translations.translationActiveMods = ruleset.mods
-        ImageGetter.setNewRuleset(ruleset)
+        ImageGetter.setNewRuleset(ruleset, true)
 
         setScreen(worldScreen)
         return worldScreen
@@ -487,7 +488,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.15.4", 1093)
+        val VERSION = Version("4.15.5-patch2", 1095)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

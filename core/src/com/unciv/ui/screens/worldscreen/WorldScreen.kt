@@ -48,7 +48,6 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
-import com.unciv.ui.screens.worldscreen.worldmap.WorldMapTileUpdater.updateTiles
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
@@ -63,6 +62,7 @@ import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
+import com.unciv.ui.screens.worldscreen.worldmap.WorldMapTileUpdater.updateTiles
 import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
@@ -87,7 +87,7 @@ class WorldScreen(
     val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
-    /** When set, causes the screen to update in the next [render][BaseScreen.render] event */
+    /** When set, causes the screen to update in the next [render][render] event */
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
@@ -445,8 +445,8 @@ class WorldScreen(
         updateGameplayButtons()
 
         val coveredNotificationsTop = stage.height - statusButtons.y
-        val coveredNotificationsBottom = bottomTileInfoTable.height +
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
+        val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
+//                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
         notificationsScroll.update(viewingCiv.notifications, coveredNotificationsTop, coveredNotificationsBottom)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
@@ -764,15 +764,13 @@ class WorldScreen(
         // Deselect Unit
         if (bottomUnitTable.selectedUnit != null) {
             bottomUnitTable.selectUnit()
-            bottomUnitTable.isVisible = false
             shouldUpdate = true
             return
         }
 
         // Deselect city
         if (bottomUnitTable.selectedCity != null) {
-            bottomUnitTable.selectedCity = null
-            bottomUnitTable.isVisible = false
+            bottomUnitTable.selectUnit()
             shouldUpdate = true
             return
         }

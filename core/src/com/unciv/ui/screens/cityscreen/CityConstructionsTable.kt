@@ -210,7 +210,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             constructionsQueueTable.add(getQueueEntry(0, currentConstruction))
                     .expandX().fillX().row()
         else
-            constructionsQueueTable.add("Pick a construction".toLabel()).pad(2f).row()
+            constructionsQueueTable.add("Pick a construction".toLabel()).height(50f).pad(2f).row()
 
         // always show queue expander, even when empty, in order to keep lowerTable at constant position
         queueExpander.innerTable.clear()
