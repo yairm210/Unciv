@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
@@ -312,11 +313,14 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
+    val unitMovementTypes = UnitMovementType.entries.map { it.name }.toSet()
     private fun addUnitTypeErrors(
         lines: RulesetErrorList,
         tryFixUnknownUniques: Boolean
     ) {
         for (unitType in ruleset.unitTypes.values) {
+            if (unitType.movementType !in unitMovementTypes)
+                lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
             uniqueValidator.checkUniques(unitType, lines, true, tryFixUnknownUniques)
         }
     }
