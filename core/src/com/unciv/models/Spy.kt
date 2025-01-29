@@ -168,7 +168,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     private fun getTurnsRemainingToStealTech(): Int {
         val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
         if (stealableTechs.isEmpty()) return -1
-        
+
         var techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!.toFloat()
         val techSpeedModifier = civInfo.gameInfo.speed.scienceCostModifier //Modify steal cost according to game speed
         techStealCost *= techSpeedModifier * 1.25f //Multiply by 1.25f, according to Civ5 GlobalDefines.XML
