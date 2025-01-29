@@ -402,7 +402,7 @@ open class ZoomableScrollPane(
     /** @return the currently scrolled-to viewport of the whole scrollable area */
     private fun getViewport() = Rectangle().also { getViewport(it) }
 
-    private fun onViewportChanged() {
+    fun onViewportChanged() {
         onViewportChangedListener?.invoke(maxX, maxY, getViewport())
     }
 }

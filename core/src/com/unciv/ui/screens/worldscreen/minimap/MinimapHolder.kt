@@ -2,18 +2,28 @@ package com.unciv.ui.screens.worldscreen.minimap
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.components.extensions.addInTable
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
     private var minimapSize = Int.MIN_VALUE
+    private var maximized = false
     lateinit var minimap: Minimap
 
     /** Button, next to the minimap, to toggle the unit movement map overlay. */
@@ -55,12 +65,70 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         this.clear()
         minimap = Minimap(mapHolder, minimapSize, civInfo)
         val wrappedMinimap = getWrappedMinimap()
-        add(getToggleIcons(wrappedMinimap.height)).align(Align.bottom)
-            .height(wrappedMinimap.height).padRight(5f) // Spread equally over the side
-        add(wrappedMinimap)
+        add(getToggleIcons(wrappedMinimap.height)).bottom().padRight(5f)
+        
+        val stack = Stack()
+        stack.add(wrappedMinimap)
+        stack.addInTable(getCornerHandleIcon()).size(20f).pad(8f).top().left()
+        stack.addInTable(getMaximizeToggleButton(civInfo)).size(40f).bottom().right() // more click area
+        add(stack).bottom()
+        
         pack()
         if (stage != null) x = stage.width - width
+        
+        addListener(ResizeDragListener(civInfo))
     }
+
+    private fun rebuildAndUpdateMap(civInfo: Civilization?) {
+        rebuild(civInfo) // re-create views
+        civInfo?.let { minimap.update(it) } // update map
+        minimap.mapHolder.onViewportChanged() // update scroll position
+    }
+
+    private fun getMaximizeToggleButton(civInfo: Civilization?): Actor {
+
+        // when maximized, collapse map when a location was clicked
+        if (maximized) {
+            minimap.onClick { maximized = false }
+        }
+
+        val toggle = fun() {
+            maximized = !maximized
+            minimapSize = if (maximized && stage!=null) {
+                minimap.getClosestMinimapSize(Vector2(stage.width, stage.height), touchInside = true)
+            } else {
+                worldScreen.game.settings.minimapSize
+            }
+            rebuildAndUpdateMap(civInfo)
+        }
+        
+        val table = Table()
+        if(shouldShowMapButtons()) {
+            // table provides larger click area. we want the resize icon to be small to not cover the map    
+            val name = if(maximized) "Reduce" else "Increase"
+            val image = ImageGetter.getImage("OtherIcons/$name")
+            table.add(image).expand().size(20f).pad(8f).bottom().right()
+            table.touchable = Touchable.enabled
+            table.onActivation(toggle)
+        } else {
+            // map is really small: use whole MinimapHolder as click area to maximize map
+            table.isVisible = false
+            minimap.touchable = Touchable.disabled
+            touchable = Touchable.enabled
+            onActivation(toggle)
+        }
+        return table
+    }
+
+    private fun getCornerHandleIcon(): Image {
+        return ImageGetter.getImage("OtherIcons/Corner").apply {
+            touchable = Touchable.disabled
+            isVisible = !maximized && shouldShowMapButtons()
+        }
+    }
+
+    private fun shouldShowMapButtons() = minimapSize > 0 && 
+        (minimap.width > 100f || minimap.height > 100f)
 
     private fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
@@ -117,4 +185,24 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
     override fun act(delta: Float){} // No actions
+
+    inner class ResizeDragListener(val civInfo: Civilization?): DragListener() {
+        private var dragged = false
+        override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
+            super.touchDragged(event, x, y, pointer)
+            if (!isDragging || maximized)
+                return
+            dragged = true
+            val targetSize = Vector2(stage.width - event.stageX, event.stageY)
+            minimapSize = minimap.getClosestMinimapSize(targetSize)
+            rebuildAndUpdateMap(civInfo)
+        }
+        override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
+            super.touchUp(event, x, y, pointer, button)
+            if (dragged) {
+                worldScreen.game.settings.minimapSize = minimapSize
+                GUI.setUpdateWorldOnNextRender() // full update    
+            }
+        }
+    }
 }
