@@ -1,0 +1,31 @@
+
+
+chore: old unique deprecation
+
+Make statusMap the source of truth for statuses
+
+Fixed textures not being built on new game from new game screen
+
+chore: minor readability
+
+Spy randomness is different for different spies in same city
+
+chore: Minor MapUnit.kt readability
+
+chore: Minor battle.kt readability improvements
+
+chore: All map types translatable
+
+4.15.5-patch2
+
+perf: Don't rebuild altases whenever possible, instead of creating and disposing all the time
+
+perf: Don't rebuild images (=reload and rebuild atlases) when loading game, if the set of mods has not changed
+
+4.15.5-patch1
+
+Fix memory leak per turn - dispose of individual pixmaps immediately, dispose of atlases after new screen is available 
+
+Resize map with drag gesture - By sulai
+
+Add info about adding project - By itanasi
