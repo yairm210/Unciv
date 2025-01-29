@@ -37,7 +37,7 @@ class ScenarioSelectTable(val newGameScreen: NewGameScreen) : Table() {
     }
 
     private fun createScenarioSelectBox(scenarioFiles: List<Pair<FileHandle, Ruleset>>) {
-        for ((file, ruleset) in scenarioFiles)
+        for ((file, _) in scenarioFiles)
             scenarios[file.name()] = ScenarioData(file.name(), file)
 
         scenarioSelectBox = TranslatedSelectBox(scenarios.keys.sorted(), scenarios.keys.first())
