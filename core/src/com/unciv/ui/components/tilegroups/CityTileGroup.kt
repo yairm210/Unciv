@@ -156,7 +156,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
         // Pixel art, roads, improvements are dimmed inside CityScreen
         layerUnitArt.dim()
         layerFeatures.dim()
-        layerMisc.dimImprovement(true)
+        layerImprovement.dimImprovement(true)
 
         // Put whole layer (yield, pop, improvement, res) to front
         layerMisc.toFront()

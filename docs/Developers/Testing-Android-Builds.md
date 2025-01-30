@@ -4,7 +4,11 @@ This is a work in progress - feel free to contribute. Much of this information i
 
 ## Run configuration
 
--   In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
+- First, enable the android project in Gradle
+    -   In .\settings.gradle.kts, replace `if (System.getenv("ANDROID_HOME") != null)` with `if (true)`.
+    -   In .\build.gradle.kts, change `if (System.getenv("ANDROID_HOME") != null)` to `if (true)`.
+    -   Run "Sync Project with Gradle Files" to populate the available projects and add the android project.
+- In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
     -   Click "+" to add a new configuration
     -   Choose "Android App"
     -   Give the configuration a name, we recommend "Android"

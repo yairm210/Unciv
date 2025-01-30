@@ -3328,6 +3328,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerCondition
 
+??? example  "&lt;upon entering a [tileFilter] tile&gt;"
+	Example: "&lt;upon entering a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
+
 ## UnitActionModifier uniques
 !!! note ""
 

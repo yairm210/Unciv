@@ -593,7 +593,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (promotions.promotions.contains(filter)) return true
                 // Badly optimized, but it's rare that statuses is even non-empty
                 // Statuses really should be converted to a hashmap
-                if (getStatus(name) != null) return true 
+                if (hasStatus(name)) return true 
                 return false
             }
         }
@@ -660,11 +660,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
         
-        for (status in statuses){
-            status.setTransients(this)
-            statusMap[status.name] = status
-        }
-
         updateUniques()
         if (action == UnitActionType.Automate.value){
             automated = true
@@ -674,7 +669,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun updateUniques() {
         val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
-            statuses.flatMap { it.uniques }
+            statusMap.values.flatMap { it.uniques }
         val uniqueSources = baseUnit.rulesetUniqueObjects.asSequence() + otherUniqueSources
         
         tempUniquesMap = UniqueMap(uniqueSources)
@@ -714,30 +709,30 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        if (updateCivViewableTiles && oldViewableTiles != viewableTiles
+        
+        val shouldUpdateTiles = updateCivViewableTiles && oldViewableTiles != viewableTiles
                 // Don't bother updating if all previous and current viewable tiles are within our borders
-                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
-                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })) {
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles } 
+                || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })
 
-            val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
-            if (unfilteredTriggeredUniques.isNotEmpty()) {
-                val newlyExploredTiles = viewableTiles.filter {
-                    !it.isExplored(civ)
-                }
-                for (tile in newlyExploredTiles) {
-                    val state = cache.state
-                    for (unique in unfilteredTriggeredUniques) {
-                        if (unique.getModifiers(UniqueType.TriggerUponDiscoveringTile)
-                                .any { tile.matchesFilter(it.params[0], civ) }
-                            && unique.conditionalsApply(state)
-                        )
-                            UniqueTriggerActivation.triggerUnique(unique, this)
-                    }
+        if (!shouldUpdateTiles) return
+        
+        val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
+        if (unfilteredTriggeredUniques.isNotEmpty()) {
+            val newlyExploredTiles = viewableTiles.filter { !it.isExplored(civ) }
+            for (tile in newlyExploredTiles) {
+                val state = cache.state
+                for (unique in unfilteredTriggeredUniques) {
+                    if (unique.getModifiers(UniqueType.TriggerUponDiscoveringTile)
+                            .any { tile.matchesFilter(it.params[0], civ) }
+                        && unique.conditionalsApply(state)
+                    )
+                        UniqueTriggerActivation.triggerUnique(unique, this)
                 }
             }
-
-            civ.cache.updateViewableTiles(explorerPosition)
         }
+
+        civ.cache.updateViewableTiles(explorerPosition)
     }
 
     /** Can accept a negative number to gain movement points */
@@ -778,6 +773,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val currentTile = getTile()
+        
         if (isMoving()) {
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
@@ -901,7 +897,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val promotion = unique.params[0]
             promotions.addPromotion(promotion, true)
         }
-
+        
+        val triggeredUniques = getTriggeredUniques(UniqueType.TriggerUponEnteringTile) { tile.matchesFilter(it.params[0]) }
+        for (triggeredUnique in triggeredUniques) 
+            UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
+            
         updateVisibleTiles(true, currentTile.position)
     }
 
@@ -1045,7 +1045,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
     
-    fun getStatus(name:String): UnitStatus? = statuses.firstOrNull { it.name == name }
+    fun getStatus(name:String): UnitStatus? = statusMap[name]
     fun hasStatus(name:String): Boolean = getStatus(name) != null
     
     fun setStatus(name:String, turns:Int){
@@ -1068,9 +1068,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
     
     fun removeStatus(name:String){
-        val wereRemoved = statuses.removeAll { it.name == name }
-        statusMap.remove(name)
-        if (!wereRemoved) return
+        val removed = statusMap.remove(name)
+        statuses.removeAll { it.name == name }
+        if (removed == null) return
         
         updateUniques()
 

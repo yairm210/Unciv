@@ -23,7 +23,7 @@ open class TileGroup(
         3) Borders
         4) Misc: improvements, resources, yields, citizens, arrows, starting locations (editor)
         5) Unit Arts
-        6) Overlay: highlight, fog, crosshair
+        6) Overlay: 
         7) Unit Flags
         8) City Button
     */
@@ -42,19 +42,23 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
     @Suppress("LeakingThis") val layerBorders = TileLayerBorders(this, groupSize)
     @Suppress("LeakingThis") val layerMisc = TileLayerMisc(this, groupSize)
+    @Suppress("LeakingThis") val layerResource = TileLayerResource(this, groupSize)
+    @Suppress("LeakingThis") val layerImprovement = TileLayerImprovement(this, groupSize)
     @Suppress("LeakingThis") val layerYield = TileLayerYield(this, groupSize)
     @Suppress("LeakingThis") val layerOverlay = TileLayerOverlay(this, groupSize)
     @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
     @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
     
-    val allLayers = listOf(
+    private val allLayers = listOf(
         layerTerrain,
-        layerFeatures,
+        layerFeatures, // includes roads
         layerBorders,
-        layerMisc,
+        layerResource,
+        layerImprovement,
+        layerMisc, // yields, citizens, arrows, starting locations (editor)
         layerYield,
-        layerOverlay,
+        layerOverlay, // highlight, fog, crosshair
         layerUnitArt,
         layerUnitFlag,
         layerCityButton
@@ -79,6 +83,8 @@ open class TileGroup(
         layerTerrain.reset()
         layerBorders.reset()
         layerMisc.reset()
+        layerResource.reset()
+        layerImprovement.reset()
         layerYield.reset(localUniqueCache)
         layerOverlay.reset()
         layerUnitArt.reset()
