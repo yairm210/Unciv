@@ -11,13 +11,14 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
+const val nextLabel = "Cycle"
+const val skipLabel = "Skip"
+
 class SmallUnitButton(
     private val worldScreen: WorldScreen,
     private val statusButtons: StatusButtons
 ) : IconTextButton("", null, fontColor = NextTurnAction.NextUnit.color) {
 
-    private val nextLabel = "Cycle"
-    private val skipLabel = "Skip"
     private var isSkip = worldScreen.game.settings.checkForDueUnitsCycles
     
     init {

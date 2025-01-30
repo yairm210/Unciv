@@ -16,29 +16,26 @@ class StatusButtons(
         add(nextTurnButton)
     }
     
-    fun update(portrait: Boolean) {
+    fun update(verticalWrap: Boolean) {
         clear()
-        if(portrait) {
+        if(verticalWrap) {
             add(nextTurnButton)
-            if (smallUnitButton != null) {
+            smallUnitButton?.let {
                 row()
-                add(smallUnitButton).padTop(padYSpace).right()
+                add(it).padTop(padYSpace).right()
             }
-            if (autoPlayStatusButton != null) {
+            autoPlayStatusButton?.let {
                 row()
-                add(autoPlayStatusButton).padTop(padYSpace).right()
+                add(it).padTop(padYSpace).right()
             }
-            if (multiplayerStatusButton != null) {
+            multiplayerStatusButton?.let {
                 row()
-                add(multiplayerStatusButton).padTop(padYSpace).right()
+                add(it).padTop(padYSpace).right()
             }
         } else {
-            if (multiplayerStatusButton != null)
-                add(multiplayerStatusButton).padRight(padXSpace).top()
-            if (autoPlayStatusButton != null)
-                add(autoPlayStatusButton).padRight(padXSpace).top()
-            if (smallUnitButton != null)
-                add(smallUnitButton).padRight(padXSpace).top()
+            multiplayerStatusButton?.let { add(it).padRight(padXSpace).top() }
+            autoPlayStatusButton?.let { add(it).padRight(padXSpace).top() }
+            smallUnitButton?.let { add(it).padRight(padXSpace).top() }
             add(nextTurnButton)
         }
         pack()
