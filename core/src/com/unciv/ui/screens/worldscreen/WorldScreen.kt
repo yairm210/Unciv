@@ -671,13 +671,10 @@ class WorldScreen(
         updateAutoPlayStatusButton()
         updateMultiplayerStatusButton()
 
-        statusButtons.wrap(false)
-        statusButtons.pack()
+        statusButtons.update(false)
         val maxWidth = stage.width - techPolicyAndDiplomacy.width - 25f
         if(statusButtons.width > maxWidth) {
-            statusButtons.width = maxWidth
-            statusButtons.wrap()
-            statusButtons.pack()
+            statusButtons.update(true)
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
     }

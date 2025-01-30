@@ -1,49 +1,47 @@
 package com.unciv.ui.screens.worldscreen.status
 
-import com.badlogic.gdx.scenes.scene2d.ui.Container
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Disposable
 
 class StatusButtons(
     val nextTurnButton: NextTurnButton
-) : HorizontalGroup(), Disposable {
+) : Table(), Disposable {
     var autoPlayStatusButton: AutoPlayStatusButton? = null
-        set(button) {
-            autoPlayStatusButton?.remove()
-            field = button
-            if (button != null) {
-                addActorAt(0, button)
-            }
-        }
     var multiplayerStatusButton: MultiplayerStatusButton? = null
-        set(button) {
-            multiplayerStatusButton?.remove()
-            field = button
-            if (button != null) {
-                addActorAt(0, button)
-            }
-        }
     var smallUnitButton: SmallUnitButton? = null
-        set(button) {
-            // wait button is wrapped in container, remove that container
-            smallUnitButton?.parent?.remove()
-            field = button
-            if (button != null) {
-                // fix uneven spacing applied by HorizontalGroup.wrap()
-                val container = Container(button)
-                container.padBottom(nextTurnButton.height - button.height)
-                // insert next to next-turn-button
-                addActorAt(children.indexOf(nextTurnButton, true), container)
-            }
-        }
+    private val padXSpace = 10f
+    private val padYSpace = 5f
     
     init {
-        space(10f)
-        right()
-        wrapReverse()
-        wrapSpace(10f)
-        rowRight()
-        addActor(nextTurnButton)
+        add(nextTurnButton)
+    }
+    
+    fun update(portrait: Boolean) {
+        clear()
+        if(portrait) {
+            add(nextTurnButton)
+            if (smallUnitButton != null) {
+                row()
+                add(smallUnitButton).padTop(padYSpace).right()
+            }
+            if (autoPlayStatusButton != null) {
+                row()
+                add(autoPlayStatusButton).padTop(padYSpace).right()
+            }
+            if (multiplayerStatusButton != null) {
+                row()
+                add(multiplayerStatusButton).padTop(padYSpace).right()
+            }
+        } else {
+            if (multiplayerStatusButton != null)
+                add(multiplayerStatusButton).padRight(padXSpace).top()
+            if (autoPlayStatusButton != null)
+                add(autoPlayStatusButton).padRight(padXSpace).top()
+            if (smallUnitButton != null)
+                add(smallUnitButton).padRight(padXSpace).top()
+            add(nextTurnButton)
+        }
+        pack()
     }
 
     override fun dispose() {
