@@ -42,7 +42,8 @@ class SmallUnitButton(
             addTooltip(KeyboardBinding.Cycle)
         }
         val nextTurnButton = statusButtons.nextTurnButton
-        val visible = nextTurnButton.isVisible
+        val visible = worldScreen.game.settings.smallUnitButton
+            && nextTurnButton.isVisible
             && nextTurnButton.isNextUnitAction()
             && worldScreen.bottomUnitTable.selectedUnit != null
         statusButtons.smallUnitButton = if (visible) this else null
