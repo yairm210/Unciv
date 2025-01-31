@@ -23,7 +23,7 @@ open class TileGroup(
         3) Borders
         4) Misc: improvements, resources, yields, citizens, arrows, starting locations (editor)
         5) Unit Arts
-        6) Overlay: highlight, fog, crosshair
+        6) Overlay: 
         7) Unit Flags
         8) City Button
     */
@@ -42,23 +42,33 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
     @Suppress("LeakingThis") val layerBorders = TileLayerBorders(this, groupSize)
     @Suppress("LeakingThis") val layerMisc = TileLayerMisc(this, groupSize)
+    @Suppress("LeakingThis") val layerResource = TileLayerResource(this, groupSize)
+    @Suppress("LeakingThis") val layerImprovement = TileLayerImprovement(this, groupSize)
+    @Suppress("LeakingThis") val layerYield = TileLayerYield(this, groupSize)
     @Suppress("LeakingThis") val layerOverlay = TileLayerOverlay(this, groupSize)
     @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
     @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
+    
+    private val allLayers = listOf(
+        layerTerrain,
+        layerFeatures, // includes roads
+        layerBorders,
+        layerResource,
+        layerImprovement,
+        layerMisc, // yields, citizens, arrows, starting locations (editor)
+        layerYield,
+        layerOverlay, // highlight, fog, crosshair
+        layerUnitArt,
+        layerUnitFlag,
+        layerCityButton
+    )
 
     init {
         this.setSize(groupSize, groupSize)
         this.isTransform = false // Cannot be a NonTransformGroup as this causes font-rendered terrain to be upside-down
 
-        this.addActor(layerTerrain)
-        this.addActor(layerFeatures)
-        this.addActor(layerBorders)
-        this.addActor(layerMisc)
-        this.addActor(layerOverlay)
-        this.addActor(layerUnitArt)
-        this.addActor(layerUnitFlag)
-        this.addActor(layerCityButton)
+        for (layer in allLayers) this.addActor(layer)
 
         layerTerrain.update(null)
     }
@@ -72,21 +82,17 @@ open class TileGroup(
     private fun reset(localUniqueCache: LocalUniqueCache) {
         layerTerrain.reset()
         layerBorders.reset()
-        layerMisc.reset(localUniqueCache)
+        layerMisc.reset()
+        layerResource.reset()
+        layerImprovement.reset()
+        layerYield.reset(localUniqueCache)
         layerOverlay.reset()
         layerUnitArt.reset()
         layerUnitFlag.reset()
     }
 
     private fun setAllLayersVisible(isVisible: Boolean) {
-        layerTerrain.isVisible = isVisible
-        layerFeatures.isVisible = isVisible
-        layerBorders.isVisible = isVisible
-        layerMisc.isVisible = isVisible
-        layerOverlay.isVisible = isVisible
-        layerUnitArt.isVisible = isVisible
-        layerUnitFlag.isVisible = isVisible
-        layerCityButton.isVisible = isVisible
+        for (layer in allLayers) layer.isVisible = isVisible
     }
 
     open fun update(
@@ -114,15 +120,8 @@ open class TileGroup(
         }
 
         removeMissingModReferences()
-
-        layerTerrain.update(viewingCiv, localUniqueCache)
-        layerFeatures.update(viewingCiv, localUniqueCache)
-        layerBorders.update(viewingCiv, localUniqueCache)
-        layerOverlay.update(viewingCiv, localUniqueCache)
-        layerMisc.update(viewingCiv, localUniqueCache)
-        layerUnitArt.update(viewingCiv, localUniqueCache)
-        layerUnitFlag.update(viewingCiv, localUniqueCache)
-        layerCityButton.update(viewingCiv, localUniqueCache)
+        
+        for (layer in allLayers) layer.update(viewingCiv, localUniqueCache)
         
         if (!wasPreviouslyVisible){ // newly revealed tile!
             layerTerrain.parent.addAction( 

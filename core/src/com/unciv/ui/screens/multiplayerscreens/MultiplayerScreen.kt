@@ -81,13 +81,18 @@ class MultiplayerScreen : PickerScreen() {
 
             // Download missing mods
             Concurrency.runOnNonDaemonThreadPool(LoadGameScreen.downloadMissingMods) {
-                LoadGameScreen.loadMissingMods(missingMods, onModDownloaded = {
-                    Concurrency.runOnGLThread { ToastPopup("[$it] Downloaded!", this@MultiplayerScreen) }
-                },
-                onCompleted = {
-                    RulesetCache.loadRulesets()
-                    Concurrency.runOnGLThread { MultiplayerHelpers.loadMultiplayerGame(this@MultiplayerScreen, selectedGame!!) }
-                })
+                try {
+                    LoadGameScreen.loadMissingMods(missingMods, onModDownloaded = {
+                        Concurrency.runOnGLThread { ToastPopup("[$it] Downloaded!", this@MultiplayerScreen) }
+                    },
+                    onCompleted = {
+                        RulesetCache.loadRulesets()
+                        Concurrency.runOnGLThread { MultiplayerHelpers.loadMultiplayerGame(this@MultiplayerScreen, selectedGame!!) }
+                    })
+                } catch (ex: Exception) {
+                    val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+                    launchOnGLThread { ToastPopup(message, this@MultiplayerScreen) }
+                }
             }
         }
     }

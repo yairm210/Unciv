@@ -315,6 +315,8 @@ enum class UniqueParameterType(
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
         override val staticKnownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues + ruleset.specialists.keys
     },
 
     /** Implemented by [Tile.matchesTerrainFilter][com.unciv.logic.map.tile.Tile.matchesTerrainFilter] */

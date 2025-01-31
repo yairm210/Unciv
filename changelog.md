@@ -1,3 +1,43 @@
+## 4.15.6
+
+Fixed white blocks on new game from new game screen
+
+Added stat categories for buildings in the construction list
+
+Spy randomness is different for different spies in same city
+
+Resize map with drag gesture - By sulai
+
+Add info about adding project - By itanasi
+
+## 4.15.5
+
+Huge rendering performance changes for modded images - merely "major" change for non-modded images
+
+Automation handles "Found City" uniques with limited uses correctly
+
+By sulai:
+- UnitTable: show a summary when no unit is selected 
+- Fix sticky tooltips 
+
+## 4.15.4
+
+Greeting stats translated correctly in notifications
+
+Multiplayer screen correctly handles errors when downloading mods
+
+"Cannot attack" accepts "vs" conditionals
+
+By SeventhM:
+- Add a field for global unit uniques 
+- Allow building improvements on terrains that only allow some improvements when it has multiple uniques 
+- Add conditional for when you aren't in a golden age 
+
+Added an UniqueType to Found puppet city. - By Emandac
+
+By itanasi:
+- Set Avoid Growth=false on city capture
+
 ## 4.15.3
 
 Tech screen performance improvements

@@ -116,8 +116,12 @@ object FontRulesetIcons {
     fun getPixmapFromActor(actor: Actor): Pixmap {
         val (boxWidth, boxHeight) = scaleAndPositionActor(actor)
 
+        return getPixmapFromActorBase(actor, boxWidth, boxHeight)
+    }
+    
+    // Also required for dynamically generating pixmaps for pixmappacker
+    fun getPixmapFromActorBase(actor: Actor, boxWidth: Int, boxHeight: Int): Pixmap {
         val pixmap = Pixmap(boxWidth, boxHeight, Pixmap.Format.RGBA8888)
-
         frameBuffer.begin()
 
         Gdx.gl.glClearColor(0f,0f,0f,0f)

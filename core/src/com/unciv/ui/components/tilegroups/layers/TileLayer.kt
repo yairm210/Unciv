@@ -48,5 +48,4 @@ abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
     protected abstract fun doUpdate(
         viewingCiv: Civilization?,
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false))
-
 }

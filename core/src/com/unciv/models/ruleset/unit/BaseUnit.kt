@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -69,7 +70,24 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     val costFunctions = BaseUnitCost(this)
 
     lateinit var ruleset: Ruleset
+        private set
 
+    fun setRuleset(ruleset: Ruleset) {
+        this.ruleset = ruleset
+        val list = ArrayList(uniques)
+        list.addAll(ruleset.globalUniques.unitUniques)
+        list.addAll(type.uniques)
+        rulesetUniqueObjects = uniqueObjectsProvider(list)
+        rulesetUniqueMap = uniqueMapProvider(rulesetUniqueObjects) // Has global uniques by the unique objects already
+    }
+
+    @Transient
+    var rulesetUniqueObjects: List<Unique> = ArrayList()
+        private set
+
+    @Transient
+    var rulesetUniqueMap: UniqueMap = UniqueMap()
+        private set
 
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
     fun getShortDescription(uniqueExclusionFilter: Unique.() -> Boolean = {false}) = BaseUnitDescriptions.getShortDescription(this, uniqueExclusionFilter)
@@ -116,45 +134,33 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return unit
     }
 
-    
     override fun hasUnique(uniqueType: UniqueType, state: StateForConditionals?): Boolean {
-        return super<RulesetObject>.hasUnique(uniqueType, state) || ::ruleset.isInitialized && type.hasUnique(uniqueType, state)
+        val stateForConditionals = state ?: StateForConditionals.EmptyState
+        return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueType, stateForConditionals)
+        else super<RulesetObject>.hasUnique(uniqueType, stateForConditionals)
     }
 
     override fun hasUnique(uniqueTag: String, state: StateForConditionals?): Boolean {
-        return super<RulesetObject>.hasUnique(uniqueTag, state) || ::ruleset.isInitialized && type.hasUnique(uniqueTag, state)
+        val stateForConditionals = state ?: StateForConditionals.EmptyState
+        return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueTag, stateForConditionals)
+        else super<RulesetObject>.hasUnique(uniqueTag, stateForConditionals)
     }
 
     override fun hasTagUnique(tagUnique: String): Boolean {
-        return super<RulesetObject>.hasTagUnique(tagUnique) || ::ruleset.isInitialized && type.hasTagUnique(tagUnique) 
+        return if (::ruleset.isInitialized) rulesetUniqueMap.hasTagUnique(tagUnique)
+        else super<RulesetObject>.hasTagUnique(tagUnique)
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
     override fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals): Sequence<Unique> {
-        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueType, state)
-        if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
-            return ourUniques
-        }
-        val typeUniques = type.getMatchingUniques(uniqueType, state)
-        // Memory optimization - very rarely do we actually get uniques from both sources,
-        //   and sequence addition is expensive relative to the rare case that we'll actually need it
-        if (ourUniques.none()) return typeUniques
-        if (typeUniques.none()) return ourUniques
-        return ourUniques + type.getMatchingUniques(uniqueType, state)
+        return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueType, state)
+        else super<RulesetObject>.getMatchingUniques(uniqueType, state)
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
     override fun getMatchingUniques(uniqueTag: String, state: StateForConditionals): Sequence<Unique> {
-        val ourUniques = super<RulesetObject>.getMatchingUniques(uniqueTag, state)
-        if (! ::ruleset.isInitialized) { // Not sure if this will ever actually happen, but better safe than sorry
-            return ourUniques
-        }
-        val typeUniques = type.getMatchingUniques(uniqueTag, state)
-        // Memory optimization - very rarely do we actually get uniques from both sources,
-        //   and sequence addition is expensive relative to the rare case that we'll actually need it
-        if (ourUniques.none()) return typeUniques
-        if (typeUniques.none()) return ourUniques
-        return ourUniques + type.getMatchingUniques(uniqueTag, state)
+        return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueTag, state)
+        else super<RulesetObject>.getMatchingUniques(uniqueTag, state)
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
@@ -381,16 +387,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             val filter = unique.params[0]
             val promotion = unique.params.last()
 
-            if (unit.matchesFilter(filter)
-                || (
-                    filter == "relevant"
+            val isRelevantPromotion = filter == "relevant"
                     && civInfo.gameInfo.ruleset.unitPromotions.values
-                        .any {
-                            it.name == promotion
-                            && unit.type.name in it.unitTypes
-                        }
-                    )
-            ) {
+                .any { it.name == promotion && unit.type.name in it.unitTypes }
+            
+            if (isRelevantPromotion || unit.matchesFilter(filter)) {
                 unit.promotions.addPromotion(promotion, isFree = true)
             }
         }
@@ -519,7 +520,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             power += 4000
 
         // Uniques
-        val allUniques = uniqueObjects.asSequence() +
+        val allUniques = rulesetUniqueObjects.asSequence() +
             promotions.asSequence()
                 .mapNotNull { ruleset.unitPromotions[it] }
                 .flatMap { it.uniqueObjects }

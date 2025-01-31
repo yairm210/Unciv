@@ -2,6 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -284,6 +285,7 @@ class NewGameScreen(
         launchOnGLThread {
             popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
+            ImageGetter.setNewRuleset(ruleset) // To build the temp atlases
         }
 
         val newGame:GameInfo
@@ -385,7 +387,7 @@ class NewGameScreen(
 
         ruleset.clear()
         ruleset.add(newRuleset)
-        ImageGetter.setNewRuleset(ruleset)
+        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
 
         if (updateUI) newGameOptionsTable.updateRuleset(ruleset)

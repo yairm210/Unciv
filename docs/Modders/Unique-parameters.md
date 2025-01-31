@@ -169,6 +169,7 @@ Allowed values:
 - `Specialists`
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
+- Specialist names
 
 ## policyFilter
 
