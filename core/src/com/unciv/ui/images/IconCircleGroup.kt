@@ -3,8 +3,8 @@ package com.unciv.ui.images
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.center
 
 open class IconCircleGroup(
@@ -13,11 +13,7 @@ open class IconCircleGroup(
     resizeActor: Boolean = true,
     color: Color = Color.WHITE,
     circleImage: String = "OtherIcons/Circle"
-): Group() { // can't be nonTransformGroup because we need to dynamically pack yield images
-    
-    init {
-        isTransform = false
-    }
+): NonTransformGroup() {
 
     val circle = ImageGetter.getImage(circleImage).apply {
         setSize(size, size)

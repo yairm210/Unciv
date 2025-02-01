@@ -375,7 +375,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stopBackgroundMapGeneration()
         val ruleset = getCivilopediaRuleset()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
-        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
+        ImageGetter.setNewRuleset(ruleset)
         setSkin()
         openCivilopedia(ruleset, link = link)
     }

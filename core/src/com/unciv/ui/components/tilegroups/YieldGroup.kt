@@ -4,14 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.addToCenter
-import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 
@@ -26,7 +24,6 @@ class YieldGroup : HorizontalGroup() {
         if (currentStats.equals(stats)) return // don't need to update - this is a memory and time saver!
         currentStats = stats
         clearChildren()
-        
         for ((stat, amount) in stats) {
             if (amount > 0f)  // Defense against upstream bugs - negatives would show as "lots"
                 addActor(getStatIconsTable(stat.name, amount.toInt()))
@@ -35,31 +32,33 @@ class YieldGroup : HorizontalGroup() {
     }
 
     fun getIcon(statName: String) =
-            Image(ImageGetter.getStatWithBackground(statName))
+            ImageGetter.getStatIcon(statName).surroundWithCircle(12f)
+                    .apply { circle.color = ImageGetter.CHARCOAL; circle.color.a = 0.5f }
 
     private fun getStatIconsTable(statName: String, number: Int): Table {
         val table = Table()
         when (number) {
-            1 -> table.add(getIcon(statName)).size(12f)
+            1 -> table.add(getIcon(statName))
             2 -> {
-                table.add(getIcon(statName)).size(12f).row()
-                table.add(getIcon(statName)).size(12f)
+                table.add(getIcon(statName)).row()
+                table.add(getIcon(statName))
             }
             3 -> {
-                table.add(getIcon(statName)).size(12f).colspan(2).row()
-                table.add(getIcon(statName)).size(12f)
-                table.add(getIcon(statName)).size(12f)
+                table.add(getIcon(statName)).colspan(2).row()
+                table.add(getIcon(statName))
+                table.add(getIcon(statName))
             }
             4 -> {
-                table.add(getIcon(statName)).size(12f)
-                table.add(getIcon(statName)).size(12f).row()
-                table.add(getIcon(statName)).size(12f)
-                table.add(getIcon(statName)).size(12f)
+                table.add(getIcon(statName))
+                table.add(getIcon(statName)).row()
+                table.add(getIcon(statName))
+                table.add(getIcon(statName))
             }
             else -> {
 
                 val group = Group().apply { setSize(22f, 22f) }
-                val largeImage = getIcon(statName).apply { setSize(22f) }
+                val largeImage = ImageGetter.getStatIcon(statName).surroundWithCircle(22f)
+                    .apply { circle.color = ImageGetter.CHARCOAL;circle.color.a = 0.5f }
                 group.addToCenter(largeImage)
 
                 if (number > 5) {
