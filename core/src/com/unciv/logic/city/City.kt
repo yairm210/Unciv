@@ -14,6 +14,7 @@ import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -91,7 +92,15 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
     var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
-
+    
+    // HashMap to check if we can build the unitType with the saved promotion. 
+    // (Saved promotion: meaning that the player checkbox to save the promotion when adding them to a unitType.)
+    // To not have to redo it for every unit build afterword.
+    var canBuildUnitTypeWithSavedPromotion = HashMap<String, Boolean>()
+    
+    // To stroe unitType to promotion.
+    var cityUnitTypePromotion = HashMap<String, UnitPromotions>()
+    
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
@@ -153,6 +162,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
         toReturn.connectedToCapitalStatus = connectedToCapitalStatus
+        toReturn.canBuildUnitTypeWithSavedPromotion = canBuildUnitTypeWithSavedPromotion
+        toReturn.cityUnitTypePromotion = cityUnitTypePromotion
         return toReturn
     }
 

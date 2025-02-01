@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
@@ -63,7 +64,9 @@ class PromotionPickerScreen private constructor(
 
     // Logic
     private val tree = PromotionTree(unit)
-
+    
+    // This if we should save the unit promotion or not.
+    private var saveUnitTypePromotion = false
 
     init {
         closeButton.onActivation {
@@ -77,6 +80,16 @@ class PromotionPickerScreen private constructor(
             rightSideButton.setText("Pick promotion".tr())
             rightSideButton.onClick(UncivSound.Silent) {
                 acceptPromotion(selectedPromotion)
+                
+                if (saveUnitTypePromotion) {
+                    val unitCurrentCity = unit.currentTile.getCity()
+                    
+                    if (unitCurrentCity != null) {
+                        // If you are clicked the save unitType promotion, you want the next unitType to have the same promotion.
+                        unitCurrentCity.canBuildUnitTypeWithSavedPromotion.put(unit.baseUnit.unitType,true)
+                        unitCurrentCity.cityUnitTypePromotion.put(unit.baseUnit.unitType,unit.promotions)
+                    }
+                }
             }
         } else {
             rightSideButton.isVisible = false
@@ -191,9 +204,16 @@ class PromotionPickerScreen private constructor(
         }
 
         topTable.add(promotionsTable)
+        saveUnitTypePromotionForCity()
         addConnectingLines(emptySet())
     }
-
+    
+    // adds the checkBoxs to choice to save unit promotion.
+    private fun saveUnitTypePromotionForCity() {
+        val checkBoxSaveUnitPromotion = "Save unitType promotions.".toCheckBox(saveUnitTypePromotion) {saveUnitTypePromotion = it}
+        promotionsTable.add(checkBoxSaveUnitPromotion)
+    }
+    
     private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
         val isPickable = canPromoteNow &&
             (!node.pathIsAmbiguous || node.distanceToAdopted == 1) &&

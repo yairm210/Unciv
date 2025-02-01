@@ -15,6 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
@@ -89,13 +90,25 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             val descriptionLabel = Label(description, BaseScreen.skin)  // already translated
             descriptionLabel.wrap = true
             add(descriptionLabel).colspan(2).width(stage.width / if(cityScreen.isCrampedPortrait()) 3 else 4)
-
+            
             if (cityConstructions.isBuilt(construction.name)) {
                 showSellButton(construction)
             } else if (buyButtonFactory.hasBuyButtons(construction)) {
                 row()
                 buyButtonFactory.addBuyButtons(selectedConstructionTable, construction) {
                     it.padTop(5f).colspan(2).center()
+                }
+            }
+            if (construction is BaseUnit) {
+                val unitType = construction.unitType
+                
+                if (city.canBuildUnitTypeWithSavedPromotion[unitType] != null) {
+                    row()
+                    add(city.canBuildUnitTypeWithSavedPromotion[unitType]?.let {
+                        "Build units with saved UnitType promotion".toCheckBox(
+                            it
+                        ) {city.canBuildUnitTypeWithSavedPromotion[unitType] = it}
+                    }).colspan(2).center()
                 }
             }
         }
@@ -132,7 +145,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             }
         }
     }
-
+    
     private fun sellBuildingClicked(construction: Building, sellText: String) {
         cityScreen.closeAllPopups()
 
