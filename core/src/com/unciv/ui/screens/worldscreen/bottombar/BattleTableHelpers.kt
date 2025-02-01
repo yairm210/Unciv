@@ -161,7 +161,7 @@ object BattleTableHelpers {
             sequence {
                 val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                 if (combatant.isCity()) {
-                    val icon = tileGroup.layerMisc.improvementIcon
+                    val icon = tileGroup.layerImprovement.improvementIcon
                     if (icon != null) yield (icon)
                 } else if (!combatant.isAirUnit()) {
                     val slot = tileGroup.layerUnitArt.getSpriteSlot((combatant as MapUnitCombatant).unit)

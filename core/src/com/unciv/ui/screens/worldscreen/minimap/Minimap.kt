@@ -117,6 +117,25 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         return smallerWorldDimension * mapSizePercent / 100 / effectiveRadius
     }
 
+    /**
+     * Returns the closest mini map size for [targetSize] in pixels.
+     * If [touchInside], the minimap is kept within [targetSize],
+     * otherwise the minimap touches [targetSize] from outside.
+     */
+    fun getClosestMinimapSize(targetSize: Vector2, touchInside: Boolean = false): Int {
+        val max = 30
+        for (size in 0..max) {
+            val calculatedSize = calcMinimapSize(size)
+            if (touchInside && (calculatedSize.x > targetSize.x || calculatedSize.y > targetSize.y)) {
+                return (size - 1).coerceIn(0, max)
+            }
+            if (!touchInside && calculatedSize.x > targetSize.x && calculatedSize.y > targetSize.y) {
+                return size
+            }
+        }
+        return max
+    }
+    
     private fun calcMinimapSize(minimapSize: Int): Vector2 {
         val minimapTileSize = calcMinTileSize(minimapSize)
         var height: Float

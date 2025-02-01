@@ -132,6 +132,7 @@ object Conditionals {
             UniqueType.ConditionalAboveHappiness -> checkOnCiv { stats.happiness > conditional.params[0].toInt() }
             UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < conditional.params[0].toInt() }
             UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
+            UniqueType.ConditionalNotGoldenAge -> checkOnCiv { !goldenAges.isGoldenAge() }
 
             UniqueType.ConditionalBeforeEra -> compareEra(conditional.params[0]) { current, param -> current < param }
             UniqueType.ConditionalStartingFromEra -> compareEra(conditional.params[0]) { current, param -> current >= param }
