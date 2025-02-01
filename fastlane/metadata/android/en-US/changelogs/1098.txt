@@ -1,0 +1,19 @@
+
+
+Revert all texture packing
+
+Avoid crash when failing to load mods due to clipboard size smaller than stacktrace
+
+Fixed Unciv not starting on MacOS
+
+4.15.6-patch1
+
+Fix per-turn remaking of the atlases 
+
+modding: Added 'upon entering a [tileFilter] tile' trigger
+
+modding: Added validation for UnitType.movementType
+
+modding: populationFilter now accepts Specialist names
+
+Fix Assignment Cycling - By itanasi
