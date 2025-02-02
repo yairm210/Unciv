@@ -1,8 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
@@ -24,27 +22,19 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.cityscreen.BuyButtonFactory.ConfirmBuyPopup
 
 /**
- * Use [addBuyButtons] to add buy buttons to a table.
  * This class handles everything related to buying constructions. This includes
  * showing and handling [ConfirmBuyPopup] and the actual purchase in [purchaseConstruction].
  */
 class BuyButtonFactory(val cityScreen: CityScreen) {
 
     private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
-    
-    fun addBuyButtons(table: Table, construction: IConstruction?, onButtonAdded: (Cell<TextButton>) -> Unit) {
-        for (button in getBuyButtons(construction)) {
-            onButtonAdded(table.add(button))
-        }
-    }
 
-    fun hasBuyButtons(construction: IConstruction?): Boolean {
-        return getBuyButtons(construction).isNotEmpty()
-    }
+    fun hasBuyButtons(construction: IConstruction?): Boolean = getBuyButtons(construction).isNotEmpty()
     
-    private fun getBuyButtons(construction: IConstruction?): List<TextButton> {
+    fun getBuyButtons(construction: IConstruction?): List<TextButton> {
         val selection = cityScreen.selectedConstruction!=null || cityScreen.selectedQueueEntry >= 0
         if (selection && construction != null && construction !is PerpetualConstruction)
             return Stat.statsUsableToBuy.mapNotNull {
