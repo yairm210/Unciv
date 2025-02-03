@@ -73,13 +73,13 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var tilesPerBiomeArea = 6
     var maxCoastExtension = 2
     var elevationExponent = 0.7f
-    var temperatureExtremeness = 0.6f
+    var temperatureintensity = 0.6f
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
     var waterThreshold = 0.0f
 
-    /** Shifts temperature (after random, latitude and temperatureExtremeness).*/
+    /** Shifts temperature (after random, latitude and temperatureintensity).*/
     var temperatureShift = 0f
 
     fun clone() = MapParameters().also {
@@ -99,7 +99,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         it.tilesPerBiomeArea = tilesPerBiomeArea
         it.maxCoastExtension = maxCoastExtension
         it.elevationExponent = elevationExponent
-        it.temperatureExtremeness = temperatureExtremeness
+        it.temperatureintensity = temperatureintensity
         it.temperatureShift = temperatureShift
         it.vegetationRichness = vegetationRichness
         it.rareFeaturesRichness = rareFeaturesRichness
@@ -117,7 +117,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         tilesPerBiomeArea = 6
         maxCoastExtension = 2
         elevationExponent = 0.7f
-        temperatureExtremeness = 0.6f
+        temperatureintensity = 0.6f
         temperatureShift = 0.0f
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
@@ -163,7 +163,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         if (type != MapGeneratedMainType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
         yield("{RNG Seed} $seed")
         yield(", {Map Elevation}=" + elevationExponent.niceToString(2))
-        yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))
+        yield(", {Temperature intensity}=" + temperatureintensity.niceToString(2))
         yield(", {Resource richness}=" + resourceRichness.niceToString(3))
         yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
         yield(", {Rare features richness}=" + rareFeaturesRichness.niceToString(3))

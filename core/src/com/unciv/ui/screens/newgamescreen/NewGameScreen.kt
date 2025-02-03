@@ -284,6 +284,7 @@ class NewGameScreen(
         launchOnGLThread {
             popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
+            ImageGetter.setNewRuleset(ruleset) // To build the temp atlases
         }
 
         val newGame:GameInfo
@@ -385,7 +386,7 @@ class NewGameScreen(
 
         ruleset.clear()
         ruleset.add(newRuleset)
-        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
+        ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
 
         if (updateUI) newGameOptionsTable.updateRuleset(ruleset)

@@ -1,3 +1,30 @@
+## 4.15.7
+
+Revert all texture packing - solves several bugs at the expense of the faster rendering
+
+Avoid rare crash when failing to load mods on Android
+
+Fixed Unciv not starting on MacOS
+
+modding: 
+- Added 'upon entering a [tileFilter] tile' trigger
+- Added validation for UnitType.movementType
+- populationFilter now accepts Specialist names
+
+Fix Assignment Cycling - By itanasi
+
+## 4.15.6
+
+Fixed white blocks on new game from new game screen
+
+Added stat categories for buildings in the construction list
+
+Spy randomness is different for different spies in same city
+
+Resize map with drag gesture - By sulai
+
+Add info about adding project - By itanasi
+
 ## 4.15.5
 
 Huge rendering performance changes for modded images - merely "major" change for non-modded images

@@ -257,7 +257,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                     shape = MapShape.rectangular
                     mapSize = MapSize.Small
                     type = MapType.pangaea
-                    temperatureExtremeness = .7f
+                    temperatureintensity = .7f
                     waterThreshold = -0.1f // mainly land, gets about 30% water
                     modifyForEasterEgg()
                 })
@@ -375,7 +375,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stopBackgroundMapGeneration()
         val ruleset = getCivilopediaRuleset()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
-        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
+        ImageGetter.setNewRuleset(ruleset)
         setSkin()
         openCivilopedia(ruleset, link = link)
     }

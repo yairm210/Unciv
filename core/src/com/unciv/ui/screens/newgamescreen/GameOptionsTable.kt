@@ -467,7 +467,7 @@ class GameOptionsTable(
         ruleset.modOptions = newRuleset.modOptions
         gameParameters.acceptedModCheckErrors = ""
 
-        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
+        ImageGetter.setNewRuleset(ruleset)
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
     }
 

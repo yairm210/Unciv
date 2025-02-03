@@ -20,6 +20,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import org.lwjgl.system.Configuration
+import java.awt.GraphicsEnvironment
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -29,6 +30,9 @@ internal object DesktopLauncher {
     fun main(arg: Array<String>) {
         if (SharedLibraryLoader.isMac) {
             Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
+            // Since LibGDX 1.13.1 on Mac you cannot call Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
+            //  before GraphicsEnvironment.getLocalGraphicsEnvironment().
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
         }
 
         // The uniques checker requires the file system to be seet up, which happens after lwjgw initializes it
@@ -78,6 +82,8 @@ internal object DesktopLauncher {
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(WindowState.minimumWidth, WindowState.minimumHeight, -1, -1)
 
+
+        
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 

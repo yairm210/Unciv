@@ -151,7 +151,6 @@ class WorldScreen(
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
         stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
-        stage.addActor(minimapWrapper)
         stage.addActor(tutorialTaskTable)    // behind topBar!
         stage.addActor(topBar)
         stage.addActor(statusButtons)
@@ -163,6 +162,7 @@ class WorldScreen(
         stage.addActor(bottomUnitTable)
         stage.addActor(unitActionsTable)
         stage.addActor(bottomTileInfoTable)
+        stage.addActor(minimapWrapper)
         battleTable.width = stage.width / 3
         battleTable.x = stage.width / 3
         stage.addActor(battleTable)
