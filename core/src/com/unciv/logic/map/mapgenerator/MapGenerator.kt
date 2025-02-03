@@ -425,7 +425,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
     /**
      * [MapParameters.tilesPerBiomeArea] to set biomes size
-     * [MapParameters.temperatureExtremeness] to favor very high and very low temperatures
+     * [MapParameters.temperatureintensity] to favor very high and very low temperatures
      * [MapParameters.temperatureShift] to shift temperature towards cold (negative) or hot (positive)
      */
     private fun applyHumidityAndTemperature(tileMap: TileMap) {
@@ -435,7 +435,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         tileMap.setTransients(ruleset)
 
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
-        val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
+        val temperatureintensity = tileMap.mapParameters.temperatureintensity
         val temperatureShift = tileMap.mapParameters.temperatureShift
         val humidityShift = if (temperatureShift > 0) -temperatureShift / 2 else 0f
 
@@ -471,7 +471,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             var temperature = (5.0 * expectedTemperature + randomTemperature) / 6.0
-            temperature = abs(temperature).pow(1.0 - temperatureExtremeness) * temperature.sign
+            temperature = abs(temperature).pow(1.0 - temperatureintensity) * temperature.sign
             temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
 
             // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
@@ -613,7 +613,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     /**
-     * [MapParameters.temperatureExtremeness] as in [applyHumidityAndTemperature]
+     * [MapParameters.temperatureintensity] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
         val waterTerrain: Set<String> =
@@ -649,7 +649,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
-            temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
+            temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureintensity) * temperature.sign
             temperature = (temperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
 
             val candidates = iceEquivalents

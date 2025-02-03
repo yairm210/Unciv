@@ -413,8 +413,8 @@ class MapParametersTable(
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
-        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
-        { mapParameters.temperatureExtremeness = it }
+        addSlider("Temperature intensity", {mapParameters.temperatureintensity}, 0.4f, 0.8f)
+        { mapParameters.temperatureintensity = it }
 
         addSlider("Temperature shift", {mapParameters.temperatureShift}, -0.4f, 0.4f, 0.1f)
         { mapParameters.temperatureShift = it }
