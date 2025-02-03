@@ -352,14 +352,14 @@ class MapParametersTable(
     }
 
     private fun addAdvancedSettings() {
-        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false) {
+        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false, defaultPad = 0f) {
             addAdvancedControls(it)
         }
-        add(expander).pad(10f).padTop(10f).colspan(2).growX().row()
+        add(expander).padTop(10f).colspan(2).growX().row()
     }
 
     private fun addAdvancedControls(table: Table) {
-        table.defaults().pad(5f)
+        table.defaults().pad(2f).padTop(10f)
 
         seedTextField = UncivTextField("RNG Seed", mapParameters.seed.tr())
         seedTextField.textFieldFilter = DigitsOnlyFilter()
