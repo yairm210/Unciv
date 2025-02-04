@@ -389,7 +389,7 @@ class MapParametersTable(
         table.add(seedTextField).fillX().padBottom(10f).row()
 
         fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider {
-            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange, initial = getValue())
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = {onChange(it); generateExampleMap()}, initial = getValue())
             table.add(text.toLabel()).left()
             table.add(slider).fillX().row()
             advancedSliders[slider] = getValue
