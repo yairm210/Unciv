@@ -1,3 +1,17 @@
+## 4.15.8
+
+"Triggers a global alert upon build start" works for units
+
+Added generated map type preview :D
+
+UX: new screen game options doesn't need left-right scrolling on certain screen sizes
+
+UX: new screen map options doesn't need left-right scrolling on certain screen sizes
+
+chore: "extremeness" is both long, and not a word. The correct word is "intensity."
+
+Fixed multiple buy buttons in construction info table
+
 ## 4.15.7
 
 Revert all texture packing - solves several bugs at the expense of the faster rendering
