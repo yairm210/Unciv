@@ -2,13 +2,9 @@
 
 "Triggers a global alert upon build start" works for units
 
-Added generated map type preview :D
-
-UX: new screen game options doesn't need left-right scrolling on certain screen sizes
-
-UX: new screen map options doesn't need left-right scrolling on certain screen sizes
-
-chore: "extremeness" is both long, and not a word. The correct word is "intensity."
+UX:
+- Added generated map type preview in New Game screen :D
+- Better panel sizing in New Game screen
 
 Fixed multiple buy buttons in construction info table
 
