@@ -109,12 +109,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
     
-    @Deprecated("As of 4.14.12 - use statusMap instead (for lookup performance)")
-    /** This is still the source of truth, currently replicating all statuses to use both the map and the list
-       so that ongoing games retain their statuses until we're ready to switch over */
-    var statuses = ArrayList<UnitStatus>()
-    /** New status container - should NOT serve as source of truth since MP games going 
-     * back and forth between older versions will lose this data! */
     var statusMap = HashMap<String, UnitStatus>()
 
     //endregion
@@ -224,7 +218,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        toReturn.statuses = ArrayList(statuses)
         toReturn.statusMap = HashMap(statusMap)
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
@@ -660,6 +653,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
         
+        for (status in statusMap.values) status.setTransients(this)
         updateUniques()
         if (action == UnitActionType.Automate.value){
             automated = true
@@ -1059,7 +1053,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         status.name = name
         status.turnsLeft = turns
         status.setTransients(this)
-        statuses.add(status)
         statusMap[status.name] = status
         updateUniques()
 
@@ -1068,10 +1061,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
     
     fun removeStatus(name:String){
-        val removed = statusMap.remove(name)
-        statuses.removeAll { it.name == name }
-        if (removed == null) return
-        
+        statusMap.remove(name) ?: return
+
         updateUniques()
 
         for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusLoss){ it.params[0] == name })
