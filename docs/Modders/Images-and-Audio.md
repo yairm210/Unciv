@@ -29,6 +29,16 @@ A file `Atlases.json` (uppercase 'A') in the mod root (not in `Images` or in `js
 This file is automatically created by the built-in packer. Only the `game.atlas` file is read by default for backward compatibility.
 If you use external tools and multiple atlases, you will need to maintain this file yourself - it is a simple json array of strings, each a file name without the `.atlas` extension (saved as UTF-8 without byte order mark).
 
+### Rendering Performance
+
+Images that are packed together are much faster to render together.
+To allow for faster rendering for icons, which has a major performance effect, you can copy the ["OtherIcons/circle.png"](https://github.com/yairm210/Unciv/blob/master/android/Images.Icons/OtherIcons/Circle.png) to:
+
+- "ImprovementIcons/Circle.png" for improvements
+- "ResourceIcons/Circle.png" for resources
+- "TechIcons/Circle.png" for technologies
+- "ConstructionIcons/Circle.png" for buildings and units
+
 ### Texture packer settings
 
 The texture packers built into Unciv will look for a `TexturePacker.settings` file in each `Images` directory (_not_ under `jsons`).
