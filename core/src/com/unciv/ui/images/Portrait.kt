@@ -163,6 +163,8 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
         }
     }
 
+    override fun getCircleImage() = ImageGetter.getImage("ResourceIcons/Circle")
+
     override fun getDefaultInnerBackgroundTint(): Color =
         ruleset.tileResources[imageName]?.resourceType?.getColor() ?: Color.WHITE
 
@@ -220,6 +222,8 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
             addActor(pillagedIcon)
         }
     }
+    
+    override fun getCircleImage() = ImageGetter.getImage("ImprovementIcons/Circle")
 
     private fun getColorFromStats(stats: Stats): Color {
         if (stats.asSequence().none { it.value > 0 })
