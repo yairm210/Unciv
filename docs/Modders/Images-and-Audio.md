@@ -31,13 +31,14 @@ If you use external tools and multiple atlases, you will need to maintain this f
 
 ### Rendering Performance
 
-Images that are packed together are much faster to render together.
+Images that are packed together are much faster to render together. If most of the images in your mod are using images from the mod, we want to be able to wrap them from images *also* from your mod.
 To allow for faster rendering for icons, which has a major performance effect, you can copy the ["OtherIcons/circle.png"](https://github.com/yairm210/Unciv/blob/master/android/Images.Icons/OtherIcons/Circle.png) to:
 
 - "ImprovementIcons/Circle.png" for improvements
 - "ResourceIcons/Circle.png" for resources
 - "TechIcons/Circle.png" for technologies
 - "ConstructionIcons/Circle.png" for buildings and units
+- "StatIcons/Circle.png" for stats
 
 ### Texture packer settings
 
