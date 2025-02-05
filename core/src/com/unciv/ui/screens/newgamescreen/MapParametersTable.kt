@@ -22,6 +22,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.*
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
+import com.unciv.utils.Concurrency
 
 /** Table for editing [mapParameters]
  *
@@ -135,10 +136,14 @@ class MapParametersTable(
     }
     
     private fun generateExampleMap(){
-        mapTypeExample.clear()
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
-        val exampleMap = MapGenerator(ruleset).generateMap(mapParameters, GameParameters(), emptyList())
-        mapTypeExample.add(LoadMapPreview(exampleMap, maxMapSize, maxMapSize))
+        Concurrency.run("Generate example map") {
+            val exampleMap = MapGenerator(ruleset).generateMap(mapParameters, GameParameters(), emptyList())
+            Concurrency.runOnGLThread {
+                mapTypeExample.clear()
+                mapTypeExample.add(LoadMapPreview(exampleMap, maxMapSize, maxMapSize))
+            }
+        }
     }
 
     private fun addMapTypeSelectBox() {
