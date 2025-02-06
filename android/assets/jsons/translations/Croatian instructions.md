@@ -171,6 +171,7 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Choose `Odaberi`, `Izaberi`
 - Select `Odaberi` (Izaberi)
 - Upon `Pri`, `Prilikom`, `Po`, `Nakon` OR `Na`, `Nad`
+- Discovering `Otkriće`, `Otkrivanje`
 
 ### Untranslated words
 
