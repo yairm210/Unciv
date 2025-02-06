@@ -886,6 +886,7 @@ enum class UniqueType(
     TriggerUponConstructingBuildingCityFilter("upon constructing [buildingFilter] [cityFilter]", UniqueTarget.TriggerCondition),
     TriggerUponGainingUnit("upon gaining a [baseUnitFilter] unit", UniqueTarget.TriggerCondition),
     TriggerUponTurnEnd("upon turn end", UniqueTarget.TriggerCondition),
+    TriggerUponTurnStart("upon turn start", UniqueTarget.TriggerCondition),
 
     TriggerUponFoundingPantheon("upon founding a Pantheon", UniqueTarget.TriggerCondition),
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),

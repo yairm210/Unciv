@@ -69,6 +69,10 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.cache.updateCitiesConnectedToCapital()
         startTurnFlags()
         updateRevolts()
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state))
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
+
         for (city in civInfo.cities) {
             progressBar?.increment()
             CityTurnManager(city).startTurn()  // Most expensive part of startTurn
