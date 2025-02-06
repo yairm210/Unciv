@@ -138,10 +138,12 @@ class MapParametersTable(
     private fun generateExampleMap(){
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
         Concurrency.run("Generate example map") {
-            val exampleMap = MapGenerator(ruleset).generateMap(mapParameters, GameParameters(), emptyList())
+            val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+            val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters(), emptyList())
             Concurrency.runOnGLThread {
                 mapTypeExample.clear()
                 mapTypeExample.add(LoadMapPreview(exampleMap, maxMapSize, maxMapSize))
+                pack()
             }
         }
     }
