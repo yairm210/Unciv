@@ -170,6 +170,7 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Cancel `Poništi`, `Otkaži` (Ukini)
 - Choose `Odaberi`, `Izaberi`
 - Select `Odaberi` (Izaberi)
+- Upon `Pri`, `Prilikom`, `Po`, `Nakon` OR `Na`, `Nad`
 
 ### Untranslated words
 
