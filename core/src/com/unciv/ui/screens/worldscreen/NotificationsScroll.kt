@@ -148,7 +148,7 @@ class NotificationsScroll(
      * The 'covered' parameters are used to make sure we can scroll up or down far enough so the bottom or top entry is visible.
      *
      * @param notifications Data to display
-     * @param coveredNotificationsTop Height of the portion that may be covered on the bottom w/o any padding
+     * @param coveredNotificationsTop Height of the portion that may be covered on the top w/o any padding
      * @param coveredNotificationsBottom Height of the portion that may be covered on the bottom w/o any padding
      */
     internal fun update(
@@ -170,11 +170,8 @@ class NotificationsScroll(
 
         restoreButton.block()  // For the update, since ScrollPane may layout and change scrollX
         val contentChanged = updateContent(notifications, coveredNotificationsTop, coveredNotificationsBottom)
-        if (contentChanged) {
-            updateLayout()
-        } else {
-            updateSpacers(coveredNotificationsTop, coveredNotificationsBottom)
-        }
+        updateSpacers(coveredNotificationsTop, coveredNotificationsBottom)
+        updateLayout()
 
         scrollX = maxX - previousScrollXinv
         scrollY = if (selectedCell == null) {
