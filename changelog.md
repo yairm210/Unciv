@@ -1,24 +1,18 @@
 ## 4.15.9
 
-Added 'Example map' text on example map in new game screen
+Rendering performance improvements
+
+Map example for new games is *only an example* and does not cause lag
 
 Generate map tab in map editor properly scrollable
 
-Map example for new games is *only an example* not the real map
-
-perf(render): Improved yield render performance for modded images
-
-Map example map generation async
-
-Document rendering performance boost w/circle
-
-perf(render): Minimized texture swaps for improvements/resources
-
 Added missing attack notification translations
 
-Fixed unit statuses causing game to be unloadable
+Fixed unit statuses causing game to be unloadable 
 
-Settling Suggestion Improvements - By itanasi
+By itanasi:
+- Add small Skip/Cycle Button
+- Settling Suggestion Improvements
 
 Add turn start unique - By SeventhM
 

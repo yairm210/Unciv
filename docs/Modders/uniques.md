@@ -3249,6 +3249,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon turn end&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon turn start&gt;"
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
 
