@@ -13,10 +13,7 @@ import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.toCheckBox
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.*
@@ -142,7 +139,14 @@ class MapParametersTable(
             val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters(), emptyList())
             Concurrency.runOnGLThread {
                 mapTypeExample.clear()
-                mapTypeExample.add(LoadMapPreview(exampleMap, maxMapSize, maxMapSize))
+                val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
+                if (!forMapEditor){
+                    val label = "Example map".toLabel()
+                    label.centerX(mapPreview)
+                    label.y = mapPreview.height - label.height - 10f
+                    mapPreview.addActor(label)
+                }
+                mapTypeExample.add(mapPreview)
                 pack()
             }
         }
