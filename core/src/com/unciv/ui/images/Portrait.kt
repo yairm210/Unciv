@@ -10,7 +10,14 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.Stats
-import com.unciv.ui.components.extensions.*
+import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.centerX
+import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toGroup
+import com.unciv.ui.components.extensions.toLabel
 
 /**
  *  ### Manages "portraits" for a subset of RulesetObjects
@@ -138,7 +145,25 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
 
 }
 
-class PortraitResource(name: String, size: Float, borderSize: Float) : Portrait(Type.Resource, name, size, borderSize) {
+class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Type.Resource, name, size) {
+
+    init {
+        if (amount > 0) {
+            val label = amount.tr().toLabel(
+                fontSize = 8,
+                fontColor = Color.WHITE,
+                alignment = Align.center)
+            val amountGroup = label.surroundWithCircle(size/2, true, ImageGetter.CHARCOAL)
+
+            label.y -= 0.5f
+            amountGroup.x = width - amountGroup.width * 3 / 4
+            amountGroup.y = -amountGroup.height / 4
+
+            addActor(amountGroup)
+        }
+    }
+
+    override fun getCircleImage() = ImageGetter.getImage("ResourceIcons/Circle")
 
     override fun getDefaultInnerBackgroundTint(): Color =
         ruleset.tileResources[imageName]?.resourceType?.getColor() ?: Color.WHITE
@@ -183,8 +208,7 @@ class PortraitUnitAction(name: String, size: Float) : Portrait(Type.UnitAction, 
     override fun getDefaultImageTint(): Color = ImageGetter.CHARCOAL
 }
 
-class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false, borderSize: Float = 2f)
-    : Portrait(Type.Improvement, name, size, borderSize) {
+class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false) : Portrait(Type.Improvement, name, size) {
 
     init {
         if (dim) {
@@ -198,6 +222,8 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
             addActor(pillagedIcon)
         }
     }
+    
+    override fun getCircleImage() = ImageGetter.getImage("ImprovementIcons/Circle")
 
     private fun getColorFromStats(stats: Stats): Color {
         if (stats.asSequence().none { it.value > 0 })

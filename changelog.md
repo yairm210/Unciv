@@ -1,3 +1,46 @@
+## 4.15.9
+
+Rendering performance improvements
+
+Map example for new games is *only an example* and does not cause lag
+
+Generate map tab in map editor properly scrollable
+
+Added missing attack notification translations
+
+Fixed unit statuses causing game to be unloadable 
+
+By itanasi:
+- Add small Skip/Cycle Button
+- Settling Suggestion Improvements
+
+Add turn start unique - By SeventhM
+
+## 4.15.8
+
+"Triggers a global alert upon build start" works for units
+
+UX:
+- Added generated map type preview in New Game screen :D
+- Better panel sizing in New Game screen
+
+Fixed multiple buy buttons in construction info table
+
+## 4.15.7
+
+Revert all texture packing - solves several bugs at the expense of the faster rendering
+
+Avoid rare crash when failing to load mods on Android
+
+Fixed Unciv not starting on MacOS
+
+modding: 
+- Added 'upon entering a [tileFilter] tile' trigger
+- Added validation for UnitType.movementType
+- populationFilter now accepts Specialist names
+
+Fix Assignment Cycling - By itanasi
+
 ## 4.15.6
 
 Fixed white blocks on new game from new game screen

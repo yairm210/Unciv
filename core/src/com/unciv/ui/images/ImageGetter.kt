@@ -3,7 +3,6 @@ package com.unciv.ui.images
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.*
@@ -23,15 +22,12 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.skins.SkinCache
-import com.unciv.models.stats.Stat
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
-import kotlinx.coroutines.delay
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -45,12 +41,7 @@ object ImageGetter {
     // We use texture atlases to minimize texture swapping - see https://yairm210.medium.com/the-libgdx-performance-guide-1d068a84e181
     lateinit var atlas: TextureAtlas
     private val atlases = HashMap<String, TextureAtlas>()
-    /** These are atlases that we generate on-the-fly per ruleset */
-    private val tempAtlases = ArrayList<TextureAtlas>() 
     var ruleset = Ruleset()
-    
-    fun getStatWithBackground(statName: String): TextureRegionDrawable? = textureRegionDrawables[statName]
-    
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
@@ -64,12 +55,10 @@ object ImageGetter {
         atlases.clear()
     }
 
-    fun reloadImages() = setNewRuleset(ruleset, buildTempAtlases = false)
+    fun reloadImages() = setNewRuleset(ruleset)
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
-    fun setNewRuleset(ruleset: Ruleset, ignoreIfModsAreEqual: Boolean = false, 
-                      /** The temp atlases are a rendering optimization, and are not required except for map rendering */
-                      buildTempAtlases: Boolean = true) {
+    fun setNewRuleset(ruleset: Ruleset, ignoreIfModsAreEqual: Boolean = false) {
         if (ignoreIfModsAreEqual && ruleset.mods == ImageGetter.ruleset.mods)
             return
             
@@ -90,73 +79,6 @@ object ImageGetter {
 
         BaseScreen.setSkin()
         FontRulesetIcons.addRulesetImages(ruleset)
-        
-        if (buildTempAtlases) {
-            // We purposefully do not dispose() of the old temp atlases, as they may be used in another screen that we could resume
-            // This DOES cause a mild memory leak if a user switches rulesets a lot, but the alternative is getting black images for dead textures...
-            println("Building temp atlases for ${visualMods.joinToString()}")
-            setupStatImages()
-            setupResourcePortraits()
-            setupImprovementPortraits()
-        }
-    }
-    
-    // We want this with a delay of a few seconds because *the current screen* might still be using this image
-    private fun disposeTempAtlases(){
-        val toDispose = tempAtlases.toList()
-        tempAtlases.clear()
-        Concurrency.run {
-            delay(3000)
-            Concurrency.runOnGLThread {
-                toDispose.forEach { it.dispose() }
-            }
-        }
-
-    }
-
-    private fun setupStatImages() {
-        // Performance improvement - "pack" the stat images together with the circle to the same texture
-        // This allows modded stat icons to not require texture swaps when rendering leading to it being ~50x faster
-        fun getActor(statName: String) =
-            getStatIcon(statName).surroundWithCircle(100f)
-                .apply { circle.color = CHARCOAL; circle.color.a = 0.5f }
-        
-        val nameToActorList = Stat.entries.map { it.name to getActor(it.name) }
-        
-        packTexture(nameToActorList, 100)
-    }
-    
-    private fun setupResourcePortraits() {
-        val nameToActorList = ruleset.tileResources.values.map { it.name to getResourcePortrait(it.name, 100f, borderSize = 10f) }
-        packTexture(nameToActorList, 120)
-    }
-
-    private fun setupImprovementPortraits() {
-        val nameToActorList = ruleset.tileImprovements.values.map { it.name to getImprovementPortrait(it.name, 100f, borderSize = 10f) }
-        val pillagedActorList = ruleset.tileImprovements.values.map { (it.name + "-Pillaged") to getImprovementPortrait(it.name, 100f, isPillaged = true, borderSize = 10f) }
-        packTexture(nameToActorList + pillagedActorList, 120)
-    }
-
-    private fun packTexture(nameToActorList: List<Pair<String, Group>>, size: Int) {
-        val pixmapPacker = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply { packToTexture = true }
-        for ((name, actor) in nameToActorList) {
-            actor.apply { isTransform = true; setScale(1f, -1f); setPosition(0f, height) } // flip Y axis
-            val pixmap = FontRulesetIcons.getPixmapFromActorBase(actor, size, size) 
-            pixmapPacker.pack(name, pixmap)
-            pixmap.dispose()
-        }
-
-        val yieldAtlas = pixmapPacker.generateTextureAtlas(
-            TextureFilter.MipMapLinearLinear,
-            TextureFilter.MipMapLinearLinear,
-            true
-        )
-        tempAtlases.add(yieldAtlas)
-        for (region in yieldAtlas.regions) {
-            val drawable = TextureRegionDrawable(region)
-            textureRegionDrawables[region.name] = drawable
-        }
-        pixmapPacker.dispose()
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
@@ -346,13 +268,13 @@ object ImageGetter {
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
 
-    fun getResourcePortrait(resourceName: String, size: Float, borderSize: Float = 2f): Group =
-        PortraitResource(resourceName, size, borderSize)
+    fun getResourcePortrait(resourceName: String, size: Float, amount: Int= 0): Group =
+        PortraitResource(resourceName, size, amount)
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false, borderSize: Float = 2f): Portrait =
-        PortraitImprovement(improvementName, size, false, isPillaged, borderSize)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false): Portrait =
+        PortraitImprovement(improvementName, size, false, isPillaged)
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait = PortraitUnitAction(actionName, size)
 

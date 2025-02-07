@@ -2,7 +2,6 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -387,7 +386,7 @@ class NewGameScreen(
 
         ruleset.clear()
         ruleset.add(newRuleset)
-        ImageGetter.setNewRuleset(ruleset, buildTempAtlases = false)
+        ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
 
         if (updateUI) newGameOptionsTable.updateRuleset(ruleset)

@@ -97,12 +97,12 @@ class ModCheckboxTable(
             if (mod.widget.isChecked) mods += mod.mod.name
         }
 
-        add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods") {
+        add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods", defaultPad = 0f) {
             it.defaults().pad(5f,0f)
             for (mod in compatibleMods) {
                 it.add(mod.widget).row()
             }
-        }).pad(expanderPadOther).padTop(expanderPadTop).growX().row()
+        }).padTop(expanderPadTop).growX().row()
 
         disableIncompatibleMods()
 

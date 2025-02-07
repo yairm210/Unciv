@@ -16,7 +16,11 @@ import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
 import com.unciv.ui.components.TintedMapArrow
 import com.unciv.ui.components.UnitMovementMemoryType
-import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.extensions.brighten
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.centerX
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -120,31 +124,17 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
             resourceName = tile.resource
             resourceAmount = tile.resourceAmount
-            clear()
+            resourceIcon?.remove()
             resourceIcon = null
         }
 
         // Get a fresh Icon if and only if necessary
         if (resourceName != null && effectiveVisible && resourceIcon == null) {
-            val icon = ImageGetter.getImage(resourceName).apply { setSize(24f) }
+            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f, resourceAmount)
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y += 10 // top
             addActor(icon)
-
-            if (resourceAmount > 0) {
-                val label = resourceAmount.tr().toLabel(
-                    fontSize = 8,
-                    fontColor = Color.WHITE,
-                    alignment = Align.center)
-                val amountGroup = label.surroundWithCircle(10f, true, ImageGetter.CHARCOAL)
-
-                label.y -= 0.5f
-                amountGroup.setPosition(icon.x + icon.width, icon.y, Align.bottomRight)
-                
-                addActor(amountGroup)
-            }
-            
             resourceIcon = icon
         }
 
@@ -161,7 +151,7 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         updateResourceIcon(null, false)
     }
 
-    private fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
+    fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
     
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
@@ -173,10 +163,6 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     override fun determineVisibility() {
         isVisible = resourceIcon?.isVisible == true
     }
-
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size){
@@ -209,9 +195,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
         // Get new icon when needed
         if (improvementPlusPillagedID != null && show && improvementIcon == null) {
-            var imageName = improvementToShow!!
-            if (tile.improvementIsPillaged) imageName += "-Pillaged"
-            val icon = ImageGetter.getImage(imageName).apply { setSize(24f) }
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tile.improvementIsPillaged)
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y -= 12 // bottom

@@ -439,20 +439,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.gainStockpiledResource(resource, -amount)
         }
 
-        if (construction !is Building) return
+        if (construction !is INonPerpetualConstruction) return
         if (!construction.hasUnique(UniqueType.TriggersAlertOnStart)) return
-        val buildingIcon = "BuildingIcons/${construction.name}"
+        val icon = if (construction is Building) "BuildingIcons/${construction.name}" else "UnitIcons/${construction.name}"
         for (otherCiv in city.civ.gameInfo.civilizations) {
             if (otherCiv == city.civ) continue
             when {
                 otherCiv.hasExplored(city.getCenterTile()) ->
                     otherCiv.addNotification("The city of [${city.name}] has started constructing [${construction.name}]!",
-                        city.location, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
+                        city.location, NotificationCategory.General, NotificationIcon.Construction, icon)
                 otherCiv.knows(city.civ) ->
                     otherCiv.addNotification("[${city.civ.civName}] has started constructing [${construction.name}]!",
-                        NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
+                        NotificationCategory.General, NotificationIcon.Construction, icon)
                 else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
-                    NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
+                    NotificationCategory.General, NotificationIcon.Construction, icon)
             }
         }
     }

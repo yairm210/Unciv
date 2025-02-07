@@ -24,6 +24,7 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 
+/** This is the bottom-right table in the city screen that shows the currently selected construction */
 class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private val selectedConstructionTable = Table()
     private val buyButtonFactory = BuyButtonFactory(cityScreen)
@@ -95,8 +96,8 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
                 showSellButton(construction)
             } else if (buyButtonFactory.hasBuyButtons(construction)) {
                 row()
-                buyButtonFactory.addBuyButtons(selectedConstructionTable, construction) {
-                    it.padTop(5f).colspan(2).center()
+                for (button in buyButtonFactory.getBuyButtons(construction)) {
+                    selectedConstructionTable.add(button).padTop(5f).colspan(2).center().row()
                 }
             }
             if (construction is BaseUnit) {

@@ -286,7 +286,11 @@ class ModManagementScreen private constructor(
                 launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                 }
-                Gdx.app.clipboard.contents = ex.stackTraceToString()
+                try {
+                    // If it's too large Android won't let you copy, hence the guardrails
+                    Gdx.app.clipboard.contents = ex.stackTraceToString()
+                } catch (_:Exception) {}
+                
                 runningSearchJob = null
                 return@run
             }
