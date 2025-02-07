@@ -106,7 +106,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
                 if (city.canBuildUnitTypeWithSavedPromotion[unitType] != null) {
                     row()
                     add(city.canBuildUnitTypeWithSavedPromotion[unitType]?.let {
-                        "Build units with saved UnitType promotion".toCheckBox(
+                        "Default promotions".toCheckBox(
                             it
                         ) {city.canBuildUnitTypeWithSavedPromotion[unitType] = it}
                     }).colspan(2).center()

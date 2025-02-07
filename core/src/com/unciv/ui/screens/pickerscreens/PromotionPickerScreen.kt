@@ -210,7 +210,7 @@ class PromotionPickerScreen private constructor(
     
     // adds the checkBoxs to choice to save unit promotion.
     private fun saveUnitTypePromotionForCity() {
-        val checkBoxSaveUnitPromotion = "Save unitType promotions.".toCheckBox(saveUnitTypePromotion) {saveUnitTypePromotion = it}
+        val checkBoxSaveUnitPromotion = "Default promotions for ${unit.baseUnit.unitType}".toCheckBox(saveUnitTypePromotion) {saveUnitTypePromotion = it}
         promotionsTable.add(checkBoxSaveUnitPromotion)
     }
     
