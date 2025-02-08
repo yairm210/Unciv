@@ -50,6 +50,7 @@ enum class KeyboardBinding(
     DeveloperConsole(Category.WorldScreen, '`'),
     PrevIdleButton(Category.WorldScreen, "Idle Prev",','),
     NextIdleButton(Category.WorldScreen, "Idle Next", '.'),
+    Cycle(Category.WorldScreen, ';'),
 
     /*
      * These try to be faithful to default Civ5 key bindings as found in several places online
@@ -136,7 +137,7 @@ enum class KeyboardBinding(
     EnhanceReligion(Category.UnitActions,"Enhance a Religion", 'g'),
     DisbandUnit(Category.UnitActions,"Disband unit", KeyCharAndCode.DEL),
     GiftUnit(Category.UnitActions,"Gift unit", KeyCharAndCode.UNKNOWN),
-    Wait(Category.UnitActions, 'z'),
+    Skip(Category.UnitActions, 'z'),
     ShowAdditionalActions(Category.UnitActions,"Show more", Input.Keys.PAGE_DOWN),
     HideAdditionalActions(Category.UnitActions,"Back", Input.Keys.PAGE_UP),
     AddInCapital(Category.UnitActions, "Add in capital", 'g'),

@@ -165,8 +165,8 @@ class Simulation(
 
             val numSteps = max(steps.size, 1)
             val expWinRate = 1f / majorCivs
-            val winRate = numWins[civ]!!.value * 100 / numSteps
-            if (winRate == 0) continue
+            if (numWins[civ]!!.value == 0) continue
+            val winRate = String.format("%.1f", numWins[civ]!!.value * 100f / numSteps)
 
             outString += "\n$civ:\n"
             outString += "$winRate% total win rate \n"
