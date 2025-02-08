@@ -43,8 +43,8 @@ Words in this section are difficult to translate properly or difficult for consi
 Choice of words for consistent translation in order of preference and depending on context.</br>
 First highlighted word is used and additional highlighted words are only hints, and may be used
 either depending on context or by replacing all matching alternative words as applicable.</br>
-Words in brackets are incorrect because English translation has another word.</br>
-Words outside brackets are hints as to when highlighted word should be used.
+Words in parentheses are incorrect because English translation has another word.</br>
+Words outside parentheses are hints as to when highlighted word should be used.
 
 ### Resolved Translation
 
@@ -65,7 +65,7 @@ Words outside brackets are hints as to when highlighted word should be used.
 - Tutorial `Poduka`, `Vodič`
 - Improvement, Improve `Unaprjeđenje`, `Unaprjediti`
 - Enhance `Unaprjediti`, (Poboljšati)
-- Camp `Logor`, `tabor` barbarski kamp
+- Camp, Encampment `Logor`, `tabor` barbarski kamp
 - Camp `Kamp` unaprjeđenje
 - Air Sweep `Čišćenje Zraka`
 - Fog of War `Ratna Magla`
@@ -224,7 +224,7 @@ Use of formal form:
 
 Use of informal form:
 
-- In diplomacy, both major and minor civs and quests of city states
+- In diplomacy, both major and minor civs, and quests of city states
 - Nation introduction during new game
 - When the player gives orders to game
 - Technology and great building proverbs
@@ -239,7 +239,9 @@ Exceptions (use sparingly to retain consistency):
 
 - Use formal form where appropriate to avoid grammatical gender
 - Use formal form where appropriate to simplify grammar
-- Switch from formal or informal form where appropriate to make it sound more natural or consistent, e.g. UI prompt
+- Switch from formal or informal (mixture) where appropriate to make it sound more natural or consistent, e.g. UI prompt
+
+NOTE: Switching from formal and informal is used in diplomacy
 
 Examples (formal vs informal):
 
