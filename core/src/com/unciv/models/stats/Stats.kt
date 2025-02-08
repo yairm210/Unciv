@@ -170,7 +170,7 @@ open class Stats(
 
     /** Since notifications are translated on the fly, when saving stats there we need to do so in English */
     fun toStringForNotifications() = this.joinToString {
-        (if (it.value > 0) "+" else "") + it.value.toInt().tr() + " " + it.key.toString()
+        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString()
     }
 
     // For display in diplomacy window

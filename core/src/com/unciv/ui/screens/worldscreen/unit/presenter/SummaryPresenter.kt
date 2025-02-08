@@ -23,7 +23,7 @@ class SummaryPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
             
             val subText = mutableListOf<String>().apply {
                 if (idleCount > 0) add("[$idleCount] idle".tr())
-                if (waitingCount > 0) add("[$waitingCount] skipping".tr())
+                if (waitingCount > 0) add("[$waitingCount] waiting".tr())
             }.joinToString(", ")
             
             if(subText!="") {
