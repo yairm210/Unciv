@@ -468,18 +468,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             // checking if it's true that we should load saved promotion for the unitType
             // Check if the player want to rebuild the unit the saved promotion
             // and null check.
-            val savedPromotion = city.cityUnitTypePromotion[unit.baseUnit.unitType]
-            if (city.canBuildUnitTypeWithSavedPromotion[unit.baseUnit.unitType] != null &&
-                city.canBuildUnitTypeWithSavedPromotion[unit.baseUnit.unitType] == true &&
-                savedPromotion != null) {
+            // and finally check if the current unit has enough XP. 
+            val savedPromotion = city.cityUnitTypePromotions[unit.baseUnit.unitType]
+            if (city.unitTypeToPromotion[unit.baseUnit.unitType] != null &&
+                city.unitTypeToPromotion[unit.baseUnit.unitType] == true &&
+                savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
                 
-                // check if current unit has enough ep
-                if (unit.promotions.XP >= savedPromotion.XP) {
-                    
-                    // then added it.
                     for (promotions in savedPromotion.promotions) {
                         unit.promotions.addPromotion(promotions)
-                    }
                 }
             }
         }

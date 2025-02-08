@@ -93,13 +93,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var isPuppet = false
     var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
     
-    // HashMap to check if we can build the unitType with the saved promotion. 
-    // (Saved promotion: meaning that the player checkbox to save the promotion when adding them to a unitType.)
-    // To not have to redo it for every unit build afterword.
-    var canBuildUnitTypeWithSavedPromotion = HashMap<String, Boolean>()
+    var unitTypeToPromotion = HashMap<String, Boolean>()
     
-    // To stroe unitType to promotion.
-    var cityUnitTypePromotion = HashMap<String, UnitPromotions>()
+    var cityUnitTypePromotions = HashMap<String, UnitPromotions>()
     
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
@@ -162,8 +158,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
         toReturn.connectedToCapitalStatus = connectedToCapitalStatus
-        toReturn.canBuildUnitTypeWithSavedPromotion = canBuildUnitTypeWithSavedPromotion
-        toReturn.cityUnitTypePromotion = cityUnitTypePromotion
+        toReturn.unitTypeToPromotion = unitTypeToPromotion
+        toReturn.cityUnitTypePromotions = cityUnitTypePromotions
         return toReturn
     }
 
