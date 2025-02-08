@@ -58,7 +58,7 @@ class MapParametersTable(
     private lateinit var mapSizesOptionsValues: HashSet<String>
     private lateinit var mapResourcesOptionsValues: HashSet<String>
     
-    private val maxMapSize = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
+    private val maxMapSize = ((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f // There is 5px padding each side
     private val mapTypeExample = Table()
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders

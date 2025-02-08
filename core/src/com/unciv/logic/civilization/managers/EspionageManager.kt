@@ -92,11 +92,8 @@ class EspionageManager : IsPartOfGameInfoSerialization {
      * Determines whether the NextTurnAction MoveSpies should be shown or not
      * @return true if there are spies waiting to be moved
      */
-    fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && hasIdleSpies()
-
-    /** Are any spies in the hideout?
-     *  @see shouldShowMoveSpies */
-    fun hasIdleSpies() = spyList.any { it.isIdle() }
+    fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && spyList.any { it.isIdle() }
+            && civInfo.gameInfo.getCities().any { civInfo.hasExplored(it.getCenterTile()) && getSpyAssignedToCity(it) == null }
 
     fun getIdleSpies(): List<Spy> {
         return spyList.filterTo(mutableListOf()) { it.isIdle() }

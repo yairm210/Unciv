@@ -710,7 +710,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [City](https://thenounproject.com/icon/city-571332) By Felix Westphal
 - [Fire](https://thenounproject.com/icon/96564) By Lloyd Humphreys for "city being razed" icon
 - [Sleep](https://thenounproject.com/icon/sleep-1760085) By Saeful Muslim for unit "sleep" action and status
-- [Skip](https://www.flaticon.com/free-icon/jump_3976216) by Freq Wazza for Skip icon
+- [Clockwise](https://thenounproject.com/icon/clockwise-184528/) By Universal Icons (Louis Dawson) for "Wait" icon. The original work has been slightly modified.
 - [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 - [Arrow](https://thenounproject.com/icon/arrow-2032227/) By uzeir syarief for moving between idle units, expanders, etc.
 - [Exchange](https://thenounproject.com/icon/exchange-17858) By Mike Rowe for switching tiles between cities
