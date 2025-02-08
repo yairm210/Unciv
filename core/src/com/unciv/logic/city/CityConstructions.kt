@@ -470,8 +470,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             // and null check.
             // and finally check if the current unit has enough XP. 
             val savedPromotion = city.cityUnitTypePromotions[unit.baseUnit.unitType]
-            if (city.unitTypeToPromotion[unit.baseUnit.unitType] != null &&
-                city.unitTypeToPromotion[unit.baseUnit.unitType] == true &&
+            if (city.unitTypeToPromotion[unit.baseUnit.unitType] == true &&
                 savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
                 
                     for (promotions in savedPromotion.promotions) {
