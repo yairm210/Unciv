@@ -103,9 +103,11 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             if (construction is BaseUnit) {
                 val unitType = construction.unitType
                 
-                if (city.unitTypeToPromotion[unitType] != null) {
+                val buildUnitWithPromotions = city.unitTypeToPromotion[unitType]
+                
+                if (buildUnitWithPromotions != null) {
                     row()
-                    add("Default promotions".toCheckBox(city.unitTypeToPromotion[unitType]!!) {city.unitTypeToPromotion[unitType] = it}).colspan(2).center()
+                    add("Default promotions".toCheckBox(buildUnitWithPromotions) {city.unitTypeToPromotion[unitType] = it}).colspan(2).center()
                 }
             }
         }

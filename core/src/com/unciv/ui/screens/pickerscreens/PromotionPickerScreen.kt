@@ -64,7 +64,7 @@ class PromotionPickerScreen private constructor(
 
     // Logic
     private val tree = PromotionTree(unit)
-    
+
     // This if we should save the unit promotion or not.
     private var saveUnitTypePromotion = false
 
@@ -210,7 +210,7 @@ class PromotionPickerScreen private constructor(
     
     // adds the checkBoxs to choice to save unit promotion.
     private fun saveUnitTypePromotionForCity() {
-        val checkBoxSaveUnitPromotion = "Default promotions for ${unit.baseUnit.unitType}".toCheckBox(saveUnitTypePromotion) {saveUnitTypePromotion = it}
+        val checkBoxSaveUnitPromotion = "Default promotions for [${unit.baseUnit.unitType}]".toCheckBox(saveUnitTypePromotion) {saveUnitTypePromotion = it}
         promotionsTable.add(checkBoxSaveUnitPromotion)
     }
     
@@ -372,7 +372,6 @@ class PromotionPickerScreen private constructor(
     }
 
     override fun recreate() = recreate(closeOnPick)
-
     fun recreate(closeOnPick: Boolean): BaseScreen {
         val newScreen = PromotionPickerScreen(unit, closeOnPick, originalName, onChange)
         newScreen.setScrollY(scrollPane.scrollY)
