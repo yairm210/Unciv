@@ -61,7 +61,9 @@ class MapRegions (val ruleset: Ruleset) {
         val closeStartPenaltyForRing = mapOf(
                 0 to 99, 1 to 97, 2 to 95,
                 3 to 92, 4 to 89, 5 to 69,
-                6 to 57, 7 to 24, 8 to 15 )
+                6 to 57, 7 to 24, 8 to 20,
+                9 to 16, 10 to 12, 11 to 8, 
+                12 to 6, 13 to 4) //at 14, both of us can settle a min distance expand without competing for tiles
 
         val randomLuxuryRatios = mapOf(
                 1 to listOf(1f),

@@ -116,6 +116,7 @@ open class TileGroup(
             if (tile.neighbors.none { viewingCiv.hasExplored(it) })
                 // Else - hide all layers
                 setAllLayersVisible(false)
+            else layerOverlay.setUnexplored(viewingCiv)
             return
         }
 

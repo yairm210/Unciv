@@ -13,15 +13,13 @@ import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.toCheckBox
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.*
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
+import com.unciv.utils.Concurrency
 
 /** Table for editing [mapParameters]
  *
@@ -60,7 +58,7 @@ class MapParametersTable(
     private lateinit var mapSizesOptionsValues: HashSet<String>
     private lateinit var mapResourcesOptionsValues: HashSet<String>
     
-    private val maxMapSize = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
+    private val maxMapSize = ((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f // There is 5px padding each side
     private val mapTypeExample = Table()
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
@@ -135,10 +133,23 @@ class MapParametersTable(
     }
     
     private fun generateExampleMap(){
-        mapTypeExample.clear()
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
-        val exampleMap = MapGenerator(ruleset).generateMap(mapParameters, GameParameters(), emptyList())
-        mapTypeExample.add(LoadMapPreview(exampleMap, maxMapSize, maxMapSize))
+        Concurrency.run("Generate example map") {
+            val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+            val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters(), emptyList())
+            Concurrency.runOnGLThread {
+                mapTypeExample.clear()
+                val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
+                if (!forMapEditor){
+                    val label = "Example map".toLabel()
+                    label.centerX(mapPreview)
+                    label.y = mapPreview.height - label.height - 10f
+                    mapPreview.addActor(label)
+                }
+                mapTypeExample.add(mapPreview)
+                pack()
+            }
+        }
     }
 
     private fun addMapTypeSelectBox() {
@@ -389,7 +400,7 @@ class MapParametersTable(
         table.add(seedTextField).fillX().padBottom(10f).row()
 
         fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider {
-            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange, initial = getValue())
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = {onChange(it); generateExampleMap()}, initial = getValue())
             table.add(text.toLabel()).left()
             table.add(slider).fillX().row()
             advancedSliders[slider] = getValue
