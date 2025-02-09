@@ -58,7 +58,7 @@ Words outside parentheses are hints as to when highlighted word should be used.
 - Move `Pokreni`, `Pomakni`, `Premjesti`
 - Annex `Pripojiti`, `Aneksirati`
 - Capital `Prijestolnica`
-- Capital City `Glavni grad`
+- Capital City `Glavni Grad`
 - Turn `Potez`, `Krug`
 - Declaration `Deklaracija`, (Izjava)
 - Unique `Unikatni`, `Jedinstveni`
@@ -412,6 +412,7 @@ Mixed but not applicable:
 - [terrainName]
 - [terrainFilter]
 - [Stats]
+- [PolicyOrNationalWonder]
 
 ### Guess gender
 
