@@ -398,14 +398,14 @@ ImprovementIcons/Road
   index: -1
 ImprovementIcons/Terrace farm
   rotate: false
-  xy: 328, 680
+  xy: 328, 788
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Trading post
   rotate: false
-  xy: 328, 464
+  xy: 328, 572
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1075,51 +1075,44 @@ OtherIcons/Shield
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Skip
+OtherIcons/Sleep
   rotate: false
   xy: 1008, 1161
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Sleep
+OtherIcons/Speaker
   rotate: false
   xy: 1116, 1269
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Speaker
-  rotate: false
-  xy: 1008, 1053
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 OtherIcons/Spy
   rotate: false
-  xy: 1116, 1053
+  xy: 1008, 945
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Star
   rotate: false
-  xy: 1116, 951
+  xy: 1116, 1059
   size: 100, 94
   orig: 100, 94
   offset: 0, 0
   index: -1
 OtherIcons/Swap
   rotate: false
-  xy: 328, 788
+  xy: 335, 896
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Timer
   rotate: false
-  xy: 328, 572
+  xy: 328, 680
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1133,14 +1126,14 @@ OtherIcons/Triangle
   index: -1
 OtherIcons/Turn right
   rotate: false
-  xy: 328, 248
+  xy: 328, 356
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Tyrannosaurus
   rotate: false
-  xy: 328, 140
+  xy: 328, 248
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1150,6 +1143,13 @@ OtherIcons/WLTKD
   xy: 1663, 1319
   size: 83, 65
   orig: 83, 65
+  offset: 0, 0
+  index: -1
+OtherIcons/Wait
+  rotate: false
+  xy: 328, 32
+  size: 100, 100
+  orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Wonders
@@ -1357,35 +1357,35 @@ ResourceIcons/Silver
   index: -1
 ResourceIcons/Spices
   rotate: false
-  xy: 1008, 945
+  xy: 1116, 1161
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Stone
   rotate: false
-  xy: 343, 1004
+  xy: 1116, 951
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Sugar
   rotate: false
-  xy: 335, 896
+  xy: 343, 1004
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Truffles
   rotate: false
-  xy: 328, 356
+  xy: 328, 464
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Uranium
   rotate: false
-  xy: 328, 32
+  xy: 328, 140
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1511,7 +1511,7 @@ StatIcons/Resistance
   index: -1
 StatIcons/Specialist
   rotate: false
-  xy: 1116, 1161
+  xy: 1008, 1053
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
