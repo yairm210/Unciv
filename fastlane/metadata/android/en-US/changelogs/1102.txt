@@ -1,0 +1,23 @@
+
+
+modding: Validate tech row value
+
+UI: More visible railroads
+
+Display unexplored tiles 1-tile out from explored tiles
+
+Resolved  - Retain zoom when moving between different city screens
+
+4.15.9-patch1
+
+Revert "Add small Skip/Cycle Button " ()
+
+Resolved  - Stats in notifications no longer have number format 'baked in'
+
+Map no longer makes map options left-right scrollable (hopefully)
+
+Add missing translations - see 
+
+Only show 'move spies' button if there are places to move spies
+
+Add Shuffle Civ option - By itanasi
