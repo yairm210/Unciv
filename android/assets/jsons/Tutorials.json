@@ -27,7 +27,7 @@
           {"text": "Cities will house Citizens, which can work tiles up to 3 tiles away from the city. This means you don’t have to settle cities right on or next to good tiles. Let’s say, for example, that you want access to some Iron – but the resource is in a desert area. You don’t have to settle your city in the desert. You can settle a few tiles away in more prosperous lands. Your city will grow and eventually gain access to the resource. You only need to settle right on top of resources if you need them immediately."},
           {},
           {"text": "The first thing coming out of your city depends on the strategy you want to follow, but the 'classic' build order is to build first two Scouts, then a Shrine, and three Settlers, and adopt Tradition, to explore the map quickly (Scouts ignore terrain cost), and to get an early Pantheon (if you're playing with religion enabled)."},
-          {"text": "But feel free to experiment with your own build orders!", "color": "#fa0"},
+          {"text": "But feel free to experiment with your own build orders!", "color": "#fa0"}
       ]
   },
   {
@@ -129,7 +129,7 @@
         {"text":"This greatly improves the speed you can get Units around the map."},
         {"text":"Until you research the technology that removes it, Roads do not cross Rivers"},
         {"text":"Connecting your cities to the capital by Roads and/or Railroads will generate Gold via the Trade Route.","link":"Tutorials/Trade Route"},
-        {"text":"However, since each Road and Railroad have a Maintenance Cost, it may be more economical to wait until the cities grow and only place where needed."},
+        {"text":"However, since each Road and Railroad have a Maintenance Cost, it may be more economical to wait until the cities grow and only place where needed."}
     ]
   },
   {
@@ -233,7 +233,11 @@
   {
     "name": "Idle Units",
     "steps": [
-      "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again, or command the unit to 'Wait'.\nIf you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.\nIf you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units."
+      "Clicking 'Next unit' moves to the next idle unit in the queue (as listed in Overview -> Units). After issuing an order to an unit, if 'Auto Unit Cycle' in Options -> Gameplay is enabled, you will automatically select the next idle unit.",
+        "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again, or command the unit to 'Skip turn'.",
+        "If you want to disable the 'Next unit' feature entirely, you can toggle it in Options -> Gameplay -> Check for idle units.",
+        "If you'd rather 'Next unit' cycle the units and not mark them as Done, you can change it in the Options -> Gameplay menu.",
+        "You can also cycle through the idle units using the left and right triangles on the Unit Table in the lower left of the screen. Or by default using the Cycle button next to the 'Next Unit' button."
     ]
   },
   {
@@ -348,7 +352,7 @@
     "⑥: Unit Action Buttons - while a unit is selected its possible actions appear here.",
     "⑦: The unit/city info pane - shows information about a selected unit or city.",
     "⑧: The name (and unit icon) of the selected unit or city, with current health if wounded. Clicking a unit name or icon will open its civilopedia entry.",
-    "⑨: The arrow buttons allow jumping to the next/previous unit.",
+    "⑨: The arrow buttons allow jumping to the next/previous idle unit.",
     "⑩: For a selected unit, its promotions appear here, and clicking leads to the promotions screen for that unit.",
     "⑪: Remaining/per turn movement points, strength and experience / XP needed for promotion. For cities, you get its combat strength.",
     "⑫: This button closes the selected unit/city info pane.",
@@ -494,7 +498,7 @@
         {"text":"The Intercepting Unit rolls to see if it hits. Whether it hits or not costs an Attack, and most units (without Promotions) can only Attack Once per Nation's Turn. It does NOT cost Movement Points, but Air Units that have used their Movement cannot Intercept between turns."},
         {"text":"If the Intercepting Unit Hits, it deals damage according to the Combat Strength calculation to the Attacking Air Unit, potentially with any Strength Bonuses that apply to Interception. It does not receive damage from the Attacking Air Unit."},
         {"text":"After Interception resolves, the Attacking Air Unit and the Defending Unit in the targeted tile do Combat as normal, with damage dealt to both sides."},
-        {"text":"To help deal with Interceptions, see Air Sweeps.","link": "Tutorials/Air Sweeps"},
+        {"text":"To help deal with Interceptions, see Air Sweeps.","link": "Tutorials/Air Sweeps"}
     ]
   },
   {
@@ -545,7 +549,7 @@
       {"text":"Spies at a higher rank have a higher chance of success. The max rank a spy can reach is rank 3. After a spy is killed it will revive after a certain amount of turns back at rank 1."},
       {"text":"Building buildings like the constabulary and police station will reduce the technology steal rate of spies in that city."},
       {},
-      {"text":"Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."},
+      {"text":"Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."}
     ]
   },
     {
@@ -671,7 +675,7 @@
             {},
             {"text":"Tile improvements\nIn Civilzation V, workers start working on an improvement-under-construction at the beginning of movement. Unciv changes this, to allow players to assign workers to tiles, and then reconsider and change improvement or move them elsewhere."},
             {},
-            {"text":"Forest and Jungle Visibility\nIn Unciv, forests and jungles are visible 1 tile outside visibility range. In Civilization V, this is the behaviour of hills and mountains, but not of forests and jungles, yet jungle and forest can block hills, and hill + forest can block mountain, indicating they're on the same elevation. This is considered to be a bug in the otherwise well-structured visibility logic in Civilization V."},
+            {"text":"Forest and Jungle Visibility\nIn Unciv, forests and jungles are visible 1 tile outside visibility range. In Civilization V, this is the behaviour of hills and mountains, but not of forests and jungles, yet jungle and forest can block hills, and hill + forest can block mountain, indicating they're on the same elevation. This is considered to be a bug in the otherwise well-structured visibility logic in Civilization V."}
         ]
     },
     {
@@ -679,7 +683,7 @@
         "civilopediaText": [
             {"text": "Founding Cities\nThe Settler is a unit that can found a new city. You can build a Settler unit in a city with at least 2 population, and then move them to a good location to found a new city. This will usually be your main way of acquiring more cities."},
             {},
-            {"text": "Food conversion to Production\nDuring the construction of a Settler, the city will not grow. Instead, the 1st, 2nd, 4th, and from there on every 4th, excess Food (Growth) is converted into Production, with the rest of the excess Food being lost."},
+            {"text": "Food conversion to Production\nDuring the construction of a Settler, the city will not grow. Instead, the 1st, 2nd, 4th, and from there on every 4th, excess Food (Growth) is converted into Production, with the rest of the excess Food being lost."}
         ]
     }
 ]

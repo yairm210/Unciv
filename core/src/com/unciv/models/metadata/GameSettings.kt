@@ -39,6 +39,7 @@ class GameSettings {
     var checkForDueUnits: Boolean = true
     var checkForDueUnitsCycles: Boolean = false
     var autoUnitCycle: Boolean = true
+    var smallUnitButton: Boolean = true
     var singleTapMove: Boolean = false
     var longTapMove: Boolean = true
     var language: String = Constants.english
