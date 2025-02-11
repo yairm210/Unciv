@@ -259,7 +259,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if (workLeft < 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
+        if (workLeft <= 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
             return 0 // So we finish it at the start of the next turn. This could technically also happen when we lower production costs during our turn,
         // but distinguishing those two cases is difficult, and the second one is much rarer than the first
         if (workLeft <= productionOverflow) // if we already have stored up enough production to finish it directly
