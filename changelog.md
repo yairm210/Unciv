@@ -6,17 +6,11 @@ UI: More visible railroads
 
 Display unexplored tiles 1-tile out from explored tiles
 
-Resolved  - Retain zoom when moving between different city screens
+Retain zoom when moving between different city screens
 
-4.15.9-patch1
+Stats in notifications no longer have number format 'baked in'
 
-Revert "Add small Skip/Cycle Button " ()
-
-Resolved  - Stats in notifications no longer have number format 'baked in'
-
-Map no longer makes map options left-right scrollable (hopefully)
-
-Add missing translations - see 
+Map no longer makes map options left-right scrollable
 
 Only show 'move spies' button if there are places to move spies
 
