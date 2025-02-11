@@ -308,6 +308,22 @@ object GameStarter {
             }
         }.toCollection(chosenPlayers)
 
+        // ensure Spectators always first players
+        val spectators = chosenPlayers.filter { it.chosenCiv == Constants.spectator }
+        val otherPlayers = chosenPlayers.filterNot { it.chosenCiv == Constants.spectator }.toMutableList()
+        
+        // Shuffle Major Civs
+        if (newGameParameters.shufflePlayerOrder) {
+            otherPlayers.shuffle()
+        }
+
+        chosenPlayers.clear()
+        chosenPlayers.addAll(spectators)
+        chosenPlayers.addAll(otherPlayers)
+        
+        for(player in chosenPlayers)
+            println(player.chosenCiv)
+
         // Add CityStates to result - disguised as normal AI, but addCivilizations will detect them
         val numberOfCityStates = if (newGameParameters.randomNumberOfCityStates) {
             // This swaps min and max if the user accidentally swapped min and max
@@ -349,12 +365,7 @@ object GameStarter {
             .map { it.key }
             .filter { it in usedCivNames }
 
-        val playersToAdd = if (newGameParameters.shufflePlayerOrder) {
-            chosenPlayers.toMutableList().apply { shuffle() }
-        } else {
-            chosenPlayers
-        }
-        for (player in playersToAdd) {
+        for (player in chosenPlayers) {
             val civ = Civilization(player.chosenCiv)
             when (player.chosenCiv) {
                 in usedMajorCivs, Constants.spectator -> {

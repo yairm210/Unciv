@@ -105,7 +105,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             showHighlight(Color.RED)
     }
 
-    private fun setUnexplored(viewingCiv: Civilization) {
+    fun setUnexplored(viewingCiv: Civilization) {
         val unexploredShouldBeVisible = !viewingCiv.hasExplored(tile)
         val unexploredIsVisible = unexplored != null
         if (unexploredIsVisible && !unexploredShouldBeVisible) {

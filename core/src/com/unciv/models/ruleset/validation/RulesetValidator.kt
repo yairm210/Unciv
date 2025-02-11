@@ -850,6 +850,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (tech in ruleset.technologies.values) {
+            if (tech.row < 1) lines.add("Tech ${tech.name} has a row value below 1: ${tech.row}", sourceObject = tech)
             uniqueValidator.checkUniques(tech, lines, false, tryFixUnknownUniques)
         }
     }

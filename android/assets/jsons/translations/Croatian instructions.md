@@ -43,8 +43,8 @@ Words in this section are difficult to translate properly or difficult for consi
 Choice of words for consistent translation in order of preference and depending on context.</br>
 First highlighted word is used and additional highlighted words are only hints, and may be used
 either depending on context or by replacing all matching alternative words as applicable.</br>
-Words in brackets are incorrect because English translation has another word.</br>
-Words outside brackets are hints as to when highlighted word should be used.
+Words in parentheses are incorrect because English translation has another word.</br>
+Words outside parentheses are hints as to when highlighted word should be used.
 
 ### Resolved Translation
 
@@ -58,14 +58,14 @@ Words outside brackets are hints as to when highlighted word should be used.
 - Move `Pokreni`, `Pomakni`, `Premjesti`
 - Annex `Pripojiti`, `Aneksirati`
 - Capital `Prijestolnica`
-- Capital City `Glavni grad`
+- Capital City `Glavni Grad`
 - Turn `Potez`, `Krug`
 - Declaration `Deklaracija`, (Izjava)
 - Unique `Unikatni`, `Jedinstveni`
 - Tutorial `Poduka`, `Vodič`
 - Improvement, Improve `Unaprjeđenje`, `Unaprjediti`
 - Enhance `Unaprjediti`, (Poboljšati)
-- Camp `Logor`, `tabor` barbarski kamp
+- Camp, Encampment `Logor`, `tabor` barbarski kamp
 - Camp `Kamp` unaprjeđenje
 - Air Sweep `Čišćenje Zraka`
 - Fog of War `Ratna Magla`
@@ -170,6 +170,8 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Cancel `Poništi`, `Otkaži` (Ukini)
 - Choose `Odaberi`, `Izaberi`
 - Select `Odaberi` (Izaberi)
+- Upon `Pri`, `Prilikom`, `Po`, `Nakon` OR `Na`, `Nad`
+- Discovering `Otkriće`, `Otkrivanje`
 
 ### Untranslated words
 
@@ -222,7 +224,7 @@ Use of formal form:
 
 Use of informal form:
 
-- In diplomacy, both major and minor civs and quests of city states
+- In diplomacy, both major and minor civs, and quests of city states
 - Nation introduction during new game
 - When the player gives orders to game
 - Technology and great building proverbs
@@ -237,7 +239,9 @@ Exceptions (use sparingly to retain consistency):
 
 - Use formal form where appropriate to avoid grammatical gender
 - Use formal form where appropriate to simplify grammar
-- Switch from formal or informal form where appropriate to make it sound more natural or consistent, e.g. UI prompt
+- Switch from formal or informal (mixture) where appropriate to make it sound more natural or consistent, e.g. UI prompt
+
+NOTE: Switching from formal and informal is used in diplomacy
 
 Examples (formal vs informal):
 
@@ -408,6 +412,7 @@ Mixed but not applicable:
 - [terrainName]
 - [terrainFilter]
 - [Stats]
+- [PolicyOrNationalWonder]
 
 ### Guess gender
 
