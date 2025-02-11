@@ -81,15 +81,7 @@ class PromotionPickerScreen private constructor(
             rightSideButton.onClick(UncivSound.Silent) {
                 acceptPromotion(selectedPromotion)
                 
-                if (saveUnitTypePromotion) {
-                    val unitCurrentCity = unit.currentTile.getCity()
-                    
-                    if (unitCurrentCity != null) {
-                        // If you are clicked the save unitType promotion, you want the next unitType to have the same promotion.
-                        unitCurrentCity.unitTypeToPromotion.put(unit.baseUnit.unitType,true)
-                        unitCurrentCity.cityUnitTypePromotions.put(unit.baseUnit.unitType,unit.promotions)
-                    }
-                }
+                checkSaveUnitTypePrormotion()
             }
         } else {
             rightSideButton.isVisible = false
@@ -214,6 +206,19 @@ class PromotionPickerScreen private constructor(
         promotionsTable.add(checkBoxSaveUnitPromotion)
     }
     
+    // going to reuse this bit of code 2 time so turn it into a funtion
+    private fun checkSaveUnitTypePrormotion() {
+        if (saveUnitTypePromotion) {
+            val unitCurrentCity = unit.currentTile.getCity()
+
+            if (unitCurrentCity != null) {
+                // If you are clicked the save unitType promotion, you want the next unitType to have the same promotion.
+                unitCurrentCity.unitTypeToPromotion.put(unit.baseUnit.unitType,true)
+                unitCurrentCity.cityUnitTypePromotions.put(unit.baseUnit.unitType,unit.promotions)
+            }
+        }
+    }
+    
     private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
         val isPickable = canPromoteNow &&
             (!node.pathIsAmbiguous || node.distanceToAdopted == 1) &&
@@ -241,6 +246,7 @@ class PromotionPickerScreen private constructor(
         if (isPickable)
             button.onDoubleClick(UncivSound.Silent) {
                 acceptPromotion(button)
+                checkSaveUnitTypePrormotion()
             }
 
         return button

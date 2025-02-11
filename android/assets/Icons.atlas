@@ -200,6 +200,34 @@ OtherIcons/Stop
   orig: 100, 100
   offset: 0, 0
   index: -1
+ImprovementIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+OtherIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+ResourceIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+StatIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Citadel
   rotate: false
   xy: 4, 62
@@ -459,6 +487,27 @@ StatIcons/Faith
   orig: 100, 100
   offset: 0, 0
   index: -1
+NotificationIcons/Loading
+  rotate: false
+  xy: 907, 1686
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Working
+  rotate: false
+  xy: 907, 1686
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Loading
+  rotate: false
+  xy: 907, 1686
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 NotificationIcons/PickConstruction
   rotate: false
   xy: 1771, 1500
@@ -618,34 +667,6 @@ NotificationIcons/NextTurn
   xy: 1879, 1932
   size: 100, 100
   orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-ImprovementIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-ResourceIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-StatIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
   offset: 0, 0
   index: -1
 OtherIcons/Cities
@@ -819,27 +840,6 @@ OtherIcons/Link
 OtherIcons/Load
   rotate: false
   xy: 799, 1470
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Loading
-  rotate: false
-  xy: 907, 1686
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Loading
-  rotate: false
-  xy: 907, 1686
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Working
-  rotate: false
-  xy: 907, 1686
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
