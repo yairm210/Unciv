@@ -26,7 +26,7 @@ object BuildingDescriptions {
             infoList += "+${value.toInt()}% ${key.name.tr()}"
 
         if (requiredNearbyImprovedResources != null)
-            infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
+            infoList += "Requires improved [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) infoList += replacementTextForUniques
             else infoList += getUniquesStringsWithoutDisablers(uniqueInclusionFilter)
@@ -74,7 +74,7 @@ object BuildingDescriptions {
             translatedLines += "+$amount " + "[$specialistName] slots".tr()
 
         if (requiredNearbyImprovedResources != null)
-            translatedLines += "Requires worked [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
+            translatedLines += "Requires improved [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
 
         if (cityStrength != 0) translatedLines += "{City strength} +$cityStrength".tr()
         if (cityHealth != 0) translatedLines += "{City health} +$cityHealth".tr()
@@ -230,7 +230,7 @@ object BuildingDescriptions {
 
         if (requiredNearbyImprovedResources != null) {
             textList += FormattedLine()
-            textList += FormattedLine("Requires at least one of the following resources worked near the city:")
+            textList += FormattedLine("Requires at least one of the following resources improved near the city:")
             requiredNearbyImprovedResources!!.forEach {
                 textList += FormattedLine(it, indent = 1, link = "Resource/$it")
             }
