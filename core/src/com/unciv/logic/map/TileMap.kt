@@ -310,6 +310,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         return null
     }
 
+
     /**
      * Returns the clock position of [otherTile] seen from [tile]'s position
      * Returns -1 if not neighbors
@@ -787,5 +788,18 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             .filter { it.usage == StartingLocation.Usage.Human }
             .map { it.nation }
             .distinct()
+    }
+}
+
+enum class NeighborDirection(val clockPosition: Int) {
+    TopRight(2),
+    BottomRight(4),
+    Bottom(6),
+    BottomLeft(8),
+    TopLeft(10),
+    Top(12);
+
+    companion object {
+        val byClockPosition = entries.associateBy { it.clockPosition }
     }
 }
