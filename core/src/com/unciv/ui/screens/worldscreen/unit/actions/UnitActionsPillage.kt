@@ -64,10 +64,8 @@ object UnitActionsPillage {
                 if (pillagingImprovement)  // only Improvements heal HP
                     unit.healBy(25)
                 
-                if (tile.getImprovementToPillage() != null) {
-                    if (tile.getImprovementToPillage()!!.hasUnique(UniqueType.DestroyedWhenPillaged)) {
-                        tile.removeImprovement()
-                    }
+                if (tile.getImprovementToPillage()?.hasUnique(UniqueType.DestroyedWhenPillaged) == true) {
+                    tile.removeImprovement()
                 }
                     
             }.takeIf { unit.hasMovement() && canPillage(unit, tile) }
