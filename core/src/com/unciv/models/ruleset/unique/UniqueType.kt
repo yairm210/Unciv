@@ -642,6 +642,7 @@ enum class UniqueType(
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
     PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement),
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
+    DestroyedWhenPillaged("Destroyed when pillaged", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     AutomatedUnitsWillNotReplace("Will not be replaced by automated units", UniqueTarget.Improvement),
     ImprovesResources("Improves [resourceFilter] resource in this tile", UniqueTarget.Improvement, flags = UniqueFlag.setOfNoConditionals,
