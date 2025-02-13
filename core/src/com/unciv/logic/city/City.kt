@@ -93,7 +93,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var isPuppet = false
     var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
     
-    var unitTypeToPromotion = HashMap<String, Boolean>()
+    var buildUnitTypePromotion = HashMap<String, Boolean>()
     
     var cityUnitTypePromotions = HashMap<String, UnitPromotions>()
     
@@ -158,7 +158,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
         toReturn.connectedToCapitalStatus = connectedToCapitalStatus
-        toReturn.unitTypeToPromotion = unitTypeToPromotion
+        toReturn.buildUnitTypePromotion = buildUnitTypePromotion
         toReturn.cityUnitTypePromotions = cityUnitTypePromotions
         return toReturn
     }
