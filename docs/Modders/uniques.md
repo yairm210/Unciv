@@ -2510,7 +2510,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
-??? example  "Will be destroyed when pillaged"
+??? example  "Destroyed when pillaged"
 	Applicable to: Improvement
 
 ??? example  "Irremovable"
