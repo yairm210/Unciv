@@ -1,3 +1,21 @@
+## 4.15.11
+
+Changed stockpile names to be human readable
+
+Units with logistics that attacked but did not move, no longer heal
+
+Fix automated road connections going through impassible tiles
+
+chore: Extract NeighborDirection to another file
+
+Resolved  - Applied text changes to UI elements
+
+UI: Fixed edges for edge tiles on word wrap maps
+
+Added feature to save unitType promotion. - By Emandac
+
+Add "Will be destroyed when pillaged" unique - By PLynx01
+
 ## 4.15.10
 
 modding: Validate tech row value
