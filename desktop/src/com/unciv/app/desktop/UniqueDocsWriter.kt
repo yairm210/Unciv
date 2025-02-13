@@ -42,7 +42,7 @@ class UniqueDocsWriter {
         // by their UniqueTarget.ordinal as well - source code order.
         val targetTypesToUniques: Map<UniqueTarget, List<UniqueType>> =
             if (showUniqueOnOneTarget)
-                UniqueType.entries.asSequence()
+                UniqueType.entries
                     .groupBy { it.targetTypes.minOrNull()!! }
                     .toSortedMap()
             else

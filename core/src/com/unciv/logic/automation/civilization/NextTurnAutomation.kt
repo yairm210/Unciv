@@ -328,26 +328,22 @@ object NextTurnAutomation {
                 // If incomplete branches have higher priorities than any newly adoptable branch,
                 if (maxAdoptablePriority <= maxIncompletePriority) {
                     // Prioritize finishing one of the unfinished branches
-                    incompleteBranches.filter {
-                        priorityMap[it] == maxIncompletePriority
-                    }.toSet()
+                    incompleteBranches.filter { priorityMap[it] == maxIncompletePriority }.toSet()
                 }
                 // If newly adoptable branches have higher priorities than any incomplete branch,
                 else {
                     // Prioritize adopting one of the new branches
-                    adoptableBranches.filter {
-                        priorityMap[it] == maxAdoptablePriority
-                    }.toSet()
+                    adoptableBranches.filter { priorityMap[it] == maxAdoptablePriority }.toSet()
                 }
 
             // branchCompletionMap but keys are only candidates
             val candidateCompletionMap: Map<PolicyBranch, Int> =
-                civInfo.policies.branchCompletionMap.filterKeys { key ->
-                    key in candidates
-                }
+                civInfo.policies.branchCompletionMap.filterKeys { key -> key in candidates }
 
             // Choose the branch with the LEAST REMAINING policies, not the MOST ADOPTED ones
-            val targetBranch = candidateCompletionMap.minBy { it.key.policies.size - it.value }.key
+            val targetBranch = candidateCompletionMap.asIterable()
+                .groupBy { it.key.policies.size - it.value }
+                .minByOrNull { it.key }!!.value.random().key
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
