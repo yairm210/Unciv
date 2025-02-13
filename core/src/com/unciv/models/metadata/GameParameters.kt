@@ -31,6 +31,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var nuclearWeaponsEnabled = true
     var espionageEnabled = false
     var noStartBias = false
+    var shufflePlayerOrder = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
@@ -71,6 +72,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.espionageEnabled = espionageEnabled
         parameters.noStartBias = noStartBias
+        parameters.shufflePlayerOrder = shufflePlayerOrder
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer

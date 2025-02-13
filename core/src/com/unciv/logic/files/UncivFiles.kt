@@ -6,7 +6,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -16,12 +15,11 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameInfoSerializationVersion
 import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.screens.modmanager.ModUIData
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -34,6 +32,7 @@ private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
+const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
 
 class UncivFiles(
     /**
@@ -143,14 +142,6 @@ class UncivFiles(
     }
 
     /**
-     * @return `true` if successful.
-     * @throws SecurityException when delete access was denied
-     */
-    fun deleteMultiplayerSave(gameName: String): Boolean {
-        return deleteSave(getMultiplayerSave(gameName))
-    }
-
-    /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      *
      * @return `true` if successful.
@@ -162,6 +153,7 @@ class UncivFiles(
     }
 
     //endregion
+    
     //region Saving
 
     fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
@@ -253,9 +245,6 @@ class UncivFiles(
         return gameInfoFromString(gameData)
     }
 
-    fun loadGamePreviewByName(gameName: String) =
-            loadGamePreviewFromFile(getMultiplayerSave(gameName))
-
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
         return json().fromJson(GameInfoPreview::class.java, gameFile) ?: throw emptyFile(gameFile)
     }
@@ -296,6 +285,7 @@ class UncivFiles(
 
 
     //endregion
+    
     //region Settings
 
     private fun getGeneralSettingsFile(): FileHandle {
@@ -328,11 +318,10 @@ class UncivFiles(
     }
 
     //endregion
+    
     //region Scenarios
-
     val scenarioFolder = "scenarios"
     fun getScenarioFiles() = sequence {
-
         for (mod in RulesetCache.values) {
             val modFolder = mod.folderLocation ?: continue
             val scenarioFolder = modFolder.child(scenarioFolder)
@@ -341,21 +330,33 @@ class UncivFiles(
                     yield(Pair(file, mod))
         }
     }
-
-    fun loadScenario(gameFile: FileHandle): GameInfo {
-        val game = loadGameFromFile(gameFile)
-        game.civilizations.removeAll { it.isSpectator() }
-        for (civ in game.civilizations)
-            civ.diplomacy.remove(Constants.spectator)
-        if (game.civilizations.none { it.isHuman() })
-            game.civilizations.first { it.isMajorCiv() }.playerType = PlayerType.Human
-
-        game.currentPlayerCiv = game.civilizations.first { it.playerType == PlayerType.Human }
-        game.currentPlayer = game.currentPlayerCiv.civName
-        TurnManager(game.currentPlayerCiv).startTurn()
-
-        return game
+    //endregion
+    
+    //region Mod caching
+    fun saveModCache(modDataList: List<ModUIData>){
+        val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
+        try {
+            json().toJson(modDataList, file)
+        }
+        catch (ex: Exception){ // Not a huge deal if this fails
+            Log.error("Error saving mod cache", ex)
+        }
     }
+
+
+    fun loadModCache(): List<ModUIData>{
+        val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
+        if (!file.exists()) return emptyList()
+        try {
+            return json().fromJsonFile(Array<ModUIData>::class.java, file)
+                .toList()
+        }
+        catch (ex: Exception){ // Not a huge deal if this fails
+            Log.error("Error loading mod cache", ex)
+            return emptyList()
+        }
+    }
+
 
     //endregion
 
@@ -373,11 +374,6 @@ class UncivFiles(
          * Platform dependent saver-loader to custom system locations
          */
         var saverLoader: PlatformSaverLoader = PlatformSaverLoader.None
-            get() {
-                if (field.javaClass.simpleName == "DesktopSaverLoader" && LinuxX11SaverLoader.isRequired())
-                    field = LinuxX11SaverLoader()
-                return field
-            }
 
         /** Specialized function to access settings before Gdx is initialized.
          *
@@ -387,8 +383,14 @@ class UncivFiles(
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
             val file = FileHandle(baseDirectory + File.separator + SETTINGS_FILE_NAME)
-            return if (file.exists()) json().fromJsonFile(GameSettings::class.java, file)
-            else GameSettings().apply { isFreshlyCreated = true }
+            if (file.exists()){
+                try {
+                    return json().fromJson(GameSettings::class.java, file)
+                } catch (ex: Exception) {
+                    Log.error("Exception while deserializing GameSettings JSON", ex)
+                }
+            }
+            return GameSettings().apply { isFreshlyCreated = true }
         }
 
         /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
@@ -467,6 +469,9 @@ class Autosaves(val files: UncivFiles) {
     }
 
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
+        // get GameSettings to check the maxAutosavesStored in the autoSave function
+        val settings = files.getGeneralSettings()
+        
         try {
             files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
@@ -484,7 +489,11 @@ class Autosaves(val files: UncivFiles) {
             fun getAutosaves(): Sequence<FileHandle> {
                 return files.getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
             }
-            while (getAutosaves().count() > 10) {
+            // added the plus 1 to avoid player choosing 6,11,21,51,101, etc.. in options.
+//          // with the old version with 10 has example, it would start overriding after 9 instead of 10.
+            // like from autosave-1 to autosave-9 after the autosave-9 the autosave-1 would override to autosave-2.
+            // For me it should be after autosave-10 that it should start overriding old autosaves.
+            while (getAutosaves().count() > settings.maxAutosavesStored+1) {
                 val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
                 files.deleteSave(saveToDelete.name())
             }

@@ -1,0 +1,9 @@
+Minimized MP game update IO by ignoring games older than 2 weeks for 'update all'
+
+Resolved ANRs when pausing game due to game clone time
+
+Resolved ANRs when starting a new game (checking for multuplayer server connection)
+
+Protect terrainImage against incorrectly configured mods (natural wonder turnsInto is not in ruleset)
+
+Resolved race-condition error for loading terrain icons

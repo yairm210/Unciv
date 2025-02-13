@@ -31,18 +31,14 @@ object ReligionAutomation {
             return
         }
         
-        if (civInfo.religionManager.remainingFoundableReligions() == 0 && civInfo.religionManager.religionState == ReligionState.Pantheon) {
+        if (civInfo.religionManager.remainingFoundableReligions() == 0 ) {
             buyGreatPerson(civInfo)
-            return
-        }
-
-        // We don't have a religion and no more change of getting it :(
-        if (civInfo.religionManager.religionState <= ReligionState.Pantheon) {
             tryBuyAnyReligiousBuilding(civInfo)
             return
         }
 
         // If we don't have majority in all our own cities, build missionaries and inquisitors to solve this
+        //TODO: in late game, this may not be worth it
         val citiesWithoutOurReligion = civInfo.cities.filter { it.religion.getMajorityReligion() != civInfo.religionManager.religion!! }
         // The original had a cap at 4 missionaries total, but 1/4 * the number of cities should be more appropriate imo
         if (citiesWithoutOurReligion.count() >
@@ -59,7 +55,6 @@ object ReligionAutomation {
             return
         }
 
-
         // Get an inquisitor to defend our holy city
         val holyCity = civInfo.religionManager.getHolyCity()
         if (holyCity != null
@@ -70,25 +65,13 @@ object ReligionAutomation {
             buyInquisitorNear(civInfo, holyCity)
             return
         }
-
-        // Buy religious buildings in cities if possible
-        val citiesWithMissingReligiousBuildings = civInfo.cities.filter { city ->
-            city.religion.getMajorityReligion() != null
-            && !city.cityConstructions.isAllBuilt(city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs)
-        }
-        if (citiesWithMissingReligiousBuildings.any()) {
-            tryBuyAnyReligiousBuilding(civInfo)
-            return
-        }
-
-        // Todo: buy Great People post industrial era
-
+        
         // Just buy missionaries to spread our religion outside of our civ
         if (civInfo.units.getCivUnits().count { it.hasUnique(UniqueType.CanSpreadReligion) } < 4) {
             buyMissionaryInAnyCity(civInfo)
             return
         }
-        // Todo: buy inquisitors for defence of other cities
+        // Todo: declare war if enemy missionaries enter our civ without permission
     }
 
     private fun tryBuyAnyReligiousBuilding(civInfo: Civilization) {
@@ -225,15 +208,15 @@ object ReligionAutomation {
     // region rate beliefs
 
     fun rateBelief(civInfo: Civilization, belief: Belief): Float {
-        var score = 0f
+        var score = 0f // Roughly equivalent to the sum of stats gained across all cities
 
         for (city in civInfo.cities) {
             for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
                 val tileScore = beliefBonusForTile(belief, tile, city)
                 score += tileScore * when {
-                    city.workedTiles.contains(tile.position) -> 8
-                    tile.getCity() == city -> 5
-                    else -> 3
+                    city.workedTiles.contains(tile.position) -> 1f // worked
+                    tile.getCity() == city -> 0.7f // workable
+                    else -> 0.5f // unavailable - for now
                 } * (Random.nextFloat() * 0.05f + 0.975f)
             }
 
@@ -254,14 +237,15 @@ object ReligionAutomation {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.type) {
-                UniqueType.StatsFromObject -> if (tile.matchesFilter(unique.params[1]))
+                UniqueType.StatsFromObject -> if ((tile.matchesFilter(unique.params[1])
+                    && !(tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved) && tile.lastTerrain.matchesFilter(unique.params[1])) //forest pantheons are bad, as we want to remove the forests
+                    || (tile.resource != null && (tile.tileResource.matchesFilter(unique.params[1]) || tile.tileResource.isImprovedBy(unique.params[1]))))) //resource pantheons are good, as we want to work the tile anyways
                     bonusYield += unique.stats.values.sum()
                 UniqueType.StatsFromTilesWithout ->
                     if (city.matchesFilter(unique.params[3])
                         && tile.matchesFilter(unique.params[1])
                         && !tile.matchesFilter(unique.params[2])
                     ) bonusYield += unique.stats.values.sum()
-                // ToDo: Also calculate add stats for improvements that will be buildable
                 else -> {}
             }
         }
@@ -278,7 +262,7 @@ object ReligionAutomation {
             // If obsoleted, continue
             score += modifier * when (unique.type) {
                 UniqueType.GrowthPercentBonus -> unique.params[0].toFloat() / 3f
-                UniqueType.BorderGrowthPercentage -> -unique.params[0].toFloat() * 2f / 10f
+                UniqueType.BorderGrowthPercentage -> -unique.params[0].toFloat() / 10f
                 UniqueType.StrengthForCities -> unique.params[0].toFloat() / 10f // Modified by personality
                 UniqueType.CityHealingUnits -> unique.params[1].toFloat() / 10f
                 UniqueType.PercentProductionBuildings -> unique.params[0].toFloat() / 3f
@@ -291,27 +275,27 @@ object ReligionAutomation {
                 UniqueType.StatsFromObject ->
                     when {
                         ruleSet.buildings.containsKey(unique.params[1]) -> {
-                            unique.stats.values.sum() /
-                                if (ruleSet.buildings[unique.params[1]]!!.isWonder) 2f
-                                else 1f
+                            unique.stats.values.sum() *
+                                if (ruleSet.buildings[unique.params[1]]!!.isNationalWonder) 0.25f //there's at most 1 copy of each of these in our empire, and the AI is slow at getting it
+                                else 1f // Yields from regular buildings won't need the upfront purchase cost as is the case with religion buildings, but they may have weird requirements (gardens etc.)
 
                         }
                         ruleSet.specialists.containsKey(unique.params[1]) -> {
                             unique.stats.values.sum() *
-                                if (city.population.population > 8f) 3f
+                                if (city.population.population > 8f) 2f
                                 else 1f
                         }
-                        else -> 0f
+                        else -> unique.stats.values.sum() * 0f //yields from world wonders and great improvements - the latter needs additional AI logic to be used correctly
                     }
                 UniqueType.StatsFromTradeRoute ->
                     unique.stats.values.sum() *
-                        if (city.isConnectedToCapital()) 2f
-                        else 1f
+                        if (city.isConnectedToCapital()) 1f
+                        else 0f //no yields from the belief yet, also for pantheons it's quite low-tempo
                 UniqueType.StatPercentFromReligionFollowers ->
                     min(unique.params[0].toFloat() * city.population.population, unique.params[2].toFloat())
                 UniqueType.StatsPerCity ->
                     if (city.matchesFilter(unique.params[1]))
-                        unique.stats.values.sum()
+                        unique.stats.values.sum() * 1f //free yields
                     else 0f
                 else -> 0f
             }
@@ -361,48 +345,49 @@ object ReligionAutomation {
             // Some city-filters are modified by personality (non-enemy foreign cities)
             score += modifier * when (unique.type) {
                 UniqueType.KillUnitPlunderNearCity ->
-                    unique.params[0].toFloat() * 4f *
-                        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f
-                        else 1f
+                    unique.params[0].toFloat() * //can be very strong, but a low weight for now as the AI currently isn't farming barb camp
+                        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 0.5f
+                        else 0.25f
                 UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.followerBeliefUniqueMap.getUniques(unique.type).any()
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
-                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
+                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[2])] * 300f / unique.params[1].toFloat() //the costs of these are probably similar to the baseUnitBuyCost
                 UniqueType.BuyUnitsWithStat, UniqueType.BuyBuildingsWithStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.followerBeliefUniqueMap.getUniques(unique.type).any()
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
-                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
+                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[1])] * 300f / civInfo.getEra().baseUnitBuyCost
+                    //baseUnitBuyCost is 200 in Standard speed pre-Renaissance, but overvalue such as to let the high-faith civs pick the good faith sinks 
                 UniqueType.BuyUnitsByProductionCost ->
-                    15f * if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f else 1f
+                    0f //Holy Warriors is a waste if we don't buy units with it, and if we buy units with it'll cost us great persons
                 UniqueType.StatsWhenSpreading ->
-                    unique.params[0].toFloat() / 5f
+                    unique.params[0].toFloat() / 15f
                 UniqueType.StatsWhenAdoptingReligion ->
                     unique.stats.values.sum() / 50f
                 UniqueType.RestingPointOfCityStatesFollowingReligionChange ->
                     if (civInfo.wantsToFocusOn(Victory.Focus.CityStates))
-                        unique.params[0].toFloat() / 3.5f
+                        unique.params[0].toFloat() / 4f
                     else
-                        unique.params[0].toFloat() / 7f
+                        unique.params[0].toFloat() / 8f
                 UniqueType.StatsFromGlobalCitiesFollowingReligion ->
-                    unique.stats.values.sum()
+                    unique.stats.values.sum() * 2f //free yields that are potentially more than our own number of cities would allow
                 UniqueType.StatsFromGlobalFollowers ->
-                    4f * (unique.stats.values.sum() / unique.params[1].toFloat())
+                    10f * (unique.stats.values.sum() / unique.params[1].toFloat())
                 UniqueType.Strength ->
-                    unique.params[0].toFloat() / 4f
+                    unique.params[0].toFloat() * 3f//combat strength from beliefs is very strong
                 UniqueType.ReligionSpreadDistance ->
                     (10f + unique.params[0].toFloat()) * goodEarlyModifier
                 UniqueType.NaturalReligionSpreadStrength ->
-                    unique.params[0].toFloat() * goodEarlyModifier / 5f
+                    unique.params[0].toFloat() * goodEarlyModifier / 10f //We should weigh this according to cityFilter; Religious Texts is way stronger than Religious Unity
                 UniqueType.SpreadReligionStrength ->
-                    unique.params[0].toFloat() * goodLateModifier / 5f
+                    unique.params[0].toFloat() * goodLateModifier / 10f //Cheaper missionaries are generally better than stronger missionaries
                 UniqueType.FaithCostOfGreatProphetChange ->
-                    -unique.params[0].toFloat() * goodLateModifier / 2f
+                    -unique.params[0].toFloat() * goodLateModifier / 10f //It's only about 1 more prophet, due to the increasing costs.
                 UniqueType.BuyBuildingsDiscount, UniqueType.BuyUnitsDiscount ->
                     -unique.params[2].toFloat() * goodLateModifier / 5f
                 UniqueType.BuyItemsDiscount ->
@@ -494,7 +479,7 @@ object ReligionAutomation {
                     && !additionalBeliefsToExclude.contains(it)
                     && civInfo.religionManager.getReligionWithBelief(it) == null
                     && it.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                    .none { unique -> !unique.conditionalsApply(civInfo) }
+                    .none { unique -> !unique.conditionalsApply(civInfo.state) }
             }
             .maxByOrNull { rateBelief(civInfo, it) }
     }

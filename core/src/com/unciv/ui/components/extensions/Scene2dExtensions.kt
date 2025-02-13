@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
@@ -33,6 +34,7 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -53,7 +55,8 @@ private class RestorableTextButtonStyle(
 //todo ButtonStyle *does* have a `disabled` Drawable, and Button ignores touches in disabled state anyway - all this is a wrong approach
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
-    touchable = Touchable.disabled
+    /** We want disabled buttons to "swallow" the click so that things behind aren't activated, so we don't change touchable
+       The action won't be activated due to [ActorAttachments.activate] checking the isDisabled property */
     isDisabled = true
     val oldStyle = style
     if (oldStyle is RestorableTextButtonStyle) return
@@ -67,7 +70,6 @@ fun Button.enable() {
         style = oldStyle.restoreStyle
     }
     isDisabled = false
-    touchable = Touchable.enabled
 }
 /** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties,
  *  or returns the corresponding state.
@@ -91,7 +93,7 @@ fun colorFromHex(hexColor: Int): Color {
 fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1f)
 /** Create a new [Color] instance from r/g/b given as Integers in the range 0..255 in the form of a 3-element List [rgb] */
 fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
-/** Linearly interpolates between this [Color] and [BLACK][Color.BLACK] by [t] which is in the range [[0,1]].
+/** Linearly interpolates between this [Color] and [BLACK][ImageGetter.CHARCOAL] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
 fun Color.darken(t: Float): Color = Color(this).lerp(Color.BLACK, t)
 /** Linearly interpolates between this [Color] and [WHITE][Color.WHITE] by [t] which is in the range [[0,1]].
@@ -117,7 +119,7 @@ fun Actor.surroundWithCircle(
     return IconCircleGroup(size, this, resizeActor, color, circleImageLocation)
 }
 
-fun Actor.surroundWithThinCircle(color: Color=Color.BLACK): IconCircleGroup = surroundWithCircle(width+2f, false, color)
+fun Actor.surroundWithThinCircle(color: Color=ImageGetter.CHARCOAL): IconCircleGroup = surroundWithCircle(width+2f, false, color)
 
 
 fun Actor.addBorder(size: Float, color: Color, expandCell: Boolean = false): Table {
@@ -206,7 +208,7 @@ private fun getSeparatorImage(color: Color) = Image(ImageGetter.getWhiteDotDrawa
  * Create a horizontal separator as an empty Container with a colored background.
  * @param colSpan Optionally override [colspan][Cell.colspan] which defaults to the current column count.
  */
-fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Float = 2f): Cell<Image> {
+fun Table.addSeparator(color: Color = BaseScreen.skin.getColor("color"), colSpan: Int = 0, height: Float = 1f): Cell<Image> {
     if (!cells.isEmpty && !cells.last().isEndRow) row()
     val separator = getSeparatorImage(color)
     val cell = add(separator)
@@ -223,6 +225,15 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
  */
 fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
     return add(getSeparatorImage(color)).width(width).fillY()
+}
+
+/**
+ * When using Tables as touchables, much like buttons,
+ * this function renders them disabled: faded and not touchable.
+ */
+fun Table.setEnabled(enabled: Boolean) {
+    color.a = if (enabled) 1f else 0.5f
+    touchable = if (enabled) Touchable.enabled else Touchable.disabled 
 }
 
 /** Alternative to [Table].[add][Table] that returns the Table instead of the new Cell to allow a different way of chaining */
@@ -287,6 +298,23 @@ fun getCloseButton(
     return closeButton
 }
 
+/**
+ * Adds a white-circled (x) close button to [parent], positioned to the top right,
+ * slightly shifted outwards.
+ */
+fun addRoundCloseButton(
+    parent: Group,
+    action: () -> Unit
+): Group {
+    val size = 30f
+    val button = getCloseButton(size, size-15f, Color.CLEAR, Color.RED, action = action)
+        .surroundWithCircle(size, false, BaseScreen.clearColor)
+        .surroundWithCircle(size+4f, false, Color.WHITE)
+    parent.addActor(button)
+    button.setPosition(parent.width - button.width*3/4, parent.height - button.height*3/4)
+    return button
+}
+
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
@@ -305,7 +333,8 @@ fun String.toLabel(fontColor: Color = Color.WHITE,
         labelStyle.fontColor = fontColor
         if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(hideIcons), labelStyle).apply {
+    val translatedText = this.tr(hideIcons) 
+    return Label(translatedText, labelStyle).apply {
         setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
         setAlignment(alignment)
     }
@@ -323,7 +352,7 @@ fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean
         }
         // Add a little distance between the icon and the text. 0 looks glued together,
         // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".
-        imageCell.padRight(1f)
+        imageCell.padRight(Constants.defaultFontSize / 2.0f)
     }
 
 /** Sets the [font color][Label.LabelStyle.fontColor] on a [Label] and returns it to allow chaining */
@@ -463,4 +492,10 @@ fun TextureData.getReadonlyPixmap(): Pixmap {
     val field = FileTextureData::class.java.getDeclaredField("pixmap")
     field.isAccessible = true
     return field.get(this) as Pixmap
+}
+
+fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {
+    val table = Table()
+    add(table)
+    return table.add(actor).grow()
 }

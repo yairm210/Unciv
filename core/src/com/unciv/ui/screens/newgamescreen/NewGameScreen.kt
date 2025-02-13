@@ -107,124 +107,113 @@ class NewGameScreen(
         }
 
         rightSideButton.setText("Start game!".tr())
-        rightSideButton.onClick(this::onStartGameClicked)
+        rightSideButton.onClick(this::startGameAvoidANRs)
     }
 
-    private fun onStartGameClicked() {
+    private fun startGameAvoidANRs(){
+        // Don't allow players to click the game while we're checking if it's ok
+        Gdx.input.inputProcessor = null
         mapOptionsTable.cancelBackgroundJobs()
-        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-            if (!checkConnectionToMultiplayerServer()) {
-                val noInternetConnectionPopup = Popup(this)
-                val label = if (Multiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!" else "Couldn't connect to Dropbox!"
-                noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
-                noInternetConnectionPopup.addCloseButton()
-                noInternetConnectionPopup.open()
-                return
+        Concurrency.run {  // even just *checking* can take time
+            val errorMessage = getErrorMessage()
+            if (errorMessage != null){
+                Concurrency.runOnGLThread {
+                    val errorPopup = Popup(this@NewGameScreen)
+                    errorPopup.addGoodSizedLabel(errorMessage).row()
+                    errorPopup.addCloseButton()
+                    errorPopup.open()
+                    Gdx.input.inputProcessor = stage
+                }
+                return@run
             }
+
+            // Requires a custom popup so can't be folded into getErrorMessage
+            val modCheckResult = newGameOptionsTable.modCheckboxes.savedModcheckResult
+            newGameOptionsTable.modCheckboxes.savedModcheckResult = null
+            if (modCheckResult != null) {
+                Concurrency.runOnGLThread {
+                    AcceptModErrorsPopup(
+                        this@NewGameScreen, modCheckResult,
+                        restoreDefault = { newGameOptionsTable.resetRuleset() },
+                        action = {
+                            gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
+                            startGameAvoidANRs()
+                        }
+                    )
+                    Gdx.input.inputProcessor = stage
+                }
+                return@run
+            }
+            startGame()
+        }
+    }
+    
+    // Should be run NOT on main thread because it contacts MP server and loads maps etc
+    fun getErrorMessage(): String? {
+        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+            if (!checkConnectionToMultiplayerServer())
+                return if (Multiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!"
+                    else "Couldn't connect to Dropbox!"
 
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                 try {
                     UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
                 } catch (_: Exception) {
-                    val invalidPlayerIdPopup = Popup(this)
-                    invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
-                    invalidPlayerIdPopup.addCloseButton()
-                    invalidPlayerIdPopup.open()
-                    return
+                    return "Invalid player ID!"
                 }
             }
 
             if (!gameSetupInfo.gameParameters.anyoneCanSpectate) {
-                if (gameSetupInfo.gameParameters.players.none { it.playerId == UncivGame.Current.settings.multiplayer.userId }) {
-                    val notAllowedToSpectate = Popup(this)
-                    notAllowedToSpectate.addGoodSizedLabel("You are not allowed to spectate!".tr()).row()
-                    notAllowedToSpectate.addCloseButton()
-                    notAllowedToSpectate.open()
-                    return
-                }
+                if (gameSetupInfo.gameParameters.players.none { it.playerId == UncivGame.Current.settings.multiplayer.userId })
+                    return "You are not allowed to spectate!"
             }
         }
 
         if (gameSetupInfo.gameParameters.players.none {
-                    it.playerType == PlayerType.Human &&
-                            // do not allow multiplayer with only spectator(s) and AI(s) - non-MP that works
-                            !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer)
-                }) {
-            val noHumanPlayersPopup = Popup(this)
-            noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
-            noHumanPlayersPopup.addCloseButton()
-            noHumanPlayersPopup.open()
-            return
-        }
+                it.playerType == PlayerType.Human &&
+                        // do not allow multiplayer with only spectator(s) and AI(s) - non-MP that works
+                        !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer)
+            }) return "No human players selected!"
 
-        if (gameSetupInfo.gameParameters.victoryTypes.isEmpty()) {
-            val noVictoryTypesPopup = Popup(this)
-            noVictoryTypesPopup.addGoodSizedLabel("No victory conditions were selected!".tr()).row()
-            noVictoryTypesPopup.addCloseButton()
-            noVictoryTypesPopup.open()
-            return
-        }
-
-        val modCheckResult = newGameOptionsTable.modCheckboxes.savedModcheckResult
-        newGameOptionsTable.modCheckboxes.savedModcheckResult = null
-        if (modCheckResult != null) {
-            AcceptModErrorsPopup(
-                this, modCheckResult,
-                restoreDefault = { newGameOptionsTable.resetRuleset() },
-                action = {
-                    gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
-                    onStartGameClicked()
-                }
-            )
-            return
-        }
-
-        Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
-
+        if (gameSetupInfo.gameParameters.victoryTypes.isEmpty()) return "No victory conditions were selected!"
+        
         if (mapOptionsTable.mapTypeSelectBox.selected.value == MapGeneratedMainType.custom) {
             val map = try {
                 MapSaver.loadMap(gameSetupInfo.mapFile!!)
             } catch (ex: Throwable) {
-                Log.error("Could not load map", ex)
-                Gdx.input.inputProcessor = stage
-                ToastPopup("Could not load map!", this)
-                return
+                return "Could not load map"
             }
 
             val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
-            if (rulesetIncompatibilities.isNotEmpty()) {
-                val incompatibleMap = Popup(this)
-                incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
-                for(incompatibility in rulesetIncompatibilities)
-                    incompatibleMap.addGoodSizedLabel(incompatibility).row()
-                incompatibleMap.addCloseButton()
-                incompatibleMap.open()
-                Gdx.input.inputProcessor = stage
-                return
-            }
+            if (rulesetIncompatibilities.isNotEmpty())
+                return "Map is incompatible with the chosen ruleset!".tr() + "\n" + rulesetIncompatibilities.joinToString("\n"){it.tr()}
         } else {
             // Generated map - check for sensible dimensions and if exceeded correct them and notify user
             val mapSize = gameSetupInfo.mapParameters.mapSize
             val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
             if (message != null) {
-                ToastPopup( message, UncivGame.Current.screen!!, 4000 )
                 with (mapOptionsTable.generatedMapOptionsTable) {
                     customMapSizeRadius.text = mapSize.radius.tr()
                     customMapWidth.text = mapSize.width.tr()
                     customMapHeight.text = mapSize.height.tr()
                 }
-                Gdx.input.inputProcessor = stage
-                return
+                return message
             }
         }
+        return null
+    }
+    
+    private fun startGame() {
 
-        rightSideButton.disable()
-        rightSideButton.setText(Constants.working.tr())
-
-        setSkin()
-        // Creating a new game can take a while and we don't want ANRs
-        Concurrency.runOnNonDaemonThreadPool("NewGame") {
-            startNewGame()
+        Concurrency.runOnGLThread {
+            rightSideButton.disable()
+            rightSideButton.setText(Constants.working.tr())
+            setSkin()
+            
+            // Creating a new game can take a while and we don't want ANRs
+            Concurrency.runOnNonDaemonThreadPool("NewGame") {
+                startNewGame()
+            }
         }
     }
 
@@ -236,9 +225,9 @@ class NewGameScreen(
         scrollPane.setScrollingDisabled(true,true)
 
         topTable.add("Game Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f, 0f)
-        topTable.addSeparatorVertical(Color.BLACK, 1f)
+        topTable.addSeparatorVertical(ImageGetter.CHARCOAL, 1f)
         topTable.add("Map Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
-        topTable.addSeparatorVertical(Color.BLACK, 1f)
+        topTable.addSeparatorVertical(ImageGetter.CHARCOAL, 1f)
         topTable.add("Civilizations".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
         topTable.addSeparator(Color.CLEAR, height = 1f)
 
@@ -295,11 +284,23 @@ class NewGameScreen(
         launchOnGLThread {
             popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
+            ImageGetter.setNewRuleset(ruleset) // To build the temp atlases
         }
 
         val newGame:GameInfo
         try {
-            newGame = GameStarter.startNewGame(gameSetupInfo)
+            val selectedScenario = mapOptionsTable.getSelectedScenario()
+            newGame = if (selectedScenario == null)
+                GameStarter.startNewGame(gameSetupInfo)
+            else {
+                val gameInfo = game.files.loadGameFromFile(selectedScenario.file)
+                // Instead of removing spectator we AI-ify it, so we don't get problems in e.g. diplomacy
+                gameInfo.civilizations.firstOrNull { it.civName == Constants.spectator }?.playerType = PlayerType.AI
+                for (playerInfo in gameSetupInfo.gameParameters.players){
+                    gameInfo.civilizations.firstOrNull { it.civName == playerInfo.chosenCiv }?.playerType = playerInfo.playerType
+                }
+                gameInfo
+            }
         } catch (exception: Exception) {
             exception.printStackTrace()
             launchOnGLThread {

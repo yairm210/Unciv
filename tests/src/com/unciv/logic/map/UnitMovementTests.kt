@@ -53,8 +53,8 @@ class UnitMovementTests {
     fun addFakeUnit(unitType: UnitType, uniques: List<String> = listOf()): MapUnit {
         val baseUnit = BaseUnit()
         baseUnit.unitType = unitType.name
-        baseUnit.ruleset = testGame.ruleset
         baseUnit.uniques.addAll(uniques)
+        baseUnit.setRuleset(testGame.ruleset)
 
         val unit = MapUnit()
         unit.name = baseUnit.name
@@ -178,6 +178,7 @@ class UnitMovementTests {
         barbCiv.gameInfo = testGame.gameInfo
         barbCiv.setNameForUnitTests(Constants.barbarians) // they are always enemies
         barbCiv.nation = Nation().apply { name = Constants.barbarians }
+        barbCiv.cache.updateState()
 
         testGame.gameInfo.civilizations.add(barbCiv)
 

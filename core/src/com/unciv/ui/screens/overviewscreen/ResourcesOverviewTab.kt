@@ -81,7 +81,7 @@ class ResourcesOverviewTab(
             return tile.countAsUnimproved()
         }
         val amount = get(resource, origin)?.amount ?: return null
-        val label = if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
+        val label = if (resource.isStockpiled && amount > 0) "+$amount".toLabel()
             else amount.toLabel()
         if (origin == ExtraInfoOrigin.Unimproved.name)
             label.onClick { overviewScreen.showOneTimeNotification(
@@ -92,7 +92,7 @@ class ResourcesOverviewTab(
 
     private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label {
         val total = filter { it.resource == resource }.sumOf { it.amount }
-        return if (resource.isStockpiled() && total > 0) "+$total".toLabel()
+        return if (resource.isStockpiled && total > 0) "+$total".toLabel()
         else total.toLabel()
     }
 
@@ -122,7 +122,7 @@ class ResourcesOverviewTab(
         TradeOffer("Trade offer","Trade offer", "Resources we're offering in trades")
         ;
         companion object {
-            fun safeValueOf(name: String) = values().firstOrNull { it.name == name }
+            fun safeValueOf(name: String) = entries.firstOrNull { it.name == name }
         }
     }
     private val fixedContent = Table()
@@ -284,7 +284,7 @@ class ResourcesOverviewTab(
         /** Show unlocked **strategic** resources even if you have no access at all */
         for (resource in viewingPlayer.gameInfo.ruleset.tileResources.values) {
             if (resource.resourceType != ResourceType.Strategic) continue
-            if (resource.revealedBy == null || viewingPlayer.tech.isResearched(resource.revealedBy!!))
+            if (viewingPlayer.tech.isRevealed(resource))
                 newResourceSupplyList.add(resource, "No source", 0)
         }
 

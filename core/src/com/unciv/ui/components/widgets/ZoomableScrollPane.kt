@@ -19,7 +19,6 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.ZoomGestureListener
 import com.unciv.ui.components.input.KeyboardPanningListener
-import kotlin.math.sqrt
 
 
 open class ZoomableScrollPane(
@@ -174,7 +173,7 @@ open class ZoomableScrollPane(
         return zoomListener.isZooming
     }
 
-    inner class ZoomListener : ZoomGestureListener() {
+    inner class ZoomListener : ZoomGestureListener({ Vector2(stage.width, stage.height) }) {
 
         inner class ZoomAction : TemporalAction() {
 
@@ -204,8 +203,6 @@ open class ZoomableScrollPane(
         }
 
         private var zoomAction: ZoomAction? = null
-        private var lastInitialDistance = 0f
-        var lastScale = 1f
         var isZooming = false
 
         fun zoomOut(zoomMultiplier: Float = 0.82f) {
@@ -246,25 +243,22 @@ open class ZoomableScrollPane(
             }
         }
 
-        override fun pinch() {
+        override fun pinch(translation: Vector2, scaleChange: Float) {
             if (!isZooming) {
                 isZooming = true
                 onZoomStartListener?.invoke()
             }
+            scrollTo(
+                scrollX - translation.x / scaleX,
+                scrollY + translation.y / scaleY,
+                true
+            )
+            zoom(scaleX * scaleChange)
         }
 
         override fun pinchStop() {
             isZooming = false
             onZoomStopListener?.invoke()
-        }
-
-        override fun zoom(initialDistance: Float, distance: Float) {
-            if (lastInitialDistance != initialDistance) {
-                lastInitialDistance = initialDistance
-                lastScale = scaleX
-            }
-            val scale: Float = sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
-            zoom(scale)
         }
 
         override fun scrolled(amountX: Float, amountY: Float): Boolean {
@@ -317,8 +311,6 @@ open class ZoomableScrollPane(
 
             //clamp() call is missing here but it doesn't seem to make any big difference in this case
 
-            if ((isScrollX && deltaX != 0f || isScrollY && deltaY != 0f))
-                cancelTouchFocus()
         }
 
         override fun panStop(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
@@ -410,7 +402,7 @@ open class ZoomableScrollPane(
     /** @return the currently scrolled-to viewport of the whole scrollable area */
     private fun getViewport() = Rectangle().also { getViewport(it) }
 
-    private fun onViewportChanged() {
+    fun onViewportChanged() {
         onViewportChangedListener?.invoke(maxX, maxY, getViewport())
     }
 }

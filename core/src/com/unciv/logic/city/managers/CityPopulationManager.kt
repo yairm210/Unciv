@@ -11,8 +11,8 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.components.extensions.withItem
-import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.utils.withItem
+import com.unciv.utils.withoutItem
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
@@ -25,10 +25,9 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         private set
     var foodStored = 0
 
-    // In favor of this bad boy
     val specialistAllocations = Counter<String>()
 
-    fun getNewSpecialists() = specialistAllocations //convertStatsToSpecialistHashmap(specialists)
+    fun getNewSpecialists() = specialistAllocations 
 
 
     //region pure functions
@@ -87,7 +86,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             "Population" -> population
             "Followers of the Majority Religion", "Followers of this Religion" -> city.religion.getFollowersOfMajorityReligion()
             "Unemployed" -> getFreePopulation()
-            else -> 0
+            else -> specialistAllocations[filter]
         }
     }
 
@@ -109,6 +108,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         if (city.getMatchingUniques(UniqueType.NullifiesGrowth).any())
             return
 
+        // Hard block growth when using Avoid Growth, cap stored food
+        if (city.avoidGrowth) {
+            foodStored = foodNeededToGrow
+            return
+        }
+
         // growth!
         foodStored -= foodNeededToGrow
         val percentOfFoodCarriedOver =
@@ -124,13 +129,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     }
 
     fun addPopulation(count: Int) {
-        val changedAmount =
-            if (population + count < 0) -population
-            else count
+        val changedAmount = count.coerceAtLeast(1 - population)
         population += changedAmount
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {
             unassignExtraPopulation()
+            city.cityStats.update()
         } else {
             autoAssignPopulation()
         }
@@ -145,7 +149,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     /** Only assigns free population */
     internal fun autoAssignPopulation() {
-        city.cityStats.update(updateCivStats = false)  // calculate current stats with current assignments
+        city.cityStats.update()  // calculate current stats with current assignments
         val freePopulation = getFreePopulation()
         if (freePopulation <= 0) return
 
@@ -267,8 +271,6 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 }
             }
         }
-
-        city.cityStats.update()
     }
 
     fun getMaxSpecialists(): Counter<String> {

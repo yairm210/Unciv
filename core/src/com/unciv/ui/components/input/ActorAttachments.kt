@@ -38,7 +38,7 @@ internal class ActorAttachments private constructor(actor: Actor) {
 
     fun activate(type: ActivationTypes): Boolean {
         if (!this::activationActions.isInitialized) return false
-        if ((actor as? Disableable)?.isDisabled == true) return false // Skip if disabled - could reach here through key shortcuts
+        if ((actor as? Disableable)?.isDisabled == true) return false // Skip if disabled
         return activationActions.activate(type)
     }
 

@@ -75,6 +75,9 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
                 UniqueTriggerActivation.triggerUnique(unique, unit)
+            
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionGain){ it.params[0] == promotionName })
+                UniqueTriggerActivation.triggerUnique(unique, unit)
         }
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
@@ -100,12 +103,15 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             promotions.remove(promotionName)
             unit.updateUniques()
             unit.updateVisibleTiles()
+            
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionLoss){ it.params[0] == promotionName })
+                UniqueTriggerActivation.triggerUnique(unique, unit)
         }
     }
 
     private fun doDirectPromotionEffects(promotion: Promotion) {
         for (unique in promotion.uniqueObjects)
-            if (unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit))
+            if (unique.conditionalsApply(unit.cache.state)
                     && !unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
     }
@@ -122,7 +128,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         if (unit.type.name !in promotion.unitTypes) return false
         if (promotion.prerequisites.isNotEmpty() && promotion.prerequisites.none { it in promotions }) return false
 
-        val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
+        val stateForConditionals = unit.cache.state
         if (promotion.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
             .any { !it.conditionalsApply(stateForConditionals) }) return false

@@ -3,6 +3,7 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
+import com.badlogic.gdx.utils.SharedLibraryLoader
 import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
@@ -18,6 +19,8 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
+import org.lwjgl.system.Configuration
+import java.awt.GraphicsEnvironment
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -25,6 +28,12 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
+        if (SharedLibraryLoader.isMac) {
+            Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
+            // Since LibGDX 1.13.1 on Mac you cannot call Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
+            //  before GraphicsEnvironment.getLocalGraphicsEnvironment().
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
+        }
 
         // The uniques checker requires the file system to be seet up, which happens after lwjgw initializes it
         if (arg.isNotEmpty() && arg[0] == "mod-ci") {
@@ -57,7 +66,7 @@ internal object DesktopLauncher {
         Fonts.fontImplementation = DesktopFont()
 
         // Setup Desktop saver-loader
-        UncivFiles.saverLoader = DesktopSaverLoader()
+        UncivFiles.saverLoader = if (LinuxX11SaverLoader.isRequired()) LinuxX11SaverLoader() else DesktopSaverLoader()
         UncivFiles.preferExternalStorage = false
 
         // Solves a rendering problem in specific GPUs and drivers.
@@ -73,6 +82,8 @@ internal object DesktopLauncher {
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(WindowState.minimumWidth, WindowState.minimumHeight, -1, -1)
 
+
+        
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 

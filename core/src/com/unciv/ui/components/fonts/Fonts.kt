@@ -59,6 +59,22 @@ object Fonts {
     }
 
     /**
+     * Helper for v-centering the text of Icon – Label -type components:
+     *
+     * Normal vertical centering uses the entire font height. In reality,
+     * it is customary to align the centre from the baseline to the ascent
+     * with the centre of the other element.  This function estimates the
+     * correct amount to shift the text element.
+     */
+    fun getDescenderHeight(fontSize: Int): Float {
+        val ratio = fontImplementation.getMetrics().run {
+            descent / height }
+        // For whatever reason, undershooting the adjustment slightly
+        // causes rounding to work better
+        return ratio * fontSize.toFloat() + 2.25f
+    }
+
+    /**
      * Turn a TextureRegion into a Pixmap.
      *
      * .dispose() must be called on the returned Pixmap when it is no longer needed, or else it will leave a memory leak behind.

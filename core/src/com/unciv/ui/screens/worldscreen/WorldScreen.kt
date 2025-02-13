@@ -23,7 +23,6 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
@@ -49,7 +48,6 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
-import com.unciv.ui.screens.worldscreen.worldmap.WorldMapTileUpdater.updateTiles
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
@@ -59,11 +57,13 @@ import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
+import com.unciv.ui.screens.worldscreen.status.SmallUnitButton
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
+import com.unciv.ui.screens.worldscreen.worldmap.WorldMapTileUpdater.updateTiles
 import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
@@ -88,7 +88,7 @@ class WorldScreen(
     val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
-    /** When set, causes the screen to update in the next [render][BaseScreen.render] event */
+    /** When set, causes the screen to update in the next [render][render] event */
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
@@ -122,6 +122,7 @@ class WorldScreen(
     internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton(this)
     private val statusButtons = StatusButtons(nextTurnButton)
+    internal val smallUnitButton = SmallUnitButton(this, statusButtons)
     private val tutorialTaskTable = Table().apply {
         background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
     }
@@ -152,7 +153,6 @@ class WorldScreen(
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
         stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
-        stage.addActor(minimapWrapper)
         stage.addActor(tutorialTaskTable)    // behind topBar!
         stage.addActor(topBar)
         stage.addActor(statusButtons)
@@ -162,12 +162,12 @@ class WorldScreen(
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         stage.addActor(bottomUnitTable)
+        stage.addActor(unitActionsTable)
         stage.addActor(bottomTileInfoTable)
+        stage.addActor(minimapWrapper)
         battleTable.width = stage.width / 3
         battleTable.x = stage.width / 3
         stage.addActor(battleTable)
-
-        stage.addActor(unitActionsTable)
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -375,7 +375,7 @@ class WorldScreen(
             else bottomTileInfoTable.selectedCiv = viewingCiv
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
+            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
 
             battleTable.update()
 
@@ -447,8 +447,8 @@ class WorldScreen(
         updateGameplayButtons()
 
         val coveredNotificationsTop = stage.height - statusButtons.y
-        val coveredNotificationsBottom = bottomTileInfoTable.height +
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
+        val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
+//                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
         notificationsScroll.update(viewingCiv.notifications, coveredNotificationsTop, coveredNotificationsBottom)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
@@ -461,7 +461,7 @@ class WorldScreen(
             if (viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
                 game.settings.addCompletedTutorialTask("Create a trade route")
         }
-        val stateForConditionals = StateForConditionals(viewingCiv)
+        val stateForConditionals = viewingCiv.state
         return gameInfo.ruleset.events.values.firstOrNull {
             it.presentation == Event.Presentation.Floating &&
                 it.isAvailable(stateForConditionals)
@@ -640,9 +640,9 @@ class WorldScreen(
         }
     }
 
-    fun switchToNextUnit() {
+    fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
-        if (bottomUnitTable.selectedUnit != null)
+        if (bottomUnitTable.selectedUnit != null && resetDue)
             bottomUnitTable.selectedUnit!!.due = false
         val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
@@ -671,13 +671,10 @@ class WorldScreen(
         updateAutoPlayStatusButton()
         updateMultiplayerStatusButton()
 
-        statusButtons.wrap(false)
-        statusButtons.pack()
+        statusButtons.update(false)
         val maxWidth = stage.width - techPolicyAndDiplomacy.width - 25f
         if(statusButtons.width > maxWidth) {
-            statusButtons.width = maxWidth
-            statusButtons.wrap()
-            statusButtons.pack()
+            statusButtons.update(true)
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
     }
@@ -766,15 +763,13 @@ class WorldScreen(
         // Deselect Unit
         if (bottomUnitTable.selectedUnit != null) {
             bottomUnitTable.selectUnit()
-            bottomUnitTable.isVisible = false
             shouldUpdate = true
             return
         }
 
         // Deselect city
         if (bottomUnitTable.selectedCity != null) {
-            bottomUnitTable.selectedCity = null
-            bottomUnitTable.isVisible = false
+            bottomUnitTable.selectUnit()
             shouldUpdate = true
             return
         }

@@ -1,6 +1,5 @@
 
 import com.unciv.build.BuildConfig
-import com.unciv.build.BuildConfig.gdxVersion
 
 plugins {
     id("kotlin")
@@ -13,8 +12,6 @@ sourceSets {
 }
 
 kotlin {
-    jvmToolchain(17)
-
     target {
         compilations.all {
             kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
@@ -23,11 +20,6 @@ kotlin {
 }
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-dependencies {
-    // See https://libgdx.com/news/2021/07/devlog-7-lwjgl3#do-i-need-to-do-anything-else
-    api("com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion")
 }
 
 val mainClassName = "com.unciv.app.desktop.DesktopLauncher"

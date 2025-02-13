@@ -12,7 +12,11 @@ import com.unciv.logic.github.Github.downloadAndExtract
 import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
 import com.unciv.logic.github.GithubAPI.getUrlForTreeQuery
 import com.unciv.models.ruleset.ModOptions
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import java.io.BufferedReader
 import java.io.FileFilter
 import java.io.InputStream
@@ -40,16 +44,16 @@ object Github {
     /**
      * Helper opens am url and accesses its input stream, logging errors to the console
      * @param url String representing a [URL] to download.
-     * @param action Optional callback that will be executed between opening the connection and
+     * @param preDownloadAction Optional callback that will be executed between opening the connection and
      *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers.
      * @return The [InputStream] if successful, `null` otherwise.
      */
-    fun download(url: String, action: (HttpURLConnection) -> Unit = {}): InputStream? {
+    fun download(url: String, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
         try {
             // Problem type 1 - opening the URL connection
             with(URL(url).openConnection() as HttpURLConnection)
             {
-                action(this)
+                preDownloadAction(this)
                 // Problem type 2 - getting the information
                 try {
                     return inputStream
@@ -75,7 +79,9 @@ object Github {
      */
     fun downloadAndExtract(
         repo: GithubAPI.Repo,
-        modsFolder: FileHandle
+        modsFolder: FileHandle,
+        /** Should accept a number 0-100 */
+        updateProgressPercent: ((Int)->Unit)? = null
     ): FileHandle? {
         var modNameFromFileName = repo.name
 
@@ -93,17 +99,54 @@ object Github {
             zipUrl = repo.direct_zip_url
             tempName = "temp-" + repo.toString().hashCode().toString(16)
         }
+        
+        var contentLength = 0
         val inputStream = download(zipUrl) {
+            // We DO NOT want to accept "Transfer-Encoding: chunked" here, as we need to know the size for progress tracking
+            // So this attempts to limit the encoding to gzip only
+            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+            // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes 
+            // which means we don't actually know the total length :(
+            it.setRequestProperty("Accept-Encoding", "gzip")
+            
             val disposition = it.getHeaderField(contentDispositionHeader)
             if (disposition.startsWith(attachmentDispositionPrefix))
                 modNameFromFileName = disposition.removePrefix(attachmentDispositionPrefix)
                     .removeSuffix(".zip").replace('.', ' ')
             // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
+            
+            contentLength = it.getHeaderField("Content-Length")?.toInt()
+                ?: 0 // repo.length is a total lie
         } ?: return null
 
         // Download to temporary zip
+        
+        // minimum viable bytes-read tracking
+        class CountingInputStream(originalStream:InputStream):InputStream() {
+            private var count = 0
+            private val wrapped = originalStream
+            override fun read(): Int {
+                count++
+                return wrapped.read()
+            }
+            fun bytesRead() = count
+        }
+        
+        var trackerThread: Job? = null
+        val countingStream = CountingInputStream(inputStream)
+        if (updateProgressPercent != null && contentLength > 0) {
+            trackerThread = Concurrency.run("Downloading mod progress") {
+                while (this.isActive) {
+                    val percentage = countingStream.bytesRead() * 100 / contentLength
+                    updateProgressPercent(percentage)
+                    delay(100)
+                }
+            }
+        }
+        
         val tempZipFileHandle = modsFolder.child("$tempName.zip")
-        tempZipFileHandle.write(inputStream, false)
+        tempZipFileHandle.write(countingStream, false)
+        trackerThread?.cancel()
 
         // prepare temp unpacking folder
         val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
@@ -150,7 +193,7 @@ object Github {
     }
 
     private fun isValidModFolder(dir: FileHandle): Boolean {
-        val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*")
+        val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
             .map { Regex(it, RegexOption.IGNORE_CASE) }
         val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license")
             .map { Regex(it, RegexOption.IGNORE_CASE) }

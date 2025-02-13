@@ -35,7 +35,7 @@ class UniqueErrorTests {
         ruleset.modOptions.isBaseRuleset = true
 
         // Check mod links and ensure we don't get a crash, instead we get errors
-        val errors = ruleset.checkModLinks(false)
+        val errors = ruleset.getErrorList(false)
         assert(errors.isNotOK())
     }
 }

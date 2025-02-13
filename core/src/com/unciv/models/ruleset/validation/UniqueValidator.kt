@@ -31,15 +31,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     fun populateFilteringUniqueHashsets() {
-        addToHashsets(ruleset.globalUniques)
-        ruleset.units.values.forEach { addToHashsets(it) }
-        ruleset.buildings.values.forEach { addToHashsets(it) }
-        ruleset.unitPromotions.values.forEach { addToHashsets(it) }
-        ruleset.technologies.values.forEach { addToHashsets(it) }
-        ruleset.nations.values.forEach { addToHashsets(it) }
-        ruleset.tileResources.values.forEach { addToHashsets(it) }
-        ruleset.terrains.values.forEach { addToHashsets(it) }
-        ruleset.tileImprovements.values.forEach { addToHashsets(it) }
+        ruleset.allRulesetObjects().forEach { addToHashsets(it) }
     }
 
     fun checkUniques(
@@ -69,8 +61,13 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix)
 
         val rulesetErrors = RulesetErrorList(ruleset)
-
-        if (uniqueContainer != null && !unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()))
+        
+        if (uniqueContainer != null &&
+            !(unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()) ||
+                    // "for X turns" effectively turns a global unique into a trigger
+                    unique.hasModifier(UniqueType.ConditionalTimedUnique)
+                        && uniqueContainer.getUniqueTarget().canAcceptUniqueTarget(UniqueTarget.Triggerable)
+                    ))
             rulesetErrors.add("$prefix is not allowed on its target type", RulesetErrorSeverity.Warning, uniqueContainer, unique)
 
         val typeComplianceErrors = getComplianceErrors(unique)
@@ -110,9 +107,9 @@ class UniqueValidator(val ruleset: Ruleset) {
         return rulesetErrors
     }
 
-    val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
+    private val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
         UniqueType.DoubleResourceProduced, UniqueType.StrategicResourcesIncrease)
-    val resourceConditionals = setOf(
+    private val resourceConditionals = setOf(
         UniqueType.ConditionalWithResource,
         UniqueType.ConditionalWithoutResource,
         UniqueType.ConditionalWhenBetweenStatResource,
@@ -173,7 +170,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
 
         if (unique.type in resourceUniques && conditional.type in resourceConditionals
-            && ruleset.tileResources[conditional.params.last()]?.hasUnique(UniqueType.CityResource) == true)
+            && ruleset.tileResources[conditional.params.last()]?.isCityWide == true)
             rulesetErrors.add(
                 "$prefix contains the conditional \"${conditional.text}\"," +
                     " which references a citywide resource. This is not a valid conditional for a resource uniques, " +

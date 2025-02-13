@@ -17,3 +17,9 @@ In Civ V, this is the behavior of Hills and Mountains, but not of Jungle and For
 And yet, Jungle and Forest *can block* Hills, and Hills+Forest can block Mountains from view - so they must be the same height!
 
 This part of Civ V visibility makes no sense, considering the otherwise well-structured visibility logic, and we consider this to be a bug.
+
+## Great Warpath does not provide railroad bonuses for connected cities
+
+This is [a discrepancy in Civ V rules](https://github.com/yairm210/Unciv/issues/12261) - if all jungles are like roads, then they shouldn't be considered railroads for production purposes.
+
+The idea is that if you can quickly transport goods with railroads that yields a production bonus - moving fast through jungles may be possible, but not with industrial amounts of goods.

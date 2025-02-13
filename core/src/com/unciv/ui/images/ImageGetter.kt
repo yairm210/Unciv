@@ -5,9 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import com.badlogic.gdx.graphics.g2d.NinePatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g2d.*
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -22,18 +20,11 @@ import com.unciv.json.json
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.centerX
-import com.unciv.ui.components.extensions.centerY
-import com.unciv.ui.components.extensions.setFontColor
-import com.unciv.ui.components.extensions.setFontSize
-import com.unciv.ui.components.extensions.setSize
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.surroundWithThinCircle
-import com.unciv.ui.components.extensions.toGroup
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.NonTransformGroup
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
@@ -45,6 +36,7 @@ import kotlin.math.sqrt
 object ImageGetter {
     const val whiteDotLocation = "OtherIcons/whiteDot"
     const val circleLocation = "OtherIcons/Circle"
+    val CHARCOAL = Color(0x111111FF)
 
     // We use texture atlases to minimize texture swapping - see https://yairm210.medium.com/the-libgdx-performance-guide-1d068a84e181
     lateinit var atlas: TextureAtlas
@@ -66,7 +58,10 @@ object ImageGetter {
     fun reloadImages() = setNewRuleset(ruleset)
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
-    fun setNewRuleset(ruleset: Ruleset) {
+    fun setNewRuleset(ruleset: Ruleset, ignoreIfModsAreEqual: Boolean = false) {
+        if (ignoreIfModsAreEqual && ruleset.mods == ImageGetter.ruleset.mods)
+            return
+            
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
 
@@ -87,7 +82,7 @@ object ImageGetter {
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
-    fun loadModAtlases(mod: String, folder: FileHandle) {
+    private fun loadModAtlases(mod: String, folder: FileHandle) {
         // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
         val controlFile = folder.child("Atlases.json")
         val fileNames = (if (controlFile.exists()) json().fromJson(Array<String>::class.java, controlFile)
@@ -110,6 +105,8 @@ object ImageGetter {
             }
             for (region in tempAtlas.regions) {
                 if (region.name.startsWith("Skins")) {
+                    // TODO: give user a mod warning that the image names has to be [name].9.png
+                    //      if this throws an exception
                     val ninePatch = tempAtlas.createPatch(region.name)
                     ninePatchDrawables[region.name] = NinePatchDrawable(ninePatch)
                 } else {
@@ -212,7 +209,8 @@ object ImageGetter {
     fun getExternalImage(fileName: String) =
         getExternalImage(Gdx.files.internal("ExtraImages/$fileName"))
 
-    fun getImage(fileName: String?): Image = ImageWithCustomSize(getDrawable(fileName))
+    fun getImage(fileName: String?, tintColor: Color? = null): Image = 
+        ImageWithCustomSize(getDrawable(fileName)).apply { color = tintColor ?: Color.WHITE }
 
     fun getDrawable(fileName: String?): TextureRegionDrawable =
         textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!
@@ -236,8 +234,6 @@ object ImageGetter {
     }
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
-    fun techIconExists(techName: String) = imageExists("TechIcons/$techName")
-    fun unitIconExists(unitName: String) = imageExists("UnitIcons/$unitName")
     fun ninePatchImageExists(fileName: String) = ninePatchDrawables.containsKey(fileName)
 
     fun getStatIcon(statName: String): Image = getImage("StatIcons/$statName")
@@ -251,8 +247,10 @@ object ImageGetter {
 
     fun getRandomNationPortrait(size: Float): Portrait = PortraitNation(Constants.random, size)
 
-    fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image =
-        getImage("UnitIcons/$unitName").apply { this.color = color }
+    fun getUnitIcon(unit: BaseUnit, color: Color = CHARCOAL): Image =
+        if (imageExists("UnitIcons/${unit.name}"))
+            getImage("UnitIcons/${unit.name}").apply { this.color = color }
+        else getImage("UnitTypeIcons/${unit.type}").apply { this.color = color }
 
     fun getConstructionPortrait(construction: String, size: Float): Group {
         if (ruleset.buildings.containsKey(construction)) {
@@ -270,13 +268,13 @@ object ImageGetter {
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
 
-    fun getResourcePortrait(resourceName: String, size: Float, amount: Int = 0): Group =
+    fun getResourcePortrait(resourceName: String, size: Float, amount: Int= 0): Group =
         PortraitResource(resourceName, size, amount)
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false): Portrait =
-        PortraitImprovement(improvementName, size, dim, isPillaged)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false): Portrait =
+        PortraitImprovement(improvementName, size, false, isPillaged)
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait = PortraitUnitAction(actionName, size)
 
@@ -308,8 +306,7 @@ object ImageGetter {
         return redCross
     }
 
-    fun getCrossedImage(image: Actor, iconSize: Float) = Group().apply {
-            isTransform = false
+    fun getCrossedImage(image: Actor, iconSize: Float) = NonTransformGroup().apply {
             setSize(iconSize, iconSize)
             image.center(this)
             addActor(image)
@@ -339,7 +336,7 @@ object ImageGetter {
                 .setProgress(progressColor, percentComplete, padding = progressPadding)
     }
 
-    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true) : Group() {
+    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true) : NonTransformGroup() {
 
         var primaryPercentage: Float = 0f
         var secondaryPercentage: Float = 0f
@@ -351,8 +348,9 @@ object ImageGetter {
 
         init {
             setSize(width, height)
-            isTransform = false
         }
+
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
         fun setLabel(color: Color, text: String, fontSize: Int = Constants.defaultFontSize) : ProgressBar {
             label = text.toLabel()
@@ -427,12 +425,12 @@ object ImageGetter {
         }
         healthBar.add(healthPartOfBar).size(healthBarSize * healthPercent, height)
 
-        val emptyPartOfBar = getDot(Color.BLACK)
+        val emptyPartOfBar = getDot(CHARCOAL)
         healthBar.add(emptyPartOfBar).size(healthBarSize * (1 - healthPercent), height)
 
         healthBar.pad(1f)
         healthBar.pack()
-        healthBar.background = BaseScreen.skinStrings.getUiBackground("General/HealthBar", tintColor = Color.BLACK)
+        healthBar.background = BaseScreen.skinStrings.getUiBackground("General/HealthBar", tintColor = CHARCOAL)
         return healthBar
     }
 
@@ -467,6 +465,8 @@ object ImageGetter {
         specialist.color = color
         return specialist
     }
+    
+    fun getAllImageNames() = textureRegionDrawables.keys
 
     fun getAvailableSkins() = ninePatchDrawables.keys.asSequence().map { it.split("/")[1] }.distinct()
 
@@ -481,6 +481,8 @@ object ImageGetter {
         .filter { it.startsWith("TileSets") && !it.contains("/Units/") }
         .map { it.split("/")[1] }.distinct()
 
-    fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence().filter { it.contains("/Units/") }
-        .map { it.split("/")[1] }.distinct()
+    fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence()
+        .filter { it.startsWith("TileSets") && it.contains("/Units/") }
+        .map { it.split("/")[1] }
+        .distinct()
 }

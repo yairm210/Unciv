@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.validation
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -17,11 +18,13 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.images.PortraitPromotion
 
@@ -82,6 +85,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         addTechColumnErrorsRulesetInvariant(lines)
         addEraErrors(lines, tryFixUnknownUniques)
         addSpeedErrors(lines)
+        addPersonalityErrors(lines)
         addBeliefErrors(lines, tryFixUnknownUniques)
         addNationErrors(lines, tryFixUnknownUniques)
         addPolicyErrors(lines, tryFixUnknownUniques)
@@ -109,62 +113,94 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
 
+    private fun getPossibleMisspellings(originalText: String, possibleMisspellings: List<String>): List<String> =
+        possibleMisspellings.filter {
+            getRelativeTextDistance(
+                it,
+                originalText
+            ) <= RulesetCache.uniqueMisspellingThreshold
+        }
+    
     private fun checkFileNames(lines: RulesetErrorList) {
         val folder = ruleset.folderLocation ?: return
-        for (child in folder.list()){
+
+        checkMisplacedJsonFiles(folder, lines)
+        checkMisspelledFolders(folder, lines)
+        checkImagesFolders(folder, lines)
+        checkUnknownJsonFilenames(folder, lines)
+    }
+
+    private fun checkMisspelledFolders(
+        folder: FileHandle,
+        lines: RulesetErrorList
+    ) {
+        val knownFolderNames = listOf("jsons", "maps", "sounds", "Images", "fonts")
+        for (child in folder.list()) {
+            if (!child.isDirectory || child.name() in knownFolderNames) continue
+
+            val possibleMisspellings = getPossibleMisspellings(child.name(), knownFolderNames)
+            if (possibleMisspellings.isNotEmpty())
+                lines.add(
+                    "Folder \"${child.name()}\" is probably a misspelling of " + possibleMisspellings.joinToString("/"),
+                    RulesetErrorSeverity.OK
+                )
+        }
+    }
+
+    private fun checkMisplacedJsonFiles(
+        folder: FileHandle,
+        lines: RulesetErrorList
+    ) {
+        for (child in folder.list()) {
             if (child.name().endsWith("json") && !child.name().startsWith("Atlas"))
                 lines.add("File ${child.name()} is located in the root folder - it should be moved to a 'jsons' folder")
         }
+    }
 
-        fun getPossibleMisspellings(originalText: String, possibleMisspellings: List<String>): List<String> {
-            return possibleMisspellings.filter {
-                getRelativeTextDistance(
-                    it,
-                    originalText
-                ) <= RulesetCache.uniqueMisspellingThreshold
-            }
-        }
+    private fun checkImagesFolders(
+        folder: FileHandle,
+        lines: RulesetErrorList
+    ) {
+        val knownImageFolders =
+            Portrait.Type.entries.map { it.directory }.flatMap { listOf(it + "Icons", it + "Portraits") } +
+                    listOf("CityStateIcons", "PolicyBranchIcons", "PolicyIcons", "OtherIcons", "EmojiIcons", "StatIcons", "TileIcons", "TileSets")  // Not portrait-able (yet?)
 
-        val knownFolderNames = listOf("jsons", "maps", "sounds", "Images", "fonts")
-        for (child in folder.list()){
-            if (child.isDirectory && child.name() !in knownFolderNames){
-                val possibleMisspellings = getPossibleMisspellings(child.name(), knownFolderNames)
-                if (possibleMisspellings.isNotEmpty())
-                    lines.add("Folder \"${child.name()}\" is probably a misspelling of "+possibleMisspellings.joinToString("/"),
-                        RulesetErrorSeverity.OK)
-            }
-        }
-
-        val knownImageFolders = Portrait.Type.entries.map { it.directory }.flatMap { listOf(it+"Icons", it+"Portraits") } +
-                // Not portrait-able (yet?)
-                listOf("CityStateIcons", "PolicyBranchIcons", "PolicyIcons", "OtherIcons", "EmojiIcons", "StatIcons", "TileIcons", "TileSets")
         val imageFolders = folder.list().filter { it.name().startsWith("Images") }
-        for (imageFolder in imageFolders){
-            for (child in imageFolder.list()){
+        for (imageFolder in imageFolders) {
+            for (child in imageFolder.list()) {
                 if (!child.isDirectory) {
-                    lines.add("File \"$imageFolder/${child.name()}\" is misplaced - Images folders should not contain any files directly - only subfolders",
-                        RulesetErrorSeverity.OK)
-                } else if (child.name() !in knownImageFolders){
+                    lines.add(
+                        "File \"$imageFolder/${child.name()}\" is misplaced - Images folders should not contain any files directly - only subfolders",
+                        RulesetErrorSeverity.OK
+                    )
+                } else if (child.name() !in knownImageFolders) {
                     val possibleMisspellings = getPossibleMisspellings(child.name(), knownImageFolders)
                     if (possibleMisspellings.isNotEmpty())
-                        lines.add("Folder \"$imageFolder/${child.name()}\" is probably a misspelling of "+
-                                possibleMisspellings.joinToString("/"),
-                            RulesetErrorSeverity.OK)
+                        lines.add(
+                            "Folder \"$imageFolder/${child.name()}\" is probably a misspelling of " +
+                                    possibleMisspellings.joinToString("/"),
+                            RulesetErrorSeverity.OK
+                        )
                 }
             }
         }
+    }
 
-
+    private fun checkUnknownJsonFilenames(
+        folder: FileHandle,
+        lines: RulesetErrorList
+    ) {
         val jsonFolder = folder.child("jsons")
-        if (jsonFolder.exists()) {
-            for (file in jsonFolder.list("json")) {
-                if (file.name() !in RulesetFile.entries.map { it.filename }) {
-                    var text = "File ${file.name()} is in the jsons folder but is not a recognized ruleset file"
-                    val possibleMisspellings = getPossibleMisspellings(file.name(), RulesetFile.entries.map { it.filename })
-                    if (possibleMisspellings.isNotEmpty()) text += "\nPossible misspelling of: "+possibleMisspellings.joinToString("/")
-                    lines.add(text, RulesetErrorSeverity.OK)
-                }
-            }
+        if (!jsonFolder.exists()) return
+        
+        for (file in jsonFolder.list("json")) {
+            if (file.name() in RulesetFile.entries.map { it.filename }) continue
+
+            var text = "File ${file.name()} is in the jsons folder but is not a recognized ruleset file"
+            val possibleMisspellings = getPossibleMisspellings(file.name(), RulesetFile.entries.map { it.filename })
+            if (possibleMisspellings.isNotEmpty()) 
+                text += "\nPossible misspelling of: " + possibleMisspellings.joinToString("/")
+            lines.add(text, RulesetErrorSeverity.OK)
         }
     }
 
@@ -238,22 +274,9 @@ class RulesetValidator(val ruleset: Ruleset) {
         // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
-                
-                for (unique in choice.conditionObjects + choice.triggeredUniqueObjects)
-                    lines += uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, true)
-                
-                if (choice.conditions.isNotEmpty())
-                    lines.add("Event choice 'conditions' field is deprecated, " +
-                            "please replace with 'Only available' or 'Not availble' uniques in 'uniques' field", 
-                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
-                
-                if (choice.triggeredUniques.isNotEmpty())
-                    lines.add("Event choice 'triggered uniques' field is deprecated, " +
-                            "please place the triggers in the 'uniques' field",
-                        errorSeverityToReport = RulesetErrorSeverity.WarningOptionsOnly, choice)
-                
                 uniqueValidator.checkUniques(choice, lines, true, tryFixUnknownUniques)
             }
+            uniqueValidator.checkUniques(event, lines, true, tryFixUnknownUniques)
         }
     }
 
@@ -266,6 +289,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                         "Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!",
                         RulesetErrorSeverity.Warning, sourceObject = null
                     )
+            
             for (milestone in victoryType.milestoneObjects) {
                 if (milestone.type == null)
                     lines.add(
@@ -279,6 +303,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                         RulesetErrorSeverity.Error,
                     )
             }
+            
             for (victory in ruleset.victories.values)
                 if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
                     lines.add(
@@ -288,11 +313,14 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
     }
 
+    private val unitMovementTypes = UnitMovementType.entries.map { it.name }.toSet()
     private fun addUnitTypeErrors(
         lines: RulesetErrorList,
         tryFixUnknownUniques: Boolean
     ) {
         for (unitType in ruleset.unitTypes.values) {
+            if (unitType.movementType !in unitMovementTypes)
+                lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
             uniqueValidator.checkUniques(unitType, lines, true, tryFixUnknownUniques)
         }
     }
@@ -341,10 +369,9 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (policy in ruleset.policies.values) {
-            if (policy.requires != null)
-                for (prereq in policy.requires!!)
-                    if (!ruleset.policies.containsKey(prereq))
-                        lines.add("${policy.name} requires policy $prereq which does not exist!", sourceObject = policy)
+            for (prereq in policy.requires ?: emptyList())
+                if (!ruleset.policies.containsKey(prereq))
+                    lines.add("${policy.name} requires policy $prereq which does not exist!", sourceObject = policy)
 
             uniqueValidator.checkUniques(policy, lines, true, tryFixUnknownUniques)
         }
@@ -406,6 +433,16 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("Negative speed modifier for game speed ${speed.name}", sourceObject = speed)
             if (speed.yearsPerTurn.isEmpty())
                 lines.add("Empty turn increment list for game speed ${speed.name}", sourceObject = speed)
+        }
+    }
+    
+    private fun addPersonalityErrors(lines: RulesetErrorList) {
+        for (personality in ruleset.personalities.values) {
+            if (personality.preferredVictoryType != Constants.neutralVictoryType
+                    && personality.preferredVictoryType !in ruleset.victories) {
+                lines.add("Preferred victory type ${personality.preferredVictoryType} does not exist in ruleset",
+                    RulesetErrorSeverity.Warning, sourceObject = personality,)
+            }
         }
     }
 
@@ -526,6 +563,8 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("${improvement.name} requires tech ${improvement.techRequired} which does not exist!", sourceObject = improvement)
             if (improvement.replaces != null && !ruleset.tileImprovements.containsKey(improvement.replaces))
                 lines.add("${improvement.name} replaces ${improvement.replaces} which does not exist!", sourceObject = improvement)
+            if (improvement.replaces != null && improvement.uniqueTo == null)
+                lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!ruleset.terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines.add("${improvement.name} can be built on terrain $terrain which does not exist!", sourceObject = improvement)
@@ -724,9 +763,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         if (innerColorLuminance > outerColorLuminance) { // inner is brighter
             innerLerpColor = Color.WHITE
-            outerLerpColor = Color.BLACK
+            outerLerpColor = ImageGetter.CHARCOAL
         } else {
-            innerLerpColor = Color.BLACK
+            innerLerpColor = ImageGetter.CHARCOAL
             outerLerpColor = Color.WHITE
         }
 
@@ -768,6 +807,9 @@ class RulesetValidator(val ruleset: Ruleset) {
                     "Building ${building.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
                     RulesetErrorSeverity.Warning, building
                 )
+
+        if (building.replaces != null && building.uniqueTo == null)
+            lines.add("${building.name} should replace ${building.replaces} but does not have uniqueTo assigned!")
     }
 
     private fun addTechColumnErrorsRulesetInvariant(lines: RulesetErrorList) {
@@ -808,6 +850,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         tryFixUnknownUniques: Boolean
     ) {
         for (tech in ruleset.technologies.values) {
+            if (tech.row < 1) lines.add("Tech ${tech.name} has a row value below 1: ${tech.row}", sourceObject = tech)
             uniqueValidator.checkUniques(tech, lines, false, tryFixUnknownUniques)
         }
     }
@@ -834,6 +877,10 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (upgradesTo == unit.name || (upgradesTo == unit.replaces))
                 lines.add("${unit.name} upgrades to itself!", sourceObject = unit)
         }
+        
+        if (unit.replaces != null && unit.uniqueTo == null)
+            lines.add("${unit.name} should replace ${unit.replaces} but does not have uniqueTo assigned!")
+        
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
     }

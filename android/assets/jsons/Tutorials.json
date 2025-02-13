@@ -10,13 +10,25 @@
 
   // Civilopedia only, because players said this was too wall-of-text
   {
-    "name": "New Game",
-    "steps": [
-      "Your first mission is to found your capital city.\nThis is actually an important task because your capital city will probably be your most prosperous.\nMany game bonuses apply only to your capital city and it will probably be the center of your empire.",
-      "How do you know a spot is appropriate?\nThat’s not an easy question to answer, but looking for and building next to luxury resources is a good rule of thumb.\nLuxury resources are tiles that have things like gems, cotton, or silk (indicated by a smiley next to the resource icon)\nThese resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as iron. Cities cannot be built within 3 tiles of existing cities, which is another thing to watch out for!",
-      "However, cities don’t have a set area that they can work - more on that later!\nThis means you don’t have to settle cities right next to resources.\nLet’s say, for example, that you want access to some iron – but the resource is right next to a desert.\nYou don’t have to settle your city next to the desert. You can settle a few tiles away in more prosperous lands.\nYour city will grow and eventually gain access to the resource.\nYou only need to settle right next to resources if you need them immediately – \n   which might be the case now and then, but you’ll usually have the luxury of time."    ,
-      "The first thing coming out of your city should be either a Scout or Warrior.\nI generally prefer the Warrior because it can be used for defense and because it can be upgraded\n  to the Swordsman unit later in the game for a relatively modest sum of gold.\nScouts can be effective, however, if you seem to be located in an area of dense forest and hills.\nScouts don’t suffer a movement penalty in this terrain.\nIf you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.\nFast expanding is absolutely critical in most games of this type."
-    ]
+      "name": "New Game",
+      "civilopediaText": [
+          {"text": "Welcome to Unciv!"},
+          {},
+          {"text": "Because this is a complex game, there are some tutorials to help familiarize you with it. These can be disbaled in the Options -> Display menu, but please hang on if you're new here!"},
+          {"separator": true },
+          {"text": "Your first mission is to found your capital city. This is actually an important task because your capital city will probably be your most prosperous. Many game bonuses apply only to your capital city, and it will be the center of your empire."},
+          {},
+          {"text": "How do you know a city location is appropriate? Luckily, the game has already chosen a good location for you. You can settle in this place, or maybe move a turn to found on a Hill (for Production and defence) or next to a Mountain (to gain access to the Observatory building later on)."},
+          {},
+          {"text": "You'll likely want more cities later on. For these cities, you must go and find a good place. Looking for and founding on or near Luxury resources is a good rule of thumb."},
+          {},
+          {"text": "Luxury resources are tiles that have things like Gems, Cotton, or Silk (indicated by a yellow background of the resource icon). These resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as Iron. Cities cannot be built within 3 tiles of existing cities, which is another thing to keep in mind!"},
+          {},
+          {"text": "Cities will house Citizens, which can work tiles up to 3 tiles away from the city. This means you don’t have to settle cities right on or next to good tiles. Let’s say, for example, that you want access to some Iron – but the resource is in a desert area. You don’t have to settle your city in the desert. You can settle a few tiles away in more prosperous lands. Your city will grow and eventually gain access to the resource. You only need to settle right on top of resources if you need them immediately."},
+          {},
+          {"text": "The first thing coming out of your city depends on the strategy you want to follow, but the 'classic' build order is to build first two Scouts, then a Shrine, and three Settlers, and adopt Tradition, to explore the map quickly (Scouts ignore terrain cost), and to get an early Pantheon (if you're playing with religion enabled)."},
+          {"text": "But feel free to experiment with your own build orders!", "color": "#fa0"}
+      ]
   },
   {
     "name": "Slow Start",
@@ -117,7 +129,7 @@
         {"text":"This greatly improves the speed you can get Units around the map."},
         {"text":"Until you research the technology that removes it, Roads do not cross Rivers"},
         {"text":"Connecting your cities to the capital by Roads and/or Railroads will generate Gold via the Trade Route.","link":"Tutorials/Trade Route"},
-        {"text":"However, since each Road and Railroad have a Maintenance Cost, it may be more economical to wait until the cities grow and only place where needed."},
+        {"text":"However, since each Road and Railroad have a Maintenance Cost, it may be more economical to wait until the cities grow and only place where needed."}
     ]
   },
   {
@@ -221,7 +233,11 @@
   {
     "name": "Idle Units",
     "steps": [
-      "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.\nIf you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.\nIf you have not decided yet what an unit should do for the current turn, choose the 'Wait' command. A 'waiting' unit will be selected again at the end of the 'Next Unit' cycle, once all other units have received their orders.\nIf you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units."
+      "Clicking 'Next unit' moves to the next idle unit in the queue (as listed in Overview -> Units). After issuing an order to an unit, if 'Auto Unit Cycle' in Options -> Gameplay is enabled, you will automatically select the next idle unit.",
+        "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again, or command the unit to 'Skip turn'.",
+        "If you want to disable the 'Next unit' feature entirely, you can toggle it in Options -> Gameplay -> Check for idle units.",
+        "If you'd rather 'Next unit' cycle the units and not mark them as Done, you can change it in the Options -> Gameplay menu.",
+        "You can also cycle through the idle units using the left and right triangles on the Unit Table in the lower left of the screen. Or by default using the Cycle button next to the 'Next Unit' button."
     ]
   },
   {
@@ -276,14 +292,25 @@
 	"Instead, diplomatic relations with City-States are determined by Influence - a meter of 'how much the City-State likes you'.\nInfluence can be increased by attacking their enemies, liberating their city, and giving them sums of gold.",
 	"Certain bonuses are given when you are at above 30 influence.\nWhen you have above 60 Influence, and you have the highest influence with them of all civilizations, you are considered their 'Ally', and gain further bonuses and access to the Luxury and Strategic resources in their lands."
     ]
+  }, 
+  {
+    "name": "Specialists",
+    "civilopediaText": [
+        {"text":"While working the land is good, eventually your Citizens will want to Specialize."},
+        {"text":"Certain Buildings will also provide Specialist Slots. These slots will show up in the Citizen Management within the City Screen under Specialists. Each slot can be filled with a Citizen which will then become a Specialist."},
+        {"text": "Each Specialist will generate a certain amount of yield as indicated to the right of the available slots."},
+        {"text": "While these are a great way to specialize the yield production of a City outside of the surrounding Tile Yields, Specialists have an additional value. Each one also generates Great Person Points each turn. With enough of them, a new Great Person will join your Nation."},
+        {"text": "See also Great People","link": "Tutorials/Great People"}
+    ]
   },
   {
     "name": "Great People",
-    "steps": [
-	"Certain buildings, and specialists in cities, generate Great Person points per turn.\nThere are several types of Great People, and their points accumulate separately.\nThe number of points per turn and accumulated points can be viewed in the Overview screen.",
-	"Alternatively, the Great Person points breakdown per city can be viewed in each city screen (see UI Tips article).",
-	"Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now.",
-	"Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"
+    "civilopediaText": [
+        {"text": "Certain buildings, and specialists in cities, generate Great Person points per turn.\nThere are several types of Great People, and their points accumulate separately.\nThe number of points per turn and accumulated points can be viewed in the Overview screen."},
+        {"text": "Alternatively, the Great Person points breakdown per city can be viewed in each City Screen (see UI Tips article)."},
+        {"text": "Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now."},
+        {"text": "Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"},
+        {"text": "See also Specialists","link": "Tutorials/Specialists"}
     ]
   },
   {
@@ -303,7 +330,7 @@
       "civilopediaText": [
           {"text": "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons."},
           {"text": "On the world screen the hotkeys are as follows:"},
-          {"text": "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered"},
+          {"text": "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its City Screen if already centered"},
           {"text": "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload"},
           {"text": "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"},
           {},
@@ -325,7 +352,7 @@
     "⑥: Unit Action Buttons - while a unit is selected its possible actions appear here.",
     "⑦: The unit/city info pane - shows information about a selected unit or city.",
     "⑧: The name (and unit icon) of the selected unit or city, with current health if wounded. Clicking a unit name or icon will open its civilopedia entry.",
-    "⑨: The arrow buttons allow jumping to the next/previous unit.",
+    "⑨: The arrow buttons allow jumping to the next/previous idle unit.",
     "⑩: For a selected unit, its promotions appear here, and clicking leads to the promotions screen for that unit.",
     "⑪: Remaining/per turn movement points, strength and experience / XP needed for promotion. For cities, you get its combat strength.",
     "⑫: This button closes the selected unit/city info pane.",
@@ -372,7 +399,7 @@
         "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
         "Generating more ☮Faith will allow you to found a religion."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Religion",
@@ -386,7 +413,7 @@
         "This will allow you to choose another follower belief, as well as an enhancer belief, that only applies to you.",
         "Do take care founding a religion soon, only about half the players in the game are able to found a religion!"
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Beliefs",
@@ -394,20 +421,20 @@
         "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.",
         "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Religion inside cities",
     "steps": [
         "When founding a city, it won't follow a religion immediately.",
         "The religion a city follows depends on the total pressure each religion has within the city.",
-        "Followers are allocated in the same proportions as these pressures, and these followers can be viewed in the city screen.",
+        "Followers are allocated in the same proportions as these pressures, and these followers can be viewed in the City Screen.",
         "You are allowed to check religious followers and pressures in cities you do not own by selecting them.",
         "In both places, a tap/click on the icon of a religion will show detailed information with its effects.",
         "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
         "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Spreading Religion",
@@ -424,12 +451,12 @@
         "",
         "Cities also passively add pressure of their majority religion to nearby cities.",
         "Each city provides +6 pressure per turn to all cities within 10 tiles, though the exact amount of pressure depends on the game speed.",
-        "This pressure can also be seen in the city screen, and gives you an idea of how religions in your cities will evolve if you don't do anything.",
+        "This pressure can also be seen in the City Screen, and gives you an idea of how religions in your cities will evolve if you don't do anything.",
         "Holy cities also provide +30 pressure of the religion founded there to themselves, making it very difficult to effectively convert a holy city.",
         "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
         "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Inquisitors",
@@ -438,9 +465,9 @@
         "They can remove all other religions from one of your own cities, removing any pressures built up.",
         "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
         "Often this results in the city immediately converting to their religion",
-        "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
+        "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is unaffected."
       ],
-    "uniques": ["Hidden when religion is disabled"]
+    "uniques": ["Only available <when religion is enabled>"]
   },
   {
     "name": "Maya Long Count calendar cycle",
@@ -471,7 +498,7 @@
         {"text":"The Intercepting Unit rolls to see if it hits. Whether it hits or not costs an Attack, and most units (without Promotions) can only Attack Once per Nation's Turn. It does NOT cost Movement Points, but Air Units that have used their Movement cannot Intercept between turns."},
         {"text":"If the Intercepting Unit Hits, it deals damage according to the Combat Strength calculation to the Attacking Air Unit, potentially with any Strength Bonuses that apply to Interception. It does not receive damage from the Attacking Air Unit."},
         {"text":"After Interception resolves, the Attacking Air Unit and the Defending Unit in the targeted tile do Combat as normal, with damage dealt to both sides."},
-        {"text":"To help deal with Interceptions, see Air Sweeps.","link": "Tutorials/Air Sweeps"},
+        {"text":"To help deal with Interceptions, see Air Sweeps.","link": "Tutorials/Air Sweeps"}
     ]
   },
   {
@@ -482,6 +509,14 @@
         "Your unit will always draw an Interception, if one can reach the target tile, even if the Intercepting unit has a chance to miss.",
         "If the Interceptor is not an Air Unit (eg Land or Sea), the Air Sweeping unit and Interceptor take no damage!",
         "If the Interceptor is an Air Unit, the two units will damage each other in a straight fight with no Interception bonuses. And only the Attacking Air Sweep Unit gets any Air Sweep strength bonuses."
+    ]
+  },
+  {
+    "name": "Fortify, Guard, Withdraw",
+    "civilopediaText": [
+        {"text": "Most Land units have the ability to Fortify. As they spend time without moving, they will slowly gain a Fortification Bonus to their Combat Strength representing digging in and preparing in case of an attack."},
+        {"text":"Some units have the ability to Withdraw before a melee attack is struck. However, perhaps you wish for them to stand their ground to protect a particular tile. If you do, then give them the Guard command and they will stay fixed until they die or you give them fresh orders."},
+        {"text":"This is NOT the same as Fortify but they will still gain the Fortification Bonus. They will simply not utilize their Withdraw ability. Fortified units with the Withdraw ability will try to flee when attacked."}
     ]
   },
   {
@@ -514,7 +549,7 @@
       {"text":"Spies at a higher rank have a higher chance of success. The max rank a spy can reach is rank 3. After a spy is killed it will revive after a certain amount of turns back at rank 1."},
       {"text":"Building buildings like the constabulary and police station will reduce the technology steal rate of spies in that city."},
       {},
-      {"text":"Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."},
+      {"text":"Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."}
     ]
   },
     {
@@ -571,18 +606,18 @@
             {"text":"On the World screen, swipe the notification list to the right to temporarily hide it. Click the \"Bell\" button to display them again."},
             {"text":"The default state for the notification list can be set in Options > Display > UI - Notifications on world screen."},
             {},
-            {"text":"Entering a city screen quickly","header":5,"color":"#fa0"},
-            {"text":"You can Right-click or long press a city button on the World screen. The result is the same as tapping it twice - once to select and move the button, again to trigger a reaction: show the city screen (if the city is yours to inspect), or offer the foreign city info popup."},
+            {"text":"Entering a City Screen quickly","header":5,"color":"#fa0"},
+            {"text":"You can Right-click or long press a city button on the World screen. The result is the same as tapping it twice - once to select and move the button, again to trigger a reaction: show the City Screen (if the city is yours to inspect), or offer the foreign city info popup."},
             {},
             {"text":"Upgrade multiple units of the same type","header":5,"color":"#fa0"},
             {"text":"On the World screen, select an unit that can be upgraded, then right-click or long press the \"Upgrade\" button to open a popup menu allowing to upgrade all units of this type at once."},
             {"text":"In the Units overview, the same upgrade menu is available by clicking the unit icon in the \"Upgrade\" column. When an unit is upgradeable, the icon is lit if conditions are met (enough gold and/or resources), otherwise it is dimmed."},
             {},
             {},
-            {"text":"City screen","header":3},
+            {"text":"City Screen","header":3},
             {},
             {"text":"Additional controls for the construction queue","header":5,"color":"#fa0"},
-            {"text":"Right-click or long press a construction item to open a popup menu with additional controls, allowing to manage production of the same item in all cities, by issuing the commands from the same City screen."},
+            {"text":"Right-click or long press a construction item to open a popup menu with additional controls, allowing to manage production of the same item in all cities, by issuing the commands from the same City Screen."},
             {"text":"The \"Disable\" option moves an item to a separated \"Disabled\" tab, preventing its automatic queueing by the \"Auto-assign city production\" option. To move a disabled item back to its initial place, enter again the popup menu, and choose \"Enable\"."},
             {"text":"Disabled items are set globally and persistent: they are not reset in a new game, or by restarting Unciv."},
             {},
@@ -614,6 +649,41 @@
             {"text":"External links","header":5,"color":"#fa0"},
             {"text":"External links support right-click or long press to copy the link to the clipboard instead of launching the browser."},
             {"text":"Example: The 'Open Github page' button on the Mod management screen."}
+        ]
+    },
+    {
+        "name": "Differences from Civilization V",
+        "civilopediaText": [
+            {},
+            {"text":"Production Focus\nIn Civilization V, the Food yield in a city is calculated first, then population grows by consuming stored food (growth), then production is calculated, and so on one by one the other stats are calculated. Thus, citizens can produce yields in the same turn as they are born. The city focus is set to Production to assign the newborn citizen to a hill so they'll contribute Production, and then manually reassigned to a growth tile on the next turn. Alternatively, you can set city focus to Gold (e.g. with Cerro de Potosi), Faith (e.g. with Mount Sinai) or whatever gains the most yields. In Unciv, citizens only start producing yields on the next turn, so you can ignore this whole concept."},
+            {},
+            {"text":"Science Queueing\nIn Civilization V, Science yield is calculated after production, so if you finish an item and have Science (or Gold) queued as a perpetual construction, the Production overflow from item will be converted into Science (or Gold), but the Production is not consumed, as this will only happen again on the next turn. By immediately swapping out your perpetual construction for an item on the next turn, you'll get this Science (or Gold) for free. This doesn't apply to Unciv, so don't bother."},
+            {},
+            {"text":"Double Aqueducts\nIn Civilization V, the game sells existing copies of the building for you before providing a free copy of the building. So, if you build an aqueduct in a city, and then in the turn of adopting Tradition Complete you sell a cheap building (e.g a shrine) beforehand, the game is unable to sell more than 1 building per turn, and thus you'll keep your aqueduct, together with the new free aqueduct. Not applicable to Unciv."},
+            {},
+            {"text":"Legalism Oxford\nIn Civilization V, national wonders such as Oxford University are considered culture buildings, so you can get them for free with Legalism. Not applicable to Unciv."},
+            {},
+            {"text":"Roads and Forts\nIn Civilization V, you can't use roads and forts in enemy territory. In Unciv, you can use them, so instead of mindlessly constructing them everywhere when at war, you need to decide if and when they'll benefit you more than your opponents."},
+            {},
+            {"text":"Citizen Conversion\nIn Civilization V, a citizen is born religious if the parent city is already converted. This is not the case in Unciv, which can lead to temporary deconversion of a city when it grows."},
+            {},
+            {"text":"Unassigned Citizens\nIn Civilization V, unassigned citizens are considered specialists, and subject to the same type of bonuses (e.g. Korea's ability). It can be worthwhile to leave citizens unassigned, instead of being assigned to a tile. Not applicable to Unciv."},
+            {},
+            {"text":"Settler Construction\nIn Civilization V, cities can't starve when constructing settlers, so you can assign all citizens to production tiles and none to food tiles. In Unciv, citizens keep consuming two food per turn."},
+            {},
+            {"text":"Water Melee Attack\nAs result of a Discord poll, Water Melee units can attack military land units on the shore, unlike in Civilization V."},
+            {},
+            {"text":"Tile improvements\nIn Civilzation V, workers start working on an improvement-under-construction at the beginning of movement. Unciv changes this, to allow players to assign workers to tiles, and then reconsider and change improvement or move them elsewhere."},
+            {},
+            {"text":"Forest and Jungle Visibility\nIn Unciv, forests and jungles are visible 1 tile outside visibility range. In Civilization V, this is the behaviour of hills and mountains, but not of forests and jungles, yet jungle and forest can block hills, and hill + forest can block mountain, indicating they're on the same elevation. This is considered to be a bug in the otherwise well-structured visibility logic in Civilization V."}
+        ]
+    },
+    {
+        "name": "Settler",
+        "civilopediaText": [
+            {"text": "Founding Cities\nThe Settler is a unit that can found a new city. You can build a Settler unit in a city with at least 2 population, and then move them to a good location to found a new city. This will usually be your main way of acquiring more cities."},
+            {},
+            {"text": "Food conversion to Production\nDuring the construction of a Settler, the city will not grow. Instead, the 1st, 2nd, 4th, and from there on every 4th, excess Food (Growth) is converted into Production, with the rest of the excess Food being lost."}
         ]
     }
 ]

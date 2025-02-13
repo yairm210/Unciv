@@ -93,7 +93,7 @@
             {
                 "name": "Citizenship",
                 "uniques": [
-                    "[-25]% construction time for [All] improvements",
+                    "Can build [all] improvements at a [+25]% rate",
                     "Free [Worker] appears"
                 ],
                 "row": 1,
@@ -285,7 +285,10 @@
             "Domination": 0,
             "Scientific": 0
         },
-        "uniques": ["[-25]% City-State Influence degradation"],
+        "uniques": [
+            "[-25]% City-State Influence degradation",
+            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>"
+        ],
         "policies": [
             {
                 "name": "Philantropy",

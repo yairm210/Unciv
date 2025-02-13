@@ -10,6 +10,6 @@ all unpillagable improvements are not destroyed by 'destroy improvements' unique
 
 By SomeTroglodyte:
 - Fix broken random nations pool
-- City screen displays "free" tile yields undimmed
+- City Screen displays "free" tile yields undimmed
 
 AbsoluteUnits - Chu-Ko-Nu, Longbowman, Crossbowman v2  - By letstalkaboutdune

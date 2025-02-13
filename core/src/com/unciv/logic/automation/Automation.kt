@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.CityStats
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
@@ -21,6 +22,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.victoryscreen.RankingType
+import kotlin.math.min
+
 
 object Automation {
 
@@ -43,7 +46,32 @@ object Automation {
         return rank
     }
 
+    // More complicated logic to properly weigh Food vs other Stats (esp Production)
+    private fun getFoodModWeight(city: City, surplusFood: Float): Float {
+        val speed = city.civ.gameInfo.speed.modifier
+        // Zero out Growth if close to Unhappiness limit
+        if (city.civ.getHappiness() < -8)
+            return 0f
+        if (city.civ.isAI()) {
+            // When Happy, 2 production is better than 1 growth,
+            // but setting such by default worsens AI civ citizen assignment,
+            // probably due to badly configured personalities not properly weighing food vs non-food yields
+            if (city.population.population < 5)
+                return 2f
+            return 1.5f
+        }
+        // Human weights. May be different since AI Happiness is always "easier"
+        // Only apply these for Default to not interfere with Focus weights
+        if (city.getCityFocus() == CityFocus.NoFocus) {
+            if (city.population.population < 5)
+                return 2f
+            if (surplusFood > city.population.getFoodToNextPopulation() / (10 * speed))
+                return 0.75f // get Growth just under Production
+        }
 
+        return 1f
+    }
+    
     fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
         val yieldStats = stats.clone()
@@ -64,33 +92,57 @@ object Automation {
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
+        val starving = surplusFood < 0
         // If current Production converts Food into Production, then calculate increased Production Yield
         if (cityStatsObj.canConvertFoodToProduction(surplusFood, city.cityConstructions.getCurrentConstruction())) {
             // calculate delta increase of food->prod. This isn't linear
             yieldStats.production += cityStatsObj.getProductionFromExcessiveFood(surplusFood+yieldStats.food) - cityStatsObj.getProductionFromExcessiveFood(surplusFood)
             yieldStats.food = 0f  // all food goes to 0
         }
+
+        // Split Food Yield into feedFood, amount needed to not Starve
+        // and growthFood, any amount above that
+        var feedFood = 0f
+        if (starving)
+            feedFood = min(yieldStats.food, -surplusFood).coerceAtLeast(0f)
+        var growthFood = yieldStats.food - feedFood // how much extra Food we yield
+        // Avoid Growth, only count Food that gets you not-starving, but no more
+        if (city.avoidGrowth) {
+            growthFood = 0f
+        }
+        yieldStats.food = 1f
+        
         // Apply base weights
         yieldStats.applyRankingWeights()
 
-        if (surplusFood > 0 && city.avoidGrowth) {
-            yieldStats.food = 0f // don't need more food!
-        } else if (cityAIFocus in CityFocus.zeroFoodFocuses) {
-            // Focus on non-food/growth
-            if (surplusFood < 0)
-                yieldStats.food *= 8 // Starving, need Food, get to 0
-            else if (city.civ.getHappiness() < 1)
-                yieldStats.food /= 4
-        } else if (!city.avoidGrowth) {
-            // NoFocus or Food/Growth Focus. Target +10 Food Surplus when happy
-            if (surplusFood < 0)
-                yieldStats.food *= 8 // Starving, need Food, get to 0
-            else if (surplusFood < 10 && city.civ.getHappiness() > -1)
-                yieldStats.food *= 2
-            else if (city.civ.getHappiness() < 0) {
-                // 75% of excess food is wasted when in negative happiness
-                yieldStats.food /= 4
+        val foodBaseWeight = yieldStats.food
+
+        // If starving, need Food, so feedFood > 0
+        // scale feedFood by 14(base weight)*8(super important)
+        // By only scaling what we need to reach Not Starving by x8, we can pick a tile that gives
+        // exactly as much Food as we need to Not Starve that also has other good yields instead of
+        // always picking the Highest Food tile until Not Starving
+        yieldStats.food = feedFood * (foodBaseWeight * 8)
+        // growthFood is any additional food not required to meet Starvation
+
+        // Growth is penalized when Unhappy, see GlobalUniques.json
+        // No Growth if <-10, 1/4 if <0
+        // Reusing food growth code from CityStats.updateFinalStatList()
+        val growthNullifyingUnique =
+            city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
+        if (growthNullifyingUnique == null) { // if not nullified
+            var newGrowthFood = growthFood  // running count of growthFood
+            val cityStats = CityStats(city)
+            val growthBonuses = cityStats.getGrowthBonus(growthFood)
+            for (growthBonus in growthBonuses) {
+                newGrowthFood += growthBonus.value.food
             }
+            if (city.isWeLoveTheKingDayActive() && city.civ.getHappiness() >= 0) {
+                newGrowthFood += growthFood / 4
+            }
+            newGrowthFood = newGrowthFood.coerceAtLeast(0f) // floor to 0 for safety
+            
+            yieldStats.food += newGrowthFood * foodBaseWeight * getFoodModWeight(city, surplusFood)
         }
 
         if (city.population.population < 10) {
@@ -159,6 +211,7 @@ object Automation {
         val totalCarriableUnits =
             civInfo.units.getCivUnits().count { it.matchesFilter(carryFilter) }
         val totalCarryingSlots = civInfo.units.getCivUnits().sumOf { getCarryAmount(it) }
+                
         return totalCarriableUnits < totalCarryingSlots
     }
 
@@ -180,9 +233,9 @@ object Automation {
 
             val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
                 .count { it.isCityCenter() && it.getOwner() == city.civ }
-            val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
-                .flatMap { it.getUnits() }
-                .count { isNavalMeleeUnit(it.baseUnit) }
+            val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles()
+                .sumOf { it.getUnits().count { isNavalMeleeUnit(it.baseUnit) } }
+                
             isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
 
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
@@ -197,7 +250,7 @@ object Automation {
             .filter { allowSpendingResource(city.civ, it) }
             .filterNot {
                 // filter out carrier-type units that can't attack if we don't need them
-                (it.hasUnique(UniqueType.CarryAirUnits) && it.hasUnique(UniqueType.CannotAttack))
+                it.hasUnique(UniqueType.CarryAirUnits)
                         && providesUnneededCarryingSlots(it, city.civ)
             }
             // Only now do we filter out the constructable units because that's a heavier check
@@ -306,8 +359,8 @@ object Automation {
             return true
 
         val requiredResources = if (construction is BaseUnit)
-            construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo))
-        else construction.getResourceRequirementsPerTurn(StateForConditionals(civInfo, cityInfo))
+            construction.getResourceRequirementsPerTurn(civInfo.state)
+        else construction.getResourceRequirementsPerTurn(cityInfo?.state ?: civInfo.state)
         // Does it even require any resources?
         if (requiredResources.isEmpty())
             return true
@@ -325,11 +378,9 @@ object Automation {
             for (city in civInfo.cities) {
                 val otherConstruction = city.cityConstructions.getCurrentConstruction()
                 if (otherConstruction is Building)
-                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(
-                        StateForConditionals(civInfo, city))[resource]
+                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn(city.state)[resource]
                 else
-                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn(
-                        StateForConditionals(civInfo))[resource]
+                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn(civInfo.state)[resource]
             }
 
             // Make sure we have some for space

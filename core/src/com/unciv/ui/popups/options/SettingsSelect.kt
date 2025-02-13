@@ -11,9 +11,9 @@ import com.unciv.models.metadata.GameSettings.GameSetting
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.toGdxArray
 import kotlin.reflect.KMutableProperty0
 
 

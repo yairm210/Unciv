@@ -24,19 +24,16 @@ class UnitTurnManager(val unit: MapUnit) {
                 tile.getCity()?.shouldReassignPopulation = true
         }
 
-        if (!unit.hasUnitMovedThisTurn() && unit.isFortified() && unit.turnsFortified < 2) {
+        if (!unit.hasUnitMovedThisTurn()
+            && (unit.isFortified() || (unit.isGuarding() && unit.canFortify()))
+            && unit.turnsFortified < 2) {
             unit.turnsFortified++
         }
-        if (!unit.isFortified())
+        if (!unit.isFortified() && !unit.isGuarding())
             unit.turnsFortified = 0
 
-        if (!unit.hasUnitMovedThisTurn() || unit.hasUnique(UniqueType.HealsEvenAfterAction))
+        if ((!unit.hasUnitMovedThisTurn() && unit.attacksThisTurn == 0) || unit.hasUnique(UniqueType.HealsEvenAfterAction))
             healUnit()
-
-        if (unit.action != null && unit.health > 99)
-            if (unit.isActionUntilHealed()) {
-                unit.action = null // wake up when healed
-            }
 
         if (unit.isPreparingParadrop() || unit.isPreparingAirSweep())
             unit.action = null
@@ -64,10 +61,9 @@ class UnitTurnManager(val unit: MapUnit) {
 
         unit.addMovementMemory()
 
-        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponEndingTurnInTile))
-            if (unique.getModifiers(UniqueType.TriggerUponEndingTurnInTile).any {
-                            unit.getTile().matchesFilter(it.params[0], unit.civ) })
-                UniqueTriggerActivation.triggerUnique(unique, unit)
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponEndingTurnInTile)
+                { unit.getTile().matchesFilter(it.params[0], unit.civ) })
+            UniqueTriggerActivation.triggerUnique(unique, unit)
     }
 
 
@@ -87,7 +83,7 @@ class UnitTurnManager(val unit: MapUnit) {
                         && it.getUnpillagedImprovement() != null
                         && unit.civ.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
-                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
+                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits, tile.stateThisTile)
                     .sumOf { it.params[0].toInt() }
             }.maxByOrNull { it.second }
             ?: return
@@ -148,6 +144,9 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.attacksThisTurn = 0
         unit.due = true
 
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponTurnStart))
+            UniqueTriggerActivation.triggerUnique(unique, unit)
+
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
         if (unit.isSleeping() && (unit.isMilitary() || (unit.currentTile.militaryUnit == null && !unit.currentTile.isCityCenter())) &&
@@ -155,6 +154,11 @@ class UnitTurnManager(val unit: MapUnit) {
                     it.militaryUnit != null && it in unit.civ.viewableTiles && it.militaryUnit!!.civ.isAtWarWith(unit.civ)
                 }
         )  unit.action = null
+
+        if (unit.action != null && unit.health > 99)
+            if (unit.isActionUntilHealed()) {
+                unit.action = null // wake up when healed
+            }
 
         val tileOwner = unit.getTile().getOwner()
         if (tileOwner != null
@@ -167,9 +171,9 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.addMovementMemory()
         unit.attacksSinceTurnStart.clear()
         
-        for (status in unit.statuses.toList()){
+        for (status in unit.statusMap.values.toList()){
             status.turnsLeft--
-            if (status.turnsLeft <= 0) unit.statuses.remove(status)
+            if (status.turnsLeft <= 0) unit.removeStatus(status.name)
         }
         unit.updateUniques()
     }

@@ -10,7 +10,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.components.extensions.randomWeighted
+import com.unciv.utils.randomWeighted
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow

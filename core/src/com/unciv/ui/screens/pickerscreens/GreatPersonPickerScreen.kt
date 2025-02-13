@@ -24,7 +24,7 @@ class GreatPersonPickerScreen(val worldScreen: WorldScreen, val civInfo: Civiliz
 
         for (unit in greatPersonUnits) {
             val button =
-                PickerPane.getPickerOptionButton(ImageGetter.getUnitIcon(unit.name), unit.name)
+                PickerPane.getPickerOptionButton(ImageGetter.getUnitIcon(unit), unit.name)
             button.pack()
             button.isEnabled = !useMayaLongCount || unit.name in civInfo.greatPeople.longCountGPPool
             if (button.isEnabled) {

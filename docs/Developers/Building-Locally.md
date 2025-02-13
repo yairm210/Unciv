@@ -14,9 +14,9 @@ By the end of this guide, you will have Unciv running locally from code, so you 
     - Enter your GitHub username and password
     - Select the repository and hit clone - The GitHub repo will be created as a new project in Android Studio.
 -   Gradle will attempt the initial sync. If this is your first time with Android Studio, this may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
-    -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Appearance & Behavior > System Settings > Android SDK
+    -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Languages & Frameworks > Android SDK
         - Click "SDK Platforms"
-        - Click "Android 13 (Tiramisu)"
+        - Click "Android 14 ("UpsideDownCake")"
         ![image](/Unciv/assets/Android_SDK_Platforms.png)
           (Optionally, you can save some space by selecting 'Show Package Details' and choosing the Platform SDK only, without Sources or system Images)
         - Click "SDK Tools"
@@ -45,7 +45,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
 
 Unciv uses Gradle to specify dependencies and how to run. In the background, the Gradle gnomes will be off fetching the packages (a one-time effort) and, once that's done, will build the project!
 
-Unciv uses Gradle 7.5 and the Android Gradle Plugin 7.3.1. Can check in File > Project Structure > Project
+Unciv uses Gradle 8.7 and the Android Gradle Plugin 8.5. Can check in File > Project Structure > Project
 
 > Note: advanced build commands (as described in the next paragraph), specifically `gradlew desktop:dist` to build a jar, run just fine in Android Studio's terminal (Alt+F12), with most dependencies already taken care of.
 

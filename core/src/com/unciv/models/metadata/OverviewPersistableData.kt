@@ -11,7 +11,6 @@ class OverviewPersistableData(
 ) : Json.Serializable,
     Map<EmpireOverviewCategories, EmpireOverviewTab.EmpireOverviewTabPersistableData> by map
 {
-    //todo so far this is saved but not used, should replace [GameSettings.lastOverviewPage] in a future update.
     var last: EmpireOverviewCategories = EmpireOverviewCategories.Cities
 
     fun update(pageObjects: Map<EmpireOverviewCategories, EmpireOverviewTab>) {

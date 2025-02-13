@@ -133,6 +133,9 @@ class CityScreen(
     var pickTileData: PickTileForImprovementData? = null
     /** A [Building] with [UniqueType.CreatesOneImprovement] has been selected _in the queue_: show the tile it will place the improvement on */
     private var selectedQueueEntryTargetTile: Tile? = null
+    var selectedQueueEntry
+        get() = constructionsTable.selectedQueueEntry
+        set(value) { constructionsTable.selectedQueueEntry = value }
     /** Cached city.expansion.chooseNewTileToOwn() */
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
@@ -153,9 +156,9 @@ class CityScreen(
 
         addTiles()
 
-        stage.addActor(cityStatsTable)
         // If we are spying then we shoulden't be able to see their construction screen.
         constructionsTable.addActorsToStage()
+        stage.addActor(cityStatsTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(tileTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
@@ -164,6 +167,13 @@ class CityScreen(
 
         globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
         globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
+
+        if (isPortrait()) mapScrollPane.apply {
+            // center scrolling so city center sits more to the bottom right
+            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
+            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
+            updateVisualScroll()
+        }
     }
 
     override fun getCivilopediaRuleset() = selectedCiv.gameInfo.ruleset
@@ -179,12 +189,6 @@ class CityScreen(
 
         // Rest of screen: Map of surroundings
         updateTileGroups()
-        if (isPortrait()) mapScrollPane.apply {
-            // center scrolling so city center sits more to the bottom right
-            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
-            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
-            updateVisualScroll()
-        }
     }
 
     internal fun updateWithoutConstructionAndMap() {
@@ -196,7 +200,7 @@ class CityScreen(
 
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
-            !isPortrait() -> 0f
+            !isPortrait() || isCrampedPortrait() -> 0f
             selectedTile != null -> tileTable.packIfNeeded().width
             selectedConstruction != null -> selectedConstructionTable.packIfNeeded().width
             else -> posFromEdge
@@ -213,16 +217,25 @@ class CityScreen(
         cityPickerTable.setPosition(centeredX, exitCityButton.top + 10f, Align.bottom)
 
         // Top right of screen: Stats / Specialists
-        var statsHeight = stage.height - posFromEdge * 2
-        if (selectedTile != null)
-            statsHeight -= tileTable.height + 10f
-        if (selectedConstruction != null)
-            statsHeight -= selectedConstructionTable.height + 10f
-        cityStatsTable.update(statsHeight)
-        cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
+        updateCityStats()
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
+
+    }
+
+    private fun updateCityStats() {
+        var statsHeight = stage.height - posFromEdge * 2
+        if (selectedTile != null)
+            statsHeight -= tileTable.top + 10f
+        if (selectedConstruction != null)
+            statsHeight -= selectedConstructionTable.top + 10f
+        cityStatsTable.update(statsHeight)
+        cityStatsTable.setPosition(
+            stage.width - posFromEdge,
+            stage.height - posFromEdge,
+            Align.topRight
+        )
     }
 
     fun canCityBeChanged(): Boolean {
@@ -276,8 +289,8 @@ class CityScreen(
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
 
-            if (fireworks == null || tileGroup.tile.position != city.location) continue
-            fireworks.setActorBounds(tileGroup)
+            if (fireworks != null && tileGroup.tile.position == city.location)
+                fireworks.setActorBounds(tileGroup)
         }
     }
 
@@ -329,9 +342,21 @@ class CityScreen(
         }
 
         razeCityButtonHolder.pack()
-        val centerX = if (!isPortrait()) stage.width / 2
-            else constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
-        razeCityButtonHolder.setPosition(centerX, stage.height - 20f, Align.top)
+        if(isCrampedPortrait()) {
+            // cramped portrait: move raze button down to city picker
+            val centerX = cityPickerTable.x + cityPickerTable.width / 2 - razeCityButtonHolder.width / 2
+            razeCityButtonHolder.setPosition(centerX, cityPickerTable.y + cityPickerTable.height + 10)
+            // and also re-position the tooltips, which would otherwise be covered
+            tileTable.setPosition(stage.width - posFromEdge, razeCityButtonHolder.top + 10f, Align.bottomRight)
+            selectedConstructionTable.setPosition(stage.width - posFromEdge, razeCityButtonHolder.top + 10f, Align.bottomRight)
+            updateCityStats() // limit city stats height according to the tooltips
+        } else {
+            val centerX = if (isPortrait())
+                constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
+            else
+                stage.width / 2
+            razeCityButtonHolder.setPosition(centerX, stage.height - 20f, Align.top)
+        }
         stage.addActor(razeCityButtonHolder)
     }
 
@@ -340,7 +365,7 @@ class CityScreen(
         val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
         val cityTileGroups = city.getCenterTile().getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings, fireworks != null) }
+                .map { CityTileGroup(city, it, tileSetStrings, false) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
@@ -452,7 +477,7 @@ class CityScreen(
             val improvement = pickTileData.improvement
             if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.civ)) {
                 if (pickTileData.isBuying) {
-                    constructionsTable.askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
+                    BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
                     // This way to store where the improvement a CreatesOneImprovement Building will create goes
                     // might get a bit fragile if several buildings constructing the same improvement type
@@ -474,6 +499,9 @@ class CityScreen(
     internal fun hasFreeBuilding(building: Building) =
         city.civ.civConstructions.hasFreeBuilding(city, building)
 
+    fun selectConstructionFromQueue(index: Int) {
+        selectConstruction(city.cityConstructions.constructionQueue[index])
+    }
     fun selectConstruction(name: String) {
         selectConstruction(city.cityConstructions.getConstruction(name))
     }
@@ -532,6 +560,7 @@ class CityScreen(
         val indexOfCity = viewableCities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
         val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+        newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)
     }

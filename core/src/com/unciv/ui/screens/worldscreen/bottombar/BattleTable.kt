@@ -29,7 +29,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoints
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
+import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimationDeferred
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
 import com.unciv.utils.DebugUtils
 import kotlin.math.max
@@ -83,7 +83,12 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         isVisible = true
         pack()
-        addBorderAllowOpacity(1f, Color.WHITE)
+
+        addBorderAllowOpacity(2f, Color.WHITE)
+        addRoundCloseButton(this) {
+            isVisible = false
+        }
+
     }
 
     private fun tryGetAttacker(): ICombatant? {
@@ -305,7 +310,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         SoundPlayer.play(attacker.getAttackSound())
         val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
 
-        worldScreen.battleAnimation(attacker, damageToAttacker, defender, damageToDefender)
+        worldScreen.battleAnimationDeferred(attacker, damageToAttacker, defender, damageToDefender)
         if (!attacker.canAttack()) hide()
     }
 

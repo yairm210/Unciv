@@ -23,8 +23,6 @@ abstract class EmpireOverviewTab (
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         if (caption.isEmpty()) return // called from EmpireOverviewScreen.resume()
-        //TODO remove line in a future update
-        overviewScreen.game.settings.lastOverviewPage = caption
         overviewScreen.persistState.last = EmpireOverviewCategories.entries.toTypedArray()[index]  // Change this if categories are ever reordered or filtered
     }
 

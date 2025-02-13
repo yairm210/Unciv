@@ -83,7 +83,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
     private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Actor {
 
         if (assignedSpecialists >= maxSpecialists || city.isPuppet) return Table()
-        val assignButton = "+".toLabel(Color.BLACK, Constants.headingFontSize)
+        val assignButton = "+".toLabel(ImageGetter.CHARCOAL, Constants.headingFontSize)
             .apply { this.setAlignment(Align.center) }
             .surroundWithCircle(30f).apply { circle.color = Color.GREEN.darken(0.2f) }
         assignButton.onClick {
@@ -98,7 +98,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
     }
 
     private fun getUnassignButton(assignedSpecialists: Int, specialistName: String): Actor {
-        val unassignButton = "-".toLabel(Color.BLACK, Constants.headingFontSize)
+        val unassignButton = "-".toLabel(ImageGetter.CHARCOAL, Constants.headingFontSize)
             .apply { this.setAlignment(Align.center) }
             .surroundWithCircle(30f).apply { circle.color = Color.RED.darken(0.1f) }
         unassignButton.onClick {
@@ -137,7 +137,8 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
         // greatPersonPoints is a Counter so iteration order is potentially random:
         // Sort by unit name without collator to ensure consistency in those rare mods where one Specialist gives points to several GP counters
         for ((gpName, gpPoints) in specialist.greatPersonPoints.asSequence().sortedBy { it.key }) {
-            addWrapping(gpPoints, Color.GOLD, ImageGetter.getUnitIcon(gpName, Color.GOLD))
+            val greatPerson = city.getRuleset().units[gpName] ?: continue
+            addWrapping(gpPoints, Color.GOLD, ImageGetter.getUnitIcon(greatPerson, Color.GOLD))
         }
 
         // This uses Stats.iterator() which ensures consistent Stat order and returns no zero value

@@ -1,7 +1,6 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
-import kotlin.reflect.KMutableProperty0
 
 /**
  * A container for the seven basic ["currencies"][Stat] in Unciv,
@@ -21,26 +20,30 @@ open class Stats(
     var faith: Float = 0f
 ): Iterable<Stats.StatValuePair> {
 
-    // This is what facilitates indexed access by [Stat] or add(Stat,Float)
-    // without additional memory allocation or expensive conditionals
-    private fun statToProperty(stat: Stat): KMutableProperty0<Float> {
-        return when(stat) {
-            Stat.Production -> ::production
-            Stat.Food -> ::food
-            Stat.Gold -> ::gold
-            Stat.Science -> ::science
-            Stat.Culture -> ::culture
-            Stat.Happiness -> ::happiness
-            Stat.Faith -> ::faith
-        }
-    }
-
     /** Indexed read of a value for a given [Stat], e.g. `this.gold == this[Stat.Gold]` */
     operator fun get(stat: Stat): Float {
-        return statToProperty(stat).get()
+        return when(stat) {
+            Stat.Production -> production
+            Stat.Food -> food
+            Stat.Gold -> gold
+            Stat.Science -> science
+            Stat.Culture -> culture
+            Stat.Happiness -> happiness
+            Stat.Faith -> faith
+        }
     }
     /** Indexed write of a value for a given [Stat], e.g. `this.gold += 1f` is equivalent to `this[Stat.Gold] += 1f` */
-    operator fun set(stat: Stat, value: Float) = statToProperty(stat).set(value)
+    operator fun set(stat: Stat, value: Float) {
+        when(stat) {
+            Stat.Production -> production = value
+            Stat.Food -> food = value
+            Stat.Gold -> gold = value
+            Stat.Science -> science = value
+            Stat.Culture -> culture = value
+            Stat.Happiness -> happiness = value
+            Stat.Faith -> faith = value
+        }
+    }
 
     /** Compares two instances. Not callable via `==`. */
     // This is an overload, not an override conforming to the kotlin conventions of `equals(Any?)`,
@@ -147,9 +150,9 @@ open class Stats(
      * Apply weighting for Production Ranking */
     fun applyRankingWeights() {
         food *= 14
-        production *= 12
+        production *= 12.01f // tie break Production vs gold
         gold *= 6 // 2 gold worth about 1 production
-        science *= 9
+        science *= 9.01f // 4 Science better than 3 Production
         culture *= 8
         happiness *= 10 // base
         faith *= 7
@@ -167,7 +170,7 @@ open class Stats(
 
     /** Since notifications are translated on the fly, when saving stats there we need to do so in English */
     fun toStringForNotifications() = this.joinToString {
-        (if (it.value > 0) "+" else "") + it.value.toInt().tr() + " " + it.key.toString()
+        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString()
     }
 
     // For display in diplomacy window
@@ -227,7 +230,7 @@ open class Stats(
 
 
     companion object {
-        private val allStatNames = Stat.values().joinToString("|") { it.name }
+        private val allStatNames = Stat.entries.joinToString("|") { it.name }
         private val statRegexPattern = "([+-])(\\d+) ($allStatNames)"
         private val statRegex = Regex(statRegexPattern)
         private val entireStringRegexPattern = Regex("$statRegexPattern(, $statRegexPattern)*")

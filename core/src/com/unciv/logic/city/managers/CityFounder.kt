@@ -44,7 +44,6 @@ class CityFounder {
         city.expansion.reset()
 
         city.tryUpdateRoadStatus()
-//         civInfo.cache.updateCitiesConnectedToCapital() // Carthage cities can connect immediately
 
         val tile = city.getCenterTile()
         for (terrainFeature in tile.terrainFeatures.filter {
@@ -206,7 +205,7 @@ class CityFounder {
     private fun addStartingBuildings(city: City, civInfo: Civilization, startingEra: String) {
         val ruleset = civInfo.gameInfo.ruleset
         if (civInfo.cities.size == 1) {
-            val capitalCityIndicator = city.capitalCityIndicator()
+            val capitalCityIndicator = civInfo.capitalCityIndicator(city)
             if (capitalCityIndicator != null)
                 city.cityConstructions.addBuilding(capitalCityIndicator, tryAddFreeBuildings = false)
         }

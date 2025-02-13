@@ -6,6 +6,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.abs
 
 class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
@@ -32,9 +35,9 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
         }
     }
 
-    val statCostModifiers: HashMap<Stat, Float> by lazy {
-        val map = HashMap<Stat, Float>()
-        for (stat in Stat.values()) {
+    val statCostModifiers: EnumMap<Stat, Float> by lazy {
+        val map = EnumMap<Stat, Float>(Stat::class.java)
+        for (stat in Stat.entries) {
             val modifier = when (stat) {
                 Stat.Production -> productionCostModifier
                 Stat.Gold -> goldCostModifier
@@ -81,12 +84,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
     fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
 }
 
-class YearsPerTurn {
-    var yearInterval: Float = 0f
-    var untilTurn: Int = 0
-
-    constructor(yearsPerTurn: Float, turnsPerIncrement: Int) {
-        this.yearInterval = yearsPerTurn
-        this.untilTurn = turnsPerIncrement
-    }
+class YearsPerTurn(yearsPerTurn: Float, turnsPerIncrement: Int) {
+    var yearInterval: Float = yearsPerTurn
+    var untilTurn: Int = turnsPerIncrement
 }

@@ -34,8 +34,9 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 
 class MapEditorGenerateTab(
-    private val editorScreen: MapEditorScreen
-): TabbedPager(capacity = 2) {
+    private val editorScreen: MapEditorScreen,
+    headerHeight: Float
+): TabbedPager(capacity = 2, maximumHeight = headerHeight) {
     private val newTab = MapEditorNewMapTab(this)
     private val partialTab = MapEditorGenerateStepsTab(this)
 

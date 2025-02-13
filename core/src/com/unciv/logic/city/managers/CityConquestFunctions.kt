@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.max
 import kotlin.math.min
@@ -39,7 +40,7 @@ class CityConquestFunctions(val city: City) {
         for (building in city.cityConstructions.getBuiltBuildings()) {
             when {
                 building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured) || building.isWonder -> continue
-                building.hasUnique(UniqueType.IndicatesCapital) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
+                building.hasUnique(UniqueType.IndicatesCapital, city.state) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
                 building.hasUnique(UniqueType.DestroyedWhenCityCaptured) ->
                     city.cityConstructions.removeBuilding(building)
                 // Regular buildings have a 34% chance of removal
@@ -98,6 +99,8 @@ class CityConquestFunctions(val city: City) {
         Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+        city.avoidGrowth = false // reset settings
+        city.setCityFocus(CityFocus.NoFocus) // reset settings
         if (city.population.population > 1)
             city.population.addPopulation(-1 - city.population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         city.reassignAllPopulation()
@@ -127,14 +130,15 @@ class CityConquestFunctions(val city: City) {
         city.cityStats.update()
         // The city could be producing something that puppets shouldn't, like units
         city.cityConstructions.currentConstructionIsUserSet = false
+        city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         city.cityConstructions.constructionQueue.clear()
         city.cityConstructions.chooseNextConstruction()
     }
 
     fun annexCity() {
         city.isPuppet = false
-        city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         if (!city.isInResistance()) city.shouldReassignPopulation = true
+        city.avoidGrowth = false
         city.setCityFocus(CityFocus.NoFocus)
         city.cityStats.update()
         GUI.setUpdateWorldOnNextRender()
@@ -185,7 +189,7 @@ class CityConquestFunctions(val city: City) {
 
         if (foundingCiv.cities.size == 1) {
             // Resurrection!
-            val capitalCityIndicator = city.capitalCityIndicator()
+            val capitalCityIndicator = conqueringCiv.capitalCityIndicator(city)
             if (capitalCityIndicator != null) city.cityConstructions.addBuilding(capitalCityIndicator)
             for (civ in city.civ.gameInfo.civilizations) {
                 if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
@@ -255,6 +259,7 @@ class CityConquestFunctions(val city: City) {
         oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
         newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
         city.civ = newCiv
+        city.state = StateForConditionals(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns
         city.previousOwner = oldCiv.civName
@@ -270,6 +275,10 @@ class CityConquestFunctions(val city: City) {
 
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
         removeBuildingsOnMoveToCiv()
+
+        // catch-all - should ideally not happen as we catch the individual cases with an appropriate notification
+        city.espionage.removeAllPresentSpies(SpyFleeReason.Other) 
+        
 
         // Place palace for newCiv if this is the only city they have.
         if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)

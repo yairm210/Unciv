@@ -23,8 +23,10 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 
+/** This is the bottom-right table in the city screen that shows the currently selected construction */
 class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private val selectedConstructionTable = Table()
+    private val buyButtonFactory = BuyButtonFactory(cityScreen)
 
     init {
         selectedConstructionTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -75,7 +77,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             buildingText += specialConstruction?.getProductionTooltip(city)
                     ?: cityConstructions.getTurnsToConstructionString(construction)
 
-            add(Label(buildingText, BaseScreen.skin)).row()  // already translated
+            add(Label(buildingText, BaseScreen.skin)).expandX().row()  // already translated
 
             val description = when (construction) {
                 is BaseUnit -> construction.getDescription(city)
@@ -87,11 +89,25 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
 
             val descriptionLabel = Label(description, BaseScreen.skin)  // already translated
             descriptionLabel.wrap = true
-            add(descriptionLabel).colspan(2).width(stage.width / 4)
+            add(descriptionLabel).colspan(2).width(stage.width / if(cityScreen.isCrampedPortrait()) 3 else 4)
 
-            // Show sell button if construction is a currently sellable building
-            if (construction is Building && cityConstructions.isBuilt(construction.name)
-                    && construction.isSellable()) {
+            if (cityConstructions.isBuilt(construction.name)) {
+                showSellButton(construction)
+            } else if (buyButtonFactory.hasBuyButtons(construction)) {
+                row()
+                for (button in buyButtonFactory.getBuyButtons(construction)) {
+                    selectedConstructionTable.add(button).padTop(5f).colspan(2).center().row()
+                }
+            }
+        }
+    }
+
+    // Show sell button if construction is a currently sellable building
+    private fun showSellButton(
+        construction: IConstruction
+    ) {
+        if (construction is Building && construction.isSellable()) {
+            selectedConstructionTable.run {
                 val sellAmount = cityScreen.city.getGoldForSellingBuilding(construction.name)
                 val sellText = "{Sell} $sellAmount " + Fonts.gold
                 val sellBuildingButton = sellText.toTextButton()
@@ -138,4 +154,5 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
         cityScreen.clearSelection()
         cityScreen.update()
     }
+    
 }

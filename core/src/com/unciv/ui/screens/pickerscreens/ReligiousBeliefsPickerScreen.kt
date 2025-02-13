@@ -99,7 +99,7 @@ class ReligiousBeliefsPickerScreen (
         }
 
         val changeReligionNameButton = Button(
-            ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(30f),
+            ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(30f),
             skin
         )
 
@@ -221,7 +221,7 @@ class ReligiousBeliefsPickerScreen (
                     beliefButton.disable(redDisableColor)
                 }
                 belief.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                    .any { !it.conditionalsApply(choosingCiv) } ->
+                    .any { !it.conditionalsApply(choosingCiv.state) } ->
                     // The Belief is blocked
                     beliefButton.disable(redDisableColor)
 

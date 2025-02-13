@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -202,7 +203,7 @@ class NotificationsScroll(
             coveredNotificationsBottom + restoreButtonPad,
             Align.bottomRight)
     }
-
+    
     private fun updateContent(
         notifications: List<Notification>,
         coveredNotificationsTop: Float,
@@ -300,7 +301,7 @@ class NotificationsScroll(
                 .minHeight(2f).width(minCategoryLineWidth)
             add(Table().apply {
                 background = backgroundDrawable
-                val label = ColorMarkupLabel(category.name, Color.BLACK, fontSize = fontSize)
+                val label = ColorMarkupLabel(category.name, ImageGetter.CHARCOAL, fontSize = fontSize)
                 add(label)
                 captionWidth = prefWidth  // of this wrapper including background rims
                 captionWidth
@@ -347,7 +348,7 @@ class NotificationsScroll(
             }
 
             val maxLabelWidth = maxEntryWidth - (itemIconSize + 5f) * notification.icons.size - 10f
-            val label = WrappableLabel(notification.text, maxLabelWidth, Color.BLACK, labelFontSize, hideIcons = true)
+            val label = WrappableLabel(notification.text, maxLabelWidth, ImageGetter.CHARCOAL, labelFontSize, hideIcons = true)
             label.setAlignment(Align.center)
             if (label.prefWidth > maxLabelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
                 label.wrap = true
@@ -412,11 +413,11 @@ class NotificationsScroll(
                 .surroundWithCircle(restoreButtonSize, resizeActor = false)
             size(restoreButtonSize)
 
-            countLabel = "".toLabel(Color.BLACK, restoreButtonNumberFontSize, Align.center)
+            countLabel = "".toLabel(ImageGetter.CHARCOAL, restoreButtonNumberFontSize, Align.center)
             // not using surroundWithCircle for the count, as the centering will break if positioned within another IconCircleGroup (why?)
             labelInnerCircle = ImageGetter.getCircle(Color.WHITE, restoreButtonNumbersSize * 0.9f)
             labelInnerCircle.centerAtNumberPosition()
-            labelOuterCircle = ImageGetter.getCircle(Color.BLACK, restoreButtonNumbersSize)
+            labelOuterCircle = ImageGetter.getCircle(ImageGetter.CHARCOAL, restoreButtonNumbersSize)
             labelOuterCircle.centerAtNumberPosition()
             actor.addActor(labelOuterCircle)
             actor.addActor(labelInnerCircle)
@@ -490,11 +491,13 @@ class NotificationsScroll(
             // Actions are blocked while update() is rebuilding the UI elements - to be safe from unexpected state changes
             if (!blockAct) super.act(delta)
         }
+
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
 
     private fun getUserSettingCheckDisabled(): Boolean {
         val settingString = GUI.getSettings().notificationScroll
-        val setting = UserSetting.values().firstOrNull { it.name == settingString }
+        val setting = UserSetting.entries.firstOrNull { it.name == settingString }
             ?: UserSetting.default()
         userSettingChanged = false
         if (setting == userSetting)
@@ -547,4 +550,8 @@ class NotificationsScroll(
         userSetting = newSetting
         GUI.getSettings().notificationScroll = newSetting.name
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun act(delta: Float) = super.act(delta)
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
 }

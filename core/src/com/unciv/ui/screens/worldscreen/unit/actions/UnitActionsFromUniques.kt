@@ -39,8 +39,11 @@ object UnitActionsFromUniques {
      * (no movement left, too close to another city).
      */
     internal fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
-        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity)
-            .firstOrNull() ?: return null
+        // FoundPuppetCity is to found a puppet city for modding.
+        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit,
+            UniqueType.FoundCity).firstOrNull() ?: 
+            UnitActionModifiers.getUsableUnitActionUniques(unit,
+            UniqueType.FoundPuppetCity).firstOrNull() ?: return null
 
         if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
@@ -54,12 +57,19 @@ object UnitActionsFromUniques {
         ) == true }
         val foundAction = {
             if (unit.civ.playerType != PlayerType.AI)
-                UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-            unit.civ.addCity(tile.position, unit)
+                // Now takes on the text of the unique.
+                UncivGame.Current.settings.addCompletedTutorialTask(
+                    unique.text)
+            // Get the city to be able to change it into puppet, for modding.
+            val city = unit.civ.addCity(tile.position, unit)
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()
             GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
+            // If unit has FoundPuppetCity make it into a puppet city.
+            if (unique.type == UniqueType.FoundPuppetCity) {
+                city.isPuppet = true
+            }
         }
 
         if (unit.civ.playerType == PlayerType.AI)
@@ -78,6 +88,7 @@ object UnitActionsFromUniques {
             useFrequency = 80f,
             title = title,
             uncivSound = UncivSound.Chimes,
+            associatedUnique = unique,
             action = {
                 // check if we would be breaking a promise
                 val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
@@ -165,6 +176,30 @@ object UnitActionsFromUniques {
         ))
     }
 
+    // Instead of Withdrawing, stand your ground!
+    // Different than Fortify
+    internal fun getGuardActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat)) return emptySequence()
+        
+        if (unit.isGuarding()) {
+            val title = if (unit.canFortify()) "${"Guarding".tr()} ${unit.getFortificationTurns() * 20}%" else "Guarding".tr()
+            return sequenceOf(UnitAction(UnitActionType.Guard,
+                useFrequency = 0f,
+                isCurrentAction = true,
+                title = title
+            ))
+        }
+        
+        if (!unit.hasMovement()) return emptySequence()
+        
+        return sequenceOf(UnitAction(UnitActionType.Guard,
+            useFrequency = 0f,
+            action = {
+                unit.action = UnitActionType.Guard.value
+            }.takeIf { !unit.isGuarding() })
+        )
+    }
+
     internal fun getTriggerUniqueActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getUniques()) {
             // not a unit action
@@ -172,7 +207,7 @@ object UnitActionsFromUniques {
             // extends an existing unit action
             if (unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes)) continue
             if (!unique.isTriggerable) continue
-            if (!unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit, tile = unit.currentTile))) continue
+            if (!unique.conditionalsApply(unit.cache.state)) continue
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
             val baseTitle = when (unique.type) {
@@ -218,6 +253,7 @@ object UnitActionsFromUniques {
 
             yield(
                 UnitAction(UnitActionType.TriggerUnique, 80f, title,
+                    associatedUnique = unique,
                     action = unitAction.takeIf {
                         UnitActionModifiers.canActivateSideEffects(unit, unique)
                     })
@@ -270,7 +306,7 @@ object UnitActionsFromUniques {
 
         for (unique in uniquesToCheck) {
             val improvementFilter = unique.params[0]
-            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter) }
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, StateForConditionals(unit = unit, tile = tile)) }
 
             for (improvement in improvements) {
                 // Try to skip Improvements we can never build
@@ -288,6 +324,7 @@ object UnitActionsFromUniques {
                         unique,
                         unit
                     ),
+                    associatedUnique = unique,
                     action = {
                         val unitTile = unit.getTile()
                         unitTile.setImprovement(improvement.name, unit.civ, unit)
@@ -339,8 +376,7 @@ object UnitActionsFromUniques {
     internal fun getTransformActions(unit: MapUnit, tile: Tile) = sequence {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        val stateForConditionals =
-            StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
+        val stateForConditionals = unit.cache.state
 
         for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
@@ -356,7 +392,7 @@ object UnitActionsFromUniques {
             val resourceRequirementsDelta = Counter<String>()
             for ((resource, amount) in unit.getResourceRequirementsPerTurn())
                 resourceRequirementsDelta.add(resource, -amount)
-            for ((resource, amount) in unitToTransformTo.getResourceRequirementsPerTurn(StateForConditionals(unit.civ, unit = unit)))
+            for ((resource, amount) in unitToTransformTo.getResourceRequirementsPerTurn(unit.cache.state))
                 resourceRequirementsDelta.add(resource, amount)
             val newResourceRequirementsString = resourceRequirementsDelta.entries
                 .filter { it.value > 0 }
@@ -369,6 +405,7 @@ object UnitActionsFromUniques {
 
             yield(UnitAction(UnitActionType.Transform, 70f,
                 title = title,
+                associatedUnique = unique,
                 action = {
                     val oldMovement = unit.currentMovement
                     unit.destroy()

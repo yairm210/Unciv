@@ -7,14 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.components.tilegroups.layers.TileLayerBorders
-import com.unciv.ui.components.tilegroups.layers.TileLayerCityButton
-import com.unciv.ui.components.tilegroups.layers.TileLayerFeatures
-import com.unciv.ui.components.tilegroups.layers.TileLayerMisc
-import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
-import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitSprite
-import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
+import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import kotlin.math.max
 import kotlin.math.min
@@ -32,6 +25,7 @@ class TileGroupMap<T: TileGroup>(
     val worldWrap: Boolean = false,
     tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
+    
     companion object {
         /** Vertical size of a hex in world coordinates, or the distance between the centers of any two opposing edges
          *  (the hex is oriented so it has corners to the left and right of the center and its upper and lower bounds are horizontal edges) */
@@ -102,37 +96,61 @@ class TileGroupMap<T: TileGroup>(
         drawTopX = topX - bottomX
         drawBottomX = bottomX - bottomX
 
-        val baseLayers = ArrayList<TileLayerTerrain>()
-        val featureLayers = ArrayList<TileLayerFeatures>()
-        val borderLayers = ArrayList<TileLayerBorders>()
-        val miscLayers = ArrayList<TileLayerMisc>()
-        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>()
-        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>()
-        val unitLayers = ArrayList<TileLayerUnitFlag>()
-        val cityButtonLayers = ArrayList<TileLayerCityButton>()
+        val numberOfTilegroups = tileGroups.count()
+        
+        val baseLayers = ArrayList<TileLayerTerrain>(numberOfTilegroups)
+        val featureLayers = ArrayList<TileLayerFeatures>(numberOfTilegroups)
+        val borderLayers = ArrayList<TileLayerBorders>(numberOfTilegroups)
+        val resourceLayers = ArrayList<TileLayerResource>(numberOfTilegroups)
+        val improvementLayers = ArrayList<TileLayerImprovement>(numberOfTilegroups)
+        val miscLayers = ArrayList<TileLayerMisc>(numberOfTilegroups)
+        val yieldLayers = ArrayList<TileLayerYield>(numberOfTilegroups)
+        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>(numberOfTilegroups)
+        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>(numberOfTilegroups)
+        val unitLayers = ArrayList<TileLayerUnitFlag>(numberOfTilegroups)
+        val cityButtonLayers = ArrayList<TileLayerCityButton>(numberOfTilegroups)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
-        for (group in tileGroups.sortedByDescending { it.tile.position.x + it.tile.position.y }) {
+        //  So instead we group by and then sort on the groups
+        // Profiling is a bit iffy if this is actually better but...probably?
+        for (group in tileGroups.groupBy { it.tile.position.x + it.tile.position.y }
+            .entries.sortedByDescending { it.key }.flatMap { it.value }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
             baseLayers.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
             featureLayers.add(group.layerFeatures.apply { setPosition(group.x, group.y) })
             borderLayers.add(group.layerBorders.apply { setPosition(group.x, group.y) })
+            resourceLayers.add(group.layerResource.apply { setPosition(group.x, group.y) })
+            improvementLayers.add(group.layerImprovement.apply { setPosition(group.x, group.y) })
             miscLayers.add(group.layerMisc.apply { setPosition(group.x, group.y) })
+            yieldLayers.add(group.layerYield.apply { setPosition(group.x, group.y) })
             pixelUnitLayers.add(group.layerUnitArt.apply { setPosition(group.x, group.y) })
             circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x, group.y) })
             unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x, group.y) })
             cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x, group.y) })
         }
 
-        for (group in baseLayers) addActor(group)
-        for (group in featureLayers) addActor(group)
-        for (group in borderLayers) addActor(group)
-        for (group in miscLayers) addActor(group)
-        for (group in pixelUnitLayers) addActor(group)
-        for (group in circleFogCrosshairLayers) addActor(group)
-        for (group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
-        for (group in unitLayers) addActor(group) // Aaand units above everything else.
-        for (group in cityButtonLayers) addActor(group) // city buttons + clickability
+        
+        val layerLists = listOf(
+            baseLayers,
+            featureLayers,
+            borderLayers,
+            resourceLayers,
+            improvementLayers,
+            miscLayers,
+            yieldLayers,
+            pixelUnitLayers,
+            circleFogCrosshairLayers,
+            tileGroups, // The above layers are for the visual layers, this is for the clickability of the tile
+            unitLayers,  // Aaand units above everything else.
+            cityButtonLayers
+        )
+        
+        // Resize the children list ONCE instead of multiple times with item copying between them
+        children.ensureCapacity(layerLists.sumOf { it.count() })
+        for (layer in layerLists) 
+            for (group in layer) 
+                addActor(group)
+        
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well

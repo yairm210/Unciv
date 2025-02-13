@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.minimap
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.GUI
 import com.unciv.ui.components.extensions.setSize
@@ -30,7 +29,7 @@ class MapOverlayToggleButton(
     resizeActor = false
 ) {
     init {
-        circle.color = Color.BLACK
+        circle.color = ImageGetter.CHARCOAL
         onClick(::toggle)
     }
 

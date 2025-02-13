@@ -89,7 +89,7 @@ class ImprovementPickerScreen(
 
         // clone tileInfo without "top" feature if it could be removed
         // Keep this copy around for speed
-        tileWithoutLastTerrain = tile.clone()
+        tileWithoutLastTerrain = tile.clone(addUnits = false)
         tileWithoutLastTerrain.setTerrainTransients()
         if (Constants.remove + tileWithoutLastTerrain.lastTerrain.name in ruleset.tileImprovements) {
             tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.lastTerrain.name)

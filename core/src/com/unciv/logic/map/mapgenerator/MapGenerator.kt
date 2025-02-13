@@ -1,12 +1,10 @@
 package com.unciv.logic.map.mapgenerator
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapType
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -19,6 +17,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.mapeditorscreen.MapGeneratorSteps
 import com.unciv.logic.map.tile.TileNormalizer
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
@@ -165,19 +164,60 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
             }
             // Fallback spread resources function - used when generating maps in map editor
-            runAndMeasure("spreadResources") {
-                spreadResources(map)
-            }
+            runAndMeasure("spreadResources") { spreadResources(map) }
         }
-        runAndMeasure("spreadAncientRuins") {
-            spreadAncientRuins(map)
-        }
+        runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
+        
+        mirror(map)
 
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)
             TileNormalizer.normalizeToRuleset(tile, ruleset)
 
         return map
+    }
+    
+    private fun flipTopBottom(vector: Vector2): Vector2 = Vector2(-vector.y, -vector.x)
+    private fun flipLeftRight(vector: Vector2): Vector2 = Vector2(vector.y, vector.x)
+
+    private fun mirror(map: TileMap) {
+        fun getMirrorTile(tile: Tile, mirroringType: String): Tile? {
+            val mirrorTileVector = when (mirroringType) {
+                MirroringType.topbottom -> if (tile.getRow() <= 0) return null else flipTopBottom(tile.position)
+                MirroringType.leftright -> if (tile.getColumn() <= 0) return null else flipLeftRight(tile.position)
+                MirroringType.aroundCenterTile -> if (tile.getRow() <= 0) return null else flipLeftRight(flipTopBottom(tile.position))
+                MirroringType.fourway -> when {
+                    tile.getRow() < 0 && tile.getColumn() < 0 -> return null
+                    tile.getRow() < 0 && tile.getColumn() >= 0 -> flipLeftRight(tile.position)
+                    tile.getRow() >= 0 && tile.getColumn() < 0 -> flipTopBottom(tile.position)
+                    else -> flipLeftRight(flipTopBottom(tile.position))
+                }
+
+                else -> return null
+            }
+            return map.getIfTileExistsOrNull(mirrorTileVector.x.toInt(), mirrorTileVector.y.toInt())
+        }
+        
+        fun copyTile(tile: Tile, mirroringType: String) {
+            val mirrorTile = getMirrorTile(tile, mirroringType) ?: return
+            
+            tile.setBaseTerrain(mirrorTile.getBaseTerrain())
+            tile.naturalWonder = mirrorTile.naturalWonder
+            tile.setTerrainFeatures(mirrorTile.terrainFeatures)
+            tile.resource = mirrorTile.resource
+            tile.improvement = mirrorTile.improvement
+            
+            for (neighbor in tile.neighbors){
+                val neighborMirror = getMirrorTile(neighbor, mirroringType) ?: continue
+                if (neighborMirror !in mirrorTile.neighbors) continue // we landed on the edge here
+                tile.setConnectedByRiver(neighbor, mirrorTile.isConnectedByRiver(neighborMirror))
+            }
+        }
+
+        if (map.mapParameters.mirroring == MirroringType.none) return
+        for (tile in map.values) {
+            copyTile(tile, map.mapParameters.mirroring)
+        }
     }
 
     fun generateSingleStep(map: TileMap, step: MapGeneratorSteps) {
@@ -225,7 +265,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         fun convertTerrains(ruleset: Ruleset, tiles: Iterable<Tile>) {
             for (tile in tiles) {
                 val conversionUnique =
-                    tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain)
+                    tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain, StateForConditionals(tile = tile))
                         .firstOrNull { tile.isAdjacentTo(it.params[1]) }
                         ?: continue
                 val terrain = ruleset.terrains[conversionUnique.params[0]] ?: continue
@@ -284,8 +324,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
                     val tileWeAreChecking = tilesToCheck.removeFirst()
-                    for (vector in tileWeAreChecking.neighbors
-                        .filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
+                    for (vector in tileWeAreChecking.neighbors){
+                        if (tilesInArea.contains(vector)) continue
+                        if (!waterTiles.contains(vector)) continue
                         tilesInArea += vector
                         tilesToCheck += vector
                         waterTiles -= vector
@@ -384,7 +425,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
     /**
      * [MapParameters.tilesPerBiomeArea] to set biomes size
-     * [MapParameters.temperatureExtremeness] to favor very high and very low temperatures
+     * [MapParameters.temperatureintensity] to favor very high and very low temperatures
      * [MapParameters.temperatureShift] to shift temperature towards cold (negative) or hot (positive)
      */
     private fun applyHumidityAndTemperature(tileMap: TileMap) {
@@ -394,7 +435,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         tileMap.setTransients(ruleset)
 
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
-        val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
+        val temperatureintensity = tileMap.mapParameters.temperatureintensity
         val temperatureShift = tileMap.mapParameters.temperatureShift
         val humidityShift = if (temperatureShift > 0) -temperatureShift / 2 else 0f
 
@@ -430,7 +471,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             var temperature = (5.0 * expectedTemperature + randomTemperature) / 6.0
-            temperature = abs(temperature).pow(1.0 - temperatureExtremeness) * temperature.sign
+            temperature = abs(temperature).pow(1.0 - temperatureintensity) * temperature.sign
             temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
 
             // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
@@ -572,7 +613,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     /**
-     * [MapParameters.temperatureExtremeness] as in [applyHumidityAndTemperature]
+     * [MapParameters.temperatureintensity] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
         val waterTerrain: Set<String> =
@@ -608,7 +649,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
-            temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
+            temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureintensity) * temperature.sign
             temperature = (temperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
 
             val candidates = iceEquivalents

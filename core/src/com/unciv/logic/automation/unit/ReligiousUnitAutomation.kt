@@ -1,8 +1,11 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -16,6 +19,17 @@ object ReligiousUnitAutomation {
 
         val ourCitiesWithoutReligion = unit.civ.cities.filter {
             it.religion.getMajorityReligion() != unit.civ.religionManager.religion
+        }
+        
+        fun isValidSpreadReligionTarget(city: City): Boolean {
+            val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
+            if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
+                // See NextTurnAutomation - these are the conditions under which AI agrees to religious demands
+                // If they still hold, keep the agreement, otherwise we can renege
+                if (diplomacyManager.relationshipLevel() == RelationshipLevel.Ally) return false
+                if (Automation.threatAssessment(unit.civ, city.civ) >= ThreatLevel.High) return false
+            }
+            return true
         }
 
         /** Lowest value will be chosen */
@@ -37,6 +51,7 @@ object ReligiousUnitAutomation {
                 .filter { it.religion.getMajorityReligion() != unit.civ.religionManager.religion }
                 .filter { it.civ.knows(unit.civ) && !it.civ.isAtWarWith(unit.civ) }
                 .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
+                .filter { isValidSpreadReligionTarget(it) }
                 .minByOrNull { rankCityForReligionSpread(it) }
 
         if (city == null) return
@@ -90,17 +105,11 @@ object ReligiousUnitAutomation {
         }
 
         if (destinationCity == null) return
-        var destinationTile = destinationCity.getCenterTile()
-
-        if (!unit.movement.canReach(destinationTile)
-            // Wait for the addInCapital units to go to the city!
-            || CivilianUnitAutomation.shouldClearTileForAddInCapitalUnits(unit, destinationTile)) {
-            destinationTile = destinationTile.neighbors
+        val destinationTile = destinationCity.getCenterTile().neighbors
                 .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
                 ?: return
-        }
 
         unit.movement.headTowards(destinationTile)
 

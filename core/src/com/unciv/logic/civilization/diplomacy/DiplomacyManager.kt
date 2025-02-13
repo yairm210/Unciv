@@ -52,6 +52,7 @@ enum class DiplomacyFlags {
     DeclinedJoinWarOffer,
     ResearchAgreement,
     BorderConflict,
+    TilesStolen,
 
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
@@ -104,6 +105,7 @@ enum class DiplomaticModifiers(val text: String) {
     BulliedProtectedMinor("You demanded tribute from City-States that were under our protection!"),
     SidedWithProtectedMinor("You sided with a City-State over us"),
     SpiedOnUs("You spied on us!"),
+    StoleOurAlly("You took the alliance we had with a City-State"),
 
     // Positive
     YearsOfPeace("Years of peace have strengthened our relations."),
@@ -431,7 +433,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val isResourceFilter: (TradeOffer) -> Boolean = {
             (it.type == TradeOfferType.Strategic_Resource || it.type == TradeOfferType.Luxury_Resource)
                     && resourcesMap.containsKey(it.name)
-                    && !resourcesMap[it.name]!!.isStockpiled()
+                    && !resourcesMap[it.name]!!.isStockpiled
         }
         for (trade in trades) {
             for (offer in trade.ourOffers.filter(isResourceFilter))

@@ -58,10 +58,10 @@ Please note:
 * [https://github.com/Mape6/Unciv_server](https://github.com/Mape6/Unciv_server) (Python)
 * [https://gitlab.com/azzurite/unciv-server](https://gitlab.com/azzurite/unciv-server) (NodeJS)
 * [https://github.com/oynqr/rust_unciv_server](https://github.com/oynqr/rust_unciv_server) (Rust)
-* [https://github.com/touhidurrr/UncivServer.xyz](https://github.com/touhidurrr/UncivServer.xyz) (NodeJS)
+* [https://github.com/touhidurrr/UncivServer.xyz](https://github.com/touhidurrr/UncivServer.xyz) (TypeScript | Bun)
 
 ## Third-party (unofficial) publicly hosted Unciv servers
 
 These servers are run by the community and **not** official servers. These servers may become (temporarily or permanently) unavailable and lose your game saves. They might also collect data like your IP, how often you play, or other data. Use these only if you accept these risks and trust the server owners.
 
-* [`https://uncivserver.xyz/`](https://uncivserver.xyz/) - Run by PikaPika#2315 on [their Discord](https://discord.gg/H9em4ws8XP) ([Source Code](https://github.com/touhidurrr/UncivServer.xyz/))
+* [`https://uncivserver.xyz/`](https://uncivserver.xyz/) - Run by [@touhidurrr](https://github.com/touhidurrr) on [their Discord](https://discord.gg/H9em4ws8XP) ([Source Code](https://github.com/touhidurrr/UncivServer.xyz/))

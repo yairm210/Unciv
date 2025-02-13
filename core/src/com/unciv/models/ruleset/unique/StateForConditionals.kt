@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.GameInfo
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.ICombatant
@@ -23,11 +24,12 @@ data class StateForConditionals(
     val combatAction: CombatAction? = null,
 
     val region: Region? = null,
+    val gameInfo: GameInfo? = civInfo?.gameInfo,
 
     val ignoreConditionals: Boolean = false,
 ) {
-    constructor(city: City) : this(city.civ, city, tile = city.getCenterTile())
-    constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = unit.currentTile)
+    constructor(city: City) : this(city.civ, city, tile = city.getCenterTileOrNull())
+    constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = if (unit.hasTile()) unit.getTile() else null)
     constructor(ourCombatant: ICombatant, theirCombatant: ICombatant? = null,
                 attackedTile: Tile? = null, combatAction: CombatAction? = null) : this(
         ourCombatant.getCivInfo(),
@@ -50,7 +52,7 @@ data class StateForConditionals(
         ?: tile
         // We need to protect against conditionals checking tiles for units pre-placement - see #10425, #10512
         ?: relevantUnit?.run { if (hasTile()) getTile() else null }
-        ?: city?.getCenterTile()
+        ?: city?.getCenterTileOrNull()
     }
 
     val relevantCity by lazy {
@@ -72,8 +74,6 @@ data class StateForConditionals(
         relevantUnit?.civ
     }
 
-    val gameInfo by lazy { relevantCiv?.gameInfo }
-
     fun getResourceAmount(resourceName: String): Int {
         return when {
             relevantCity != null -> relevantCity!!.getAvailableResourceAmount(resourceName)
@@ -92,6 +92,7 @@ data class StateForConditionals(
 
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
+        val EmptyState = StateForConditionals()
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */

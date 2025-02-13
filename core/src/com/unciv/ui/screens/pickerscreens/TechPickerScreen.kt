@@ -1,8 +1,8 @@
 package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -15,6 +15,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
@@ -33,16 +34,16 @@ import kotlin.math.abs
 class TechPickerScreen(
     internal val civInfo: Civilization,
     centerOnTech: Technology? = null,
-    private val freeTechPick: Boolean = false
 ) : PickerScreen() {
 
+    private val freeTechPick: Boolean = civInfo.tech.freeTechs != 0
     private val ruleset = civInfo.gameInfo.ruleset
     private var techNameToButton = HashMap<String, TechButton>()
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
     private var tempTechsToResearch: ArrayList<String>
-    private var lines = Group().apply { isTransform = false }
-    private var orderIndicators = Group().apply { isTransform = false }
+    private var lines = NonTransformGroup()
+    private var orderIndicators = NonTransformGroup()
     private var eraLabels = ArrayList<Label>()
 
     /** We need this to be a separate table, and NOT the topTable, because *inhales*
@@ -52,7 +53,9 @@ class TechPickerScreen(
      * Having this be a separate table allows us to leave the TopTable as is (that is: auto-width to fit the scrollPane)
      *  leaving us the juicy small tech tree right in the center.
      */
-    private val techTable = Table()
+    private val techTable = object : Table(){
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    }
 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = ruleset.technologies.keys
@@ -84,8 +87,8 @@ class TechPickerScreen(
         topTable.add(techTable)
         techTable.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-
-        rightSideButton.setText("Pick a tech".tr())
+        
+        rightSideButton.setText(if (freeTechPick) "Pick a free tech".tr() else "Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) { tryExit() }
 
         // per default show current/recent technology,
@@ -152,7 +155,7 @@ class TechPickerScreen(
             val color = when {
                 civTech.era.name == era -> queuedTechColor
                 ruleset.eras[era]!!.eraNumber < civTech.era.eraNumber -> colorFromRGB(255, 175, 0)
-                else -> Color.BLACK.cpy()
+                else -> ImageGetter.CHARCOAL.cpy()
             }
 
             val table1 = Table().pad(1f)
@@ -213,7 +216,7 @@ class TechPickerScreen(
                 tempTechsToResearch.firstOrNull() == techName && !freeTechPick -> currentTechColor
                 researchableTechs.contains(techName) -> researchableTechColor
                 tempTechsToResearch.contains(techName) -> queuedTechColor
-                else -> Color.BLACK.cpy()
+                else -> ImageGetter.CHARCOAL.cpy()
             })
 
             if (isResearched && techName != Constants.futureTech) {
@@ -409,7 +412,7 @@ class TechPickerScreen(
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
         for (requiredTech in pathToTech) {
             for (unique in requiredTech.uniqueObjects
-                .filter { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo) }) {
+                .filter { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo.state) }) {
                 rightSideButton.setText(unique.getDisplayText().tr())
                 rightSideButton.disable()
                 return
@@ -463,5 +466,4 @@ class TechPickerScreen(
             rightSideButton.disable()
         }
     }
-
 }

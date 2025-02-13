@@ -146,3 +146,27 @@ They can be for unit types (Archery, Seige, Cavalry) or for specific unit names
 
 The files should be in the format of `<unit type/unit name>-attack-<frame number>`.
 For example, a 3 frame animation for Sword units would have the files `Sword-attack-1.png`, `Sword-attack-3.png`, `Sword-attack-3.png`
+
+## Edge images
+
+You can add additional images that will be drawn only when a tile is adjacent to another tile in a specific direction.
+
+The images should be placed in the `Images/Tilesets/<tileset name>/Edges` folder, rather than in `/Tiles`.
+
+The name of the tile should be `<tile name>-<origin tile filter>-<destination tile filter>-<neighbor direction>.png`, where direction of one of:
+
+- Bottom
+- BottomLeft
+- BottomRight
+- Top
+- TopLeft
+- TopRight
+
+And where the tile filter is one of:
+- Terrain name
+- Feature name
+- Terrain type (Land/Water)
+
+For example: `Cliff-Hills-Coast-Top.png`
+
+The initial name has no bearing on the image used, it is just a way to group images together.

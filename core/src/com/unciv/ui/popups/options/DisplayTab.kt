@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
@@ -41,7 +42,7 @@ fun displayTab(
 
     val settings = optionsPopup.settings
 
-    add("Screen".toLabel(fontSize = 24)).colspan(2).row()
+    add("Screen".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addScreenOrientationSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
@@ -58,17 +59,17 @@ fun displayTab(
     }
 
     addSeparator()
-    add("Graphics".toLabel(fontSize = 24)).colspan(2).row()
+    add("Graphics".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
     addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     addSeparator()
-    add("UI".toLabel(fontSize = 24)).colspan(2).row()
+    add("UI".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     addNotificationScrollSelect(this, settings, optionsPopup.selectBoxMinWidth)
-    addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
+    optionsPopup.addCheckbox(this, "Show minimap", settings.showMinimap, updateWorld = true) { settings.showMinimap = it }
     optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
     addResetTutorials(this, settings)
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
@@ -77,7 +78,7 @@ fun displayTab(
     addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addSeparator()
-    add("Visual Hints".toLabel(fontSize = 24)).colspan(2).row()
+    add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
     optionsPopup.addCheckbox(this, "Show suggested city locations for units that can found cities", settings.showSettlersSuggestedCityLocations, true) { settings.showSettlersSuggestedCityLocations = it }
@@ -89,7 +90,7 @@ fun displayTab(
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addSeparator()
-    add("Performance".toLabel(fontSize = 24)).colspan(2).row()
+    add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
     optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
         settings.continuousRendering = it
@@ -103,36 +104,6 @@ fun displayTab(
     )
     continuousRenderingLabel.wrap = true
     add(continuousRenderingLabel).colspan(2).padTop(10f).row()
-}
-
-private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Minimap size".toLabel()).left().fillX()
-
-    // The meaning of the values needs a formula to be synchronized between here and
-    // [Minimap.init]. It goes off-10%-11%..29%-30%-35%-40%-45%-50% - and the percentages
-    // correspond roughly to the minimap's proportion relative to screen dimensions.
-    val offTranslated = "off".tr()  // translate only once and cache in closure
-    val getTipText: (Float) -> String = {
-        when (it) {
-            0f -> offTranslated
-            in 0.99f..21.01f -> "%.0f".format(it + 9) + "%"
-            else -> "%.0f".format(it * 5 - 75) + "%"
-        }
-    }
-    val minimapSlider = UncivSlider(
-        0f, 25f, 1f,
-        initial = if (settings.showMinimap) settings.minimapSize.toFloat() else 0f,
-        getTipText = getTipText
-    ) {
-        val size = it.toInt()
-        if (size == 0) settings.showMinimap = false
-        else {
-            settings.showMinimap = true
-            settings.minimapSize = size
-        }
-        GUI.setUpdateWorldOnNextRender()
-    }
-    table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {

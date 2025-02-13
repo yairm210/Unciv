@@ -98,7 +98,7 @@ class ModCheckTab(
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
-                    if (base == MOD_CHECK_WITHOUT_BASE) mod.checkModLinks(tryFixUnknownUniques = true)
+                    if (base == MOD_CHECK_WITHOUT_BASE) mod.getErrorList(tryFixUnknownUniques = true)
                     else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, tryFixUnknownUniques = true)
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 val noProblem = !modLinks.isNotOK()
@@ -120,7 +120,7 @@ class ModCheckTab(
                         else -> "OtherIcons/Checkmark"
                     }
                     val icon = ImageGetter.getImage(iconName)
-                        .apply { color = Color.BLACK }
+                        .apply { color = ImageGetter.CHARCOAL }
                         .surroundWithCircle(30f, color = iconColor)
 
                     val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = mod.name in openedExpanderTitles) {

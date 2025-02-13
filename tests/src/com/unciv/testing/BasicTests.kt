@@ -91,13 +91,15 @@ class BasicTests {
 
     @Test
     fun baseRulesetHasNoBugs() {
+        var hasFailed = false
         for (baseRuleset in BaseRuleset.entries) {
             val ruleset = RulesetCache[baseRuleset.fullName]!!
-            val modCheck = ruleset.checkModLinks()
+            val modCheck = ruleset.getErrorList()
             if (modCheck.isNotOK())
                 debug("%s", modCheck.getErrorText(true))
-            Assert.assertFalse(modCheck.isNotOK())
+            hasFailed = hasFailed || modCheck.isNotOK()
         }
+        Assert.assertFalse(hasFailed)
     }
 
     @Test

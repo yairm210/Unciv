@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.ceil
@@ -158,7 +157,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     private fun startStealingTech() {
         progressTowardsStealingTech = 0
         setAction(SpyAction.StealingTech)
-        endTurn()
     }
 
     /**
@@ -171,12 +169,14 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
         if (stealableTechs.isEmpty()) return -1
 
-        val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
+        var techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!.toFloat()
+        val techSpeedModifier = civInfo.gameInfo.speed.scienceCostModifier //Modify steal cost according to game speed
+        techStealCost *= techSpeedModifier * 1.25f //Multiply by 1.25f, according to Civ5 GlobalDefines.XML
         var progressThisTurn = getCity().cityStats.currentCityStats.science
         if (progressThisTurn <= 0f) return -2 // The city has no science
 
-        // 33% spy bonus for each level
-        progressThisTurn *= (rank + 2f) / 3f
+        // 25% spy bonus for each level
+        progressThisTurn *= (rank + 3f) / 4f
         progressThisTurn *= getEfficiencyModifier().toFloat()
         progressTowardsStealingTech += progressThisTurn.toInt()
 
@@ -391,13 +391,13 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
             city.civ == civInfo -> {
                 // Spy is in our own city
-                friendlyUniques = city.getMatchingUniques(UniqueType.SpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
+                friendlyUniques = city.getMatchingUniques(UniqueType.SpyEffectiveness, city.state, includeCivUniques = true)
                 enemyUniques = emptySequence()
             }
             else -> {
                 // Spy is active in a foreign city
                 friendlyUniques = civInfo.getMatchingUniques(UniqueType.SpyEffectiveness)
-                enemyUniques = city.getMatchingUniques(UniqueType.EnemySpyEffectiveness, StateForConditionals(city), includeCivUniques = true)
+                enemyUniques = city.getMatchingUniques(UniqueType.EnemySpyEffectiveness, city.state, includeCivUniques = true)
             }
         }
         var totalEfficiency = 1.0
@@ -421,5 +421,5 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /** Anti-save-scum: Deterministic random from city and turn
      *  @throws NullPointerException for spies in the hideout */
-    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt()
+    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt() + name.hashCode()
 }

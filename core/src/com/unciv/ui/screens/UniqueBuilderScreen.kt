@@ -85,7 +85,7 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
             .filter { it.modifierType != UniqueTarget.ModifierType.None }
 
         defaults().pad(10f)
-        background = ImageGetter.getWhiteDotDrawable().tint(Color.BLACK.cpy().apply { a=0.3f })
+        background = ImageGetter.getWhiteDotDrawable().tint(ImageGetter.CHARCOAL.cpy().apply { a=0.3f })
         val uniqueTargetSelectBoxTable = Table().apply { defaults().pad(5f) }
         uniqueTargetsSelectBox = SelectBox<UniqueTarget>(BaseScreen.skin)
         uniqueTargetsSelectBox.setItems(uniqueTargets)

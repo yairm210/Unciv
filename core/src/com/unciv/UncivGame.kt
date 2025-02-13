@@ -219,6 +219,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             screenStack.clear()
 
             worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
+            Gdx.input.inputProcessor = null // Avoid ANRs while loading
             val newWorldScreen = WorldScreen(newGameInfo, autoPlay, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
             worldScreen = newWorldScreen
 
@@ -231,7 +232,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             }
 
             screenStack.addLast(screenToShow)
-            setScreen(screenToShow)
+            setScreen(screenToShow) // Only here do we set the inputProcessor again 
             loadingScreen.dispose()
 
             return@withGLContext newWorldScreen
@@ -241,11 +242,10 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     /** The new game info may have different mods or rulesets, which may use different resources that need to be loaded. */
     private suspend fun initializeResources(newGameInfo: GameInfo) {
         withGLContext {
-            ImageGetter.setNewRuleset(newGameInfo.ruleset)
+            ImageGetter.setNewRuleset(newGameInfo.ruleset, true)
         }
         val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
         musicController.setModList(fullModList)
-        settings.tileSet
     }
 
     /** Re-creates the current [worldScreen], if there is any. */
@@ -307,7 +307,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 screen = screenStack.last(),
                 question = "Do you want to exit the game?",
                 confirmText = "Exit",
-                restoreDefault = { musicController.resume() },
+                restoreDefault = { musicController.resumeFromShutdown() },
                 action = { Gdx.app.exit() }
             ).open(force = true)
             return null
@@ -337,7 +337,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
         val ruleset = worldScreen.gameInfo.ruleset
         translations.translationActiveMods = ruleset.mods
-        ImageGetter.setNewRuleset(ruleset)
+        ImageGetter.setNewRuleset(ruleset, true)
 
         setScreen(worldScreen)
         return worldScreen
@@ -387,7 +387,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
-        musicController.resume()
+        musicController.resumeFromShutdown()
 
         // This is also needed in resume to open links and notifications
         // correctly when the app was already running. The handling in onCreate
@@ -400,7 +400,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
         if (::musicController.isInitialized) musicController.pause()
         val curGameInfo = gameInfo
-        if (curGameInfo != null) files.autosaves.requestAutoSave(curGameInfo)
+        // Since we're pausing the game, we don't need to clone it before autosave - no one else will touch it
+        if (curGameInfo != null) files.autosaves.requestAutoSaveUnCloned(curGameInfo)
         super.pause()
     }
 
@@ -462,6 +463,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             // ignore
         }
         Gdx.app.postRunnable {
+            Gdx.input.inputProcessor = null // CrashScreen needs to toJson which can take a while
+            // This may not be enough, we may need to run "generate crash text" in a different thread,
+            //   but for now let's try this.
             setAsRootScreen(CrashScreen(ex))
         }
     }
@@ -483,7 +487,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.13.5", 1044)
+        val VERSION = Version("4.15.10", 1102)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
@@ -507,7 +511,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 }
 
-private class GameStartScreen : BaseScreen() {
+class GameStartScreen : BaseScreen() {
     init {
         val logoImage = ImageGetter.getExternalImage("banner.png")
         logoImage.center(stage)

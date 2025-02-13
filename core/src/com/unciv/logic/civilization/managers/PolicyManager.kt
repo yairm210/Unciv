@@ -44,9 +44,11 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         get() {
             val value = HashMap<PolicyBranch, Int>()
             for (branch in branches) {
-                val victoryPriority = branch.priorities[civInfo.nation.preferredVictoryType] ?: 0
+                val victoryPriority = civInfo.getPreferredVictoryTypes().sumOf { branch.priorities[it] ?: 0}
                 val personalityPriority = civInfo.getPersonality().priorities[branch.name] ?: 0
-                value[branch] = victoryPriority + personalityPriority
+                val branchPriority = (victoryPriority + personalityPriority) * 
+                        branch.getWeightForAiDecision(civInfo.state)
+                value[branch] = branchPriority.roundToInt()
             }
             return value
         }
@@ -184,18 +186,18 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleset.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                .any { !it.conditionalsApply(civInfo) }) return false
-        if (policy.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return false
+                .any { !it.conditionalsApply(civInfo.state) }) return false
+        if (policy.hasUnique(UniqueType.Unavailable, civInfo.state)) return false
         return true
     }
 
     fun canAdoptPolicy(): Boolean {
         if (civInfo.isSpectator()) return false
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy()) return false
-
-        //Return true if there is a policy to adopt, else return false
-        return getRulesetPolicies().values.any { civInfo.policies.isAdoptable(it) }
+        if (allPoliciesAdopted(true)) return false
+        return true
     }
+    
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
 
@@ -229,12 +231,11 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         //todo Can this be mapped downstream to a PolicyAction:NotificationAction?
         val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
-            if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
-            if (unique.getModifiers(UniqueType.TriggerUponAdoptingPolicyOrBelief).any { it.params[0] == policy.name })
-                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) {it.params[0] == policy.name})
+            UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         civInfo.cache.updateCivResources()
 
@@ -258,9 +259,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (!adoptedPolicies.remove(policy.name))
             throw IllegalStateException("Attempt to remove non-adopted Policy ${policy.name}")
 
-        if (!assumeWasFree) {
-            if (--numberOfAdoptedPolicies < 0)
-                throw IllegalStateException("Attempt to remove Policy ${policy.name} but civ only has free policies left")
+        if (!assumeWasFree && numberOfAdoptedPolicies > 0) {
+            numberOfAdoptedPolicies -= 1
         }
 
         removePolicyFromTransients(policy)

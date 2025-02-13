@@ -79,7 +79,9 @@ object MovementCost {
         if (unit.cache.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        val terrainCost = to.lastTerrain.movementCost.toFloat()
+        // Cities reduce terrain cost to 1
+        val terrainCost = if (to.isCityCenter()) 1f
+            else to.lastTerrain.movementCost.toFloat()
 
         if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost
@@ -170,8 +172,7 @@ object MovementCost {
         // these two tiles can perhaps be optimized. Using a hex-math-based "commonAdjacentTiles"
         // function is surprisingly less efficient than the current neighbor-intersection approach.
         // See #4085 for more details.
-        val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(unit, from)
-        if (tilesExertingZoneOfControl.none { to.aerialDistanceTo(it) == 1 })
+        if (!anyTilesExertingZoneOfControl(unit, from, to))
             return false
 
         // Even though this is a very fast check, we perform it last. This is because very few units
@@ -183,16 +184,19 @@ object MovementCost {
         return true
     }
 
-    private fun getTilesExertingZoneOfControl(unit: MapUnit, tile: Tile) = sequence {
-        for (neighbor in tile.neighbors) {
-            if (neighbor.isCityCenter() && unit.civ.isAtWarWith(neighbor.getOwner()!!)) {
-                yield(neighbor)
-            }
-            else if (neighbor.militaryUnit != null && unit.civ.isAtWarWith(neighbor.militaryUnit!!.civ)) {
-                if (neighbor.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && !neighbor.militaryUnit!!.isEmbarked()))
-                    yield(neighbor)
+    private fun anyTilesExertingZoneOfControl(unit: MapUnit, from: Tile, to:Tile): Boolean {
+        for (neighbor in from.neighbors) {
+            if (neighbor.isCityCenter()) {
+                if (neighbor.aerialDistanceTo(to) == 1
+                    && unit.civ.isAtWarWith(neighbor.getOwner()!!))
+                        return true
+            } else if (neighbor.militaryUnit != null) {
+                if (neighbor.aerialDistanceTo(to) == 1
+                    && (neighbor.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && !neighbor.militaryUnit!!.isEmbarked()))
+                    && unit.civ.isAtWarWith(neighbor.militaryUnit!!.civ))
+                        return true
             }
         }
+        return false
     }
-
 }

@@ -15,10 +15,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
@@ -45,17 +42,22 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
     var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
+    
+    fun updateState() {
+        civInfo.state = StateForConditionals(civInfo)
+    }
 
     fun setTransients() {
         val ruleset = civInfo.gameInfo.ruleset
 
+        val state = civInfo.state
         val buildingsToRequiredResources = ruleset.buildings.values
                 .filter { civInfo.getEquivalentBuilding(it) == it }
-                .associateWith { it.requiredResources() }
+                .associateWith { it.requiredResources(state) }
 
         val unitsToRequiredResources = ruleset.units.values
                 .filter { civInfo.getEquivalentUnit(it) == it }
-                .associateWith { it.requiredResources() }
+                .associateWith { it.requiredResources(state) }
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
             val applicableBuildings = buildingsToRequiredResources.filter { it.value.contains(resource) }.map { it.key }
@@ -327,7 +329,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
-                    if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, StateForConditionals(cityStateAlly))) continue
+                    if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, cityStateAlly.state)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
                     cityStateProvidedResources.add(resourceSupply.copy(amount = newAmount))
                 }
@@ -353,13 +355,21 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             newDetailedCivResources.subtractResourceRequirements(
                 unit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
 
-        newDetailedCivResources.removeAll { it.resource.hasUnique(UniqueType.CityResource) }
+        newDetailedCivResources.removeAll { it.resource.isCityWide }
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
 
+        val summarizedResourceSupply = newDetailedCivResources.sumByResource("All")
+
+        val newResourceUniqueMap = UniqueMap()
+        for (resource in summarizedResourceSupply)
+            if (resource.amount > 0)
+                newResourceUniqueMap.addUniques(resource.resource.uniqueObjects)
+        
         civInfo.detailedCivResources = newDetailedCivResources
-        civInfo.summarizedCivResourceSupply = newDetailedCivResources.sumByResource("All")
+        civInfo.summarizedCivResourceSupply = summarizedResourceSupply
+        civInfo.civResourcesUniqueMap = newResourceUniqueMap
 
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }

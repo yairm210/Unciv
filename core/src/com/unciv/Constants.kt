@@ -42,11 +42,15 @@ object Constants {
 
     const val barbarianEncampment = "Barbarian encampment"
     const val cityCenter = "City center"
-
+    
+    // Treaties
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"
-    const val openBorders = "Open Borders"
     const val defensivePact = "Defensive Pact"
+    
+    // Agreements
+    const val openBorders = "Open Borders"
+    
     /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
     const val cityStates = "City-States"
     /** Used as origin in ResourceSupplyList */
@@ -103,9 +107,10 @@ object Constants {
     const val defaultFallbackTileset = "FantasyHex"
     const val defaultUnitset = "AbsoluteUnits"
     const val defaultSkin = "Minimal"
+    const val defaultFallbackSkin = "Minimal"
 
     /**
-     * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted
+     * Use this to determine whether a [MapUnit][com.unciv.logic.map.mapunit.MapUnit]'s movement is exhausted
      * (currentMovement <= this) if and only if a fuzzy comparison is needed to account for Float rounding errors.
      * _Most_ checks do compare to 0!
      */

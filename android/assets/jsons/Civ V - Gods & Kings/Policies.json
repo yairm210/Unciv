@@ -35,7 +35,8 @@
                 "name": "Oligarchy",
                 "uniques": [
                     "Units in cities cost no Maintenance",
-                    "[+50]% Strength for cities <with a garrison> <when attacking>"
+                    "[+50]% Strength for cities <with a garrison> <when attacking>",
+                    "[-100]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 5
@@ -92,8 +93,9 @@
             {
                 "name": "Citizenship",
                 "uniques": [
-                    "[-25]% construction time for [All] improvements",
-                    "Free [Worker] appears"
+                    "Can build [all] improvements at a [+25]% rate",
+                    "Free [Worker] appears",
+                    "[-100]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 4
@@ -122,7 +124,8 @@
                 "name": "Meritocracy",
                 "uniques": [
                     "[+1 Happiness] [in all cities connected to capital]",
-                    "[-5]% Unhappiness from [Population] [in all non-occupied cities]"
+                    "[-5]% Unhappiness from [Population] [in all non-occupied cities]",
+                    "[-100]% weight to this choice for AI decisions"
                 ],
                 "requires": ["Citizenship"],
                 "row": 2,
@@ -219,7 +222,8 @@
         "uniques": [
             "[+100]% Production when constructing [Shrine] buildings [in all cities]",
             "[+100]% Production when constructing [Temple] buildings [in all cities]",
-            "Only available <before adopting [Rationalism]>"
+            "Only available <before adopting [Rationalism]>",
+            "[-100]% weight to this choice for AI decisions <when religion is disabled>"
         ],
         "policies": [
             {
@@ -280,7 +284,10 @@
             "Domination": 5,
             "Scientific": 5
         },
-        "uniques": ["[-25]% City-State Influence degradation"],
+        "uniques": [
+            "[-25]% City-State Influence degradation",
+            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>"
+        ],
         "policies": [
             {
                 "name": "Philantropy",
@@ -434,7 +441,8 @@
                 "uniques": [
                     "[+1 Happiness] from every [University]",
                     "[+1 Happiness] from every [Observatory]",
-                    "[+1 Happiness] from every [Public School]"
+                    "[+1 Happiness] from every [Public School]",
+                    "[-50]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 4
@@ -458,7 +466,7 @@
             },
             {
                 "name": "Scientific Revolution",
-                "uniques": ["Science gained from research agreements [+50]%"],
+                "uniques": ["Science gained from research agreements [+50]%", "[-100]% weight to this choice for AI decisions"],
                 "requires": ["Free Thought"],
                 "row": 3,
                 "column": 2
@@ -490,13 +498,13 @@
         "policies": [
             {
                 "name": "Constitution",
-                "uniques": ["[+2 Culture] from every [Wonder]"],
+                "uniques": ["[+2 Culture] from every [Wonder]", "[-100]% weight to this choice for AI decisions"],
                 "row": 1,
                 "column": 1
             },
             {
                 "name": "Universal Suffrage",
-                "uniques": ["[+33]% Strength for cities <when defending>"],
+                "uniques": ["[+33]% Strength for cities <when defending>", "[-100]% weight to this choice for AI decisions"],
                 "row": 1,
                 "column": 3
             },
@@ -553,7 +561,7 @@
         "policies": [
             {
                 "name": "Populism",
-                "uniques": ["[+25]% Strength <for [Wounded] units>"],
+                "uniques": ["[+25]% Strength <for [Wounded] units>", "[+100]% weight to this choice for AI decisions"],
                 "row": 1,
                 "column": 2
             },
@@ -622,7 +630,7 @@
             {
                 "name": "United Front",
                 "uniques": [
-                    "Militaristic City-States grant units [2] times as fast when you are at war with a common nation"
+                    "Militaristic City-States grant units [2] times as fast when you are at war with a common nation","[-100]% weight to this choice for AI decisions"
                 ],
                 "row": 1,
                 "column": 1

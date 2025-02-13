@@ -7,6 +7,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.fonts.Fonts
 import kotlin.math.ceil
 
@@ -73,16 +74,17 @@ object UnitActionModifiers {
         return true
     }
 
-    /**Checks if this Action Unique can be executed, based on action modifiers
+    /** Checks if this Action Unique can be executed, based on action modifiers
      * @param unit: The specific unit executing the Action
      * @param actionUnique: Unique that defines the Action
      * @return Boolean
      */
     fun canActivateSideEffects(unit: MapUnit, actionUnique: Unique): Boolean {
-        return canUse(unit, actionUnique)
-            && getMovementPointsRequired(actionUnique) <= ceil(unit.currentMovement).toInt()
-            && canSpendStatsCost(unit, actionUnique)
-            && canSpendStockpileCost(unit, actionUnique)
+        if (!canUse(unit, actionUnique)) return false
+        if (getMovementPointsRequired(actionUnique) > ceil(unit.currentMovement).toInt()) return false
+        if (!canSpendStatsCost(unit, actionUnique)) return false
+        if (!canSpendStockpileCost(unit, actionUnique)) return false
+        return true
     }
 
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false) {
@@ -113,8 +115,18 @@ object UnitActionModifiers {
                 UniqueType.UnitActionStockpileCost -> {
                     val amount = conditional.params[0].toInt()
                     val resourceName = conditional.params[1]
-                    if(unit.civ.getCivResourcesByName()[resourceName] != null)
-                        unit.civ.resourceStockpiles.add(resourceName, -amount)
+                    val resource = unit.civ.gameInfo.ruleset.tileResources[resourceName]
+                    if (resource != null && resource.isStockpiled)
+                        unit.civ.gainStockpiledResource(resource, -amount)
+                }
+                UniqueType.UnitActionRemovingPromotion -> {
+                    val promotionName = conditional.params[0]
+                    // if has a status, remove that instead - the promotion is 'safe'
+                    if (unit.hasStatus(promotionName)) {
+                        unit.removeStatus(promotionName)
+                    } else { // check for real promotion
+                        unit.promotions.removePromotion(promotionName)
+                    }
                 }
                 else -> continue
             }
@@ -176,6 +188,12 @@ object UnitActionModifiers {
             actionUnique,
             defaultAllMovement
         ).tr() + Fonts.movement
+        
+        for (removes in actionUnique.getModifiers(UniqueType.UnitActionRemovingPromotion)) {
+            val promotionName = removes.params[0]
+            val promotionChar = FontRulesetIcons.rulesetObjectNameToChar[promotionName]
+            if (promotionChar != null) effects += "-$promotionChar"
+        }
 
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"

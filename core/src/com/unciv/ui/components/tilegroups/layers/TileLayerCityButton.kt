@@ -21,18 +21,18 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     }
 
     override fun act(delta: Float) {
-        if (tileGroup.tile.isCityCenter())
+        if (tile.isCityCenter())
             super.act(delta)
     }
 
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        if (tileGroup.tile.isCityCenter())
+        if (tile.isCityCenter())
             return super.hit(x, y, touchable)
         return null
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (tileGroup.tile.isCityCenter())
+        if (tile.isCityCenter())
             super.draw(batch, parentAlpha)
     }
 
@@ -45,11 +45,9 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     }
 
     override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+        if (tileGroup !is WorldTileGroup) return
 
-        if (tileGroup !is WorldTileGroup)
-            return
-
-        val city = tile().getCity()
+        val city = tile.getCity()
 
         // There used to be a city here but it was razed
         if (city == null && cityButton != null) {
@@ -57,21 +55,16 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
             cityButton = null
         }
 
-        if (viewingCiv == null)
-            return
-
-        val tileIsViewable = isViewable(viewingCiv)
-        val shouldShow = DebugUtils.VISIBLE_MAP
-
+        if (viewingCiv == null) return
+        if (city == null || !tileGroup.tile.isCityCenter()) return
+        
         // Create (if not yet) and update city button
-        if (city != null && tileGroup.tile.isCityCenter()) {
-            if (cityButton == null) {
-                cityButton = CityButton(city, tileGroup)
-                addActor(cityButton)
-            }
-
-            cityButton!!.update(shouldShow || tileIsViewable)
+        if (cityButton == null) {
+            cityButton = CityButton(city, tileGroup)
+            addActor(cityButton)
         }
+
+        cityButton!!.update(DebugUtils.VISIBLE_MAP || isViewable(viewingCiv))
     }
 
 }

@@ -8,6 +8,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MirroringType
 import com.unciv.logic.simulation.Simulation
 import com.unciv.models.metadata.*
 import com.unciv.models.ruleset.RulesetCache
@@ -47,7 +48,8 @@ internal object ConsoleLauncher {
 
         ruleset.nations[simulationCiv1] = Nation().apply { name = simulationCiv1 }
         ruleset.nations[simulationCiv2] = Nation().apply { name = simulationCiv2 }
-
+        //These names need PascalCase if applied in-game for testing (e.g. if (civInfo.civName == "SimulationCiv2"))
+        
         val gameParameters = getGameParameters(simulationCiv1, simulationCiv2)
         val mapParameters = getMapParameters()
         val gameSetupInfo = GameSetupInfo(gameParameters, mapParameters)
@@ -56,7 +58,8 @@ internal object ConsoleLauncher {
         UncivGame.Current.gameInfo = newGame
 
 
-        val simulation = Simulation(newGame, 10, 4)
+        val simulation = Simulation(newGame, 50, 8)
+        //Unless the effect size is very large, you'll typically need a large number of games to get a statistically significant result
 
         simulation.start()
     }
@@ -66,17 +69,18 @@ internal object ConsoleLauncher {
             mapSize = MapSize.Small
             noRuins = true
             noNaturalWonders = true
+            mirroring = MirroringType.aroundCenterTile
         }
     }
 
-    private fun getGameParameters(civilization1: String, civilization2: String): GameParameters {
+    private fun getGameParameters(vararg civilizations: String): GameParameters {
         return GameParameters().apply {
-            difficulty = "Chieftain"
+            difficulty = "Prince"
+            numberOfCityStates = 0
             speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
-                add(Player(civilization1))
-                add(Player(civilization2))
+                civilizations.forEach { add(Player(it)) }
                 add(Player(Constants.spectator, PlayerType.Human))
             }
         }

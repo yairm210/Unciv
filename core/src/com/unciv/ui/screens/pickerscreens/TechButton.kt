@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -42,10 +43,11 @@ class TechButton(
 
         val path = "TechPickerScreen/TechButton"
         val default = BaseScreen.skinStrings.roundedEdgeRectangleMidShape
-        backgroundImage = Image(BaseScreen.skinStrings.getUiBackground(path, default))
+        backgroundImage = object : Image(BaseScreen.skinStrings.getUiBackground(path, default)){
+            override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        }
         background = BaseScreen.skinStrings.getUiBackground(path, default, Color.WHITE.darken(0.3f))
 
-        backgroundImage.toBack()
         addActor(backgroundImage)
 
         pad(5f, 5f, 5f, 0f)
@@ -67,7 +69,9 @@ class TechButton(
             add(progressBar.addBorder(1f, Color.GRAY.cpy())).padLeft(0f).padRight(5f)
         }
 
-        val rightSide = Table()
+        val rightSide = object : Table() {
+            override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        }
 
         rightSide.add(text).width(140f).top().left().padRight(15f)
         rightSide.add(turns).width(40f).top().left().padRight(10f).row()
@@ -76,6 +80,10 @@ class TechButton(
 
         rightSide.centerY(this)
         add(rightSide).expandX().left()
+        
+        // Render both Skin images adjacently to reduce a texture swap between them
+        rightSide.toBack()
+        backgroundImage.toBack()
         pack()
 
         backgroundImage.setSize(width - 3f, height - 3f)
@@ -91,11 +99,14 @@ class TechButton(
     }
 
     private fun addTechEnabledIcons(techName: String, rightSide: Table) {
-        val techEnabledIcons = Table().align(Align.left)
+        val techEnabledIcons = object : Table(){
+            init { align(Align.left) }
+            override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        }
         techEnabledIcons.background = BaseScreen.skinStrings.getUiBackground(
             "TechPickerScreen/TechButtonIconsOutline",
             BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
-            tintColor = Color.BLACK.cpy().apply { a = 0.7f }
+            tintColor = ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }
         )
         techEnabledIcons.pad(2f, 10f, 2f, 0f)
         techEnabledIcons.defaults().padRight(5f)
@@ -113,6 +124,10 @@ class TechButton(
             .prefWidth(195f)
             .maxWidth(195f)
             .expandX().left().row()
+        
+        techEnabledIcons.toBack() // First thing in the table to render so the 2 skin textures are rendered back to back
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
 }

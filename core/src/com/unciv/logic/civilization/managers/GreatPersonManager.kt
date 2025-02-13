@@ -105,7 +105,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     fun getGreatPeople() = civInfo.gameInfo.ruleset.units.values.asSequence()
         .filter { it.isGreatPerson }
         .map { civInfo.getEquivalentUnit(it.name) }
-        .filterNot { it.isHiddenBySettings(civInfo.gameInfo) }
+        .filterNot { it.isUnavailableBySettings(civInfo.gameInfo) }
         .toHashSet()
 
     fun getGreatPersonPointsForNextTurn(): Counter<String> {

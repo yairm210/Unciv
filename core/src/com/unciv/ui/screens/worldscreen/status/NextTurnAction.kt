@@ -2,13 +2,13 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
@@ -22,7 +22,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 
 enum class NextTurnAction(protected val text: String, val color: Color) {
-    Default("", Color.BLACK) {
+    Default("", ImageGetter.CHARCOAL) {
         override val icon get() = null
         override fun isChoice(worldScreen: WorldScreen) = false
     },
@@ -57,7 +57,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             worldScreen.viewingCiv.shouldOpenTechPicker()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen(
-                TechPickerScreen(worldScreen.viewingCiv, null, worldScreen.viewingCiv.tech.freeTechs != 0)
+                TechPickerScreen(worldScreen.viewingCiv, null)
             )
     },
     PickPolicy("Pick a policy", Color.VIOLET) {
@@ -120,7 +120,9 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.viewingCiv.units.shouldGoToDueUnit()
         override fun action(worldScreen: WorldScreen) =
-            worldScreen.switchToNextUnit()
+            worldScreen.switchToNextUnit(!worldScreen.game.settings.checkForDueUnitsCycles)
+        override fun getSubText(worldScreen: WorldScreen): String? =
+            getIdleUnitsText(worldScreen)
     },
     MoveAutomatedUnits("Move automated units", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -133,11 +135,14 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             true  // When none of the others is active..
         override fun action(worldScreen: WorldScreen) =
             worldScreen.confirmedNextTurn()
+        override fun getSubText(worldScreen: WorldScreen): String? =
+            getIdleUnitsText(worldScreen)
     },
 
     ;
     open val icon: String? get() = if (text != "AutoPlay") "NotificationIcons/$name" else "NotificationIcons/Working"
     open fun getText(worldScreen: WorldScreen) = text
+    open fun getSubText(worldScreen: WorldScreen): String? = null
     abstract fun isChoice(worldScreen: WorldScreen): Boolean
     open fun action(worldScreen: WorldScreen) {}
 
@@ -199,6 +204,22 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
                 ConfirmPopup(this, "Confirm next turn", "Next turn",
                     true, action = ::action).open()
             } else action()
+        }
+
+        /**
+        Show due units in next-unit and next-turn phase, encouraging the player to give order to
+        idle units.
+        It also serves to inform new players that the NextUnit-Button cycles units. That's easy
+        to grasp, because the number doesn't change when repeatedly clicking the button.
+        We also show due units on the NextTurn button, so players see due units in case the
+        the NextTurn phase is disabled.
+        */
+        private fun getIdleUnitsText(worldScreen: WorldScreen): String? {
+            val count = worldScreen.viewingCiv.units.getDueUnits().count()
+            if (count > 0) {
+                return "[$count] units idle"
+            }
+            return null
         }
     }
 }

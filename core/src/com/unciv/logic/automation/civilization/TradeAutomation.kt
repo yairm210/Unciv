@@ -3,7 +3,6 @@ package com.unciv.logic.automation.civilization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.Trade
@@ -40,8 +39,11 @@ object TradeAutomation {
                 if (counteroffer != null) {
                     otherCiv.addNotification("[${civInfo.civName}] has made a counteroffer to your trade request", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
                     otherCiv.tradeRequests.add(counteroffer)
-                } else
+                } else{
+                    otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationCategory.Trade, civInfo.civName, NotificationIcon.Trade)
                     tradeRequest.decline(civInfo)
+                }
+                    
             }
         }
         civInfo.tradeRequests.clear()
@@ -52,9 +54,8 @@ object TradeAutomation {
      *  guaranteed to find the best or closest one. */
     private fun getCounteroffer(civInfo: Civilization, tradeRequest: TradeRequest): TradeRequest? {
         val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
-        // AIs counteroffering each other is problematic as they tend to ping-pong back and forth forever
-        if (otherCiv.playerType == PlayerType.AI)
-            return null
+        // AIs counteroffering each other could be problematic if they ping-pong back and forth forever
+        // If this happens, that means our trade automation doesn't settle into an equilibrium that's favourable to both parties, so that should be updated when observed
         val evaluation = TradeEvaluation()
         var deltaInOurFavor = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv, true)
         if (deltaInOurFavor > 0) deltaInOurFavor = (deltaInOurFavor / 1.1f).toInt() // They seem very interested in this deal, let's push it a bit.
@@ -75,7 +76,8 @@ object TradeAutomation {
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeOfferType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
-
+            if (offer.type == TradeOfferType.Luxury_Resource)
+                continue // Don't ask for luxuries as counteroffer, players likely don't want to sell them if they didn't offer them already
             if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
                 continue // So you don't get double offers of open borders declarations of war etc.
             if (offer.type == TradeOfferType.Treaty)

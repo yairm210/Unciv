@@ -195,6 +195,7 @@ object GameStarter {
             val startingEraNumber = ruleset.eras[gameSetupInfo.gameParameters.startingEra]!!.eraNumber
             for (tech in ruleset.technologies.values) {
                 if (ruleset.eras[tech.era()]!!.eraNumber >= startingEraNumber) continue
+                if (civInfo.tech.isUnresearchable(tech)) continue
                 civInfo.addTechSilently(tech.name)
             }
 
@@ -306,6 +307,22 @@ object GameStarter {
                 else -> null
             }
         }.toCollection(chosenPlayers)
+
+        // ensure Spectators always first players
+        val spectators = chosenPlayers.filter { it.chosenCiv == Constants.spectator }
+        val otherPlayers = chosenPlayers.filterNot { it.chosenCiv == Constants.spectator }.toMutableList()
+        
+        // Shuffle Major Civs
+        if (newGameParameters.shufflePlayerOrder) {
+            otherPlayers.shuffle()
+        }
+
+        chosenPlayers.clear()
+        chosenPlayers.addAll(spectators)
+        chosenPlayers.addAll(otherPlayers)
+        
+        for(player in chosenPlayers)
+            println(player.chosenCiv)
 
         // Add CityStates to result - disguised as normal AI, but addCivilizations will detect them
         val numberOfCityStates = if (newGameParameters.randomNumberOfCityStates) {
@@ -428,7 +445,7 @@ object GameStarter {
             //Trigger any global or nation uniques that should triggered.
             //We may need the starting location for some uniques, which is why we're doing it now
             val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
-            for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ) })
+            for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ.state) })
                 UniqueTriggerActivation.triggerUnique(unique, civ, tile = startingLocation)
         }
     }

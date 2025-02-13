@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
@@ -123,7 +124,7 @@ class MapUnitAction(
 ) : NotificationAction {
     constructor(unit: MapUnit) : this(unit.currentTile.position, unit.id)
     override fun execute(worldScreen: WorldScreen) {
-        val selectUnit = id == Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
+        val selectUnit = id != Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
         val unit = if (selectUnit) null else
             worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = selectUnit, forceSelectUnit = unit)
@@ -182,6 +183,11 @@ class EspionageAction : NotificationAction {
     }
 }
 
+class LinkAction(private val url: String = "") : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        if (url.isNotEmpty()) Gdx.net.openURI(url)
+    }
+}
 
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
@@ -206,13 +212,14 @@ internal class NotificationActionsDeserializer {
     private val OverviewAction: OverviewAction? = null
     private val PolicyAction: PolicyAction? = null
     private val EspionageAction: EspionageAction? = null
+    private val LinkAction: LinkAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
             LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
             MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction, PolicyAction,
-            EspionageAction
+            EspionageAction, LinkAction
         )
     }
 }

@@ -68,7 +68,7 @@ async function parseCommits() {
 
     for (const [author, commits] of Object.entries(ownerToCommits)) {
         if (commits.length === 1) {
-            commitSummary += "\n\n" + commits[0] + " - By " + author;
+            commitSummary += "\n\n" + commits[0] + "- By " + author;
         } else {
             commitSummary += "\n\nBy " + author + ":";
             commits.forEach(commitMessage => { commitSummary += "\n- " + commitMessage });

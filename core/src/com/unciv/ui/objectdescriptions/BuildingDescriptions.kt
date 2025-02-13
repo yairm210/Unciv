@@ -4,7 +4,6 @@ import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -27,7 +26,7 @@ object BuildingDescriptions {
             infoList += "+${value.toInt()}% ${key.name.tr()}"
 
         if (requiredNearbyImprovedResources != null)
-            infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
+            infoList += "Requires improved [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) infoList += replacementTextForUniques
             else infoList += getUniquesStringsWithoutDisablers(uniqueInclusionFilter)
@@ -48,10 +47,10 @@ object BuildingDescriptions {
         if (isWonder) translatedLines += "Wonder".tr()
         if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
-            for ((resourceName, amount) in getResourceRequirementsPerTurn(StateForConditionals(city.civ, city))) {
+            for ((resourceName, amount) in getResourceRequirementsPerTurn(city.state)) {
                 val available = city.getAvailableResourceAmount(resourceName)
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
-                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
+                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled)
 
                 translatedLines += if (showAdditionalInfo) "$consumesString ({[$available] available})".tr()
                 else consumesString.tr()
@@ -75,7 +74,7 @@ object BuildingDescriptions {
             translatedLines += "+$amount " + "[$specialistName] slots".tr()
 
         if (requiredNearbyImprovedResources != null)
-            translatedLines += "Requires worked [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
+            translatedLines += "Requires improved [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
 
         if (cityStrength != 0) translatedLines += "{City strength} +$cityStrength".tr()
         if (cityHealth != 0) translatedLines += "{City health} +$cityHealth".tr()
@@ -118,14 +117,16 @@ object BuildingDescriptions {
     fun getDifferences(
         originalBuilding: Building, replacementBuilding: Building
     ): Sequence<FormattedLine> = sequence {
-        for ((key, value) in replacementBuilding)
-            if (value != originalBuilding[key])
-                yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1))
+
+        for (stat in Stat.entries) // Do not iterate on object since that excludes zero values
+            if (replacementBuilding[stat] != originalBuilding[stat])
+                yield(FormattedLine( stat.name.tr() + " " +"[${replacementBuilding[stat].toInt()}] vs [${originalBuilding[stat].toInt()}]".tr(), indent=1))
 
         val originalStatBonus = originalBuilding.getStatPercentageBonuses(null)
-        for ((key, value) in replacementBuilding.getStatPercentageBonuses(null))
-            if (value != originalStatBonus[key])
-                yield(FormattedLine("[${value.toInt()}]% ".tr() + key.name.tr() + " vs [${originalStatBonus[key].toInt()}]% ".tr() + key.name.tr(), indent = 1))
+        val replacementStatBonus = replacementBuilding.getStatPercentageBonuses(null)
+        for (stat in Stat.entries)
+            if (replacementStatBonus[stat] != originalStatBonus[stat])
+                yield(FormattedLine("[${replacementStatBonus[stat].toInt()}]% ".tr() + stat.name.tr() + " vs [${originalStatBonus[stat].toInt()}]% ".tr() + stat.name.tr(), indent = 1))
 
         if (replacementBuilding.maintenance != originalBuilding.maintenance)
             yield(FormattedLine("{Maintenance} ".tr() + "[${replacementBuilding.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
@@ -188,7 +189,7 @@ object BuildingDescriptions {
             textList += FormattedLine()
             val resource = ruleset.tileResources[requiredResource]
             textList += FormattedLine(
-                requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled()),
+                requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
                 link="Resources/$requiredResource", color="#F42" )
         }
 
@@ -229,7 +230,7 @@ object BuildingDescriptions {
 
         if (requiredNearbyImprovedResources != null) {
             textList += FormattedLine()
-            textList += FormattedLine("Requires at least one of the following resources worked near the city:")
+            textList += FormattedLine("Requires at least one of the following resources improved near the city:")
             requiredNearbyImprovedResources!!.forEach {
                 textList += FormattedLine(it, indent = 1, link = "Resource/$it")
             }

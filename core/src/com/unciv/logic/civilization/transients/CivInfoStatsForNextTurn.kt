@@ -32,7 +32,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
-        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnits, StateForConditionals(civInfo))) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnits, civInfo.state)) {
             freeUnits += unique.params[0].toInt()
         }
 
@@ -53,7 +53,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             .toList().asSequence()
 
         for (unit in unitsToPayFor) {
-            val stateForConditionals = StateForConditionals(civInfo = civInfo, unit = unit)
+            val stateForConditionals = unit.cache.state
             var unitMaintenance = 1f
             val uniquesThatApply = unit.getMatchingUniques(
                 UniqueType.UnitMaintenanceDiscount,
@@ -272,9 +272,9 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
                 statMap.add(key, value)
         }
 
-        val transportUpkeep = getTransportationUpkeep() * -1
+        val transportUpkeep = getTransportationUpkeep()
         if (transportUpkeep.happiness != 0f)
-            statMap["Transportation Upkeep"] = transportUpkeep.happiness
+            statMap["Transportation Upkeep"] = -transportUpkeep.happiness
 
         for ((key, value) in getGlobalStatsFromUniques())
             statMap.add(key,value.happiness)
@@ -286,7 +286,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
-                UniqueType.StatsFromGlobalCitiesFollowingReligion, StateForConditionals(civInfo)
+                UniqueType.StatsFromGlobalCitiesFollowingReligion, civInfo.state
             ))
                 statMap.add(
                     "Religion",
@@ -294,7 +294,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
                 )
 
             for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
-                UniqueType.StatsFromGlobalFollowers, StateForConditionals(civInfo)
+                UniqueType.StatsFromGlobalFollowers, civInfo.state
             ))
                 statMap.add(
                     "Religion",
@@ -326,11 +326,11 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         statMap.add("Natural Wonders", statsPerNaturalWonder.times(civInfo.naturalWonders.size))
 
-        if (statMap.contains(UniqueTarget.CityState.name)) {
+        if (statMap.contains(Constants.cityStates)) {
             for (unique in civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
                 val bonusPercent = unique.params[0].toPercent()
                 val bonusStat = Stat.valueOf(unique.params[1])
-                statMap[UniqueTarget.CityState.name]!![bonusStat] *= bonusPercent
+                statMap[Constants.cityStates]!![bonusStat] *= bonusPercent
             }
         }
 

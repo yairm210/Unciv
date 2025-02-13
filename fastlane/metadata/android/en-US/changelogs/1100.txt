@@ -1,0 +1,15 @@
+Rendering performance improvements
+
+Map example for new games is *only an example* and does not cause lag
+
+Generate map tab in map editor properly scrollable
+
+Added missing attack notification translations
+
+Fixed unit statuses causing game to be unloadable 
+
+By itanasi:
+- Add small Skip/Cycle Button
+- Settling Suggestion Improvements
+
+Add turn start unique - By SeventhM

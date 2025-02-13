@@ -29,6 +29,17 @@ A file `Atlases.json` (uppercase 'A') in the mod root (not in `Images` or in `js
 This file is automatically created by the built-in packer. Only the `game.atlas` file is read by default for backward compatibility.
 If you use external tools and multiple atlases, you will need to maintain this file yourself - it is a simple json array of strings, each a file name without the `.atlas` extension (saved as UTF-8 without byte order mark).
 
+### Rendering Performance
+
+Images that are packed together are much faster to render together. If most of the images in your mod are using images from the mod, we want to be able to wrap them from images *also* from your mod.
+To allow for faster rendering for icons, which has a major performance effect, you can copy the ["OtherIcons/circle.png"](https://github.com/yairm210/Unciv/blob/master/android/Images.Icons/OtherIcons/Circle.png) to:
+
+- "ImprovementIcons/Circle.png" for improvements
+- "ResourceIcons/Circle.png" for resources
+- "TechIcons/Circle.png" for technologies
+- "ConstructionIcons/Circle.png" for buildings and units
+- "StatIcons/Circle.png" for stats
+
 ### Texture packer settings
 
 The texture packers built into Unciv will look for a `TexturePacker.settings` file in each `Images` directory (_not_ under `jsons`).
@@ -71,7 +82,7 @@ Note that the Mod author can (and often should) control whether the checkbox app
 
 ## Override built-in graphics
 
-If a mod supplies an image with the same name and path as one included in the base game (and its [atlas](Mods.md#more-on-images-and-the-texture-atlas) is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.
+If a mod supplies an image with the same name and path as one included in the base game (and its atlas is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.
 
 For example, if you include a file named "Images/OtherIcons/Link.png" in your mod, you will be overriding the little chain links icon denoting linked lines in Civilopedia. The first part of the path is not relevant for overriding, it controls which of a set of atlas files will carry the image, but for selection in the game only the rest of the path is relevant. So, to override "Images.Tech/TechIcons/Archery.png" you could place your image as "Images/TechIcons/Archery.png" and it would work because the "TechIcons/Archery" part is the key.
 
@@ -84,6 +95,7 @@ You will need to supply the graphics for new elements - a new unit needs its ico
 -   The path and name of the image file need to conform to the rule: `Image[.AtlasName]/Type-specific/Objectname.png` (Type-specific means "TechIcons" for a Technology, "NationIcons" for a Nation and so on. See vanilla game folders. Objectname is the exact name as defined in json, before translation.)
 -   All path parts are case sensitive.
 -   Unit Pixel sprites and [Tilesets](Creating-a-custom-tileset.md) follow special rules.
+-   If `UnitIcons/<UnitName>.png` does not exist, we fall back to `UnitTypeIcons/<UnitType>.png` - this allows setting a single image for an entire type of units without fiddling with each one 
 -   Promotions can be named "`[Unitname] ability`". In such a case, if `UnitIcons/Unitname.png` exists it will fall back to that unit icon when `UnitPromotionIcons/Unitname ability.png` is missing.
 -   Promotions can be named "Something I" (or " II" or " III"). The suffix will be removed and painted as little stars, only the base `UnitPromotionIcons/Something.png` will be loaded.
 -   The special rules for promotions can be combined, e.g. "`[Warrior] ability III`" will fall back to the Warrior unit icon and paint 3 Stars on it.
@@ -173,11 +185,22 @@ For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-exampl
 
 The base game uses flat icons, surrounded with colored circles as backgrounds (e.g. for units to fit the civilization's flag colors), to denote entities such as: units, buildings, techs, resources, improvements, religions, promotions, uniques, unit actions and nations in the UI. A mod can supply "Portraits" - static images that will remain uncolored - by adding images to `/Images/<entityType>Portraits/` (e.g. `/Images/BuildingPortraits/`, `/Images/ResourcePortraits/`, etc), which will be used in all UI elements (except for unit icons in the world map). The file name must correspond exactly with the unit/building/tech/resource/etc name  defined in corresponding JSONs (e.g. Units.json, Buildings.json, TileResources.json, etc) or have the same name as the file they suppose to replace, or they will be ignored.
 
-If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle.
-
-Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
+If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle. Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 
 For example, [here](https://github.com/vegeta1k95/Civ-5-Icons) is mod showing how to add custom portraits, which can complement the base game.
+
+Available `<entityType>Portraits/` include:
+
+* UnitPortraits
+* BuildingPortraits
+* TechPortraits
+* ResourcePortraits
+* ImprovementPortraits
+* UnitPromotionPortraits
+* UniquePortraits
+* NationPortraits
+* ReligionPortraits
+* UnitActionPortraits
 
 ### Adding icons for Unit Types
 
@@ -193,7 +216,7 @@ Civilopedia falls back to the icon for the Belief type - as you can see in the b
 
 You can enable pictures for each of the Victories, illustrating their progress. That could be a Spaceship under construction, showing the parts you've added, or cultural progress as you complete Policy branches. They will be shown on a new tab of the Victory Screen.
 
-For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](../Other/Miscellaneous-JSON-files.md#victorytypes-json), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
+For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](Mod-file-structure/5-Miscellaneous-JSON-files#victorytypesjson), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
 
 * `VictoryIllustrations/<name>/Background.png` - this determines overall dimensions, the others must not exceed its size and should ideally have identical size. Mandatory, if this file is missing, no illustrations will be shown for this Victory Type.
 * `VictoryIllustrations/<name>/Won.png` - shown if _you_ (the viewing player) won this Victory.
@@ -317,6 +340,3 @@ Notes:
 - In case of overlapping holidays, only one is chosen - and the "impact" of longer holidays is equalized by reducing the chance inversely proportional to the number of days. e.g. DiaDeLosMuertos is two days, so each Unciv launch on these days has 50% chance to show the egg.
 - Unciv's "map-based" easter eggs work independently!
 - No cultural prejudice is intended. If you know a nice custom we should include the date test for, just ask.
-
-
-*<entityType>Portraits/: Entities are: 'Unit', 'Building', 'Tech', 'Resource', 'Improvement', 'Promotion', 'Unique', 'Nation', 'Religion', 'UnitAction'

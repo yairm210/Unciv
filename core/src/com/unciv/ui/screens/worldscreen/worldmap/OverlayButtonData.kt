@@ -42,10 +42,10 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, I
         val image = if (isParadrop)
             ImageGetter.getUnitActionPortrait("Paradrop", buttonSize / 2)
         else ImageGetter.getStatIcon("Movement")
-            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
+            .apply { color = ImageGetter.CHARCOAL; width = buttonSize / 2; height = buttonSize / 2 }
         val moveHereButton = image
             .surroundWithCircle(buttonSize - 2, false)
-            .surroundWithCircle(buttonSize, false, Color.BLACK)
+            .surroundWithCircle(buttonSize, false, ImageGetter.CHARCOAL)
 
         if (!isParadrop) {
             val numberCircle = unitToTurnsToDestination.values.maxOrNull()!!.tr().toLabel(fontSize = 14)
@@ -87,7 +87,7 @@ class SwapWithOverlayButtonData(val unit: MapUnit, val tile: Tile) : OverlayButt
         swapWithButton.addActor(ImageGetter.getCircle(size = buttonSize))
         swapWithButton.addActor(
             ImageGetter.getImage("OtherIcons/Swap").apply {
-                color = Color.BLACK
+                color = ImageGetter.CHARCOAL
                 setSize(buttonSize / 2)
                 center(swapWithButton)
             }
@@ -163,7 +163,7 @@ class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonDat
             spyActionButton.addActor(
                 ImageGetter.getStatIcon("Movement").apply {
                     name = "Button"
-                    color = Color.BLACK
+                    color = ImageGetter.CHARCOAL
                     setSize(buttonSize / 2)
                     center(spyActionButton)
                 }
@@ -186,7 +186,7 @@ class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonDat
                 worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
             } else {
                 worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
-                worldScreen.bottomUnitTable.selectedSpy = null
+                worldScreen.bottomUnitTable.selectSpy(null)
             }
             worldMapHolder.removeUnitActionOverlay()
             worldMapHolder.selectedTile = null

@@ -8,10 +8,13 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.fonts.FontRulesetIcons.getPixmapFromActor
+import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.civilopediascreen.CivilopediaImageGetters
@@ -75,14 +78,20 @@ object FontRulesetIcons {
             addChar(policy.name, ImageGetter.getImage(fileLocation).apply { setSize(Fonts.ORIGINAL_FONT_SIZE) })
         }
         
-        for (terrain in ruleset.terrains.values) {
-            // These ensure that the font icons are correctly sized - tilegroup rendering works differently than others, to account for clickability vs rendered areas
-            val tileGroup = CivilopediaImageGetters.terrainImage(terrain, ruleset, Fonts.ORIGINAL_FONT_SIZE)
-            tileGroup.width *= 1.5f
-            tileGroup.height *= 1.5f
-            for (layer in tileGroup.children) layer.center(tileGroup)
+        // Upon *game initialization* we can get here without the tileset being loaded yet
+        //  in which case we can't add terrain icons
+        if (TileSetCache.containsKey(UncivGame.Current.settings.tileSet)) {
+            val tileSetStrings = TileSetStrings(ruleset, UncivGame.Current.settings)
+            for (terrain in ruleset.terrains.values) {
+                // These ensure that the font icons are correctly sized - tilegroup rendering works differently than others, to account for clickability vs rendered areas
 
-            addChar(terrain.name, tileGroup)
+                val tileGroup = CivilopediaImageGetters.terrainImage(terrain, ruleset, Fonts.ORIGINAL_FONT_SIZE, tileSetStrings)
+                tileGroup.width *= 1.5f
+                tileGroup.height *= 1.5f
+                for (layer in tileGroup.children) layer.center(tileGroup)
+
+                addChar(terrain.name, tileGroup)
+            }
         }
         
     }
@@ -107,8 +116,12 @@ object FontRulesetIcons {
     fun getPixmapFromActor(actor: Actor): Pixmap {
         val (boxWidth, boxHeight) = scaleAndPositionActor(actor)
 
+        return getPixmapFromActorBase(actor, boxWidth, boxHeight)
+    }
+    
+    // Also required for dynamically generating pixmaps for pixmappacker
+    fun getPixmapFromActorBase(actor: Actor, boxWidth: Int, boxHeight: Int): Pixmap {
         val pixmap = Pixmap(boxWidth, boxHeight, Pixmap.Format.RGBA8888)
-
         frameBuffer.begin()
 
         Gdx.gl.glClearColor(0f,0f,0f,0f)

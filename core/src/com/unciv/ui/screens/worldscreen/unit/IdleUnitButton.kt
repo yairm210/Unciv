@@ -5,15 +5,19 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.pad
 
 class IdleUnitButton (
-    internal val unitTable: UnitTable,
+    private val unitTable: UnitTable,
     private val tileMapHolder: WorldMapHolder,
-    val previous: Boolean
+    val previous: Boolean,
+    keyShortcutBind: KeyboardBinding
 ) : Table() {
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
@@ -27,10 +31,11 @@ class IdleUnitButton (
         }
         add(image).size(imageSize).pad(10f,20f)
         enable()
-        onClick {
+        keyShortcuts.add(keyShortcutBind)
+        onActivation (binding = keyShortcutBind) {
 
             val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
-            if (idleUnits.none()) return@onClick
+            if (idleUnits.none()) return@onActivation
 
             val unitToSelect: MapUnit
             if (unitTable.selectedUnit == null || !idleUnits.contains(unitTable.selectedUnit!!))
@@ -43,7 +48,6 @@ class IdleUnitButton (
                 unitToSelect = idleUnits.elementAt(index)
             }
 
-            unitToSelect.due = false
             tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
             unitTable.selectUnit(unitToSelect)
             unitTable.worldScreen.shouldUpdate = true

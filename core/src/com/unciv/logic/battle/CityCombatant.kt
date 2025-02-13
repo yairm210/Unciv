@@ -25,7 +25,9 @@ class CityCombatant(val city: City) : ICombatant {
     override fun isDefeated(): Boolean = city.health == 1
     override fun isInvisible(to: Civilization): Boolean = false
     override fun canAttack(): Boolean = city.canBombard()
-    override fun matchesFilter(filter: String) = MultiFilter.multiFilter(filter, {it == "City" || it in Constants.all || city.matchesFilter(it)})
+    override fun matchesFilter(filter: String, multiFilter: Boolean) = 
+        if (multiFilter) MultiFilter.multiFilter(filter, { it == "City" || it in Constants.all || city.matchesFilter(it, multiFilter = false) })
+    else filter == "City" || filter in Constants.all || city.matchesFilter(filter, multiFilter = false)
     override fun getAttackSound() = UncivSound.Bombard
 
     override fun takeDamage(damage: Int) {

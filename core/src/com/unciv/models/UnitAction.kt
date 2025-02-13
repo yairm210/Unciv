@@ -2,6 +2,7 @@ package com.unciv.models
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.fonts.Fonts
@@ -23,6 +24,7 @@ open class UnitAction(
     val title: String = type.value,
     val isCurrentAction: Boolean = false,
     val uncivSound: UncivSound = type.uncivSound,
+    val associatedUnique: Unique? = null,
     /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
 ) {
@@ -70,7 +72,7 @@ open class UnitAction(
 
 /** Specialized [UnitAction] for upgrades
  *
- *  Transports [unitToUpgradeTo] from [creation][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade.getUpgradeAction]
+ *  Transports [unitToUpgradeTo] from [creation][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade.getUpgradeActions]
  *  to [UI][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable.update]
  */
 class UpgradeUnitAction(
@@ -126,6 +128,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("Fortify") }, UncivSound.Fortify),
     FortifyUntilHealed("Fortify until healed",
         { ImageGetter.getUnitActionPortrait("FortifyUntilHealed") }, UncivSound.Fortify),
+    Guard("Guard",
+        { ImageGetter.getUnitActionPortrait("Guard") }, UncivSound.Fortify, defaultPage = 0),
     Explore("Explore",
         { ImageGetter.getUnitActionPortrait("Explore") }),
     StopExploration("Stop exploration",
@@ -176,8 +180,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("DisbandUnit") }, false, defaultPage = 1),
     GiftUnit("Gift unit",
         { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Silent, defaultPage = 1),
-    Wait("Wait",
-        { ImageGetter.getUnitActionPortrait("Wait") }, UncivSound.Silent),
+    Skip("Skip turn",
+        { ImageGetter.getUnitActionPortrait("Skip") }, UncivSound.Silent, defaultPage = 0),
     ShowAdditionalActions("Show more",
         { ImageGetter.getUnitActionPortrait("ShowMore") }, false),
     HideAdditionalActions("Back",
@@ -194,6 +198,6 @@ enum class UnitActionType(
 
     val binding: KeyboardBinding =
             binding ?:
-            KeyboardBinding.values().firstOrNull { it.name == name } ?:
+            KeyboardBinding.entries.firstOrNull { it.name == name } ?:
             KeyboardBinding.None
 }

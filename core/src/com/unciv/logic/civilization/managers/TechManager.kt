@@ -17,6 +17,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -24,8 +25,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar
-import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.utils.withItem
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -57,6 +58,8 @@ class TechManager : IsPartOfGameInfoSerialization {
     var movementSpeedOnRoads = 1f
     @Transient
     var roadsConnectAcrossRivers = false
+    @Transient
+    var allTechsAreResearched = false
 
     var freeTechs = 0
     // For calculating score
@@ -153,12 +156,18 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
+    /** resources which need no research count as researched */
+    fun isRevealed(resource: TileResource): Boolean {
+        val revealedBy = resource.revealedBy ?: return true
+        return isResearched(revealedBy)
+    }
+    
     fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
 
     fun isUnresearchable(tech: Technology): Boolean {
-        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo) })
+        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo.state) })
             return true
-        if (tech.hasUnique(UniqueType.Unavailable, StateForConditionals(civInfo))) return true
+        if (tech.hasUnique(UniqueType.Unavailable, civInfo.state)) return true
         return false
     }
 
@@ -171,8 +180,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return tech.prerequisites.all { isResearched(it) }
     }
 
-    fun allTechsAreResearched() = civInfo.gameInfo.ruleset.technologies.values
-        .all { isResearched(it.name) || !canBeResearched(it.name)}
+    fun allTechsAreResearched() = allTechsAreResearched
 
     //endregion
 
@@ -305,12 +313,11 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
-            if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
+            if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
-            if (unique.getModifiers(UniqueType.TriggerUponResearch).any { newTech.matchesFilter(it.params[0]) })
-                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch) { newTech.matchesFilter(it.params[0], civInfo.state) })
+            UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
         val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
@@ -410,66 +417,66 @@ class TechManager : IsPartOfGameInfoSerialization {
         val previousEra = civInfo.getEra()
         updateEra()
         val currentEra = civInfo.getEra()
-        if (previousEra != currentEra) {
-            if(showNotification) {
-                if(!civInfo.isSpectator())
-                    civInfo.addNotification(
-                        "You have entered the [$currentEra]!",
-                        NotificationCategory.General,
-                        NotificationIcon.Science
+        if (previousEra == currentEra) return
+        
+        if (showNotification) {
+            if (!civInfo.isSpectator())
+                civInfo.addNotification(
+                    "You have entered the [$currentEra]!",
+                    NotificationCategory.General,
+                    NotificationIcon.Science
+                )
+            if (civInfo.isMajorCiv()) {
+                for (knownCiv in civInfo.getKnownCivsWithSpectators()) {
+                    knownCiv.addNotification(
+                        "[${civInfo.civName}] has entered the [$currentEra]!",
+                        NotificationCategory.General, civInfo.civName, NotificationIcon.Science
                     )
-                if (civInfo.isMajorCiv()) {
-                    for (knownCiv in civInfo.getKnownCivsWithSpectators()) {
-                        knownCiv.addNotification(
-                            "[${civInfo.civName}] has entered the [$currentEra]!",
-                            NotificationCategory.General, civInfo.civName, NotificationIcon.Science
-                        )
-                    }
-                }
-                for (policyBranch in getRuleset().policyBranches.values.filter {
-                    it.era == currentEra.name && civInfo.policies.isAdoptable(it)
-                }) {
-                    if (!civInfo.isSpectator())
-                        civInfo.addNotification(
-                            "[${policyBranch.name}] policy branch unlocked!",
-                            PolicyAction(policyBranch.name),
-                            NotificationCategory.General,
-                            NotificationIcon.Culture
-                        )
                 }
             }
-
-            val erasPassed = getRuleset().eras.values
-                .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
-                .sortedBy { it.eraNumber }
-
-
-            for (era in erasPassed)
-                for (unique in era.uniqueObjects)
-                    if (!unique.hasTriggerConditional() && unique.conditionalsApply(StateForConditionals(civInfo)))
-                        UniqueTriggerActivation.triggerUnique(
-                            unique,
-                            civInfo,
-                            triggerNotificationText = "due to entering the [${era.name}]"
-                        )
-
-            val eraNames = erasPassed.map { it.name }.toHashSet()
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
-                for (eraName in eraNames)
-                    if (unique.modifiers.any { it.type == UniqueType.TriggerUponEnteringEra && it.params[0] == eraName })
-                        UniqueTriggerActivation.triggerUnique(
-                            unique,
-                            civInfo,
-                            triggerNotificationText = "due to entering the [$eraName]"
-                        )
-
-            // The unfiltered version
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
-                UniqueTriggerActivation.triggerUnique(
-                    unique,
-                    civInfo,
-                    triggerNotificationText = "due to entering the [${currentEra.name}]")
+            
+            for (policyBranch in getRuleset().policyBranches.values.filter {
+                it.era == currentEra.name && civInfo.policies.isAdoptable(it)
+            }) {
+                if (!civInfo.isSpectator())
+                    civInfo.addNotification(
+                        "[${policyBranch.name}] policy branch unlocked!",
+                        PolicyAction(policyBranch.name),
+                        NotificationCategory.General,
+                        NotificationIcon.Culture
+                    )
+            }
         }
+
+        val erasPassed = getRuleset().eras.values
+            .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
+            .sortedBy { it.eraNumber }
+
+        for (era in erasPassed)
+            for (unique in era.uniqueObjects)
+                if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
+                    UniqueTriggerActivation.triggerUnique(
+                        unique,
+                        civInfo,
+                        triggerNotificationText = "due to entering the [${era.name}]"
+                    )
+
+        val eraNames = erasPassed.map { it.name }.toHashSet()
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
+            for (eraName in eraNames)
+                if (unique.getModifiers(UniqueType.TriggerUponEnteringEra).any { it.params[0] == eraName })
+                    UniqueTriggerActivation.triggerUnique(
+                        unique,
+                        civInfo,
+                        triggerNotificationText = "due to entering the [$eraName]"
+                    )
+
+        // The unfiltered version
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
+            UniqueTriggerActivation.triggerUnique(
+                unique,
+                civInfo,
+                triggerNotificationText = "due to entering the [${currentEra.name}]")
     }
 
     private fun updateEra() {
@@ -524,6 +531,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
             RoadStatus.Road.movementImproved else RoadStatus.Road.movement
         roadsConnectAcrossRivers = civInfo.hasUnique(UniqueType.RoadsConnectAcrossRivers)
+        allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values
+            .all { isResearched(it.name) || !canBeResearched(it.name)}
     }
 
     fun getBestRoadAvailable(): RoadStatus {

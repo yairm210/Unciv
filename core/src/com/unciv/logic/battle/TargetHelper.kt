@@ -5,6 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 
 object TargetHelper {
@@ -30,13 +31,13 @@ object TargetHelper {
             if (unit.baseUnit.isMelee() && unit.isEscorting()) {
                 val escortingUnit = unit.getOtherEscortUnit()!!
                 if (!escortingUnit.movement.canReachInCurrentTurn(reachableTile)
-                    || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalDistance <= 0f) 
+                    || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalMovement <= 0f) 
                     continue
             }
 
             val tilesInAttackRange =
                 if (unit.baseUnit.isMelee()) reachableTile.neighbors
-                else if (unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true) || unit.baseUnit.movesLikeAirUnits)
+                else if (unit.baseUnit.movesLikeAirUnits || unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true))
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
 
@@ -76,7 +77,7 @@ object TargetHelper {
                 val movementPointsToExpendBeforeAttack =
                     if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
                 val movementLeft =
-                    unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
+                    unit.currentMovement - distance.totalMovement - movementPointsToExpendBeforeAttack
                 Pair(tile, movementLeft)
             }
             // still got leftover movement points after all that, to attack
@@ -112,22 +113,27 @@ object TargetHelper {
         )
             return false
 
-        if (combatant is MapUnitCombatant && combatant.hasUnique(UniqueType.CannotAttack))
-            return false
+        
+        if (combatant is MapUnitCombatant) {
+            val stateForConditionals = StateForConditionals(
+                unit = (combatant as? MapUnitCombatant)?.unit, tile = tile, 
+                ourCombatant = combatant, theirCombatant = tileCombatant, combatAction = CombatAction.Attack)
 
-        if (combatant is MapUnitCombatant &&
-            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).run {
-                any() && none { tileCombatant.matchesFilter(it.params[0]) }
-            }
-        )
-            return false
+            if (combatant.hasUnique(UniqueType.CannotAttack, stateForConditionals))
+                return false
 
-        if (combatant is MapUnitCombatant &&
-            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles).run {
-                any() && none { tile.matchesFilter(it.params[0]) }
-            }
-        )
-            return false
+            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits, stateForConditionals).run {
+                    any() && none { tileCombatant.matchesFilter(it.params[0]) }
+                }
+            )
+                return false
+
+            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles, stateForConditionals).run {
+                    any() && none { tile.matchesFilter(it.params[0]) }
+                }
+            )
+                return false
+        }
 
         // Only units with the right unique can view submarines (or other invisible units) from more then one tile away.
         // Garrisoned invisible units can be attacked by anyone, as else the city will be in invincible.
@@ -135,6 +141,7 @@ object TargetHelper {
             return combatant is MapUnitCombatant
                 && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
         }
+        
         return true
     }
 

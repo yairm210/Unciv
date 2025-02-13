@@ -25,7 +25,10 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
@@ -148,6 +151,10 @@ class Ruleset {
         return newRuleset
     }
 
+    fun getGameResource(resourceName: String): GameResource? = Stat.safeValueOf(resourceName)
+        ?: SubStat.safeValueOf(resourceName)
+        ?: tileResources[resourceName]
+
     private inline fun <reified T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>(items.size)
         for (item in items) {
@@ -177,6 +184,8 @@ class Ruleset {
         globalUniques = GlobalUniques().apply {
             uniques.addAll(globalUniques.uniques)
             uniques.addAll(ruleset.globalUniques.uniques)
+            unitUniques.addAll(globalUniques.unitUniques)
+            unitUniques.addAll(ruleset.globalUniques.unitUniques)
         }
         ruleset.modOptions.nationsToRemove
             .flatMap { nationToRemove ->
@@ -207,7 +216,7 @@ class Ruleset {
         cityStateTypes.putAll(ruleset.cityStateTypes)
         ruleset.modOptions.unitsToRemove
             .flatMap { unitToRemove ->
-                units.filter { it.apply { value.ruleset = this@Ruleset }.value.matchesFilter(unitToRemove) }.keys
+                units.filter { it.apply { value.setRuleset(this@Ruleset) }.value.matchesFilter(unitToRemove) }.keys
             }.toSet().forEach {
                 units.remove(it)
             }
@@ -509,5 +518,5 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
-    fun checkModLinks(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
+    fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this).getErrorList(tryFixUnknownUniques)
 }

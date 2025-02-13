@@ -18,6 +18,14 @@ object CivilianUnitAutomation {
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+        // To allow "found city" actions that can only trigger a limited number of times
+        val settlerUnique = 
+            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity).firstOrNull() ?: 
+            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundPuppetCity).firstOrNull()
+        
+        if (settlerUnique != null)
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
+
         if (tryRunAwayIfNeccessary(unit)) return
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
@@ -25,11 +33,8 @@ object CivilianUnitAutomation {
             val tilesCanMoveTo = unit.movement.getDistanceToTiles()
                 .filter { unit.movement.canMoveTo(it.key) }
             if (tilesCanMoveTo.isNotEmpty())
-                unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
+                unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalMovement }!!.key)
         }
-
-        if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (unit.isAutomatingRoadConnection())
             return unit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
@@ -85,6 +90,7 @@ object CivilianUnitAutomation {
 
             val hurriedPolicy = UnitActions.invokeUnitAction(unit, UnitActionType.HurryPolicy)
             if (hurriedPolicy) return
+            //TODO: save up great scientists/writers for late game (8 turns after research labs/broadcast towers resp.)
         }
 
         // Great merchant -> Conduct trade mission if late game and if not at war.
@@ -103,8 +109,8 @@ object CivilianUnitAutomation {
         }
 
         // Great engineer -> Try to speed up wonder construction
-        if ((unit.hasUnique(UniqueType.CanSpeedupConstruction)
-                || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction))) {
+        if (unit.hasUnique(UniqueType.CanSpeedupConstruction)
+                || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction)) {
             val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
             if (wonderCanBeSpedUpEventually)
                 return
@@ -138,6 +144,14 @@ object CivilianUnitAutomation {
         //  ages?
 
         if (SpecificUnitAutomation.automateImprovementPlacer(unit)) return
+        
+        val goldenAgeAction = UnitActions.getUnitActions(unit, UnitActionType.TriggerUnique)
+            .filter { it.action != null && it.associatedUnique?.type in listOf(UniqueType.OneTimeEnterGoldenAge,
+                UniqueType.OneTimeEnterGoldenAgeTurns) }.firstOrNull()
+        if (goldenAgeAction != null) {
+            goldenAgeAction.action?.invoke()
+            return
+        }
 
         return // The AI doesn't know how to handle unknown civilian units
     }
@@ -145,11 +159,11 @@ object CivilianUnitAutomation {
     private fun isLateGame(civ: Civilization): Boolean {
         val researchCompletePercent =
             (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
-        return researchCompletePercent >= 0.7f
+        return researchCompletePercent >= 0.6f
     }
 
     /** Returns whether the civilian spends its turn hiding and not moving */
-    private fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
+    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys

@@ -93,17 +93,19 @@ class CityTurnManager(val city: City) {
             it.resourceType == ResourceType.Luxury && // Must be luxury
                     !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
                     it.name != city.demandedResource && // Not same as last time
-                    !city.civ.hasResource(it.name) && // Not one we already have
                     it.name in city.tileMap.resources && // Must exist somewhere on the map
                     city.getCenterTile().getTilesInDistance(city.getWorkRange()).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
         }
+        val missingResources = candidates.filter { !city.civ.hasResource(it.name) }
+        
+        if (missingResources.isEmpty()) { // hooray happpy day forever!
+            city.demandedResource = candidates.randomOrNull()?.name ?: ""
+            return // actually triggering "wtlk" is done in tryWeLoveTheKing(), *next turn*
+        }
 
-        val chosenResource = candidates.randomOrNull()
-        /* What if we had a WLTKD before but now the player has every resource in the game? We can't
-           pick a new resource, so the resource will stay stay the same and the city will demand it
-           again even if the player still has it. But we shouldn't punish success. */
-        if (chosenResource != null)
-            city.demandedResource = chosenResource.name
+        val chosenResource = missingResources.randomOrNull()
+        
+        city.demandedResource = chosenResource?.name ?: "" // mods may have no resources as candidates even
         if (city.demandedResource == "") // Failed to get a valid resource, try again some time later
             city.setFlag(CityFlags.ResourceDemand, 15 + Random.Default.nextInt(10))
         else
@@ -122,10 +124,9 @@ class CityTurnManager(val city: City) {
             val removedPopulation =
                     1 + city.civ.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
                         .sumOf { it.params[0].toInt() - 1 }
-            city.population.addPopulation(-1 * removedPopulation)
 
-            if (city.population.population <= 0) {
-                city.espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
+            if (city.population.population <= removedPopulation) {
+                city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
                 city.civ.addNotification(
                     "[${city.name}] has been razed to the ground!",
                     city.location, NotificationCategory.General,
@@ -133,6 +134,7 @@ class CityTurnManager(val city: City) {
                 )
                 city.destroyCity()
             } else { //if not razed yet:
+                city.population.addPopulation(-removedPopulation)
                 if (city.population.foodStored >= city.population.getFoodToNextPopulation()) { //if surplus in the granary...
                     city.population.foodStored =
                             city.population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold

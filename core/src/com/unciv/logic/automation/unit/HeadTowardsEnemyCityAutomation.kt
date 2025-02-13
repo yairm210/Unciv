@@ -136,7 +136,7 @@ object HeadTowardsEnemyCityAutomation {
                         unitRange && it.key !in tilesInBombardRange
                         && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain
                 }
-                .minByOrNull { it.value.totalDistance }?.key ?: return false // return false if no tile to move to
+                .minByOrNull { it.value.totalMovement }?.key ?: return false // return false if no tile to move to
 
         // move into position far away enough that the bombard doesn't hurt
         unit.movement.headTowards(tileToMoveTo)

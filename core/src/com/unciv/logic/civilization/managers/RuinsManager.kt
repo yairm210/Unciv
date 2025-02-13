@@ -47,7 +47,7 @@ class RuinsManager(
 
     private fun isPossibleReward(ruinReward: RuinReward, unit: MapUnit): Boolean {
         if (ruinReward.name in lastChosenRewards) return false
-        if (ruinReward.isHiddenBySettings(civInfo.gameInfo)) return false
+        if (ruinReward.isUnavailableBySettings(civInfo.gameInfo)) return false
         val stateForConditionals = StateForConditionals(civInfo, unit = unit, tile = unit.getTile())
         if (ruinReward.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
         if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)

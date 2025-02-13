@@ -1,0 +1,9 @@
+SIGNIFICANT memory performance improvements for large maps
+
+"Stats from tiles" uniques work with terrain + improvement filter combos
+
+Layout for resource icons in city screen when in resistance - fixed
+
+Remove server notifications - bad user experience
+
+hexarealm: Fix Snow-Lake edges - By RobLoach

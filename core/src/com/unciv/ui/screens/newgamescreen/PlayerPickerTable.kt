@@ -26,6 +26,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
@@ -68,6 +69,8 @@ class PlayerPickerTable(
             player.playerId = "" // This is to stop people from getting other users' IDs and cheating with them in multiplayer games
 
         top()
+        gameParameters.shufflePlayerOrder = false
+        add("Shuffle Civ Order at Start".toCheckBox(false) { gameParameters.shufflePlayerOrder = it }).padTop(5f).padBottom(5f).row()
         add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
         update()
         background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/PlayerPickerTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
@@ -100,7 +103,7 @@ class PlayerPickerTable(
         }
 
         if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
-            val addPlayerButton = "+".toLabel(Color.BLACK, 30)
+            val addPlayerButton = "+".toLabel(ImageGetter.CHARCOAL, 30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
                 .onClick {
@@ -211,7 +214,7 @@ class PlayerPickerTable(
         }
 
         if (!locked) {
-            playerTable.add("-".toLabel(Color.BLACK, 30, Align.center)
+            playerTable.add("-".toLabel(ImageGetter.CHARCOAL, 30, Align.center)
                 .surroundWithCircle(40f)
                 .onClick {
                     gameParameters.players.remove(player)

@@ -24,7 +24,8 @@ object CityLocationTileRanker {
      * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
      */
     fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
-        val range =  if (distanceToSearch != null) distanceToSearch else {
+        val distanceModifier = 3f // percentage penalty per aerial distance from unit (Settler)
+        val range = if (distanceToSearch != null) distanceToSearch else {
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
@@ -43,7 +44,9 @@ object CityLocationTileRanker {
 
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
-                val tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                val distanceScore = (unit.currentTile.aerialDistanceTo(it) * distanceModifier).coerceIn(0f, 99f)
+                tileValue *= (100 - distanceScore) / 100
                 if (tileValue >= minimumValue)
                     bestTilesToFoundCity.tileRankMap[it] = tileValue
 
@@ -90,31 +93,36 @@ object CityLocationTileRanker {
         val onCoast = newCityTile.isCoastalTile()
         val onHill = newCityTile.isHill()
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
-        // Only count a luxary resource that we don't have yet as unique once
+        // Only count a luxury resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<String>()
 
         if (onCoast) tileValue += 3
         // Hills are free production and defence
         if (onHill) tileValue += 7
-        // Observatories are good, but current implementation no mod-friendly
+        // Observatories are good, but current implementation not mod-friendly
         if (isNextToMountain) tileValue += 5
-        if (newCityTile.isAdjacentToRiver()) tileValue += 14
-        if (newCityTile.terrainHasUnique(UniqueType.FreshWater)) tileValue += 5
+        // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
+        if (newCityTile.isAdjacentToRiver()) tileValue += 20
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
         // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.resource != null) tileValue -= 4
+        if (newCityTile.hasViewableResource(civ)) tileValue -= 4
+        if (newCityTile.hasViewableResource(civ) && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
+        // Settling on bonus resources tends to waste a food
+        // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
         var tiles = 0
         for (i in 0..3) {
+            //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
             for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
                 tiles++
-                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache)
+                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache) * (3 / (i + 1))
+                //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
             }
         }
 
         // Placing cities on the edge of the map is bad, we can't even build improvements on them!
-        tileValue -= (HexMath.getNumberOfTilesInHexagon(3) - tiles) * 3
+        tileValue -= (HexMath.getNumberOfTilesInHexagon(3) - tiles) * 2.4f
         return tileValue
     }
 
@@ -149,10 +157,8 @@ object CityLocationTileRanker {
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
         if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
-        // Apply the effect of having a lighthouse, since we can probably assume that we will build it
-        if (onCoast && rankTile.isOcean) locationSpecificTileValue += 1
         // Check if there are any new unique luxury resources
-        if (rankTile.resource != null && rankTile.tileResource.resourceType == ResourceType.Luxury
+        if (rankTile.hasViewableResource(civ) && rankTile.tileResource.resourceType == ResourceType.Luxury
             && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
             locationSpecificTileValue += 10
             newUniqueLuxuryResources.add(rankTile.resource!!)
@@ -163,16 +169,18 @@ object CityLocationTileRanker {
         if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
 
         var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
-        // We can't build improvements on water tiles without resources
-        if (!rankTile.isLand) rankTileValue -= 1
 
-        if (rankTile.resource != null) {
+        if (rankTile.hasViewableResource(civ)) {
             rankTileValue += when (rankTile.tileResource.resourceType) {
                 ResourceType.Bonus -> 2f
                 ResourceType.Strategic -> 1.2f * rankTile.resourceAmount
-                ResourceType.Luxury -> 5f * rankTile.resourceAmount
+                ResourceType.Luxury -> 10f * rankTile.resourceAmount //very important for humans who might want to conquer the AI
             }
         }
+        if (rankTile.terrainHasUnique(UniqueType.FreshWater)) rankTileValue += 0.5f 
+        //Taking into account freshwater farm food, maybe less important in baseruleset mods
+        if (rankTile.terrainFeatures.isNotEmpty() && rankTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) rankTileValue += 0.5f
+        //Taking into account yields from forest chopping
 
         if (rankTile.isNaturalWonder()) rankTileValue += 10
 

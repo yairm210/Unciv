@@ -12,6 +12,13 @@ import kotlin.random.Random
 
 object Conditionals {
 
+    private fun getStateBasedRandom(state: StateForConditionals, unique: Unique?): Float {
+        var seed = state.gameInfo?.turns?.hashCode() ?: 0
+        seed = seed * 31 + (unique?.hashCode() ?: 0)
+        seed = seed * 31 + state.hashCode()
+        return Random(seed).nextFloat()
+    }
+    
     fun conditionalApplies(
         unique: Unique?,
         conditional: Unique,
@@ -21,17 +28,10 @@ object Conditionals {
         if (conditional.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
             return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers
 
-        val stateBasedRandom by lazy {
-            var seed = state.gameInfo?.turns?.hashCode() ?: 0
-            seed = seed * 31 + (unique?.hashCode() ?: 0)
-            seed = seed * 31 + state.hashCode()
-            Random(seed)
-        }
-
         /** Helper to simplify conditional tests requiring gameInfo */
         fun checkOnGameInfo(predicate: (GameInfo.() -> Boolean)): Boolean {
             if (state.gameInfo == null) return false
-            return state.gameInfo!!.predicate()
+            return state.gameInfo.predicate()
         }
 
         /** Helper to simplify conditional tests requiring a Civilization */
@@ -49,7 +49,7 @@ object Conditionals {
         /** Helper to simplify the "compare civ's current era with named era" conditions */
         fun compareEra(eraParam: String, compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
             if (state.gameInfo == null) return false
-            val era = state.gameInfo!!.ruleset.eras[eraParam] ?: return false
+            val era = state.gameInfo.ruleset.eras[eraParam] ?: return false
             return compare(state.relevantCiv!!.getEraNumber(), era.eraNumber)
         }
 
@@ -62,15 +62,15 @@ object Conditionals {
             compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
         ): Boolean {
             if (state.gameInfo == null) return false
-            var gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo!!.speed.modifier else 1f
+            var gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo.speed.modifier else 1f
 
-            if (state.gameInfo!!.ruleset.tileResources.containsKey(resourceOrStatName))
+            if (state.gameInfo.ruleset.tileResources.containsKey(resourceOrStatName))
                 return compare(state.getResourceAmount(resourceOrStatName), lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
             val stat = Stat.safeValueOf(resourceOrStatName)
                 ?: return false
             val statReserve = state.getStatAmount(stat)
 
-            gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo!!.speed.statCostModifiers[stat]!! else 1f
+            gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo.speed.statCostModifiers[stat]!! else 1f
             return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
         }
 
@@ -103,14 +103,14 @@ object Conditionals {
         }
 
         return when (conditional.type) {
-            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < conditional.params[0].toFloat() / 100f
+            UniqueType.ConditionalChance -> getStateBasedRandom(state, unique) < conditional.params[0].toFloat() / 100f
             UniqueType.ConditionalEveryTurns -> checkOnGameInfo { turns % conditional.params[0].toInt() == 0 }
             UniqueType.ConditionalBeforeTurns -> checkOnGameInfo { turns < conditional.params[0].toInt() }
             UniqueType.ConditionalAfterTurns -> checkOnGameInfo { turns >= conditional.params[0].toInt() }
             UniqueType.ConditionalTutorialsEnabled -> UncivGame.Current.settings.showTutorials
             UniqueType.ConditionalTutorialCompleted -> conditional.params[0] in UncivGame.Current.settings.tutorialTasksCompleted
 
-            UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(conditional.params[0]) }
+            UniqueType.ConditionalCivFilter -> checkOnCiv { matchesFilter(conditional.params[0], state) }
             UniqueType.ConditionalWar -> checkOnCiv { isAtWar() }
             UniqueType.ConditionalNotWar -> checkOnCiv { !isAtWar() }
             UniqueType.ConditionalWithResource -> state.getResourceAmount(conditional.params[0]) > 0
@@ -132,14 +132,20 @@ object Conditionals {
             UniqueType.ConditionalAboveHappiness -> checkOnCiv { stats.happiness > conditional.params[0].toInt() }
             UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < conditional.params[0].toInt() }
             UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
+            UniqueType.ConditionalNotGoldenAge -> checkOnCiv { !goldenAges.isGoldenAge() }
 
             UniqueType.ConditionalBeforeEra -> compareEra(conditional.params[0]) { current, param -> current < param }
             UniqueType.ConditionalStartingFromEra -> compareEra(conditional.params[0]) { current, param -> current >= param }
             UniqueType.ConditionalDuringEra -> compareEra(conditional.params[0]) { current, param -> current == param }
             UniqueType.ConditionalIfStartingInEra -> checkOnGameInfo { gameParameters.startingEra == conditional.params[0] }
             UniqueType.ConditionalSpeed -> checkOnGameInfo { gameParameters.speed == conditional.params[0] }
+            UniqueType.ConditionalDifficulty -> checkOnGameInfo { gameParameters.difficulty == conditional.params[0] }
             UniqueType.ConditionalVictoryEnabled -> checkOnGameInfo { gameParameters.victoryTypes.contains(conditional.params[0]) }
-            UniqueType.ConditionalVictoryDisabled-> checkOnGameInfo { !gameParameters.victoryTypes.contains(conditional.params[0]) }
+            UniqueType.ConditionalVictoryDisabled -> checkOnGameInfo { !gameParameters.victoryTypes.contains(conditional.params[0]) }
+            UniqueType.ConditionalReligionEnabled -> checkOnGameInfo { isReligionEnabled() }
+            UniqueType.ConditionalReligionDisabled -> checkOnGameInfo { !isReligionEnabled() }
+            UniqueType.ConditionalEspionageEnabled -> checkOnGameInfo { isEspionageEnabled() }
+            UniqueType.ConditionalEspionageDisabled -> checkOnGameInfo { !isEspionageEnabled() }
             UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(conditional.params[0]) }
             UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(conditional.params[0]) }
             UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnologyName() == conditional.params[0] }
@@ -195,19 +201,23 @@ object Conditionals {
                 checkOnCity { population.getPopulationFilterAmount(conditional.params[1]) >= conditional.params[0].toInt() }
             UniqueType.ConditionalExactPopulationFilter ->
                 checkOnCity { population.getPopulationFilterAmount(conditional.params[1]) == conditional.params[0].toInt() }
+            UniqueType.ConditionalBetweenPopulationFilter ->
+                checkOnCity {population.getPopulationFilterAmount(conditional.params[2]) in conditional.params[0].toInt()..conditional.params[1].toInt() }
+            UniqueType.ConditionalBelowPopulationFilter ->
+                checkOnCity { population.getPopulationFilterAmount(conditional.params[1]) < conditional.params[0].toInt() }
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
 
-            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City") == true
+            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City", false) == true
             UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 state.relevantUnit?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalUnitWithPromotion -> state.relevantUnit != null &&
                     (state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
-                    || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
+                    || state.relevantUnit!!.hasStatus(conditional.params[0]) )
             UniqueType.ConditionalUnitWithoutPromotion -> state.relevantUnit != null &&
                     !(state.relevantUnit!!.promotions.promotions.contains(conditional.params[0])
-                            || state.relevantUnit!!.statuses.any { it.name == conditional.params[0] } )
+                            || state.relevantUnit!!.hasStatus(conditional.params[0]) )
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalAboveHP -> state.relevantUnit != null && state.relevantUnit!!.health > conditional.params[0].toInt()
@@ -308,6 +318,10 @@ object Conditionals {
             UniqueType.ConditionalModEnabled -> checkOnGameInfo {
                 val filter = conditional.params[0]
                 (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }
+            }
+            UniqueType.ConditionalModNotEnabled -> checkOnGameInfo {
+                val filter = conditional.params[0]
+                (gameParameters.mods.asSequence() + gameParameters.baseRuleset).none { ModCompatibility.modNameFilter(it, filter) }
             }
 
             else -> false

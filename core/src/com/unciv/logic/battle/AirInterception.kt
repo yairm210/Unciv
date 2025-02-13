@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -38,7 +37,7 @@ object AirInterception {
 
         // Make giant sequence of all potential Interceptors from all Civs isAtWarWith()
         var potentialInterceptors = sequence<MapUnit> {  }
-        for (interceptingCiv in UncivGame.Current.gameInfo!!.civilizations
+        for (interceptingCiv in attacker.getCivInfo().gameInfo.civilizations
             .filter {attacker.getCivInfo().isAtWarWith(it)}) {
             potentialInterceptors += interceptingCiv.units.getCivUnits()
                 .filter { it.canIntercept(attackedTile) }

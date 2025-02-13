@@ -225,7 +225,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
     fun getMajorityReligionName(): String? {
         if (followers.isEmpty()) return null
-        val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
+        val religionWithMaxPressure = followers.maxByOrNull { it.value }!!.key
         return when {
             religionWithMaxPressure == Constants.noReligionName -> null
             followers[religionWithMaxPressure] >= city.population.population / 2 -> religionWithMaxPressure
@@ -320,8 +320,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         }
 
         // Founder beliefs of this religion
-        if (getMajorityReligion() != null) {
-            for (unique in getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
+        val majorityReligion = getMajorityReligion()
+        if (majorityReligion != null) {
+            for (unique in majorityReligion.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
                 if (pressuredCity.matchesFilter(unique.params[1]))
                     pressure *= unique.params[0].toPercent()
         }

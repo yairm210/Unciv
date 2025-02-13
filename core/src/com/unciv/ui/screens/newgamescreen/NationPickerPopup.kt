@@ -45,7 +45,7 @@ internal class NationPickerPopup(
         const val buttonsCircleSize = 70f
         const val buttonsIconSize = 50f
         const val buttonsOffsetFromEdge = 5f
-        val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
+        val buttonsBackColor: Color = ImageGetter.CHARCOAL.cpy().apply { a = 0.67f }
         // Icon view sizing
         const val iconViewIconSize = 50f  // Portrait lies and will be bigger than asked for (55f)
         const val iconViewCellSize = 60f  // Difference to the above is used for selection highlight

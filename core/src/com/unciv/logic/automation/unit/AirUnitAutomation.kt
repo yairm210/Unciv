@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 object AirUnitAutomation {
 
     fun automateFighter(unit: MapUnit) {
-        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+        if (unit.health < 75) return // Wait and heal
 
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
         // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
@@ -51,6 +51,8 @@ object AirUnitAutomation {
 
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
+        if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
+
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
         val pathsToCities = unit.movement.getAerialPathsToCities()
@@ -76,7 +78,6 @@ object AirUnitAutomation {
 
         // no city needs fighters to defend, so let's attack stuff from the closest possible location
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
-
     }
 
     private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>): Boolean {
@@ -89,13 +90,15 @@ object AirUnitAutomation {
     }
 
     fun automateBomber(unit: MapUnit) {
-        if (unit.health <= 50 && !unit.hasUnique(UniqueType.HealsEvenAfterAction)) return // Wait and heal
+        if (unit.health < 75) return // Wait and heal
 
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (unit.health <= 90 || (unit.health < 100 && !unit.civ.isAtWar())) {
             return // Wait and heal
         }
+
+        if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 

@@ -297,7 +297,7 @@ object Nuke {
                     2 -> (60 + Random.Default.nextInt(10) + Random.Default.nextInt(10)) / 100f
                     else -> 1f  // hypothetical nukeStrength 3 -> always to 1 pop
                 }
-            ).toInt().coerceAtMost(targetedCity.population.population - 1)
+            ).toInt()
         targetedCity.population.addPopulation(-populationLoss)
     }
 

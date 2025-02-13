@@ -47,7 +47,7 @@ Allows filtering for specific nations. Used by [ModOptions.nationsToRemove](Mod-
 Allowed values:
 
 - `All`
-- `City-states`
+- `City-States`, `City-State`
 - `Major`
 - Nation name
 - A unique a Nation has (verbatim, no placeholders)
@@ -169,6 +169,7 @@ Allowed values:
 - `Specialists`
 - `Unemployed`
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
+- Specialist names
 
 ## policyFilter
 
@@ -309,8 +310,11 @@ Allowed values:
 
 - `year`, `turns`
 - `Cities`, `[cityFilter] Cities`
+- `City-States` - counts all undefeated city-states
 - `Units`, `[mapUnitFilter] Units`
 - `[buildingFilter] Buildings`
+- `Remaining [civFilter] Civilizations`
+- `Owned [tileFilter] Tiles`
 - Stat name - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
 - Resource name (can be city stats or civilization stats, depending on where the unique is used)
 
