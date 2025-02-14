@@ -310,6 +310,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         return null
     }
 
+
     /**
      * Returns the clock position of [otherTile] seen from [tile]'s position
      * Returns -1 if not neighbors

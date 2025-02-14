@@ -235,6 +235,17 @@ don't have enough left in stock.
 To use, you need to first define a TileResources with the "Stockpiled" Unique. Then you can reference
 them in other Uniques.
 
+## Stockpile
+
+Something that can be added to a civ
+
+Allowed values:
+
+- stockpiled resource (see above)
+- Stat name - for global stats, not city stats
+- `Stored Food` (for cities)
+- `Golden Age points`
+
 ## technologyFilter
 
 At the moment only implemented for [ModOptions.techsToRemove](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson).
