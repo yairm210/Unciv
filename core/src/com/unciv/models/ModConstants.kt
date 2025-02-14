@@ -108,9 +108,13 @@ class ModConstants {
     // Espionage
     var maxSpyRank = 3
     // How much of a skill bonus each rank gives.
-    // Rank 0 is 100%, rank 1 is 130%, and so on for stealing technology.
+    // Rank 1 is 100, rank 2 is 130, and so on.
     // Half as much for a coup.
     var spyRankSkillPercentBonus = 30
+    // Rank 2 is +25% tech steal rate, rank 3 is +50%, and so on
+    var spyRankStealPercentBonus = 25
+    // Steal cost equal to 125% of the most expensive stealable tech
+    var spyTechStealCostModifier = 1.25f
 
     // UI: If set >= 0, ImprovementPicker will silently skip improvements whose tech requirement is more advanced than your current Era + this
     var maxImprovementTechErasForward = -1
