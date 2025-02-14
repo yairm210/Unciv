@@ -95,7 +95,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     
     var unitShouldUseSavedPromotion = HashMap<String, Boolean>()
     
-    var cityUnitPromotions = HashMap<String, UnitPromotions>()
+    var unitToPromotions = HashMap<String, UnitPromotions>()
     
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
@@ -159,7 +159,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.manualSpecialists = manualSpecialists
         toReturn.connectedToCapitalStatus = connectedToCapitalStatus
         toReturn.unitShouldUseSavedPromotion = unitShouldUseSavedPromotion
-        toReturn.cityUnitPromotions = cityUnitPromotions
+        toReturn.unitToPromotions = unitToPromotions
         return toReturn
     }
 

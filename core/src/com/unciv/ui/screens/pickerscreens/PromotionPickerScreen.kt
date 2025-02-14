@@ -214,7 +214,7 @@ class PromotionPickerScreen private constructor(
             if (unitCurrentCity != null) {
                 // If you are clicked the save unitType promotion, you want the next unitType to have the same promotion.
                 unitCurrentCity.unitShouldUseSavedPromotion.put(unit.baseUnit.name,true)
-                unitCurrentCity.cityUnitPromotions.put(unit.baseUnit.name,unit.promotions)
+                unitCurrentCity.unitToPromotions.put(unit.baseUnit.name,unit.promotions)
             }
         }
     }
