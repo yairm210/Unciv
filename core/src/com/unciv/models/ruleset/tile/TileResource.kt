@@ -163,7 +163,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         }
         if (buildingsRequiringThis.isNotEmpty()) {
             textList += FormattedLine()
-            textList += FormattedLine("{Buildings that require this resource worked near the city}: ")
+            textList += FormattedLine("{Buildings that require this resource improved near the city}: ")
             buildingsRequiringThis.forEach {
                 textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
             }
