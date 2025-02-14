@@ -108,7 +108,7 @@ class ModConstants {
     // Espionage
     var maxSpyRank = 3
     // How much of a skill bonus each rank gives.
-    // Rank 1 is 100, rank 2 is 130, and so on.
+    // Rank 0 is 100, rank 1 is 130, and so on.
     // Half as much for a coup.
     var spyRankSkillPercentBonus = 30
     // Rank 2 is +25% tech steal rate, rank 3 is +50%, and so on
