@@ -51,7 +51,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
     fun xpForNextPromotion(): Int {
         // reduce or hieghter the xp for next promotion.
-        for (unique in unit.civ.getMatchingUniques(UniqueType.ExperienceForPromotionModifier)) {
+        for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
             return Math.round(((numberOfPromotions + 1) * 10) * unique.params[0].toPercent())
         }
         return (numberOfPromotions + 1) * 10
@@ -61,7 +61,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     /** @return the XP points needed to "buy" the next [count] promotions. */
     fun xpForNextNPromotions(count: Int): Int {
         // reduce or hieghter the xp for next promotion.
-        for (unique in unit.civ.getMatchingUniques(UniqueType.ExperienceForPromotionModifier)) {
+        for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
             return Math.round(((1..count).sumOf { (numberOfPromotions + it) * 10 } * unique.params[0].toPercent()))
         }
         return (1..count).sumOf { (numberOfPromotions + it) * 10 }

@@ -188,7 +188,7 @@ enum class UniqueType(
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
-    ExperienceForPromotionModifier("[relativeAmount]% Experience required for promotions",UniqueTarget.Global,UniqueTarget.FollowerBelief),
+    XPForPromotionModifier("[relativeAmount]% Experience required for promotions",UniqueTarget.Global,UniqueTarget.FollowerBelief),
 
     /// City Strength
     BetterDefensiveBuildings("[relativeAmount]% City Strength from defensive buildings", UniqueTarget.Global),
