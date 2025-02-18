@@ -374,7 +374,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var XP = 0
 
         for (unique in
-        cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience)
+        (cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience) + cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperienceOld))
             .filter { cityConstructions.city.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))
