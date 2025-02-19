@@ -719,10 +719,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Experience required for promotions"
-	Example: "[+20]% Experience required for promotions"
+??? example  "[relativeAmount]% XP required for promotions"
+	Example: "[+20]% XP required for promotions"
 
-	Applicable to: Global, FollowerBelief
+	Applicable to: Global
 
 ??? example  "[relativeAmount]% City Strength from defensive buildings"
 	Example: "[+20]% City Strength from defensive buildings"
@@ -1368,11 +1368,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing"
 	Example: "[Wounded] Units adjacent to this city heal [3] HP per turn when healing"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "[relativeAmount]% Experience required for promotions"
-	Example: "[+20]% Experience required for promotions"
 
 	Applicable to: Global, FollowerBelief
 
