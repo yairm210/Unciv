@@ -170,13 +170,15 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         if (stealableTechs.isEmpty()) return -1
 
         var techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!.toFloat()
+        val techStealCostModifier = civInfo.gameInfo.ruleset.modOptions.constants.spyTechStealCostModifier //1.25f in Civ5 GlobalDefines.XML
         val techSpeedModifier = civInfo.gameInfo.speed.scienceCostModifier //Modify steal cost according to game speed
-        techStealCost *= techSpeedModifier * 1.25f //Multiply by 1.25f, according to Civ5 GlobalDefines.XML
+        techStealCost *= techStealCostModifier * techSpeedModifier
         var progressThisTurn = getCity().cityStats.currentCityStats.science
         if (progressThisTurn <= 0f) return -2 // The city has no science
 
         // 25% spy bonus for each level
-        progressThisTurn *= (rank + 3f) / 4f
+        val rankTechStealModifier = rank * civInfo.gameInfo.ruleset.modOptions.constants.spyRankStealPercentBonus
+        progressThisTurn *= (rankTechStealModifier + 75f) / 100f
         progressThisTurn *= getEfficiencyModifier().toFloat()
         progressTowardsStealingTech += progressThisTurn.toInt()
 

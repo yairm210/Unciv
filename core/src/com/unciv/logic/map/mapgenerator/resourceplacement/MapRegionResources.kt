@@ -28,6 +28,7 @@ object MapRegionResources {
         baseImpact: Int = 0, randomImpact: Int = 0, majorDeposit: Boolean = false
     ): Map<TileResource, Int> {
         if (tileList.none() || resourceOptions.isEmpty()) return mapOf()
+        if (frequency == 0) return mapOf()
         val impactType = when (resourceOptions.first().resourceType) {
             ResourceType.Strategic -> ImpactType.Strategic
             ResourceType.Bonus -> ImpactType.Bonus

@@ -704,8 +704,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global
 
-??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
-	Example: "New [Melee] units start with [3] Experience [in all cities]"
+??? example  "New [baseUnitFilter] units start with [amount] XP [cityFilter]"
+	Example: "New [Melee] units start with [3] XP [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -1356,8 +1356,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
-	Example: "New [Melee] units start with [3] Experience [in all cities]"
+??? example  "New [baseUnitFilter] units start with [amount] XP [cityFilter]"
+	Example: "New [Melee] units start with [3] XP [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
