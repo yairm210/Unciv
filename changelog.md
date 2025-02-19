@@ -1,3 +1,13 @@
+## 4.15.12
+
+"Abundant resources" with mods with loads of resources no longer crash
+
+AI: choose policy branch at random between those with the least remaining policies
+
+modding: rename "experience" with "XP" for unified naming
+
+Move Spy tech steal modifiers to mod constants - By EmperorPinguin
+
 ## 4.15.11
 
 UI: Fixed edges for edge tiles on word wrap maps
