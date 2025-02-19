@@ -101,7 +101,7 @@ class ModConstants {
     // Factors in formula for policy costs
     var policyBase = 25
     var policyMultiplier = 6
-    var policyExponent = 1.7f
+    var policyExponent = 1.7
 
     var workboatAutomationSearchMaxTiles = 20
 
