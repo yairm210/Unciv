@@ -1,3 +1,19 @@
+## 4.15.12
+
+chore: rename "experience" with "XP" for unified naming
+
+"Abundant resources" with mods with loads of resources no longer crash
+
+4.15.11-patch1
+
+Fixed golden age points 
+
+Text fix
+
+AI: choose policy branch at random between those with the least remaining policies
+
+Move Spy tech steal modifiers to mod constants - By EmperorPinguin
+
 ## 4.15.11
 
 UI: Fixed edges for edge tiles on word wrap maps
