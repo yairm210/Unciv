@@ -1,3 +1,35 @@
+## 4.15.11
+
+UI: Fixed edges for edge tiles on word wrap maps
+
+Fixed automated road connections attempting to go through impassible tiles
+
+Modding: Changed stockpile names to be human readable
+
+Units with logistics that attacked but did not move, no longer heal
+
+Added feature to save unitType promotion - By Emandac
+
+Add "Will be destroyed when pillaged" unique - By PLynx01
+
+## 4.15.10
+
+modding: Validate tech row value
+
+UI: More visible railroads
+
+Display unexplored tiles 1-tile out from explored tiles
+
+Retain zoom when moving between different city screens
+
+Stats in notifications no longer have number format 'baked in'
+
+Map no longer makes map options left-right scrollable
+
+Only show 'move spies' button if there are places to move spies
+
+Add Shuffle Civ option - By itanasi
+
 ## 4.15.9
 
 Rendering performance improvements

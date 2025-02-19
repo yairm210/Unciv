@@ -57,6 +57,7 @@ import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
+import com.unciv.ui.screens.worldscreen.status.SmallUnitButton
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
@@ -121,6 +122,7 @@ class WorldScreen(
     internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton(this)
     private val statusButtons = StatusButtons(nextTurnButton)
+    internal val smallUnitButton = SmallUnitButton(this, statusButtons)
     private val tutorialTaskTable = Table().apply {
         background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
     }
@@ -669,13 +671,10 @@ class WorldScreen(
         updateAutoPlayStatusButton()
         updateMultiplayerStatusButton()
 
-        statusButtons.wrap(false)
-        statusButtons.pack()
+        statusButtons.update(false)
         val maxWidth = stage.width - techPolicyAndDiplomacy.width - 25f
         if(statusButtons.width > maxWidth) {
-            statusButtons.width = maxWidth
-            statusButtons.wrap()
-            statusButtons.pack()
+            statusButtons.update(true)
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
     }

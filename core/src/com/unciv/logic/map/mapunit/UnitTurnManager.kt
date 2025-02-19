@@ -32,7 +32,7 @@ class UnitTurnManager(val unit: MapUnit) {
         if (!unit.isFortified() && !unit.isGuarding())
             unit.turnsFortified = 0
 
-        if (!unit.hasUnitMovedThisTurn() || unit.hasUnique(UniqueType.HealsEvenAfterAction))
+        if ((!unit.hasUnitMovedThisTurn() && unit.attacksThisTurn == 0) || unit.hasUnique(UniqueType.HealsEvenAfterAction))
             healUnit()
 
         if (unit.isPreparingParadrop() || unit.isPreparingAirSweep())

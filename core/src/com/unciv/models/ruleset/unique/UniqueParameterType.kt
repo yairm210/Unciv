@@ -478,7 +478,7 @@ enum class UniqueParameterType(
     Stockpile("stockpile", "Mana", "The name of any stockpiled resource") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
             return ruleset.tileResources.filter { it.value.isStockpiled }.keys +
-                Stat.entries.map { it.name } + SubStat.StoredFood.name + SubStat.GoldenAgePoints.name
+                Stat.entries.map { it.name } + SubStat.StoredFood.text + SubStat.GoldenAgePoints.text
         }
     },
 

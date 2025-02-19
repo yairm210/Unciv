@@ -2,7 +2,6 @@ package com.unciv.logic.map
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
 
@@ -27,13 +26,15 @@ object MapPathing {
     fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
         val roadImprovement = tile.ruleset.roadImprovement ?: return false
         val railRoadImprovement = tile.ruleset.railroadImprovement ?: return false
-        return tile.isLand
-            && !tile.isImpassible()
-            && unit.civ.hasExplored(tile)
-            && tile.canCivPassThrough(unit.civ)
-            && (tile.hasRoadConnection(unit.civ, false)
+        
+        if (tile.isWater) return false
+        if (tile.isImpassible()) return false
+        if (!unit.civ.hasExplored(tile)) return false
+        if (!tile.canCivPassThrough(unit.civ)) return false
+        
+        return tile.hasRoadConnection(unit.civ, false)
                 || tile.hasRailroadConnection(false)
-                || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ))
+                || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ)
                 || tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.civ)
     }
 

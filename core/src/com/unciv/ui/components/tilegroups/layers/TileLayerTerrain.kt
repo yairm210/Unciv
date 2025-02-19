@@ -2,15 +2,15 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.NeighborDirection
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.random.Random
 
@@ -108,7 +108,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     
     private val neighborEdgeDataList: Sequence<NeighborEdgeData> = if (!tile.isTilemapInitialized()) emptySequence()
         else tile.neighbors.map {
-            val direction = NeighborDirection.fromVector(it.position.cpy().sub(tile.position))
+            val clockPosition = tile.tileMap.getNeighborTileClockPosition(tile, it)
+            val direction = NeighborDirection.byClockPosition[clockPosition]
             NeighborEdgeData(it, direction)
         }.toList().asSequence()
     
@@ -273,26 +274,6 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             if (strings.tileSetConfig.useSummaryImages) baseHexagon.apply { add(strings.naturalWonder) }
             else baseHexagon.apply { add(strings.orFallback{ getTile(tileGroup.tile.naturalWonder!!) }) }
 
-}
-
-enum class NeighborDirection {
-    Top, TopRight, TopLeft, Bottom, BottomLeft, BottomRight;
-
-    companion object {
-        fun fromVector(vector2: Vector2): NeighborDirection? {
-            val x = vector2.x.toInt()
-            val y = vector2.y.toInt()
-            return when (x) {
-                1 -> if (y == 1) Top // x == 1 && y == 1
-                    else TopLeft // x == 1 && y == 0
-                0 -> if (y == 1) TopRight // x == 0 && y == 1
-                    else BottomLeft // x == 0 && y == -1
-                -1 -> if (y == -1) Bottom // x == -1 && y == -1
-                    else BottomRight // x == -1 && y == 0
-                else -> null
-            }
-        }
-    }
 }
 
 data class EdgeTileImage(val fileName:String, val originTileFilter: String, val destinationTileFilter: String, val edgeType: NeighborDirection)

@@ -20,11 +20,11 @@ This document provides short hints only for Croatian translation and is by no me
   - [Placeholder genders](#placeholder-genders)
     - [Feminine](#feminine)
     - [Masculine](#masculine)
-    - [Third gender](#third-gender)
+    - [Neuter](#neuter)
     - [Mixed gender](#mixed-gender)
     - [Guess gender](#guess-gender)
-    - [Unresolved gender](#unresolved-gender)
     - [Gender not applicable](#gender-not-applicable)
+    - [Unresolved gender](#unresolved-gender)
   - [City names](#city-names)
     - [Cities written in English](#cities-written-in-english)
     - [Cities written in Latin letter](#cities-written-in-latin-letter)
@@ -43,8 +43,9 @@ Words in this section are difficult to translate properly or difficult for consi
 Choice of words for consistent translation in order of preference and depending on context.</br>
 First highlighted word is used and additional highlighted words are only hints, and may be used
 either depending on context or by replacing all matching alternative words as applicable.</br>
-Words in brackets are incorrect because English translation has another word.</br>
-Words outside brackets are hints as to when highlighted word should be used.
+Words in parentheses are incorrect either because English translation has another word, or because
+we already use them to translate some other English word in translation file.</br>
+Words outside parentheses are hints as to when highlighted word should be used.
 
 ### Resolved Translation
 
@@ -58,14 +59,14 @@ Words outside brackets are hints as to when highlighted word should be used.
 - Move `Pokreni`, `Pomakni`, `Premjesti`
 - Annex `Pripojiti`, `Aneksirati`
 - Capital `Prijestolnica`
-- Capital City `Glavni grad`
+- Capital City `Glavni Grad`
 - Turn `Potez`, `Krug`
 - Declaration `Deklaracija`, (Izjava)
 - Unique `Unikatni`, `Jedinstveni`
 - Tutorial `Poduka`, `Vodič`
 - Improvement, Improve `Unaprjeđenje`, `Unaprjediti`
 - Enhance `Unaprjediti`, (Poboljšati)
-- Camp `Logor`, `tabor` barbarski kamp
+- Camp, Encampment `Logor`, `tabor` barbarski kamp
 - Camp `Kamp` unaprjeđenje
 - Air Sweep `Čišćenje Zraka`
 - Fog of War `Ratna Magla`
@@ -131,7 +132,8 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Place `Postavi`
 - Gift `Poklon`, `Dar`
 - Supply `Opskrba`
-- Consume(s)/Consuming `Troši/Potrošnja`, `Iskoristiti` stvar, pojava, `Konzumiranje` biće
+- Consume(s)/Consuming `Konzumira/Konzumirati`, `Troši/Potrošnja`, `Iskoristiti`
+- Spend(s) `Troši/Potrošnja`, `Provoditi`
 - Move `Pokreni`, `Pomakni`, `Premjesti`
 - Movement `Kretnja`, `Pokret`
 - Chance `Šansa`, `Vjerojatnost`
@@ -170,6 +172,8 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Cancel `Poništi`, `Otkaži` (Ukini)
 - Choose `Odaberi`, `Izaberi`
 - Select `Odaberi` (Izaberi)
+- Upon `Pri`, `Prilikom`, `Po`, `Nakon` OR `Na`, `Nad`
+- Discovering `Otkriće`, `Otkrivanje`
 
 ### Untranslated words
 
@@ -222,7 +226,7 @@ Use of formal form:
 
 Use of informal form:
 
-- In diplomacy, both major and minor civs and quests of city states
+- In diplomacy, both major and minor civs, and quests of city states
 - Nation introduction during new game
 - When the player gives orders to game
 - Technology and great building proverbs
@@ -237,9 +241,11 @@ Exceptions (use sparingly to retain consistency):
 
 - Use formal form where appropriate to avoid grammatical gender
 - Use formal form where appropriate to simplify grammar
-- Switch from formal or informal form where appropriate to make it sound more natural or consistent, e.g. UI prompt
+- Switch from formal or informal (mixture) where appropriate to make it sound more natural or consistent, e.g. UI prompt
 
-Examples (formal vs informal):
+NOTE: Switching from formal and informal is used in diplomacy
+
+Examples (formal vs informal, to check for correct usage e.g. in combination with placeholders):
 
 - Vi vs Ti
 - Vas vs Tebe, te
@@ -271,9 +277,7 @@ Use regex for quick find, e.g. for `*iš`:
 
 ### Grammatical gender
 
-TODO: Not fully checked
-
-Examples:
+Examples (to check for correct usage e.g. in combination with placeholders):
 
 - Naš vs Naša
 - Našim vs Našom
@@ -285,12 +289,14 @@ Examples:
 - Njihovim vs Njihovom
 - Njihovog vs Njihove
 
+TODO: Usage not fully checked:
+
 - `(a)`, `(la)`, `(ica)`, `(ice)`, `(kinjo)`, `(icom)`, `(jela)`, `(na)`, `(om)`, `(icom)` (All feminine)
 - `*io`, `*la`
 
 Exceptions:
 
-- Use 3rd gender where appropriate to avoid grammatical gender
+- Use neuter where appropriate to avoid grammatical gender
 
 ### Other grammar
 
@@ -324,6 +330,7 @@ When grammatical gender around a placeholder is needed we use majority gender of
 - [currentPlayerCiv]
 - [unitType]
 - [civ], [civ1], [civ2]
+- [civilization]
 
 Feminine but not applicable:
 
@@ -350,7 +357,6 @@ Feminine but not applicable:
 - [cityFilter]
 - [cityState]
 - [cityStateName]
-- [resource]
 - [resources]
 - [greatPerson]
 - [specialist]
@@ -369,7 +375,7 @@ Masculine but not applicable:
 - [populationFilter]
 - [battleAction]
 
-### Third gender
+### Neuter
 
 - [era]
 - [eraName]
@@ -379,7 +385,7 @@ Masculine but not applicable:
 
 ### Mixed gender
 
-Use 3rd gender in translation:
+Use neuter in translation:
 
 - [wonder]
 - [buildingName]
@@ -397,8 +403,9 @@ Use 3rd gender in translation:
 - [techName]
 - [technologyName]
 - [building]
+- [resource]
 
-Mixed but use 3rd and masculine gender (depending on context) but not feminine:
+Mixed but use neuter or masculine (depending on context) but not feminine:
 
 - [nukeType]
 
@@ -408,6 +415,7 @@ Mixed but not applicable:
 - [terrainName]
 - [terrainFilter]
 - [Stats]
+- [PolicyOrNationalWonder]
 
 ### Guess gender
 
@@ -418,14 +426,7 @@ Try to guess gender depending on context:
 - [countable], [countable2], [countable3]
 - [policy]
 - [code]
-
-### Unresolved gender
-
-TODO: Which gender are these?</br>
-TODO: There are more placeholders in properties not handled here.
-
-- [costOrStrength]
-- [param]
+- [name]
 
 ### Gender not applicable
 
@@ -443,9 +444,24 @@ TODO: There are more placeholders in properties not handled here.
 - [version]
 - [title]
 - [naturalWonder]
-- [name]
 - [thingToProduce]
 - [thingToSelect]
+- [count]
+- [influenceAmount]
+- [amountOfCulture]
+- [firstValue]
+- [secondValue]
+- [questName]
+
+### Unresolved gender
+
+TODO: Which gender are these?</br>
+TODO: There are more placeholders in properties not listed here.
+
+- [costOrStrength]
+- [param]
+- [valueType]
+- [ability]
 
 [Table of Contents](#table-of-contents)
 
@@ -520,17 +536,18 @@ TODO: Which letter was historically used by these? classify them and verify tran
 
 ## Resources
 
-The following resources were helpful for translation of cities and personal names:
+The following resources were helpful for translation of cities and person names:
 
 ### Hints
 
-- wikipedia
-- google maps in local language first (origin country of a city), google maps in Croatian language if local language
+- Wikipedia
+- Google maps in local language first (origin country of a city), google maps in Croatian language if local language
   letter is not Latin
-- search engines
+- Multiple search engines, meta search engines
 - The Bible (e.g. Babylonian and Egyptian cities)
-- Country local lexicons
+- Country local lexicons, preferably state official lexicons
 - Deep web
+- Sample articles in Croatian or English language using a word or term which is to be translated
 
 ### Links
 
@@ -545,6 +562,8 @@ The following resources were helpful for translation of cities and personal name
 - [Geek pravopis](https://geek.hr/pravopis/)
 - [Encyclopedia Iranica](https://iranicaonline.org/)
 
+- TODO: Reference of comprehensive transliteration rules
+
 [Table of Contents](#table-of-contents)
 
 ## Gotcha's
@@ -557,5 +576,10 @@ The following resources were helpful for translation of cities and personal name
 
 - Note that other slavic countries like Serbia, Macedonia, Slovakia etc. use different transliteration
   rules so they're not appropriate for translation but exceptions exist that can help. (e.g by using wikipedia)
+
+- TODO: Where possible avoid "da" (dakavica) and "bude/budu" etc.
+  Note that some cases are orthographically correct.
+
+- Avoid anglicisms, germanisms and other borrowed words unless there is no actual Croatian equivalent
 
 [Table of Contents](#table-of-contents)

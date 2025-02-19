@@ -183,7 +183,10 @@ enum class UniqueType(
     EnemyUnitsSpendExtraMovement("Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory", UniqueTarget.Global),
 
     /// Unit Abilities
-    UnitStartingExperience("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+
+    UnitStartingExperience("New [baseUnitFilter] units start with [amount] XP [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"))
+    UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -642,6 +645,7 @@ enum class UniqueType(
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
     PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement),
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
+    DestroyedWhenPillaged("Destroyed when pillaged", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     AutomatedUnitsWillNotReplace("Will not be replaced by automated units", UniqueTarget.Improvement),
     ImprovesResources("Improves [resourceFilter] resource in this tile", UniqueTarget.Improvement, flags = UniqueFlag.setOfNoConditionals,

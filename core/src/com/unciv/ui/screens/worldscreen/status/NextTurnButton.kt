@@ -52,6 +52,8 @@ class NextTurnButton(
             || (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip("")
+        
+        worldScreen.smallUnitButton.update()
     }
 
     internal fun updateButton(nextTurnAction: NextTurnAction) {
@@ -76,4 +78,7 @@ class NextTurnButton(
     private fun getNextTurnAction(worldScreen: WorldScreen) =
         // Guaranteed to return a non-null NextTurnAction because the last isChoice always returns true
         NextTurnAction.entries.first { it.isChoice(worldScreen) }
+    
+    fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit
+    
 }
