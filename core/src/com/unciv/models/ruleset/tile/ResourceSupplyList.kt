@@ -25,7 +25,7 @@ class ResourceSupplyList(
 
     /** Fetch a [ResourceSupply] entry or `null` if no match found */
     fun get(resource: TileResource, origin: String) =
-        firstOrNull { it.resource == resource && it.origin == origin }
+        firstOrNull { it.resource.name == resource.name && it.origin == origin }
 
     /** Get the total amount for a resource by [resourceName] */
     fun sumBy(resourceName: String) =

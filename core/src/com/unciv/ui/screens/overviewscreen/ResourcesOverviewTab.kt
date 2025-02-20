@@ -57,7 +57,7 @@ class ResourcesOverviewTab(
 
     private val resourceDrilldown: ResourceSupplyList = viewingPlayer.detailedCivResources
     private val extraDrilldown: ResourceSupplyList = getExtraDrilldown()
-    private val allResources = ResourceSupplyList().apply { addAll(resourceDrilldown.asSequence() + extraDrilldown.asSequence()) }
+    private val allResources = ResourceSupplyList().apply { add(resourceDrilldown); add(extraDrilldown) }
 
     // Order of source ResourceSupplyList: by tiles, enumerating the map in that spiral pattern
     // UI should not surprise player, thus we need a deterministic and guessable order
