@@ -182,11 +182,12 @@ object NextTurnAutomation {
         if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
         }
-        if (civInfo.getHappiness() < 5 && cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
-            value += 10 - civInfo.getHappiness()
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
+            if (civInfo.getHappiness() < 10)
+                value += 10 - civInfo.getHappiness()
             value += civPersonality[PersonalityValue.Happiness].toInt() - 5
         }
-        if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
+        if (cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
             value += 5
             value += civPersonality[PersonalityValue.Food].toInt() - 5
         }
@@ -198,7 +199,7 @@ object NextTurnAutomation {
         val ourInfluence = if (civInfo.knows(cityState))
             cityState.getDiplomacyManager(civInfo)!!.getInfluence().toInt()
         else 0
-        value += ourInfluence / 10
+        value += minOf(10, ourInfluence / 10) // don't let this spiral out of control
 
         if (ourInfluence < 30) {
             // Consider bullying for cash
@@ -327,26 +328,22 @@ object NextTurnAutomation {
                 // If incomplete branches have higher priorities than any newly adoptable branch,
                 if (maxAdoptablePriority <= maxIncompletePriority) {
                     // Prioritize finishing one of the unfinished branches
-                    incompleteBranches.filter {
-                        priorityMap[it] == maxIncompletePriority
-                    }.toSet()
+                    incompleteBranches.filter { priorityMap[it] == maxIncompletePriority }.toSet()
                 }
                 // If newly adoptable branches have higher priorities than any incomplete branch,
                 else {
                     // Prioritize adopting one of the new branches
-                    adoptableBranches.filter {
-                        priorityMap[it] == maxAdoptablePriority
-                    }.toSet()
+                    adoptableBranches.filter { priorityMap[it] == maxAdoptablePriority }.toSet()
                 }
 
             // branchCompletionMap but keys are only candidates
             val candidateCompletionMap: Map<PolicyBranch, Int> =
-                civInfo.policies.branchCompletionMap.filterKeys { key ->
-                    key in candidates
-                }
+                civInfo.policies.branchCompletionMap.filterKeys { key -> key in candidates }
 
             // Choose the branch with the LEAST REMAINING policies, not the MOST ADOPTED ones
-            val targetBranch = candidateCompletionMap.minBy { it.key.policies.size - it.value }.key
+            val targetBranch = candidateCompletionMap.asIterable()
+                .groupBy { it.key.policies.size - it.value }
+                .minByOrNull { it.key }!!.value.random().key
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch

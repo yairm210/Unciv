@@ -704,8 +704,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global
 
-??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
-	Example: "New [Melee] units start with [3] Experience [in all cities]"
+??? example  "New [baseUnitFilter] units start with [amount] XP [cityFilter]"
+	Example: "New [Melee] units start with [3] XP [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -1351,8 +1351,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
-	Example: "New [Melee] units start with [3] Experience [in all cities]"
+??? example  "New [baseUnitFilter] units start with [amount] XP [cityFilter]"
+	Example: "New [Melee] units start with [3] XP [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -1577,6 +1577,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Uniques that affect a unit's actions, and can be modified by UnitActionModifiers
 
 ??? example  "Founds a new city"
+	Applicable to: UnitAction
+
+??? example  "Founds a new puppet city"
 	Applicable to: UnitAction
 
 ??? example  "Can instantly construct a [improvementFilter] improvement"
@@ -2507,6 +2510,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
+??? example  "Destroyed when pillaged"
+	Applicable to: Improvement
+
 ??? example  "Irremovable"
 	Applicable to: Improvement
 
@@ -2823,6 +2829,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;during a Golden Age&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when not in a Golden Age&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;during We Love The King Day&gt;"
@@ -3243,6 +3252,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon turn end&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon turn start&gt;"
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
 
@@ -3319,6 +3331,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
 	Example: "&lt;upon discovering a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon entering a [tileFilter] tile&gt;"
+	Example: "&lt;upon entering a [Farm] tile&gt;"
 
 	Applicable to: UnitTriggerCondition
 

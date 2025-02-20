@@ -55,8 +55,8 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
             // Does not belong to us
             tile.getOwner() != city.civ -> {
                 setDimmed(0.6f)
-                layerMisc.setYieldVisible(UncivGame.Current.settings.showTileYields)
-                layerMisc.dimYields(true)
+                layerYield.setYieldVisible(UncivGame.Current.settings.showTileYields)
+                layerYield.dimYields(true)
 
                 // Can be purchased in principle? Add icon.
                 if (city.expansion.canBuyTile(tile)) {
@@ -81,20 +81,20 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
             // Out of city range
             tile !in city.tilesInRange -> {
                 setDimmed(1f)
-                layerMisc.dimYields(true)
+                layerYield.dimYields(true)
             }
 
             // Worked by another city
             tile.isWorked() && tile.getWorkingCity() != city -> {
                 setDimmed(1f)
-                layerMisc.dimYields(true)
+                layerYield.dimYields(true)
             }
 
             // City Center
             tile.isCityCenter() -> {
                 icon = ImageGetter.getImage("TileIcons/CityCenter")
                 // Night mode does not apply to the city tile itself
-                layerMisc.dimYields(false)
+                layerYield.dimYields(false)
             }
 
             // Does not provide yields
@@ -108,7 +108,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
                 icon = ImageGetter.getImage("TileIcons/Blockaded")
                 tileState = CityTileState.BLOCKADED
                 setUndimmed()
-                layerMisc.dimYields(true)
+                layerYield.dimYields(true)
             }
 
             // Locked
@@ -116,7 +116,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
                 icon = ImageGetter.getImage("TileIcons/Locked")
                 tileState = CityTileState.WORKABLE
                 setUndimmed()
-                layerMisc.dimYields(false)
+                layerYield.dimYields(false)
             }
 
             // Worked
@@ -124,7 +124,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
                 icon = ImageGetter.getImage("TileIcons/Worked")
                 tileState = CityTileState.WORKABLE
                 setUndimmed()
-                layerMisc.dimYields(false)
+                layerYield.dimYields(false)
             }
 
             // Provides yield without worker assigned (isWorked already tested above)
@@ -138,7 +138,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
                 icon = ImageGetter.getImage("TileIcons/NotWorked")
                 tileState = CityTileState.WORKABLE
                 setUndimmed()
-                layerMisc.dimYields(true)
+                layerYield.dimYields(true)
             }
         }
 
@@ -156,7 +156,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
         // Pixel art, roads, improvements are dimmed inside CityScreen
         layerUnitArt.dim()
         layerFeatures.dim()
-        layerMisc.dimImprovement(true)
+        layerImprovement.dimImprovement(true)
 
         // Put whole layer (yield, pop, improvement, res) to front
         layerMisc.toFront()

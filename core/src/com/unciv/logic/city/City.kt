@@ -14,6 +14,7 @@ import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -91,7 +92,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
     var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
-
+    
+    var unitTypeShouldUseSavedPromotion = HashMap<String, Boolean>()
+    
+    var cityUnitTypePromotions = HashMap<String, UnitPromotions>()
+    
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
@@ -153,6 +158,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
         toReturn.connectedToCapitalStatus = connectedToCapitalStatus
+        toReturn.unitTypeShouldUseSavedPromotion = unitTypeShouldUseSavedPromotion
+        toReturn.cityUnitTypePromotions = cityUnitTypePromotions
         return toReturn
     }
 

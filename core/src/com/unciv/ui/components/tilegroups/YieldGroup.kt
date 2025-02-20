@@ -1,6 +1,7 @@
 package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -31,7 +32,7 @@ class YieldGroup : HorizontalGroup() {
     }
 
     fun getIcon(statName: String) =
-            ImageGetter.getStatIcon(statName).surroundWithCircle(12f)
+            ImageGetter.getStatIcon(statName).surroundWithCircle(12f, circleImageLocation = "StatIcons/Circle")
                     .apply { circle.color = ImageGetter.CHARCOAL; circle.color.a = 0.5f }
 
     private fun getStatIconsTable(statName: String, number: Int): Table {
@@ -80,4 +81,7 @@ class YieldGroup : HorizontalGroup() {
         table.pack()
         return table
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun act(delta: Float) = super.act(delta)
 }

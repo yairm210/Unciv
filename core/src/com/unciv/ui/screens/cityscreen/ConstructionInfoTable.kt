@@ -15,6 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
@@ -23,6 +24,7 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 
+/** This is the bottom-right table in the city screen that shows the currently selected construction */
 class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private val selectedConstructionTable = Table()
     private val buyButtonFactory = BuyButtonFactory(cityScreen)
@@ -89,13 +91,23 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             val descriptionLabel = Label(description, BaseScreen.skin)  // already translated
             descriptionLabel.wrap = true
             add(descriptionLabel).colspan(2).width(stage.width / if(cityScreen.isCrampedPortrait()) 3 else 4)
-
+            
             if (cityConstructions.isBuilt(construction.name)) {
                 showSellButton(construction)
             } else if (buyButtonFactory.hasBuyButtons(construction)) {
                 row()
-                buyButtonFactory.addBuyButtons(selectedConstructionTable, construction) {
-                    it.padTop(5f).colspan(2).center()
+                for (button in buyButtonFactory.getBuyButtons(construction)) {
+                    selectedConstructionTable.add(button).padTop(5f).colspan(2).center().row()
+                }
+            }
+            if (construction is BaseUnit) {
+                val unitType = construction.unitType
+                
+                val buildUnitWithPromotions = city.unitTypeShouldUseSavedPromotion[unitType]
+                
+                if (buildUnitWithPromotions != null) {
+                    row()
+                    add("Use default promotions".toCheckBox(buildUnitWithPromotions) {city.unitTypeShouldUseSavedPromotion[unitType] = it}).colspan(2).center()
                 }
             }
         }
@@ -132,7 +144,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             }
         }
     }
-
+    
     private fun sellBuildingClicked(construction: Building, sellText: String) {
         cityScreen.closeAllPopups()
 

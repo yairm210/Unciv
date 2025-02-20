@@ -122,7 +122,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
         val baseRuleset = RulesetCache.getVanillaRuleset()
-        ImageGetter.ruleset = baseRuleset
+        ImageGetter.setNewRuleset(baseRuleset)
 
         if (game.settings.enableEasterEggs) {
             val holiday = HolidayDates.getHolidayByDate()
@@ -257,13 +257,13 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                     shape = MapShape.rectangular
                     mapSize = MapSize.Small
                     type = MapType.pangaea
-                    temperatureExtremeness = .7f
+                    temperatureintensity = .7f
                     waterThreshold = -0.1f // mainly land, gets about 30% water
                     modifyForEasterEgg()
                 })
 
             launchOnGLThread { // for GL context
-                ImageGetter.setNewRuleset(backgroundMapRuleset)
+                ImageGetter.setNewRuleset(backgroundMapRuleset, ignoreIfModsAreEqual = true)
                 val mapHolder = EditorMapHolder(
                     this@MainMenuScreen,
                     newMap
@@ -314,7 +314,6 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             } else {
                 GUI.resetToWorldScreen()
                 GUI.getWorldScreen().popups.filterIsInstance<WorldScreenMenuPopup>().forEach(Popup::close)
-                ImageGetter.setNewRuleset(game.gameInfo!!.ruleset)
             }
         } else {
             QuickSave.autoLoadGame(this)
@@ -384,6 +383,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     override fun recreate(): BaseScreen {
         stopBackgroundMapGeneration()
         return MainMenuScreen()
+    }
+
+    override fun resume() {
+        startBackgroundMapGeneration()
     }
 
     // We contain a map...

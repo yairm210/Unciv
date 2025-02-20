@@ -9,6 +9,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.input.KeyboardBinding
 
 //todo Check move/top/end for "place one improvement" buildings

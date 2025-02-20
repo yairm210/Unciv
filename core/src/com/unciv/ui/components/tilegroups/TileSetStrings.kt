@@ -2,6 +2,7 @@ package com.unciv.ui.components.tilegroups
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.NeighborDirection
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.GameSettings
@@ -9,7 +10,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.components.tilegroups.layers.EdgeTileImage
-import com.unciv.ui.components.tilegroups.layers.NeighborDirection
 import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
 

@@ -7,25 +7,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.*
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapType
+import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.UncivTextField
-import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.toCheckBox
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.ExpanderTab
-import com.unciv.ui.components.widgets.TranslatedSelectBox
-import com.unciv.ui.components.widgets.UncivSlider
-import com.unciv.ui.components.widgets.WrappableLabel
+import com.unciv.ui.components.widgets.*
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.victoryscreen.LoadMapPreview
+import com.unciv.utils.Concurrency
 
 /** Table for editing [mapParameters]
  *
@@ -48,7 +42,7 @@ class MapParametersTable(
     lateinit var customMapHeight: TextField
 
     private lateinit var worldSizeSelectBox: TranslatedSelectBox
-    private var customWorldSizeTable = Table ()
+    private var customWorldSizeTable = Table()
     private var hexagonalSizeTable = Table()
     private var rectangularSizeTable = Table()
     lateinit var resourceSelectBox: TranslatedSelectBox
@@ -63,6 +57,9 @@ class MapParametersTable(
     private lateinit var mapTypesOptionsValues: HashSet<String>
     private lateinit var mapSizesOptionsValues: HashSet<String>
     private lateinit var mapResourcesOptionsValues: HashSet<String>
+    
+    private val maxMapSize = ((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f // There is 5px padding each side
+    private val mapTypeExample = Table()
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
     // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
@@ -96,6 +93,7 @@ class MapParametersTable(
         addResourceSelectBox()
         addWrappedCheckBoxes()
         addAdvancedSettings()
+        generateExampleMap()
     }
 
     fun reseed() {
@@ -126,10 +124,31 @@ class MapParametersTable(
             mapShapeSelectBox.onChange {
                 mapParameters.shape = mapShapeSelectBox.selected.value
                 updateWorldSizeTable()
+                generateExampleMap()
             }
 
             add ("{Map Shape}:".toLabel()).left()
             add(mapShapeSelectBox).fillX().row()
+        }
+    }
+    
+    private fun generateExampleMap(){
+        val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
+        Concurrency.run("Generate example map") {
+            val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+            val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters(), emptyList())
+            Concurrency.runOnGLThread {
+                mapTypeExample.clear()
+                val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
+                if (!forMapEditor){
+                    val label = "Example map".toLabel()
+                    label.centerX(mapPreview)
+                    label.y = mapPreview.height - label.height - 10f
+                    mapPreview.addActor(label)
+                }
+                mapTypeExample.add(mapPreview)
+                pack()
+            }
         }
     }
 
@@ -162,6 +181,7 @@ class MapParametersTable(
             add(optionsTable).colspan(2).grow().row()
         } else {
             mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type)
+            
 
             mapTypeSelectBox.onChange {
                 mapParameters.type = mapTypeSelectBox.selected.value
@@ -169,10 +189,13 @@ class MapParametersTable(
                 // If the map won't be generated, these options are irrelevant and are hidden
                 noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
                 noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
+                
+                generateExampleMap()
             }
 
             add("{Map Generation Type}:".toLabel()).left()
             add(mapTypeSelectBox).fillX().row()
+            add(mapTypeExample).colspan(2).grow().row()
         }
     }
 
@@ -191,7 +214,7 @@ class MapParametersTable(
         } else {
             val mapSizes = MapSize.names() + listOf(MapSize.custom)
             worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name)
-            worldSizeSelectBox.onChange { updateWorldSizeTable() }
+            worldSizeSelectBox.onChange { updateWorldSizeTable(); generateExampleMap() }
 
             addHexagonalSizeTable()
             addRectangularSizeTable()
@@ -352,14 +375,14 @@ class MapParametersTable(
     }
 
     private fun addAdvancedSettings() {
-        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false) {
+        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false, defaultPad = 0f) {
             addAdvancedControls(it)
         }
-        add(expander).pad(10f).padTop(10f).colspan(2).growX().row()
+        add(expander).padTop(10f).colspan(2).growX().row()
     }
 
     private fun addAdvancedControls(table: Table) {
-        table.defaults().pad(5f)
+        table.defaults().pad(2f).padTop(10f)
 
         seedTextField = UncivTextField("RNG Seed", mapParameters.seed.tr())
         seedTextField.textFieldFilter = DigitsOnlyFilter()
@@ -377,7 +400,7 @@ class MapParametersTable(
         table.add(seedTextField).fillX().padBottom(10f).row()
 
         fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider {
-            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange, initial = getValue())
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = {onChange(it); generateExampleMap()}, initial = getValue())
             table.add(text.toLabel()).left()
             table.add(slider).fillX().row()
             advancedSliders[slider] = getValue
@@ -413,8 +436,8 @@ class MapParametersTable(
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
-        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
-        { mapParameters.temperatureExtremeness = it }
+        addSlider("Temperature intensity", {mapParameters.temperatureintensity}, 0.4f, 0.8f)
+        { mapParameters.temperatureintensity = it }
 
         addSlider("Temperature shift", {mapParameters.temperatureShift}, -0.4f, 0.4f, 0.1f)
         { mapParameters.temperatureShift = it }

@@ -284,6 +284,7 @@ class NewGameScreen(
         launchOnGLThread {
             popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
+            ImageGetter.setNewRuleset(ruleset) // To build the temp atlases
         }
 
         val newGame:GameInfo

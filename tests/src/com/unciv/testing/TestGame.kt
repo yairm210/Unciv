@@ -64,7 +64,7 @@ class TestGame {
         tileMap.gameInfo = gameInfo
 
         for (baseUnit in ruleset.units.values)
-            baseUnit.ruleset = ruleset
+            baseUnit.setRuleset(ruleset)
     }
 
     /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
@@ -183,7 +183,7 @@ class TestGame {
 
     fun addUnit(name: String, civInfo: Civilization, tile: Tile?): MapUnit {
         val baseUnit = ruleset.units[name]!!
-        baseUnit.ruleset = ruleset
+        baseUnit.setRuleset(ruleset)
         val mapUnit = baseUnit.getMapUnit(civInfo)
         civInfo.units.addUnit(mapUnit)
         if (tile!=null) {
@@ -238,8 +238,8 @@ class TestGame {
     fun createBaseUnit(unitType: String = createUnitType().name, vararg uniques: String) =
         createRulesetObject(ruleset.units, *uniques) {
             val baseUnit = BaseUnit()
-            baseUnit.ruleset = gameInfo.ruleset
             baseUnit.unitType = unitType
+            baseUnit.setRuleset(gameInfo.ruleset)
             baseUnit
         }
     fun createBelief(type: BeliefType = BeliefType.Any, vararg uniques: String) =

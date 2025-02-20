@@ -32,7 +32,7 @@ class UnitTurnManager(val unit: MapUnit) {
         if (!unit.isFortified() && !unit.isGuarding())
             unit.turnsFortified = 0
 
-        if (!unit.hasUnitMovedThisTurn() || unit.hasUnique(UniqueType.HealsEvenAfterAction))
+        if ((!unit.hasUnitMovedThisTurn() && unit.attacksThisTurn == 0) || unit.hasUnique(UniqueType.HealsEvenAfterAction))
             healUnit()
 
         if (unit.isPreparingParadrop() || unit.isPreparingAirSweep())
@@ -144,6 +144,9 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.attacksThisTurn = 0
         unit.due = true
 
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponTurnStart))
+            UniqueTriggerActivation.triggerUnique(unique, unit)
+
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
         if (unit.isSleeping() && (unit.isMilitary() || (unit.currentTile.militaryUnit == null && !unit.currentTile.isCityCenter())) &&
@@ -168,7 +171,7 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.addMovementMemory()
         unit.attacksSinceTurnStart.clear()
         
-        for (status in unit.statuses.toList()){
+        for (status in unit.statusMap.values.toList()){
             status.turnsLeft--
             if (status.turnsLeft <= 0) unit.removeStatus(status.name)
         }

@@ -1,17 +1,1 @@
-重新实现有史以来最著名的文明建设类游戏-快，小，无广告，永远免费！
-
-建设文明，发展科技，扩展城市，征战四方！
-
-请求？漏洞？待办事项列表位于https://github.com/yairm210/Unciv/issues，欢迎每一个小小的帮助！
-
-问题？评论？只是无聊？在https://discord.gg/bjrB4Xw上加入我们！
-
-想帮忙把游戏翻译成你的语言吗？给我发送电子邮件到yairm210@hotmail.com。
-
-熟悉Java或Kotlin？在https://github.com/yairm210/Unciv加入我们。
-
-看不懂英文但仍然希望为社区做贡献？加入中文社区QQ群675179266或点击网址http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=UHIJomTUkhevKOkwu5vQtyDMHO6oqqB2&authKey=vLV%2FVDcmUU7uPA2ggTe8F6x%2FM4ySgZxQ50VjNLCYQL%2BI8lAgFUOVA90nHcVCZ78s&noverify=0&group_code=675179266
-
-世界正在等待！你能建立一个经得起时间考验的文明吗？
-
-用户发起的下载和多人游戏功能需要“完全网络访问”权限。用于实现多人游戏回合通知的API会自动包含所有其他列出的权限。网络权限用于列出模组、下载模组、下载音乐以及上传/下载多人游戏。Unciv不会发起其他互联网通信。
+重新打造经典：史上最具影响力的文明建设游戏——快速、轻量、无广告，永远免费！在游戏中，你可以建设属于自己的文明，发展科技，扩张城市，征服四方。遇到问题、发现漏洞，或者想参与开发，可以访问我们的待办事项列表 GitHub Issues（https://github.com/yairm210/Unciv/issues），我们欢迎每一位小伙伴的参与。想讨论游戏、有疑问，或者只是想找地方消遣？加入我们的 Discord 社区（https://discord.gg/bjrB4Xw）。如果你熟悉 Java 或 Kotlin，欢迎来 GitHub 项目（https://github.com/yairm210/Unciv） 找我们，一起让游戏变得更好。不懂英文但想为社区做贡献？可以加入我们的中文社区 QQ 群：675179266，或者点击 http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=UHIJomTUkhevKOkwu5vQtyDMHO6oqqB2&authKey=vLV%2FVDcmUU7uPA2ggTe8F6x%2FM4ySgZxQ50VjNLCYQL%2BI8lAgFUOVA90nHcVCZ78s&noverify=0&group_code=675179266。世界正等待你的创造，你能建立一个经得起时间考验的文明吗？用户发起的下载和多人游戏功能需要“完全网络访问”权限，用于实现多人游戏回合通知的 API 会自动包含所有其他列出的权限，网络权限仅用于列出模组、下载模组、下载音乐以及上传/下载多人游戏，Unciv 不会发起其他互联网通信。

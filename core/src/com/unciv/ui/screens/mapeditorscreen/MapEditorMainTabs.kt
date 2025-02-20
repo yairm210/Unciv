@@ -20,7 +20,7 @@ class MapEditorMainTabs(
     capacity = 7
 ) {
     val view = MapEditorViewTab(editorScreen)
-    val generate = MapEditorGenerateTab(editorScreen)
+    val generate = MapEditorGenerateTab(editorScreen, headerHeight)
     val edit = MapEditorEditTab(editorScreen, headerHeight)
     val load = MapEditorLoadTab(editorScreen, headerHeight)
     val save = MapEditorSaveTab(editorScreen, headerHeight)

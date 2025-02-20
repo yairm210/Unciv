@@ -109,12 +109,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
     
-    @Deprecated("As of 4.14.12 - use statusMap instead (for lookup performance)")
-    /** This is still the source of truth, currently replicating all statuses to use both the map and the list
-       so that ongoing games retain their statuses until we're ready to switch over */
-    var statuses = ArrayList<UnitStatus>()
-    /** New status container - should NOT serve as source of truth since MP games going 
-     * back and forth between older versions will lose this data! */
     var statusMap = HashMap<String, UnitStatus>()
 
     //endregion
@@ -224,7 +218,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        toReturn.statuses = ArrayList(statuses)
         toReturn.statusMap = HashMap(statusMap)
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
@@ -593,7 +586,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (promotions.promotions.contains(filter)) return true
                 // Badly optimized, but it's rare that statuses is even non-empty
                 // Statuses really should be converted to a hashmap
-                if (getStatus(name) != null) return true 
+                if (hasStatus(name)) return true 
                 return false
             }
         }
@@ -660,11 +653,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
         
-        for (status in statuses){
-            status.setTransients(this)
-            statusMap[status.name] = status
-        }
-
+        for (status in statusMap.values) status.setTransients(this)
         updateUniques()
         if (action == UnitActionType.Automate.value){
             automated = true
@@ -673,12 +662,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun updateUniques() {
-        val unitUniqueSources =
-            baseUnit.uniqueObjects.asSequence() +
-                type.uniqueObjects
         val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
-            statuses.flatMap { it.uniques }
-        val uniqueSources = unitUniqueSources + otherUniqueSources
+            statusMap.values.flatMap { it.uniques }
+        val uniqueSources = baseUnit.rulesetUniqueObjects.asSequence() + otherUniqueSources
         
         tempUniquesMap = UniqueMap(uniqueSources)
         nonUnitUniquesMap = UniqueMap(otherUniqueSources)
@@ -717,30 +703,30 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        if (updateCivViewableTiles && oldViewableTiles != viewableTiles
+        
+        val shouldUpdateTiles = updateCivViewableTiles && oldViewableTiles != viewableTiles
                 // Don't bother updating if all previous and current viewable tiles are within our borders
-                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
-                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })) {
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles } 
+                || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })
 
-            val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
-            if (unfilteredTriggeredUniques.isNotEmpty()) {
-                val newlyExploredTiles = viewableTiles.filter {
-                    !it.isExplored(civ)
-                }
-                for (tile in newlyExploredTiles) {
-                    val state = cache.state
-                    for (unique in unfilteredTriggeredUniques) {
-                        if (unique.getModifiers(UniqueType.TriggerUponDiscoveringTile)
-                                .any { tile.matchesFilter(it.params[0], civ) }
-                            && unique.conditionalsApply(state)
-                        )
-                            UniqueTriggerActivation.triggerUnique(unique, this)
-                    }
+        if (!shouldUpdateTiles) return
+        
+        val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
+        if (unfilteredTriggeredUniques.isNotEmpty()) {
+            val newlyExploredTiles = viewableTiles.filter { !it.isExplored(civ) }
+            for (tile in newlyExploredTiles) {
+                val state = cache.state
+                for (unique in unfilteredTriggeredUniques) {
+                    if (unique.getModifiers(UniqueType.TriggerUponDiscoveringTile)
+                            .any { tile.matchesFilter(it.params[0], civ) }
+                        && unique.conditionalsApply(state)
+                    )
+                        UniqueTriggerActivation.triggerUnique(unique, this)
                 }
             }
-
-            civ.cache.updateViewableTiles(explorerPosition)
         }
+
+        civ.cache.updateViewableTiles(explorerPosition)
     }
 
     /** Can accept a negative number to gain movement points */
@@ -781,6 +767,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val currentTile = getTile()
+        
         if (isMoving()) {
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
@@ -904,7 +891,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val promotion = unique.params[0]
             promotions.addPromotion(promotion, true)
         }
-
+        
+        val triggeredUniques = getTriggeredUniques(UniqueType.TriggerUponEnteringTile) { tile.matchesFilter(it.params[0]) }
+        for (triggeredUnique in triggeredUniques) 
+            UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
+            
         updateVisibleTiles(true, currentTile.position)
     }
 
@@ -1048,7 +1039,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
     
-    fun getStatus(name:String): UnitStatus? = statuses.firstOrNull { it.name == name }
+    fun getStatus(name:String): UnitStatus? = statusMap[name]
     fun hasStatus(name:String): Boolean = getStatus(name) != null
     
     fun setStatus(name:String, turns:Int){
@@ -1062,7 +1053,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         status.name = name
         status.turnsLeft = turns
         status.setTransients(this)
-        statuses.add(status)
         statusMap[status.name] = status
         updateUniques()
 
@@ -1071,10 +1061,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
     
     fun removeStatus(name:String){
-        val wereRemoved = statuses.removeAll { it.name == name }
-        statusMap.remove(name)
-        if (!wereRemoved) return
-        
+        statusMap.remove(name) ?: return
+
         updateUniques()
 
         for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusLoss){ it.params[0] == name })

@@ -25,10 +25,9 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         private set
     var foodStored = 0
 
-    // In favor of this bad boy
     val specialistAllocations = Counter<String>()
 
-    fun getNewSpecialists() = specialistAllocations //convertStatsToSpecialistHashmap(specialists)
+    fun getNewSpecialists() = specialistAllocations 
 
 
     //region pure functions
@@ -87,7 +86,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             "Population" -> population
             "Followers of the Majority Religion", "Followers of this Religion" -> city.religion.getFollowersOfMajorityReligion()
             "Unemployed" -> getFreePopulation()
-            else -> 0
+            else -> specialistAllocations[filter]
         }
     }
 
@@ -150,7 +149,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     /** Only assigns free population */
     internal fun autoAssignPopulation() {
-        city.cityStats.update(updateCivStats = false)  // calculate current stats with current assignments
+        city.cityStats.update()  // calculate current stats with current assignments
         val freePopulation = getFreePopulation()
         if (freePopulation <= 0) return
 

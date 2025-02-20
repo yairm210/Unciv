@@ -276,6 +276,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     fun updateAllyCivForCityState() {
         var newAllyName: String? = null
         if (!civInfo.isCityState) return
+        
         val maxInfluence = civInfo.diplomacy
             .filter { it.value.otherCiv().isMajorCiv() && !it.value.otherCiv().isDefeated() }
             .maxByOrNull { it.value.getInfluence() }
@@ -283,48 +284,49 @@ class CityStateFunctions(val civInfo: Civilization) {
             newAllyName = maxInfluence.key
         }
 
-        if (civInfo.getAllyCiv() != newAllyName) {
-            val oldAllyName = civInfo.getAllyCiv()
-            civInfo.setAllyCiv(newAllyName)
+        if (civInfo.getAllyCiv() == newAllyName) return
+        
+        val oldAllyName = civInfo.getAllyCiv()
+        civInfo.setAllyCiv(newAllyName)
 
-            if (newAllyName != null) {
-                val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
-                val text = "We have allied with [${civInfo.civName}]."
-                newAllyCiv.addNotification(text,
-                    getNotificationActions(),
-                    NotificationCategory.Diplomacy, civInfo.civName,
-                    NotificationIcon.Diplomacy
-                )
-                newAllyCiv.cache.updateViewableTiles()
-                newAllyCiv.cache.updateCivResources()
-                for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold) + newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGoldOld))
-                    newAllyCiv.getDiplomacyManager(civInfo)!!.setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
+        if (newAllyName != null) {
+            val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
+            val text = "We have allied with [${civInfo.civName}]."
+            newAllyCiv.addNotification(text,
+                getNotificationActions(),
+                NotificationCategory.Diplomacy, civInfo.civName,
+                NotificationIcon.Diplomacy
+            )
+            newAllyCiv.cache.updateViewableTiles()
+            newAllyCiv.cache.updateCivResources()
+            for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold) + newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGoldOld))
+                newAllyCiv.getDiplomacyManager(civInfo)!!.setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
 
-                // Join the wars of our new ally - loop through all civs they are at war with
-                for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
-                    if (!civInfo.isAtWarWith(newEnemy)) {
-                        if (!civInfo.knows(newEnemy))
-                            // We have to meet first
-                            civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
-                        civInfo.getDiplomacyManager(newEnemy)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
-                    }
+            // Join the wars of our new ally - loop through all civs they are at war with
+            for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
+                if (!civInfo.isAtWarWith(newEnemy)) {
+                    if (!civInfo.knows(newEnemy))
+                        // We have to meet first (meet interesting people - and kill them!)
+                        civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
+                    civInfo.getDiplomacyManager(newEnemy)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
                 }
             }
-            if (oldAllyName != null && civInfo.isAlive()) {
-                val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
-                val text = "We have lost alliance with [${civInfo.civName}]."
-                oldAllyCiv.addNotification(text,
-                    getNotificationActions(),
-                    NotificationCategory.Diplomacy, civInfo.civName,
-                    NotificationIcon.Diplomacy
-                )
-                if (newAllyName != null && oldAllyCiv.knows(newAllyName)){
-                    val diplomacyManager = oldAllyCiv.getDiplomacyManager(newAllyName)!!
-                    diplomacyManager.addModifier(DiplomaticModifiers.StoleOurAlly, -10f)
-                }
-                oldAllyCiv.cache.updateViewableTiles()
-                oldAllyCiv.cache.updateCivResources()
+        }
+        
+        if (oldAllyName != null && civInfo.isAlive()) {
+            val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
+            val text = "We have lost alliance with [${civInfo.civName}]."
+            oldAllyCiv.addNotification(text,
+                getNotificationActions(),
+                NotificationCategory.Diplomacy, civInfo.civName,
+                NotificationIcon.Diplomacy
+            )
+            if (newAllyName != null && oldAllyCiv.knows(newAllyName)){
+                val diplomacyManager = oldAllyCiv.getDiplomacyManager(newAllyName)!!
+                diplomacyManager.addModifier(DiplomaticModifiers.StoleOurAlly, -10f)
             }
+            oldAllyCiv.cache.updateViewableTiles()
+            oldAllyCiv.cache.updateCivResources()
         }
     }
 
@@ -626,89 +628,109 @@ class CityStateFunctions(val civInfo: Civilization) {
             }
         }
         // Others might become wary!
-        if (attacker.isMinorCivAggressor()) {
-            for (cityState in civInfo.gameInfo.getAliveCityStates()) {
-                if (cityState == civInfo) // Must be a different minor
-                    continue
-                if (cityState.getAllyCiv() == attacker.civName) // Must not be allied to the attacker
-                    continue
-                if (!cityState.knows(attacker)) // Must have met
-                    continue
-                if (cityState.questManager.wantsDead(civInfo.civName))  // Must not want us dead
-                    continue
+        if (attacker.isMinorCivAggressor()) makeOtherCityStatesWaryOfAttacker(attacker)
 
-                var probability: Int
-                if (attacker.isMinorCivWarmonger()) {
-                    // High probability if very aggressive
-                    probability = when (cityState.getProximity(attacker)) {
-                        Proximity.Neighbors -> 100
-                        Proximity.Close -> 75
-                        Proximity.Far -> 50
-                        Proximity.Distant -> 25
-                        else                -> 0
-                    }
-                } else {
-                    // Lower probability if only somewhat aggressive
-                    probability = when (cityState.getProximity(attacker)) {
-                        Proximity.Neighbors -> 50
-                        Proximity.Close -> 20
-                        else                -> 0
-                    }
-                }
+        triggerProtectorCivs(attacker)
 
-                // Higher probability if already at war
-                if (cityState.isAtWarWith(attacker))
-                    probability += 50
-
-                if (Random.Default.nextInt(100) <= probability) {
-                    cityState.getDiplomacyManager(attacker)!!.becomeWary()
-                }
-            }
-        }
-
-        for (protector in civInfo.cityStateFunctions.getProtectorCivs()) {
-            val protectorDiplomacy = protector.getDiplomacyManager(attacker) ?: continue // Who?
-            if (protectorDiplomacy.hasModifier(DiplomaticModifiers.AttackedProtectedMinor)
-                && protectorDiplomacy.getFlag(DiplomacyFlags.RememberAttackedProtectedMinor) > 50)
-                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -15f) // Penalty less severe for second offence
-            else
-                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -20f)
-            protectorDiplomacy.setFlag(DiplomacyFlags.RememberAttackedProtectedMinor, 75)   // Reset their memory
-
-            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
-                attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!",
-                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName)
-            else    // Let humans choose who to side with
-                protector.popupAlerts.add(
-                    PopupAlert(
-                        AlertType.AttackedProtectedMinor,
-                    attacker.civName + "@" + civInfo.civName)
-                )   // we need to pass both civs as argument, hence the horrible chimera
-        }
-
-        // Even if we aren't *technically* protectors, we *can* still be pissed you attacked our allies*
-        val allyCivName = civInfo.getAllyCiv()
-        val allyCiv = if (allyCivName != null) civInfo.gameInfo.getCivilization(allyCivName) else null
-        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs() && allyCiv.knows(attacker)){
-            val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
-            // Less than if we were protectors
-            allyDiplomacy.addModifier(DiplomaticModifiers.AttackedAlliedMinor, -10f)
-
-            if (allyCiv.playerType != PlayerType.Human)   // Humans can have their own emotions
-                attacker.addNotification("[${allyCiv.civName}] is upset that you attacked [${civInfo.civName}], whom they are allied with!",
-                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, allyCiv.civName)
-            else    // Let humans choose who to side with
-                allyCiv.popupAlerts.add(
-                    PopupAlert(
-                        AlertType.AttackedAllyMinor,
-                        attacker.civName + "@" + civInfo.civName)
-                )
-        }
+        // Even if we aren't *technically* protectors, we *can* still be pissed you attacked our allies
+        triggerAllyCivs(attacker)
 
         // Set up war with major pseudo-quest
         civInfo.questManager.wasAttackedBy(attacker)
         civInfo.getDiplomacyManager(attacker)!!.setFlag(DiplomacyFlags.RecentlyAttacked, 2) // Reminder to ask for unit gifts in 2 turns
     }
+
+    private fun makeOtherCityStatesWaryOfAttacker(attacker: Civilization) {
+        for (cityState in civInfo.gameInfo.getAliveCityStates()) {
+            if (cityState == civInfo) // Must be a different minor
+                continue
+            if (cityState.getAllyCiv() == attacker.civName) // Must not be allied to the attacker
+                continue
+            if (!cityState.knows(attacker)) // Must have met
+                continue
+            if (cityState.questManager.wantsDead(civInfo.civName))  // Must not want us dead
+                continue
+
+            var probability: Int = if (attacker.isMinorCivWarmonger()) {
+                // High probability if very aggressive
+                when (cityState.getProximity(attacker)) {
+                    Proximity.Neighbors -> 100
+                    Proximity.Close -> 75
+                    Proximity.Far -> 50
+                    Proximity.Distant -> 25
+                    else -> 0
+                }
+            } else {
+                // Lower probability if only somewhat aggressive
+                when (cityState.getProximity(attacker)) {
+                    Proximity.Neighbors -> 50
+                    Proximity.Close -> 20
+                    else -> 0
+                }
+            }
+
+            // Higher probability if already at war
+            if (cityState.isAtWarWith(attacker))
+                probability += 50
+
+            if (Random.nextInt(100) <= probability) {
+                cityState.getDiplomacyManager(attacker)!!.becomeWary()
+            }
+        }
+    }
+
+    private fun triggerProtectorCivs(attacker: Civilization) {
+        for (protector in civInfo.cityStateFunctions.getProtectorCivs()) {
+            val protectorDiplomacy = protector.getDiplomacyManager(attacker) ?: continue // Who?
+            if (protectorDiplomacy.hasModifier(DiplomaticModifiers.AttackedProtectedMinor)
+                && protectorDiplomacy.getFlag(DiplomacyFlags.RememberAttackedProtectedMinor) > 50
+            )
+                protectorDiplomacy.addModifier(
+                    DiplomaticModifiers.AttackedProtectedMinor,
+                    -15f
+                ) // Penalty less severe for second offence
+            else
+                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -20f)
+            protectorDiplomacy.setFlag(DiplomacyFlags.RememberAttackedProtectedMinor, 75)   // Reset their memory
+
+            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
+                attacker.addNotification(
+                    "[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!",
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName
+                )
+            else    // Let humans choose who to side with
+                protector.popupAlerts.add(
+                    PopupAlert(
+                        AlertType.AttackedProtectedMinor,
+                        attacker.civName + "@" + civInfo.civName
+                    )
+                )   // we need to pass both civs as argument, hence the horrible chimera
+        }
+    }
+
+    private fun triggerAllyCivs(attacker: Civilization) {
+        val allyCivName = civInfo.getAllyCiv()
+        val allyCiv = if (allyCivName != null) civInfo.gameInfo.getCivilization(allyCivName) else null
+        if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs() && allyCiv.knows(attacker)) {
+            val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
+            // Less than if we were protectors
+            allyDiplomacy.addModifier(DiplomaticModifiers.AttackedAlliedMinor, -10f)
+
+            if (allyCiv.playerType != PlayerType.Human)   // Humans can have their own emotions
+                attacker.addNotification(
+                    "[${allyCiv.civName}] is upset that you attacked [${civInfo.civName}], whom they are allied with!",
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, allyCiv.civName
+                )
+            else    // Let humans choose who to side with
+                allyCiv.popupAlerts.add(
+                    PopupAlert(
+                        AlertType.AttackedAllyMinor,
+                        attacker.civName + "@" + civInfo.civName
+                    )
+                )
+        }
+    }
+
 
     /** A city state was destroyed. Its protectors are going to be upset! */
     fun cityStateDestroyed(attacker: Civilization) {

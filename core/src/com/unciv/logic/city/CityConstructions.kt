@@ -259,7 +259,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if (workLeft < 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
+        if (workLeft <= 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
             return 0 // So we finish it at the start of the next turn. This could technically also happen when we lower production costs during our turn,
         // but distinguishing those two cases is difficult, and the second one is much rarer than the first
         if (workLeft <= productionOverflow) // if we already have stored up enough production to finish it directly
@@ -402,30 +402,30 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val rejectionReasons =
                 (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
-            if (rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) {
-                val workDone = getWorkDone(constructionName)
-                if (construction is Building) {
-                    // Production put into wonders gets refunded
-                    if (construction.isWonder && workDone != 0) {
-                        city.civ.addGold(workDone)
-                        city.civ.addNotification(
-                            "Excess production for [$constructionName] converted to [$workDone] gold",
-                            city.location,
-                            NotificationCategory.Production,
-                            NotificationIcon.Gold, "BuildingIcons/${constructionName}")
-                    }
-                } else if (construction is BaseUnit) {
-                    // Production put into upgradable units gets put into upgraded version
-                    val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(city.state)
-                        .map { city.civ.getEquivalentUnit(it) }
-                        .filter { it.isBuildable(this) }
-                        .minByOrNull { it.cost }
-                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
-                        inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
-                    }
+            if (!rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) continue
+            
+            val workDone = getWorkDone(constructionName)
+            if (construction is Building) {
+                // Production put into wonders gets refunded
+                if (construction.isWonder && workDone != 0) {
+                    city.civ.addGold(workDone)
+                    city.civ.addNotification(
+                        "Excess production for [$constructionName] converted to [$workDone] gold",
+                        city.location,
+                        NotificationCategory.Production,
+                        NotificationIcon.Gold, "BuildingIcons/${constructionName}")
                 }
-                inProgressConstructions.remove(constructionName)
+            } else if (construction is BaseUnit) {
+                // Production put into upgradable units gets put into upgraded version
+                val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(city.state)
+                    .map { city.civ.getEquivalentUnit(it) }
+                    .filter { it.isBuildable(this) }
+                    .minByOrNull { it.cost }
+                if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
+                    inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
+                }
             }
+            inProgressConstructions.remove(constructionName)
         }
     }
 
@@ -439,20 +439,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.gainStockpiledResource(resource, -amount)
         }
 
-        if (construction !is Building) return
+        if (construction !is INonPerpetualConstruction) return
         if (!construction.hasUnique(UniqueType.TriggersAlertOnStart)) return
-        val buildingIcon = "BuildingIcons/${construction.name}"
+        val icon = if (construction is Building) "BuildingIcons/${construction.name}" else "UnitIcons/${construction.name}"
         for (otherCiv in city.civ.gameInfo.civilizations) {
             if (otherCiv == city.civ) continue
             when {
                 otherCiv.hasExplored(city.getCenterTile()) ->
                     otherCiv.addNotification("The city of [${city.name}] has started constructing [${construction.name}]!",
-                        city.location, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
+                        city.location, NotificationCategory.General, NotificationIcon.Construction, icon)
                 otherCiv.knows(city.civ) ->
                     otherCiv.addNotification("[${city.civ.civName}] has started constructing [${construction.name}]!",
-                        NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
+                        NotificationCategory.General, NotificationIcon.Construction, icon)
                 else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
-                    NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
+                    NotificationCategory.General, NotificationIcon.Construction, icon)
             }
         }
     }
@@ -464,6 +464,19 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         else if (construction is BaseUnit) {
             unit = construction.construct(this, null)
                 ?: return false // unable to place unit
+            
+            // checking if it's true that we should load saved promotion for the unitType
+            // Check if the player want to rebuild the unit the saved promotion
+            // and null check.
+            // and finally check if the current unit has enough XP. 
+            val savedPromotion = city.cityUnitTypePromotions[unit.baseUnit.unitType]
+            if (city.unitTypeShouldUseSavedPromotion[unit.baseUnit.unitType] == true &&
+                savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
+                
+                    for (promotions in savedPromotion.promotions) {
+                        unit.promotions.addPromotion(promotions)
+                }
+            }
         }
 
         if (construction.name in inProgressConstructions)

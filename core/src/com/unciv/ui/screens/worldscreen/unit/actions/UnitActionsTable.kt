@@ -183,6 +183,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unit.isDestroyed || 
             unitAction.type.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))
             worldScreen.switchToNextUnit()
-        else worldScreen.bottomUnitTable.selectedUnitHasChanged = true
+        else worldScreen.bottomUnitTable.shouldUpdate = true
     }
 }

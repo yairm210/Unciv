@@ -50,7 +50,7 @@ In this order:
 
 Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 
-Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)!
+Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)! Language completion status [here](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/translations/completionPercentages.properties) 
 
 Modders start [here](https://yairm210.github.io/Unciv/Modders/Mods/)!
 

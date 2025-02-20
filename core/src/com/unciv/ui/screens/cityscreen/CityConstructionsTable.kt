@@ -14,7 +14,6 @@ import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -37,6 +36,7 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.setEnabled
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -83,6 +83,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val lowerTableScrollCell: Cell<ScrollPane>
 
     private val pad = 10f
+    private val miniQueueHeight = 54f
     private val posFromEdge = CityScreen.posFromEdge
     private val stageHeight = cityScreen.stage.height
     
@@ -106,8 +107,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         queueExpander = ExpanderTab(
             "Construction queue", 
             onChange = { cityScreen.update() },
-            startsOutOpened = cityScreen.game.settings.screenSize >= GameSettings.ScreenSize.Large,
-            defaultPad = 0f
+            defaultPad = 0f,
+            // keep lowerTable at fixed position
+            startsOutOpened = false,
+            expanderHeight = miniQueueHeight
         )
 
         upperTable.defaults().left().top()
@@ -120,7 +123,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         // by default, and by expancing the construction queue, the user changes precedence to the
         // construction queue.
         upperTable.add(constructionsQueueScrollPane).padBottom(pad).maxHeight(stageHeight*3/4).row()
-        upperTable.add(buttonsTable).padBottom(pad).row()
+        upperTable.add(buttonsTable)
+            .height("".toTextButton().height) // constant height in order to not let the lowerTable jump
+            .padBottom(pad).row()
         
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
         availableConstructionsScrollPane.setOverscroll(false, false)
@@ -166,8 +171,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         /** [UniqueType.MayBuyConstructionsInPuppets] support - we need a buy button for civs that could buy items in puppets */
         if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
         buttonsTable.clear()
-        buyButtonFactory.addBuyButtons(buttonsTable, construction) {
-            it.width(120f).padRight(10f)
+        
+        for (button in buyButtonFactory.getBuyButtons(construction)) {
+            buttonsTable.add(button).width(120f).padRight(10f)
         }
         // priority buttons and remove button
         val queue = cityScreen.city.cityConstructions.constructionQueue
@@ -205,28 +211,28 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             constructionsQueueTable.add(getQueueEntry(0, currentConstruction))
                     .expandX().fillX().row()
         else
-            constructionsQueueTable.add("Pick a construction".toLabel()).pad(2f).row()
+            constructionsQueueTable.add("Pick a construction".toLabel()).height(50f).pad(2f).row()
 
-        if (queue.size > 1) {
-            queueExpander.innerTable.clear()
-            queueExpander.headerContent.clear()
-            queueExpander.header.pad(0f)
-            queueExpander.setText("Construction queue".tr())
-            queue.forEachIndexed { i, constructionName ->
-                // The first entry is already displayed as "Current construction"
-                if (i != 0) {
-                    queueExpander.innerTable.add(getQueueEntry(i, constructionName))
-                        .expandX().fillX().row()
-                    if (i != queue.lastIndex) {
-                        queueExpander.innerTable.addSeparator()
-                    }
+        // always show queue expander, even when empty, in order to keep lowerTable at constant position
+        queueExpander.innerTable.clear()
+        queueExpander.headerContent.clear()
+        queueExpander.isHeaderIconVisible = queue.size >= 2
+        queueExpander.header.pad(0f)
+        queueExpander.setText("Construction queue".tr())
+        queue.forEachIndexed { i, constructionName ->
+            // The first entry is already displayed as "Current construction"
+            if (i != 0) {
+                queueExpander.innerTable.add(getQueueEntry(i, constructionName))
+                    .expandX().fillX().row()
+                if (i != queue.lastIndex) {
+                    queueExpander.innerTable.addSeparator()
                 }
             }
-            if (!queueExpander.isOpen) {
-                updateQueuePreview(queue)
-            }
-            constructionsQueueTable.add(queueExpander).fillX().pad(2f)
         }
+        if (!queueExpander.isOpen) {
+            updateQueuePreview(queue)
+        }
+        constructionsQueueTable.add(queueExpander).fillX().pad(2f)
 
         constructionsQueueScrollPane.layout()
         constructionsQueueScrollPane.scrollY = queueScrollY
@@ -235,11 +241,16 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun updateQueuePreview(queue: MutableList<String>) {
         queueExpander.header.pad(-5f, 0f, -5f, 0f)
-        queueExpander.setText(if (queue.size <= 3) "Queue".tr() else "")
+        val title = when(queue.size) {
+            in 0..1 -> "Queue empty".tr()
+            in 2..4 -> "Queue".tr()
+            else -> ""
+        }
+        queueExpander.setText(title)
         queue.forEachIndexed { i, constructionName ->
             if (i in 1..3) {
                 val color = if (selectedQueueEntry == i) highlightColor else BaseScreen.skinStrings.skinConfig.baseColor
-                val image = ImageGetter.getConstructionPortrait(constructionName, 40f).surroundWithCircle(54f, false, color)
+                val image = ImageGetter.getConstructionPortrait(constructionName, 40f).surroundWithCircle(miniQueueHeight, false, color)
                 image.addListener(object: ClickListener() {
                     // Calling event.stop() to prevent click propagation to the parent,
                     // the expander header.
@@ -503,7 +514,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val resourceTable = Table().apply { isTransform = false }
 
         val textColor = if (constructionButtonDTO.rejectionReason == null) Color.WHITE else Color.RED
-        constructionTable.add(construction.name.toLabel(fontColor = textColor, hideIcons = true).apply { wrap=true })
+
+        val statIcons = if (construction is Building)
+            " " + Stat.entries.filter { construction.isStatRelated(it, cityScreen.city) }.map { it.character }.joinToString("")
+        else ""
+        
+        val constructionNameText = "${construction.name.tr(hideIcons = true)}$statIcons"
+
+        constructionTable.add(constructionNameText.toLabel(fontColor = textColor, hideIcons = true).apply { wrap=true })
             .width(cityScreen.stage.width/5).expandX().left().row()
 
         resourceTable.add(constructionButtonDTO.buttonText.toLabel()).expandX().left()

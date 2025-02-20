@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Container
@@ -195,8 +196,15 @@ class UncivTooltip <T: Actor>(
         show()
     }
 
-    override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-        if (!touchDownSeen && toActor != null && toActor.isDescendantOf(target)) return
+    override fun exit(event: InputEvent, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+        // When an actor is removed, [toActor] is not set correctly. It falsely is set to
+        // the actor which just got removed, where it should either be null or better set to the
+        // actor behind it. I filed a bug report to libGDX https://github.com/libgdx/libgdx/issues/7577
+        // This is a hack to work around the bug:
+        val field = Stage::class.java.getDeclaredField("mouseOverActor").apply { isAccessible = true }
+        val mouseOverActor = field.get(event.stage)
+        if (!touchDownSeen && toActor != null && toActor.isDescendantOf(target) && mouseOverActor!=null)
+            return
         touchDownSeen = false
         hide()
     }

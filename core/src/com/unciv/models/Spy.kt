@@ -169,12 +169,16 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
         if (stealableTechs.isEmpty()) return -1
 
-        val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
+        var techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!.toFloat()
+        val techStealCostModifier = civInfo.gameInfo.ruleset.modOptions.constants.spyTechStealCostModifier //1.25f in Civ5 GlobalDefines.XML
+        val techSpeedModifier = civInfo.gameInfo.speed.scienceCostModifier //Modify steal cost according to game speed
+        techStealCost *= techStealCostModifier * techSpeedModifier
         var progressThisTurn = getCity().cityStats.currentCityStats.science
         if (progressThisTurn <= 0f) return -2 // The city has no science
 
-        // 33% spy bonus for each level
-        progressThisTurn *= (rank + 2f) / 3f
+        // 25% spy bonus for each level
+        val rankTechStealModifier = rank * civInfo.gameInfo.ruleset.modOptions.constants.spyRankStealPercentBonus
+        progressThisTurn *= (rankTechStealModifier + 75f) / 100f
         progressThisTurn *= getEfficiencyModifier().toFloat()
         progressTowardsStealingTech += progressThisTurn.toInt()
 
@@ -419,5 +423,5 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /** Anti-save-scum: Deterministic random from city and turn
      *  @throws NullPointerException for spies in the hideout */
-    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt()
+    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt() + name.hashCode()
 }

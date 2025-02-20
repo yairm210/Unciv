@@ -1,3 +1,144 @@
+## 4.15.12
+
+"Abundant resources" with mods with loads of resources no longer crash
+
+AI: choose policy branch at random between those with the least remaining policies
+
+modding: rename "experience" with "XP" for unified naming
+
+Move Spy tech steal modifiers to mod constants - By EmperorPinguin
+
+## 4.15.11
+
+UI: Fixed edges for edge tiles on word wrap maps
+
+Fixed automated road connections attempting to go through impassible tiles
+
+Modding: Changed stockpile names to be human readable
+
+Units with logistics that attacked but did not move, no longer heal
+
+Added feature to save unitType promotion - By Emandac
+
+Add "Will be destroyed when pillaged" unique - By PLynx01
+
+## 4.15.10
+
+modding: Validate tech row value
+
+UI: More visible railroads
+
+Display unexplored tiles 1-tile out from explored tiles
+
+Retain zoom when moving between different city screens
+
+Stats in notifications no longer have number format 'baked in'
+
+Map no longer makes map options left-right scrollable
+
+Only show 'move spies' button if there are places to move spies
+
+Add Shuffle Civ option - By itanasi
+
+## 4.15.9
+
+Rendering performance improvements
+
+Map example for new games is *only an example* and does not cause lag
+
+Generate map tab in map editor properly scrollable
+
+Added missing attack notification translations
+
+Fixed unit statuses causing game to be unloadable 
+
+By itanasi:
+- Add small Skip/Cycle Button
+- Settling Suggestion Improvements
+
+Add turn start unique - By SeventhM
+
+## 4.15.8
+
+"Triggers a global alert upon build start" works for units
+
+UX:
+- Added generated map type preview in New Game screen :D
+- Better panel sizing in New Game screen
+
+Fixed multiple buy buttons in construction info table
+
+## 4.15.7
+
+Revert all texture packing - solves several bugs at the expense of the faster rendering
+
+Avoid rare crash when failing to load mods on Android
+
+Fixed Unciv not starting on MacOS
+
+modding: 
+- Added 'upon entering a [tileFilter] tile' trigger
+- Added validation for UnitType.movementType
+- populationFilter now accepts Specialist names
+
+Fix Assignment Cycling - By itanasi
+
+## 4.15.6
+
+Fixed white blocks on new game from new game screen
+
+Added stat categories for buildings in the construction list
+
+Spy randomness is different for different spies in same city
+
+Resize map with drag gesture - By sulai
+
+Add info about adding project - By itanasi
+
+## 4.15.5
+
+Huge rendering performance changes for modded images - merely "major" change for non-modded images
+
+Automation handles "Found City" uniques with limited uses correctly
+
+By sulai:
+- UnitTable: show a summary when no unit is selected 
+- Fix sticky tooltips 
+
+## 4.15.4
+
+Greeting stats translated correctly in notifications
+
+Multiplayer screen correctly handles errors when downloading mods
+
+"Cannot attack" accepts "vs" conditionals
+
+By SeventhM:
+- Add a field for global unit uniques 
+- Allow building improvements on terrains that only allow some improvements when it has multiple uniques 
+- Add conditional for when you aren't in a golden age 
+
+Added an UniqueType to Found puppet city. - By Emandac
+
+By itanasi:
+- Set Avoid Growth=false on city capture
+
+## 4.15.3
+
+Tech screen performance improvements
+
+Notification for city conversion when removing heresy
+
+Fixed unique buildings/improvements with zeroed stat not showing before vs after
+
+By sulai:
+- Show "x units due" on Big Button, setting for cycling units 
+- Constructions table: avoid vertical movement of lower table 
+
+Added option to change the Maximum Autosave turns stored - By Emandac
+
+Add hotkey for Idle Unit cycle buttons - By itanasi
+
 ## 4.15.2
 
 Added notification when enemy religion spread converts a city 

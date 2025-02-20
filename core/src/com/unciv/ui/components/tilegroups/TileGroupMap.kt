@@ -101,7 +101,10 @@ class TileGroupMap<T: TileGroup>(
         val baseLayers = ArrayList<TileLayerTerrain>(numberOfTilegroups)
         val featureLayers = ArrayList<TileLayerFeatures>(numberOfTilegroups)
         val borderLayers = ArrayList<TileLayerBorders>(numberOfTilegroups)
+        val resourceLayers = ArrayList<TileLayerResource>(numberOfTilegroups)
+        val improvementLayers = ArrayList<TileLayerImprovement>(numberOfTilegroups)
         val miscLayers = ArrayList<TileLayerMisc>(numberOfTilegroups)
+        val yieldLayers = ArrayList<TileLayerYield>(numberOfTilegroups)
         val pixelUnitLayers = ArrayList<TileLayerUnitSprite>(numberOfTilegroups)
         val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>(numberOfTilegroups)
         val unitLayers = ArrayList<TileLayerUnitFlag>(numberOfTilegroups)
@@ -116,18 +119,25 @@ class TileGroupMap<T: TileGroup>(
             baseLayers.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
             featureLayers.add(group.layerFeatures.apply { setPosition(group.x, group.y) })
             borderLayers.add(group.layerBorders.apply { setPosition(group.x, group.y) })
+            resourceLayers.add(group.layerResource.apply { setPosition(group.x, group.y) })
+            improvementLayers.add(group.layerImprovement.apply { setPosition(group.x, group.y) })
             miscLayers.add(group.layerMisc.apply { setPosition(group.x, group.y) })
+            yieldLayers.add(group.layerYield.apply { setPosition(group.x, group.y) })
             pixelUnitLayers.add(group.layerUnitArt.apply { setPosition(group.x, group.y) })
             circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x, group.y) })
             unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x, group.y) })
             cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x, group.y) })
         }
 
+        
         val layerLists = listOf(
             baseLayers,
             featureLayers,
             borderLayers,
+            resourceLayers,
+            improvementLayers,
             miscLayers,
+            yieldLayers,
             pixelUnitLayers,
             circleFogCrosshairLayers,
             tileGroups, // The above layers are for the visual layers, this is for the clickability of the tile
