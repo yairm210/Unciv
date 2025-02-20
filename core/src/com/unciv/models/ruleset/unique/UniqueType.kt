@@ -156,6 +156,10 @@ enum class UniqueType(
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [relativeAmount]% less than normal", UniqueTarget.Global),
     LessPolicyCost("[relativeAmount]% Culture cost of adopting new Policies", UniqueTarget.Global),
 
+    /// Tech Cost
+    LessTechCostFromCities("Each city founded increases science cost of technologies [relativeAmount]% less than normal", UniqueTarget.Global),
+    LessTechCost("[relativeAmount]% Science cost of researching new Technologies", UniqueTarget.Global),
+
     /// Natural Wonders
     StatsFromNaturalWonders("[stats] for every known Natural Wonder", UniqueTarget.Global),
     StatBonusWhenDiscoveringNaturalWonder("[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)", UniqueTarget.Global),
