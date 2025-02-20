@@ -202,27 +202,14 @@ class PromotionPickerScreen private constructor(
     
     // adds the checkBoxs to choice to save unit promotion.
     private fun saveUnitTypePromotionForCity() {
-<<<<<<< Updated upstream
-=======
         // if you are not in a city tile then don't show up 
-        if (unit.currentTile.getCity() == null) return 
->>>>>>> Stashed changes
+        if (unit.currentTile.getCity() == null) return
         val checkBoxSaveUnitPromotion = "Default promotions for [${unit.baseUnit.name}]".toCheckBox(saveUnitTypePromotion) {saveUnitTypePromotion = it}
         promotionsTable.add(checkBoxSaveUnitPromotion)
     }
     
     // going to reuse this bit of code 2 time so turn it into a funtion
     private fun checkSaveUnitTypePrormotion() {
-<<<<<<< Updated upstream
-        if (!saveUnitTypePromotion) {
-            val unitCurrentCity = unit.currentTile.getCity()
-
-            if (unitCurrentCity != null) {
-                // If you are clicked the save unitType promotion, you want the next unitType to have the same promotion.
-                unitCurrentCity.unitShouldUseSavedPromotion.put(unit.baseUnit.name,true)
-                unitCurrentCity.unitToPromotions.put(unit.baseUnit.name,unit.promotions)
-            }
-=======
         if (!saveUnitTypePromotion)  return
         
         val unitCurrentCity = unit.currentTile.getCity()
@@ -230,7 +217,6 @@ class PromotionPickerScreen private constructor(
             // If you are clicked the save baseUnit promotion, you want the next baseUnit to have the same promotion.
             unitCurrentCity.unitShouldUseSavedPromotion[unit.baseUnit.name] = true
             unitCurrentCity.unitToPromotions[unit.baseUnit.name] = unit.promotions
->>>>>>> Stashed changes
         }
     }
     
