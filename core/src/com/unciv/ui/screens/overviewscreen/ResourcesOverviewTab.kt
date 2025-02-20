@@ -12,6 +12,7 @@ import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
@@ -56,13 +57,13 @@ class ResourcesOverviewTab(
 
     private val resourceDrilldown: ResourceSupplyList = viewingPlayer.detailedCivResources
     private val extraDrilldown: ResourceSupplyList = getExtraDrilldown()
-    private val drilldownSequence = resourceDrilldown.asSequence() + extraDrilldown.asSequence()
+    private val allResources = ResourceSupplyList().apply { addAll(resourceDrilldown.asSequence() + extraDrilldown.asSequence()) }
 
     // Order of source ResourceSupplyList: by tiles, enumerating the map in that spiral pattern
     // UI should not surprise player, thus we need a deterministic and guessable order
-    private val resources: List<TileResource> = drilldownSequence
+    private val resources: List<TileResource> = allResources.asSequence()
         .map { it.resource }
-        .filter { it.resourceType != ResourceType.Bonus }
+        .filter { it.resourceType != ResourceType.Bonus && !it.hasUnique(UniqueType.NotShownOnWorldScreen) }
         .distinct()
         .sortedWith(
             compareBy<TileResource> { it.resourceType }
