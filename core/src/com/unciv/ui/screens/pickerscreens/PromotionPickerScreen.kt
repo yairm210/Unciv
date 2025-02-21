@@ -17,12 +17,8 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onDoubleClick
+import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.*
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -195,11 +191,12 @@ class PromotionPickerScreen private constructor(
             row += 1
         }
 
-        topTable.add(promotionsTable)
+        topTable.add(promotionsTable).row()
         saveUnitTypePromotionForCity()
+        if (unit.statusMap.isNotEmpty()) addStatuses()
         addConnectingLines(emptySet())
     }
-    
+
     // adds the checkBoxs to choice to save unit promotion.
     private fun saveUnitTypePromotionForCity() {
         // if you are not in a city tile then don't show up 
@@ -251,6 +248,18 @@ class PromotionPickerScreen private constructor(
             }
 
         return button
+    }
+    
+    private fun addStatuses() {
+        val statusTable = Table().apply { defaults().pad(5f) }
+        for (status in unit.statusMap.values.sortedBy { it.turnsLeft }) {
+            val statusButton = "{${status.name}}: ${status.turnsLeft}${Fonts.turn}".toTextButton()
+            val description = "{${status.name}}: ${status.turnsLeft}${Fonts.turn}\n".tr() +
+                    unit.civ.gameInfo.ruleset.unitPromotions[status.name]?.getDescription(emptySet())
+            statusButton.onClick { descriptionLabel.setText(description) }
+            statusTable.add(statusButton).left().row()
+        }
+        topTable.add(statusTable).row()
     }
 
     private fun addConnectingLines(path: Set<Promotion>) {
