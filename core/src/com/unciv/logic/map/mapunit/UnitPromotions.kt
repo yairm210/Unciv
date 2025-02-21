@@ -5,7 +5,6 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
-import com.unciv.ui.components.extensions.toPercent
 
 class UnitPromotions : IsPartOfGameInfoSerialization {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
@@ -51,8 +50,6 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
     fun xpForNextPromotion() = (numberOfPromotions + 1) * 10
     
-    
-
     /** @return the XP points needed to "buy" the next [count] promotions. */
     fun xpForNextNPromotions(count: Int) = (1..count).sumOf { (numberOfPromotions + it) * 10 }
 

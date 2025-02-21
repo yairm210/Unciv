@@ -479,7 +479,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                         } else {
                             break
                         }
-                        
                 }
             }
         }

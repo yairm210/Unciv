@@ -102,7 +102,6 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             }
             if (construction is BaseUnit) {
                 val baseUnit = construction.name
-                
                 val buildUnitWithPromotions = city.unitShouldUseSavedPromotion[baseUnit]
                 
                 if (buildUnitWithPromotions != null) {
