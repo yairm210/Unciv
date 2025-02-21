@@ -469,7 +469,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             // Check if the player want to rebuild the unit the saved promotion
             // and null check.
             // and finally check if the current unit has enough XP.
-            // and finally check if the current unit has enough XP.
             val savedPromotion = city.unitToPromotions[unit.baseUnit.name]
             if (city.unitShouldUseSavedPromotion[unit.baseUnit.name] == true &&
                 savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
