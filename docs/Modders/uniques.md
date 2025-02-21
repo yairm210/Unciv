@@ -719,11 +719,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% XP required for promotions"
-	Example: "[+20]% XP required for promotions"
-
-	Applicable to: Global
-
 ??? example  "[relativeAmount]% City Strength from defensive buildings"
 	Example: "[+20]% City Strength from defensive buildings"
 
