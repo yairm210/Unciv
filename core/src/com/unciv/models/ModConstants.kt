@@ -105,6 +105,10 @@ class ModConstants {
     var baseTurnsUntilRevolt = 4
     var cityStateElectionTurns = 15
 
+    // Force rank modifiers determining CS tribute willingness
+    var tributeGlobalModifier = 100 // 75 in BNW
+    var tributeLocalModifier = 100 // 125 in BNW
+
     // Espionage
     var maxSpyRank = 3
     // How much of a skill bonus each rank gives.
