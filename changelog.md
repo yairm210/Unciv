@@ -1,3 +1,25 @@
+## 4.15.13
+
+Add .ico file to Windows distribution
+
+Resolved  - Added 'tile setpillaged' to dev console commands
+
+Resolved  - Can no longer duplicate units by spamming upgrade button
+
+Resolved  - "upon gaining the [promotion] promotion" activates when gaining the promotion for free as well as during promotion
+
+Added statuses to promotion screen
+
+.
+
+Hide 'hidden in world screen' resources from overview tab as well
+
+Hopefully solve ghost 'duplicate resource' bug
+
+Fix free populatoion buildings not working when settling cities - By SeventhM
+
+Change save promotion from unitType to just baseUnit - By Emandac
+
 ## 4.15.12
 
 "Abundant resources" with mods with loads of resources no longer crash
