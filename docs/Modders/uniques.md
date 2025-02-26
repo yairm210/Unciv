@@ -1027,9 +1027,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ## Nation uniques
-??? example  "Will not be chosen for new games"
-	Applicable to: Nation
-
 ??? example  "Starts with [tech]"
 	Example: "Starts with [Agriculture]"
 
@@ -1053,6 +1050,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+
+??? example  "Will not be chosen for new games"
+	Applicable to: Nation
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.

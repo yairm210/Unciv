@@ -81,7 +81,6 @@ enum class UniqueType(
     CityStateTerritoryAlwaysFriendly("City-State territory always counts as friendly territory", UniqueTarget.Global),
 
     CityStateCanGiftGreatPeople("Allied City-States will occasionally gift Great People", UniqueTarget.Global),  // used in Policy
-    CityStateDeprecated("Will not be chosen for new games", UniqueTarget.Nation), // implemented for CS only for now
     CityStateInfluenceDegradation("[relativeAmount]% City-State Influence degradation", UniqueTarget.Global),
     CityStateRestingPoint("Resting point for Influence with City-States is increased by [amount]", UniqueTarget.Global),
 
@@ -929,9 +928,12 @@ enum class UniqueType(
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
+    WillNotBeChosenForNewGames("Will not be chosen for new games", UniqueTarget.Nation),
+    
     ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier),
     ForEveryAdjacentTile("for every adjacent [tileFilter]", UniqueTarget.MetaModifier),
     ForEveryAmountCountable("for every [amount] [countable]", UniqueTarget.MetaModifier),
+    
     ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
     Comment("Comment [comment]", *UniqueTarget.Displayable,

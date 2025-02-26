@@ -250,7 +250,8 @@ object GameStarter {
                 if (gameSetupInfo.gameParameters.enableRandomNationsPool)
                     gameSetupInfo.gameParameters.randomNationsPool.asSequence()
                 else
-                    ruleset.nations.filter { it.value.isMajorCiv }.keys.asSequence()
+                    ruleset.nations.filter { it.value.isMajorCiv && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
+                        .keys.asSequence()
                 ).filter { it !in selectedPlayerNames }
             .shuffled().toCollection(ArrayDeque(dequeCapacity))
 
@@ -337,7 +338,7 @@ object GameStarter {
         ruleset.nations.asSequence()
             .filter {
                 it.value.isCityState &&
-                        !it.value.hasUnique(UniqueType.CityStateDeprecated)
+                        !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames)
             }.map { it.key }
             .shuffled()
             .sortedByDescending { it in civNamesWithStartingLocations }  // please those with location first
