@@ -1,24 +1,24 @@
 ## 4.15.13
 
-Add .ico file to Windows distribution
+Add .ico file to Windows zip
 
-Resolved  - Added 'tile setpillaged' to dev console commands
+MacOS dock icon
 
-Resolved  - Can no longer duplicate units by spamming upgrade button
+Added 'tile setpillaged' to dev console
 
-Resolved  - "upon gaining the [promotion] promotion" activates when gaining the promotion for free as well as during promotion
+Fixed duplicate units by spamming upgrade
+
+"upon gaining the [promotion] promotion" activates for free promotions
 
 Added statuses to promotion screen
 
-.
+Hide 'hidden in world screen' resources from overview tab
 
-Hide 'hidden in world screen' resources from overview tab as well
-
-Hopefully solve ghost 'duplicate resource' bug
+Solved 'duplicate resource' bug
 
 Fix free populatoion buildings not working when settling cities - By SeventhM
 
-Change save promotion from unitType to just baseUnit - By Emandac
+AbsoluteUnits ancient era Settler - by Basil
 
 ## 4.15.12
 
