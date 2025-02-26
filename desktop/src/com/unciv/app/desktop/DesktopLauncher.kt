@@ -122,16 +122,16 @@ internal object DesktopLauncher {
         HardenGdxAudio(DesktopGame(config, customDataDir), config)
         exitProcess(0)
     }
-}
 
-private fun updateDockIconForMacOs(fileName: String) {
-    try {
-        val defaultToolkit: Toolkit = Toolkit.getDefaultToolkit()
-        val imageResource: URL = FileHandle(fileName).file().toURI().toURL()
-        val image: Image = defaultToolkit.getImage(imageResource)
-        val taskbar = Taskbar.getTaskbar()
-        taskbar.iconImage = image
-    } catch (throwable: Throwable) {
-        throwable.printStackTrace()
+    private fun updateDockIconForMacOs(fileName: String) {
+        try {
+            val defaultToolkit: Toolkit = Toolkit.getDefaultToolkit()
+            val imageResource: URL = FileHandle(fileName).file().toURI().toURL()
+            val image: Image = defaultToolkit.getImage(imageResource)
+            val taskbar = Taskbar.getTaskbar()
+            taskbar.iconImage = image
+        } catch (throwable: Throwable) {
+            throwable.printStackTrace()
+        }
     }
 }
