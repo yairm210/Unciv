@@ -49,7 +49,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
     fun xpForNextPromotion() = (numberOfPromotions + 1) * 10
-
+    
     /** @return the XP points needed to "buy" the next [count] promotions. */
     fun xpForNextNPromotions(count: Int) = (1..count).sumOf { (numberOfPromotions + it) * 10 }
 
