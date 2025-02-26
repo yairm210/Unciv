@@ -21,8 +21,13 @@ import com.unciv.utils.Display
 import com.unciv.utils.Log
 import org.lwjgl.system.Configuration
 import java.awt.GraphicsEnvironment
+import java.awt.Image
+import java.awt.Taskbar
+import java.awt.Toolkit
 import java.io.File
+import java.net.URL
 import kotlin.system.exitProcess
+
 
 internal object DesktopLauncher {
 
@@ -77,11 +82,13 @@ internal object DesktopLauncher {
         ImagePacker.packImages(isRunFromJAR)
 
         val config = Lwjgl3ApplicationConfiguration()
-        config.setWindowIcon("ExtraImages/Icon.png")
+        config.setWindowIcon("ExtraImages/Icons/Unciv32.png", "ExtraImages/Icons/Unciv128.png")
+        if (SharedLibraryLoader.isMac) updateDockIconForMacOs("ExtraImages/Icons/Unciv128.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(WindowState.minimumWidth, WindowState.minimumHeight, -1, -1)
 
+        
 
         
         // LibGDX not yet configured, use regular java class
@@ -114,5 +121,17 @@ internal object DesktopLauncher {
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
         HardenGdxAudio(DesktopGame(config, customDataDir), config)
         exitProcess(0)
+    }
+}
+
+private fun updateDockIconForMacOs(fileName: String) {
+    try {
+        val defaultToolkit: Toolkit = Toolkit.getDefaultToolkit()
+        val imageResource: URL = FileHandle(fileName).file().toURI().toURL()
+        val image: Image = defaultToolkit.getImage(imageResource)
+        val taskbar = Taskbar.getTaskbar()
+        taskbar.iconImage = image
+    } catch (throwable: Throwable) {
+        throwable.printStackTrace()
     }
 }
