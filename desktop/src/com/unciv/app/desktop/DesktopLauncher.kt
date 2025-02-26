@@ -89,8 +89,6 @@ internal object DesktopLauncher {
         config.setWindowSizeLimits(WindowState.minimumWidth, WindowState.minimumHeight, -1, -1)
 
         
-
-        
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 

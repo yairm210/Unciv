@@ -180,6 +180,7 @@ Barbarian variants by Pelo, made for [Playable Barbarians](https://github.com/Ja
 By Basil:
 
 - Worker-Barbarians
+- Settler-Ancient era
 
 ### HexaRealm
 
