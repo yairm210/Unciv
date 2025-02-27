@@ -586,7 +586,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (promotions.promotions.contains(filter)) return true
                 // Badly optimized, but it's rare that statuses is even non-empty
                 // Statuses really should be converted to a hashmap
-                if (hasStatus(name)) return true 
+                if (hasStatus(filter)) return true 
                 return false
             }
         }

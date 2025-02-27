@@ -2878,17 +2878,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;if no other Civilization has researched this&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;after discovering [tech]&gt;"
+??? example  "&lt;after discovering [techFilter]&gt;"
 	Example: "&lt;after discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;before discovering [tech]&gt;"
+??? example  "&lt;before discovering [techFilter]&gt;"
 	Example: "&lt;before discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;while researching [tech]&gt;"
+??? example  "&lt;while researching [techFilter]&gt;"
 	This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)
 	Example: "&lt;while researching [Agriculture]&gt;"
 
