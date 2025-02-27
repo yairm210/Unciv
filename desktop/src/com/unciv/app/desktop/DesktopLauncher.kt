@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.badlogic.gdx.utils.SharedLibraryLoader
+import com.unciv.UncivGame
 import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
@@ -33,12 +34,6 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
-        if (SharedLibraryLoader.isMac) {
-            Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
-            // Since LibGDX 1.13.1 on Mac you cannot call Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
-            //  before GraphicsEnvironment.getLocalGraphicsEnvironment().
-            GraphicsEnvironment.getLocalGraphicsEnvironment()
-        }
 
         // The uniques checker requires the file system to be seet up, which happens after lwjgw initializes it
         if (arg.isNotEmpty() && arg[0] == "mod-ci") {
@@ -56,6 +51,18 @@ internal object DesktopLauncher {
             val errors = RulesetValidator(ruleset).getErrorList(true)
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
+        }
+        
+        if (arg.isNotEmpty() && arg[0] == "--version") {
+            println(UncivGame.VERSION.text)
+            exitProcess(0)
+        }
+        
+        if (SharedLibraryLoader.isMac) {
+            Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
+            // Since LibGDX 1.13.1 on Mac you cannot call Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
+            //  before GraphicsEnvironment.getLocalGraphicsEnvironment().
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
         }
 
         val customDataDirPrefix="--data-dir="
