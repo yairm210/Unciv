@@ -135,8 +135,6 @@ internal object DesktopLauncher {
             val image: Image = defaultToolkit.getImage(imageResource)
             val taskbar = Taskbar.getTaskbar()
             taskbar.iconImage = image
-        } catch (throwable: Throwable) {
-            throwable.printStackTrace()
-        }
+        } catch (throwable: Throwable) { }
     }
 }
