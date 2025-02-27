@@ -698,9 +698,9 @@ enum class UniqueType(
     ConditionalIfStartingInEra("if starting in the [era]", UniqueTarget.Conditional),
 
     ConditionalFirstCivToResearch("if no other Civilization has researched this", UniqueTarget.Conditional),
-    ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
-    ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
-    ConditionalWhileResearching("while researching [tech]", UniqueTarget.Conditional,
+    ConditionalTech("after discovering [techFilter]", UniqueTarget.Conditional),
+    ConditionalNoTech("before discovering [techFilter]", UniqueTarget.Conditional),
+    ConditionalWhileResearching("while researching [techFilter]", UniqueTarget.Conditional,
         docDescription = "This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)"),
 
     ConditionalFirstCivToAdopt("if no other Civilization has adopted this", UniqueTarget.Conditional),
