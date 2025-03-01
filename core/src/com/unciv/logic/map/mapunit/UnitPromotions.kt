@@ -55,7 +55,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     fun xpForNextNPromotions(count: Int) = costOfPromotion((1..count).sumOf { (numberOfPromotions + it) * 10 })
     
     /** return the existingPromotions cost with the XPForPromotionModifier Unique applied */
-    fun costOfPromotion(existingPromotions: Int): Int {
+    private fun costOfPromotion(existingPromotions: Int): Int {
         for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
             return Math.round((existingPromotions * unique.params[0].toPercent()))
         }
