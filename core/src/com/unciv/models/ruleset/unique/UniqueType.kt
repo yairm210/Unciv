@@ -190,6 +190,9 @@ enum class UniqueType(
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    
+    // change the XP cost for a relative amount %
+    XPForPromotionModifier("[relativeAmount]% XP required for promotions",UniqueTarget.Global),
 
     /// City Strength
     BetterDefensiveBuildings("[relativeAmount]% City Strength from defensive buildings", UniqueTarget.Global),

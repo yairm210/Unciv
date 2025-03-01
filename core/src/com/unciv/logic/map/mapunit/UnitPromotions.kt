@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.ui.components.extensions.toPercent
 
 class UnitPromotions : IsPartOfGameInfoSerialization {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
@@ -48,11 +49,19 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    fun xpForNextPromotion() = (numberOfPromotions + 1) * 10
+    fun xpForNextPromotion() = costOfPromotion((numberOfPromotions + 1) * 10)
     
     /** @return the XP points needed to "buy" the next [count] promotions. */
-    fun xpForNextNPromotions(count: Int) = (1..count).sumOf { (numberOfPromotions + it) * 10 }
-
+    fun xpForNextNPromotions(count: Int) = costOfPromotion((1..count).sumOf { (numberOfPromotions + it) * 10 })
+    
+    /** return the existingPromotions cost with the XPForPromotionModifier Unique applied */
+    fun costOfPromotion(existingPromotions: Int): Int {
+        for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
+            return Math.round((existingPromotions * unique.params[0].toPercent()))
+        }
+        return existingPromotions
+    }
+    
     /** @return Total XP including that already "spent" on promotions */
     fun totalXpProduced() = XP + (numberOfPromotions * (numberOfPromotions + 1)) * 5
 
