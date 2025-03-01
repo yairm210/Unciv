@@ -1,4 +1,5 @@
 
+import com.google.common.io.Files
 import com.unciv.build.BuildConfig
 
 plugins {
@@ -159,6 +160,7 @@ for (platform in Platform.values()) {
                     " --vmargs Xmx1G " +
                     " --output ${config.outDir}"
             command.runCommand(rootDir)
+            Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(config.outDir, "Unciv.ico"))
         }
 
         tasks.register<Zip>("zip${platformName}") {

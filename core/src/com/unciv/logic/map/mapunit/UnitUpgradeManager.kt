@@ -83,6 +83,11 @@ class UnitUpgradeManager(val unit: MapUnit) {
      *  but then the lambda in UnitActionsUpgrade will complain and need to be forced back to Unit type.
      */
     fun performUpgrade(upgradedUnit: BaseUnit, isFree: Boolean, goldCostOfUpgrade: Int? = null) {
+        // When mashing the upgrade button, you can 'queue' 2 upgrade actions
+        //  If both are performed, what you get is the unit is doubled
+        //  This prevents this, since we lack another way to do so -_-'  
+        if (unit.isDestroyed) return  
+            
         unit.destroy(destroyTransportedUnit = false)
         val civ = unit.civ
         val position = unit.currentTile.position

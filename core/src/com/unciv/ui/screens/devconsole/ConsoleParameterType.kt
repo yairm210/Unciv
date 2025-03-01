@@ -34,14 +34,15 @@ internal enum class ConsoleParameterType(
     policyName( { ruleset.policyBranches.keys + ruleset.policies.keys } ),
     techName( { ruleset.technologies.keys } ),
     cityName( { civilizations.flatMap { civ -> civ.cities.map { it.name } } } ),
-    triggeredUniqueTemplate( { UniqueType.values().filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
-    difficulty( { ruleset.difficulties.keys } )
+    triggeredUniqueTemplate( { UniqueType.entries.filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
+    difficulty( { ruleset.difficulties.keys } ),
+    boolean( { listOf("true", "false") }),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()
 
     companion object {
-        fun safeValueOf(name: String): ConsoleParameterType = values().firstOrNull { it.name == name } ?: none
+        fun safeValueOf(name: String): ConsoleParameterType = entries.firstOrNull { it.name == name } ?: none
         fun getOptions(name: String, console: DevConsolePopup) = safeValueOf(name).let { type ->
             if (type.preferquoted) type.getOptions(console).map { CliInput(it, CliInput.Method.Quoted) }
             else type.getOptions(console).map { CliInput(it) }

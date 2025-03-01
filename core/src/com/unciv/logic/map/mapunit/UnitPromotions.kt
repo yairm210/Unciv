@@ -84,10 +84,10 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
                 UniqueTriggerActivation.triggerUnique(unique, unit)
-            
-            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionGain){ it.params[0] == promotionName })
-                UniqueTriggerActivation.triggerUnique(unique, unit)
         }
+
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionGain){ it.params[0] == promotionName })
+            UniqueTriggerActivation.triggerUnique(unique, unit)
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
             promotions.add(promotionName)

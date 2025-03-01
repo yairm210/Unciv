@@ -146,9 +146,17 @@ object Conditionals {
             UniqueType.ConditionalReligionDisabled -> checkOnGameInfo { !isReligionEnabled() }
             UniqueType.ConditionalEspionageEnabled -> checkOnGameInfo { isEspionageEnabled() }
             UniqueType.ConditionalEspionageDisabled -> checkOnGameInfo { !isEspionageEnabled() }
-            UniqueType.ConditionalTech -> checkOnCiv { tech.isResearched(conditional.params[0]) }
-            UniqueType.ConditionalNoTech -> checkOnCiv { !tech.isResearched(conditional.params[0]) }
-            UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnologyName() == conditional.params[0] }
+            UniqueType.ConditionalTech -> checkOnCiv {
+                val filter = conditional.params[0]
+                if (filter in gameInfo.ruleset.technologies) tech.isResearched(conditional.params[0]) // fast common case
+                else tech.researchedTechnologies.any { it.matchesFilter(filter) }
+            }
+            UniqueType.ConditionalNoTech -> checkOnCiv {
+                val filter = conditional.params[0]
+                if (filter in gameInfo.ruleset.technologies) !tech.isResearched(conditional.params[0]) // fast common case
+                else tech.researchedTechnologies.none { it.matchesFilter(filter) }
+            }
+            UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnology()?.matchesFilter(conditional.params[0]) == true }
 
             UniqueType.ConditionalAfterPolicyOrBelief ->
                 checkOnCiv { policies.isAdopted(conditional.params[0]) || religionManager.religion?.hasBelief(conditional.params[0]) == true }

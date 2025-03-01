@@ -222,7 +222,7 @@ class GameOptionsTable(
     }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
-        it.isCityState && !it.hasUnique(UniqueType.CityStateDeprecated)
+        it.isCityState && !it.hasUnique(UniqueType.WillNotBeChosenForNewGames)
     }
 
     private fun Table.addNoStartBiasCheckbox() =
@@ -538,6 +538,7 @@ private class RandomNationPickerPopup(
     init {
         val sortedNations = previousScreen.ruleset.nations.values
                 .filter { it.isMajorCiv }
+                .filterNot { it.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
                 .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr(hideIcons = true) })
         allNationTables = ArrayList(
             sortedNations.map { NationTable(it, civBlocksWidth, 0f) }  // no need for min height
