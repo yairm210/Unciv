@@ -17,6 +17,8 @@ class SpyPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
         selectedSpy = spy
     }
 
+    override fun shouldBeShown(): Boolean = selectedSpy != null
+
     override fun updateWhenNeeded() = with(unitTable) {
         val spy = selectedSpy!!
         unitNameLabel.clearListeners()

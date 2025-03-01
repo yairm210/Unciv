@@ -1,3 +1,25 @@
+## 4.15.13
+
+Add .ico file to Windows zip
+
+MacOS dock icon
+
+Added 'tile setpillaged' to dev console
+
+Fixed duplicate units by spamming upgrade
+
+"upon gaining the [promotion] promotion" activates for free promotions
+
+Added statuses to promotion screen
+
+Hide 'hidden in world screen' resources from overview tab
+
+Solved 'duplicate resource' bug
+
+Fix free populatoion buildings not working when settling cities - By SeventhM
+
+AbsoluteUnits ancient era Settler - by Basil
+
 ## 4.15.12
 
 "Abundant resources" with mods with loads of resources no longer crash

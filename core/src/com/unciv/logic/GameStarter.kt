@@ -250,7 +250,8 @@ object GameStarter {
                 if (gameSetupInfo.gameParameters.enableRandomNationsPool)
                     gameSetupInfo.gameParameters.randomNationsPool.asSequence()
                 else
-                    ruleset.nations.filter { it.value.isMajorCiv }.keys.asSequence()
+                    ruleset.nations.filter { it.value.isMajorCiv && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
+                        .keys.asSequence()
                 ).filter { it !in selectedPlayerNames }
             .shuffled().toCollection(ArrayDeque(dequeCapacity))
 
@@ -337,7 +338,7 @@ object GameStarter {
         ruleset.nations.asSequence()
             .filter {
                 it.value.isCityState &&
-                        !it.value.hasUnique(UniqueType.CityStateDeprecated)
+                        !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames)
             }.map { it.key }
             .shuffled()
             .sortedByDescending { it in civNamesWithStartingLocations }  // please those with location first
@@ -655,14 +656,14 @@ object GameStarter {
                     val tileToAvoid = startBias.getPlaceholderParameters()[0]
                     preferredTiles.filter { tile ->
                         !tile.getTilesInDistance(1).any {
-                            it.matchesTerrainFilter(tileToAvoid)
+                            it.matchesTerrainFilter(tileToAvoid, null)
                         }
                     }
                 }
                 startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
                 else -> preferredTiles.filter { tile ->
                     tile.getTilesInDistance(1).any {
-                        it.matchesTerrainFilter(startBias)
+                        it.matchesTerrainFilter(startBias, null)
                     }
                 }
             }

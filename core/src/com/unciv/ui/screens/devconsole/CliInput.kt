@@ -137,6 +137,10 @@ internal class CliInput(
     /** Parses `this` parameter as a Float number.
      *  @throws ConsoleErrorException if the string is not a valid representation of a number. */
     fun toFloat(): Float = content.toFloatOrNull() ?: throw ConsoleErrorException("'$this' is not a valid number.")
+    
+    /** Parses `this` parameter as a Boolean.
+     *  @throws ConsoleErrorException if the string is not 'true' or 'false'. */
+    fun toBoolean(): Boolean = content.toBooleanStrictOrNull() ?: throw ConsoleErrorException("'$this' is not a valid boolean value.")
 
     /** Parses `this` parameter as the name of a [Stat].
      *  @throws ConsoleErrorException if the string is not a Stat name. */

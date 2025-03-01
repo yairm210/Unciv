@@ -167,6 +167,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     fun update() {
         closeButton.isVisible = true
+        
+        if (!presenter.shouldBeShown()) summaryPresenter
         presenter.update()
 
         // more efficient to do this check once for both
@@ -275,5 +277,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         fun update() {}
         /** only called when [UnitTable.shouldUpdate] is true */
         fun updateWhenNeeded() {}
+        fun shouldBeShown(): Boolean { return true}
     }
 }
