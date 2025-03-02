@@ -752,6 +752,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
+    fun isConstructionPurchaseBlockedByUnit(construction: INonPerpetualConstruction): Boolean {
+        return !city.isPuppet && !city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets)
+            .any() &&
+            !city.isInResistance() &&
+            construction.isPurchasable(city.cityConstructions) &&
+            (construction is BaseUnit) && !city.canPlaceNewUnit(construction)
+    }
+ 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
     fun chooseNextConstruction() {
