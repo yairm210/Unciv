@@ -610,6 +610,9 @@ class WorldScreen(
                             launchOnGLThread {
                                 val cantUploadNewGamePopup = Popup(this@WorldScreen)
                                 cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                                cantUploadNewGamePopup.addButton("Copy to clipboard") {
+                                    Gdx.app.clipboard.contents = ex.stackTraceToString()
+                                }
                                 cantUploadNewGamePopup.addCloseButton()
                                 cantUploadNewGamePopup.open()
                             }
