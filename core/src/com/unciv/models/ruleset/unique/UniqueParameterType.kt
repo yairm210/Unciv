@@ -510,6 +510,19 @@ enum class UniqueParameterType(
     Belief("belief", "God of War", "The name of any belief") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.beliefs.keys
     },
+    
+    /**Used by [UniqueType.ConditionalCityReligion]*/
+    ReligionFilter("religionFilter", "major") {
+        override val staticKnownValues = setOf("any", "major", "enhanced", "your", "foreign","enemy")
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            return when (parameterText) {
+                in staticKnownValues -> true
+                in ruleset.nations -> true
+                in ruleset.religions -> true
+                else -> ruleset.beliefs.values.any { it.hasTagUnique(parameterText) }
+            }
+        }
+    },
 
     /** Used by [UniqueType.FreeExtraBeliefs] and its any variant, see ReligionManager.getBeliefsToChooseAt* functions */
     FoundingOrEnhancing("foundingOrEnhancing", "founding", "`founding` or `enhancing`", "Prophet Action Filters",
