@@ -581,5 +581,6 @@ The following resources were helpful for translation of cities and person names:
   Note that some cases are orthographically correct.
 
 - Avoid anglicisms, germanisms and other borrowed words unless there is no actual Croatian equivalent
+- Avoid archaisms
 
 [Table of Contents](#table-of-contents)
