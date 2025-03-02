@@ -1,0 +1,27 @@
+
+
+Resolved  - Spy stationed in city allows, but does not force, viewing the city when clicking on city button
+
+Ignore 'cannot set dock image' errors
+
+Ignore 'cannot set dock image' errors
+
+Add cli 'unciv --version' command
+
+Modding: Added 'worked' and 'pillaged' tile filter options
+
+Modding: Resolved  - unitFilters now catch status names properly
+
+Modding: before/after/while researching tech uniques accept techFilter
+
+Resolved  - Fixed crash when moving selected spies via long-click
+
+Resolved  - "Will not be chosen for new games" works for major nations
+
+Resolved  - Console tile checkfilter works for resources
+
+By EmperorPinguin:
+- Add tech cost uniques 
+- Move CS tribute modifiers to mod constants 
+
+tooltip for purchase blocked by unit - By saejo
