@@ -1,3 +1,21 @@
+## 4.15.14
+
+Modding:
+- Added 'worked' and 'pillaged' tile filters
+- unitFilter catches status names
+- before/after/while researching tech uniques accept techFilter
+- "Will not be chosen for new games" works for major nations
+
+Fixed crash when moving selected spies via long-click
+
+Console tile checkfilter works for resources
+
+By EmperorPinguin:
+- Add tech cost uniques 
+- Move CS tribute modifiers to mod constants 
+
+tooltip for purchase blocked by unit - By saejo
+
 ## 4.15.13
 
 Add .ico file to Windows zip

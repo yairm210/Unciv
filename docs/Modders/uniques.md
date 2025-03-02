@@ -629,6 +629,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Each city founded increases Science cost of Technologies [relativeAmount]% less than normal"
+	Example: "Each city founded increases Science cost of Technologies [+20]% less than normal"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Science cost of researching new Technologies"
+	Example: "[+20]% Science cost of researching new Technologies"
+
+	Applicable to: Global
+
 ??? example  "[stats] for every known Natural Wonder"
 	Example: "[+1 Gold, +2 Production] for every known Natural Wonder"
 
