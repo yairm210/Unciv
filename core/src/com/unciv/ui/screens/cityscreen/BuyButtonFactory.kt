@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
@@ -70,6 +71,9 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
             button.isEnabled = cityScreen.canChangeState &&
                 city.cityConstructions.isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
             preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
+            if (city.cityConstructions.isConstructionPurchaseBlockedByUnit(construction)) {
+                button.addTooltip("Move unit out of city first", 26f, false)
+            }
         }
 
         button.labelCell.pad(5f)

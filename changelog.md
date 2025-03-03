@@ -1,3 +1,43 @@
+## 4.15.14
+
+Modding:
+- Added 'worked' and 'pillaged' tile filters
+- unitFilter catches status names
+- before/after/while researching tech uniques accept techFilter
+- "Will not be chosen for new games" works for major nations
+
+Fixed crash when moving selected spies via long-click
+
+Console tile checkfilter works for resources
+
+By EmperorPinguin:
+- Add tech cost uniques 
+- Move CS tribute modifiers to mod constants 
+
+tooltip for purchase blocked by unit - By saejo
+
+## 4.15.13
+
+Add .ico file to Windows zip
+
+MacOS dock icon
+
+Added 'tile setpillaged' to dev console
+
+Fixed duplicate units by spamming upgrade
+
+"upon gaining the [promotion] promotion" activates for free promotions
+
+Added statuses to promotion screen
+
+Hide 'hidden in world screen' resources from overview tab
+
+Solved 'duplicate resource' bug
+
+Fix free populatoion buildings not working when settling cities - By SeventhM
+
+AbsoluteUnits ancient era Settler - by Basil
+
 ## 4.15.12
 
 "Abundant resources" with mods with loads of resources no longer crash

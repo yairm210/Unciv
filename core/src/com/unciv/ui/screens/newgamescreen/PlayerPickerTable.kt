@@ -15,6 +15,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.widgets.UncivTextField
@@ -86,7 +87,8 @@ class PlayerPickerTable(
         val gameBasics = previousScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        val newRulesetPlayableCivs = previousScreen.ruleset.nations.count { it.key != Constants.barbarians }
+        val newRulesetPlayableCivs = previousScreen.ruleset.nations
+            .count { it.key != Constants.barbarians && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
         if (gameParameters.players.size > newRulesetPlayableCivs)
             gameParameters.players = ArrayList(gameParameters.players.subList(0, newRulesetPlayableCivs))
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
@@ -151,7 +153,9 @@ class PlayerPickerTable(
      */
     private fun reassignRemovedModReferences() {
         for (player in gameParameters.players) {
-            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv) || previousScreen.ruleset.nations[player.chosenCiv]!!.isCityState)
+            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv)
+                || previousScreen.ruleset.nations[player.chosenCiv]!!.isCityState
+                || previousScreen.ruleset.nations[player.chosenCiv]!!.hasUnique(UniqueType.WillNotBeChosenForNewGames))
                 player.chosenCiv = Constants.random
         }
     }
@@ -326,6 +330,7 @@ class PlayerPickerTable(
     internal fun getAvailablePlayerCivs(dontSkipNation: String? = null) =
         previousScreen.ruleset.nations.values.asSequence()
             .filter { it.isMajorCiv }
+            .filterNot { it.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
             .filter { it.name == dontSkipNation || gameParameters.players.none { player -> player.chosenCiv == it.name } }
 
     /**

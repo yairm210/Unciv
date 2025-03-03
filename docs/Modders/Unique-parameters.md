@@ -299,6 +299,8 @@ Allowed values:
 - [improvementFilter](#improvementfilter) for this tile
 - `Improvement` or `improved` for tiles with any improvements
 - `unimproved` for tiles with no improvement
+- `pillaged` for pillaged tiles
+- `worked` for tiles worked by a city
 
 You can check this in-game using the console with the `tile checkfilter <filter>` command
 

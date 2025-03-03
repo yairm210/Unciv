@@ -4,8 +4,8 @@ package com.unciv.build
 object BuildConfig {
     const val kotlinVersion = "1.9.24"
     const val appName = "Unciv"
-    const val appCodeNumber = 1105
-    const val appVersion = "4.15.12"
+    const val appCodeNumber = 1107
+    const val appVersion = "4.15.14"
 
     const val gdxVersion = "1.13.1"
     const val ktorVersion = "2.3.12"

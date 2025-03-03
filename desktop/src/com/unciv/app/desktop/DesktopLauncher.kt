@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.badlogic.gdx.utils.SharedLibraryLoader
+import com.unciv.UncivGame
 import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
@@ -21,19 +22,18 @@ import com.unciv.utils.Display
 import com.unciv.utils.Log
 import org.lwjgl.system.Configuration
 import java.awt.GraphicsEnvironment
+import java.awt.Image
+import java.awt.Taskbar
+import java.awt.Toolkit
 import java.io.File
+import java.net.URL
 import kotlin.system.exitProcess
+
 
 internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
-        if (SharedLibraryLoader.isMac) {
-            Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
-            // Since LibGDX 1.13.1 on Mac you cannot call Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
-            //  before GraphicsEnvironment.getLocalGraphicsEnvironment().
-            GraphicsEnvironment.getLocalGraphicsEnvironment()
-        }
 
         // The uniques checker requires the file system to be seet up, which happens after lwjgw initializes it
         if (arg.isNotEmpty() && arg[0] == "mod-ci") {
@@ -51,6 +51,18 @@ internal object DesktopLauncher {
             val errors = RulesetValidator(ruleset).getErrorList(true)
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
+        }
+        
+        if (arg.isNotEmpty() && arg[0] == "--version") {
+            println(UncivGame.VERSION.text)
+            exitProcess(0)
+        }
+        
+        if (SharedLibraryLoader.isMac) {
+            Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
+            // Since LibGDX 1.13.1 on Mac you cannot call Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
+            //  before GraphicsEnvironment.getLocalGraphicsEnvironment().
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
         }
 
         val customDataDirPrefix="--data-dir="
@@ -77,11 +89,11 @@ internal object DesktopLauncher {
         ImagePacker.packImages(isRunFromJAR)
 
         val config = Lwjgl3ApplicationConfiguration()
-        config.setWindowIcon("ExtraImages/Icon.png")
+        config.setWindowIcon("ExtraImages/Icons/Unciv32.png", "ExtraImages/Icons/Unciv128.png")
+        if (SharedLibraryLoader.isMac) updateDockIconForMacOs("ExtraImages/Icons/Unciv128.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(WindowState.minimumWidth, WindowState.minimumHeight, -1, -1)
-
 
         
         // LibGDX not yet configured, use regular java class
@@ -114,5 +126,15 @@ internal object DesktopLauncher {
         // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
         HardenGdxAudio(DesktopGame(config, customDataDir), config)
         exitProcess(0)
+    }
+
+    private fun updateDockIconForMacOs(fileName: String) {
+        try {
+            val defaultToolkit: Toolkit = Toolkit.getDefaultToolkit()
+            val imageResource: URL = FileHandle(fileName).file().toURI().toURL()
+            val image: Image = defaultToolkit.getImage(imageResource)
+            val taskbar = Taskbar.getTaskbar()
+            taskbar.iconImage = image
+        } catch (_: Throwable) { }
     }
 }

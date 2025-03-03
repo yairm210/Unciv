@@ -480,18 +480,20 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
+        if (isPillaged() && filter == "pillaged") return true
+        if (filter == "worked" && isWorked()) return true
         if (getUnpillagedTileImprovement()?.matchesFilter(filter, stateThisTile, false) == true) return true
         return getUnpillagedRoadImprovement()?.matchesFilter(filter, stateThisTile, false) == true
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
-    fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null, multiFilter: Boolean = true): Boolean {
+    fun matchesTerrainFilter(filter: String, observingCiv: Civilization?, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
         else matchesSingleTerrainFilter(filter, observingCiv)
     }
     
 
-    private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
+    private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization?): Boolean {
         // Constant strings get their own 'when' for performance - 
         //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734
         when (filter) {
@@ -515,7 +517,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         
         return when (filter) {
             baseTerrain -> true
-            resource -> observingCiv != null && hasViewableResource(observingCiv)
+            resource -> observingCiv == null || hasViewableResource(observingCiv)
 
             else -> {
                 val owner = getOwner()
@@ -785,7 +787,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
 
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles, stateThisTile)) {
-            if (matchesTerrainFilter(unique.params[0])) {
+            if (matchesTerrainFilter(unique.params[0], null)) {
                 resourceAmount = unique.params[1].toInt()
                 return
             }

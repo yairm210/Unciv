@@ -49,7 +49,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
     fun xpForNextPromotion() = (numberOfPromotions + 1) * 10
-
+    
     /** @return the XP points needed to "buy" the next [count] promotions. */
     fun xpForNextNPromotions(count: Int) = (1..count).sumOf { (numberOfPromotions + it) * 10 }
 
@@ -75,10 +75,10 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
                 UniqueTriggerActivation.triggerUnique(unique, unit)
-            
-            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionGain){ it.params[0] == promotionName })
-                UniqueTriggerActivation.triggerUnique(unique, unit)
         }
+
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionGain){ it.params[0] == promotionName })
+            UniqueTriggerActivation.triggerUnique(unique, unit)
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
             promotions.add(promotionName)

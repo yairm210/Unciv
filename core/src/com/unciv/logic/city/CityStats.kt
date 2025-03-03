@@ -224,7 +224,7 @@ class CityStats(val city: City) {
             }
 
         for (unique in city.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles))
-            if (city.getCenterTile().matchesTerrainFilter(unique.params[1]))
+            if (city.getCenterTile().matchesTerrainFilter(unique.params[1], city.civ))
                 addUniqueStats(unique)
 
 

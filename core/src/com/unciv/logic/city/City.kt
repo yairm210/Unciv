@@ -93,9 +93,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var isPuppet = false
     var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
     
-    var unitTypeShouldUseSavedPromotion = HashMap<String, Boolean>()
+    var unitShouldUseSavedPromotion = HashMap<String, Boolean>()
     
-    var cityUnitTypePromotions = HashMap<String, UnitPromotions>()
+    var unitToPromotions = HashMap<String, UnitPromotions>()
     
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
@@ -158,8 +158,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
         toReturn.connectedToCapitalStatus = connectedToCapitalStatus
-        toReturn.unitTypeShouldUseSavedPromotion = unitTypeShouldUseSavedPromotion
-        toReturn.cityUnitTypePromotions = cityUnitTypePromotions
+        toReturn.unitShouldUseSavedPromotion = unitShouldUseSavedPromotion
+        toReturn.unitToPromotions = unitToPromotions
         return toReturn
     }
 

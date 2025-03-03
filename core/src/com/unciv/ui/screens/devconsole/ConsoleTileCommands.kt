@@ -38,6 +38,14 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
         },
+        
+        "setpillaged" to ConsoleAction("tile setpillaged <boolean>"){ console, params ->
+            val selectedTile = console.getSelectedTile()
+            val setPillaged = params[0].toBoolean()
+            if (setPillaged) selectedTile.setPillaged()
+            else selectedTile.setRepaired()
+            DevConsoleResponse.OK
+        },
 
         "removeroad" to ConsoleAction("tile removeroad") { console, _ ->
             val selectedTile = console.getSelectedTile()

@@ -72,7 +72,7 @@ class OptionsPopup(
         tabs.addPage(
             "About",
             aboutTab(),
-            ImageGetter.getExternalImage("Icon.png"), 24f
+            ImageGetter.getExternalImage("Icons/Unciv128.png"), 24f
         )
         tabs.addPage(
             "Display",
@@ -119,7 +119,7 @@ class OptionsPopup(
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 
-        if (RulesetCache.size > BaseRuleset.values().size) {
+        if (RulesetCache.size > BaseRuleset.entries.size) {
             val content = ModCheckTab(screen)
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
