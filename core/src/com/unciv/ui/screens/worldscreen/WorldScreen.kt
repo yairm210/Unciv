@@ -623,7 +623,6 @@ class WorldScreen(
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }
-
             }
 
             if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
