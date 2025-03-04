@@ -302,7 +302,7 @@ jobs:
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
         run: |
-          if [[ ${{ github.ref_name }} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
+          if [[ ${{ github.ref_name }} =~ [0-9]\.[0-9]+\.[0-9]+(-patch[0-9]+)?$ ]]; then
             echo "real_release=true" >> $GITHUB_OUTPUT
           fi
 
