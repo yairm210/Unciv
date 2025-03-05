@@ -171,6 +171,20 @@ Allowed values:
 - `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
 - Specialist names
 
+## religionFilter
+
+For filtering specific relgions
+
+- `any`
+- `major`
+- `enhanced`
+- `your`
+- `foriegn`
+- `enemy`
+- The name of a relgion symbol
+- The name of a belief
+- A unique of a belief the religion has
+
 ## policyFilter
 
 Allowed values:
