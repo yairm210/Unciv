@@ -517,7 +517,6 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             return when (parameterText) {
                 in staticKnownValues -> true
-                in ruleset.nations -> true
                 in ruleset.religions -> true
                 else -> ruleset.beliefs.values.any { it.hasTagUnique(parameterText) }
             }

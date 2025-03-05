@@ -132,7 +132,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         val known = civ != null && civ.knows(foundingCiv)
         if (filter == "enemy") return known && civ!!.isAtWarWith(foundingCiv)
         if (founderBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
-        if (founderBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
+        if (followerBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
         return false
     }
 
