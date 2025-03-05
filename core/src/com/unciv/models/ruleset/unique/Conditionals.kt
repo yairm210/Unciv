@@ -198,6 +198,10 @@ object Conditionals {
                 religion.getMajorityReligion()
                     ?.matchesFilter(conditional.params[0], state, state.relevantCiv) == true
             }
+            UniqueType.ConditionalCityNotReligion -> checkOnCity {
+                religion.getMajorityReligion()
+                    ?.matchesFilter(conditional.params[0], state, state.relevantCiv) != true
+            }
             UniqueType.ConditionalCityMajorReligion -> checkOnCity {
                 religion.getMajorityReligion()?.isMajorReligion() == true }
             UniqueType.ConditionalCityEnhancedReligion -> checkOnCity {
