@@ -122,18 +122,24 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     }
     
     private fun matchesSingleFilter(filter: String, state: StateForConditionals = StateForConditionals.IgnoreConditionals, civ: Civilization? = null): Boolean {
-        if (filter == "any") return true
-        if (filter == name) return true
-        if (filter == "major") return isMajorReligion()
-        if (filter == "enhanced") return isEnhancedReligion()
         val foundingCiv = getFounder()
-        if (filter == "your") return civ == foundingCiv
-        if (filter == "foreign") return civ != null && civ != foundingCiv
-        val known = civ != null && civ.knows(foundingCiv)
-        if (filter == "enemy") return known && civ!!.isAtWarWith(foundingCiv)
-        if (founderBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
-        if (followerBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
-        return false
+        when (filter) {
+            "any" -> return true
+            "major" -> return isMajorReligion()
+            "enhanced" -> return isEnhancedReligion()
+            "your" -> return civ == foundingCiv
+            "foreign" -> return civ != null && civ != foundingCiv
+            "enemy" -> {
+                val known = civ != null && civ.knows(foundingCiv)
+                return known && civ!!.isAtWarWith(foundingCiv)
+            }
+            else -> {
+                if (filter == name) return true
+                if (founderBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
+                if (followerBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
+                return false
+            }
+        }
     }
 
     private fun unlockedBuildingsPurchasable(): List<String> {
