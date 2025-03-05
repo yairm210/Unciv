@@ -49,17 +49,22 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    fun xpForNextPromotion() = costOfPromotion((numberOfPromotions + 1) * 10)
+    fun xpForNextPromotion() = Math.round(baseXpForPromotionNumber(numberOfPromotions) * promotionCostModifier())
     
     /** @return the XP points needed to "buy" the next [count] promotions. */
-    fun xpForNextNPromotions(count: Int) = costOfPromotion((1..count).sumOf { (numberOfPromotions + it) * 10 })
+    fun xpForNextNPromotions(count: Int) = Math.round((1..count).sumOf { 
+        baseXpForPromotionNumber(numberOfPromotions) + count} * promotionCostModifier() )
+
+    private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions + 1) * 10
     
-    /** return the existingPromotions cost with the XPForPromotionModifier Unique applied */
-    private fun costOfPromotion(existingPromotions: Int): Int {
+    private fun promotionCostModifier(): Float {
+       
+        var totalPromotionCostModifier = 0f
         for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
-            return Math.round((existingPromotions * unique.params[0].toPercent()))
+            totalPromotionCostModifier += unique.params[0].toPercent()
         }
-        return existingPromotions
+        // base case if you don't have any the unique that reduce or higher the promotion cost
+        return if (totalPromotionCostModifier != 0f) totalPromotionCostModifier  else 1f
     }
     
     /** @return Total XP including that already "spent" on promotions */
