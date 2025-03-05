@@ -79,10 +79,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     private fun mapToExistingBeliefs(beliefs: Set<String>): Sequence<Belief> {
         val rulesetBeliefs = gameInfo.ruleset.beliefs
-        return beliefs.asSequence().mapNotNull {
-            if (it !in rulesetBeliefs) null
-            else rulesetBeliefs[it]!!
-        }
+        return beliefs.asSequence().mapNotNull { rulesetBeliefs[it] }
     }
 
     fun getBeliefs(beliefType: BeliefType): Sequence<Belief> {
