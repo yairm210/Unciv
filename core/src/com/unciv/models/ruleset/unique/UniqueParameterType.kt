@@ -518,6 +518,7 @@ enum class UniqueParameterType(
             return when (parameterText) {
                 in staticKnownValues -> true
                 in ruleset.religions -> true
+                in ruleset.beliefs -> true
                 else -> ruleset.beliefs.values.any { it.hasTagUnique(parameterText) }
             }
         }

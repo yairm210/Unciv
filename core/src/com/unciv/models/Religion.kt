@@ -132,6 +132,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             }
             else -> {
                 if (filter == name) return true
+                if (filter in getBeliefs(BeliefType.Any).map { it.name }) return true
                 if (founderBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
                 if (followerBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
                 return false
