@@ -49,13 +49,13 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    fun xpForNextPromotion() = Math.round(baseXpForPromotionNumber(numberOfPromotions) * promotionCostModifier())
+    fun xpForNextPromotion() = Math.round(baseXpForPromotionNumber(numberOfPromotions+1) * promotionCostModifier())
     
     /** @return the XP points needed to "buy" the next [count] promotions. */
     fun xpForNextNPromotions(count: Int) = Math.round((1..count).sumOf { 
-        baseXpForPromotionNumber(numberOfPromotions) + count} * promotionCostModifier() )
+        baseXpForPromotionNumber(numberOfPromotions+count)} * promotionCostModifier() )
 
-    private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions + 1) * 10
+    private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions) * 10
     
     private fun promotionCostModifier(): Float {
        
@@ -64,7 +64,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             totalPromotionCostModifier += unique.params[0].toPercent()
         }
         // base case if you don't have any the unique that reduce or higher the promotion cost
-        return if (totalPromotionCostModifier != 0f) totalPromotionCostModifier  else 1f
+        return if (totalPromotionCostModifier != 0f) totalPromotionCostModifier else 1f
     }
     
     /** @return Total XP including that already "spent" on promotions */
