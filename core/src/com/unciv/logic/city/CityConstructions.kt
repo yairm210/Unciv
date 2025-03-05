@@ -472,13 +472,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val savedPromotion = city.unitToPromotions[unit.baseUnit.name]
             if (city.unitShouldUseSavedPromotion[unit.baseUnit.name] == true &&
                 savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
-                    // sorting it to avoid getting Accuracy III before Accuracy I
-                    for (promotions in savedPromotion.promotions.sorted()) {
-                        if (unit.promotions.XP >= savedPromotion.XP) {
-                            unit.promotions.addPromotion(promotions)
-                        } else {
-                            break
-                        }
+                // sorting it to avoid getting Accuracy III before Accuracy I
+                for (promotions in savedPromotion.promotions.sorted()) {
+                    if (unit.promotions.XP >= savedPromotion.XP) {
+                        unit.promotions.addPromotion(promotions)
+                    } else {
+                        break
+                    }
                 }
             }
         }
