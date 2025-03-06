@@ -376,4 +376,4 @@ jobs:
           formula-name: unciv
           download-url: https://github.com/yairm210/Unciv/releases/download/${{ github.ref_name }}/Unciv.jar
         env:
-          COMMITTER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
