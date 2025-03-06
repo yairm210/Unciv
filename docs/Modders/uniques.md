@@ -3020,6 +3020,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;in cities connected to the capital&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;in cities with a [religionFilter] religion&gt;"
+	Example: "&lt;in cities with a [major] religion&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in cities not following a [religionFilter] religion&gt;"
+	Example: "&lt;in cities not following a [major] religion&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;in cities with a major religion&gt;"
 	Applicable to: Conditional
 

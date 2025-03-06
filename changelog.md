@@ -1,18 +1,10 @@
 ## 4.15.15
 
-New AI resource cost uniques also work for Strategic and Bonus resources, assuming they even want to buy
+Added uniques to make AI value resources at set prices 
 
 Allow trading stockpiled resources
 
-CI: Update Brew on new releases
-
-CI: Correct deploy regex to catch fake releases vs real ones
-
-chore: don't print chosen civs to console
-
-Added option to copy MP upload game error to clipboard for debugging 
-
-Add unqiue change the promotion XP cost  - By Emandac
+Added unique to change promotion XP cost - By Emandac
 
 By EmperorPinguin:
 - Bugfix: puppet science cost increase 
