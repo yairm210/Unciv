@@ -1,7 +1,7 @@
 [
     {
         "name": "discover cultural artifacts",
-        "notification": "We have discovered cultural artifacts in the ruins! (+20 culture)",
+        "notification": "We have discovered cultural artifacts in the ruins! (+[cultureAmount] culture)",
         "uniques": ["Gain [20] [Culture] <(modified by game speed)>"],
         "color": "#cf8ff7"
     },
