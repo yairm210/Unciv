@@ -621,6 +621,8 @@ enum class UniqueType(
     LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
+    AiWillSellAt("AI will sell at [amount] Gold", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    AiWillBuyAt("AI will buy at [amount] Gold", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
     ////// Improvement uniques
     ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),

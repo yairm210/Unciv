@@ -2612,6 +2612,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Guaranteed with Strategic Balance resource option"
 	Applicable to: Resource
 
+??? example  "AI will sell at [amount] Gold"
+	Example: "AI will sell at [3] Gold"
+
+	Applicable to: Resource
+
+??? example  "AI will buy at [amount] Gold"
+	Example: "AI will buy at [3] Gold"
+
+	Applicable to: Resource
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
