@@ -59,12 +59,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     
     private fun promotionCostModifier(): Float {
        
-        var totalPromotionCostModifier = 0f
+        var totalPromotionCostModifier = 1f
         for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
-            totalPromotionCostModifier += unique.params[0].toPercent()
+            totalPromotionCostModifier *= unique.params[0].toPercent()
         }
         // base case if you don't have any the unique that reduce or higher the promotion cost
-        return if (totalPromotionCostModifier != 0f) totalPromotionCostModifier else 1f
+        return totalPromotionCostModifier
     }
     
     /** @return Total XP including that already "spent" on promotions */
