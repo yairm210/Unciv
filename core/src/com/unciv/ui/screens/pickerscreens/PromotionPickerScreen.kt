@@ -200,7 +200,8 @@ class PromotionPickerScreen private constructor(
     // adds the checkBoxs to choice to save unit promotion.
     private fun saveUnitTypePromotionForCity() {
         // if you are not in a city tile then don't show up 
-        // the player should not be able to save promotion in enermy tiles/puppet citys
+        // then player should not be able to save promotion in enermy tiles/puppet citys 
+        // even their own because you can't build any unit there.
         val currentCity = unit.currentTile.getCity() ?: return
         if (currentCity.civ.civName != unit.civ.civName) return
         if (currentCity.isPuppet) return
@@ -211,7 +212,6 @@ class PromotionPickerScreen private constructor(
     // going to reuse this bit of code 2 time so turn it into a funtion
     private fun checkSaveUnitTypePrormotion() {
         if (!saveUnitTypePromotion)  return
-        
         val unitCurrentCity = unit.currentTile.getCity()
         if (unitCurrentCity != null) {
             // If you are clicked the save baseUnit promotion, you want the next baseUnit to have the same promotion.

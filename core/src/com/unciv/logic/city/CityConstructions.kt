@@ -33,6 +33,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
 import kotlin.math.ceil
@@ -469,11 +470,19 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             // Check if the player want to rebuild the unit the saved promotion
             // and null check.
             // and finally check if the current unit has enough XP.
+            val possiblePromotions = hashSetOf<String>()
+            
+            // Added all the possible Prmotion that the unit can be promoted,
+            // to avoid edge case where upgrading a scout to spearman
+            // whould give the rest of the spearman the "ingore terrain cost" promotion
+            // when built with auto promotion.
+            for (promotion in PromotionTree(unit).possiblePromotions) possiblePromotions.add(promotion.name)
             val savedPromotion = city.unitToPromotions[unit.baseUnit.name]
+            
             if (city.unitShouldUseSavedPromotion[unit.baseUnit.name] == true &&
                 savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
-                // sorting it to avoid getting Accuracy III before Accuracy I
-                for (promotions in savedPromotion.promotions.sorted()) {
+                // sort it to avoid getting Accuracy III before Accuracy I
+                for (promotions in savedPromotion.promotions.sorted().filter { it in possiblePromotions }) {
                     if (unit.promotions.XP >= savedPromotion.XP) {
                         unit.promotions.addPromotion(promotions)
                     } else {
