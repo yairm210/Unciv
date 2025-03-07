@@ -38,13 +38,17 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         if (civInfo.diplomacyFunctions.canSignDefensivePactWith(otherCivilization))
             offers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
 
-        for (entry in civInfo.getCivResourcesWithOriginsForTrade()
+        for (entry in civInfo.getPerTurnResourcesWithOriginsForTrade()
             .filterNot { it.resource.resourceType == ResourceType.Bonus }
             .filter { it.origin == Constants.tradable }
         ) {
             val resourceTradeOfferType = if (entry.resource.resourceType == ResourceType.Luxury) TradeOfferType.Luxury_Resource
             else TradeOfferType.Strategic_Resource
             offers.add(TradeOffer(entry.resource.name, resourceTradeOfferType, entry.amount, speed = civInfo.gameInfo.speed))
+        }
+        
+        for (entry in civInfo.getStockpiledResourcesForTrade()){
+            offers.add(TradeOffer(entry.resource.name, TradeOfferType.Stockpiled_Resource, entry.amount, speed = civInfo.gameInfo.speed))
         }
 
         offers.add(TradeOffer("Gold", TradeOfferType.Gold, civInfo.gold, speed = civInfo.gameInfo.speed))

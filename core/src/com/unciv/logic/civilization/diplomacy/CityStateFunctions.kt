@@ -450,7 +450,8 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
-        modifiers["Military Rank"] = 100 - ((100 / civInfo.gameInfo.gameParameters.players.size) * forceRank)
+        val globalModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeGlobalModifier
+        modifiers["Military Rank"] = globalModifier - ((globalModifier / civInfo.gameInfo.gameParameters.players.size) * forceRank)
 
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
@@ -468,13 +469,14 @@ class CityStateFunctions(val civInfo: Civilization) {
                 else 0
             }
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
+        val localModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeLocalModifier
 
         modifiers["Military near City-State"] = when {
-            forceRatio > 3f -> 100
-            forceRatio > 2f -> 80
-            forceRatio > 1.5f -> 60
-            forceRatio > 1f -> 40
-            forceRatio > 0.5f -> 20
+            forceRatio > 3f -> localModifier
+            forceRatio > 2f -> localModifier * 4/5
+            forceRatio > 1.5f -> localModifier * 3/5
+            forceRatio > 1f -> localModifier * 2/5
+            forceRatio > 0.5f -> localModifier / 5
             else -> 0
         }
 

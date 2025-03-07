@@ -288,7 +288,7 @@ class TurnManager(val civInfo: Civilization) {
             } while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0)
         }
 
-        civInfo.addGold( nextTurnStats.gold.toInt() )
+        civInfo.addGold(nextTurnStats.gold.toInt() )
 
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.endTurn(nextTurnStats.science.toInt())

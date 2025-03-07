@@ -60,6 +60,7 @@ class OffersListScroll(
                 Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
+                Stockpiled_Resource -> "Stockpiled resources"
                 Technology -> "Technologies"
                 WarDeclaration -> "Declarations of war"
                 City -> "Cities"

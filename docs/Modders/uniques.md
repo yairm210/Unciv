@@ -629,6 +629,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Each city founded increases Science cost of Technologies [relativeAmount]% less than normal"
+	Example: "Each city founded increases Science cost of Technologies [+20]% less than normal"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Science cost of researching new Technologies"
+	Example: "[+20]% Science cost of researching new Technologies"
+
+	Applicable to: Global
+
 ??? example  "[stats] for every known Natural Wonder"
 	Example: "[+1 Gold, +2 Production] for every known Natural Wonder"
 
@@ -718,6 +728,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[Wounded] Units adjacent to this city heal [3] HP per turn when healing"
 
 	Applicable to: Global, FollowerBelief
+
+??? example  "[relativeAmount]% XP required for promotions"
+	Example: "[+20]% XP required for promotions"
+
+	Applicable to: Global
 
 ??? example  "[relativeAmount]% City Strength from defensive buildings"
 	Example: "[+20]% City Strength from defensive buildings"
@@ -2602,6 +2617,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Guaranteed with Strategic Balance resource option"
 	Applicable to: Resource
 
+??? example  "AI will sell at [amount] Gold"
+	Example: "AI will sell at [3] Gold"
+
+	Applicable to: Resource
+
+??? example  "AI will buy at [amount] Gold"
+	Example: "AI will buy at [3] Gold"
+
+	Applicable to: Resource
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
@@ -2993,6 +3018,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities connected to the capital&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with a [religionFilter] religion&gt;"
+	Example: "&lt;in cities with a [major] religion&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in cities not following a [religionFilter] religion&gt;"
+	Example: "&lt;in cities not following a [major] religion&gt;"
+
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a major religion&gt;"

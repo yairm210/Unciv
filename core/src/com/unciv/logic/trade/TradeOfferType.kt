@@ -14,6 +14,7 @@ enum class TradeOfferType(val numberType: TradeTypeNumberType, val isImmediate: 
     Agreement           (TradeTypeNumberType.Simple, false),
     Luxury_Resource     (TradeTypeNumberType.Simple, false),
     Strategic_Resource  (TradeTypeNumberType.Simple, false),
+    Stockpiled_Resource  (TradeTypeNumberType.Simple, true),
     Technology          (TradeTypeNumberType.None, true),
     Introduction        (TradeTypeNumberType.None, true),
     WarDeclaration      (TradeTypeNumberType.None, true),

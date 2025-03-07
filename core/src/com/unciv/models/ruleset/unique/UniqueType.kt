@@ -155,6 +155,10 @@ enum class UniqueType(
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [relativeAmount]% less than normal", UniqueTarget.Global),
     LessPolicyCost("[relativeAmount]% Culture cost of adopting new Policies", UniqueTarget.Global),
 
+    /// Tech Cost
+    LessTechCostFromCities("Each city founded increases Science cost of Technologies [relativeAmount]% less than normal", UniqueTarget.Global),
+    LessTechCost("[relativeAmount]% Science cost of researching new Technologies", UniqueTarget.Global),
+
     /// Natural Wonders
     StatsFromNaturalWonders("[stats] for every known Natural Wonder", UniqueTarget.Global),
     StatBonusWhenDiscoveringNaturalWonder("[stats] for discovering a Natural Wonder (bonus enhanced to [stats] if first to discover it)", UniqueTarget.Global),
@@ -189,6 +193,9 @@ enum class UniqueType(
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    
+    // change the XP cost for a relative amount %
+    XPForPromotionModifier("[relativeAmount]% XP required for promotions",UniqueTarget.Global),
 
     /// City Strength
     BetterDefensiveBuildings("[relativeAmount]% City Strength from defensive buildings", UniqueTarget.Global),
@@ -617,6 +624,8 @@ enum class UniqueType(
     LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
+    AiWillSellAt("AI will sell at [amount] Gold", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    AiWillBuyAt("AI will buy at [amount] Gold", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
     ////// Improvement uniques
     ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),
@@ -736,6 +745,8 @@ enum class UniqueType(
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),
     ConditionalCityFilter("in [cityFilter] cities", UniqueTarget.Conditional),
     ConditionalCityConnected("in cities connected to the capital", UniqueTarget.Conditional),
+    ConditionalCityReligion("in cities with a [religionFilter] religion", UniqueTarget.Conditional),
+    ConditionalCityNotReligion("in cities not following a [religionFilter] religion", UniqueTarget.Conditional),
     ConditionalCityMajorReligion("in cities with a major religion", UniqueTarget.Conditional),
     ConditionalCityEnhancedReligion("in cities with an enhanced religion", UniqueTarget.Conditional),
     ConditionalCityThisReligion("in cities following our religion", UniqueTarget.Conditional),

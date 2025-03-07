@@ -529,8 +529,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
             // second tap on the button will go to the city screen
             // if this city belongs to you and you are not iterating though the air units
             if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
-                || belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit)
-                || city.civ.gameInfo.isEspionageEnabled() && viewingPlayer.espionageManager.getSpyAssignedToCity(city)?.isSetUp() == true) {
+                || belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit)) {
                 GUI.pushScreen(CityScreen(city))
             } else if (viewingPlayer.knows(city.civ)) {
                 foreignCityInfoPopup()
@@ -585,19 +584,21 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
     }
 
     private fun foreignCityInfoPopup() {
-        fun openDiplomacy() {
-            // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            GUI.pushScreen(DiplomacyScreen(viewingPlayer, city.civ))
-        }
+        fun openDiplomacy() = GUI.pushScreen(DiplomacyScreen(viewingPlayer, city.civ))
 
+        val espionageVisible = city.civ.gameInfo.isEspionageEnabled()
+                && viewingPlayer.espionageManager.getSpyAssignedToCity(city)?.isSetUp() == true
+        
         // If there's nothing to display cuz no Religion - skip popup
-        if (!city.civ.gameInfo.isReligionEnabled()) return openDiplomacy()
+        if (!city.civ.gameInfo.isReligionEnabled() && !espionageVisible) return openDiplomacy()
 
         val popup = Popup(GUI.getWorldScreen()).apply {
             name = "ForeignCityInfoPopup"
             add(CityTable(city, true)).fillX().padBottom(5f).colspan(3).row()
-            add(CityReligionInfoTable(city.religion, true)).colspan(3).row()
+            if (city.civ.gameInfo.isReligionEnabled())
+                add(CityReligionInfoTable(city.religion, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
+            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(city)) }
             add().expandX()
             addCloseButton() {
                 GUI.getWorldScreen().run { nextTurnButton.update() }

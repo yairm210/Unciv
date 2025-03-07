@@ -2,8 +2,11 @@ package com.unciv.models
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.MultiFilter
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
@@ -76,10 +79,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     private fun mapToExistingBeliefs(beliefs: Set<String>): Sequence<Belief> {
         val rulesetBeliefs = gameInfo.ruleset.beliefs
-        return beliefs.asSequence().mapNotNull {
-            if (it !in rulesetBeliefs) null
-            else rulesetBeliefs[it]!!
-        }
+        return beliefs.asSequence().mapNotNull { rulesetBeliefs[it] }
     }
 
     fun getBeliefs(beliefType: BeliefType): Sequence<Belief> {
@@ -113,6 +113,32 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 
     fun getFounder() = gameInfo.getCivilization(foundingCivName)
+
+    fun matchesFilter(filter: String, state: StateForConditionals = StateForConditionals.IgnoreConditionals, civ: Civilization? = null): Boolean {
+        return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state, civ) })
+    }
+    
+    private fun matchesSingleFilter(filter: String, state: StateForConditionals = StateForConditionals.IgnoreConditionals, civ: Civilization? = null): Boolean {
+        val foundingCiv = getFounder()
+        when (filter) {
+            "any" -> return true
+            "major" -> return isMajorReligion()
+            "enhanced" -> return isEnhancedReligion()
+            "your" -> return civ == foundingCiv
+            "foreign" -> return civ != null && civ != foundingCiv
+            "enemy" -> {
+                val known = civ != null && civ.knows(foundingCiv)
+                return known && civ!!.isAtWarWith(foundingCiv)
+            }
+            else -> {
+                if (filter == name) return true
+                if (filter in getBeliefs(BeliefType.Any).map { it.name }) return true
+                if (founderBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
+                if (followerBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
+                return false
+            }
+        }
+    }
 
     private fun unlockedBuildingsPurchasable(): List<String> {
         return getAllBeliefsOrdered().flatMap { belief ->
