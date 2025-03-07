@@ -466,16 +466,16 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             unit = construction.construct(this, null)
                 ?: return false // unable to place unit
             
-            // checking if it's true that we should load saved promotion for the unitType
-            // Check if the player want to rebuild the unit the saved promotion
-            // and null check.
-            // and finally check if the current unit has enough XP.
+            /* check if it's true that we should load saved promotion for the unitType,
+               Then check if the player want to rebuild the unit the saved promotion,
+               and do a null check.
+               and finally check if the current unit has enough XP. */
             val possiblePromotions = hashSetOf<String>()
             
-            // Added all the possible Prmotion that the unit can be promoted,
-            // to avoid edge case where upgrading a scout to spearman
-            // whould give the rest of the spearman the "ingore terrain cost" promotion
-            // when built with auto promotion.
+            /* Added all the possible Prmotion that the unit can be promoted,
+               to avoid edge case where upgrading a scout to spearman
+               whould give the rest of the spearman the "ingore terrain cost" promotion
+               when built with auto promotion. */
             for (promotion in PromotionTree(unit).possiblePromotions) possiblePromotions.add(promotion.name)
             val savedPromotion = city.unitToPromotions[unit.baseUnit.name]
             
