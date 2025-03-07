@@ -474,7 +474,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             
             /* Added all the possible Prmotion that the unit can be promoted,
                to avoid edge case where upgrading a scout to spearman
-               whould give the rest of the spearman the "ingore terrain cost" promotion
+               whould give the rest of the spearman the "ignore terrain cost" promotion
                when built with auto promotion. */
             for (promotion in PromotionTree(unit).possiblePromotions) possiblePromotions.add(promotion.name)
             val savedPromotion = city.unitToPromotions[unit.baseUnit.name]
