@@ -321,9 +321,6 @@ object GameStarter {
         chosenPlayers.clear()
         chosenPlayers.addAll(spectators)
         chosenPlayers.addAll(otherPlayers)
-        
-        for(player in chosenPlayers)
-            println(player.chosenCiv)
 
         // Add CityStates to result - disguised as normal AI, but addCivilizations will detect them
         val numberOfCityStates = if (newGameParameters.randomNumberOfCityStates) {

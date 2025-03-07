@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.withItem
 import kotlin.math.ceil
@@ -119,7 +120,10 @@ class TechManager : IsPartOfGameInfoSerialization {
         techCost /= getScienceModifier(techName)
         val mapSizePredef = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller()
         techCost *= mapSizePredef.techCostMultiplier
-        techCost *= 1 + (civInfo.cities.size - 1) * mapSizePredef.techCostPerCityModifier
+        var cityModifier = (civInfo.cities.count { !it.isPuppet } - 1) * mapSizePredef.techCostPerCityModifier
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessTechCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessTechCost)) techCost *= unique.params[0].toPercent()
+        techCost *= 1 + cityModifier
         return techCost.toInt()
     }
 

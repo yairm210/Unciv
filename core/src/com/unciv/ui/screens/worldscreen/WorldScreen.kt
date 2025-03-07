@@ -610,6 +610,9 @@ class WorldScreen(
                             launchOnGLThread {
                                 val cantUploadNewGamePopup = Popup(this@WorldScreen)
                                 cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                                cantUploadNewGamePopup.addButton("Copy to clipboard") {
+                                    Gdx.app.clipboard.contents = ex.stackTraceToString()
+                                }
                                 cantUploadNewGamePopup.addCloseButton()
                                 cantUploadNewGamePopup.open()
                             }
@@ -620,7 +623,6 @@ class WorldScreen(
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }
-
             }
 
             if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
