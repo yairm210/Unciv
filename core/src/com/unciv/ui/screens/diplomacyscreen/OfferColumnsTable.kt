@@ -102,9 +102,9 @@ class OfferColumnsTable(
     fun update() {
         val ourFilteredOffers = tradeLogic.ourAvailableOffers.without(tradeLogic.currentTrade.ourOffers)
         val theirFilteredOffers = tradeLogic.theirAvailableOffers.without(tradeLogic.currentTrade.theirOffers)
-        val ourUntradables = tradeLogic.ourCivilization.getCivResourcesWithOriginsForTrade()
+        val ourUntradables = tradeLogic.ourCivilization.getPerTurnResourcesWithOriginsForTrade()
             .removeAll(Constants.tradable)
-        val theirUntradables = tradeLogic.otherCivilization.getCivResourcesWithOriginsForTrade()
+        val theirUntradables = tradeLogic.otherCivilization.getPerTurnResourcesWithOriginsForTrade()
             .removeAll(Constants.tradable)
         ourAvailableOffersTable.update(ourFilteredOffers, tradeLogic.theirAvailableOffers, ourUntradables, ourCiv, theirCiv)
         ourOffersTable.update(tradeLogic.currentTrade.ourOffers, tradeLogic.theirAvailableOffers, ourCiv = ourCiv, theirCiv = theirCiv)

@@ -729,6 +729,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[relativeAmount]% XP required for promotions"
+	Example: "[+20]% XP required for promotions"
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% City Strength from defensive buildings"
 	Example: "[+20]% City Strength from defensive buildings"
 
@@ -2612,6 +2617,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Guaranteed with Strategic Balance resource option"
 	Applicable to: Resource
 
+??? example  "AI will sell at [amount] Gold"
+	Example: "AI will sell at [3] Gold"
+
+	Applicable to: Resource
+
+??? example  "AI will buy at [amount] Gold"
+	Example: "AI will buy at [3] Gold"
+
+	Applicable to: Resource
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
@@ -3003,6 +3018,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities connected to the capital&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in cities with a [religionFilter] religion&gt;"
+	Example: "&lt;in cities with a [major] religion&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;in cities not following a [religionFilter] religion&gt;"
+	Example: "&lt;in cities not following a [major] religion&gt;"
+
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a major religion&gt;"

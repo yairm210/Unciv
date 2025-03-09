@@ -1,3 +1,17 @@
+## 4.15.15
+
+Added uniques to make AI value resources at set prices 
+
+Allow trading stockpiled resources
+
+Added unique to change promotion XP cost - By Emandac
+
+By EmperorPinguin:
+- Bugfix: puppet science cost increase 
+- Fix puppet city description 
+
+Add a filter for religions - By SeventhM
+
 ## 4.15.14
 
 Modding:

@@ -493,7 +493,7 @@ class AlertPopup(
         add(button).row()
         addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost.").row()
         addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
-        addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
+        addGoodSizedLabel("Puppeted cities also generate 25% less Science and Culture.").row()
         if (mayAnnex) addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
     }
 

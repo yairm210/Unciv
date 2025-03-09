@@ -27,6 +27,7 @@ object BackwardCompatibility {
         tileMap.removeMissingTerrainModReferences(ruleset)
 
         removeUnitsAndPromotions()
+        removeMissingGreatPersonPoints()
 
         // Mod decided you can't repair things anymore - get rid of old pillaged improvements
         removeOldPillagedImprovements()
@@ -54,6 +55,18 @@ object BackwardCompatibility {
                     if (!ruleset.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
             }
+        }
+    }
+
+    private fun GameInfo.removeMissingGreatPersonPoints() {
+        for (civ in civilizations) {
+            // Don't remove the 'points to next' counters, since pools do not necessarily correspond to unit names
+            for (key in civ.greatPeople.greatGeneralPointsCounter.keys.toList())
+                if (!ruleset.units.containsKey(key))
+                    civ.greatPeople.greatGeneralPointsCounter.remove(key)
+            for (key in civ.greatPeople.greatPersonPointsCounter.keys.toList())
+                if (!ruleset.units.containsKey(key))
+                    civ.greatPeople.greatPersonPointsCounter.remove(key)
         }
     }
 

@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -67,6 +68,7 @@ class TradeEvaluation {
             TradeOfferType.Agreement -> true
             TradeOfferType.Luxury_Resource -> hasResource(tradeOffer)
             TradeOfferType.Strategic_Resource -> hasResource(tradeOffer)
+            TradeOfferType.Stockpiled_Resource -> hasResource(tradeOffer)
             TradeOfferType.Technology -> true
             TradeOfferType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeOfferType.WarDeclaration -> offerer.getDiplomacyManager(tradeOffer.name)!!.canDeclareWar()
@@ -138,6 +140,12 @@ class TradeEvaluation {
             TradeOfferType.Luxury_Resource -> {
                 if (civInfo.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResourceTradesCutShort))
                     return 0 // We don't trust you for resources
+                
+                val lowestExplicitBuyCost = civInfo.gameInfo.ruleset.tileResources[offer.name]!!
+                    .getMatchingUniques(UniqueType.AiWillBuyAt, StateForConditionals(civInfo))
+                    .minOfOrNull { it.params[0].toInt() }
+
+                if (lowestExplicitBuyCost != null) return lowestExplicitBuyCost
 
                 val weLoveTheKingPotential = civInfo.cities.count { it.demandedResource == offer.name } * 50
                 return if(!civInfo.hasResource(offer.name)) { // we can't trade on resources, so we are only interested in 1 copy for ourselves
@@ -157,6 +165,12 @@ class TradeEvaluation {
                 if (amountWillingToBuy <= 0) return 0 // we already have enough.
                 val amountToBuyInOffer = min(amountWillingToBuy, offer.amount)
 
+
+                val lowestExplicitBuyCost = civInfo.gameInfo.ruleset.tileResources[offer.name]!!
+                    .getMatchingUniques(UniqueType.AiWillBuyAt, StateForConditionals(civInfo))
+                    .minOfOrNull { it.params[0].toInt() }
+                if (lowestExplicitBuyCost != null) return lowestExplicitBuyCost
+
                 val canUseForBuildings = civInfo.cities
                         .any { city -> city.cityConstructions.getBuildableBuildings().any {
                             it.getResourceRequirementsPerTurn(city.state).containsKey(offer.name) } }
@@ -166,6 +180,13 @@ class TradeEvaluation {
                 if (!canUseForBuildings && !canUseForUnits) return 0
 
                 return 50 * amountToBuyInOffer
+            }
+            
+            TradeOfferType.Stockpiled_Resource -> {
+                val resource = civInfo.gameInfo.ruleset.tileResources[offer.name] ?: return 0
+                val lowestBuyCost = resource.getMatchingUniques(UniqueType.AiWillBuyAt, StateForConditionals(civInfo))
+                    .minOfOrNull { it.params[0].toInt() }
+                return lowestBuyCost ?: 0
             }
 
             TradeOfferType.Technology -> // Currently unused
@@ -251,6 +272,12 @@ class TradeEvaluation {
                 }
             }
             TradeOfferType.Luxury_Resource -> {
+                val lowestExplicitSellCost = civInfo.gameInfo.ruleset.tileResources[offer.name]!!
+                    .getMatchingUniques(UniqueType.AiWillSellAt, StateForConditionals(civInfo))
+                    .minOfOrNull { it.params[0].toInt() }
+
+                if (lowestExplicitSellCost != null) return lowestExplicitSellCost
+                
                 return when {
                     civInfo.getResourceAmount(offer.name) > 1 -> 250 // fair price
                     civInfo.hasUnique(UniqueType.RetainHappinessFromLuxury) -> // If we retain 100% happiness, value it as a duplicate lux
@@ -264,7 +291,13 @@ class TradeEvaluation {
                     (civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) ||
                             tradePartner.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                 )
-                    return 10000 // We'd rather win the game, thanks
+                    return Int.MAX_VALUE // We'd rather win the game, thanks
+                
+                val lowestExplicitSellCost = civInfo.gameInfo.ruleset.tileResources[offer.name]!!
+                    .getMatchingUniques(UniqueType.AiWillSellAt, StateForConditionals(civInfo))
+                    .minOfOrNull { it.params[0].toInt() }
+                
+                if (lowestExplicitSellCost != null) return lowestExplicitSellCost
 
                 if (!civInfo.isAtWar()) return 50 * offer.amount
 
@@ -290,6 +323,14 @@ class TradeEvaluation {
                 }
                 return totalCost
             }
+
+            TradeOfferType.Stockpiled_Resource -> {
+                val resource = civInfo.gameInfo.ruleset.tileResources[offer.name] ?: return 0
+                val lowestSellCost = resource.getMatchingUniques(UniqueType.AiWillSellAt, StateForConditionals(civInfo))
+                    .minOfOrNull { it.params[0].toInt() }
+                return lowestSellCost ?: Int.MAX_VALUE
+            }
+            
             TradeOfferType.Technology -> return sqrt(civInfo.gameInfo.ruleset.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
             TradeOfferType.Introduction -> return introductionValue(civInfo.gameInfo.ruleset)
             TradeOfferType.WarDeclaration -> {
