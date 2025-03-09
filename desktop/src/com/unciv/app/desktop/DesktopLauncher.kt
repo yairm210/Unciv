@@ -84,9 +84,11 @@ internal object DesktopLauncher {
         // Solves a rendering problem in specific GPUs and drivers.
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
+        
+        val dataDirectory = customDataDir ?: "."
 
         val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
-        ImagePacker.packImages(isRunFromJAR)
+        ImagePacker.packImages(isRunFromJAR, dataDirectory)
 
         val config = Lwjgl3ApplicationConfiguration()
         config.setWindowIcon("ExtraImages/Icons/Unciv32.png", "ExtraImages/Icons/Unciv128.png")
@@ -99,14 +101,13 @@ internal object DesktopLauncher {
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 
-        val settingsDirectory = customDataDir ?: "."
 
-        val settings = UncivFiles.getSettingsForPlatformLaunchers(settingsDirectory)
+        val settings = UncivFiles.getSettingsForPlatformLaunchers(dataDirectory)
         if (settings.isFreshlyCreated) {
             settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
             settings.windowState = WindowState(maximumWindowBounds)
 
-            FileHandle(settingsDirectory + File.separator + SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
+            FileHandle(dataDirectory + File.separator + SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
         }
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they
