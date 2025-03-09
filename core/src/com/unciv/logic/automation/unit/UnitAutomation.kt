@@ -156,6 +156,8 @@ object UnitAutomation {
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean {
             if (!unit.civ.tech.isResearched(baseUnit))
                 return true
+            if (unit.civ.isBarbarian && baseUnit.hasUnique(UniqueType.CannotBeBarbarian))
+                return true
             return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { !it.conditionalsApply(unit.cache.state) }
         }
