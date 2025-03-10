@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.unit.presenter
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -121,10 +122,13 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
 
             for (promotion in unit.promotions.getPromotions(true))
-                promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f))
-                    .padBottom(2f)
+                if (!promotion.hasUnique(UniqueType.NotShownOnWorldScreen))
+                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f))
+                        .padBottom(2f)
 
             for (status in unit.statusMap.values) {
+                if (status.uniques.any { it.type == UniqueType.NotShownOnWorldScreen }) continue
+                
                 val group = ImageGetter.getPromotionPortrait(status.name)
                 val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8)
                     .surroundWithCircle(15f, color = ImageGetter.CHARCOAL)
