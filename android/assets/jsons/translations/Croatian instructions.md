@@ -331,6 +331,7 @@ When grammatical gender around a placeholder is needed we use majority gender of
 - [unitType]
 - [civ], [civ1], [civ2]
 - [civilization]
+- [religionFilter]
 
 Feminine but not applicable:
 
