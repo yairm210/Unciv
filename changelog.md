@@ -1,18 +1,14 @@
 ## 4.15.16
 
-Sort religion overview by number of followers
+Sort city religion overview by number of followers
 
-modding: "Not shown on world screen" applies to promotions and statuses
+Made Prince difficulty "truly balanced"
 
-Made Prince be "truly balanced"
-
-Resolved  - Allow atlas generation when using --data-dir option
-
-"Never appears as a Barbarian unit" also affects upgrades
-
-Resolved  - Remove great person point accumulation for units no longer available in this ruleset
-
-CI: Use Github Actions access token (with actual permissions) and not the default GITHUB_TOKEN for brew update
+Modding: 
+- "Not shown on world screen" applies to promotions and statuses
+- "Never appears as a Barbarian unit" also affects upgrades
+- Remove great person point accumulation for units no longer available in this ruleset
+- Allow atlas generation when using --data-dir option (e.g. Windows, installed via MSI)
 
 Correct puppet city description - By Ouaz
 

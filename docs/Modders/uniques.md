@@ -2176,6 +2176,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
+??? example  "Not shown on world screen"
+	Applicable to: Promotion, Resource
+
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
@@ -2586,7 +2589,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Not shown on world screen"
-	Applicable to: Resource
+	Applicable to: Promotion, Resource
 
 ??? example  "Generated with weight [amount]"
 	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are given weight `1`
