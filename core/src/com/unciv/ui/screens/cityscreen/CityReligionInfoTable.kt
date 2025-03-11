@@ -60,7 +60,7 @@ class CityReligionInfoTable(
             add("Pressure".toLabel()).pad(5f).row()
             addSeparator(gridColor)
 
-            for ((religion, followerCount) in followers) {
+            for ((religion, followerCount) in followers.asSequence().sortedByDescending { it.value }) {
                 val iconName = gameInfo.religions[religion]!!.getIconName()
                 add(linkedReligionIcon(iconName, religion)).pad(5f)
                 addSeparatorVertical(gridColor)
