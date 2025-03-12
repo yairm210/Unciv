@@ -325,7 +325,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     /**
      * Leader title corresponds with the branch that has the most policies adopted
      * TODO:
-     * 1. Externalise Branch-Title map
      * 2. `Lady` title for female leaders instead of `Lord`
      */
     fun getMostAdoptedPolicyBranch(): PolicyBranch? {
