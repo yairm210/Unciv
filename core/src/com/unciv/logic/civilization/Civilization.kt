@@ -682,7 +682,16 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        return nation.getLeaderDisplayName().tr(hideIcons = true) +
+        val leaderName = nation.leaderName
+        val nationName = nation.name
+        val leaderTitle = policies.getLeaderTitle()
+        val formattedName = when {
+            !nation.isMajorCiv -> nationName
+            leaderTitle.isEmpty() -> "$leaderName of $nationName"
+            leaderTitle.startsWith("the ") -> "$leaderName $leaderTitle of $nationName"
+            else -> "$leaderTitle $leaderName of $nationName"
+        }
+        return formattedName +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"

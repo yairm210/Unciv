@@ -320,4 +320,36 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     fun allPoliciesAdopted(checkEra: Boolean) =
         getRulesetPolicies().values.none { isAdoptable(it, checkEra) }
+    
+    /**
+     * Leader title corresponds with the branch that has the most policies adopted
+     * TODO:
+     * 1. Externalise Branch-Title map
+     * 2. `Lady` title for female leaders instead of `Lord`
+     */
+    fun getMostAdoptedPolicyBranch(): PolicyBranch? {
+        if (adoptedPolicies.isEmpty()) return null
+
+        return branchCompletionMap.entries
+            .filter { it.value > 0 } // Only consider branches with at least one policy adopted
+            .maxByOrNull { it.value }?.key // Get the branch with most policies
+    }
+
+    fun getLeaderTitle(): String {
+        val mostAdoptedBranch = getMostAdoptedPolicyBranch() ?: return ""
+
+        return when(mostAdoptedBranch.name) {
+            "Tradition" -> "Lord"
+            "Liberty" -> "Consul"
+            "Honor" -> "the Great"
+            "Piety" -> "the Pious"
+            "Patronage" -> "the Enlightened"
+            "Commerce" -> "Doge"
+            "Rationalism" -> "the Wise"
+            "Freedom" -> "President"
+            "Autocracy" -> "the Terrible"
+            "Order" -> "Chairman"
+            else -> ""
+        }
+    }
 }
