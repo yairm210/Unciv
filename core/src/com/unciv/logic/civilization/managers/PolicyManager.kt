@@ -78,9 +78,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         get() {
             val value = HashMap<PolicyBranch, Int>()
             for (branch in branches) {
-                value[branch] = adoptedPolicies.count {
+                val adoptedCount = adoptedPolicies.count {
                     branch.policies.contains(getPolicyByName(it))
                 }
+                value[branch] = if (isAdopted(branch.name)) 1 + adoptedCount else adoptedCount
             }
             return value
         }
@@ -336,20 +337,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     }
 
     fun getLeaderTitle(): String {
-        val mostAdoptedBranch = getMostAdoptedPolicyBranch() ?: return ""
-
-        return when(mostAdoptedBranch.name) {
-            "Tradition" -> "Lord"
-            "Liberty" -> "Consul"
-            "Honor" -> "the Great"
-            "Piety" -> "the Pious"
-            "Patronage" -> "the Enlightened"
-            "Commerce" -> "Doge"
-            "Rationalism" -> "the Wise"
-            "Freedom" -> "President"
-            "Autocracy" -> "the Terrible"
-            "Order" -> "Chairman"
-            else -> ""
-        }
+        return getMostAdoptedPolicyBranch()?.title?: ""
     }
 }

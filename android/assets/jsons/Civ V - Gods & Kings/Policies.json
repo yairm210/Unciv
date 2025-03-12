@@ -1,6 +1,7 @@
 [
     {
         "name": "Tradition",
+        "title": "Lord",
         "era": "Ancient era",
         "priorities": {
             "Neutral": 5,
@@ -71,6 +72,7 @@
     },
     {
         "name": "Liberty",
+        "title": "Consul",
         "era": "Ancient era",
         "priorities": {
             "Neutral": 10,
@@ -139,6 +141,7 @@
     },
     {
         "name": "Honor",
+        "title": "the Great",
         "era": "Ancient era",
         "priorities": {
             "Neutral": 5,
@@ -211,6 +214,7 @@
     },
     {
         "name": "Piety",
+        "title": "the Pious",
         "era": "Classical era",
         "priorities": {
             "Neutral": 0,
@@ -276,6 +280,7 @@
     },
     {
         "name": "Patronage",
+        "title": "the Enlightened",
         "era": "Medieval era",
         "priorities": {
             "Neutral": 5,
@@ -344,6 +349,7 @@
     },
     {
         "name": "Commerce",
+        "title": "Doge",
         "era": "Medieval era",
         "priorities": {
             "Neutral": 5,
@@ -415,6 +421,7 @@
     },
     {
         "name": "Rationalism",
+        "title": "the Wise",
         "era": "Renaissance era",
         "priorities": {
             "Neutral": 10,
@@ -482,6 +489,7 @@
     },
     {
         "name": "Freedom",
+        "title": "President",
         "era": "Industrial era",
         "priorities": {
             "Neutral": 5,
@@ -544,6 +552,7 @@
     },
     {
         "name": "Autocracy",
+        "title": "the Terrible",
         "era": "Industrial era",
         "priorities": {
             "Neutral": 5,
@@ -613,6 +622,7 @@
     },
     {
         "name": "Order",
+        "title": "Chairman",
         "era": "Industrial era",
         "priorities": {
             "Neutral": 10,
