@@ -7,19 +7,17 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.models.Religion
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.images.Portrait
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 
 class CityReligionInfoTable(
     private val religionManager: CityReligionManager,
@@ -60,7 +58,7 @@ class CityReligionInfoTable(
             add("Pressure".toLabel()).pad(5f).row()
             addSeparator(gridColor)
 
-            for ((religion, followerCount) in followers) {
+            for ((religion, followerCount) in followers.asSequence().sortedByDescending { it.value }) {
                 val iconName = gameInfo.religions[religion]!!.getIconName()
                 add(linkedReligionIcon(iconName, religion)).pad(5f)
                 addSeparatorVertical(gridColor)

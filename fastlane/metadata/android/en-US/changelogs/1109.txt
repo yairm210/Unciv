@@ -1,0 +1,11 @@
+Sort city religion overview by number of followers
+
+Made Prince difficulty "truly balanced"
+
+Modding: 
+- "Not shown on world screen" applies to promotions and statuses
+- "Never appears as a Barbarian unit" also affects upgrades
+- Remove great person point accumulation for units no longer available in this ruleset
+- Allow atlas generation when using --data-dir option (e.g. Windows, installed via MSI)
+
+Correct puppet city description - By Ouaz
