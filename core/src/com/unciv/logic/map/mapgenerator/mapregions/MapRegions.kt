@@ -67,7 +67,7 @@ class MapRegions (val ruleset: Ruleset) {
 
         val randomLuxuryRatios = mapOf(
                 1 to listOf(1f),
-                2 to listOf(0.55f, 0.44f),
+                2 to listOf(0.55f, 0.45f),
                 3 to listOf(0.40f, 0.33f, 0.27f),
                 4 to listOf(0.35f, 0.25f, 0.25f, 0.15f),
                 5 to listOf(0.25f, 0.25f, 0.20f, 0.15f, 0.15f),
