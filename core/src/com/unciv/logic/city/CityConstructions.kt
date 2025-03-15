@@ -471,7 +471,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                and do a null check.
                and finally check if the current unit has enough XP. */
             val possiblePromotions = hashSetOf<String>()
-            // to get promotion in order for nodes
+            
+            // to get promotion in order from nodes
             val prmotionTreeOrder = mutableSetOf<String>()
             
             /* Added all the possible Prmotion that the unit can be promoted,
@@ -486,10 +487,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (city.unitShouldUseSavedPromotion[unit.baseUnit.name] == true &&
                 savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
                 // this variable is the filted promotion from savedPrmotion to only get promotion that are possible for this unit.
-                val possiblePromotionFilted =  savedPromotion.promotions.sorted().filter { it in possiblePromotions }
+                val possiblePromotionFilted =  savedPromotion.promotions.filter { it in possiblePromotions }
                 // sort in order to avoid getting Accuracy III before Accuracy I
                 for (promotions in prmotionTreeOrder) {
-                    if (unit.promotions.XP >= savedPromotion.XP) {
+                    // check if here is enough XP for the next promotion
+                    if (unit.promotions.XP-unit.promotions.xpForNextPromotion() >= 0) {
                         if (promotions in possiblePromotionFilted) unit.promotions.addPromotion(promotions)
                     } else {
                         break
