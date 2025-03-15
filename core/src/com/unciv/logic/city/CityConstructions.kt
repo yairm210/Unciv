@@ -471,20 +471,26 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                and do a null check.
                and finally check if the current unit has enough XP. */
             val possiblePromotions = hashSetOf<String>()
+            // to get promotion in order for nodes
+            val prmotionTreeOrder = mutableSetOf<String>()
             
             /* Added all the possible Prmotion that the unit can be promoted,
                to avoid edge case where upgrading a scout to spearman
                whould give the rest of the spearman the "ignore terrain cost" promotion
                when built with auto promotion. */
             for (promotion in PromotionTree(unit).possiblePromotions) possiblePromotions.add(promotion.name)
+            for (roots in PromotionTree(unit).allNodes()) prmotionTreeOrder.add(roots.promotion.name)
+
             val savedPromotion = city.unitToPromotions[unit.baseUnit.name]
             
             if (city.unitShouldUseSavedPromotion[unit.baseUnit.name] == true &&
                 savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
-                // sort it to avoid getting Accuracy III before Accuracy I
-                for (promotions in savedPromotion.promotions.sorted().filter { it in possiblePromotions }) {
+                // this variable is the filted promotion from savedPrmotion to only get promotion that are possible for this unit.
+                val possiblePromotionFilted =  savedPromotion.promotions.sorted().filter { it in possiblePromotions }
+                // sort in order to avoid getting Accuracy III before Accuracy I
+                for (promotions in prmotionTreeOrder) {
                     if (unit.promotions.XP >= savedPromotion.XP) {
-                        unit.promotions.addPromotion(promotions)
+                        if (promotions in possiblePromotionFilted) unit.promotions.addPromotion(promotions)
                     } else {
                         break
                     }
