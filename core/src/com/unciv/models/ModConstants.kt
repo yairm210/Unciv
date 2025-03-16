@@ -109,6 +109,9 @@ class ModConstants {
     var tributeGlobalModifier = 100 // 75 in BNW
     var tributeLocalModifier = 100 // 125 in BNW
 
+    // Forest chops: if Production bonus from removing terrain features should increase with game progress
+    var choppingYieldsIncreaseWithGameProgress = false // true in Civ6
+
     // Espionage
     var maxSpyRank = 3
     // How much of a skill bonus each rank gives.
