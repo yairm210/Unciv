@@ -69,6 +69,7 @@ class MapSize private constructor(
          * used in [name] to indicate user-defined dimensions.
          * Do not mistake for [MapGeneratedMainType.custom]. */
         const val custom = "Custom"
+        val Duel get() = MapSize(Predefined.Duel)
         val Tiny get() = MapSize(Predefined.Tiny)
         val Small get() = MapSize(Predefined.Small)
         val Medium get() = MapSize(Predefined.Medium)
