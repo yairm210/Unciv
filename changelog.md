@@ -1,12 +1,14 @@
 ## 4.15.17
 
-Resolved  - Science points no longer 're-bonused' on overflow
+Science points no longer 're-bonused' on overflow
 
-Resolved  - Updated docs regarding event choice fields
+Updated docs regarding event choice fields
 
 By k-oa:
 - Added animation for unit movement button 
 - Changed the Settle sprite to match style of AbsoluteUnits 
+
+Auto promotions fixes - by Emandac
 
 ## 4.15.16
 
