@@ -309,19 +309,32 @@ class TileImprovementFunctions(val tile: Tile) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             ?: return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
-        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
+
+        var productionPoints = 0f
+        for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
+            productionPoints = unique.params[0].toFloatOrNull() ?: return
+        }
+        val ruleset = civ.gameInfo.ruleset
+        val choppingYieldsIncreaseWithGameProgress = ruleset.modOptions.constants.choppingYieldsIncreaseWithGameProgress
+        // Civ6 yields increase with game progression: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
+        if (choppingYieldsIncreaseWithGameProgress) {
+            val gameProgress = max(civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size, civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size)
+            productionPoints *= (1 + 9 * gameProgress)
+        }
+        var productionPointsToAdd = if (distance == 1) productionPoints else productionPoints - (distance - 2) * productionPoints/4
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) productionPointsToAdd =
             productionPointsToAdd * 2 / 3
+        productionPointsToAdd *= civ.gameInfo.speed.productionCostModifier
+        productionPointsToAdd = floor(productionPointsToAdd)
         if (productionPointsToAdd > 0) {
-            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd.toInt())
             val locations = LocationAction(tile.position, closestCity.location)
             civ.addNotification(
-                "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
+                "Clearing a [$removedTerrainFeature] has created [${productionPointsToAdd.toInt()}] Production for [${closestCity.name}]",
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
     }
-
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {
