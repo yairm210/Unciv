@@ -385,7 +385,7 @@ class CityStats(val city: City) {
         if (!civInfo.isHuman())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
-        var unhappinessFromCity = -3f // -3 happiness per city
+        var unhappinessFromCity = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().unHappinesPerCity
         if (hasExtraAnnexUnhappiness())
             unhappinessFromCity -= 2f
 
