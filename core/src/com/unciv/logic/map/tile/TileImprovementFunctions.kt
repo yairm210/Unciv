@@ -313,7 +313,6 @@ class TileImprovementFunctions(val tile: Tile) {
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var stats = Stats()
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
-            //productionPoints = unique.params[0].toFloatOrNull() ?: return
             stats.add(unique.stats)
         }
         val ruleset = civ.gameInfo.ruleset
