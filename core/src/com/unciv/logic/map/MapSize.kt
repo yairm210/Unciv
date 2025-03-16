@@ -50,7 +50,7 @@ class MapSize private constructor(
         val techCostMultiplier: Float = 1f,
         val techCostPerCityModifier: Float = 0.05f,
         val policyCostPerCityModifier: Float = 0.1f,
-        val unHappinesPerCity: Float = 3f
+        val unHappinesPerCity: Float = 3f,
     ) {
         Duel(16, 40, 24),
         Tiny(24, 56, 36),
