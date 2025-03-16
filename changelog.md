@@ -1,3 +1,13 @@
+## 4.15.17
+
+Resolved  - Science points no longer 're-bonused' on overflow
+
+Resolved  - Updated docs regarding event choice fields
+
+By k-oa:
+- Added animation for unit movement button 
+- Changed the Settle sprite to match style of AbsoluteUnits 
+
 ## 4.15.16
 
 Sort city religion overview by number of followers
