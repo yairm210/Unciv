@@ -255,7 +255,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val newMap = MapGenerator(backgroundMapRuleset, this)
                 .generateMap(MapParameters().apply {
                     shape = MapShape.rectangular
-                    mapSize = MapSize.Small
+                    mapSize.width = 33
+                    mapSize.height = 21
                     type = MapType.pangaea
                     temperatureintensity = .7f
                     waterThreshold = -0.1f // mainly land, gets about 30% water
