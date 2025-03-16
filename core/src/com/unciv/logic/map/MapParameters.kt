@@ -52,7 +52,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var type = MapType.pangaea
     // DO NOT CHANGE DEFAULTS since that changes all existing games to new default!
     var shape = MapShape.hexagonal
-    var mapSize = MapSize.Medium
+    var mapSize = MapSize.Tiny
     var mapResources = MapResourceSetting.default.label
     var mirroring: String = MirroringType.none
     var noRuins = false
