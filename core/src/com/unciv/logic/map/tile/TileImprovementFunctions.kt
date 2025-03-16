@@ -309,7 +309,6 @@ class TileImprovementFunctions(val tile: Tile) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             ?: return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
-
         var productionPoints = 0f
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
             productionPoints = unique.params[0].toFloatOrNull() ?: return
