@@ -188,7 +188,7 @@
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
 		"uniques": ["Rough terrain", "Vegetation",
-					"Provides a one-time Production bonus to the closest city when cut down",
+					"Provides a one-time bonus of [30] Production to the closest city when cut down",
 					"Blocks line-of-sight from tiles at same elevation",
 					"[25]% Chance to be destroyed by nukes",
 					"A Region is formed with at least [30]% [Forest] tiles, with priority [3]",
