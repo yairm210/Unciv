@@ -10,7 +10,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import kotlin.math.floor
+import com.unciv.models.stats.Stats
 import kotlin.math.max
 
 
