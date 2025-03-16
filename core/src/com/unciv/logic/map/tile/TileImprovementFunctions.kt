@@ -330,13 +330,13 @@ class TileImprovementFunctions(val tile: Tile) {
             if (closestCity != null) {
                 closestCity.addStat(stat, value.toInt())
             }
-        }
             val locations = LocationAction(tile.position, closestCity.location)
             civ.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [${stats.toStringWithoutIcons()}] for [${closestCity.name}]",
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
+    }
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {
