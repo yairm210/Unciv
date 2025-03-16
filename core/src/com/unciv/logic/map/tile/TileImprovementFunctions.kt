@@ -10,6 +10,8 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import kotlin.math.floor
+import kotlin.math.max
 
 
 /** Reason why an Improvement cannot be built by a given civ */
