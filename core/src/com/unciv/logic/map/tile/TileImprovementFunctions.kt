@@ -314,24 +314,30 @@ class TileImprovementFunctions(val tile: Tile) {
         var stats = Stats()
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
             stats.add(unique.stats)
+            if (stats.isEmpty()) return
         }
         val ruleset = civ.gameInfo.ruleset
-        val choppingYieldsIncreaseWithGameProgress = ruleset.modOptions.constants.choppingYieldsIncreaseWithGameProgress
+        val choppingYieldsIncreaseWithGameProgress =
+            ruleset.modOptions.constants.choppingYieldsIncreaseWithGameProgress
         // Civ6 yields increase with game progression: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
         if (choppingYieldsIncreaseWithGameProgress) {
-            val gameProgress = max(civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size, civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size)
+            val gameProgress = max(
+                civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size,
+                civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size
+            )
             stats *= (1 + 9 * gameProgress)
         }
-        if (distance != 1) stats *= (6-distance)/4
-        if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2/3
+        if (distance > 5) stats *= 0
+        else if (distance != 1) stats *= (6 - distance) / 4
+        if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
         stats *= civ.gameInfo.speed.productionCostModifier
+        if (closestCity != null) {
         for ((stat, value) in stats) {
-            if (closestCity != null) {
-                closestCity.addStat(stat, value.toInt())
-            }
+            closestCity.addStat(stat, value.toInt())
+        }
             val locations = LocationAction(tile.position, closestCity.location)
             civ.addNotification(
-                "Clearing a [$removedTerrainFeature] has created [${stats.toStringWithoutIcons()}] for [${closestCity.name}]",
+                "Clearing a [$removedTerrainFeature] has created [${stats.toStringForNotifications()}] for [${closestCity.name}]",
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
