@@ -235,10 +235,14 @@ object BattleTableHelpers {
         }
 
         fun animateHealth(health: Image, fat: Float, move: Float) {
-            health.addAction(Actions.sizeBy(fat, 0f))
-            health.addAction(Actions.moveBy(-move, 0f))
-            health.addAction(Actions.sizeBy(-fat, 0f, 0.5f))
-            health.addAction(Actions.moveBy(move, 0f, 0.5f))
+            health.addAction(Actions.sequence(
+                Actions.sizeBy(fat, 0f),
+                Actions.sizeBy(-fat, 0f, 0.5f)
+            ))
+            health.addAction(Actions.sequence(
+                Actions.moveBy(-move, 0f),
+                Actions.moveBy(move, 0f, 0.5f)
+            ))
         }
         
         val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
@@ -251,10 +255,8 @@ object BattleTableHelpers {
                 Actions.color(Color.ORANGE, 0.7f)
             )))
         }
-
-        // This is the additional Width for `remainingHealthDot`, 
-        // by which it shrinks during the animation before returning to its original Width.
-        val fat = (currentHealth - minRemainingHealth) * totalWidth / 100  
+        
+        val healthDecreaseWidth = (currentHealth - minRemainingHealth) * totalWidth / 100 // Used for animation only
         if (forDefender) {
             addHealthToBar(missingHealth, maxHealth - currentHealth)
             addHealthToBar(damagedHealth, currentHealth - maxRemainingHealth)
@@ -262,7 +264,7 @@ object BattleTableHelpers {
             addHealthToBar(remainingHealthDot, minRemainingHealth)
 
             remainingHealthDot.toFront()
-            animateHealth(remainingHealthDot, fat, fat)
+            animateHealth(remainingHealthDot, healthDecreaseWidth, healthDecreaseWidth)
         }
         else {
             addHealthToBar(remainingHealthDot, minRemainingHealth)
@@ -271,7 +273,7 @@ object BattleTableHelpers {
             addHealthToBar(missingHealth, maxHealth - currentHealth)
 
             remainingHealthDot.toFront()
-            animateHealth(remainingHealthDot, fat, 0f)
+            animateHealth(remainingHealthDot, healthDecreaseWidth, 0f)
         }
         healthBar.pack()
         return healthBar
