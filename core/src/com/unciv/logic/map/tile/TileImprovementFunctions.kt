@@ -314,8 +314,8 @@ class TileImprovementFunctions(val tile: Tile) {
         var stats = Stats()
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
             stats.add(unique.stats)
-            if (stats.isEmpty()) return
         }
+        if (stats.isEmpty()) return
         val ruleset = civ.gameInfo.ruleset
         val choppingYieldsIncreaseWithGameProgress =
             ruleset.modOptions.constants.choppingYieldsIncreaseWithGameProgress
@@ -328,7 +328,7 @@ class TileImprovementFunctions(val tile: Tile) {
             stats *= (1 + 9 * gameProgress)
         }
         if (distance > 5) stats *= 0
-        else if (distance != 1) stats *= (6 - distance) / 4
+        else if (distance != 1) stats *= (6 - distance) / 4f
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
         stats *= civ.gameInfo.speed.productionCostModifier
         if (closestCity != null) {
