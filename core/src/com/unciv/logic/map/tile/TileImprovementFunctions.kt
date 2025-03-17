@@ -311,6 +311,7 @@ class TileImprovementFunctions(val tile: Tile) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             ?: return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
+        if (distance > 5) return
         var stats = Stats()
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
             stats.add(unique.stats)
@@ -327,8 +328,7 @@ class TileImprovementFunctions(val tile: Tile) {
             )
             stats *= (1 + 9 * gameProgress)
         }
-        if (distance > 5) stats *= 0
-        else if (distance != 1) stats *= (6 - distance) / 4f
+        if (distance != 1) stats *= (6 - distance) / 4f
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
         stats *= civ.gameInfo.speed.productionCostModifier
         if (closestCity != null) {
