@@ -234,10 +234,10 @@ object BattleTableHelpers {
             healthBar.add(image).size(width.coerceIn(0f, totalWidth),4f)
         }
 
-        fun animateHealth(health: Image, fat: Float, move: Float) {
+        fun animateHealth(health: Image, healthDecreaseWidth: Float, move: Float) {
             health.addAction(Actions.sequence(
-                Actions.sizeBy(fat, 0f),
-                Actions.sizeBy(-fat, 0f, 0.5f)
+                Actions.sizeBy(healthDecreaseWidth, 0f),
+                Actions.sizeBy(-healthDecreaseWidth, 0f, 0.5f)
             ))
             health.addAction(Actions.sequence(
                 Actions.moveBy(-move, 0f),
