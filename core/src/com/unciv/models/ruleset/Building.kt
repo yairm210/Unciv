@@ -311,7 +311,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.MustNotBeOnTile.toInstance(unique.text))
 
                 UniqueType.MustBeNextTo ->
-                    if (!cityCenter.isAdjacentTo(unique.params[0], civ))
+                    if (!cityCenter.isAdjacentTo(unique.params[0], civ) && !cityCenter.matchesFilter(unique.params[0], civ))
                         yield(RejectionReasonType.MustBeNextToTile.toInstance(unique.text))
 
                 UniqueType.MustNotBeNextTo ->
