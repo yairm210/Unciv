@@ -745,10 +745,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (mapSizeModifier > 1)
             mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
 
+        val modConstants= gameInfo.ruleset.modOptions.constants
         scoreBreakdown["Cities"] = cities.size * 10 * mapSizeModifier
-        scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
+        scoreBreakdown["Population"] = cities.sumOf { it.population.population } * modConstants.scoreFromPopulation * mapSizeModifier
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
-        scoreBreakdown["Wonders"] = 40 * cities
+        scoreBreakdown["Wonders"] = modConstants.scoreFromWonders * cities
             .sumOf { city -> city.cityConstructions.getBuiltBuildings()
                 .filter { it.isWonder }.count()
             }.toDouble()
