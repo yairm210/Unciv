@@ -19,12 +19,14 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
+    /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
+    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals) = sequenceOf<Unique>()
+    
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/
     fun getResourceRequirementsPerTurn(state: StateForConditionals? = null): Counter<String>
     fun requiredResources(state: StateForConditionals = StateForConditionals.EmptyState): Set<String>
-    /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
-    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals) = sequenceOf<Unique>()
+    fun getStockpiledResourceRequirements(state: StateForConditionals): Counter<String>
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
@@ -116,6 +118,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     override fun requiredResources(state: StateForConditionals): Set<String> {
         return getResourceRequirementsPerTurn(state).keys +
                 getMatchingUniques(UniqueType.CostsResources, state).map { it.params[1] }
+    }
+    
+    override fun getStockpiledResourceRequirements(state: StateForConditionals): Counter<String> {
+        val counter = Counter<String>()
+        for (unique in getMatchingUniquesNotConflicting(UniqueType.CostsResources, state)){
+            var amount = unique.params[0].toInt()
+            if (unique.isModifiedByGameSpeed()) amount = (amount * state.gameInfo!!.speed.modifier).toInt()
+            counter.add(unique.params[1], amount)
+        }
+        return counter
     }
 }
 
@@ -270,6 +282,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
+    override fun getStockpiledResourceRequirements(state: StateForConditionals) = Counter.ZERO
 
     companion object {
         val science = PerpetualStatConversion(Stat.Science)

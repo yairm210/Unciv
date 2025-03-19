@@ -373,15 +373,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val construction = getConstruction(constructionName)
             // First construction will be built next turn, we need to make sure it has the correct resources
             if (constructionQueue.isEmpty() && getWorkDone(constructionName) == 0) {
-                val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources, 
-                    city.state
-                )
+                val stockpileCosts = construction.getStockpiledResourceRequirements(city.state)
                 val civResources = city.civ.getCivResourcesByName()
 
-                if (costUniques.any {
-                            val resourceName = it.params[1]
+                if (stockpileCosts.any { (resourceName, amount) ->
                             civResources[resourceName] == null
-                                    || it.params[0].toInt() > civResources[resourceName]!! })
+                                    || amount > civResources[resourceName]!! })
                     continue // Removes this construction from the queue
             }
             if (construction.isBuildable(this))
@@ -431,11 +428,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     private fun constructionBegun(construction: IConstruction) {
-        val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources, city.state)
-
-        for (unique in costUniques) {
-            val amount = unique.params[0].toInt()
-            val resourceName = unique.params[1]
+        for ((resourceName, amount) in construction.getStockpiledResourceRequirements(city.state)) {
             val resource = city.civ.gameInfo.ruleset.tileResources[resourceName] ?: continue
             city.gainStockpiledResource(resource, -amount)
         }
@@ -735,11 +728,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             
             // Consume stockpiled resources - usually consumed when construction starts, but not when bought
             if (getWorkDone(construction.name) == 0){ // we didn't pay the resources when we started building
-                val costUniques = construction.getMatchingUniques(UniqueType.CostsResources, conditionalState)
-
-                for (unique in costUniques) {
-                    val amount = unique.params[0].toInt()
-                    val resourceName = unique.params[1]
+                for ((resourceName, amount) in construction.getStockpiledResourceRequirements(conditionalState)) {
                     val resource = city.civ.gameInfo.ruleset.tileResources[resourceName] ?: continue
                     city.gainStockpiledResource(resource, -amount)
                 }
