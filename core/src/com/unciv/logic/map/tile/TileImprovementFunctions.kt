@@ -315,6 +315,9 @@ class TileImprovementFunctions(val tile: Tile) {
         var stats = Stats()
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
             stats.add(unique.stats)
+            if (unique.isModifiedByGameSpeed()) {
+                stats *= civ.gameInfo.speed.modifier
+            }
         }
         if (stats.isEmpty()) return
         val ruleset = civ.gameInfo.ruleset
@@ -330,7 +333,6 @@ class TileImprovementFunctions(val tile: Tile) {
         }
         if (distance != 1) stats *= (6 - distance) / 4f
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
-        stats *= civ.gameInfo.speed.productionCostModifier
         if (closestCity != null) {
         for ((stat, value) in stats) {
             closestCity.addStat(stat, value.toInt())
