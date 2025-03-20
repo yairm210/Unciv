@@ -317,7 +317,7 @@ class TileImprovementFunctions(val tile: Tile) {
             if (unique.isModifiedByGameSpeed())
                 stats *= civ.gameInfo.speed.modifier
             if (unique.isModifiedByGameProgress())
-                stats *= unique.modifyByGameProgress(civ, unique.getModifiers(UniqueType.ModifiedByGameProgress).firstOrNull()!!.params[0].toInt())
+                stats *= unique.modifyByGameProgress(civ, unique.getModifiers(UniqueType.ModifiedByGameProgress).firstOrNull()!!.params[0].toFloat())
         }
         if (stats.isEmpty()) return
         if (distance != 1) stats *= (6 - distance) / 4f
