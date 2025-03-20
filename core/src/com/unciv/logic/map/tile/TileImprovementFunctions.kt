@@ -317,10 +317,9 @@ class TileImprovementFunctions(val tile: Tile) {
             if (unique.isModifiedByGameSpeed())
                 stats *= civ.gameInfo.speed.modifier
             if (unique.isModifiedByGameProgress())
-                stats *= unique.modifyByGameProgress(civ, 1000)
+                stats *= unique.modifyByGameProgress(civ, unique.getModifiers(UniqueType.ModifiedByGameProgress).firstOrNull()!!.params[0].toInt())
         }
         if (stats.isEmpty()) return
-        // Civ6 yields increase with game progression: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
         if (distance != 1) stats *= (6 - distance) / 4f
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
         if (closestCity != null) {
