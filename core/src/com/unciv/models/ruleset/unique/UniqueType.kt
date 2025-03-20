@@ -683,6 +683,7 @@ enum class UniqueType(
     ConditionalReligionDisabled("when religion is disabled", UniqueTarget.Conditional),
     ConditionalEspionageEnabled("when espionage is enabled", UniqueTarget.Conditional),
     ConditionalEspionageDisabled("when espionage is disabled", UniqueTarget.Conditional),
+    ConditionalNuclearWeaponsEnabled("when nuclear weapons are enabled", UniqueTarget.Conditional),
 
     /////// general conditionals
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
