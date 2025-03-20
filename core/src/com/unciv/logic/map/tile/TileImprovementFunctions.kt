@@ -11,7 +11,6 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
-import kotlin.math.max
 
 
 /** Reason why an Improvement cannot be built by a given civ */
@@ -315,22 +314,13 @@ class TileImprovementFunctions(val tile: Tile) {
         var stats = Stats()
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
             stats.add(unique.stats)
-            if (unique.isModifiedByGameSpeed()) {
+            if (unique.isModifiedByGameSpeed())
                 stats *= civ.gameInfo.speed.modifier
-            }
+            if (unique.isModifiedByGameProgress())
+                stats *= unique.modifyByGameProgress(civ, 1000)
         }
         if (stats.isEmpty()) return
-        val ruleset = civ.gameInfo.ruleset
-        val choppingYieldsIncreaseWithGameProgress =
-            ruleset.modOptions.constants.choppingYieldsIncreaseWithGameProgress
         // Civ6 yields increase with game progression: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
-        if (choppingYieldsIncreaseWithGameProgress) {
-            val gameProgress = max(
-                civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size,
-                civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size
-            )
-            stats *= (1 + 9 * gameProgress)
-        }
         if (distance != 1) stats *= (6 - distance) / 4f
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
         if (closestCity != null) {
