@@ -208,7 +208,8 @@ enum class UniqueType(
     /** @see UnitActionStockpileCost */
     CostsResources("Costs [amount] [stockpiledResource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit,
         docDescription = "These resources are removed *when work begins* on the construction. " +
-                "Do not confuse with \"costs [amount] [stockpiledResource]\" (lowercase 'c'), the Unit Action Modifier."),
+                "Do not confuse with \"costs [amount] [stockpiledResource]\" (lowercase 'c'), the Unit Action Modifier.",
+        flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     // Todo: Get rid of forced sign (+[relativeAmount]) and unify these two, e.g.: "[relativeAmount]% [resource/resourceType] production"
     // Note that the parameter type 'resourceType' (strategic, luxury, bonus) currently doesn't exist and should then be added as well
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used by Policies
@@ -682,6 +683,7 @@ enum class UniqueType(
     ConditionalReligionDisabled("when religion is disabled", UniqueTarget.Conditional),
     ConditionalEspionageEnabled("when espionage is enabled", UniqueTarget.Conditional),
     ConditionalEspionageDisabled("when espionage is disabled", UniqueTarget.Conditional),
+    ConditionalNuclearWeaponsEnabled("when nuclear weapons are enabled", UniqueTarget.Conditional),
 
     /////// general conditionals
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),

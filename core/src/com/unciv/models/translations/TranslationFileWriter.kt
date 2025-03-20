@@ -476,7 +476,6 @@ object TranslationFileWriter {
 
             private val fieldsToProcessParameters = setOf(
                 "uniques", "promotions", "milestones",
-                "triggeredUniques", "conditions"
             )
 
             private fun isFieldTypeRelevant(type: Class<*>) =

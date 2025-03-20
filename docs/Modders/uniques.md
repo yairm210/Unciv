@@ -1429,6 +1429,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -1647,6 +1648,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -2410,6 +2412,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -2830,6 +2833,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when espionage is disabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when nuclear weapons are enabled&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;with [amount]% chance&gt;"

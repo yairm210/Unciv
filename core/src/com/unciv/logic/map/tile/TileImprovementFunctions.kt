@@ -78,7 +78,8 @@ class TileImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.MissingResources)
 
         if (improvement.getMatchingUniques(UniqueType.CostsResources)
-                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
+                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() * 
+                            (if (it.isModifiedByGameSpeed()) civInfo.gameInfo.speed.modifier else 1f) })
             yield(ImprovementBuildingProblem.MissingResources)
 
         val knownFeatureRemovals = tile.ruleset.nonRoadTileRemovals
@@ -258,7 +259,9 @@ class TileImprovementFunctions(val tile: Tile) {
         
         for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
             val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
-            civ.gainStockpiledResource(resource, -unique.params[0].toInt())
+            var amount = unique.params[0].toInt()
+            if (unique.isModifiedByGameSpeed()) amount = (amount * civ.gameInfo.speed.modifier).toInt()
+            civ.gainStockpiledResource(resource, -amount)
         }
 
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()

@@ -24,9 +24,9 @@ enum class ActivationTypes(
         this == other.equivalentTo || other == this.equivalentTo
 
     internal companion object {
-        fun equivalentValues(type: ActivationTypes) = values().asSequence()
+        fun equivalentValues(type: ActivationTypes) = entries.asSequence()
             .filter { it.isEquivalent(type) }
-        fun gestures() = values().asSequence()
+        fun gestures() = entries.asSequence()
             .filter { it.isGesture }
     }
 }
