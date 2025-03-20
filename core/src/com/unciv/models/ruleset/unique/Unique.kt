@@ -51,18 +51,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
     fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
-    fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
-    fun modifyByGameProgress(civ: Civilization, modifierPercent: Float): Float {
-        // Civ6 game progression modifier: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
-        var modifier = 1f
-        val ruleset = civ.gameInfo.ruleset
-        val gameProgress = max(
-            civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size,
-            civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size
-        )
-        modifier += (modifierPercent/100 - 1) * gameProgress
-        return modifier
-    }
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false
         return modifiers.any { conditional ->
