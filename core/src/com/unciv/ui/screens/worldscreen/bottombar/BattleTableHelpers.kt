@@ -226,32 +226,55 @@ object BattleTableHelpers {
         container.addAction(DamageLabelAnimation(container))
     }
 
-    fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
+    fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int, forDefender: Boolean = false): Table {
         val healthBar = Table()
-        val totalWidth = 100f
+        val totalWidth = 120f
         fun addHealthToBar(image: Image, amount: Int) {
             val width = totalWidth * amount / maxHealth
-            healthBar.add(image).size(width.coerceIn(0f, totalWidth),3f)
+            healthBar.add(image).size(width.coerceIn(0f, totalWidth),4f)
         }
 
+        fun animateHealth(health: Image, healthDecreaseWidth: Float, move: Float) {
+            health.addAction(Actions.sequence(
+                Actions.sizeBy(healthDecreaseWidth, 0f),
+                Actions.sizeBy(-healthDecreaseWidth, 0f, 0.5f)
+            ))
+            health.addAction(Actions.sequence(
+                Actions.moveBy(-move, 0f),
+                Actions.moveBy(move, 0f, 0.5f)
+            ))
+        }
+        
         val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
+        val remainingHealthDot = ImageGetter.getDot(Color.GREEN)
+        val maybeDamagedHealth = ImageGetter.getDot(Color.ORANGE)
+        val missingHealth = ImageGetter.getDot(ImageGetter.CHARCOAL)
         if (UncivGame.Current.settings.continuousRendering) {
-            damagedHealth.addAction(Actions.forever(Actions.sequence(
-                Actions.color(ImageGetter.CHARCOAL, 0.7f),
-                Actions.color(Color.FIREBRICK, 0.7f)
+            maybeDamagedHealth.addAction(Actions.forever(Actions.sequence(
+                Actions.color(Color.FIREBRICK, 0.7f),
+                Actions.color(Color.ORANGE, 0.7f)
             )))
         }
+        
+        val healthDecreaseWidth = (currentHealth - minRemainingHealth) * totalWidth / 100 // Used for animation only
+        if (forDefender) {
+            addHealthToBar(missingHealth, maxHealth - currentHealth)
+            addHealthToBar(damagedHealth, currentHealth - maxRemainingHealth)
+            addHealthToBar(maybeDamagedHealth, maxRemainingHealth - minRemainingHealth)
+            addHealthToBar(remainingHealthDot, minRemainingHealth)
 
-        val maybeDamagedHealth = ImageGetter.getDot(Color.ORANGE)
+            remainingHealthDot.toFront()
+            animateHealth(remainingHealthDot, healthDecreaseWidth, healthDecreaseWidth)
+        }
+        else {
+            addHealthToBar(remainingHealthDot, minRemainingHealth)
+            addHealthToBar(maybeDamagedHealth, maxRemainingHealth - minRemainingHealth)
+            addHealthToBar(damagedHealth, currentHealth - maxRemainingHealth)
+            addHealthToBar(missingHealth, maxHealth - currentHealth)
 
-        val remainingHealthDot = ImageGetter.getWhiteDot()
-        remainingHealthDot.color = Color.GREEN
-
-        addHealthToBar(ImageGetter.getDot(ImageGetter.CHARCOAL), maxHealth - currentHealth)
-        addHealthToBar(damagedHealth, currentHealth - maxRemainingHealth)
-        addHealthToBar(maybeDamagedHealth, maxRemainingHealth - minRemainingHealth)
-        addHealthToBar(remainingHealthDot, minRemainingHealth)
-
+            remainingHealthDot.toFront()
+            animateHealth(remainingHealthDot, healthDecreaseWidth, 0f)
+        }
         healthBar.pack()
         return healthBar
     }

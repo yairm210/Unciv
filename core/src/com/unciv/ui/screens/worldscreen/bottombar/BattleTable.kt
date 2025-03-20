@@ -230,7 +230,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             val maxRemainingLifeDefender = max(defenderHealth-minDamageToDefender, 0)
 
             add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), maxRemainingLifeAttacker, minRemainingLifeAttacker))
-            add(getHealthBar(defender.getMaxHealth(), defender.getHealth(), maxRemainingLifeDefender, minRemainingLifeDefender)).row()
+            add(getHealthBar(defender.getMaxHealth(), defender.getHealth(), maxRemainingLifeDefender, minRemainingLifeDefender, true)).row()
 
             fun avg(vararg values: Int) = values.average().roundToInt()
             // Don't use original damage estimates - they're raw, before clamping to 0..max
