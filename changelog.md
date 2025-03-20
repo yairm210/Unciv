@@ -1,3 +1,17 @@
+## 4.15.18
+
+Resolved  - Hide bomb shelters when nuclear weapons are disabled
+
+Modding: "Costs [amount] [stockpiledResource]" accepts game speed modifier
+
+Modding: "Must be next to [tileFilter]" includes the center tile as well
+
+Console: Allowed alt-navigation and deletion :D
+
+Hopefully decrease OOMs on crash screen
+
+Support BNW score formula - By EmperorPinguin
+
 ## 4.15.17
 
 Science points no longer 're-bonused' on overflow
