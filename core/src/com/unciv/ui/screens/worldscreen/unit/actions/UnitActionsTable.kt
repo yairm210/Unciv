@@ -2,10 +2,8 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.math.Interpolation
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
@@ -19,13 +17,13 @@ import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
+
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     /** Distribute UnitActions on "pages" */
     private var currentPage = 0
     private var buttonsPerPage = Int.MAX_VALUE
     private var numPages = 2
     private var shownForUnitHash = 0
-    private var animationNotFinished = false
 
     companion object {
         /** Maximum for how many pages there can be. ([minButtonsPerPage]-1)*[maxAllowedPages]
@@ -56,9 +54,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
     fun update(unit: MapUnit?) {
         val newUnitHash = unit?.hashCode() ?: 0
-        var unitChanged = false
         if (shownForUnitHash != newUnitHash) {
-            unitChanged = true
             currentPage = 0
             shownForUnitHash = newUnitHash
         }
@@ -129,18 +125,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             add(previousPageButton)
         if (currentPage < numPages - 1)
             add(nextPageButton)
-
-        // Animate buttons
-        if (unitChanged || animationNotFinished) {
-            val buttons = children.filterIsInstance<Button>()
-            var delay = 0f
-            for (button in buttons) {
-                button.color.a = 0f
-                animateButton(button, delay)
-                delay += 0.05f
-            }
-        }
-
         pack()
 
         // Bind all currently invisible actions to their keys
@@ -196,24 +180,9 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // overlay, since the user definitely wants to interact with the new unit.
         worldScreen.mapHolder.removeUnitActionOverlay()
         if (!UncivGame.Current.settings.autoUnitCycle) return
-        if (unit.isDestroyed ||
+        if (unit.isDestroyed || 
             unitAction.type.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))
             worldScreen.switchToNextUnit()
         else worldScreen.bottomUnitTable.shouldUpdate = true
     }
-
-    private fun animateButton(button: Button, delay: Float) {
-        button.addAction(Actions.sequence(
-            Actions.run { animationNotFinished = true },
-            Actions.run {
-                button.addAction(Actions.moveBy(-150f, 0f))
-                button.addAction(Actions.alpha(1f, 0.2f))
-                button.addAction(Actions.delay(delay, Actions.moveBy(150f, 0f, 0.2f, Interpolation.smoother)))
-            },
-            Actions.run { animationNotFinished = false }
-        ))
-        
-    }
 }
-
-
