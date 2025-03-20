@@ -1,14 +1,16 @@
 ## 4.15.18
 
-Resolved  - Hide bomb shelters when nuclear weapons are disabled
+Hide bomb shelters when nuclear weapons are disabled
 
-Modding: "Costs [amount] [stockpiledResource]" accepts game speed modifier
+Decrease Out Of Memory errors on crash screen
 
-Modding: "Must be next to [tileFilter]" includes the center tile as well
+Modding: 
+- "Costs [amount] [stockpiledResource]" accepts game speed modifier
+- "Must be next to [tileFilter]" includes the center tile as well
 
-Console: Allowed alt-navigation and deletion :D
+Stats in notifications no longer with black icons
 
-Hopefully decrease OOMs on crash screen
+Console: Allowed alt-navigation and deletion
 
 Support BNW score formula - By EmperorPinguin
 
