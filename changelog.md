@@ -1,3 +1,19 @@
+## 4.15.18
+
+Hide bomb shelters when nuclear weapons are disabled
+
+Decrease Out Of Memory errors on crash screen
+
+Modding: 
+- "Costs [amount] [stockpiledResource]" accepts game speed modifier
+- "Must be next to [tileFilter]" includes the center tile as well
+
+Stats in notifications no longer with black icons
+
+Console: Allowed alt-navigation and deletion
+
+Support BNW score formula - By EmperorPinguin
+
 ## 4.15.17
 
 Science points no longer 're-bonused' on overflow
