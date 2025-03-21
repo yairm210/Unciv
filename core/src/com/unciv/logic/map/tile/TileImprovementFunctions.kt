@@ -313,9 +313,9 @@ class TileImprovementFunctions(val tile: Tile) {
         if (distance > 5) return
         var stats = Stats()
         for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
-            stats.add(unique.stats)
             if (unique.isModifiedByGameSpeed())
-                stats *= civ.gameInfo.speed.modifier
+                stats.add(unique.stats * civ.gameInfo.speed.modifier)
+            else stats.add(unique.stats)
         }
         if (stats.isEmpty()) return
         if (distance != 1) stats *= (6 - distance) / 4f
