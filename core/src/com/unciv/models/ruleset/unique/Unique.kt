@@ -13,6 +13,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
 import java.util.EnumMap
+import kotlin.math.max
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -50,6 +51,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
     fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
+    fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
+    fun modifyByGameProgress(civ: Civilization, modifyPercent: Float): Float {
+        var modifier = 1f
+        val ruleset = civ.gameInfo.ruleset
+        val gameProgess = max(
+            civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size,
+            civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size)
+        modifier += (modifyPercent/100 - 1) * gameProgess
+        return modifier
+    }
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false
         return modifiers.any { conditional ->
