@@ -1,3 +1,13 @@
+## 4.15.19
+
+Resolved  - Resource uniques cannot use countables that depend on citywide resources
+
+Resolved  - better resource filter documentation
+
+Better battle menu - By k-oa
+
+Forest chopping moddability - By EmperorPinguin
+
 ## 4.15.18
 
 Hide bomb shelters when nuclear weapons are disabled
