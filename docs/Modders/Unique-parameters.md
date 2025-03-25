@@ -235,8 +235,12 @@ These can be strung together with ", " between them, for example: `+2 Production
 
 ## resourceFilter
 
-At the moment, only used for the `"Improves [resourceFilter] resource in this tile"` Unique on Improvements.
-Allows filtering resources by their name, their type, or by any Stat listed in their `improvementStats` property. The `all` keyword works too.
+Allowed values:
+
+- Resource name
+- `any`, `all`
+- Resource type: `Strategic`, `Luxury`, `Bonus`
+- Stat provided by the resource when improved (e.g. `Food`)
 
 ## stockpiledResource
 

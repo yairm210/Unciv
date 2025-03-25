@@ -2270,7 +2270,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Provides a one-time Production bonus to the closest city when cut down"
+??? example  "Provides a one-time bonus of [stats] to the closest city when cut down"
+	Example: "Provides a one-time bonus of [+1 Gold, +2 Production] to the closest city when cut down"
+
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Terrain
 
 ??? example  "Vegetation"

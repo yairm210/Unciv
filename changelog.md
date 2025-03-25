@@ -1,3 +1,11 @@
+## 4.15.19
+
+Modding: Warn against Resource uniques cannot use countables that depend on citywide resources
+
+Animated healthbards in battle menu - By k-oa
+
+Forest chopping moddability - By EmperorPinguin
+
 ## 4.15.18
 
 Hide bomb shelters when nuclear weapons are disabled
