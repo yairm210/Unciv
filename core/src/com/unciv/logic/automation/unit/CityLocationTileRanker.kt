@@ -110,6 +110,9 @@ object CityLocationTileRanker {
         if (newCityTile.hasViewableResource(civ) && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
         // Settling on bonus resources tends to waste a food
         // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
+        
+        tileValue -= civ.cities.size * 5 
+        //Empire-based penalty for tile quality, to allow settling on spawn even if it's bad spawn, but try to limit city sprawl on tundra later on
 
         var tiles = 0
         for (i in 0..3) {
