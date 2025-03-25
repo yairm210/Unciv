@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 
 
 /** Reason why an Improvement cannot be built by a given civ */
@@ -312,19 +313,25 @@ class TileImprovementFunctions(val tile: Tile) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             ?: return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
-        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (tile.owningCity == null || tile.owningCity!!.civ != civ) productionPointsToAdd =
-            productionPointsToAdd * 2 / 3
-        if (productionPointsToAdd > 0) {
-            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+        if (distance > 5) return
+        var stats = Stats()
+        for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
+            if (unique.isModifiedByGameSpeed())
+                stats.add(unique.stats * civ.gameInfo.speed.modifier)
+            else stats.add(unique.stats)
+        }
+        if (stats.isEmpty()) return
+        if (distance != 1) stats *= (6 - distance) / 4f
+        if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
+        for ((stat, value) in stats) {
+            closestCity.addStat(stat, value.toInt())
             val locations = LocationAction(tile.position, closestCity.location)
             civ.addNotification(
-                "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
+                "Clearing a [$removedTerrainFeature] has created [${stats.toStringForNotifications()}] for [${closestCity.name}]",
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
     }
-
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {
