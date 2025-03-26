@@ -156,6 +156,8 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     var civName = ""
         private set
+    var displayCivName = ""
+        private set
 
     var tech = TechManager()
     var policies = PolicyManager()
@@ -259,6 +261,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     constructor(civName: String) {
         this.civName = civName
+        this.displayCivName = civName
     }
 
     fun clone(): Civilization {
@@ -267,6 +270,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.playerType = playerType
         toReturn.playerId = playerId
         toReturn.civName = civName
+        toReturn.displayCivName = displayCivName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
         toReturn.civConstructions = civConstructions.clone()
@@ -1069,6 +1073,10 @@ class Civilization : IsPartOfGameInfoSerialization {
             lastSeenImprovement.remove(position)
         else
             lastSeenImprovement[position] = improvement
+    }
+    
+    fun changeDisplayCivName(name: String) {
+        this.displayCivName = name
     }
 }
 
