@@ -1,7 +1,10 @@
 package com.unciv.ui.screens.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.ui.components.input.KeyboardBinding
@@ -96,5 +99,21 @@ class WorldScreenMenuPopup(
         pack()
 
         open(force = true)
+        val buttons = innerTable.children.filterIsInstance<Button>()
+        innerTable.addAction(Actions.moveBy(10f, 10f, 1f))
+        var delay = 0f
+        for (button in buttons) {
+            button.addAction(Actions.sequence(
+                Actions.alpha(0f),
+                Actions.delay(delay),
+                Actions.alpha(1f, 0.2f)
+            ))
+            button.addAction(Actions.sequence(
+                Actions.moveBy(0f, 10f),
+                Actions.delay(delay),
+                Actions.moveBy(0f, -10f, 0.3f, Interpolation.smooth)
+            ))
+            delay += 0.02f
+        }
     }
 }
