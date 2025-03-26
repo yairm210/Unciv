@@ -61,8 +61,14 @@ object UnitActionsPillage {
                 val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
                 if (!freePillage) unit.useMovementPoints(1f)
 
-                if (pillagingImprovement)  // only Improvements heal HP
-                    unit.healBy(25)
+                if (pillagingImprovement) { // only Improvements heal HP
+                    var healAmount = 25f
+                    if (unit.civ.hasUnique(UniqueType.PercentHealthFromPillaging)) {
+                        for (unique in unit.civ.getMatchingUniques(UniqueType.PercentHealthFromPillaging))
+                            healAmount *= 1 + unique.params[0].toFloat() / 100
+                    }
+                    unit.healBy(healAmount.toInt())
+                }
                 
                 if (tile.getImprovementToPillage()?.hasUnique(UniqueType.DestroyedWhenPillaged) == true) {
                     tile.removeImprovement()
@@ -77,7 +83,7 @@ object UnitActionsPillage {
         val improvement = tile.getImprovementToPillage()!!
 
         // Accumulate the loot
-        val pillageYield = Stats()
+        var pillageYield = Stats()
         val stateForConditionals = unit.cache.state
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom, stateForConditionals)) {
             for ((stat, value) in unique.stats) {
@@ -88,6 +94,12 @@ object UnitActionsPillage {
         }
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed, stateForConditionals)) {
             pillageYield.add(unique.stats)
+        }
+
+        //Multiply according to global uniques
+        if (unit.civ.hasUnique(UniqueType.PercentYieldFromPillaging)) {
+            for (unique in unit.civ.getMatchingUniques(UniqueType.PercentYieldFromPillaging))
+                pillageYield *= 1 + unique.params[0].toFloat() / 100
         }
 
         // Please no notification when there's no loot
