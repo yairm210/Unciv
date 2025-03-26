@@ -53,14 +53,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
     fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
     fun getGameProgressModifier(civ: Civilization): Float {
-        val modifyPercent = getModifiers(UniqueType.ModifiedByGameProgress).first()!!.params[0].toFloat()
+        var modifier = 1f
         val ruleset = civ.gameInfo.ruleset
         val techComplete = if (ruleset.technologies.isNotEmpty()) 
             civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size else 0f
         val policyComplete = if (ruleset.policies.isNotEmpty()) 
             civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size else 0f
-        val gameProgess = max(techComplete, policyComplete)
-        return 1f + (modifyPercent/100 - 1) * gameProgess
+        val gameProgess = max(techComplete, policyComplete)   
+        for (unique in getModifiers(UniqueType.ModifiedByGameProgress))
+            modifier *= 1 + (unique.params[0].toFloat()/100 - 1) * gameProgess
+        return modifier
     }
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false
