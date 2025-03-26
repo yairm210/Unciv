@@ -320,7 +320,7 @@ class TileImprovementFunctions(val tile: Tile) {
             if (unique.isModifiedByGameSpeed())
                 statsToAdd *= civ.gameInfo.speed.modifier
             if (unique.isModifiedByGameProgress())
-                statsToAdd *= unique.modifyByGameProgress(civ, unique.getModifiers(UniqueType.ModifiedByGameProgress).firstOrNull()!!.params[0].toFloat())
+                statsToAdd *= unique.getGameProgressModifier(civ)
             stats.add(statsToAdd)
         }
         if (stats.isEmpty()) return

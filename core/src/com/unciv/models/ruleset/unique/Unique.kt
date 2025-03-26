@@ -52,12 +52,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
     fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
-    fun modifyByGameProgress(civ: Civilization, modifyPercent: Float): Float {
+    fun getGameProgressModifier(civ: Civilization): Float {
         var modifier = 1f
+        val modifyPercent = getModifiers(UniqueType.ModifiedByGameProgress).first()!!.params[0].toFloat()
         val ruleset = civ.gameInfo.ruleset
-        val gameProgess = max(
-            civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size,
-            civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size)
+        val techComplete = if (ruleset.technologies.isNotEmpty()) 
+            civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size else 0f
+        val policyComplete = if (ruleset.policies.isNotEmpty()) 
+            civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size else 0f
+        val gameProgess = max(techComplete, policyComplete)
         modifier += (modifyPercent/100 - 1) * gameProgess
         return modifier
     }
