@@ -7,9 +7,6 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.github.Github.download
-import com.unciv.logic.github.Github.downloadAndExtract
-import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
 import com.unciv.logic.github.GithubAPI.getUrlForTreeQuery
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Concurrency
@@ -39,18 +36,18 @@ import java.util.zip.ZipException
 object Github {
     private const val contentDispositionHeader = "Content-Disposition"
     private val parseAttachmentDispositionRegex = Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
-    private val redirectingResponseCodes = listOf(301, 302, 303, 307, 308).toSet()
+    private val redirectingResponseCodes = setOf(301, 302, 303, 307, 308)
     private class RedirectionException : Exception()
 
     // These are used in isValidModFolder to check an archive's content
-    val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
+    private val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
         .map { Regex(it, RegexOption.IGNORE_CASE) }
-    val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license", "contribute.md", "readme.md", "credits.md")
+    private val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license", "contribute.md", "readme.md", "credits.md")
         .map { Regex(it, RegexOption.IGNORE_CASE) }
 
     // Consider merging this with the Dropbox function
     /**
-     * Helper opens am url and accesses its input stream, logging errors to the console
+     * Helper opens an url and accesses its input stream, logging errors to the console
      * @param url String representing a [URL] to download.
      * @param preDownloadAction Optional callback that will be executed between opening the connection and
      *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers.
@@ -86,9 +83,11 @@ object Github {
 
     /**
      * Download a mod and extract, deleting any pre-existing version.
-     * @param modsFolder Destination handle of mods folder - also controls Android internal/external
-     * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone
-     * @return FileHandle for the downloaded Mod's folder or null if download failed
+     * @param repo A repository descriptor with either `direct_zip_url` set or the fields `name`, `html_url` and `default_branch` populated.
+     * @param modsFolder Destination handle of mods folder - also controls Android internal/external.
+     * @param updateProgressPercent A function recieving a download progress percentage (0-100) roughly every 100ms. Call will run under a Coroutine context.
+     * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone.
+     * @return FileHandle for the downloaded Mod's folder or null if download failed.
      */
     fun downloadAndExtract(
         repo: GithubAPI.Repo,
