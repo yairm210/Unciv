@@ -53,6 +53,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
     fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
     fun getGameProgressModifier(civ: Civilization): Float {
+        //According to: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
         var modifier = 1f
         val ruleset = civ.gameInfo.ruleset
         val techComplete = if (ruleset.technologies.isNotEmpty()) 
