@@ -62,6 +62,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val gameProgess = max(techComplete, policyComplete)   
         for (unique in getModifiers(UniqueType.ModifiedByGameProgress))
             modifier *= 1 + (unique.params[0].toFloat()/100 - 1) * gameProgess
+            //Mod creators likely expect this to stack multiplicatively, otherwise they'd use a single modifier 
         return modifier
     }
     fun hasTriggerConditional(): Boolean {
