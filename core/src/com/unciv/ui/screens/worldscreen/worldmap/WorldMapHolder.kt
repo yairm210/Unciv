@@ -518,9 +518,14 @@ class WorldMapHolder(
         }
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)
-        table.color.a = 0f
-        table.addAction(Actions.moveBy(0f, 48f, 0.2f, Interpolation.fade))
-        table.addAction(Actions.alpha(1f, 0.2f, Interpolation.fade))
+        if (UncivGame.Current.settings.experimentalUIAnimations 
+            && UncivGame.Current.settings.unitMovementButtonAnimation) {
+            table.color.a = 0f
+            table.addAction(Actions.moveBy(0f, 48f, 0.15f, Interpolation.smooth))
+            table.addAction(Actions.alpha(1f, 0.15f, Interpolation.smooth))
+        }
+        else
+            table.moveBy(0f, 48f)
     }
 
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {

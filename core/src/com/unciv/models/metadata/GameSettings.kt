@@ -92,6 +92,10 @@ class GameSettings {
     var showZoomButtons: Boolean = false
     var forbidPopupClickBehindToClose: Boolean = false
 
+    var experimentalUIAnimations: Boolean = false
+    var unitMovementButtonAnimation: Boolean = false
+    var unitActionsTableAnimation: Boolean = false
+
     var notificationsLogMaxTurns = 5
 
     var showAutosaves: Boolean = false

@@ -1,7 +1,9 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -24,6 +26,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private var buttonsPerPage = Int.MAX_VALUE
     private var numPages = 2
     private var shownForUnitHash = 0
+    private var animationNotFinished = false
 
     companion object {
         /** Maximum for how many pages there can be. ([minButtonsPerPage]-1)*[maxAllowedPages]
@@ -54,7 +57,9 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
     fun update(unit: MapUnit?) {
         val newUnitHash = unit?.hashCode() ?: 0
+        var unitChanged = false
         if (shownForUnitHash != newUnitHash) {
+            unitChanged = true
             currentPage = 0
             shownForUnitHash = newUnitHash
         }
@@ -125,6 +130,20 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             add(previousPageButton)
         if (currentPage < numPages - 1)
             add(nextPageButton)
+        
+        // Animate buttons
+        if (UncivGame.Current.settings.experimentalUIAnimations
+            && UncivGame.Current.settings.unitActionsTableAnimation) {
+            if (unitChanged || animationNotFinished) {
+                val buttons = children.filterIsInstance<Button>()
+                var delay = 0f
+                for (button in buttons) {
+                    animateButton(button, delay)
+                    delay += 0.05f
+                }
+            }
+        }
+
         pack()
 
         // Bind all currently invisible actions to their keys
@@ -184,5 +203,18 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             unitAction.type.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))
             worldScreen.switchToNextUnit()
         else worldScreen.bottomUnitTable.shouldUpdate = true
+    }
+
+    private fun animateButton(button: Button, delay: Float) {
+        button.color.a = 0f
+        button.addAction(Actions.sequence(
+            Actions.run { animationNotFinished = true },
+            Actions.run {
+                button.addAction(Actions.moveBy(-150f, 0f))
+                button.addAction(Actions.alpha(1f, 0.15f))
+                button.addAction(Actions.delay(delay, Actions.moveBy(150f, 0f, 0.15f, Interpolation.smooth)))
+            },
+            Actions.run { animationNotFinished = false }
+        ))
     }
 }

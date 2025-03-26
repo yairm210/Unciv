@@ -3,6 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -104,6 +105,16 @@ fun displayTab(
     )
     continuousRenderingLabel.wrap = true
     add(continuousRenderingLabel).colspan(2).padTop(10f).row()
+    
+    addSeparator()
+    add("Experimental".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+
+    addExperimentalUIAnimationsCheckbox(this, settings, onChange)    
+    if (settings.experimentalUIAnimations) {
+        optionsPopup.addCheckbox(this, "Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
+        optionsPopup.addCheckbox(this, "Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
+    
+    }
 }
 
 private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
@@ -260,6 +271,19 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
         onSkinChange()
     }
 }
+
+private fun addExperimentalUIAnimationsCheckbox(table: Table, settings: GameSettings, onStateChange: () -> Unit) {
+    val checkBox = CheckBox("Experimental UI animations", table.skin)
+    checkBox.isChecked = settings.experimentalUIAnimations
+    table.add(checkBox).colspan(2).left().row()
+    table.add().height(10f).row()
+
+    checkBox.onChange {
+        settings.experimentalUIAnimations = checkBox.isChecked
+        onStateChange()
+    }
+}
+
 
 private fun addResetTutorials(table: Table, settings: GameSettings) {
     val resetTutorialsButton = "Reset tutorials".toTextButton()
