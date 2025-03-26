@@ -139,7 +139,7 @@ object Github {
                     responseCode in 401..403 || responseCode == 407 ->
                         throw UncivShowableException("Servers requiring authentication are not supported")
                     responseCode in 300..499 ->
-                        throw UncivShowableException("Server error: [${it.responseMessage}]")
+                        throw UncivShowableException("Unexpected response: [${it.responseMessage}]")
                     responseCode in 500..599 ->
                         throw UncivShowableException("Server failure: [${it.responseMessage}]")
                     else -> {
@@ -158,7 +158,7 @@ object Github {
         // Download to temporary zip
 
         // minimum viable bytes-read tracking
-        class CountingInputStream(originalStream:InputStream):InputStream() {
+        class CountingInputStream(originalStream: InputStream): InputStream() {
             private var count = 0
             private val wrapped = originalStream
             override fun read(): Int {
