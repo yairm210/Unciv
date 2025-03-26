@@ -13,6 +13,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
 import java.util.EnumMap
+import kotlin.math.max
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -50,6 +51,21 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
     fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
+    fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
+    fun getGameProgressModifier(civ: Civilization): Float {
+        //According to: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
+        var modifier = 1f
+        val ruleset = civ.gameInfo.ruleset
+        val techComplete = if (ruleset.technologies.isNotEmpty()) 
+            civ.tech.researchedTechnologies.size.toFloat() / ruleset.technologies.size else 0f
+        val policyComplete = if (ruleset.policies.isNotEmpty()) 
+            civ.policies.adoptedPolicies.size.toFloat() / ruleset.policies.size else 0f
+        val gameProgess = max(techComplete, policyComplete)   
+        for (unique in getModifiers(UniqueType.ModifiedByGameProgress))
+            modifier *= 1 + (unique.params[0].toFloat()/100 - 1) * gameProgess
+            //Mod creators likely expect this to stack multiplicatively, otherwise they'd use a single modifier 
+        return modifier
+    }
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false
         return modifiers.any { conditional ->

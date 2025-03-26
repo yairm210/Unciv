@@ -87,6 +87,8 @@ class UniqueDocsWriter {
                 }
                 if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier))
                     lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;"
+                if (uniqueType.flags.contains(UniqueFlag.AcceptsGameProgressModifier))
+                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameProgress.text}&gt;"
                 if (uniqueType in MapUnitCache.UnitMovementUniques) {
                     lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work."
                 }
