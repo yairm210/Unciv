@@ -33,6 +33,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
 import kotlin.math.ceil
@@ -372,15 +373,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val construction = getConstruction(constructionName)
             // First construction will be built next turn, we need to make sure it has the correct resources
             if (constructionQueue.isEmpty() && getWorkDone(constructionName) == 0) {
-                val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources, 
-                    city.state
-                )
+                val stockpileCosts = construction.getStockpiledResourceRequirements(city.state)
                 val civResources = city.civ.getCivResourcesByName()
 
-                if (costUniques.any {
-                            val resourceName = it.params[1]
+                if (stockpileCosts.any { (resourceName, amount) ->
                             civResources[resourceName] == null
-                                    || it.params[0].toInt() > civResources[resourceName]!! })
+                                    || amount > civResources[resourceName]!! })
                     continue // Removes this construction from the queue
             }
             if (construction.isBuildable(this))
@@ -430,11 +428,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     private fun constructionBegun(construction: IConstruction) {
-        val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources, city.state)
-
-        for (unique in costUniques) {
-            val amount = unique.params[0].toInt()
-            val resourceName = unique.params[1]
+        for ((resourceName, amount) in construction.getStockpiledResourceRequirements(city.state)) {
             val resource = city.civ.gameInfo.ruleset.tileResources[resourceName] ?: continue
             city.gainStockpiledResource(resource, -amount)
         }
@@ -465,20 +459,36 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             unit = construction.construct(this, null)
                 ?: return false // unable to place unit
             
-            // checking if it's true that we should load saved promotion for the unitType
-            // Check if the player want to rebuild the unit the saved promotion
-            // and null check.
-            // and finally check if the current unit has enough XP.
+            /* check if it's true that we should load saved promotion for the unitType,
+               Then check if the player want to rebuild the unit the saved promotion,
+               and do a null check.
+               and finally check if the current unit has enough XP. */
+            val possiblePromotions = hashSetOf<String>()
+            
+            // to get promotion in order from nodes
+            val prmotionTreeOrder = mutableSetOf<String>()
+            
+            /* Added all the possible Prmotion that the unit can be promoted,
+               to avoid edge case where upgrading a scout to spearman
+               whould give the rest of the spearman the "ignore terrain cost" promotion
+               when built with auto promotion. */
+            for (promotion in PromotionTree(unit).possiblePromotions) possiblePromotions.add(promotion.name)
+            for (roots in PromotionTree(unit).allNodes()) prmotionTreeOrder.add(roots.promotion.name)
+
             val savedPromotion = city.unitToPromotions[unit.baseUnit.name]
+            
             if (city.unitShouldUseSavedPromotion[unit.baseUnit.name] == true &&
                 savedPromotion != null && unit.promotions.XP >= savedPromotion.XP) {
-                    // sorting it to avoid getting Accuracy III before Accuracy I
-                    for (promotions in savedPromotion.promotions.sorted()) {
-                        if (unit.promotions.XP >= savedPromotion.XP) {
-                            unit.promotions.addPromotion(promotions)
-                        } else {
-                            break
-                        }
+                // this variable is the filted promotion from savedPrmotion to only get promotion that are possible for this unit.
+                val possiblePromotionFilted =  savedPromotion.promotions.filter { it in possiblePromotions }
+                // sort in order to avoid getting Accuracy III before Accuracy I
+                for (promotions in prmotionTreeOrder) {
+                    // check if here is enough XP for the next promotion
+                    if (unit.promotions.XP-unit.promotions.xpForNextPromotion() >= 0) {
+                        if (promotions in possiblePromotionFilted) unit.promotions.addPromotion(promotions)
+                    } else {
+                        break
+                    }
                 }
             }
         }
@@ -718,11 +728,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             
             // Consume stockpiled resources - usually consumed when construction starts, but not when bought
             if (getWorkDone(construction.name) == 0){ // we didn't pay the resources when we started building
-                val costUniques = construction.getMatchingUniques(UniqueType.CostsResources, conditionalState)
-
-                for (unique in costUniques) {
-                    val amount = unique.params[0].toInt()
-                    val resourceName = unique.params[1]
+                for ((resourceName, amount) in construction.getStockpiledResourceRequirements(conditionalState)) {
                     val resource = city.civ.gameInfo.ruleset.tileResources[resourceName] ?: continue
                     city.gainStockpiledResource(resource, -amount)
                 }

@@ -71,7 +71,7 @@ internal object ImagePacker {
         filterMag = Texture.TextureFilter.MipMapLinearLinear // This is changed to Linear if the folder name ends in `Icons` - see `suffixUsingLinear`
     }
 
-    fun packImages(isRunFromJAR: Boolean) {
+    fun packImages(isRunFromJAR: Boolean, dataDirectory: String) {
         val startTime = System.currentTimeMillis()
 
         val defaultSettings = getDefaultSettings()
@@ -81,7 +81,7 @@ internal object ImagePacker {
             packImagesPerMod(builtinImageSourcePath, builtinAtlasDestinationPath, defaultSettings)
 
         // pack for mods
-        val modDirectory = File(modsBasePath)
+        val modDirectory = File(dataDirectory, modsBasePath)
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
                 if (!mod.isHidden) {

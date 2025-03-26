@@ -1429,6 +1429,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -1647,6 +1648,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -2176,6 +2178,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
+??? example  "Not shown on world screen"
+	Applicable to: Promotion, Resource
+
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
@@ -2265,7 +2270,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Terrain
 
-??? example  "Provides a one-time Production bonus to the closest city when cut down"
+??? example  "Provides a one-time bonus of [stats] to the closest city when cut down"
+	Example: "Provides a one-time bonus of [+1 Gold, +2 Production] to the closest city when cut down"
+
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
@@ -2407,6 +2415,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
 	Example: "Costs [3] [Mana]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -2586,7 +2595,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Not shown on world screen"
-	Applicable to: Resource
+	Applicable to: Promotion, Resource
 
 ??? example  "Generated with weight [amount]"
 	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are given weight `1`
@@ -2827,6 +2836,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when espionage is disabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when nuclear weapons are enabled&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;with [amount]% chance&gt;"

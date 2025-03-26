@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.devconsole
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -11,10 +12,8 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.widgets.UncivTextField
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toCheckBox
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
@@ -23,6 +22,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.devconsole.CliInput.Companion.splitToCliInput
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 
 
 class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
@@ -65,6 +65,9 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
 
         textField.keyShortcuts.add(Input.Keys.ENTER, ::onEnter)
         textField.keyShortcuts.add(KeyCharAndCode.TAB, ::onAutocomplete)
+        textField.keyShortcuts.add(KeyCharAndCode.ctrlFromCode(Input.Keys.BACKSPACE), ::onAltDelete)
+        textField.keyShortcuts.add(KeyCharAndCode.ctrlFromCode(Input.Keys.RIGHT), ::onAltRight)
+        textField.keyShortcuts.add(KeyCharAndCode.ctrlFromCode(Input.Keys.LEFT), ::onAltLeft)
 
         keyShortcuts.add(Input.Keys.UP) { navigateHistory(-1) }
         keyShortcuts.add(Input.Keys.DOWN) { navigateHistory(1) }
@@ -101,6 +104,51 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         fun String.removeFromEnd(n: Int) = substring(0, (length - n).coerceAtLeast(0))
         textField.text = textField.text.removeFromEnd(toRemove) + toAdd
         textField.cursorPosition = Int.MAX_VALUE // because the setText implementation actively resets it after the paste it uses (auto capped at length)
+    }
+    
+    private fun onAltDelete() {
+        if (!Gdx.input.isAltKeyPressed()) return
+        
+        Concurrency.runOnGLThread {
+            val text = textField.text
+            // textField.cursorPosition-1 to avoid the case where we're currently on a space catching the space we're on
+            val lastSpace = text.lastIndexOf(' ', textField.cursorPosition-1) 
+            if (lastSpace == -1) {
+                textField.text = text.removeRange(0, textField.cursorPosition)
+                return@runOnGLThread
+            }
+            // KEEP the last space
+            textField.text = text.removeRange(lastSpace + 1, textField.cursorPosition)
+            textField.cursorPosition = lastSpace + 1
+        }
+    }
+
+    private fun onAltRight() {
+        if (!Gdx.input.isAltKeyPressed()) return
+
+        Concurrency.runOnGLThread {
+            val text = textField.text
+            val nextSpace = text.indexOf(' ', textField.cursorPosition)
+            if (nextSpace == -1) {
+                textField.cursorPosition = text.length
+                return@runOnGLThread
+            }
+            textField.cursorPosition = nextSpace
+        }
+    }
+
+    private fun onAltLeft() {
+        if (!Gdx.input.isAltKeyPressed()) return
+
+        Concurrency.runOnGLThread {
+            val text = textField.text
+            val previousSpace = text.lastIndexOf(' ', textField.cursorPosition-1)
+            if (previousSpace == -1) {
+                textField.cursorPosition = 0
+                return@runOnGLThread
+            }
+            textField.cursorPosition = previousSpace
+        }
     }
 
     private fun navigateHistory(delta: Int) {

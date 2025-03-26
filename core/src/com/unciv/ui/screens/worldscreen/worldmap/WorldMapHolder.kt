@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.math.Interpolation
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -517,7 +518,9 @@ class WorldMapHolder(
         }
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)
-        table.moveBy(0f, 48f)
+        table.color.a = 0f
+        table.addAction(Actions.moveBy(0f, 48f, 0.2f, Interpolation.fade))
+        table.addAction(Actions.alpha(1f, 0.2f, Interpolation.fade))
     }
 
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {

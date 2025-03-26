@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 
 
 /** Reason why an Improvement cannot be built by a given civ */
@@ -78,7 +79,8 @@ class TileImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.MissingResources)
 
         if (improvement.getMatchingUniques(UniqueType.CostsResources)
-                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
+                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() * 
+                            (if (it.isModifiedByGameSpeed()) civInfo.gameInfo.speed.modifier else 1f) })
             yield(ImprovementBuildingProblem.MissingResources)
 
         val knownFeatureRemovals = tile.ruleset.nonRoadTileRemovals
@@ -258,7 +260,9 @@ class TileImprovementFunctions(val tile: Tile) {
         
         for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
             val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
-            civ.gainStockpiledResource(resource, -unique.params[0].toInt())
+            var amount = unique.params[0].toInt()
+            if (unique.isModifiedByGameSpeed()) amount = (amount * civ.gameInfo.speed.modifier).toInt()
+            civ.gainStockpiledResource(resource, -amount)
         }
 
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
@@ -309,19 +313,25 @@ class TileImprovementFunctions(val tile: Tile) {
         val closestCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             ?: return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
-        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (tile.owningCity == null || tile.owningCity!!.civ != civ) productionPointsToAdd =
-            productionPointsToAdd * 2 / 3
-        if (productionPointsToAdd > 0) {
-            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+        if (distance > 5) return
+        var stats = Stats()
+        for (unique in tile.getTerrainMatchingUniques(UniqueType.ProductionBonusWhenRemoved)) {
+            if (unique.isModifiedByGameSpeed())
+                stats.add(unique.stats * civ.gameInfo.speed.modifier)
+            else stats.add(unique.stats)
+        }
+        if (stats.isEmpty()) return
+        if (distance != 1) stats *= (6 - distance) / 4f
+        if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
+        for ((stat, value) in stats) {
+            closestCity.addStat(stat, value.toInt())
             val locations = LocationAction(tile.position, closestCity.location)
             civ.addNotification(
-                "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
+                "Clearing a [$removedTerrainFeature] has created [${stats.toStringForNotifications()}] for [${closestCity.name}]",
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
     }
-
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {

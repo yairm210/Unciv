@@ -581,11 +581,8 @@ class GlobalUniquesTests {
         val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
 
         city.cityStats.update()
-        // Because of some weird design choices, -3.6 is correct, though I would expect it to be -6 instead.
-        // As I'm not certain enough in my feeling that it should be -6, I'm changing the test to fit the code instead of the other way around.
-        // I've also written some text about this in CityStats.updateCityHappiness(). ~xlenstra
         println(city.cityStats.happinessList)
-        Assert.assertTrue(abs(city.cityStats.happinessList["Cities"]!! - -3.6f) < epsilon) // Float rounding errors
+        Assert.assertTrue(abs(city.cityStats.happinessList["Cities"]!! - -6f) < epsilon) // Float rounding errors
     }
 
     @Test
@@ -594,10 +591,8 @@ class GlobalUniquesTests {
         val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, initialPopulation = 4)
 
         city.cityStats.update()
-        // This test suffers from the same problems as `unhappinessFromCitiesPercentageTest()`.
-        // This should be -2, I believe, as every pop should add -1 happiness and 4 pop with -50% unhappiness = -2 unhappiness.
         println(city.cityStats.happinessList)
-        Assert.assertTrue(abs(city.cityStats.happinessList["Population"]!! - -1.2f) < epsilon)
+        Assert.assertTrue(abs(city.cityStats.happinessList["Population"]!! - -2f) < epsilon)
 
         val building = game.createBuilding("[-50]% Unhappiness from [Specialists] [in all cities]")
         val specialist = game.createSpecialist()
@@ -607,8 +602,7 @@ class GlobalUniquesTests {
 
         city.cityStats.update()
         println(city.cityStats.happinessList)
-        // This test suffers from the same problems as above. It should be -1, I believe.
-        Assert.assertTrue(abs(city.cityStats.happinessList["Population"]!! - -0.6f) < epsilon)
+        Assert.assertTrue(abs(city.cityStats.happinessList["Population"]!! - -1f) < epsilon)
     }
 
 

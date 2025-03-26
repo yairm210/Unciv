@@ -195,6 +195,7 @@ class TileResource : RulesetStatsObject(), GameResource {
     fun matchesSingleFilter(filter: String) = when (filter) {
         name -> true
         "any" -> true
+        "all" -> true
         resourceType.name -> true
         else -> improvementStats?.any { filter == it.key.name } == true
     }

@@ -1140,7 +1140,9 @@
 		"cost": 300,
 		"maintenance": 1,
 		"requiredTech": "Telecommunications",
-		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]","Damage to garrison from nuclear attacks [-75]% [in this city]"]
+		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]",
+			"Damage to garrison from nuclear attacks [-75]% [in this city]",
+			"Only available <when nuclear weapons are enabled> <hidden from users>"]
 	},
 	{
 		"name": "Hubble Space Telescope",

@@ -1,3 +1,53 @@
+## 4.15.19
+
+Modding: Warn against Resource uniques cannot use countables that depend on citywide resources
+
+Animated healthbards in battle menu - By k-oa
+
+Forest chopping moddability - By EmperorPinguin
+
+## 4.15.18
+
+Hide bomb shelters when nuclear weapons are disabled
+
+Decrease Out Of Memory errors on crash screen
+
+Modding: 
+- "Costs [amount] [stockpiledResource]" accepts game speed modifier
+- "Must be next to [tileFilter]" includes the center tile as well
+
+Stats in notifications no longer with black icons
+
+Console: Allowed alt-navigation and deletion
+
+Support BNW score formula - By EmperorPinguin
+
+## 4.15.17
+
+Science points no longer 're-bonused' on overflow
+
+Updated docs regarding event choice fields
+
+By k-oa:
+- Added animation for unit movement button 
+- Changed the Settle sprite to match style of AbsoluteUnits 
+
+Auto promotions fixes - by Emandac
+
+## 4.15.16
+
+Sort city religion overview by number of followers
+
+Made Prince difficulty "truly balanced"
+
+Modding: 
+- "Not shown on world screen" applies to promotions and statuses
+- "Never appears as a Barbarian unit" also affects upgrades
+- Remove great person point accumulation for units no longer available in this ruleset
+- Allow atlas generation when using --data-dir option (e.g. Windows, installed via MSI)
+
+Correct puppet city description - By Ouaz
+
 ## 4.15.15
 
 Added uniques to make AI value resources at set prices 
