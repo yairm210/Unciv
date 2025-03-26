@@ -131,13 +131,12 @@ You can use text and/or civilopediaText, if both are present both are shown (but
 
 Event choices are comprised of:
 
-| Attribute        | Type                        | Default    | Notes                                                                                                                |
-|------------------|-----------------------------|------------|----------------------------------------------------------------------------------------------------------------------|
-| text             | String                      | Required   | Displayed to user as button. Should be an action name - "Do X"                                                       |
-| triggeredUniques | List of trigger uniques     | Required   | The triggers that this choice activates upon being chosen                                                            |
-| conditions       | List of conditional uniques | Empty list | If any conditional is not met, this option becomes unpickable (not shown)                                            |
-| keyShortcut      | key to select (name)        | none       | Key names see [Gdx.Input.Keys](https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/Input.java#L69) |
-| civilopediaText  | List                        | Optional   | See [civilopediaText chapter](5-Miscellaneous-JSON-files#civilopedia-text)                                        |
+| Attribute       | Type                                           | Default    | Notes                                                                                                               |
+|-----------------|------------------------------------------------|------------|---------------------------------------------------------------------------------------------------------------------|
+| text            | String                                         | Required   | Displayed to user as button. Should be an action name - "Do X"                                                      |
+| uniques         | List of uniques to trigger or limit conditions | Required   | The triggers that this choice activates upon being chosen, and "Unavailable" / "Only available" uniques             |
+| keyShortcut     | key to select (name)                           | none       | Key names see [Gdx.Input.Keys](https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/Input.java#L69) |
+| civilopediaText | List                                           | Optional   | See [civilopediaText chapter](5-Miscellaneous-JSON-files#civilopedia-text)                                          |
 
 Here, civilopediaText is shown outside the active Button, before the triggeredUniques.
 

@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
@@ -47,6 +48,11 @@ class CityConquestFunctions(val city: City) {
                 tileBasedRandom.nextInt(100) < 34 -> city.cityConstructions.removeBuilding(building)
             }
         }
+    }
+    
+    private fun removeAutoPromotion() {
+        city.unitShouldUseSavedPromotion = HashMap<String, Boolean>()
+        city.unitToPromotions = HashMap<String, UnitPromotions>()
     }
 
     private fun removeBuildingsOnMoveToCiv() {
@@ -275,6 +281,9 @@ class CityConquestFunctions(val city: City) {
 
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
         removeBuildingsOnMoveToCiv()
+        
+        // Remove auto promotion from city that is being moved 
+        removeAutoPromotion()
 
         // catch-all - should ideally not happen as we catch the individual cases with an appropriate notification
         city.espionage.removeAllPresentSpies(SpyFleeReason.Other) 

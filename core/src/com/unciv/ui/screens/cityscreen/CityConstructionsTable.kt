@@ -533,12 +533,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 resourceTable.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
-        for (unique in constructionButtonDTO.construction
-            .getMatchingUniquesNotConflicting(UniqueType.CostsResources, cityScreen.city.state)) {
+        for ((resourceName, amount) in constructionButtonDTO.construction
+            .getStockpiledResourceRequirements(cityScreen.city.state)) {
             val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                 Color.RED else Color.WHITE
-            resourceTable.add(ColorMarkupLabel(unique.params[0], color)).expandX().left().padLeft(5f)
-            resourceTable.add(ImageGetter.getResourcePortrait(unique.params[1], 15f)).padBottom(1f)
+            resourceTable.add(ColorMarkupLabel(amount.toString(), color)).expandX().left().padLeft(5f)
+            resourceTable.add(ImageGetter.getResourcePortrait(resourceName, 15f)).padBottom(1f)
         }
         constructionTable.add(resourceTable).expandX().left()
 
