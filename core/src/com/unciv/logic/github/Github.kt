@@ -39,6 +39,8 @@ import java.util.zip.ZipException
 object Github {
     private const val contentDispositionHeader = "Content-Disposition"
     private const val attachmentDispositionPrefix = "attachment;filename="
+    private val redirectingResponseCodes = listOf(301, 302, 303, 307, 308).toSet()
+    private class RedirectionException : Exception()
 
     // Consider merging this with the Dropbox function
     /**
@@ -65,6 +67,10 @@ object Github {
                     throw ex
                 }
             }
+        } catch (ex: UncivShowableException) {
+            throw ex
+        } catch (_: RedirectionException) {
+            return null
         } catch (ex: Exception) {
             Log.error("Exception during GitHub download", ex)
             return null
@@ -101,23 +107,49 @@ object Github {
         }
 
         var contentLength = 0
-        val inputStream = download(zipUrl) {
-            // We DO NOT want to accept "Transfer-Encoding: chunked" here, as we need to know the size for progress tracking
-            // So this attempts to limit the encoding to gzip only
-            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-            // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes 
-            // which means we don't actually know the total length :(
-            it.setRequestProperty("Accept-Encoding", "gzip")
+        var redirectCount = 0
+        var currentUrl = zipUrl
+        var inputStream: InputStream? = null
+        while (redirectCount < 2) {
+            inputStream = download(currentUrl) {
+                // We DO NOT want to accept "Transfer-Encoding: chunked" here, as we need to know the size for progress tracking
+                // So this attempts to limit the encoding to gzip only
+                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+                // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes
+                // which means we don't actually know the total length :(
+                it.setRequestProperty("Accept-Encoding", "gzip")
 
-            val disposition = it.getHeaderField(contentDispositionHeader)
-            if (disposition != null && disposition.startsWith(attachmentDispositionPrefix))
-                modNameFromFileName = disposition.removePrefix(attachmentDispositionPrefix)
-                    .removeSuffix(".zip").replace('.', ' ')
-            // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
+                val responseCode = it.responseCode
+                val location = it.getHeaderField("Location")
+                when {
+                    responseCode in redirectingResponseCodes && !location.isNullOrEmpty() -> {
+                        currentUrl = location
+                        redirectCount++
+                        throw RedirectionException()
+                    }
+                    responseCode == 403 && it.getHeaderField("CF-RAY") != null && it.getHeaderField("cf-mitigated").orEmpty() == "challenge" ->
+                        throw UncivShowableException("Blocked by Cloudflare")
+                    responseCode in 401..403 || responseCode == 407 ->
+                        throw UncivShowableException("Servers requiring authentication are not supported")
+                    responseCode in 300..499 ->
+                        throw UncivShowableException("Server error: [${it.responseMessage}]")
+                    responseCode in 500..599 ->
+                        throw UncivShowableException("Server failure: [${it.responseMessage}]")
+                    else -> {
+                        val disposition = it.getHeaderField(contentDispositionHeader)
+                        if (disposition != null && disposition.startsWith(attachmentDispositionPrefix))
+                            modNameFromFileName = disposition.removePrefix(attachmentDispositionPrefix)
+                        modNameFromFileName = modNameFromFileName.removeSuffix(".zip").replace('.', ' ')
+                        // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
 
-            contentLength = it.getHeaderField("Content-Length")?.toInt()
-                ?: 0 // repo.length is a total lie
-        } ?: return null
+                        contentLength = it.getHeaderField("Content-Length")?.toInt()
+                            ?: 0 // repo.length is a total lie
+                    }
+                }
+            }
+            if (inputStream != null) break
+        }
+        if (inputStream == null) return null
 
         // Download to temporary zip
 
