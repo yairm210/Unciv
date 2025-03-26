@@ -38,9 +38,15 @@ import java.util.zip.ZipException
  */
 object Github {
     private const val contentDispositionHeader = "Content-Disposition"
-    private const val attachmentDispositionPrefix = "attachment;filename="
+    private val parseAttachmentDispositionRegex = Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
     private val redirectingResponseCodes = listOf(301, 302, 303, 307, 308).toSet()
     private class RedirectionException : Exception()
+
+    // These are used in isValidModFolder to check an archive's content
+    val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
+        .map { Regex(it, RegexOption.IGNORE_CASE) }
+    val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license", "contribute.md", "readme.md", "credits.md")
+        .map { Regex(it, RegexOption.IGNORE_CASE) }
 
     // Consider merging this with the Dropbox function
     /**
@@ -53,6 +59,7 @@ object Github {
     fun download(url: String, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
         try {
             // Problem type 1 - opening the URL connection
+            @Suppress("DEPRECATION") // We still support Java < 20
             with(URL(url).openConnection() as HttpURLConnection)
             {
                 preDownloadAction(this)
@@ -136,10 +143,7 @@ object Github {
                     responseCode in 500..599 ->
                         throw UncivShowableException("Server failure: [${it.responseMessage}]")
                     else -> {
-                        val disposition = it.getHeaderField(contentDispositionHeader)
-                        if (disposition != null && disposition.startsWith(attachmentDispositionPrefix))
-                            modNameFromFileName = disposition.removePrefix(attachmentDispositionPrefix)
-                        modNameFromFileName = modNameFromFileName.removeSuffix(".zip").replace('.', ' ')
+                        modNameFromFileName = parseNameFromDisposition(it.getHeaderField(contentDispositionHeader), modNameFromFileName)
                         // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
 
                         contentLength = it.getHeaderField("Content-Length")?.toInt()
@@ -224,11 +228,15 @@ object Github {
         return finalDestination
     }
 
+    private fun parseNameFromDisposition(disposition: String?, default: String): String {
+        fun String.removeZipExtension() = removeSuffix(".zip").replace('.', ' ')
+        if (disposition == null) return default.removeZipExtension()
+        val match = parseAttachmentDispositionRegex.matchAt(disposition, 0)
+            ?: return default.removeZipExtension()
+        return match.groups[2]!!.value.removeZipExtension()
+    }
+
     private fun isValidModFolder(dir: FileHandle): Boolean {
-        val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
-            .map { Regex(it, RegexOption.IGNORE_CASE) }
-        val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license")
-            .map { Regex(it, RegexOption.IGNORE_CASE) }
         var good = 0
         var bad = 0
         for (file in dir.list()) {
@@ -246,9 +254,15 @@ object Github {
         if (isValidModFolder(dir))
             return dir to defaultModName
         val subdirs = dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
-        if (subdirs.size == 1 && isValidModFolder(subdirs[0]))
-            return subdirs[0] to subdirs[0].name()
-        throw UncivShowableException("Invalid Mod archive structure")
+        if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
+            throw UncivShowableException("Invalid Mod archive structure")
+        return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
+    }
+    private fun choosePrettierName(folderName: String, defaultModName: String): String {
+        fun String.isMixedCase() = this != lowercase() && this != uppercase()
+        if (defaultModName.startsWith(folderName, true) && defaultModName.isMixedCase() && !folderName.isMixedCase())
+            return defaultModName.removeSuffix("-main").removeSuffix("-master")
+        return folderName
     }
 
     private fun FileHandle.renameOrMove(dest: FileHandle) {
