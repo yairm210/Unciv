@@ -99,7 +99,7 @@ object Github {
             zipUrl = repo.direct_zip_url
             tempName = "temp-" + repo.toString().hashCode().toString(16)
         }
-        
+
         var contentLength = 0
         val inputStream = download(zipUrl) {
             // We DO NOT want to accept "Transfer-Encoding: chunked" here, as we need to know the size for progress tracking
@@ -108,19 +108,19 @@ object Github {
             // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes 
             // which means we don't actually know the total length :(
             it.setRequestProperty("Accept-Encoding", "gzip")
-            
+
             val disposition = it.getHeaderField(contentDispositionHeader)
-            if (disposition.startsWith(attachmentDispositionPrefix))
+            if (disposition != null && disposition.startsWith(attachmentDispositionPrefix))
                 modNameFromFileName = disposition.removePrefix(attachmentDispositionPrefix)
                     .removeSuffix(".zip").replace('.', ' ')
             // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
-            
+
             contentLength = it.getHeaderField("Content-Length")?.toInt()
                 ?: 0 // repo.length is a total lie
         } ?: return null
 
         // Download to temporary zip
-        
+
         // minimum viable bytes-read tracking
         class CountingInputStream(originalStream:InputStream):InputStream() {
             private var count = 0
@@ -131,7 +131,7 @@ object Github {
             }
             fun bytesRead() = count
         }
-        
+
         var trackerThread: Job? = null
         val countingStream = CountingInputStream(inputStream)
         if (updateProgressPercent != null && contentLength > 0) {
@@ -143,7 +143,7 @@ object Github {
                 }
             }
         }
-        
+
         val tempZipFileHandle = modsFolder.child("$tempName.zip")
         tempZipFileHandle.write(countingStream, false)
         trackerThread?.cancel()
