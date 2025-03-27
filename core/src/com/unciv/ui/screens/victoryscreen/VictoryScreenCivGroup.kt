@@ -59,8 +59,8 @@ internal class VictoryScreenCivGroup(
         val labelText =
             if (currentPlayer.knows(civ) || currentPlayer == civ ||
                     civ.isDefeated() || currentPlayer.isDefeated()) {
-                if (additionalInfo.isEmpty()) civ.civName
-                    else "{${civ.civName}}$separator{$additionalInfo}"
+                if (additionalInfo.isEmpty()) civ.displayCivName
+                    else "{${civ.displayCivName}}$separator{$additionalInfo}"
             } else Constants.unknownNationName
 
         val civInfo = getCivImageAndColors(civ, currentPlayer, defeatedPlayerStyle)

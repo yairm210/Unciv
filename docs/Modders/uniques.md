@@ -1063,6 +1063,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Excluded from map editor"
 	Applicable to: Nation, Terrain, Improvement, Resource
 
+??? example  "Excluded civilization picker Screen"
+	Applicable to: Nation
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 

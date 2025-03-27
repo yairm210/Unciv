@@ -602,7 +602,7 @@ object NextTurnAutomation {
             diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {
             }
             diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs) -> {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.displayCivName))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, -20f)
                 diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
@@ -610,7 +610,7 @@ object NextTurnAutomation {
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.displayCivName))
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
@@ -621,7 +621,7 @@ object NextTurnAutomation {
         when {
             diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSpreadingReligion) -> {}
             diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) -> {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.ReligionSpreadDespiteOurPromise, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.ReligionSpreadDespiteOurPromise, civInfo.displayCivName))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs, -20f)
                 diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSpreadReligion)
@@ -629,7 +629,7 @@ object NextTurnAutomation {
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSpreadingReligion, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSpreadingReligion, civInfo.displayCivName))
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SpreadReligionInOurCities)

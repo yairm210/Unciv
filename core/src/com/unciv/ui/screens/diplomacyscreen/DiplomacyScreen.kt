@@ -275,7 +275,7 @@ class DiplomacyScreen(
 
     private fun getDeclareWarButtonText(otherCiv: Civilization): String {
         val messageLines = arrayListOf<String>()
-        messageLines += "Declare war on [${otherCiv.civName}]?"
+        messageLines += "Declare war on [${otherCiv.displayCivName}]?"
         // Tell the player who all will join the other side from defensive pacts
         val otherCivDefensivePactList = otherCiv.diplomacy.values.filter {
             otherCivDiploManager -> otherCivDiploManager.otherCiv() != viewingCiv
