@@ -74,7 +74,6 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
     addResetTutorials(this, settings)
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
-    optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Never close popups by clicking outside", settings.forbidPopupClickBehindToClose, false) { settings.forbidPopupClickBehindToClose = it }
     addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
@@ -109,13 +108,10 @@ fun displayTab(
     addSeparator()
     add("Experimental".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-    addExperimentalUIAnimationsCheckbox(this, settings, onChange)    
-    if (settings.experimentalUIAnimations) {
-        optionsPopup.addCheckbox(this, "Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
-        optionsPopup.addCheckbox(this, "Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
-    
+    optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+    optionsPopup.addCheckbox(this, "Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
+    optionsPopup.addCheckbox(this, "Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
     }
-}
 
 private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
     table.add("Map panning speed".toLabel()).left().fillX()
@@ -271,19 +267,6 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
         onSkinChange()
     }
 }
-
-private fun addExperimentalUIAnimationsCheckbox(table: Table, settings: GameSettings, onStateChange: () -> Unit) {
-    val checkBox = CheckBox("Experimental UI animations", table.skin)
-    checkBox.isChecked = settings.experimentalUIAnimations
-    table.add(checkBox).colspan(2).left().row()
-    table.add().height(10f).row()
-
-    checkBox.onChange {
-        settings.experimentalUIAnimations = checkBox.isChecked
-        onStateChange()
-    }
-}
-
 
 private fun addResetTutorials(table: Table, settings: GameSettings) {
     val resetTutorialsButton = "Reset tutorials".toTextButton()

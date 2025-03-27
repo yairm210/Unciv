@@ -132,8 +132,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             add(nextPageButton)
         
         // Animate buttons
-        if (UncivGame.Current.settings.experimentalUIAnimations
-            && UncivGame.Current.settings.unitActionsTableAnimation) {
+        if (UncivGame.Current.settings.unitActionsTableAnimation) {
             if (unitChanged || animationNotFinished) {
                 val buttons = children.filterIsInstance<Button>()
                 var delay = 0f

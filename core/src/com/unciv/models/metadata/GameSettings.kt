@@ -91,8 +91,7 @@ class GameSettings {
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
     var forbidPopupClickBehindToClose: Boolean = false
-
-    var experimentalUIAnimations: Boolean = false
+    
     var unitMovementButtonAnimation: Boolean = false
     var unitActionsTableAnimation: Boolean = false
 
