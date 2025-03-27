@@ -259,8 +259,8 @@ enum class UniqueType(
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
 
     // Civ appearance
-    ChangeCivilizationName("Change civilization [Test civ] name to [greater Test civ]",UniqueTarget.Era),
-    ChangeCivilizationNation("Change civilization [Test civ] nation to [greater Test civ]",UniqueTarget.Era),
+    ChangeCivilizationName("Change civilization [civName] name to [civName]",UniqueTarget.Era),
+    ChangeCivilizationNation("Change civilization [civName] nation to [civName]",UniqueTarget.Era),
 
     /// Misc.
     MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),

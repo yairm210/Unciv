@@ -1088,12 +1088,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
 
-??? example  "Change civilization [Test civ] name to [greater Test civ]"
+??? example  "Change civilization [civName] name to [civName]"
 	Example: "Change civilization [Unknown] name to [Unknown]"
 
 	Applicable to: Era
 
-??? example  "Change civilization [Test civ] nation to [greater Test civ]"
+??? example  "Change civilization [civName] nation to [civName]"
 	Example: "Change civilization [Unknown] nation to [Unknown]"
 
 	Applicable to: Era
