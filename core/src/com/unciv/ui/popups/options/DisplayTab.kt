@@ -3,6 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -73,7 +74,6 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
     addResetTutorials(this, settings)
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
-    optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Never close popups by clicking outside", settings.forbidPopupClickBehindToClose, false) { settings.forbidPopupClickBehindToClose = it }
     addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
@@ -104,7 +104,14 @@ fun displayTab(
     )
     continuousRenderingLabel.wrap = true
     add(continuousRenderingLabel).colspan(2).padTop(10f).row()
-}
+    
+    addSeparator()
+    add("Experimental".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+
+    optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+    optionsPopup.addCheckbox(this, "Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
+    optionsPopup.addCheckbox(this, "Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
+    }
 
 private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
     table.add("Map panning speed".toLabel()).left().fillX()
