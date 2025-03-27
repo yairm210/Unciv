@@ -10,6 +10,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.popups.ConfirmPopup
 import kotlin.random.Random
 
@@ -63,9 +64,8 @@ object UnitActionsPillage {
 
                 if (pillagingImprovement) { // only Improvements heal HP
                     var healAmount = 25f
-                    if (unit.civ.hasUnique(UniqueType.PercentHealthFromPillaging)) {
-                        for (unique in unit.civ.getMatchingUniques(UniqueType.PercentHealthFromPillaging))
-                            healAmount *= 1 + unique.params[0].toFloat() / 100
+                    for (unique in unit.civ.getMatchingUniques(UniqueType.PercentHealthFromPillaging)) {
+                            healAmount *= unique.params[0].toPercent()
                     }
                     unit.healBy(healAmount.toInt())
                 }
@@ -97,9 +97,8 @@ object UnitActionsPillage {
         }
 
         //Multiply according to global uniques
-        if (unit.civ.hasUnique(UniqueType.PercentYieldFromPillaging)) {
-            for (unique in unit.civ.getMatchingUniques(UniqueType.PercentYieldFromPillaging))
-                pillageYield *= 1 + unique.params[0].toFloat() / 100
+        for (unique in unit.civ.getMatchingUniques(UniqueType.PercentYieldFromPillaging)) {
+                pillageYield *= unique.params[0].toPercent()
         }
 
         // Please no notification when there's no loot
