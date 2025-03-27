@@ -10,6 +10,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.popups.ConfirmPopup
 import kotlin.random.Random
 
@@ -61,8 +62,13 @@ object UnitActionsPillage {
                 val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
                 if (!freePillage) unit.useMovementPoints(1f)
 
-                if (pillagingImprovement)  // only Improvements heal HP
-                    unit.healBy(25)
+                if (pillagingImprovement) { // only Improvements heal HP
+                    var healAmount = 25f
+                    for (unique in unit.civ.getMatchingUniques(UniqueType.PercentHealthFromPillaging)) {
+                            healAmount *= unique.params[0].toPercent()
+                    }
+                    unit.healBy(healAmount.toInt())
+                }
                 
                 if (tile.getImprovementToPillage()?.hasUnique(UniqueType.DestroyedWhenPillaged) == true) {
                     tile.removeImprovement()
@@ -77,7 +83,7 @@ object UnitActionsPillage {
         val improvement = tile.getImprovementToPillage()!!
 
         // Accumulate the loot
-        val pillageYield = Stats()
+        var pillageYield = Stats()
         val stateForConditionals = unit.cache.state
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom, stateForConditionals)) {
             for ((stat, value) in unique.stats) {
@@ -88,6 +94,11 @@ object UnitActionsPillage {
         }
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed, stateForConditionals)) {
             pillageYield.add(unique.stats)
+        }
+
+        //Multiply according to global uniques
+        for (unique in unit.civ.getMatchingUniques(UniqueType.PercentYieldFromPillaging)) {
+                pillageYield *= unique.params[0].toPercent()
         }
 
         // Please no notification when there's no loot

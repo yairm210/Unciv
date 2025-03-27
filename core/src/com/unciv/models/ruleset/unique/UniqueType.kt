@@ -58,7 +58,9 @@ enum class UniqueType(
     PercentProductionUnits("[relativeAmount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionWonders("[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildingsInCapital("[relativeAmount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-
+    PercentYieldFromPillaging("[relativeAmount]% Yield from pillaging tiles", UniqueTarget.Global),
+    PercentHealthFromPillaging("[relativeAmount]% Health from pillaging tiles", UniqueTarget.Global),
+    
     // endregion Stat providing uniques
 
     // region City-State related uniques
