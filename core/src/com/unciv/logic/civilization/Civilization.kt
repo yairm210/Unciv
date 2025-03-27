@@ -779,8 +779,8 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  And if the civs don't yet know who they are then they don't know if they're barbarians =\
      *  */
     fun setNationTransient() {
-        nation = gameInfo.ruleset.nations[civName]
-                ?: throw UncivShowableException("Nation $civName is not found!")
+        nation = gameInfo.ruleset.nations[displayCivName]
+                ?: throw UncivShowableException("Nation $displayCivName is not found!")
     }
 
     fun setTransients() {

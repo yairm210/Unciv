@@ -1090,6 +1090,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Era
 
+??? example  "Change civilization [Test civ] nation to [greater Test civ]"
+	Example: "Change civilization [Unknown] nation to [Unknown]"
+
+	Applicable to: Era
+
 ??? example  "Every major Civilization gains a spy once a civilization enters this era"
 	Applicable to: Era
 

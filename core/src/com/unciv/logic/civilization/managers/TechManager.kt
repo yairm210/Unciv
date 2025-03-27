@@ -478,16 +478,23 @@ class TechManager : IsPartOfGameInfoSerialization {
                 unique,
                 civInfo,
                 triggerNotificationText = "due to entering the [${currentEra.name}]")
-        
         for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationName)) {
             // check if there is any civ with this name.
-            @SuppressWarnings
+            if (civInfo.gameInfo.getCivilization(unique.params[0]) != null) {
+                val civ = civInfo.gameInfo.getCivilization(unique.params[0])
+                civ.changeDisplayCivName(unique.params[1])
+            }
+        }    
+            
+        for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationNation)) {
+            // check if there is any civ with this name.
             if (civInfo.gameInfo.getCivilization(unique.params[0]) != null) {
                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
                 
                 civ.changeDisplayCivName(unique.params[1])
-                //civ.nation.name = unique.params[1]
-                println(civ)
+                val dummyNation = civInfo.gameInfo.ruleset.nations.get(unique.params[1])
+
+                if (dummyNation != null) civ.nation = dummyNation
             }
             
         }

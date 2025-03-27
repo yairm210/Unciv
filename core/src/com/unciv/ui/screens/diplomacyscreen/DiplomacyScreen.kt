@@ -170,7 +170,7 @@ class DiplomacyScreen(
                 questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
-            val civNameLabel = civ.civName.toLabel(hideIcons = true)
+            val civNameLabel = civ.displayCivName.toLabel(hideIcons = true)
 
             // The wrapper serves only to highlight the selected civ better
             val civButton = Table().apply {
@@ -286,7 +286,7 @@ class DiplomacyScreen(
         // Defensive pact chains are not allowed now
         for (civ in otherCivDefensivePactList) {
             messageLines += if (viewingCiv.knows(civ)) {
-                "[${civ.civName}] will also join them in the war"
+                "[${civ.displayCivName}] will also join them in the war"
             } else {
                 "An unknown civilization will also join them in the war"
             }

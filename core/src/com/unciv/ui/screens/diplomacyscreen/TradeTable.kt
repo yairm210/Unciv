@@ -74,7 +74,7 @@ class TradeTable(
                 }
             }
 
-            otherCivilization.tradeRequests.add(TradeRequest(civ.civName, tradeLogic.currentTrade.reverse()))
+            otherCivilization.tradeRequests.add(TradeRequest(civ.displayCivName, tradeLogic.currentTrade.reverse()))
             civ.cache.updateCivResources()
             offerButton.setText("Retract offer".tr())
         }

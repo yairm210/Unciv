@@ -156,7 +156,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val nextLevelString = when {
             atWar -> ""
             otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
-            ally == viewingCiv.civName -> ""
+            ally == viewingCiv.displayCivName-> ""
             else -> "Reach highest influence above 60 for alliance."
         }
         diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
@@ -472,8 +472,8 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val warTable = Table()
         warTable.defaults().pad(10f)
 
-        val title = "War against [${target.civName}]"
-        val description = "We need you to help us defend against [${target.civName}]. Killing [${otherCiv.questManager.unitsToKill(target)}] of their military units would slow their offensive."
+        val title = "War against [${target.displayCivName}]"
+        val description = "We need you to help us defend against [${target.displayCivName}]. Killing [${otherCiv.questManager.unitsToKill(target)}] of their military units would slow their offensive."
         val progress = if (viewingCiv.knows(target)) "Currently you have killed [${otherCiv.questManager.unitsKilledSoFar(target, viewingCiv)}] of their military units."
         else "You need to find them first!"
 
