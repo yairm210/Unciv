@@ -177,12 +177,7 @@ internal class NationPickerPopup(
 
         // Decide by listMode how each block is built -
         // for each a factory producing an Actor and info on how to select it
-        fun getListModeNationActor(element: NationIterationElement): Pair<NationTable, SelectInfo>? {
-            println("                  ")
-            println(element)
-            for (unique in element.nation.getMatchingUniques(UniqueType.ExcludedFromCivilizationPickerScreen)) {
-                return null
-            }
+        fun getListModeNationActor(element: NationIterationElement): Pair<NationTable, SelectInfo> {
             val currentSelectInfo = SelectInfo(element.nation, currentY)
             val nationTable = NationTable(element.nation, civBlocksWidth, 0f) // no need for min height
             val cell = nationListTable.add(nationTable)
@@ -220,31 +215,28 @@ internal class NationPickerPopup(
         var selectInfo: SelectInfo? = null
 
         for (element in getSortedNations()) {
-            val nationActorelEment = nationActorFactory(element)
-            if (nationActorelEment != null) {
-                val (nationActor, currentSelectInfo) = nationActorelEment
-                
-                nationActor.onClick {
-                    highlightNation(currentSelectInfo)
-                }
-                nationActor.onDoubleClick {
-                    selection = currentSelectInfo
-                    returnSelected()
-                }
+            val (nationActor, currentSelectInfo) = nationActorFactory(element)
+            
+            nationActor.onClick {
+                highlightNation(currentSelectInfo)
+            }
+            nationActor.onDoubleClick {
+                selection = currentSelectInfo
+                returnSelected()
+            }
 
-                if (player.chosenCiv == element.nation.name) {
-                    selectInfo = currentSelectInfo
-                }
+            if (player.chosenCiv == element.nation.name) {
+                selectInfo = currentSelectInfo
+            }
 
-                // Keyboard: Fist letter of each "word" - "The Ottomans" get T _and_ O
-                val keys = element.translatedName.split(' ').mapNotNull { it.firstOrNull() }.toSet()
-                for (key in keys) {
-                    if (key in keySelectMap) {
-                        keySelectMap[key]!! += currentSelectInfo
-                    } else {
-                        keySelectMap[key] = mutableListOf(currentSelectInfo)
-                        nationListTable.keyShortcuts.add(key) { onKeyPress(key) }
-                    }
+            // Keyboard: Fist letter of each "word" - "The Ottomans" get T _and_ O
+            val keys = element.translatedName.split(' ').mapNotNull { it.firstOrNull() }.toSet()
+            for (key in keys) {
+                if (key in keySelectMap) {
+                    keySelectMap[key]!! += currentSelectInfo
+                } else {
+                    keySelectMap[key] = mutableListOf(currentSelectInfo)
+                    nationListTable.keyShortcuts.add(key) { onKeyPress(key) }
                 }
             }
         }    

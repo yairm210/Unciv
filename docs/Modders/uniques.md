@@ -1063,9 +1063,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Excluded from map editor"
 	Applicable to: Nation, Terrain, Improvement, Resource
 
-??? example  "Excluded civilization picker Screen"
-	Applicable to: Nation
-
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
 
@@ -1088,13 +1085,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
 
-??? example  "Change civilization [civName] name to [civName]"
-	Example: "Change civilization [Unknown] name to [Unknown]"
+??? example  "Change civilization [civFilter] name to [civFilter]"
+	Example: "Change civilization [City-States] name to [City-States]"
 
 	Applicable to: Era
 
-??? example  "Change civilization [civName] nation to [civName]"
-	Example: "Change civilization [Unknown] nation to [Unknown]"
+??? example  "Change civilization [civFilter] nation to [civFilter]"
+	Example: "Change civilization [City-States] nation to [City-States]"
 
 	Applicable to: Era
 

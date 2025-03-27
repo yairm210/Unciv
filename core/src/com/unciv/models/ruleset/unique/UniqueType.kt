@@ -259,8 +259,8 @@ enum class UniqueType(
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
 
     // Civ appearance
-    ChangeCivilizationName("Change civilization [civName] name to [civName]",UniqueTarget.Era),
-    ChangeCivilizationNation("Change civilization [civName] nation to [civName]",UniqueTarget.Era),
+    ChangeCivilizationName("Change civilization [civFilter] name to [civFilter]",UniqueTarget.Era),
+    ChangeCivilizationNation("Change civilization [civFilter] nation to [civFilter]",UniqueTarget.Era),
 
     /// Misc.
     MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),
@@ -606,7 +606,7 @@ enum class UniqueType(
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
 
     ExcludedFromMapEditor("Excluded from map editor", UniqueTarget.Terrain, UniqueTarget.Improvement, UniqueTarget.Resource, UniqueTarget.Nation, flags = UniqueFlag.setOfHiddenToUsers),
-    ExcludedFromCivilizationPickerScreen("Excluded civilization picker Screen",UniqueTarget.Nation),
+    
     /////// Resource uniques
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
