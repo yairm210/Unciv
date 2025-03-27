@@ -112,47 +112,9 @@ object Github {
             tempName = "temp-" + repo.toString().hashCode().toString(16)
         }
 
-        var contentLength = 0
-        var redirectCount = 0
-        var currentUrl = zipUrl
-        var inputStream: InputStream? = null
-        while (redirectCount < 2) {
-            inputStream = download(currentUrl) {
-                // We DO NOT want to accept "Transfer-Encoding: chunked" here, as we need to know the size for progress tracking
-                // So this attempts to limit the encoding to gzip only
-                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-                // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes
-                // which means we don't actually know the total length :(
-                it.setRequestProperty("Accept-Encoding", "gzip")
-
-                val responseCode = it.responseCode
-                val location = it.getHeaderField("Location")
-                when {
-                    responseCode in redirectingResponseCodes && !location.isNullOrEmpty() -> {
-                        currentUrl = location
-                        redirectCount++
-                        throw RedirectionException()
-                    }
-                    responseCode == 403 && it.getHeaderField("CF-RAY") != null && it.getHeaderField("cf-mitigated").orEmpty() == "challenge" ->
-                        throw UncivShowableException("Blocked by Cloudflare")
-                    responseCode in 401..403 || responseCode == 407 ->
-                        throw UncivShowableException("Servers requiring authentication are not supported")
-                    responseCode in 300..499 ->
-                        throw UncivShowableException("Unexpected response: [${it.responseMessage}]")
-                    responseCode in 500..599 ->
-                        throw UncivShowableException("Server failure: [${it.responseMessage}]")
-                    else -> {
-                        modNameFromFileName = parseNameFromDisposition(it.getHeaderField(contentDispositionHeader), modNameFromFileName)
-                        // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
-
-                        contentLength = it.getHeaderField("Content-Length")?.toInt()
-                            ?: 0 // repo.length is a total lie
-                    }
-                }
-            }
-            if (inputStream != null) break
-        }
+        val (inputStream, contentLength, disposition) = processRequestHandlingRedirects(zipUrl)
         if (inputStream == null) return null
+        modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
 
         // Download to temporary zip
 
@@ -169,7 +131,7 @@ object Github {
 
         var trackerThread: Job? = null
         val countingStream = CountingInputStream(inputStream)
-        if (updateProgressPercent != null && contentLength > 0) {
+        if (updateProgressPercent != null && contentLength != null && contentLength > 0) {
             trackerThread = Concurrency.run("Downloading mod progress") {
                 while (this.isActive) {
                     val percentage = countingStream.bytesRead() * 100 / contentLength
@@ -225,6 +187,51 @@ object Github {
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
 
         return finalDestination
+    }
+
+    private data class RequestHandlingRedirectsResult(val stream: InputStream?, val length: Int?, val disposition: String?)
+
+    private fun processRequestHandlingRedirects(zipUrl: String): RequestHandlingRedirectsResult {
+        var redirectCount = 0
+        var currentUrl = zipUrl
+        var inputStream: InputStream? = null
+        var contentLength: Int? = null
+        var disposition: String? = null
+
+        while (redirectCount < 2) {
+            inputStream = download(currentUrl) {
+                // Github will not return Content-Length for mod archives, they come back with Transfer-Encoding=chunked,
+                // which implies the server is obliged to withhold that info.
+                // Attempts to prevent that using Accept-Encoding or Content-Encoding request headers have failed.
+                // See also: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+                // See also: https://github.com/psf/requests/issues/3953
+
+                val responseCode = it.responseCode
+                val location = it.getHeaderField("Location")
+                when {
+                    responseCode in redirectingResponseCodes && !location.isNullOrEmpty() -> {
+                        currentUrl = location
+                        redirectCount++
+                        throw RedirectionException()
+                    }
+                    responseCode == 403 && it.getHeaderField("CF-RAY") != null && it.getHeaderField("cf-mitigated").orEmpty() == "challenge" ->
+                        throw UncivShowableException("Blocked by Cloudflare")
+                    responseCode in 401..403 || responseCode == 407 ->
+                        throw UncivShowableException("Servers requiring authentication are not supported")
+                    responseCode in 300..499 ->
+                        throw UncivShowableException("Unexpected response: [${it.responseMessage}]")
+                    responseCode in 500..599 ->
+                        throw UncivShowableException("Server failure: [${it.responseMessage}]")
+                    else -> {
+                        disposition = it.getHeaderField(contentDispositionHeader)
+                        // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
+                        contentLength = it.getHeaderField("Content-Length")?.toIntOrNull() // Pass no Content-Length header up as null, let caller decide
+                    }
+                }
+            }
+            if (inputStream != null) break
+        }
+        return RequestHandlingRedirectsResult(inputStream, contentLength, disposition)
     }
 
     private fun parseNameFromDisposition(disposition: String?, default: String): String {
