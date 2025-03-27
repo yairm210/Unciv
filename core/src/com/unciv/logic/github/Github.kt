@@ -117,33 +117,9 @@ object Github {
         modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
 
         // Download to temporary zip
-
-        // minimum viable bytes-read tracking
-        class CountingInputStream(originalStream: InputStream): InputStream() {
-            private var count = 0
-            private val wrapped = originalStream
-            override fun read(): Int {
-                count++
-                return wrapped.read()
-            }
-            fun bytesRead() = count
-        }
-
-        var trackerThread: Job? = null
-        val countingStream = CountingInputStream(inputStream)
-        if (updateProgressPercent != null && contentLength != null && contentLength > 0) {
-            trackerThread = Concurrency.run("Downloading mod progress") {
-                while (this.isActive) {
-                    val percentage = countingStream.bytesRead() * 100 / contentLength
-                    updateProgressPercent(percentage)
-                    delay(100)
-                }
-            }
-        }
-
+        val countingStream = CountingInputStream.create(inputStream, contentLength ?: 0, updateProgressPercent)
         val tempZipFileHandle = modsFolder.child("$tempName.zip")
         tempZipFileHandle.write(countingStream, false)
-        trackerThread?.cancel()
 
         // prepare temp unpacking folder
         val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
@@ -232,6 +208,72 @@ object Github {
             if (inputStream != null) break
         }
         return RequestHandlingRedirectsResult(inputStream, contentLength, disposition)
+    }
+
+    /** Helper implementing minimum viable bytes-read tracking with a callback to display a progress percentage.
+     *  Pass-through if either the callback is null or the content length is not known beforehand.
+     *
+     *  This works as follows: [create] creates a new instance that wraps the input stream and counts within its `read()` override.
+     *  Before this is returned, a tracker coroutine is launched that sends the progress percentace to the callback every 100ms.
+     *  The tracker stops either once 100% is reported or the stream is closed.
+     *  In other words, the 'driving force' is the client reading the stream.
+     *
+     *  @constructor Private, call [CountingInputStream.create] instead.
+     */
+    private class CountingInputStream private constructor(
+        private val wrapped: InputStream,
+        private val contentLength: Int,
+        private val updateProgressPercent: (Int)->Unit
+    ): InputStream() {
+        private var count = 0
+        private var trackerThread: Job? = null
+
+        companion object {
+            /**
+             *  @param originalStream The data to stream while tracking progress
+             *  @param contentLength The length of the conten in bytes needs to be known beforehand
+             *  @param updateProgressPercent The callback to notify with percentages
+             *  @return [originalStream] if either [contentLength] isn't positive or [updateProgressPercent] is `null`, otherwise a new [CountingInputStream]
+             *          with tracking already started.
+             */
+            fun create(originalStream: InputStream, contentLength: Int, updateProgressPercent: ((Int)->Unit)?): InputStream {
+                if (updateProgressPercent == null || contentLength <= 0) return originalStream
+                val newStream = CountingInputStream(originalStream, contentLength, updateProgressPercent)
+                newStream.startTracking()
+                return newStream
+            }
+        }
+
+        override fun read(): Int {
+            count++
+            return wrapped.read()
+        }
+
+        override fun close() {
+            stopTracking()
+            super.close()
+        }
+
+        fun bytesRead() = count
+
+        private fun startTracking() {
+            trackerThread = Concurrency.run("Downloading mod progress") {
+                while (this.isActive) {
+                    val percentage = bytesRead() * 100 / contentLength
+                    updateProgressPercent(percentage)
+                    if (percentage >= 100) {
+                        stopTracking()
+                        break
+                    }
+                    delay(100)
+                }
+            }
+        }
+
+        private fun stopTracking() {
+            trackerThread?.cancel()
+            trackerThread = null
+        }
     }
 
     private fun parseNameFromDisposition(disposition: String?, default: String): String {
