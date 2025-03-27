@@ -479,8 +479,12 @@ class TechManager : IsPartOfGameInfoSerialization {
                 civInfo,
                 triggerNotificationText = "due to entering the [${currentEra.name}]")
         for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationName)) {
-            // check if there is any civ with this name.
-            if (civInfo.gameInfo.getCivilization(unique.params[0]) != null) {
+            /* 
+            check if there is any civ with this name.
+            And this try-catch setement to not crash the game if the civ is not playing 
+            */
+
+            if (civInfo.gameInfo.civilizations.firstOrNull{ it.civName == unique.params[0] } != null) {
                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
                 civ.changeDisplayCivName(unique.params[1])
             }
@@ -488,15 +492,14 @@ class TechManager : IsPartOfGameInfoSerialization {
             
         for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationNation)) {
             // check if there is any civ with this name.
-            if (civInfo.gameInfo.getCivilization(unique.params[0]) != null) {
+            if (civInfo.gameInfo.civilizations.firstOrNull{ it.civName == unique.params[0] } != null) {
                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
-                
-                civ.changeDisplayCivName(unique.params[1])
-                val dummyNation = civInfo.gameInfo.ruleset.nations.get(unique.params[1])
-
-                if (dummyNation != null) civ.nation = dummyNation
-            }
-            
+                val dummyNation = civInfo.gameInfo.ruleset.nations[unique.params[1]]
+                if (dummyNation != null) {
+                    civ.changeDisplayCivName(unique.params[1])
+                    civ.nation = dummyNation
+                }
+            } 
         }
     }
 

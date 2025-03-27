@@ -146,7 +146,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             otherCiv.popupAlerts.add(
                 PopupAlert(
                     AlertType.DeclarationOfFriendship,
-                    viewingCiv.displayCivName
+                    viewingCiv.civName
                 )
             )
             declareFriendshipButton.disable()
@@ -230,7 +230,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             otherCiv.popupAlerts.add(
                 PopupAlert(
                     AlertType.DemandToStopSettlingCitiesNear,
-                    viewingCiv.displayCivName
+                    viewingCiv.civName
                 )
             )
             dontSettleCitiesButton.disable()
@@ -244,7 +244,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             otherCiv.popupAlerts.add(
                 PopupAlert(
                     AlertType.DemandToStopSpreadingReligion,
-                    viewingCiv.displayCivName
+                    viewingCiv.civName
                 )
             )
             dontSpreadReligionButton.disable()
