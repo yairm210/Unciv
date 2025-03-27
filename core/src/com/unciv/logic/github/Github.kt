@@ -117,7 +117,10 @@ object Github {
         modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
 
         // Download to temporary zip
-        val countingStream = CountingInputStream.create(inputStream, contentLength ?: 0, updateProgressPercent)
+        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
+        // and assume low compression efficiency - bigger mods typically have mostly images.
+        val progressEndsAtSize = contentLength ?: (repo.size * 1024 * 4 / 5)
+        val countingStream = CountingInputStream.create(inputStream, progressEndsAtSize, updateProgressPercent)
         val tempZipFileHandle = modsFolder.child("$tempName.zip")
         tempZipFileHandle.write(countingStream, false)
 
