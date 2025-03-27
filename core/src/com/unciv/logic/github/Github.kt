@@ -40,7 +40,7 @@ object Github {
     private class RedirectionException : Exception()
 
     // These are used in isValidModFolder to check an archive's content
-    private val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
+    private val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios", ".github")
         .map { Regex(it, RegexOption.IGNORE_CASE) }
     private val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license", "contribute.md", "readme.md", "credits.md")
         .map { Regex(it, RegexOption.IGNORE_CASE) }
