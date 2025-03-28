@@ -137,13 +137,13 @@ class AlertPopup(
         val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player)!!.isRelationshipLevelGE(RelationshipLevel.Neutral)
         val text = when {
             popupAlert.type == AlertType.BulliedProtectedMinor && isAtLeastNeutral ->  // Nice message
-                "I've been informed that my armies have taken tribute from [${cityState.displayCivName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
+                "I've been informed that my armies have taken tribute from [${cityState.getDisplayCivName()}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
             popupAlert.type == AlertType.BulliedProtectedMinor ->  // Nasty message
-                "We asked [${cityState.displayCivName}] for a tribute recently and they gave in.\nYou promised to protect them from such things, but we both know you cannot back that up."
+                "We asked [${cityState.getDisplayCivName()}] for a tribute recently and they gave in.\nYou promised to protect them from such things, but we both know you cannot back that up."
             isAtLeastNeutral ->  // Nice message
-                "It's come to my attention that I may have attacked [${cityState.displayCivName}].\nWhile it was not my goal to be at odds with your empire, this was deemed a necessary course of action."
+                "It's come to my attention that I may have attacked [${cityState.getDisplayCivName()}].\nWhile it was not my goal to be at odds with your empire, this was deemed a necessary course of action."
             else ->  // Nasty message
-                "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.displayCivName}] will make a fine addition to my own."
+                "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.getDisplayCivName()}] will make a fine addition to my own."
         }
         addGoodSizedLabel(text).row()
         
@@ -160,7 +160,7 @@ class AlertPopup(
         }.row()
 
         addCloseButton("Very well.", KeyboardBinding.Cancel) {
-            player.addNotification("You have broken your Pledge to Protect [${cityState.displayCivName}]!",
+            player.addNotification("You have broken your Pledge to Protect [${cityState.getDisplayCivName()}]!",
                 cityState.cityStateFunctions.getNotificationActions(), NotificationCategory.Diplomacy, cityState.civName)
             cityState.cityStateFunctions.removeProtectorCiv(player, forced = true)
         }.row()
@@ -334,9 +334,9 @@ class AlertPopup(
         val originalOwner = getCiv(capturedUnit.originalOwner!!)
         val captor = viewingCiv
 
-        addGoodSizedLabel("Return [${capturedUnit.name}] to [${originalOwner.displayCivName}]?")
+        addGoodSizedLabel("Return [${capturedUnit.name}] to [${originalOwner.getDisplayCivName()}]?")
         addSeparator()
-        addGoodSizedLabel("The [${capturedUnit.name}] we liberated originally belonged to [${originalOwner.displayCivName}]. They will be grateful if we return it to them.").row()
+        addGoodSizedLabel("The [${capturedUnit.name}] we liberated originally belonged to [${originalOwner.getDisplayCivName()}]. They will be grateful if we return it to them.").row()
 
         bottomTable.defaults().pad(0f, 30f) // Small buttons, plenty of pad so we don't fat-finger it
 
@@ -365,7 +365,7 @@ class AlertPopup(
                 yield(DiplomacyAction(captor.civName))
                 yield(CivilopediaAction("Tutorial/Barbarians"))
             }
-            originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.displayCivName}]", notificationSequence, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)
+            originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.getDisplayCivName()}]", notificationSequence, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)
         }
         addCloseButton(Constants.no, KeyboardBinding.Cancel) {
             // Take it for ourselves

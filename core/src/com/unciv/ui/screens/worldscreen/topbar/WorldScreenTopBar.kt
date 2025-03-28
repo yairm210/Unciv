@@ -231,7 +231,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         }
 
         fun update(worldScreen: WorldScreen) {
-            val newCiv = worldScreen.selectedCiv.displayCivName
+            val newCiv = worldScreen.selectedCiv.getDisplayCivName()
             if (this.selectedCiv == newCiv) return
             this.selectedCiv = newCiv
 

@@ -66,7 +66,7 @@ class OfferColumnsTable(
         if (!isPortraitMode) {
             // In landscape, arrange in 4 panels: ours left / theirs right ; items top / offers bottom.
             add("Our items".tr())
-            add("[${tradeLogic.otherCivilization.displayCivName}]'s items".tr()).row()
+            add("[${tradeLogic.otherCivilization.getDisplayCivName()}]'s items".tr()).row()
 
             add(ourAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2)
             add(theirAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2).row()
@@ -74,7 +74,7 @@ class OfferColumnsTable(
             addSeparator().height(2f)
 
             add("Our trade offer".tr())
-            add("[${tradeLogic.otherCivilization.displayCivName}]'s trade offer".tr()).row()
+            add("[${tradeLogic.otherCivilization.getDisplayCivName()}]'s trade offer".tr()).row()
             add(ourOffersTable).size(columnWidth, screen.stage.height / 3)
             add(theirOffersTable).size(columnWidth, screen.stage.height / 3)
         } else {
@@ -85,13 +85,13 @@ class OfferColumnsTable(
 
             addSeparator().height(2f)
 
-            add("[${tradeLogic.otherCivilization.displayCivName}]'s items".tr()).colspan(2).row()
+            add("[${tradeLogic.otherCivilization.getDisplayCivName()}]'s items".tr()).colspan(2).row()
             add(theirAvailableOffersTable).height(screen.stage.height / 4f).colspan(2).row()
 
             addSeparator().height(5f)
 
             add("Our trade offer".tr())
-            add("[${tradeLogic.otherCivilization.displayCivName}]'s trade offer".tr()).row()
+            add("[${tradeLogic.otherCivilization.getDisplayCivName()}]'s trade offer".tr()).row()
             add(ourOffersTable).height(screen.stage.height / 4f).width(columnWidth)
             add(theirOffersTable).height(screen.stage.height / 4f).width(columnWidth)
         }

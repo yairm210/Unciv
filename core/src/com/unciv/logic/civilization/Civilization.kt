@@ -156,8 +156,9 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     var civName = ""
         private set
-    var displayCivName = ""
-        private set
+    private var displayCivName: String? = null
+    fun getDisplayCivName() = displayCivName ?: civName
+    fun setDisplayCivName(value: String) { displayCivName = if (value == civName) null else value }
 
     var tech = TechManager()
     var policies = PolicyManager()
@@ -1073,10 +1074,6 @@ class Civilization : IsPartOfGameInfoSerialization {
             lastSeenImprovement.remove(position)
         else
             lastSeenImprovement[position] = improvement
-    }
-    
-    fun changeDisplayCivName(name: String) {
-        this.displayCivName = name
     }
 }
 

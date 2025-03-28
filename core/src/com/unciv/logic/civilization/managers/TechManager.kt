@@ -486,20 +486,18 @@ class TechManager : IsPartOfGameInfoSerialization {
 
             if (civInfo.gameInfo.civilizations.firstOrNull{ it.civName == unique.params[0] } != null) {
                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
-                civ.changeDisplayCivName(unique.params[1])
+                civ.setDisplayCivName(unique.params[1])
             }
-        }    
-            
-        for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationNation)) {
-            // check if there is any civ with this name.
-            if (civInfo.gameInfo.civilizations.firstOrNull{ it.civName == unique.params[0] } != null) {
-                val civ = civInfo.gameInfo.getCivilization(unique.params[0])
-                val dummyNation = civInfo.gameInfo.ruleset.nations[unique.params[1]]
-                if (dummyNation != null) {
-                    civ.changeDisplayCivName(unique.params[1])
-                    civ.nation = dummyNation
-                }
-            } 
+//         for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationNation)) {
+//             // check if there is any civ with this name.
+//             if (civInfo.gameInfo.civilizations.firstOrNull{ it.civName == unique.params[0] } != null) {
+//                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
+//                 val dummyNation = civInfo.gameInfo.ruleset.nations[unique.params[1]]
+//                 if (dummyNation != null) {
+//                     civ.changeDisplayCivName(unique.params[1])
+//                     civ.nation = dummyNation
+//                 }
+//             }
         }
     }
 
