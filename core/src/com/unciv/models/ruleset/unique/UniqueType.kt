@@ -260,7 +260,7 @@ enum class UniqueType(
 
     // Civ appearance
     ChangeCivilizationName("Change civilization [civFilter] name to [civFilter]",UniqueTarget.Era),
-    ChangeCivilizationNation("Change civilization [civFilter] nation to [civFilter]",UniqueTarget.Era),
+    ChangeCivilizationColors("Change civilization [civFilter] colors to [civFilter]",UniqueTarget.Era),
 
     /// Misc.
     MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),

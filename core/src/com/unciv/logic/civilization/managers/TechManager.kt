@@ -419,7 +419,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         updateEra()
         val currentEra = civInfo.getEra()
         if (previousEra == currentEra) return
-        
+
         if (showNotification) {
             if (!civInfo.isSpectator())
                 civInfo.addNotification(
@@ -435,7 +435,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                     )
                 }
             }
-            
+
             for (policyBranch in getRuleset().policyBranches.values.filter {
                 it.era == currentEra.name && civInfo.policies.isAdoptable(it)
             }) {
@@ -477,30 +477,32 @@ class TechManager : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerUnique(
                 unique,
                 civInfo,
-                triggerNotificationText = "due to entering the [${currentEra.name}]")
+                triggerNotificationText = "due to entering the [${currentEra.name}]"
+            )
         for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationName)) {
             /* 
             check if there is any civ with this name.
             And this try-catch setement to not crash the game if the civ is not playing 
             */
 
-            if (civInfo.gameInfo.civilizations.firstOrNull{ it.civName == unique.params[0] } != null) {
+            if (civInfo.gameInfo.civilizations.firstOrNull { it.civName == unique.params[0] } != null) {
                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
                 civ.setDisplayCivName(unique.params[1])
             }
-//         for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationNation)) {
-//             // check if there is any civ with this name.
-//             if (civInfo.gameInfo.civilizations.firstOrNull{ it.civName == unique.params[0] } != null) {
-//                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
-//                 val dummyNation = civInfo.gameInfo.ruleset.nations[unique.params[1]]
-//                 if (dummyNation != null) {
-//                     civ.changeDisplayCivName(unique.params[1])
-//                     civ.nation = dummyNation
-//                 }
-//             }
         }
-    }
-
+        for (unique in era.getMatchingUniques(UniqueType.ChangeCivilizationColors)) {
+            // check if there is any civ with this name.
+            if (civInfo.gameInfo.civilizations.firstOrNull { it.civName == unique.params[0] } != null) {
+                val civ = civInfo.gameInfo.getCivilization(unique.params[0])
+                val dummyNation = civInfo.gameInfo.ruleset.nations[unique.params[1]]
+                if (dummyNation != null) {
+                    civ.nation.innerColor = dummyNation.innerColor
+                    civ.nation.outerColor = dummyNation.outerColor
+                    civ.nation.setTransients()
+                }
+            }
+        }
+    }        
     private fun updateEra() {
         val ruleset = civInfo.gameInfo.ruleset
         if (ruleset.technologies.isEmpty() || researchedTechnologies.isEmpty())

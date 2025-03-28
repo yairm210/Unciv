@@ -1090,8 +1090,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Era
 
-??? example  "Change civilization [civFilter] nation to [civFilter]"
-	Example: "Change civilization [City-States] nation to [City-States]"
+??? example  "Change civilization [civFilter] colors to [civFilter]"
+	Example: "Change civilization [City-States] colors to [City-States]"
 
 	Applicable to: Era
 
