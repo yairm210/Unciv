@@ -177,7 +177,7 @@ internal class NationPickerPopup(
 
         // Decide by listMode how each block is built -
         // for each a factory producing an Actor and info on how to select it
-        fun getListModeNationActor(element: NationIterationElement): Pair<NationTable, SelectInfo> {
+        fun getListModeNationActor(element: NationIterationElement): Pair<WidgetGroup, SelectInfo> {
             val currentSelectInfo = SelectInfo(element.nation, currentY)
             val nationTable = NationTable(element.nation, civBlocksWidth, 0f) // no need for min height
             val cell = nationListTable.add(nationTable)
@@ -216,7 +216,6 @@ internal class NationPickerPopup(
 
         for (element in getSortedNations()) {
             val (nationActor, currentSelectInfo) = nationActorFactory(element)
-            
             nationActor.onClick {
                 highlightNation(currentSelectInfo)
             }
@@ -239,7 +238,7 @@ internal class NationPickerPopup(
                     nationListTable.keyShortcuts.add(key) { onKeyPress(key) }
                 }
             }
-        }    
+        }
 
         nationListScroll.layout()
         pack()
