@@ -3,16 +3,14 @@ package com.unciv.ui.screens.savescreens
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.files.UncivFiles
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.LoadingImage
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 
@@ -56,12 +54,9 @@ class VerticalFileListScrollPane(
     fun update(files: Sequence<FileHandle>) {
         existingSavesTable.clear()
         previousSelection = null
-        val loadImage = ImageGetter.getImage("OtherIcons/Load")
-        loadImage.setSize(50f, 50f) // So the origin sets correctly
-        loadImage.setOrigin(Align.center)
-        val loadAnimation = Actions.forever(Actions.rotateBy(360f, 2f))
-        loadImage.addAction(loadAnimation)
-        existingSavesTable.add(loadImage).size(50f).center()
+        val loadingImage = LoadingImage(62f, LoadingImage.Style(innerSizeFactor = 0.8f))
+        existingSavesTable.add(loadingImage)
+        loadingImage.show()
 
         // Apparently, even just getting the list of saves can cause ANRs -
         // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
@@ -70,7 +65,7 @@ class VerticalFileListScrollPane(
             val saves = files.toList()
 
             launchOnGLThread {
-                loadAnimation.reset()
+                loadingImage.hide()
                 existingSavesTable.clear()
                 savesPerButton.clear()
                 for (saveGameFile in saves) {
