@@ -419,7 +419,6 @@ class TechManager : IsPartOfGameInfoSerialization {
         updateEra()
         val currentEra = civInfo.getEra()
         if (previousEra == currentEra) return
-
         if (showNotification) {
             if (!civInfo.isSpectator())
                 civInfo.addNotification(
@@ -435,7 +434,6 @@ class TechManager : IsPartOfGameInfoSerialization {
                     )
                 }
             }
-
             for (policyBranch in getRuleset().policyBranches.values.filter {
                 it.era == currentEra.name && civInfo.policies.isAdoptable(it)
             }) {

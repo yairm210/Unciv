@@ -235,7 +235,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             if (this.selectedCiv == newCiv) return
             this.selectedCiv = newCiv
 
-            selectedCivIcon = ImageGetter.getNationPortrait(worldScreen.selectedCiv.nation, 25f)
+            selectedCivIcon = ImageGetter.getNationPortrait(worldScreen.selectedCiv.getDisplayNation(), 25f)
             selectedCivIconCell.setActor(selectedCivIcon)
             selectedCivLabel.setText(newCiv.tr(hideIcons = true))
             invalidate()

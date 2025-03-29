@@ -160,6 +160,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getDisplayCivName() = displayCivName ?: civName
     fun setDisplayCivName(value: String) { displayCivName = if (value == civName) null else value }
 
+    private var displayNation: String? = null
+        fun getDisplayNationName() = displayNation ?: civName
+        fun getDisplayNation() = if (displayNation == null) nation else gameInfo.ruleset.nations[displayNation] ?: nation
+        fun setDisplayNation(value: String) { displayNation = if (value == civName) null else value }
+
     var tech = TechManager()
     var policies = PolicyManager()
     var civConstructions = CivConstructions()
@@ -310,6 +315,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.displayNation = displayNation
         return toReturn
     }
 
