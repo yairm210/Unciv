@@ -1085,6 +1085,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
 
+??? example  "Change civilization [civFilter] name to [civFilter]"
+	Example: "Change civilization [City-States] name to [City-States]"
+
+	Applicable to: Era
+
+??? example  "Change civilization [civFilter] colors to [civFilter]"
+	Example: "Change civilization [City-States] colors to [City-States]"
+
+	Applicable to: Era
+
 ??? example  "Every major Civilization gains a spy once a civilization enters this era"
 	Applicable to: Era
 

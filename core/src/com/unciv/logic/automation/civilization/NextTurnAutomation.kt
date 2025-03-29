@@ -133,10 +133,10 @@ object NextTurnAutomation {
                 if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
                     && DiplomacyAutomation.wantsToSignDeclarationOfFrienship(civInfo,requestingCiv)) {
                     diploManager.signDeclarationOfFriendship()
-                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.getDisplayCivName()}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.getDisplayCivName())
                 } else  {
                     diploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
-                    requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+                    requestingCiv.addNotification("[${civInfo.getDisplayCivName()}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.getDisplayCivName())
                 }
             }
         }
@@ -602,7 +602,7 @@ object NextTurnAutomation {
             diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {
             }
             diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs) -> {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.getDisplayCivName()))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, -20f)
                 diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
@@ -610,7 +610,7 @@ object NextTurnAutomation {
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.getDisplayCivName()))
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
@@ -621,7 +621,7 @@ object NextTurnAutomation {
         when {
             diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSpreadingReligion) -> {}
             diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) -> {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.ReligionSpreadDespiteOurPromise, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.ReligionSpreadDespiteOurPromise, civInfo.getDisplayCivName()))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs, -20f)
                 diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSpreadReligion)
@@ -629,7 +629,7 @@ object NextTurnAutomation {
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSpreadingReligion, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSpreadingReligion, civInfo.getDisplayCivName()))
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SpreadReligionInOurCities)
