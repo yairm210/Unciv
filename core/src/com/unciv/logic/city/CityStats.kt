@@ -458,7 +458,7 @@ class CityStats(val city: City) {
     private fun updateStatPercentBonusList(currentConstruction: IConstruction) {
         val newStatsBonusTree = StatTreeNode()
 
-        newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(city.civ.goldenAges.isGoldenAge()),"Golden Age")
+        newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(city.civ.goldenAges.isGoldenAge()),city.civ.nation.goldenAgeName)
         addStatPercentBonusesFromBuildings(newStatsBonusTree)
         newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
         newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet City")

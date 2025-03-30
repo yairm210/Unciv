@@ -57,6 +57,8 @@ class Nation : RulesetObject() {
 
     var startIntroPart1 = ""
     var startIntroPart2 = ""
+    var goldenAgeName = "Golden Age"
+    var enteredGoldenAge = "You have entered a Golden Age"
 
     /* Properties present in json but not yet implemented:
     var adjective = ArrayList<String>()

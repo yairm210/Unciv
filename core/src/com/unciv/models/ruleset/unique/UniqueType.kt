@@ -811,8 +811,8 @@ enum class UniqueType(
     OneTimeFreeUnitRuins("Free [unit] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
     OneTimeFreePolicy("Free Social Policy", UniqueTarget.Triggerable), // used in Buildings
     OneTimeAmountFreePolicies("[positiveAmount] Free Social Policies", UniqueTarget.Triggerable),  // Not used in Vanilla
-    OneTimeEnterGoldenAge("Empire enters golden age", UniqueTarget.Triggerable),  // used in Policies, Buildings
-    OneTimeEnterGoldenAgeTurns("Empire enters a [positiveAmount]-turn Golden Age", UniqueTarget.Triggerable),
+    OneTimeEnterGoldenAge("Empire enters [Golden Age]", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeEnterGoldenAgeTurns("Empire enters a [positiveAmount]-turn [Golden Age]", UniqueTarget.Triggerable),
     OneTimeFreeGreatPerson("Free Great Person", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainPopulation("[amount] population [cityFilter]", UniqueTarget.Triggerable),  // used in CN tower
     OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Triggerable),
@@ -985,6 +985,10 @@ enum class UniqueType(
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
 
+    @Deprecated("As of 4.15.20", ReplaceWith("Empire enters [Golden Age]"), DeprecationLevel.ERROR)
+    OneTimeEnterGoldenAgeOld("Empire enters golden age", UniqueTarget.Triggerable),
+    @Deprecated("As of 4.15.20", ReplaceWith("Empire enters a [positiveAmount]-turn [Golden Age]"), DeprecationLevel.ERROR)
+    OneTimeEnterGoldenAgeTurnsOld("Empire enters a [positiveAmount]-turn Golden Age", UniqueTarget.Triggerable),
     @Deprecated("As of 4.14.6", ReplaceWith("[+100]% Strength <when defending> <when [Embarked]>"), DeprecationLevel.ERROR)
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("As of 4.13.18", ReplaceWith("Only available <when [victoryType] Victory is enabled>"), DeprecationLevel.ERROR)

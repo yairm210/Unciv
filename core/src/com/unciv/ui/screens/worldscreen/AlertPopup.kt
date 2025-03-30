@@ -318,9 +318,10 @@ class AlertPopup(
     }
 
     private fun addGoldenAge() {
-        addGoodSizedLabel("GOLDEN AGE")
+        val nation = viewingCiv.nation
+        addGoodSizedLabel(viewingCiv.nation.goldenAgeName.tr().uppercase())
         addSeparator()
-        addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
+        addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a [${viewingCiv.nation.goldenAgeName}]!").row()
         addCloseButton()
         music.chooseTrack(viewingCiv.civName, MusicMood.Golden, MusicTrackChooserFlags.setSpecific)
     }
