@@ -378,7 +378,7 @@ object UniqueTriggerActivation {
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
-                        "You enter a Golden Age"
+                        "[${civInfo.nation.enteredGoldenAge}]"
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Happiness)

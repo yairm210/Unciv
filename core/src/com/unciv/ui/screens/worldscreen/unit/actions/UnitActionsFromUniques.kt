@@ -211,11 +211,18 @@ object UnitActionsFromUniques {
             if (!UnitActionModifiers.canUse(unit, unique)) continue
 
             val baseTitle = when (unique.type) {
+                UniqueType.OneTimeEnterGoldenAge -> {
+                    unique.placeholderText.fillPlaceholders(
+                        unit.civ.nation.goldenAgeName.tr()
+                    )
+                }
                 UniqueType.OneTimeEnterGoldenAgeTurns -> {
                     unique.placeholderText.fillPlaceholders(
                         unit.civ.goldenAges.calculateGoldenAgeLength(
-                            unique.params[0].toInt()).tr())
-                    }
+                            unique.params[0].toInt()).tr(),
+                        unit.civ.nation.goldenAgeName.tr()
+                    )
+                }
                 UniqueType.OneTimeGainStat -> {
                     if (unique.hasModifier(UniqueType.ModifiedByGameSpeed)) {
                         val stat = unique.params[1]
