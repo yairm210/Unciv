@@ -1,16 +1,16 @@
 ## 4.15.20
 
-Resolved  - modding - Replaced semi-working policy branch restriction with countable + Unavailable
+Fixed autosave crashes when saving to external files on some Android devices
 
-Resolved  - Fixed autosave crashes when saving to external files on some Android devices
-
-Negative stat percentages from buildings displayed properly in city screen.
+Modding:
+- Replaced semi-working policy branch restriction with countable + Unavailable
+- Negative stat percentages from buildings displayed properly in city screen.
 
 Experimental UI animations change. - By k-oa
 
 By EmperorPinguin:
 - Add pillage yield uniques 
-- Add game progress modifier 
+- Add game progress modifier
 
 By SomeTroglodyte:
 - Minor refactor: Save/Load game loading image uses `LoadingImage` 
