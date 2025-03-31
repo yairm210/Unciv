@@ -289,6 +289,8 @@ enum class UniqueType(
     CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
+
+    @Deprecated("As of 4.16.0", ReplaceWith("Unavailable <when number of [Completed Policy branches] is less than [amount]>"))
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
     /** A special unique, as it only activates [RejectionReasonType] when it has conditionals that *do not* apply.
      * Meant to be used together with conditionals, like `"Only available <after adopting [Piety]> <while the empire is happy>"`.
