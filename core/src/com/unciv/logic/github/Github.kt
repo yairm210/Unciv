@@ -7,9 +7,6 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.github.Github.download
-import com.unciv.logic.github.Github.downloadAndExtract
-import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
 import com.unciv.logic.github.GithubAPI.getUrlForTreeQuery
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Concurrency
@@ -38,11 +35,19 @@ import java.util.zip.ZipException
  */
 object Github {
     private const val contentDispositionHeader = "Content-Disposition"
-    private const val attachmentDispositionPrefix = "attachment;filename="
+    private val parseAttachmentDispositionRegex = Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
+    private val redirectingResponseCodes = setOf(301, 302, 303, 307, 308)
+    private class RedirectionException : Exception()
+
+    // These are used in isValidModFolder to check an archive's content
+    private val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios", ".github")
+        .map { Regex(it, RegexOption.IGNORE_CASE) }
+    private val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license", "contribute.md", "readme.md", "credits.md")
+        .map { Regex(it, RegexOption.IGNORE_CASE) }
 
     // Consider merging this with the Dropbox function
     /**
-     * Helper opens am url and accesses its input stream, logging errors to the console
+     * Helper opens an url and accesses its input stream, logging errors to the console
      * @param url String representing a [URL] to download.
      * @param preDownloadAction Optional callback that will be executed between opening the connection and
      *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers.
@@ -51,6 +56,7 @@ object Github {
     fun download(url: String, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
         try {
             // Problem type 1 - opening the URL connection
+            @Suppress("DEPRECATION") // We still support Java < 20
             with(URL(url).openConnection() as HttpURLConnection)
             {
                 preDownloadAction(this)
@@ -65,6 +71,10 @@ object Github {
                     throw ex
                 }
             }
+        } catch (ex: UncivShowableException) {
+            throw ex
+        } catch (_: RedirectionException) {
+            return null
         } catch (ex: Exception) {
             Log.error("Exception during GitHub download", ex)
             return null
@@ -73,9 +83,11 @@ object Github {
 
     /**
      * Download a mod and extract, deleting any pre-existing version.
-     * @param modsFolder Destination handle of mods folder - also controls Android internal/external
-     * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone
-     * @return FileHandle for the downloaded Mod's folder or null if download failed
+     * @param repo A repository descriptor with either `direct_zip_url` set or the fields `name`, `html_url` and `default_branch` populated.
+     * @param modsFolder Destination handle of mods folder - also controls Android internal/external.
+     * @param updateProgressPercent A function recieving a download progress percentage (0-100) roughly every 100ms. Call will run under a Coroutine context.
+     * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone.
+     * @return FileHandle for the downloaded Mod's folder or null if download failed.
      */
     fun downloadAndExtract(
         repo: GithubAPI.Repo,
@@ -99,54 +111,18 @@ object Github {
             zipUrl = repo.direct_zip_url
             tempName = "temp-" + repo.toString().hashCode().toString(16)
         }
-        
-        var contentLength = 0
-        val inputStream = download(zipUrl) {
-            // We DO NOT want to accept "Transfer-Encoding: chunked" here, as we need to know the size for progress tracking
-            // So this attempts to limit the encoding to gzip only
-            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-            // HOWEVER it doesn't seem to work - the server still sends chunked data sometimes 
-            // which means we don't actually know the total length :(
-            it.setRequestProperty("Accept-Encoding", "gzip")
-            
-            val disposition = it.getHeaderField(contentDispositionHeader)
-            if (disposition.startsWith(attachmentDispositionPrefix))
-                modNameFromFileName = disposition.removePrefix(attachmentDispositionPrefix)
-                    .removeSuffix(".zip").replace('.', ' ')
-            // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
-            
-            contentLength = it.getHeaderField("Content-Length")?.toInt()
-                ?: 0 // repo.length is a total lie
-        } ?: return null
+
+        val (inputStream, contentLength, disposition) = processRequestHandlingRedirects(zipUrl)
+        if (inputStream == null) return null
+        modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
 
         // Download to temporary zip
-        
-        // minimum viable bytes-read tracking
-        class CountingInputStream(originalStream:InputStream):InputStream() {
-            private var count = 0
-            private val wrapped = originalStream
-            override fun read(): Int {
-                count++
-                return wrapped.read()
-            }
-            fun bytesRead() = count
-        }
-        
-        var trackerThread: Job? = null
-        val countingStream = CountingInputStream(inputStream)
-        if (updateProgressPercent != null && contentLength > 0) {
-            trackerThread = Concurrency.run("Downloading mod progress") {
-                while (this.isActive) {
-                    val percentage = countingStream.bytesRead() * 100 / contentLength
-                    updateProgressPercent(percentage)
-                    delay(100)
-                }
-            }
-        }
-        
+        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
+        // and assume low compression efficiency - bigger mods typically have mostly images.
+        val progressEndsAtSize = contentLength ?: (repo.size * 1024 * 4 / 5)
+        val countingStream = CountingInputStream.create(inputStream, progressEndsAtSize, updateProgressPercent)
         val tempZipFileHandle = modsFolder.child("$tempName.zip")
         tempZipFileHandle.write(countingStream, false)
-        trackerThread?.cancel()
 
         // prepare temp unpacking folder
         val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
@@ -192,11 +168,126 @@ object Github {
         return finalDestination
     }
 
+    private data class RequestHandlingRedirectsResult(val stream: InputStream?, val length: Int?, val disposition: String?)
+
+    private fun processRequestHandlingRedirects(zipUrl: String): RequestHandlingRedirectsResult {
+        var redirectCount = 0
+        var currentUrl = zipUrl
+        var inputStream: InputStream? = null
+        var contentLength: Int? = null
+        var disposition: String? = null
+
+        while (redirectCount < 2) {
+            inputStream = download(currentUrl) {
+                // Github will not return Content-Length for mod archives, they come back with Transfer-Encoding=chunked,
+                // which implies the server is obliged to withhold that info.
+                // Attempts to prevent that using Accept-Encoding or Content-Encoding request headers have failed.
+                // See also: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+                // See also: https://github.com/psf/requests/issues/3953
+
+                val responseCode = it.responseCode
+                val location = it.getHeaderField("Location")
+                when {
+                    responseCode in redirectingResponseCodes && !location.isNullOrEmpty() -> {
+                        currentUrl = location
+                        redirectCount++
+                        throw RedirectionException()
+                    }
+                    responseCode == 403 && it.getHeaderField("CF-RAY") != null && it.getHeaderField("cf-mitigated").orEmpty() == "challenge" ->
+                        throw UncivShowableException("Blocked by Cloudflare")
+                    responseCode in 401..403 || responseCode == 407 ->
+                        throw UncivShowableException("Servers requiring authentication are not supported")
+                    responseCode in 300..499 ->
+                        throw UncivShowableException("Unexpected response: [${it.responseMessage}]")
+                    responseCode in 500..599 ->
+                        throw UncivShowableException("Server failure: [${it.responseMessage}]")
+                    else -> {
+                        disposition = it.getHeaderField(contentDispositionHeader)
+                        // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
+                        contentLength = it.getHeaderField("Content-Length")?.toIntOrNull() // Pass no Content-Length header up as null, let caller decide
+                    }
+                }
+            }
+            if (inputStream != null) break
+        }
+        return RequestHandlingRedirectsResult(inputStream, contentLength, disposition)
+    }
+
+    /** Helper implementing minimum viable bytes-read tracking with a callback to display a progress percentage.
+     *  Pass-through if either the callback is null or the content length is not known beforehand.
+     *
+     *  This works as follows: [create] creates a new instance that wraps the input stream and counts within its `read()` override.
+     *  Before this is returned, a tracker coroutine is launched that sends the progress percentace to the callback every 100ms.
+     *  The tracker stops either once 100% is reported or the stream is closed.
+     *  In other words, the 'driving force' is the client reading the stream.
+     *
+     *  @constructor Private, call [CountingInputStream.create] instead.
+     */
+    private class CountingInputStream private constructor(
+        private val wrapped: InputStream,
+        private val contentLength: Int,
+        private val updateProgressPercent: (Int)->Unit
+    ): InputStream() {
+        private var count = 0
+        private var trackerThread: Job? = null
+
+        companion object {
+            /**
+             *  @param originalStream The data to stream while tracking progress
+             *  @param contentLength The length of the conten in bytes needs to be known beforehand
+             *  @param updateProgressPercent The callback to notify with percentages
+             *  @return [originalStream] if either [contentLength] isn't positive or [updateProgressPercent] is `null`, otherwise a new [CountingInputStream]
+             *          with tracking already started.
+             */
+            fun create(originalStream: InputStream, contentLength: Int, updateProgressPercent: ((Int)->Unit)?): InputStream {
+                if (updateProgressPercent == null || contentLength <= 0) return originalStream
+                val newStream = CountingInputStream(originalStream, contentLength, updateProgressPercent)
+                newStream.startTracking()
+                return newStream
+            }
+        }
+
+        override fun read(): Int {
+            count++
+            return wrapped.read()
+        }
+
+        override fun close() {
+            stopTracking()
+            super.close()
+        }
+
+        fun bytesRead() = count
+
+        private fun startTracking() {
+            trackerThread = Concurrency.run("Downloading mod progress") {
+                while (this.isActive) {
+                    val percentage = bytesRead() * 100 / contentLength
+                    updateProgressPercent(percentage)
+                    if (percentage >= 100) {
+                        stopTracking()
+                        break
+                    }
+                    delay(100)
+                }
+            }
+        }
+
+        private fun stopTracking() {
+            trackerThread?.cancel()
+            trackerThread = null
+        }
+    }
+
+    private fun parseNameFromDisposition(disposition: String?, default: String): String {
+        fun String.removeZipExtension() = removeSuffix(".zip").replace('.', ' ')
+        if (disposition == null) return default.removeZipExtension()
+        val match = parseAttachmentDispositionRegex.matchAt(disposition, 0)
+            ?: return default.removeZipExtension()
+        return match.groups[2]!!.value.removeZipExtension()
+    }
+
     private fun isValidModFolder(dir: FileHandle): Boolean {
-        val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios")
-            .map { Regex(it, RegexOption.IGNORE_CASE) }
-        val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license")
-            .map { Regex(it, RegexOption.IGNORE_CASE) }
         var good = 0
         var bad = 0
         for (file in dir.list()) {
@@ -214,9 +305,15 @@ object Github {
         if (isValidModFolder(dir))
             return dir to defaultModName
         val subdirs = dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
-        if (subdirs.size == 1 && isValidModFolder(subdirs[0]))
-            return subdirs[0] to subdirs[0].name()
-        throw UncivShowableException("Invalid Mod archive structure")
+        if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
+            throw UncivShowableException("Invalid Mod archive structure")
+        return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
+    }
+    private fun choosePrettierName(folderName: String, defaultModName: String): String {
+        fun String.isMixedCase() = this != lowercase() && this != uppercase()
+        if (defaultModName.startsWith(folderName, true) && defaultModName.isMixedCase() && !folderName.isMixedCase())
+            return defaultModName.removeSuffix("-main").removeSuffix("-master")
+        return folderName
     }
 
     private fun FileHandle.renameOrMove(dest: FileHandle) {
