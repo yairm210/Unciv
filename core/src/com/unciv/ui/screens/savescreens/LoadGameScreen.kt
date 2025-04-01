@@ -105,7 +105,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
 
         setDefaultCloseAction()
         rightSideTable.initRightSideTable()
-        rightSideButton.onActivation { onLoadGame() }
+        rightSideButton.onActivation { onLoadGame(selectedSave) }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.isVisible = false
         pickerPane.bottomTable.background = skinStrings.getUiBackground("LoadGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
@@ -126,8 +126,8 @@ class LoadGameScreen : LoadOrSaveScreen() {
         rightSideButton.enable()
     }
 
-    override fun doubleClickAction() {
-        onLoadGame()
+    override fun doubleClickAction(saveGameFile: FileHandle) {
+        onLoadGame(saveGameFile)
     }
 
     private fun Table.initRightSideTable() {
@@ -140,13 +140,13 @@ class LoadGameScreen : LoadOrSaveScreen() {
         add(showAutosavesCheckbox).row()
     }
 
-    private fun onLoadGame() {
-        if (selectedSave == null) return
+    private fun onLoadGame(saveGameFile: FileHandle?) {
+        if (saveGameFile == null) return
         val loadingPopup = LoadingPopup(this)
         Concurrency.run(loadGame) {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
-                val loadedGame = game.files.loadGameFromFile(selectedSave!!)
+                val loadedGame = game.files.loadGameFromFile(saveGameFile)
                 game.loadGame(loadedGame, callFromLoadScreen = true)
             } catch (notAPlayer: UncivShowableException) {
                 launchOnGLThread {

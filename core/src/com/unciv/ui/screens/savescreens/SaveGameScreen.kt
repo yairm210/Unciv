@@ -41,9 +41,10 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
         rightSideButton.setText("Save game".tr())
         rightSideButton.onActivation {
-            if (game.files.getSave(gameNameTextField.text).exists())
-                doubleClickAction()
-            else saveGame()
+            if (selectedSave == null) return@onActivation
+            if (selectedSave!!.exists())
+                doubleClickAction(selectedSave!!)
+            else saveGame(selectedSave!!)
         }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.enable()
@@ -116,10 +117,10 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         add(errorLabel).row()
     }
 
-    private fun saveGame() {
+    private fun saveGame(saveGameFile: FileHandle) {
         rightSideButton.setText(savingText.tr())
         Concurrency.runOnNonDaemonThreadPool("SaveGame") {
-            game.files.saveGame(gameInfo, gameNameTextField.text) {
+            game.files.saveGame(gameInfo, saveGameFile) {
                 launchOnGLThread {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
                     else UncivGame.Current.popScreen()
@@ -132,12 +133,12 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         gameNameTextField.text = saveGameFile.name()
     }
 
-    override fun doubleClickAction() {
+    override fun doubleClickAction(saveGameFile: FileHandle) {
         ConfirmPopup(
             this,
             "Overwrite existing file?",
             "Overwrite",
-        ) { saveGame() }.open()
+        ) { saveGame(saveGameFile) }.open()
     }
 
 }

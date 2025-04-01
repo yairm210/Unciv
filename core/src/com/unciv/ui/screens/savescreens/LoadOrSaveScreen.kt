@@ -19,7 +19,6 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
@@ -32,7 +31,7 @@ abstract class LoadOrSaveScreen(
 ) : PickerScreen(disableScroll = true) {
 
     abstract fun onExistingSaveSelected(saveGameFile: FileHandle)
-    abstract fun doubleClickAction()
+    abstract fun doubleClickAction(saveGameFile: FileHandle)
 
     protected var selectedSave: FileHandle? = null
         private set
@@ -44,7 +43,7 @@ abstract class LoadOrSaveScreen(
 
     init {
         savesScrollPane.onChange(::selectExistingSave)
-        savesScrollPane.onDoubleClick { doubleClickAction() }
+        savesScrollPane.onDoubleClick(::doubleClickAction)
 
         rightSideTable.defaults().pad(5f, 10f)
 
