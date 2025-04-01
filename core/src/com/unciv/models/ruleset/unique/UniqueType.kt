@@ -835,6 +835,7 @@ enum class UniqueType(
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
+    Eureka("Research [relativeAmount]% of [tech]", UniqueTarget.Triggerable),
 
     OneTimeTakeOverTilesInRadius("Gain control over [tileFilter] tiles in a [amount]-tile radius", UniqueTarget.Triggerable),
 
