@@ -1,9 +1,6 @@
 package com.unciv.logic.map.mapunit
 
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.*
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -155,10 +152,11 @@ class UnitTurnManager(val unit: MapUnit) {
                 }
         )  unit.action = null
 
-        if (unit.action != null && unit.health > 99)
-            if (unit.isActionUntilHealed()) {
-                unit.action = null // wake up when healed
-            }
+        if (unit.action != null && unit.health > 99 && unit.isActionUntilHealed()) {
+            unit.action = null // wake up when healed
+            unit.civ.addNotification("[${unit.shortDisplayName()}] has fully healed",
+                MapUnitAction(unit), NotificationCategory.Units, unit.name)
+        }
 
         val tileOwner = unit.getTile().getOwner()
         if (tileOwner != null
