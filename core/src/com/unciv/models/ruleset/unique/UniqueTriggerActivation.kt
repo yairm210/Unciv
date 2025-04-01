@@ -732,16 +732,17 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.Eureka -> {
+            UniqueType.OneTimeGainTechPercent -> {
                 val tech = unique.params[1]
                 val amount = unique.params[0].toFloatOrNull()
-                if (amount == null || tech.isEmpty() || civInfo.tech.isResearched(tech)) return null
+                if (amount == null || civInfo.gameInfo.ruleset.technologies.none { it.key == tech } || civInfo.tech.isResearched(tech)) return null
                 val scienceGain = (civInfo.tech.costOfTech(tech) * amount / 100).roundToInt()
                 if (scienceGain == 0) return null
 
                 return {
                     if (civInfo.tech.techsInProgress[tech] == null) {
-                        civInfo.tech.techsInProgress.putIfAbsent(tech,scienceGain)}
+                        civInfo.tech.techsInProgress[tech] = scienceGain
+                    }
                     else civInfo.tech.techsInProgress[tech] = civInfo.tech.techsInProgress[tech]!! + scienceGain
 
                     val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
@@ -752,8 +753,9 @@ object UniqueTriggerActivation {
                         filledNotification, triggerNotificationText,
                         "You have gained [$scienceGain] Science towards researching [$tech]"
                     )
-                    if (notificationText != null)
-                        civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Science)
+
+                    civInfo.addNotification(notificationText!!, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Science)
+
                     true
                 }
             }
