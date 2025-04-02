@@ -120,12 +120,15 @@ class UncivFiles(
 
     private fun getSaves(saveFolder: String): Sequence<FileHandle> {
         debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
-        val localFiles = getLocalFile(saveFolder).list().asSequence()
+        // This construct instead of asSequence causes the actual list() to happen when the
+        // first element is pulled, not right now before a Sequence is wrapped around the result.
+        // Note that any performance gains are moot when logging is on: See the the `debug` below.
+        val localFiles = Sequence { getLocalFile(saveFolder).list().iterator() }
 
-        val externalFiles = if (files.isExternalStorageAvailable && getDataFolder().file().absolutePath != files.external("").file().absolutePath) {
-            files.external(saveFolder).list().asSequence()
-        } else {
-            emptySequence()
+        val externalFiles = when {
+            !files.isExternalStorageAvailable -> emptySequence()
+            getDataFolder().file().absolutePath == files.external("").file().absolutePath -> emptySequence()
+            else -> Sequence { files.external(saveFolder).list().iterator() }
         }
 
         debug("Local files: %s, external files: %s",
