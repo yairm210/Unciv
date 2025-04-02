@@ -145,7 +145,7 @@ object BattleUnitCapture {
                 wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
-            capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState -> {
+            capturedUnit.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) && attacker.getCivInfo().isCityState -> {
                 capturedUnit.destroy()
                 wasDestroyedInstead = true
             }
@@ -206,7 +206,7 @@ object BattleUnitCapture {
      */
     fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): Vector2? {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
-        if (!capturedUnit.hasUnique(UniqueType.FoundCity) || capturingCiv.isBarbarian) {
+        if (!capturedUnit.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) || capturingCiv.isBarbarian) {
             capturedUnit.capturedBy(capturingCiv)
             return capturedUnit.currentTile.position // if capturedBy has moved the unit, this is updated
         }
