@@ -3,6 +3,7 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
+import com.badlogic.gdx.utils.Os
 import com.badlogic.gdx.utils.SharedLibraryLoader
 import com.unciv.UncivGame
 import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
@@ -52,13 +53,13 @@ internal object DesktopLauncher {
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
         }
-        
+
         if (arg.isNotEmpty() && arg[0] == "--version") {
             println(UncivGame.VERSION.text)
             exitProcess(0)
         }
-        
-        if (SharedLibraryLoader.isMac) {
+
+        if (SharedLibraryLoader.os == Os.MacOsX) {
             Configuration.GLFW_LIBRARY_NAME.set("glfw_async")
             // Since LibGDX 1.13.1 on Mac you cannot call Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
             //  before GraphicsEnvironment.getLocalGraphicsEnvironment().
@@ -84,7 +85,7 @@ internal object DesktopLauncher {
         // Solves a rendering problem in specific GPUs and drivers.
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
-        
+
         val dataDirectory = customDataDir ?: "."
 
         val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
@@ -92,12 +93,12 @@ internal object DesktopLauncher {
 
         val config = Lwjgl3ApplicationConfiguration()
         config.setWindowIcon("ExtraImages/Icons/Unciv32.png", "ExtraImages/Icons/Unciv128.png")
-        if (SharedLibraryLoader.isMac) updateDockIconForMacOs("ExtraImages/Icons/Unciv128.png")
+        if (SharedLibraryLoader.os == Os.MacOsX) updateDockIconForMacOs("ExtraImages/Icons/Unciv128.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(WindowState.minimumWidth, WindowState.minimumHeight, -1, -1)
 
-        
+
         // LibGDX not yet configured, use regular java class
         val maximumWindowBounds = getMaximumWindowBounds()
 
