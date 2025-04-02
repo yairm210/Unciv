@@ -112,10 +112,8 @@ class UncivFiles(
 
     fun getSaves(autoSaves: Boolean = true): Sequence<FileHandle> {
         val saves = getSaves(SAVE_FILES_FOLDER)
-        val filteredSaves = if (autoSaves) { saves } else { saves.filter { !it.name().startsWith(
-            AUTOSAVE_FILE_NAME
-        ) }}
-        return filteredSaves
+        if (autoSaves) return saves
+        return saves.filter { !it.name().startsWith(AUTOSAVE_FILE_NAME) }
     }
 
     private fun getSaves(saveFolder: String): Sequence<FileHandle> {
@@ -157,7 +155,7 @@ class UncivFiles(
     }
 
     //endregion
-    
+
     //region Saving
 
     fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
@@ -289,7 +287,7 @@ class UncivFiles(
 
 
     //endregion
-    
+
     //region Settings
 
     private fun getGeneralSettingsFile(): FileHandle {
@@ -322,7 +320,7 @@ class UncivFiles(
     }
 
     //endregion
-    
+
     //region Scenarios
     val scenarioFolder = "scenarios"
     fun getScenarioFiles() = sequence {
@@ -335,7 +333,7 @@ class UncivFiles(
         }
     }
     //endregion
-    
+
     //region Mod caching
     fun saveModCache(modDataList: List<ModUIData>){
         val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
@@ -475,7 +473,7 @@ class Autosaves(val files: UncivFiles) {
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
         // get GameSettings to check the maxAutosavesStored in the autoSave function
         val settings = files.getGeneralSettings()
-        
+
         try {
             files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
