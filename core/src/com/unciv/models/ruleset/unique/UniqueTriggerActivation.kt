@@ -735,7 +735,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeGainTechPercent -> {
                 val tech = unique.params[1]
                 val amount = unique.params[0].toFloatOrNull()
-                if (amount == null || civInfo.gameInfo.ruleset.technologies.none { it.key == tech } || civInfo.tech.isResearched(tech)) return null
+                if (amount == null || tech !in civInfo.gameInfo.ruleset.technologies || civInfo.tech.isResearched(tech)) return null
                 val scienceGain = (civInfo.tech.costOfTech(tech) * amount / 100).roundToInt()
                 if (scienceGain == 0) return null
 
