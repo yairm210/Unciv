@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -33,6 +34,9 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import java.io.FileNotFoundException
+import java.nio.file.attribute.DosFileAttributes
+import kotlin.io.path.Path
+import kotlin.io.path.readAttributes
 
 class LoadGameScreen : LoadOrSaveScreen() {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
@@ -48,39 +52,54 @@ class LoadGameScreen : LoadOrSaveScreen() {
         internal const val downloadMissingMods = "Download missing mods"
 
         /** Gets a translated exception message to show to the user.
+         * @param file Optional, used for detection of local read-only files, only relevant for write operations on Windows desktops.
          * @return The first returned value is the message, the second is signifying if the user can likely fix this problem. */
-        fun getLoadExceptionMessage(ex: Throwable, primaryText: String = "Could not load game!"): Pair<String, Boolean> {
+        fun getLoadExceptionMessage(ex: Throwable, primaryText: String = "Could not load game!", file: FileHandle? = null): Pair<String, Boolean> {
             val errorText = StringBuilder(primaryText.tr())
-
-            val isUserFixable: Boolean
             errorText.appendLine()
-            when (ex) {
+            var cause = ex
+            while (cause.cause != null && cause is GdxRuntimeException) cause = cause.cause!!
+
+            fun FileHandle.isReadOnly(): Boolean {
+                try {
+                    val attr = Path(file().absolutePath).readAttributes<DosFileAttributes>()
+                    return attr.isReadOnly
+                } catch (_: Throwable) { return false }
+            }
+
+            val isUserFixable = when (cause) {
                 is UncivShowableException -> {
                     errorText.append(ex.localizedMessage)
-                    isUserFixable = true
+                    true
                 }
                 is SerializationException -> {
                     errorText.append("The file data seems to be corrupted.".tr())
-                    isUserFixable = false
+                    false
                 }
                 is FileNotFoundException -> {
-                    isUserFixable = if (ex.cause?.message?.contains("Permission denied") == true) {
-                        errorText.append("You do not have sufficient permissions to access the file.".tr())
-                        true
-                    } else {
-                        false
+                    // This is thrown both for chmod/ACL denials and for writing to a file with the read-only attribute set
+                    // On Windows, `message` is already (and illegally) partially localized.
+                    val localizedMessage = UncivGame.Current.getSystemErrorMessage(5)
+                    val isPermissionDenied = cause.message?.run {
+                        contains("Permission denied") || (localizedMessage != null && contains(localizedMessage))
+                    } == true
+                    if (isPermissionDenied) {
+                        if (file != null && file.isReadOnly())
+                            errorText.append("The file is marked read-only.".tr())
+                        else
+                            errorText.append("You do not have sufficient permissions to access the file.".tr())
                     }
+                    isPermissionDenied
                 }
                 else -> {
                     errorText.append("Unhandled problem, [${ex::class.simpleName} ${ex.stackTraceToString()}]".tr())
-                    isUserFixable = false
+                    false
                 }
             }
             return Pair(errorText.toString(), isUserFixable)
         }
 
-        fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit){
-
+        fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
             for (rawName in missingMods) {
                 val modName = rawName.folderNameToRepoName().lowercase()
                 val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
@@ -305,5 +324,4 @@ class LoadGameScreen : LoadOrSaveScreen() {
             }
         }
     }
-
 }
