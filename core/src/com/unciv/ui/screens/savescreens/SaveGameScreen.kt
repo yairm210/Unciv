@@ -66,6 +66,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
     private fun Table.addGameNameField() {
         gameNameTextField.setTextFieldFilter { _, char -> char != '\\' && char != '/' }
+        gameNameTextField.textFieldFilter = UncivFiles.fileNameTextFieldFilter()
         val defaultSaveName = "[${gameInfo.currentPlayer}] - [${gameInfo.turns}] turns".tr(hideIcons = true)
         gameNameTextField.text = defaultSaveName
         gameNameTextField.setSelection(0, defaultSaveName.length)
