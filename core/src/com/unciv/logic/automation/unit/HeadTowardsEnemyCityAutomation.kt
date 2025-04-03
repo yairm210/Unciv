@@ -100,7 +100,7 @@ object HeadTowardsEnemyCityAutomation {
     ): Boolean {
         val cityCombatant = CityCombatant(city)
         val expectedDamagePerTurn = ourUnitsAroundEnemyCity
-            .sumOf { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
+            .sumOf { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant, randomnessFactor = 0.5f) }
 
         val cityHealingPerTurn = 20
         return expectedDamagePerTurn < city.health && // Cannot take immediately
