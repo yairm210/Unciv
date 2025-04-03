@@ -124,7 +124,7 @@ class TileStatFunctions(val tile: Tile) {
 
         if (observingCiv != null &&
             listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
-            listOfStats.add("Golden Age" to Stats(gold = 1f))
+            listOfStats.add(observingCiv.nation.goldenAgeName to Stats(gold = 1f))
 
         // To ensure that the original stats (in uniques, terrains, etc) are not modified in getTileStats, we clone them all
         return listOfStats.filter { !it.second.isEmpty() }.map { it.first to it.second.clone() }

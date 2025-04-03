@@ -39,6 +39,8 @@
           "defeated": { "type": "string" },
           "startIntroPart1": { "type": "string" },
           "startIntroPart2": { "type": "string" },
+          "goldenAgeName": { "type": "string" },
+          "enteredGoldenAge": { "type": "string" },
           "cities": {
               "type": "array",
               "items": { "type": "string" },

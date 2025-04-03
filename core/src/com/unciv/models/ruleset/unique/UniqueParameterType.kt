@@ -598,6 +598,10 @@ enum class UniqueParameterType(
     UnitTriggerTarget("unitTriggerTarget", Constants.thisUnit, "`${Constants.thisUnit}` or `${Constants.targetUnit}`") {
         override val staticKnownValues = setOf(Constants.thisUnit, Constants.targetUnit)
     },
+    
+    GoldenAgeName("Golden Age", "Golden Age", "Affects only the visuals. Does not impact gameplay.") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = null
+    },
 
     /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter",
