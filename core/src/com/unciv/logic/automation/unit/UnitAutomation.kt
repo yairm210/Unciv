@@ -613,10 +613,8 @@ object UnitAutomation {
 
         val hitsToKill = targets.associateWith { it.getHealth().toFloat() / BattleDamage.calculateDamageToDefender(
             CityCombatant(city),
-            it,
-            randomnessFactor = 0.5f
+            it
         ).toFloat().coerceAtLeast(1f) }
-        // To to instakill the highest strength target
         val target = hitsToKill.filter { it.value <= 1 }.maxByOrNull { it.key.getAttackingStrength() }?.key
         if (target != null) return target
         return hitsToKill.minByOrNull { it.value }?.key

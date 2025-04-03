@@ -295,8 +295,7 @@ object BattleDamage {
         attacker: ICombatant,
         defender: ICombatant,
         tileToAttackFrom: Tile = defender.getTile(),
-        /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming.
-         * For "average" randomness, put 0.5f */
+        /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
         randomnessFactor: Float = Random(defender.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode().toLong()).nextFloat()
         ,
     ): Int {

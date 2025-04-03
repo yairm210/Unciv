@@ -150,7 +150,7 @@ object BattleHelper {
             attackValue = 100
             // Associate enemy units with number of hits from this unit to kill them
             val attacksToKill = (militaryUnit.health.toFloat() /
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit), randomnessFactor = 0.5f))
+                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit)))
                 .coerceAtLeast(1f).coerceAtMost(10f)
             // We can kill them in this turn
             if (attacksToKill <= 1) attackValue += 30
