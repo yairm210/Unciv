@@ -10,7 +10,6 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.nio.charset.Charset
 import java.util.Date
 import java.util.Timer
 import kotlin.concurrent.timer
@@ -25,6 +24,7 @@ object DropBox: FileStorage {
         if (remainingRateLimitSeconds > 0)
             throw FileStorageRateLimitReached(remainingRateLimitSeconds)
 
+        @Suppress("DEPRECATION") // We still support Java < 20, and Android Doc doesn't show the static URI.toUrl(string) replacement.
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "POST"  // default is GET
 

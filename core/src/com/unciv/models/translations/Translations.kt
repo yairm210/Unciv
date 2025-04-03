@@ -249,7 +249,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
             val languageName = language.filterNot { it in bannedCharacters }
             return try {
                 val code = LocaleCode.valueOf(languageName)
-                Locale(code.language, code.country)
+                // See https://developer.android.com/reference/java/util/Locale
+                Locale.of(code.language, code.country)
             } catch (_: Exception) {
                 Locale.getDefault()
             }

@@ -56,7 +56,8 @@ object Github {
     fun download(url: String, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
         try {
             // Problem type 1 - opening the URL connection
-            @Suppress("DEPRECATION") // We still support Java < 20
+            @Suppress("DEPRECATION") // We still support Java < 20, and Android Doc doesn't show the static URI.toUrl(string) replacement.
+            // URI(url).toURL() should be fine from the [Android Doc](https://developer.android.com/reference/java/net/URI#toURL()), but looks ugly.
             with(URL(url).openConnection() as HttpURLConnection)
             {
                 preDownloadAction(this)

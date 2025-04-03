@@ -59,7 +59,7 @@ class UncivFiles(
     }
 
     fun getModsFolder() = getLocalFile("mods")
-    fun getModFolder(modName: String) = getModsFolder().child(modName)
+    fun getModFolder(modName: String): FileHandle = getModsFolder().child(modName)
 
     /** The folder that holds data that the game changes while running - all the mods, maps, save files, etc */
     fun getDataFolder() = getLocalFile("")
@@ -167,7 +167,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    private fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
@@ -322,7 +322,7 @@ class UncivFiles(
     //endregion
     
     //region Scenarios
-    val scenarioFolder = "scenarios"
+    private val scenarioFolder = "scenarios"
     fun getScenarioFiles() = sequence {
         for (mod in RulesetCache.values) {
             val modFolder = mod.folderLocation ?: continue
