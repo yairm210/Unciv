@@ -506,7 +506,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rangedPower /= 2
         }
         if (rangedPower > 0)
-            power = rangedPower
+            power = (rangedPower * range.toFloat().pow(0.3f)) // Apply a multiplier based on the range of the ranged unit
 
         // Replicates the formula from civ V, which is a lower multiplier than probably intended, because math
         // They did fix it in BNW so it was completely bugged and always 1, again math
@@ -514,8 +514,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
-        if (isNuclearWeapon())
-            power += 4000
 
         // Uniques
         val allUniques = rulesetUniqueObjects.asSequence() +
@@ -555,6 +553,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 else -> {}
             }
         }
+        
+        if (isNuclearWeapon())
+            power += 4000 // Not subject to multiplications, to prevent extremely high nuke Force in mods
 
         cachedForceEvaluation = power.toInt()
     }
