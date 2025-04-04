@@ -124,11 +124,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         val chosenConstruction: String =
             if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
-                // add science!
+                // faith last, as faith sinks generally aren't unlimited, and the AI may not spend wisely if they were
                 when {
+                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture.name
                     PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science.name
                     PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
-                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture.name
                     PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith.name
                     else -> PerpetualConstruction.idle.name
                 }
