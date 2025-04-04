@@ -250,7 +250,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
             return try {
                 val code = LocaleCode.valueOf(languageName)
                 // See https://developer.android.com/reference/java/util/Locale
-                Locale.of(code.language, code.country)
+                // But Locale.of(code.language, code.country) isn't known in our Github runners
+                Locale.forLanguageTag(code.language + "-" + code.country)
             } catch (_: Exception) {
                 Locale.getDefault()
             }
