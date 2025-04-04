@@ -7,8 +7,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
-import com.unciv.models.translations.Translations.Companion.getLocaleFromLanguage
-import com.unciv.models.translations.Translations.Companion.getNumberFormatFromLanguage
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -175,7 +173,7 @@ class GameSettings {
     }
 
     fun updateLocaleFromLanguage() {
-        locale = getLocaleFromLanguage(language)
+        locale = LocaleCode.getLocale(language)
     }
 
     fun getFontSize(): Int {
@@ -193,7 +191,7 @@ class GameSettings {
     }
 
     fun getCurrentNumberFormat(): NumberFormat {
-        return getNumberFormatFromLanguage(language)
+        return LocaleCode.getNumberFormatFromLanguage(language)
     }
 
     //endregion
@@ -261,67 +259,6 @@ class GameSettings {
     }
 
     enum class NationPickerListMode { Icons, List }
-
-    /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
-     *  - Effect depends on the Java libraries and may not always conform to expectations.
-     *    If in doubt, debug and see what Locale instance you get and compare its properties with `Locale.getDefault()`.
-     *    (`Collator.getInstance(LocaleCode.*.run { Locale(language, country) }) to Collator.getInstance()`, drill to both `rules`, compare hashes - if equal and other properties equal, then Java doesn't know your Language))
-     *  @property name same as translation file name with ' ', '_', '-', '(', ')' removed
-     *  @property language ISO 639-1 code for the language
-     *  @property country ISO 3166 code for the nation this is predominantly spoken in
-     *  @property trueLanguage If set, used instead of language to trick Java into supplying a close-enough collator (a no-match would otherwise give us the default collator, not a collator for a partial match)
-     */
-    enum class LocaleCode(val language: String, val country: String, val trueLanguage: String? = null) {
-        Afrikaans("af", "ZA"),
-        Arabic("ar", "IQ"),
-        Bangla("bn", "BD"),
-        Belarusian("be", "BY"),
-        Bosnian("bs", "BA"),
-        BrazilianPortuguese("pt", "BR"),
-        Bulgarian("bg", "BG"),
-        Catalan("ca", "ES"),
-        Croatian("hr", "HR"),
-        Czech("cs", "CZ"),
-        Danish("da", "DK"),
-        Dutch("nl", "NL"),
-        English("en", "US"),
-        Estonian("et", "EE"),
-        Finnish("fi", "FI"),
-        French("fr", "FR"),
-        Galician("gl", "ES"),
-        German("de", "DE"),
-        Greek("el", "GR"),
-        Hindi("hi", "IN"),
-        Hungarian("hu", "HU"),
-        Indonesian("in", "ID"),
-        Italian("it", "IT"),
-        Japanese("ja", "JP"),
-        Korean("ko", "KR"),
-        Latin("la", "IT"),
-        Latvian("lv", "LV"),
-        Lithuanian("lt", "LT"),
-        Malay("ms", "MY"),
-        Norwegian("no", "NO"),
-        NorwegianNynorsk("nn", "NO"),
-        PersianPinglishDIN("fa", "IR"), // These might just fall back to default
-        PersianPinglishUN("fa", "IR"),
-        Polish("pl", "PL"),
-        Portuguese("pt", "PT"),
-        Romanian("ro", "RO"),
-        Russian("ru", "RU"),
-        Rusyn("uk", "UA", "rus"), // No specific locale for rus exists, so use closest for collator
-        Serbian("sr", "RS"),
-        SimplifiedChinese("zh", "CN"),
-        Slovak("sk", "SK"),
-        Spanish("es", "ES"),
-        Swedish("sv", "SE"),
-        Thai("th", "TH"),
-        TraditionalChinese("zh", "TW"),
-        Turkish("tr", "TR"),
-        Ukrainian("uk", "UA"),
-        Vietnamese("vi", "VN"),
-        Zulu("zu", "ZA")
-    }
 
     //endregion
     //region Multiplayer-specific
