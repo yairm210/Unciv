@@ -247,7 +247,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(RejectionReasonType.Unbuildable.toInstance())
 
-        if ((civ.isCityState || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, stateForConditionals))
+        if ((civ.isCityState || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals))
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
