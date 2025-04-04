@@ -8,7 +8,7 @@ import com.unciv.json.json
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.SpyAction
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.metadata.GameSettings.LocaleCode
+import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Event
@@ -558,8 +558,7 @@ object TranslationFileWriter {
                 !endWithNewline && translated.endsWith('\n') -> translated.removeSuffix("\n")
                 else -> translated
             }
-            val localeCode = LocaleCode.valueOf(language.replace("_",""))
-            val path = fastlanePath + (localeCode.trueLanguage ?: localeCode.language)
+            val path = fastlanePath + LocaleCode.fastlaneFolder(language)
             File(path).mkdirs()
             File(path + File.separator + fileName).writeText(fileContent)
         }
