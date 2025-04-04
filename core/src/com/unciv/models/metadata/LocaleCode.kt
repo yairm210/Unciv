@@ -52,7 +52,7 @@ enum class LocaleCode(val languageTag: String, private val fastlaneFolder: Strin
     Portuguese("pt-PT"),
     Romanian("ro-RO"),
     Russian("ru-RU"),
-    Rusyn("rue-SK-u-kr-cyrl-latn-digit", "rus"), // No specific locale exists, so use explicit cyrillic collation. Chose country with most speakers.
+    Rusyn("rue-SK-u-kr-cyrl-latn-digit", "rue"), // No specific locale exists, so use explicit cyrillic collation. Chose country with most speakers.
     Serbian("sr-RS"),
     SimplifiedChinese("zh-CN"),
     Slovak("sk-SK"),
