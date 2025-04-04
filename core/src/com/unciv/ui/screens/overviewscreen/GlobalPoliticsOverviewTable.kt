@@ -353,7 +353,7 @@ class GlobalPoliticsOverviewTable(
     private fun getCivMiniTable(civInfo: Civilization): Table {
         val table = Table()
         table.add(ImageGetter.getNationPortrait(civInfo.nation, 25f)).pad(5f)
-        table.add(civInfo.civName.toLabel(hideIcons = true)).left().padRight(10f)
+        table.add(civInfo.getDisplayCivName().toLabel(hideIcons = true)).left().padRight(10f)
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick

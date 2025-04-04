@@ -302,7 +302,7 @@ class AlertPopup(
         music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
         music.playVoice("${civInfo.civName}.introduction")
         if (civInfo.isCityState) {
-            addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
+            addGoodSizedLabel("We have encountered the City-State of [${civInfo.getDisplayNationName()}]!").row()
             addCloseButton("Excellent!")
         } else {
             addGoodSizedLabel(nation.introduction).row()
