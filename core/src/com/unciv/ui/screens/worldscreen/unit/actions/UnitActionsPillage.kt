@@ -89,8 +89,8 @@ object UnitActionsPillage {
         var pillageYield = Stats()
         val stateForConditionals = unit.cache.state
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom, stateForConditionals)) {
-            var yieldsToAdd = Stats()
             for ((stat, value) in unique.stats) {
+                var yieldsToAdd = Stats()
                 // Unique text says "approximately [X]", so we add 0..X twice - think an RPG's 2d12
                 yieldsToAdd.add(stat, (Random.nextInt((value + 1).toInt()) + Random.nextInt((value + 1).toInt()).toFloat()))
                 if (unique.isModifiedByGameSpeed())
