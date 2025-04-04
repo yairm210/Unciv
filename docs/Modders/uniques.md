@@ -395,6 +395,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[relativeAmount]% Yield from pillaging tiles"
+	Example: "[+20]% Yield from pillaging tiles"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Health from pillaging tiles"
+	Example: "[+20]% Health from pillaging tiles"
+
+	Applicable to: Global
+
 ??? example  "Military Units gifted from City-States start with [amount] XP"
 	Example: "Military Units gifted from City-States start with [3] XP"
 
@@ -1464,11 +1474,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit
 
-??? example  "Hidden until [amount] social policy branches have been completed"
-	Example: "Hidden until [3] social policy branches have been completed"
-
-	Applicable to: Building, Unit
-
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
@@ -1680,11 +1685,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Limited to [amount] per Civilization"
 	Example: "Limited to [3] per Civilization"
-
-	Applicable to: Building, Unit
-
-??? example  "Hidden until [amount] social policy branches have been completed"
-	Example: "Hidden until [3] social policy branches have been completed"
 
 	Applicable to: Building, Unit
 
@@ -2284,6 +2284,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Provides a one-time bonus of [+1 Gold, +2 Production] to the closest city when cut down"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
@@ -3485,6 +3486,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;(modified by game speed)&gt;"
 	Can only be applied to certain uniques, see details of each unique for specifics
+	Applicable to: MetaModifier
+
+??? example  "&lt;(modified by game progress up to [relativeAmount]%)&gt;"
+	Can only be applied to certain uniques, see details of each unique for specifics
+	Example: "&lt;(modified by game progress up to [+20]%)&gt;"
+
 	Applicable to: MetaModifier
 
 ??? example  "&lt;Suppress warning [validationWarning]&gt;"

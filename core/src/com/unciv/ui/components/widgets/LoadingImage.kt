@@ -34,6 +34,13 @@ import kotlin.time.TimeSource
  *  * When GameSettings.continuousRendering is off, fade and rotation animations are disabled.
  *  * [animated] is public and can be used to override the 'continuousRendering' setting.
  *
+ *  ### Note
+ *  "Squaring the circle": When the circle is not used ([Style.circleColor] is its default `Color.CLEAR`), then the loading icon
+ *  is sized to a square (`size`x`size`) and rotated, meaning it will paint outside that bounding box by a max of 4/pi,
+ *  or be **clipped** when placed in a clipping container such as Table. This is not a problem if the image itself has no pixels
+ *  outside its 'inside-bounds' circle, but the default loading image _has_ some - the arrow edges protrude and would be clipped.
+ *  Therefore, if you place this in a clipping container, use either a Circle or set [Style.innerSizeFactor] to 0.8f.
+ *
  *  @param size Fixed forced size: prefWidth, minWidth, maxWidth and height counterparts will all return this.
  *  @param style Contains the visual and behavioral parameters
  */
@@ -53,7 +60,7 @@ class LoadingImage(
     //endregion
 
     data class Style(
-        /** If not CLEAR, a Circle with this Color is layered at the bottom and the icons are resized to [innerSizeFactor] * `size` */
+        /** If not CLEAR, a Circle with this Color is layered at the bottom and the default for [innerSizeFactor] changes */
         val circleColor: Color = Color.CLEAR,
         /** Color for the animated "Loading" icon (drawn on top) */
         val loadingColor: Color = Color.WHITE,
@@ -69,8 +76,8 @@ class LoadingImage(
         /** Texture name for the loading icon */
         val loadingImageName: String = "OtherIcons/Loading",
 
-        /** Size scale for icons when a Circle is used */
-        val innerSizeFactor: Float = 0.75f,
+        /** Size scale for icons (they will be [innerSizeFactor] * `size`), defaults to 1 without a Cirlce, or close to pi/4 when a Circle is used */
+        val innerSizeFactor: Float = Float.NaN,
         /** duration of fade-in and fade-out in seconds */
         val fadeDuration: Float = 0.2f,
         /** duration of rotation - seconds per revolution */
@@ -83,16 +90,19 @@ class LoadingImage(
         isTransform = false
         setSize(size, size)
 
-        val innerSize: Float
+        val innerSize = size * when {
+            !style.innerSizeFactor.isNaN() -> style.innerSizeFactor
+            style.circleColor == Color.CLEAR  -> 1f
+            else -> 0.785f  // close to pi/4
+        }
+
         if (style.circleColor == Color.CLEAR) {
             circle = null
-            innerSize = size
         } else {
             circle = ImageGetter.getImage(style.circleImageName)
             circle.color = style.circleColor
             circle.setSize(size)
             addActor(circle)
-            innerSize = size * style.innerSizeFactor
         }
 
         if (style.idleIconColor == Color.CLEAR) {

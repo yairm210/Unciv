@@ -82,6 +82,8 @@ class UncivFiles(
                 externalFile.exists() && !localFile.exists() || // external file is only valid choice
                 preferExternalStorage && (externalFile.exists() || !localFile.exists()) // unless local file is only valid choice, choose external
                 ) ) {
+            if (externalFile.isDirectory) externalFile.deleteDirectory() // fix for #13113
+            externalFile.parent().mkdirs()
             externalFile
         } else {
             localFile

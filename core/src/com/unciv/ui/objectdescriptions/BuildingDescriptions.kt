@@ -10,6 +10,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
@@ -65,7 +66,7 @@ object BuildingDescriptions {
             translatedLines += stats.toString()
 
         for ((stat, value) in getStatPercentageBonuses(city))
-            if (value != 0f) translatedLines += "+${value.toInt()}% {${stat.name}}".tr()
+            if (value != 0f) translatedLines += "${value.toInt().toStringSigned()}% {${stat.name}}".tr()
 
         for ((greatPersonName, value) in greatPersonPoints)
             translatedLines += "+$value " + "[$greatPersonName] points".tr()

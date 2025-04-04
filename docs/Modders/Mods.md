@@ -101,6 +101,18 @@ If you feel there should be additional topics supported in-game, then the course
      - Wait at least one release, check that your topic appeared in [ModCategories.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/ModCategories.json), and open a change PR for that file, removing the "hidden" attribute, telling us exactly why that topic would benefit the entire community.
      - Or, open an issue pointing us to your Mod with the new topics, asking us to do the above for you, again telling us why.
 
+## Loading mods from other sources than github
+
+The mod manager has a "Download mod from URL" button. As mod consumer, you can use this to load mods as zip files from sources you trust: Use cases include mods in development, clients not able to connect to github for various reasons (e.g. firewalls, no IPv4 support), or as alternative transport for loading your own mods on mobile devices.
+
+This downloader supports simple redirections, but not hosters requiring authentication or pre-set cookies, or hosters reassembling files in the browser using javascript or other complications - a simple `http get` must suffice.
+
+As mod author, you might need to know a few details how that button works. After all, it will lack some metadata it can normally get from github - e.g. repository name, branch names, release tags. Your storage might be an alternative git platform, but unless we code explicit support, Unciv has no way to reliably determine those. Therefore pay attention to:
+- The zip content after unpacking should either contain exactly one subfolder and all the mod's files (and mod folders like `jsons` or `Images`) below that folder, or have all the mod's data directly at the top lefel of the zip content.
+- The content should include a majority of files or folders Unciv knows to be part of a mod. Adding more testing, comment, asset-source or similar files/folders than there are actual payload files will result in a "Invalid Mod archive structure" message and your mod won't be accepted. This is counted on the top mod level, so moving all extra files into one subfolder should work when you're nearing that limit. Note that files named "license", "contribute.md", "readme.md" or "credits.md" _do_ count as "good" content.
+- The final mod name will be taken from one of three sources: The last part of the download link's path, the content-disposition header the server sends (you can see this as the actual name the file will be saved as when you download the link directly in a browser), or the first subfolder mentioned above. Precedence is subfolder - header - path, with some rarer exceptions (e.g. when the subfolder name is included in the header/path name but more boring, or in some cases typical branch name suffixes are automatically removed).
+- Therefore the best you can do is to include your mod content under a single subfolder with the desired mod name (including proper upper/lower casing), or, if your platform makes that difficult, make sure the downloaded name matches what you want to appear in your mod list (replacing blanks with dashes is allowed in all cases and recommended).
+
 ## I have the mod, now what?
 
 The primary use of mods is to add them when starting a new game, or configuring a map. This will mean that both the ruleset of the mod, and the images, will be in use for that specific game/map.

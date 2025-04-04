@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -528,7 +529,9 @@ object NextTurnAutomation {
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 
-        if (civInfo.units.getCivUnits().any { it.hasUnique(UniqueType.FoundCity) }) return
+        // This is a tough one - if we don't ignore conditionals we could have units that can found only on certain tiles that are ignored
+        // If we DO ignore conditionals we could get a unit that can only found if there's a certain tech, or something
+        if (civInfo.units.getCivUnits().any { it.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) }) return
         if (civInfo.cities.any {
                 val currentConstruction = it.cityConstructions.getCurrentConstruction()
                 currentConstruction is BaseUnit && currentConstruction.isCityFounder()
