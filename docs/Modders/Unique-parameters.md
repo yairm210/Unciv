@@ -356,12 +356,12 @@ This can make a difference for e.g. local resources, which are counted per city.
 Allowed *complex* values:
 - `[complex value]`
 - `[complex value] + [complex value]` - such as `[Cities] + 1`
-- `[complex value] - [complex value]` - such as `[Cities] - 1`
-- `[complex value] * [complex value]` - such as `[Cities] * 2`
-- `[complex value] / [complex value]` - such as `[Cities] / 2`
-- `[complex value] % [complex value]` - such as `[Cities] % 2`
-- `[complex value] ^ [complex value]` - such as `[Cities] ^ 2`
+- `[complex value] - [complex value]`
+- `[complex value] * [complex value]`
+- `[complex value] / [complex value]`
+- `[complex value] % [complex value]`
+- `[complex value] ^ [complex value]`
 
-In addition, complex nested expressions can also be used, such as: `([Cities] + [turns]) * 2 + [Units]`. Note that the precedence of the five operations follows mathematical intuition: exponentiation has the highest precedence, followed by multiplication, division, and modulus, and then addition and subtraction have the lowest precedence. If you need to adjust the precedence, please use parentheses.
+In addition, complex nested expressions can also be used, such as: `([Cities] + [turns]) * 2 + [Units]`. Note that the precedence of the 6 operations follows mathematical intuition: exponentiation(`^`) has the highest precedence, followed by multiplication(`*`), division(`/`), and modulus(`%`), and then addition(`+`) and subtraction(`-`) have the lowest precedence. If you need to adjust the precedence, please use parentheses.
 
-Specifically, when calculating n/0 or n%0 , although these operations are meaningless, we still compute them as 0.
+Specifically, when calculating `n/0` or `n%0` , although these operations are meaningless, we still compute them as `0`.
