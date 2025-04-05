@@ -64,10 +64,7 @@ object UnitActionsPillage {
 
                 if (pillagingImprovement) { // only Improvements heal HP
                     var healAmount = 25f
-                    for (unique in unit.civ.getMatchingUniques(UniqueType.PercentHealthFromPillaging)) {
-                        healAmount *= unique.params[0].toPercent()
-                    }
-                    for (unique in unit.getMatchingUniques(UniqueType.PercentHealthFromPillaging)) {
+                    for (unique in unit.getMatchingUniques(UniqueType.PercentHealthFromPillaging, checkCivInfoUniques = true)) {
                         healAmount *= unique.params[0].toPercent()
                     }
                     unit.healBy(healAmount.toInt())
@@ -110,10 +107,7 @@ object UnitActionsPillage {
         }
 
         //Multiply according to uniques
-        for (unique in unit.civ.getMatchingUniques(UniqueType.PercentYieldFromPillaging)) {
-            pillageYield *= unique.params[0].toPercent()
-        }
-        for (unique in unit.getMatchingUniques(UniqueType.PercentYieldFromPillaging)) {
+        for (unique in unit.getMatchingUniques(UniqueType.PercentYieldFromPillaging, checkCivInfoUniques = true)) {
             pillageYield *= unique.params[0].toPercent()
         }
 
