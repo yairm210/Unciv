@@ -30,6 +30,7 @@
       <option name="processLiterals" value="true" />
       <option name="processComments" value="true" />
     </inspection_tool>
+    <inspection_tool class="TrailingSpacesInProperty" enabled="true" level="TYPO" enabled_by_default="true" editorAttributes="TYPO" ignoreVisibleSpaces="true" />
     <inspection_tool class="TransitionPropertiesLabel" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UpdateTransitionLabel" enabled="false" level="WARNING" enabled_by_default="false" />
   </profile>
