@@ -8,10 +8,10 @@ import kotlin.math.pow
 object Countables {
 
     fun getCountableAmount(countable: String, stateForConditionals: StateForConditionals): Int? {
-        if (!countable.contains('[') && !countable.contains(']')) {
-            return simpleCountableAmount(countable, stateForConditionals)
+        if (isExpression(countable)) {
+            return evaluateExpression(countable, stateForConditionals)
         }
-        return evaluateExpression(countable, stateForConditionals)
+        return simpleCountableAmount(countable, stateForConditionals)
     }
 
     private fun simpleCountableAmount(countable: String, stateForConditionals: StateForConditionals): Int? {
@@ -30,29 +30,54 @@ object Countables {
         if (countable == "Cities") return civInfo.cities.size
 
         val placeholderParameters = countable.getPlaceholderParameters()
-        if (countable.equalsPlaceholderText("[] Cities"))
-            return civInfo.cities.count { it.matchesFilter(placeholderParameters[0]) }
+        if (countable.equalsPlaceholderText("[] Cities")) {
+            val filter = placeholderParameters[0]
+            return civInfo.cities.count { it.matchesFilter(filter) }
+        }
 
         if (countable == "Units") return civInfo.units.getCivUnitsSize()
-        if (countable.equalsPlaceholderText("[] Units"))
-            return civInfo.units.getCivUnits().count { it.matchesFilter(placeholderParameters[0]) }
+        if (countable.equalsPlaceholderText("[] Units")) {
+            val filter = placeholderParameters[0]
+            return civInfo.units.getCivUnits().count { it.matchesFilter(filter) }
+        }
 
-        if (countable.equalsPlaceholderText("[] Buildings"))
-            return civInfo.cities.sumOf { it.cityConstructions.getBuiltBuildings()
-                .count { it.matchesFilter(placeholderParameters[0]) } }
+        if (countable.equalsPlaceholderText("[] Buildings")) {
+            val filter = placeholderParameters[0]
+            var totalBuildings = 0
+            for (city in civInfo.cities) {
+                val builtBuildings = city.cityConstructions.getBuiltBuildings()
+                totalBuildings += builtBuildings.count { it.matchesFilter(filter) }
+            }
+            return totalBuildings
+        }
 
-        if (countable.equalsPlaceholderText("Remaining [] Civilizations"))
-            return gameInfo.civilizations.filter { !it.isDefeated() }
-                .count { it.matchesFilter(placeholderParameters[0]) }
+        if (countable.equalsPlaceholderText("Remaining [] Civilizations")) {
+            val filter = placeholderParameters[0]
+            var remainingCivs = 0
+            for (civ in gameInfo.civilizations) {
+                if (!civ.isDefeated() && civ.matchesFilter(filter)) {
+                    remainingCivs++
+                }
+            }
+            return remainingCivs
+        }
 
-        if (countable.equalsPlaceholderText("Completed Policy branches"))
+        if (countable.equalsPlaceholderText("Completed Policy branches")) {
             return civInfo.getCompletedPolicyBranchesCount()
+        }
 
-        if (countable.equalsPlaceholderText("Owned [] Tiles"))
-            return civInfo.cities.sumOf { it.getTiles().count { it.matchesFilter(placeholderParameters[0]) } }
+        if (countable.equalsPlaceholderText("Owned [] Tiles")) {
+            val filter = placeholderParameters[0]
+            var totalTiles = 0
+            for (city in civInfo.cities) {
+                totalTiles += city.getTiles().count { it.matchesFilter(filter) }
+            }
+            return totalTiles
+        }
 
-        if (gameInfo.ruleset.tileResources.containsKey(countable))
+        if (gameInfo.ruleset.tileResources.containsKey(countable)) {
             return stateForConditionals.getResourceAmount(countable)
+        }
 
         return null
     }
@@ -65,15 +90,22 @@ object Countables {
     }
 
     private fun parseExpression(expression: String): List<String> {
-        val regex = Regex("([+\\-*/%^()]|\\[[^]]+]|\\b\\w+\\b)")
+        val regex = Regex(
+            "(?:^|(?<=]))\\s*(\\[[^\\[\\]]*(?:\\[[^\\[\\]]*][^\\[\\]]*)*])|([+\\-*/%^()])|(\\d+)"
+        )
         val matches = regex.findAll(expression)
         val tokens = mutableListOf<String>()
         for (match in matches) {
-            tokens.add(match.value)
+            val token = match.groups.asSequence()
+                .filter { it != null && it.value.isNotEmpty() }
+                .firstOrNull()?.value
+                ?.trim()
+            if (!token.isNullOrEmpty()) {
+                tokens.add(token)
+            }
         }
         return tokens
     }
-
     private fun calculateExpression(tokens: List<String>, stateForConditionals: StateForConditionals): Int? {
         val outputQueue = mutableListOf<String>()
         val operatorStack = mutableListOf<String>()
@@ -83,7 +115,7 @@ object Countables {
                 outputQueue.add(token)
             } else if (token.startsWith("[") && token.endsWith("]")) {
                 val innerToken = token.substring(1, token.length - 1)
-                val value = getCountableAmount(innerToken, stateForConditionals)
+                val value = simpleCountableAmount(innerToken, stateForConditionals)
                 if (value == null) return null
                 outputQueue.add(value.toString())
             } else if (token == "(") {
@@ -105,6 +137,7 @@ object Countables {
             }
         }
 
+
         while (operatorStack.isNotEmpty()) {
             outputQueue.add(operatorStack.removeLast())
         }
@@ -122,8 +155,8 @@ object Countables {
                     "+" -> a + b
                     "-" -> a - b
                     "*" -> a * b
-                    "/" -> if (b == 0) return null else a / b
-                    "%" -> if (b == 0) return null else a % b
+                    "/" -> if (b == 0) return 0 else a / b
+                    "%" -> if (b == 0) return 0 else a % b
                     "^" -> a.toDouble().pow(b.toDouble()).toInt()
                     else -> return null
                 }
@@ -149,5 +182,11 @@ object Countables {
             "^" -> 3
             else -> 0
         }
+    }
+
+    private fun isExpression(countable: String): Boolean {
+        return countable.contains(' ') || countable.contains('+') || countable.contains('-') ||
+            countable.contains('*') || countable.contains('/') || countable.contains('%') ||
+            countable.contains('^') || countable.contains('(') || countable.contains(')')
     }
 }
