@@ -58,8 +58,8 @@ enum class UniqueType(
     PercentProductionUnits("[relativeAmount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionWonders("[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildingsInCapital("[relativeAmount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    PercentYieldFromPillaging("[relativeAmount]% Yield from pillaging tiles", UniqueTarget.Global),
-    PercentHealthFromPillaging("[relativeAmount]% Health from pillaging tiles", UniqueTarget.Global),
+    PercentYieldFromPillaging("[relativeAmount]% Yield from pillaging tiles", UniqueTarget.Global, UniqueTarget.Unit),
+    PercentHealthFromPillaging("[relativeAmount]% Health from pillaging tiles", UniqueTarget.Global, UniqueTarget.Unit),
     
     // endregion Stat providing uniques
 
@@ -656,8 +656,8 @@ enum class UniqueType(
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
-    PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement),
-    PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
+    PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement, flags = setOf(UniqueFlag.AcceptsSpeedModifier, UniqueFlag.AcceptsGameProgressModifier)),
+    PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement, flags = setOf(UniqueFlag.AcceptsSpeedModifier, UniqueFlag.AcceptsGameProgressModifier)),
     DestroyedWhenPillaged("Destroyed when pillaged", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     AutomatedUnitsWillNotReplace("Will not be replaced by automated units", UniqueTarget.Improvement),
