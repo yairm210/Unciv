@@ -91,7 +91,7 @@ object Countables {
 
     private fun parseExpression(expression: String): List<String> {
         val regex = Regex(
-            "(?:^|(?<=]))\\s*(\\[[^\\[\\]]*(?:\\[[^\\[\\]]*][^\\[\\]]*)*])|([+\\-*/%^()])|(\\d+)"
+            "(\\[[^\\[\\]]*(?:\\[[^\\[\\]]*][^\\[\\]]*)*])|([+\\-*/%^()])|(\\d+)"
         )
         val matches = regex.findAll(expression)
         val tokens = mutableListOf<String>()
@@ -104,8 +104,10 @@ object Countables {
                 tokens.add(token)
             }
         }
+        println("tokens: $tokens")
         return tokens
     }
+    
     private fun calculateExpression(tokens: List<String>, stateForConditionals: StateForConditionals): Int? {
         val outputQueue = mutableListOf<String>()
         val operatorStack = mutableListOf<String>()
@@ -115,8 +117,7 @@ object Countables {
                 outputQueue.add(token)
             } else if (token.startsWith("[") && token.endsWith("]")) {
                 val innerToken = token.substring(1, token.length - 1)
-                val value = simpleCountableAmount(innerToken, stateForConditionals)
-                if (value == null) return null
+                val value = simpleCountableAmount(innerToken, stateForConditionals) ?: return null
                 outputQueue.add(value.toString())
             } else if (token == "(") {
                 operatorStack.add(token)
