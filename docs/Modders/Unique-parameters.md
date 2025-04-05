@@ -337,7 +337,7 @@ Allowed values:
 
 Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
 
-Allowed values:
+Allowed *simple* values:
 
 - `year`, `turns`
 - `Cities`, `[cityFilter] Cities`
@@ -352,3 +352,14 @@ Allowed values:
 For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
 
 This can make a difference for e.g. local resources, which are counted per city.
+
+Allowed *complex* values:
+- `[complex value]`
+- `[complex value] + [complex value]` - such as `[Cities] + 1`
+- `[complex value] - [complex value]` - such as `[Cities] - 1`
+- `[complex value] * [complex value]` - such as `[Cities] * 2`
+- `[complex value] / [complex value]` - such as `[Cities] / 2`
+- `[complex value] % [complex value]` - such as `[Cities] % 2`
+- `[complex value] ^ [complex value]` - such as `[Cities] ^ 2`
+
+In addition, complex nested expressions can also be used, such as: `([Cities] + [turns]) * 2 + [Units]`. Note that the precedence of the five operations follows mathematical intuition: exponentiation has the highest precedence, followed by multiplication, division, and modulus, and then addition and subtraction have the lowest precedence. If you need to adjust the precedence, please use parentheses.
