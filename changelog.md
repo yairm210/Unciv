@@ -1,25 +1,14 @@
-## 4.15.21
+## 4.16.1
 
 Changed "tiles we can move to" indication from circles to covering the tile
 
-Revert "Better "expected damage" by normalizing damage randomness"
+Convert 'conditional settlers' to workers upon capture
 
-Better "expected damage" by normalizing damage randomness
+Selected unit fadein/fadeout it much more visible
 
-Resolved  Closes #13134 - Convert 'conditional settlers' to workers upon capture
+Added notification when unit set to sleep/defend until healed has fully healed
 
-Resolved  - Selected unit fadein/fadeout it much more visible
-
-Resolved  - Added notification when unit set to sleep/defend until healed has fully healed
-
-4.16.0-patch1
-
-mkdirs for parent instead of savefile 
-
-By SomeTroglodyte:
-- Improve concurrency of listing existing saves 
-- Reworked Locale handling + deprecations + linting 
-- Fix deprecations in Gdx and Java 
+Faster listing for existing saves - By SomeTroglodyte
 
 Pillage uniques moddability - By EmperorPinguin
 
