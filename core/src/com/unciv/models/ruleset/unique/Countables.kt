@@ -7,25 +7,35 @@ import kotlin.math.pow
 
 object Countables {
 
-    fun getCountableAmount(countable: String, stateForConditionals: StateForConditionals): Int? {
+    fun getCountableAmount(
+        countable: String,
+        stateForConditionals: StateForConditionals,
+        isFromUniqueParameterType: Boolean = false
+    ): Int? {
         if (isExpression(countable)) {
-            return evaluateExpression(countable, stateForConditionals)
+            return evaluateExpression(countable, stateForConditionals, isFromUniqueParameterType)
         }
-        return simpleCountableAmount(countable, stateForConditionals)
+        return simpleCountableAmount(countable, stateForConditionals, isFromUniqueParameterType)
     }
 
-    private fun simpleCountableAmount(countable: String, stateForConditionals: StateForConditionals): Int? {
+    private fun simpleCountableAmount(
+        countable: String,
+        stateForConditionals: StateForConditionals,
+        isFromUniqueParameterType: Boolean = false
+    ): Int? {
         if (countable.toIntOrNull() != null) return countable.toInt()
 
         val relevantStat = Stat.safeValueOf(countable)
-        if (relevantStat != null) return stateForConditionals.getStatAmount(relevantStat)
+        if (relevantStat != null) {
+            return stateForConditionals.getStatAmount(relevantStat)
+        }
 
-        val gameInfo = stateForConditionals.gameInfo ?: return null
+        val gameInfo = stateForConditionals.gameInfo ?: return if (isFromUniqueParameterType) 0 else null
 
         if (countable == "turns") return gameInfo.turns
         if (countable == "year") return gameInfo.getYear(gameInfo.turns)
 
-        val civInfo = stateForConditionals.relevantCiv ?: return null
+        val civInfo = stateForConditionals.relevantCiv ?: return if (isFromUniqueParameterType) 0 else null
 
         if (countable == "Cities") return civInfo.cities.size
 
@@ -79,14 +89,18 @@ object Countables {
             return stateForConditionals.getResourceAmount(countable)
         }
 
-        return null
+        return if (isFromUniqueParameterType) 0 else null
     }
 
-    private fun evaluateExpression(expression: String, stateForConditionals: StateForConditionals): Int? {
+    fun evaluateExpression(
+        expression: String,
+        stateForConditionals: StateForConditionals,
+        isFromUniqueParameterType: Boolean = false
+    ): Int? {
         val tokens = parseExpression(expression)
         if (tokens.isEmpty()) return null
 
-        return calculateExpression(tokens, stateForConditionals)
+        return calculateExpression(tokens, stateForConditionals, isFromUniqueParameterType)
     }
 
     private fun parseExpression(expression: String): List<String> {
@@ -104,11 +118,14 @@ object Countables {
                 tokens.add(token)
             }
         }
-        println("tokens: $tokens")
         return tokens
     }
-    
-    private fun calculateExpression(tokens: List<String>, stateForConditionals: StateForConditionals): Int? {
+
+    private fun calculateExpression(
+        tokens: List<String>,
+        stateForConditionals: StateForConditionals,
+        isFromUniqueParameterType: Boolean
+    ): Int? {
         val outputQueue = mutableListOf<String>()
         val operatorStack = mutableListOf<String>()
 
@@ -117,7 +134,7 @@ object Countables {
                 outputQueue.add(token)
             } else if (token.startsWith("[") && token.endsWith("]")) {
                 val innerToken = token.substring(1, token.length - 1)
-                val value = simpleCountableAmount(innerToken, stateForConditionals) ?: return null
+                val value = simpleCountableAmount(innerToken, stateForConditionals, isFromUniqueParameterType) ?: return null
                 outputQueue.add(value.toString())
             } else if (token == "(") {
                 operatorStack.add(token)
@@ -137,7 +154,6 @@ object Countables {
                 operatorStack.add(token)
             }
         }
-
 
         while (operatorStack.isNotEmpty()) {
             outputQueue.add(operatorStack.removeLast())
@@ -185,8 +201,8 @@ object Countables {
         }
     }
 
-    private fun isExpression(countable: String): Boolean {
-        return countable.contains(' ') || countable.contains('+') || countable.contains('-') ||
+    fun isExpression(countable: String): Boolean {
+        return countable.contains('+') || countable.contains('-') ||
             countable.contains('*') || countable.contains('/') || countable.contains('%') ||
             countable.contains('^') || countable.contains('(') || countable.contains(')')
     }
