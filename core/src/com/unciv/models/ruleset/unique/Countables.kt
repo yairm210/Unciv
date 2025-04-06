@@ -38,30 +38,40 @@ interface ICountable {
  *  - When implementing a formula language for Countables, create a new object in a separate file with the actual
  *    implementation, then a new instance here that delegates all its methods to that object. And delete these lines.
  */
-enum class Countables(protected val simpleName: String = "") : ICountable {
+enum class Countables(
+    protected val simpleName: String = "",
+    private val docPlaceholder: String = "",
+    private val shortDocumentation: String = "",
+    open val documentationStrings: List<String> = emptyList()
+) : ICountable {
     Integer {
+        override val documentationHeader = "Integer constant - any positive or negative integer number"
         override fun matches(parameterText: String) = parameterText.toIntOrNull() != null
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) = parameterText.toIntOrNull()
     },
 
-    Turns("turns") {
+    Turns("turns", shortDocumentation = "Number of turns played") {
+        override val documentationStrings = listOf("(Always starts at zero irrespective of game speed or start era)")
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.gameInfo?.turns
     },
-    Year("year") {
+    Year("year", shortDocumentation = "The current year") {
+        override val documentationStrings = listOf("(Depends on game speed or start era, negative for years BC)")
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.gameInfo?.run { getYear(turns) }
     },
-    Cities("Cities") {
+    Cities("Cities", shortDocumentation = "The number of cities the relevant Civilization owns") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.civInfo?.cities?.size
     },
-    Units("Units") {
+    Units("Units", shortDocumentation = "The number of units the relevant Civilization owns") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.civInfo?.units?.getCivUnitsSize()
     },
 
     Stats {
+        override val documentationHeader = "Stat name (${Stat.names().niceJoin()})"
+        override val documentationStrings = listOf("gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
@@ -71,6 +81,10 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
             return stateForConditionals.getStatAmount(relevantStat)
         }
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names()
+        private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
+            val index = lastIndexOf("`, `")
+            substring(0, index) + "` or `" + substring(index + 4)
+        }
     },
 
     PolicyBranches("Completed Policy branches") {
@@ -78,7 +92,7 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
             stateForConditionals.civInfo?.getCompletedPolicyBranchesCount()
     },
 
-    FilteredCities("[] Cities") {
+    FilteredCities("[] Cities", "cityFilter") {
         override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -89,7 +103,7 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
             UniqueParameterType.CityFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
     },
 
-    FilteredUnits("[] Units") {
+    FilteredUnits("[] Units", "mapUnitFilter") {
         override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -102,7 +116,7 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
             (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
     },
 
-    FilteredBuildings("[] Buildings") {
+    FilteredBuildings("[] Buildings", "buildingFilter") {
         override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -116,7 +130,7 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    RemainingCivs("Remaining [] Civilizations") {
+    RemainingCivs("Remaining [] Civilizations", "civFilter") {
         override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -128,7 +142,7 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    OwnedTiles("Owned [] Tiles") {
+    OwnedTiles("Owned [] Tiles", "tileFilter") {
         override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -141,6 +155,12 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
     },
 
     TileResources {
+        override val documentationHeader = "Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)"
+        override val documentationStrings = listOf(
+            "(can be city stats or civilization stats, depending on where the unique is used)",
+            "For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.",
+            "This can make a difference for e.g. local resources, which are counted per city."
+        )
         override val matchesWithRuleset = true
         override fun matches(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
@@ -149,7 +169,7 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
     },
 
     @Deprecated("was never actually supported", ReplaceWith("Remaining [City-State] Civilizations"), DeprecationLevel.ERROR)
-    CityStates("City-States") {
+    CityStates("City-States", shortDocumentation = "counts all undefeated city-states") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.isCityState }
@@ -160,6 +180,10 @@ enum class Countables(protected val simpleName: String = "") : ICountable {
     // Leave these in place only for the really simple cases
     override fun matches(parameterText: String) = parameterText == simpleName
     override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(simpleName)
+
+    open val documentationHeader get() =
+        (if (docPlaceholder.isEmpty()) "`$simpleName`" else "`${simpleName.fillPlaceholders(docPlaceholder)}`") +
+        (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
 
     override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
