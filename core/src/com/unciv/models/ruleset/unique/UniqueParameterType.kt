@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.models.translations.equalsPlaceholderText
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front of the rest.
 
@@ -76,6 +75,10 @@ enum class UniqueParameterType(
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
             Countables.getKnownValuesForAutocomplete(ruleset)
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return Countables.getErrorSeverity(parameterText, ruleset)
+        }
     },
 
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
