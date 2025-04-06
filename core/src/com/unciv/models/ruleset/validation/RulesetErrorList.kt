@@ -13,7 +13,7 @@ enum class RulesetErrorSeverity(val color: Color) {
     OK(Color.GREEN),
     WarningOptionsOnly(Color.YELLOW),
     Warning(Color.YELLOW),
-    ErrorOptionsOnly(Color.RED),
+    ErrorOptionsOnly(Color.ORANGE),
     Error(Color.RED),
 }
 
