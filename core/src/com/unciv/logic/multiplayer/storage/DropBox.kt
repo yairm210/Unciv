@@ -9,8 +9,7 @@ import java.io.DataOutputStream
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.Charset
+import java.net.URI
 import java.util.Date
 import java.util.Timer
 import kotlin.concurrent.timer
@@ -25,7 +24,8 @@ object DropBox: FileStorage {
         if (remainingRateLimitSeconds > 0)
             throw FileStorageRateLimitReached(remainingRateLimitSeconds)
 
-        with(URL(url).openConnection() as HttpURLConnection) {
+        // URL(string) is deprecated, URI.toUrl(string) API level 36:
+        with(URI(url).toURL().openConnection() as HttpURLConnection) {
             requestMethod = "POST"  // default is GET
 
             @Suppress("SpellCheckingInspection")
