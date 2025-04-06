@@ -190,24 +190,23 @@ enum class Countables(
     override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
     companion object {
+        fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
+            .filter {
+                if (it.matchesWithRuleset) it.matches(parameterText, ruleset!!) else it.matches(parameterText)
+            }
+
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
-            for (countable in Countables.entries) {
-                if (countable.matchesWithRuleset) {
-                    if (ruleset == null || !countable.matches(parameterText, ruleset)) continue
-                } else {
-                    if (!countable.matches(parameterText)) continue
-                }
+            var anyMatch = false
+            for (countable in Countables.getMatching(parameterText, ruleset)) {
                 val potentialResult = countable.eval(parameterText, stateForConditionals)
                 if (potentialResult != null) return potentialResult
+                anyMatch = true
             }
-            return null
+            return if (anyMatch) null else 0 // So getUniqueMultiplier won't count "for each"-modified stuff with bogus parameters
         }
 
-        fun isKnownValue(parameterText: String, ruleset: Ruleset) =
-            Countables.entries.any {
-                if (it.matchesWithRuleset) it.matches(parameterText, ruleset) else it.matches(parameterText)
-            }
+        fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset).any()
 
         // This will "leak memory" if game rulesets are changed over application lifetime, but it's a simple way to cache
         private val autocompleteCache = mutableMapOf<Ruleset, Set<String>>()
@@ -219,10 +218,13 @@ enum class Countables(
             }
 
         fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-            val countable = Countables.entries.firstOrNull {
-                if (it.matchesWithRuleset) it.matches(parameterText, ruleset) else it.matches(parameterText)
-            } ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-            return countable.getErrorSeverity(parameterText, ruleset)
+            var result = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            for (countable in Countables.getMatching(parameterText, ruleset)) {
+                // If any Countable is happy, we're happy
+                result = countable.getErrorSeverity(parameterText, ruleset) ?: return null
+            }
+            // return last result or default for simplicity - could do a max() instead
+            return result
         }
     }
 }
