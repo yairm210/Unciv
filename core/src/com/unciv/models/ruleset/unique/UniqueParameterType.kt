@@ -71,29 +71,11 @@ enum class UniqueParameterType(
     },
 
     Countable("countable", "1000", "This indicates a number or a numeric variable") {
-        // todo add more countables
-        override val staticKnownValues = setOf(
-            "year", "turns", "Cities", "Units", "Completed Policy branches"
-        )
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
+            Countables.isKnownValue(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText.toIntOrNull() != null -> true
-            parameterText.equalsPlaceholderText("[] Buildings") -> true
-            parameterText.equalsPlaceholderText("[] Cities") -> true
-            parameterText.equalsPlaceholderText("[] Units") -> true
-            parameterText.equalsPlaceholderText("Remaining [] Civilizations") -> true
-            parameterText.equalsPlaceholderText("Owned [] Tiles") -> true
-            else -> super.isKnownValue(parameterText, ruleset)
-        }
-
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
-            staticKnownValues +
-                Stat.entries.map { it.name } +
-                ruleset.tileResources.keys +
-                ruleset.units.keys +
-                ruleset.unitTypes.keys.map { "[$it] Units" } +
-                ruleset.buildings.keys.map { "[$it] Buildings" } +
-                ruleset.buildings.keys
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            Countables.getKnownValuesForAutocomplete(ruleset)
     },
 
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
