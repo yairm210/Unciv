@@ -398,12 +398,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% Yield from pillaging tiles"
 	Example: "[+20]% Yield from pillaging tiles"
 
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% Health from pillaging tiles"
 	Example: "[+20]% Health from pillaging tiles"
 
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "Military Units gifted from City-States start with [amount] XP"
 	Example: "Military Units gifted from City-States start with [3] XP"
@@ -1631,6 +1631,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that can be added to units, unit types, or promotions
 
+??? example  "[relativeAmount]% Yield from pillaging tiles"
+	Example: "[+20]% Yield from pillaging tiles"
+
+	Applicable to: Global, Unit
+
+??? example  "[relativeAmount]% Health from pillaging tiles"
+	Example: "[+20]% Health from pillaging tiles"
+
+	Applicable to: Global, Unit
+
 ??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
 	Example: "[+20]% construction time for [All Road] improvements"
 
@@ -2528,11 +2538,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Pillaging this improvement yields approximately [stats]"
 	Example: "Pillaging this improvement yields approximately [+1 Gold, +2 Production]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
 	Applicable to: Improvement
 
 ??? example  "Pillaging this improvement yields [stats]"
 	Example: "Pillaging this improvement yields [+1 Gold, +2 Production]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
 	Applicable to: Improvement
 
 ??? example  "Destroyed when pillaged"
