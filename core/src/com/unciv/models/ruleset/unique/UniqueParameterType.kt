@@ -70,16 +70,22 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf(
             "year", "turns", "Cities", "Units", "Completed Policy branches"
         )
-
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText.toIntOrNull() != null -> true
-            parameterText.equalsPlaceholderText("[] Buildings") -> true
-            parameterText.equalsPlaceholderText("[] Cities") -> true
-            parameterText.equalsPlaceholderText("[] Units") -> true
-            parameterText.equalsPlaceholderText("Remaining [] Civilizations") -> true
-            parameterText.equalsPlaceholderText("Owned [] Tiles") -> true
-            else -> super.isKnownValue(parameterText, ruleset)
+        
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText.toIntOrNull() != null) return true
+            if (parameterText.equalsPlaceholderText("[] Buildings")) return true
+            if (parameterText.equalsPlaceholderText("[] Cities")) return true
+            if (parameterText.equalsPlaceholderText("[] Units")) return true
+            if (parameterText.equalsPlaceholderText("Remaining [] Civilizations")) return true
+            if (parameterText.equalsPlaceholderText("Owned [] Tiles")) return true
+            if (Countables.isExpression(parameterText)) {
+                val stateForConditionals = StateForConditionals()
+                val result = Countables.evaluateExpression(parameterText, stateForConditionals, true)
+                if (result != null) return true
+            }
+            return super.isKnownValue(parameterText, ruleset)
         }
+        
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             staticKnownValues +
@@ -109,8 +115,8 @@ enum class UniqueParameterType(
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             staticKnownValues +
-                    MapUnitFilter.getKnownValuesForAutocomplete(ruleset) +
-                    CityFilter.getKnownValuesForAutocomplete(ruleset)
+                MapUnitFilter.getKnownValuesForAutocomplete(ruleset) +
+                CityFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
 
@@ -159,9 +165,9 @@ enum class UniqueParameterType(
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             staticKnownValues +
-                    UnitName.getKnownValuesForAutocomplete(ruleset) +
-                    UnitTypeFilter.getKnownValuesForAutocomplete(ruleset) +
-                    TechFilter.getKnownValuesForAutocomplete(ruleset)
+                UnitName.getKnownValuesForAutocomplete(ruleset) +
+                UnitTypeFilter.getKnownValuesForAutocomplete(ruleset) +
+                TechFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
     /** Implemented by [UnitType.matchesFilter][com.unciv.models.ruleset.unit.UnitType.matchesFilter] */
@@ -180,7 +186,7 @@ enum class UniqueParameterType(
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
             return super.getKnownValuesForAutocomplete(ruleset) +
-                    ruleset.unitTypes.keys
+                ruleset.unitTypes.keys
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
@@ -347,7 +353,7 @@ enum class UniqueParameterType(
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText in ruleset.terrains
-                    || parameterText !in Constants.all && parameterText in staticKnownValues
+                || parameterText !in Constants.all && parameterText in staticKnownValues
     },
 
     /** Implemented by [Tile.matchesFilter][com.unciv.logic.map.tile.Tile.matchesFilter] */
@@ -406,9 +412,9 @@ enum class UniqueParameterType(
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
             staticKnownValues +
-                    ruleset.terrains.filter {
-                        it.value.hasUnique(UniqueType.RegionRequirePercentSingleType) ||
-                            it.value.hasUnique(UniqueType.RegionRequirePercentTwoTypes) }.keys
+                ruleset.terrains.filter {
+                    it.value.hasUnique(UniqueType.RegionRequirePercentSingleType) ||
+                        it.value.hasUnique(UniqueType.RegionRequirePercentTwoTypes) }.keys
     },
 
     /** Used for start placements: [UniqueType.HasQuality], MapRegions.MapGenTileData.evaluate */
@@ -510,7 +516,7 @@ enum class UniqueParameterType(
     Belief("belief", "God of War", "The name of any belief") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.beliefs.keys
     },
-    
+
     /**Used by [UniqueType.ConditionalCityReligion]*/
     ReligionFilter("religionFilter", "major") {
         override val staticKnownValues = setOf("any", "major", "enhanced", "your", "foreign","enemy")
