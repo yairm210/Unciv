@@ -143,7 +143,7 @@ open class FileChooser(
         add(fileScroll).colspan(2).fill().row()
         addSeparator(height = 1f)
         fileNameCell = add().colspan(2).growX()
-        row()
+        super.row()
 
         addCloseButton(Constants.cancel) {
             reportResult(false)

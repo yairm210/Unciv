@@ -64,8 +64,8 @@ object UnitActionsPillage {
 
                 if (pillagingImprovement) { // only Improvements heal HP
                     var healAmount = 25f
-                    for (unique in unit.civ.getMatchingUniques(UniqueType.PercentHealthFromPillaging)) {
-                            healAmount *= unique.params[0].toPercent()
+                    for (unique in unit.getMatchingUniques(UniqueType.PercentHealthFromPillaging, checkCivInfoUniques = true)) {
+                        healAmount *= unique.params[0].toPercent()
                     }
                     unit.healBy(healAmount.toInt())
                 }
@@ -87,18 +87,28 @@ object UnitActionsPillage {
         val stateForConditionals = unit.cache.state
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom, stateForConditionals)) {
             for ((stat, value) in unique.stats) {
+                var yieldsToAdd = Stats()
                 // Unique text says "approximately [X]", so we add 0..X twice - think an RPG's 2d12
-                val looted = Random.nextInt((value + 1).toInt()) + Random.nextInt((value + 1).toInt())
-                pillageYield.add(stat, looted.toFloat())
+                yieldsToAdd.add(stat, (Random.nextInt((value + 1).toInt()) + Random.nextInt((value + 1).toInt()).toFloat()))
+                if (unique.isModifiedByGameSpeed())
+                    yieldsToAdd *= unit.civ.gameInfo.speed.modifier
+                if (unique.isModifiedByGameProgress())
+                    yieldsToAdd *= unique.getGameProgressModifier(unit.civ)
+                pillageYield.add(yieldsToAdd)
             }
         }
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed, stateForConditionals)) {
-            pillageYield.add(unique.stats)
+            var yieldsToAdd = unique.stats
+            if (unique.isModifiedByGameSpeed())
+                yieldsToAdd *= unit.civ.gameInfo.speed.modifier
+            if (unique.isModifiedByGameProgress())
+                yieldsToAdd *= unique.getGameProgressModifier(unit.civ)
+            pillageYield.add(yieldsToAdd)
         }
 
-        //Multiply according to global uniques
-        for (unique in unit.civ.getMatchingUniques(UniqueType.PercentYieldFromPillaging)) {
-                pillageYield *= unique.params[0].toPercent()
+        //Multiply according to uniques
+        for (unique in unit.getMatchingUniques(UniqueType.PercentYieldFromPillaging, checkCivInfoUniques = true)) {
+            pillageYield *= unique.params[0].toPercent()
         }
 
         // Please no notification when there's no loot
