@@ -223,7 +223,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                         if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
             val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                 RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
-            else RulesetErrorSeverity.Warning // User visible
+            else RulesetErrorSeverity.ErrorOptionsOnly // User visible
 
             rulesetErrors.add(deprecationText, severity, uniqueContainer, unique)
         }
