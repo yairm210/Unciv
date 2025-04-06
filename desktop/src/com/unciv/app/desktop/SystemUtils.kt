@@ -50,13 +50,13 @@ object SystemUtils {
      *  to break java.util.prefs.Preferences out of its Sandbox, or JNA requiring new bindings.
      */
     private fun getWinVer(): String {
-        val winVerCommand = """
-        cmd /c
-        reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ProductName &&
-        reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId &&
-        reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v CurrentBuild &&
-        reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v DisplayVersion
-        """.trimIndent().replace('\n', ' ')
+        val winVerCommand = arrayOf(
+            "cmd", "/c",
+            """reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ProductName && """ +
+            """reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId && """ +
+            """reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v CurrentBuild && """ +
+            """reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v DisplayVersion"""
+        )
 
         val entries: Map<String,String> = try {
             val process = Runtime.getRuntime().exec(winVerCommand)

@@ -59,7 +59,7 @@ class UncivFiles(
     }
 
     fun getModsFolder() = getLocalFile("mods")
-    fun getModFolder(modName: String) = getModsFolder().child(modName)
+    fun getModFolder(modName: String): FileHandle = getModsFolder().child(modName)
 
     /** The folder that holds data that the game changes while running - all the mods, maps, save files, etc */
     fun getDataFolder() = getLocalFile("")
@@ -82,6 +82,8 @@ class UncivFiles(
                 externalFile.exists() && !localFile.exists() || // external file is only valid choice
                 preferExternalStorage && (externalFile.exists() || !localFile.exists()) // unless local file is only valid choice, choose external
                 ) ) {
+            if (externalFile.isDirectory) externalFile.deleteDirectory() // fix for #13113
+            externalFile.parent().mkdirs()
             externalFile
         } else {
             localFile
@@ -111,20 +113,21 @@ class UncivFiles(
 
     fun getSaves(autoSaves: Boolean = true): Sequence<FileHandle> {
         val saves = getSaves(SAVE_FILES_FOLDER)
-        val filteredSaves = if (autoSaves) { saves } else { saves.filter { !it.name().startsWith(
-            AUTOSAVE_FILE_NAME
-        ) }}
-        return filteredSaves
+        if (autoSaves) return saves
+        return saves.filter { !it.name().startsWith(AUTOSAVE_FILE_NAME) }
     }
 
     private fun getSaves(saveFolder: String): Sequence<FileHandle> {
         debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
-        val localFiles = getLocalFile(saveFolder).list().asSequence()
+        // This construct instead of asSequence causes the actual list() to happen when the
+        // first element is pulled, not right now before a Sequence is wrapped around the result.
+        // Note that any performance gains are moot when logging is on: See the the `debug` below.
+        val localFiles = Sequence { getLocalFile(saveFolder).list().iterator() }
 
-        val externalFiles = if (files.isExternalStorageAvailable && getDataFolder().file().absolutePath != files.external("").file().absolutePath) {
-            files.external(saveFolder).list().asSequence()
-        } else {
-            emptySequence()
+        val externalFiles = when {
+            !files.isExternalStorageAvailable -> emptySequence()
+            getDataFolder().file().absolutePath == files.external("").file().absolutePath -> emptySequence()
+            else -> Sequence { files.external(saveFolder).list().iterator() }
         }
 
         debug("Local files: %s, external files: %s",
@@ -153,7 +156,7 @@ class UncivFiles(
     }
 
     //endregion
-    
+
     //region Saving
 
     fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
@@ -165,7 +168,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    private fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
@@ -285,7 +288,7 @@ class UncivFiles(
 
 
     //endregion
-    
+
     //region Settings
 
     private fun getGeneralSettingsFile(): FileHandle {
@@ -318,9 +321,9 @@ class UncivFiles(
     }
 
     //endregion
-    
+
     //region Scenarios
-    val scenarioFolder = "scenarios"
+    private val scenarioFolder = "scenarios"
     fun getScenarioFiles() = sequence {
         for (mod in RulesetCache.values) {
             val modFolder = mod.folderLocation ?: continue
@@ -331,7 +334,7 @@ class UncivFiles(
         }
     }
     //endregion
-    
+
     //region Mod caching
     fun saveModCache(modDataList: List<ModUIData>){
         val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
@@ -471,7 +474,7 @@ class Autosaves(val files: UncivFiles) {
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
         // get GameSettings to check the maxAutosavesStored in the autoSave function
         val settings = files.getGeneralSettings()
-        
+
         try {
             files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {

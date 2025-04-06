@@ -1,3 +1,37 @@
+## 4.16.1
+
+Changed "tiles we can move to" indication from circles to covering the tile
+
+Convert 'conditional settlers' to workers upon capture
+
+Selected unit fadein/fadeout it much more visible
+
+Added notification when unit set to sleep/defend until healed has fully healed
+
+Faster listing for existing saves - By SomeTroglodyte
+
+Pillage uniques moddability - By EmperorPinguin
+
+Civ V - Gods & Kings: Fix William personality - By RobLoach
+
+## 4.15.20
+
+Fixed autosave crashes when saving to external files on some Android devices
+
+Modding:
+- Replaced semi-working policy branch restriction with countable + Unavailable
+- Negative stat percentages from buildings displayed properly in city screen.
+
+Experimental UI animations change. - By k-oa
+
+By EmperorPinguin:
+- Add pillage yield uniques 
+- Add game progress modifier
+
+By SomeTroglodyte:
+- Minor refactor: Save/Load game loading image uses `LoadingImage` 
+- Mod download robustness 
+
 ## 4.15.19
 
 Modding: Warn against Resource uniques cannot use countables that depend on citywide resources

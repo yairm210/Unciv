@@ -54,6 +54,11 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it > 0 } == true }
     },
+    
+    NonNegativeNumber("nonNegativeAmount", "3", "This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
+            parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it >= 0 } == true }
+    },
 
     Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
@@ -68,7 +73,7 @@ enum class UniqueParameterType(
     Countable("countable", "1000", "This indicates a number or a numeric variable") {
         // todo add more countables
         override val staticKnownValues = setOf(
-            "year", "turns", "Cities", "Units"
+            "year", "turns", "Cities", "Units", "Completed Policy branches"
         )
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
