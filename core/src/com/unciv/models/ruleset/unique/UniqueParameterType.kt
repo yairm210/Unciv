@@ -54,6 +54,11 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it > 0 } == true }
     },
+    
+    NonNegativeNumber("nonNegativeAmount", "3", "This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
+            parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it >= 0 } == true }
+    },
 
     Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =

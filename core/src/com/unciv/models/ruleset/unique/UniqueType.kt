@@ -28,9 +28,9 @@ enum class UniqueType(
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatsPerPolicies("[stats] per [amount] social policies adopted", UniqueTarget.Global, docDescription = "Only works for civ-wide stats"),
-    StatsPerStat("[stats] per every [amount] [civWideStat]", UniqueTarget.Global),
+    StatsPerPopulation("[stats] per [positiveAmount] population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsPerPolicies("[stats] per [positiveAmount] social policies adopted", UniqueTarget.Global, docDescription = "Only works for civ-wide stats"),
+    StatsPerStat("[stats] per every [positiveAmount] [civWideStat]", UniqueTarget.Global),
 
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromBuildings("[stats] from all [buildingFilter] buildings", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -40,7 +40,7 @@ enum class UniqueType(
     StatsFromObject("[stats] from every [tileFilter/specialist/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTradeRoute("[stats] from each Trade Route", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromGlobalCitiesFollowingReligion("[stats] for each global city following this religion", UniqueTarget.FounderBelief),
-    StatsFromGlobalFollowers("[stats] from every [amount] global followers [cityFilter]", UniqueTarget.FounderBelief),
+    StatsFromGlobalFollowers("[stats] from every [positiveAmount] global followers [cityFilter]", UniqueTarget.FounderBelief),
 
     // Stat percentage boosts
     StatPercentBonus("[relativeAmount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -65,17 +65,17 @@ enum class UniqueType(
 
     // region City-State related uniques
 
-    CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState),
+    CityStateMilitaryUnits("Provides military units every ≈[positiveAmount] turns", UniqueTarget.CityState),
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
 
     // Todo: Lowercase the 'U' of 'Units' in this unique
-    CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [amount] XP", UniqueTarget.Global),
-    CityStateMoreGiftedUnits("Militaristic City-States grant units [amount] times as fast when you are at war with a common nation", UniqueTarget.Global),
+    CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [positiveAmount] XP", UniqueTarget.Global),
+    CityStateMoreGiftedUnits("Militaristic City-States grant units [positiveAmount] times as fast when you are at war with a common nation", UniqueTarget.Global),
 
     CityStateGoldGiftsProvideMoreInfluence("Gifts of Gold to City-States generate [relativeAmount]% more Influence", UniqueTarget.Global),
     
     
-    CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns", UniqueTarget.Global),
+    CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your Ally for [nonNegativeAmount] turns", UniqueTarget.Global),
 
     @Deprecated("As of 4.15.2", ReplaceWith("Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns"))
     CityStateCanBeBoughtForGoldOld("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
@@ -117,14 +117,14 @@ enum class UniqueType(
 
     /// Buying units/buildings
     // There is potential to merge these
-    BuyUnitsIncreasingCost("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    BuyBuildingsIncreasingCost("May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    BuyUnitsForAmountStat("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    BuyBuildingsForAmountStat("May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    BuyUnitsIncreasingCost("May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    BuyBuildingsIncreasingCost("May buy [buildingFilter] buildings for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    BuyUnitsForAmountStat("May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    BuyBuildingsForAmountStat("May buy [buildingFilter] buildings for [nonNegativeAmount] [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyUnitsWithStat("May buy [baseUnitFilter] units with [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsWithStat("May buy [buildingFilter] buildings with [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    BuyUnitsByProductionCost("May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
-    BuyBuildingsByProductionCost("May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
+    BuyUnitsByProductionCost("May buy [baseUnitFilter] units with [stat] for [nonNegativeAmount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
+    BuyBuildingsByProductionCost("May buy [buildingFilter] buildings with [stat] for [nonNegativeAmount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     BuyItemsDiscount("[stat] cost of purchasing items in cities [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsDiscount("[stat] cost of purchasing [buildingFilter] buildings [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyUnitsDiscount("[stat] cost of purchasing [baseUnitFilter] units [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -175,7 +175,7 @@ enum class UniqueType(
 
     /// Unit Maintenance & Supply
     BaseUnitSupply("[amount] Unit Supply", UniqueTarget.Global),
-    UnitSupplyPerPop("[amount] Unit Supply per [amount] population [cityFilter]", UniqueTarget.Global),
+    UnitSupplyPerPop("[amount] Unit Supply per [positiveAmount] population [cityFilter]", UniqueTarget.Global),
     UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitsInCitiesNoMaintenance("Units in cities cost no Maintenance", UniqueTarget.Global),
@@ -185,7 +185,7 @@ enum class UniqueType(
     LandUnitEmbarkation("Enables embarkation for land units", UniqueTarget.Global),
     UnitsMayEnterOcean("Enables [mapUnitFilter] units to enter ocean tiles", UniqueTarget.Global),
     LandUnitsCrossTerrainAfterUnitGained("Land units may cross [terrainName] tiles after the first [baseUnitFilter] is earned", UniqueTarget.Global),
-    EnemyUnitsSpendExtraMovement("Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory", UniqueTarget.Global),
+    EnemyUnitsSpendExtraMovement("Enemy [mapUnitFilter] units must spend [positiveAmount] extra movement points when inside your territory", UniqueTarget.Global),
 
     /// Unit Abilities
 
@@ -503,8 +503,8 @@ enum class UniqueType(
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CanEnterForeignTiles("May enter foreign tiles without open borders", UniqueTarget.Unit),
     CanEnterForeignTilesButLosesReligiousStrength("May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", UniqueTarget.Unit),
-    ReducedDisembarkCost("[amount] Movement point cost to disembark", UniqueTarget.Global, UniqueTarget.Unit),
-    ReducedEmbarkCost("[amount] Movement point cost to embark", UniqueTarget.Global, UniqueTarget.Unit),
+    ReducedDisembarkCost("[nonNegativeAmount] Movement point cost to disembark", UniqueTarget.Global, UniqueTarget.Unit),
+    ReducedEmbarkCost("[nonNegativeAmount] Movement point cost to embark", UniqueTarget.Global, UniqueTarget.Unit),
     // These affect movement as Nation uniques
     ForestsAndJunglesAreRoads("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.", UniqueTarget.Nation),
     IgnoreHillMovementCost("Units ignore terrain costs when moving into any tile with Hills", UniqueTarget.Nation),
@@ -530,8 +530,8 @@ enum class UniqueType(
         docDescription = "Will consume up to [amount] of Movement to execute"),
     UnitActionMovementCostAll("for all movement", UniqueTarget.UnitActionModifier,
         docDescription = "Will consume all Movement to execute"),
-    UnitActionMovementCostRequired("requires [amount] movement", UniqueTarget.UnitActionModifier,
-        docDescription = "Requires [amount] of Movement to execute. Unit's Movement is rounded up"),
+    UnitActionMovementCostRequired("requires [nonNegativeAmount] movement", UniqueTarget.UnitActionModifier,
+        docDescription = "Requires [nonNegativeAmount] of Movement to execute. Unit's Movement is rounded up"),
     UnitActionStatsCost("costs [stats] stats", UniqueTarget.UnitActionModifier,
         docDescription = "A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock"),
     /** @see CostsResources */
@@ -542,8 +542,8 @@ enum class UniqueType(
                 " this is not a cost, units will be able to activate the action even without the promotion/status. " +
                 "To limit, use <with the [promotion] promotion> conditional"),
     UnitActionOnce("once", UniqueTarget.UnitActionModifier),
-    UnitActionLimitedTimes("[amount] times", UniqueTarget.UnitActionModifier),
-    UnitActionExtraLimitedTimes("[amount] additional time(s)", UniqueTarget.UnitActionModifier),
+    UnitActionLimitedTimes("[positiveAmount] times", UniqueTarget.UnitActionModifier),
+    UnitActionExtraLimitedTimes("[nonNegativeAmount] additional time(s)", UniqueTarget.UnitActionModifier),
     UnitActionAfterWhichConsumed("after which this unit is consumed", UniqueTarget.UnitActionModifier),
 
     // endregion
@@ -677,8 +677,8 @@ enum class UniqueType(
 
     /////// game conditionals
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
-    ConditionalBeforeTurns("before turn number [amount]", UniqueTarget.Conditional),
-    ConditionalAfterTurns("after turn number [amount]", UniqueTarget.Conditional),
+    ConditionalBeforeTurns("before turn number [nonNegativeAmount]", UniqueTarget.Conditional),
+    ConditionalAfterTurns("after turn number [nonNegativeAmount]", UniqueTarget.Conditional),
     ConditionalSpeed("on [speed] game speed", UniqueTarget.Conditional),
     ConditionalDifficulty("on [difficulty] difficulty", UniqueTarget.Conditional),
     ConditionalVictoryEnabled("when [victoryType] Victory is enabled", UniqueTarget.Conditional),
@@ -690,7 +690,7 @@ enum class UniqueType(
     ConditionalNuclearWeaponsEnabled("when nuclear weapons are enabled", UniqueTarget.Conditional),
 
     /////// general conditionals
-    ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
+    ConditionalChance("with [nonNegativeAmount]% chance", UniqueTarget.Conditional),
     ConditionalTutorialsEnabled("if tutorials are enabled", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
     ConditionalTutorialCompleted("if tutorial [comment] is completed", UniqueTarget.Conditional, flags = UniqueFlag.setOfHiddenToUsers), // Hidden as no translations needed for now
 
@@ -758,8 +758,8 @@ enum class UniqueType(
     ConditionalCityThisReligion("in cities following our religion", UniqueTarget.Conditional),
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
-    ConditionalPopulationFilter("in cities with at least [amount] [populationFilter]", UniqueTarget.Conditional),
-    ConditionalExactPopulationFilter("in cities with [amount] [populationFilter]", UniqueTarget.Conditional),
+    ConditionalPopulationFilter("in cities with at least [positiveAmount] [populationFilter]", UniqueTarget.Conditional),
+    ConditionalExactPopulationFilter("in cities with [positiveAmount] [populationFilter]", UniqueTarget.Conditional),
     ConditionalBetweenPopulationFilter("in cities with between [amount] and [amount] [populationFilter]", UniqueTarget.Conditional),
     ConditionalBelowPopulationFilter("in cities with less than [amount] [populationFilter]", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
@@ -778,15 +778,15 @@ enum class UniqueType(
     ConditionalFightingInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalForeignContinent("on foreign continents", UniqueTarget.Conditional),
     ConditionalAdjacentUnit("when adjacent to a [mapUnitFilter] unit", UniqueTarget.Conditional),
-    ConditionalAboveHP("when above [amount] HP", UniqueTarget.Conditional),
-    ConditionalBelowHP("when below [amount] HP", UniqueTarget.Conditional),
+    ConditionalAboveHP("when above [positiveAmount] HP", UniqueTarget.Conditional),
+    ConditionalBelowHP("when below [positiveAmount] HP", UniqueTarget.Conditional),
     ConditionalHasNotUsedOtherActions("if it hasn't used other actions yet", UniqueTarget.Conditional),
 
     /////// tile conditionals
-    ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalNeighborTiles("with [nonNegativeAmount] to [positiveAmount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
-    ConditionalNearTiles("within [amount] tiles of a [tileFilter]", UniqueTarget.Conditional),
+    ConditionalNearTiles("within [positiveAmount] tiles of a [tileFilter]", UniqueTarget.Conditional),
 
     ConditionalAdjacentTo("in tiles adjacent to [tileFilter] tiles", UniqueTarget.Conditional),
 
@@ -838,9 +838,9 @@ enum class UniqueType(
     OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
-    OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
+    OneTimeGainProphet("Gain enough Faith for [positiveAmount]% of a Great Prophet", UniqueTarget.Triggerable),
 
-    OneTimeTakeOverTilesInRadius("Gain control over [tileFilter] tiles in a [amount]-tile radius", UniqueTarget.Triggerable),
+    OneTimeTakeOverTilesInRadius("Gain control over [tileFilter] tiles in a [nonNegativeAmount]-tile radius", UniqueTarget.Triggerable),
 
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
@@ -848,7 +848,7 @@ enum class UniqueType(
     OneTimeRevealCrudeMap("From a randomly chosen tile [positiveAmount] tiles away from the ruins, reveal tiles up to [positiveAmount] tiles away with [positiveAmount]% chance", UniqueTarget.Ruins),
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
-    OneTimeSpiesLevelUp("Promotes all spies [amount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeSpiesLevelUp("Promotes all spies [positiveAmount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainSpy("Gain an extra spy", UniqueTarget.Triggerable),  // used in Wonders
 
 
@@ -876,8 +876,8 @@ enum class UniqueType(
     OneTimeUnitSpecialUpgrade("[unitTriggerTarget] upgrades for free including special upgrades", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainPromotion("[unitTriggerTarget] gains the [promotion] promotion", UniqueTarget.UnitTriggerable),
     OneTimeUnitRemovePromotion("[unitTriggerTarget] loses the [promotion] promotion", UniqueTarget.UnitTriggerable),
-    OneTimeUnitGainMovement("[unitTriggerTarget] gains [amount] movement", UniqueTarget.UnitTriggerable),
-    OneTimeUnitLoseMovement("[unitTriggerTarget] loses [amount] movement", UniqueTarget.UnitTriggerable),
+    OneTimeUnitGainMovement("[unitTriggerTarget] gains [positiveAmount] movement", UniqueTarget.UnitTriggerable),
+    OneTimeUnitLoseMovement("[unitTriggerTarget] loses [positiveAmount] movement", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainStatus("[unitTriggerTarget] gains the [promotion] status for [positiveAmount] turn(s)", UniqueTarget.UnitTriggerable,
         docDescription = "Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. " +
                 "Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns."),
@@ -927,7 +927,7 @@ enum class UniqueType(
     TriggerUponPromotionLoss("upon losing the [promotion] promotion", UniqueTarget.UnitTriggerCondition),
     TriggerUponStatusGain("upon gaining the [promotion] status", UniqueTarget.UnitTriggerCondition),
     TriggerUponStatusLoss("upon losing the [promotion] status", UniqueTarget.UnitTriggerCondition),
-    TriggerUponLosingHealth("upon losing at least [amount] HP in a single attack", UniqueTarget.UnitTriggerCondition),
+    TriggerUponLosingHealth("upon losing at least [positiveAmount] HP in a single attack", UniqueTarget.UnitTriggerCondition),
     TriggerUponEndingTurnInTile("upon ending a turn in a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
     TriggerUponDiscoveringTile("upon discovering a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
     TriggerUponEnteringTile("upon entering a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
@@ -936,7 +936,7 @@ enum class UniqueType(
 
     ///////////////////////////////////////////// region 90 META /////////////////////////////////////////////
 
-    ConditionalTimedUnique("for [amount] turns", UniqueTarget.MetaModifier,
+    ConditionalTimedUnique("for [nonNegativeAmount] turns", UniqueTarget.MetaModifier,
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     
     AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
@@ -949,7 +949,7 @@ enum class UniqueType(
     
     ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier),
     ForEveryAdjacentTile("for every adjacent [tileFilter]", UniqueTarget.MetaModifier),
-    ForEveryAmountCountable("for every [amount] [countable]", UniqueTarget.MetaModifier),
+    ForEveryAmountCountable("for every [positiveAmount] [countable]", UniqueTarget.MetaModifier),
     
     ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
