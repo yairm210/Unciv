@@ -6,6 +6,7 @@ import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueComplianceError
@@ -219,13 +220,32 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (deprecationAnnotation != null) {
             val replacementUniqueText = unique.getReplacementText(ruleset)
             val deprecationText =
-                "$prefix is deprecated ${deprecationAnnotation.message}," +
-                        if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
+                "$prefix is deprecated ${deprecationAnnotation.message}" +
+                        if (deprecationAnnotation.replaceWith.expression != "") ", replace with \"${replacementUniqueText}\"" else ""
             val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                 RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
             else RulesetErrorSeverity.ErrorOptionsOnly // User visible
 
             rulesetErrors.add(deprecationText, severity, uniqueContainer, unique)
+        }
+
+        // Check for deprecated Countables
+        if (unique.type == null) return
+        val countables =
+            unique.type.parameterTypeMap.withIndex()
+            .filter { UniqueParameterType.Countable in it.value }
+            .map { unique.params[it.index] }
+            .flatMap { Countables.getMatching(it, ruleset) }
+        for (countable in countables) {
+            val deprecation = countable.getDeprecationAnnotation() ?: continue
+            // This is less flexible than unique.getReplacementText(ruleset)
+            val replaceExpression = deprecation.replaceWith.expression
+            val text = "Countable `${countable.name}` is deprecated ${deprecation.message}" +
+                if (replaceExpression.isEmpty()) "" else ", replace with \"$replaceExpression\""
+            val severity = if (deprecation.level == DeprecationLevel.WARNING)
+                    RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
+                else RulesetErrorSeverity.ErrorOptionsOnly // User visible in new game and red in options
+            rulesetErrors.add(text, severity, uniqueContainer, unique)
         }
     }
 

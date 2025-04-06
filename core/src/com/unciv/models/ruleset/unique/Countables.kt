@@ -168,7 +168,8 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
     },
 
-    @Deprecated("was never actually supported", ReplaceWith("Remaining [City-State] Civilizations"), DeprecationLevel.ERROR)
+    /** Please leave this one in, it is tested against in [com.unciv.uniques.CountableTests.testRulesetValidation] */
+    @Deprecated("because it was never actually supported", ReplaceWith("Remaining [City-State] Civilizations"), DeprecationLevel.ERROR)
     CityStates("City-States", shortDocumentation = "counts all undefeated city-states") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null

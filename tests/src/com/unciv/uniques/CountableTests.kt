@@ -1,9 +1,13 @@
 package com.unciv.uniques
 
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stat
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -17,9 +21,9 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class CountableTests {
-    private val game = TestGame().apply { makeHexagonalMap(3) }
-    private val civInfo = game.addCiv()
-    private val city = game.addCity(civInfo, game.tileMap[2,0])
+    private var game = TestGame().apply { makeHexagonalMap(3) }
+    private var civInfo = game.addCiv()
+    private var city = game.addCity(civInfo, game.tileMap[2,0])
 
     @Test
     fun testPerCountableForGlobalAndLocalResources() {
@@ -92,5 +96,43 @@ class CountableTests {
             val actual = Countables.getCountableAmount(test, StateForConditionals(civInfo))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
+    }
+
+    @Test
+    fun testRulesetValidation() {
+        val mod = Ruleset().apply {
+            name = "Testing"
+            globalUniques.uniques.add("[+42 Faith] <when number of [turns] is less than [42]>")
+            globalUniques.uniques.add("[-1 Faith] <for every [turns]> <when number of [turns] is less than [42]>")
+            globalUniques.uniques.add("[+1 Happiness] <for every [City-States]>")
+            globalUniques.uniques.add("[+1 Happiness] <for every [[42] Monkeys]>")
+        }
+        game = TestGame {
+            RulesetCache[mod.name] = mod
+            RulesetCache.getComplexRuleset(RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!, listOf(mod))
+        }
+        val ruleset = game.ruleset
+
+        val errors = RulesetValidator(ruleset).getErrorList()
+        val countDeprecations = errors.count { 
+            it.text.matches(Regex("Countable.*deprecated.*"))
+        }
+        assertEquals("The test mod should flag one deprecated Countable", 1, countDeprecations)
+        val countInvalid = errors.count {
+            it.text.matches(Regex(".*Monkeys.*not fit.*countable.*"))
+        }
+        assertEquals("The test mod should flag one invalid Countable", 1, countInvalid)
+
+        game.makeHexagonalMap(3)
+        civInfo = game.addCiv()
+        city = game.addCity(civInfo, game.tileMap[2,0])
+
+        val cityState = game.addCiv(cityStateType = game.ruleset.cityStateTypes.keys.first())
+        val cityStateCity = game.addCity(cityState, game.tileMap[-2,0], true)
+        civInfo.updateStatsForNextTurn()
+
+        val happiness = Countables.getCountableAmount("Happiness", StateForConditionals(civInfo, city))
+        // Base 9, -1 city, -3 population +1 deprecated countable should still work, but the bogus one should not
+        assertEquals("Testing Happiness", 6, happiness)
     }
 }
