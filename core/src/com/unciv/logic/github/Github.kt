@@ -19,7 +19,7 @@ import java.io.FileFilter
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 import java.nio.ByteBuffer
 import java.util.zip.ZipException
 
@@ -48,7 +48,7 @@ object Github {
     // Consider merging this with the Dropbox function
     /**
      * Helper opens an url and accesses its input stream, logging errors to the console
-     * @param url String representing a [URL] to download.
+     * @param url String representing a [URI] to download.
      * @param preDownloadAction Optional callback that will be executed between opening the connection and
      *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers.
      * @return The [InputStream] if successful, `null` otherwise.
@@ -56,10 +56,8 @@ object Github {
     fun download(url: String, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
         try {
             // Problem type 1 - opening the URL connection
-            @Suppress("DEPRECATION") // We still support Java < 20, and Android Doc doesn't show the static URI.toUrl(string) replacement.
-            // URI(url).toURL() should be fine from the [Android Doc](https://developer.android.com/reference/java/net/URI#toURL()), but looks ugly.
-            with(URL(url).openConnection() as HttpURLConnection)
-            {
+            // URL(string) is deprecated, URI.toUrl(string) API level 36, see [Android Doc](https://developer.android.com/reference/java/net/URI#toURL()):
+            with(URI(url).toURL().openConnection() as HttpURLConnection) {
                 preDownloadAction(this)
                 // Problem type 2 - getting the information
                 try {
