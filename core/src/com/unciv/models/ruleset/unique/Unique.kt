@@ -105,8 +105,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
         for (conditional in forEveryAmountModifiers) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
+                ?: 0 // If the countable is invalid, ignore this unique entirely
             val perEvery = conditional.params[0].toInt()
-            if (multiplier != null) amount *= multiplier / perEvery
+            amount *= multiplier / perEvery
         }
 
         if (stateForConditionals.relevantTile != null){
