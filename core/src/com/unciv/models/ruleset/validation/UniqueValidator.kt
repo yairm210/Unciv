@@ -218,7 +218,7 @@ class UniqueValidator(val ruleset: Ruleset) {
 
             rulesetErrors.add(
                 "$prefix contains modifier \"${conditional.text}\"." +
-                " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                " This contains the parameter \"${complianceError.parameterName}\" which does not fit parameter type" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
