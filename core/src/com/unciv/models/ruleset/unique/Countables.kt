@@ -99,7 +99,7 @@ enum class Countables(
             return cities.count { it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.CityFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.CityFilter.getTranslatedErrorSeverity(parameterText, ruleset)
     },
 
     FilteredUnits("[mapUnitFilter] Units") {
@@ -109,7 +109,7 @@ enum class Countables(
             return unitManager.getCivUnits().count { it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.MapUnitFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
     },
@@ -123,7 +123,7 @@ enum class Countables(
             }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.BuildingFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.BuildingFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
@@ -134,7 +134,7 @@ enum class Countables(
             return civilizations.count { it.isAlive() && it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.CivFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
@@ -144,6 +144,8 @@ enum class Countables(
             val cities = stateForConditionals.civInfo?.cities ?: return null
             return cities.sumOf { city -> city.getTiles().count { it.matchesFilter(filter) } }
         }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
@@ -188,6 +190,15 @@ enum class Countables(
     override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
     override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+
+    protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+        val severity = getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+        return when {
+            severity != UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique -> severity
+            matchesWithRuleset -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+        }
+    }
 
     companion object {
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
