@@ -210,13 +210,11 @@ enum class Countables(
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
-            var anyMatch = false
             for (countable in Countables.getMatching(parameterText, ruleset)) {
                 val potentialResult = countable.eval(parameterText, stateForConditionals)
                 if (potentialResult != null) return potentialResult
-                anyMatch = true
             }
-            return if (anyMatch) null else 0 // So getUniqueMultiplier won't count "for each"-modified stuff with bogus parameters
+            return null
         }
 
         fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset).any()
