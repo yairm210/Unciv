@@ -51,6 +51,10 @@ class UniqueValidator(val ruleset: Ruleset) {
             lines.addAll(errors)
         }
     }
+    
+    private val performanceHeavyConditionals = setOf(UniqueType.ConditionalNeighborTiles, UniqueType.ConditionalAdjacentTo,
+        UniqueType.ConditionalNotAdjacentTo
+    )
 
     fun checkUnique(
         unique: Unique,
@@ -87,6 +91,19 @@ class UniqueValidator(val ruleset: Ruleset) {
         for (conditional in unique.modifiers) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
         }
+        
+        val conditionals = unique.modifiers.filter { it.type?.canAcceptUniqueTarget(UniqueTarget.Conditional) == true }
+        if (conditionals.size > 1){
+            val lastCheapConditional = conditionals.lastOrNull { it.type !in performanceHeavyConditionals }
+            val firstExpensiveConditional = conditionals.firstOrNull { it.type in performanceHeavyConditionals }
+            if (lastCheapConditional != null && firstExpensiveConditional != null){
+                if (conditionals.indexOf(lastCheapConditional) > conditionals.indexOf(firstExpensiveConditional))
+                    rulesetErrors.add("$prefix contains multiple conditionals," +
+                            " of which \"${firstExpensiveConditional.text}\" is more expensive to calculate than \"${lastCheapConditional.text}\". " +
+                            "For performance, consider switching their locations.", RulesetErrorSeverity.Warning, uniqueContainer, unique)
+            }
+        }
+        
 
         if (unique.type in MapUnitCache.UnitMovementUniques
                 && unique.modifiers.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] !in Constants.all }

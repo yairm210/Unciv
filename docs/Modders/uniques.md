@@ -3169,7 +3169,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;if it hasn't used other actions yet&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;with [nonNegativeAmount] to [positiveAmount] neighboring [tileFilter] tiles&gt;"
+??? example  "&lt;with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles&gt;"
 	Example: "&lt;with [3] to [3] neighboring [Farm] tiles&gt;"
 
 	Applicable to: Conditional
