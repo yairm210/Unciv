@@ -182,21 +182,27 @@ enum class Countables(
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
 
     override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-        if (this == Integer) return UniqueParameterType.Number.getErrorSeverity(parameterText, ruleset)
-        if (!text.contains('[')) {
-            if (parameterText == text) return null
-            else return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-        } else {
-            val placeholderParameters = text.getPlaceholderParameters()
-            var worstErrorSeverity: UniqueType.UniqueParameterErrorSeverity? = null
-            for ((index, parameter) in placeholderParameters.withIndex()) {
-                val parameterType = UniqueParameterType.safeValueOf(parameter)
-                val actualParameterText = placeholderParameters[index]
-                val severity = parameterType.getErrorSeverity(actualParameterText, ruleset) ?: continue
-                if (worstErrorSeverity == null || severity > worstErrorSeverity) worstErrorSeverity = severity
-            }
-            return worstErrorSeverity
+        return when {
+            matches(parameterText) -> null
+            matchesWithRuleset -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
+    }
+    
+    fun getParameterErrors(parameterText: String, ruleset: Ruleset): List<String> {
+        if (this.noPlaceholders) return emptyList()
+        
+        val errors = mutableListOf<String>()
+        val placeholderParameters = text.getPlaceholderParameters()
+        
+        for ((index, parameter) in placeholderParameters.withIndex()) {
+            val parameterType = UniqueParameterType.safeValueOf(parameter)
+            val actualParameterText = placeholderParameters[index]
+            val severity = parameterType.getErrorSeverity(actualParameterText, ruleset) ?: continue
+            errors.add("`$text` contains parameter `$actualParameterText` which is invalid for type `${parameterType.name}`")
+        }
+        return errors
+        
     }
     
 
