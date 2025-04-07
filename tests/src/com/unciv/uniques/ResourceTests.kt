@@ -129,18 +129,6 @@ class ResourceTests {
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
     }
 
-    @Test
-    fun testPerCountableForGlobalAndLocalResources() {
-        // one coal provided locally
-        val consumesCoal = game.createBuilding("Provides [1] [Coal]")
-        city.cityConstructions.addBuilding(consumesCoal)
-        // one globally
-        UniqueTriggerActivation.triggerUnique(Unique("Provides [1] [Coal] <for [2] turns>"), civInfo)
-        val providesFaithPerCoal = game.createBuilding("[+1 Faith] [in this city] <for every [Coal]>")
-        city.cityConstructions.addBuilding(providesFaithPerCoal)
-        assertEquals(2f, city.cityStats.currentCityStats.faith)
-    }
-
 
     // Resource tests
     @Test

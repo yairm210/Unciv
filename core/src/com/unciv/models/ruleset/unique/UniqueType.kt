@@ -783,7 +783,7 @@ enum class UniqueType(
     ConditionalHasNotUsedOtherActions("if it hasn't used other actions yet", UniqueTarget.Conditional),
 
     /////// tile conditionals
-    ConditionalNeighborTiles("with [nonNegativeAmount] to [positiveAmount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalNeighborTiles("with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
     ConditionalNearTiles("within [positiveAmount] tiles of a [tileFilter]", UniqueTarget.Conditional),

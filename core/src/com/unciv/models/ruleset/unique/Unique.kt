@@ -98,7 +98,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val forEveryModifiers = getModifiers(UniqueType.ForEveryCountable)
         for (conditional in forEveryModifiers) { // multiple multipliers DO multiply.
             val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
-            if (multiplier != null) amount *= multiplier
+                ?: 0 // If the countable is invalid, ignore this unique entirely
+            amount *= multiplier
         }
         
         val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
