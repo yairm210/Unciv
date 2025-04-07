@@ -5,6 +5,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  *  Prototype for each new [Countables] instance, to ensure a baseline.
@@ -169,9 +170,11 @@ enum class Countables(
         }
     }
     ;
+
     val placeholderText = text.getPlaceholderText()
-    
-    val noPlaceholders = text.isNotEmpty() && !text.contains('[')
+
+    @VisibleForTesting
+    open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
     override fun matches(parameterText: String) = if (noPlaceholders) parameterText == text 
@@ -181,30 +184,8 @@ enum class Countables(
     open val documentationHeader get() =
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
 
-    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-        return when {
-            matches(parameterText) -> null
-            matchesWithRuleset -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
-            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-        }
-    }
-    
-    fun getParameterErrors(parameterText: String, ruleset: Ruleset): List<String> {
-        if (this.noPlaceholders) return emptyList()
-        
-        val errors = mutableListOf<String>()
-        val placeholderParameters = text.getPlaceholderParameters()
-        
-        for ((index, parameter) in placeholderParameters.withIndex()) {
-            val parameterType = UniqueParameterType.safeValueOf(parameter)
-            val actualParameterText = placeholderParameters[index]
-            val severity = parameterType.getErrorSeverity(actualParameterText, ruleset) ?: continue
-            errors.add("`$text` contains parameter `$actualParameterText` which is invalid for type `${parameterType.name}`")
-        }
-        return errors
-        
-    }
-    
+    /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
+    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
     override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
@@ -212,7 +193,7 @@ enum class Countables(
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .filter {
                 if (it.matchesWithRuleset) it.matches(parameterText, ruleset!!) else it.matches(parameterText)
-            }   
+            }
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
