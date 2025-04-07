@@ -3,8 +3,8 @@ package com.unciv.models.ruleset.unique
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 
 /**
  *  Prototype for each new [Countables] instance, to ensure a baseline.
@@ -40,7 +40,6 @@ interface ICountable {
  */
 enum class Countables(
     protected val simpleName: String = "",
-    private val docPlaceholder: String = "",
     private val shortDocumentation: String = "",
     open val documentationStrings: List<String> = emptyList()
 ) : ICountable {
@@ -92,8 +91,7 @@ enum class Countables(
             stateForConditionals.civInfo?.getCompletedPolicyBranchesCount()
     },
 
-    FilteredCities("[] Cities", "cityFilter") {
-        override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
+    FilteredCities("[cityFilter] Cities") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val cities = stateForConditionals.civInfo?.cities ?: return null
@@ -103,8 +101,7 @@ enum class Countables(
             UniqueParameterType.CityFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
     },
 
-    FilteredUnits("[] Units", "mapUnitFilter") {
-        override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
+    FilteredUnits("[mapUnitFilter] Units") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val unitManager = stateForConditionals.civInfo?.units ?: return null
@@ -116,8 +113,7 @@ enum class Countables(
             (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
     },
 
-    FilteredBuildings("[] Buildings", "buildingFilter") {
-        override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
+    FilteredBuildings("[buildingFilter] Buildings") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val cities = stateForConditionals.civInfo?.cities ?: return null
@@ -130,8 +126,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    RemainingCivs("Remaining [] Civilizations", "civFilter") {
-        override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
+    RemainingCivs("Remaining [civFilter] Civilizations") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
@@ -142,14 +137,11 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    OwnedTiles("Owned [] Tiles", "tileFilter") {
-        override fun matches(parameterText: String) = parameterText.equalsPlaceholderText(simpleName)
+    OwnedTiles("Owned [tileFilter] Tiles") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val cities = stateForConditionals.civInfo?.cities ?: return null
-            return cities.sumOf { city ->
-                city.getTiles().count { it.matchesFilter(filter) }
-            }
+            return cities.sumOf { city -> city.getTiles().count { it.matchesFilter(filter) } }
         }
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
@@ -177,16 +169,36 @@ enum class Countables(
         }
     }
     ;
+    val placeholderText = simpleName.getPlaceholderText()
+    
+    val noPlaceholders = simpleName.isNotEmpty() && !simpleName.contains('[')
 
     // Leave these in place only for the really simple cases
-    override fun matches(parameterText: String) = parameterText == simpleName
+    override fun matches(parameterText: String) = if (noPlaceholders) parameterText == simpleName 
+        else parameterText.equalsPlaceholderText(placeholderText)
     override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(simpleName)
 
     open val documentationHeader get() =
-        (if (docPlaceholder.isEmpty()) "`$simpleName`" else "`${simpleName.fillPlaceholders(docPlaceholder)}`") +
-        (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
+        simpleName + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
 
-    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
+    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+        if (this == Integer) return UniqueParameterType.Number.getErrorSeverity(parameterText, ruleset)
+        if (!simpleName.contains('[')) {
+            if (parameterText == simpleName) return null
+            else return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+        } else {
+            val placeholderParameters = simpleName.getPlaceholderParameters()
+            var worstErrorSeverity: UniqueType.UniqueParameterErrorSeverity? = null
+            for ((index, parameter) in placeholderParameters.withIndex()) {
+                val parameterType = UniqueParameterType.safeValueOf(parameter)
+                val actualParameterText = placeholderParameters[index]
+                val severity = parameterType.getErrorSeverity(actualParameterText, ruleset) ?: continue
+                if (worstErrorSeverity == null || severity > worstErrorSeverity) worstErrorSeverity = severity
+            }
+            return worstErrorSeverity
+        }
+    }
+    
 
     override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
