@@ -3,7 +3,12 @@ package com.unciv.uniques
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.Countables
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueParameterType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
@@ -24,6 +29,50 @@ class CountableTests {
     private var civInfo = game.addCiv()
     private var city = game.addCity(civInfo, game.tileMap[2,0])
 
+    @Test
+    fun testCountableConventions() {
+        fun Class<out Countables>.hasOverrideFor(name: String, vararg args: Class<out Any>): Boolean {
+            try {
+                getDeclaredMethod(name, *args)
+            } catch (ex: NoSuchMethodException) {
+                return false
+            }
+            return true
+        }
+
+        var fails = 0
+        println("Reflection check of the Countables class:")
+        for (instance in Countables::class.java.enumConstants) {
+            val instanceClazz = instance::class.java
+
+            val matchesRulesetOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
+            val matchesPlainOverridden = instanceClazz.hasOverrideFor("matches", String::class.java)
+            if (instance.matchesWithRuleset && !matchesRulesetOverridden) {
+                println("`$instance` is marked as working _with_ a `Ruleset` but fails to override `matches(String,Ruleset)`,")
+                fails++
+            } else if (instance.matchesWithRuleset && matchesPlainOverridden) {
+                println("`$instance` is marked as working _with_ a `Ruleset` but overrides `matches(String)` which is worthless.")
+                fails++
+            } else if (!instance.matchesWithRuleset && matchesRulesetOverridden) {
+                println("`$instance` is marked as working _without_ a `Ruleset` but overrides `matches(String,Ruleset)` which is worthless.")
+                fails++
+            }
+            if (instance.text.isEmpty() && !matchesPlainOverridden && !matchesRulesetOverridden) {
+                println("`$instance` has no `text` but fails to override either `matches` overload.")
+                fails++
+            }
+
+            val getErrOverridden = instanceClazz.hasOverrideFor("getErrorSeverity", String::class.java, Ruleset::class.java)
+            if (instance.noPlaceholders && getErrOverridden) {
+                println("`$instance` has no placeholders but overrides `getErrorSeverity` which is likely an error.")
+                fails++
+            } else if (!instance.noPlaceholders && !getErrOverridden) {
+                println("`$instance` has placeholders that must be treated and therefore **must** override `getErrorSeverity` but does not.")
+                fails++
+            }
+        }
+        assertEquals("failure count", 0, fails)
+    }
 
     @Test
     fun testAllCountableParametersAreUniqueParameterTypes() {
