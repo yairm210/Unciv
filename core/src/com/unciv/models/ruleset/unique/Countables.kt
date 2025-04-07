@@ -8,11 +8,12 @@ import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
 
 /**
- *  Prototype for each new [Countables] instance, to ensure a baseline.
+ *  Prototype for each new [Countables] instance, core functionality, to ensure a baseline.
  *
  *  Notes:
  *  - Each instance ***must*** implement _either_ overload of [matches] and indicate which one via [matchesWithRuleset].
- *  - [matches] is used to look up which instance implements a given string, [getErrorSeverity] is responsible for validating placeholders.
+ *  - [matches] is used to look up which instance implements a given string, **without** validating its placeholders.
+ *  - [getErrorSeverity] is responsible for validating placeholders, _and can assume [matches] was successful_.
  *  - Override [getKnownValuesForAutocomplete] only if a sensible number of suggestions is obvious.
  */
 interface ICountable {
@@ -31,11 +32,13 @@ interface ICountable {
  *
  *  Expansion instructions:
  *  - A new simple "variable" needs to implement only [text] and [eval].
+ *  - Not supplying [text] means the "variable" **must** implement either [matches] overload. If it parses placeholders, then it **must** override [noPlaceholders] to `false`.
  *  - A new "variable" _using placeholder(s)_ needs to implement [matches] and [eval].
- *    - Using [simpleName] inside [validate] as the examples do is only done for readability.
  *    - Implement [getErrorSeverity] in most cases, use [UniqueParameterType] to validate each placeholder content.
  *    - Implement [getKnownValuesForAutocomplete] only when a meaningful, not too large set of suggestions is obvious.
  *  - A new countable that draws from an existing enum or set of RulesetObjects should work along the lines of the [Stats] or [TileResources] examples.
+ *  - **Do** heed the docs of [ICountable] - but be aware the [Countables] Enum class pre-implements some of the methods.
+ *  - Run the unit tests! There's one checking implementation conventions.
  *  - When implementing a formula language for Countables, create a new object in a separate file with the actual
  *    implementation, then a new instance here that delegates all its methods to that object. And delete these lines.
  */
