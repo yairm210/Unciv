@@ -29,7 +29,7 @@ interface ICountable {
  *  Contains all knowledge about how to check and evaluate [countable Unique parameters][UniqueParameterType.Countable].
  *
  *  Expansion instructions:
- *  - A new simple "variable" needs to implement only [simpleName] and [eval].
+ *  - A new simple "variable" needs to implement only [text] and [eval].
  *  - A new "variable" _using placeholder(s)_ needs to implement [matches] and [eval].
  *    - Using [simpleName] inside [validate] as the examples do is only done for readability.
  *    - Implement [getErrorSeverity] in most cases, use [UniqueParameterType] to validate each placeholder content.
@@ -39,7 +39,7 @@ interface ICountable {
  *    implementation, then a new instance here that delegates all its methods to that object. And delete these lines.
  */
 enum class Countables(
-    protected val simpleName: String = "",
+    val text: String = "",
     private val shortDocumentation: String = "",
     open val documentationStrings: List<String> = emptyList()
 ) : ICountable {
@@ -169,25 +169,25 @@ enum class Countables(
         }
     }
     ;
-    val placeholderText = simpleName.getPlaceholderText()
+    val placeholderText = text.getPlaceholderText()
     
-    val noPlaceholders = simpleName.isNotEmpty() && !simpleName.contains('[')
+    val noPlaceholders = text.isNotEmpty() && !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    override fun matches(parameterText: String) = if (noPlaceholders) parameterText == simpleName 
+    override fun matches(parameterText: String) = if (noPlaceholders) parameterText == text 
         else parameterText.equalsPlaceholderText(placeholderText)
-    override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(simpleName)
+    override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
 
     open val documentationHeader get() =
-        simpleName + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
+        "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
 
     override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
         if (this == Integer) return UniqueParameterType.Number.getErrorSeverity(parameterText, ruleset)
-        if (!simpleName.contains('[')) {
-            if (parameterText == simpleName) return null
+        if (!text.contains('[')) {
+            if (parameterText == text) return null
             else return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         } else {
-            val placeholderParameters = simpleName.getPlaceholderParameters()
+            val placeholderParameters = text.getPlaceholderParameters()
             var worstErrorSeverity: UniqueType.UniqueParameterErrorSeverity? = null
             for ((index, parameter) in placeholderParameters.withIndex()) {
                 val parameterType = UniqueParameterType.safeValueOf(parameter)
@@ -206,7 +206,7 @@ enum class Countables(
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .filter {
                 if (it.matchesWithRuleset) it.matches(parameterText, ruleset!!) else it.matches(parameterText)
-            }
+            }   
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset

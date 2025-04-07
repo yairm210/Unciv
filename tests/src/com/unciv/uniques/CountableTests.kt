@@ -3,15 +3,14 @@ package com.unciv.uniques
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.unique.Countables
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -24,6 +23,18 @@ class CountableTests {
     private var game = TestGame().apply { makeHexagonalMap(3) }
     private var civInfo = game.addCiv()
     private var city = game.addCity(civInfo, game.tileMap[2,0])
+
+
+    @Test
+    fun testAllCountableParametersAreUniqueParameterTypes() {
+        for (countable in Countables.entries) {
+            val parameters = countable.text.getPlaceholderParameters()
+            for (parameter in parameters) {
+                assertNotEquals("Countable ${countable.name} parameter ${parameter} is not a UniqueParameterType",
+                    UniqueParameterType.safeValueOf(parameter), UniqueParameterType.Unknown)
+            }
+        }
+    }
 
     @Test
     fun testPerCountableForGlobalAndLocalResources() {
