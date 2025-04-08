@@ -185,10 +185,8 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         val newHolder = EditorMapHolder(this, tileMap) {
             tileClickHandler?.invoke(it)
         }
-        for (oldPanningListener in stage.root.listeners.filterIsInstance<KeyboardPanningListener>())
-            stage.removeListener(oldPanningListener)  // otherwise they accumulate
         newHolder.mapPanningSpeed = UncivGame.Current.settings.mapPanningSpeed
-        stage.addListener(KeyboardPanningListener(newHolder, allowWASD = false))
+        enableKeyboardPanningListener(newHolder, true)
         if (Gdx.app.type == Application.ApplicationType.Desktop)
             newHolder.isAutoScrollEnabled = UncivGame.Current.settings.mapAutoScroll
 
@@ -209,6 +207,15 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         }
 
         return newHolder
+    }
+
+    internal fun enableKeyboardPanningListener(holder: EditorMapHolder? = null, enable: Boolean) {
+        for (oldPanningListener in stage.root.listeners.filterIsInstance<KeyboardPanningListener>()) {
+            stage.removeListener(oldPanningListener)  // otherwise they accumulate
+            oldPanningListener.dispose()
+        }
+        if (!enable) return
+        stage.addListener(KeyboardPanningListener(holder ?: mapHolder, allowWASD = false))
     }
 
     // We contain a map...
