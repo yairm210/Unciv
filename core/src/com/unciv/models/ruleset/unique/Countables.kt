@@ -202,7 +202,6 @@ enum class Countables(
             errors.add("`$text` contains parameter `$actualParameterText` which is invalid for type `${parameterType.name}`")
         }
         return errors
-        
     }
     
 

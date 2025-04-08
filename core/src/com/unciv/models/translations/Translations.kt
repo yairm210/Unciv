@@ -502,6 +502,7 @@ fun String.getPlaceholderText(): String {
 
 fun String.equalsPlaceholderText(str: String): Boolean {
     if (isEmpty() && str.isEmpty()) return true // Empty strings have no .first()
+    if (isEmpty() != str.isEmpty()) return false
     if (first() != str.first()) return false // for quick negative return 95% of the time
     return this.getPlaceholderText() == str
 }
