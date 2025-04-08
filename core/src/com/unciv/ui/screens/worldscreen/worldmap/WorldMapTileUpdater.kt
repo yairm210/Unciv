@@ -151,7 +151,12 @@ object WorldMapTileUpdater {
             if (unit.movement.canMoveTo(tile) ||
                 unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits
             ) {
-                group.layerMisc.overlayTerrain(moveTileOverlayColor, 0.5f)
+                if (UncivGame.Current.settings.useCirclesToIndicateMovableTiles) {
+                    val alpha = if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f
+                    group.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
+                }
+
+                else group.layerMisc.overlayTerrain(moveTileOverlayColor, 0.4f)
             }
 
         }
