@@ -1,42 +1,18 @@
 ## 4.16.2
 
-Added settings for circles vs hexagons for movable tiles, since it's a close one
+Added settings for circles vs hexagons for movable tiles
 
-Resolved  - Unciv server creates multiplayer file folder if it doesn't exist
-
-Resolved  - "Nullifies all other stats this tile provides" includes nullifying improvement stats
-
-Fix equalsPlaceholderText for when only one of the strings is empty
-
-Fix equalsPlaceholderText
-
-Fix: "for every [countable]" should equal 0 when the countable is invalid- round 2
-
-Fix: "for every [countable]" should equal 0 when the countable is invalid
-
-Better parameter delimiting for modifier parameter errors
-
-Fix countable validity testing
-
-Added countable check console command
-
-Advise modders of conditional order in uniques, for performance reasons
-
-Added test to ensure countable parameters are proper parameter types
-
-Better handling of countable placeholder parameters validation
-
-Resolved  - Trigger 'on tile enter' before removing barb camps / ruins
-
-Harden unique parameters to disallow negative numbers where not relevant / possibly breaking
+Modding:
+- Added 'civ checkcountable' console command
+- Trigger 'on tile enter' before removing barb camps / ruins
+- Suggest conditional order in uniques, for performance
+- Harden unique parameters to disallow negative numbers where not relevant
 
 Eureka unique - By EmperorPinguin
 
 By SomeTroglodyte:
-- Improve save file name and errors handling 
-- Countables : Next "pass" 
-- Add a section on Cleanup to Building-Locally.md 
-- Refactor Countables into an enum with better validation, tests, and auto documentation 
+- Improve save file name and errors handling
+- Better Countable handling
 
 Fix untranslated strings - By Ouaz
 

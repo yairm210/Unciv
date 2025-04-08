@@ -143,6 +143,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Research [relativeAmount]% of [tech]"
+	Example: "Research [+20]% of [Agriculture]"
+
+	Applicable to: Triggerable
+
 ??? example  "Gain control over [tileFilter] tiles in a [nonNegativeAmount]-tile radius"
 	Example: "Gain control over [Farm] tiles in a [3]-tile radius"
 
