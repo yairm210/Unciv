@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -30,6 +31,7 @@ class VerticalFileListScrollPane(
     private var previousSelection: TextButton? = null
 
     private var onChangeListener: ((FileHandle) -> Unit)? = null
+    private var onDoubleClickListener: ((FileHandle) -> Unit)? = null
 
     init {
         keyShortcuts.add(Input.Keys.UP) { onArrowKey(-1) }
@@ -42,6 +44,9 @@ class VerticalFileListScrollPane(
 
     fun onChange(action: (FileHandle) -> Unit) {
         onChangeListener = action
+    }
+    fun onDoubleClick(action: (FileHandle) -> Unit) {
+        onDoubleClickListener = action
     }
 
     /** repopulate with existing saved games */
@@ -73,6 +78,10 @@ class VerticalFileListScrollPane(
                     savesPerButton[textButton] = saveGameFile
                     textButton.onClick {
                         selectExistingSave(textButton)
+                    }
+                    textButton.onDoubleClick {
+                        selectExistingSave(textButton)
+                        onDoubleClickListener?.invoke(saveGameFile)
                     }
                     existingSavesTable.add(textButton).pad(5f).row()
                 }
@@ -138,7 +147,7 @@ class VerticalFileListScrollPane(
     private fun onHomeEndKey(direction: Int) {
         scrollY = direction * maxY
         if (existingSavesTable.rows == 0) return
-        val row =  (existingSavesTable.rows - 1) * direction
+        val row = (existingSavesTable.rows - 1) * direction
         selectExistingSave(existingSavesTable.cells[row].actor as TextButton)
     }
     //endregion
