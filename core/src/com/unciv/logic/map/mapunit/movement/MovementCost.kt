@@ -18,12 +18,14 @@ object MovementCost {
         considerZoneOfControl: Boolean = true,
         includeEscortUnit: Boolean = true,
     ): Float {
-        if (includeEscortUnit && unit.isEscorting()) {
-            return maxOf(getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl),
+        val movementCost = if (includeEscortUnit && unit.isEscorting()) {
+            maxOf(getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl),
                 getMovementCostBetweenAdjacentTiles(unit.getOtherEscortUnit()!!, from, to, considerZoneOfControl))
         } else {
-            return getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl)
+            getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl)
         }
+        if (movementCost < 0) throw Exception("Got a negative movement cost?!")
+        return movementCost
     }
 
     // This function is called ALL THE TIME and should be as time-optimal as possible!

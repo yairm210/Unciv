@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.models.translations.equalsPlaceholderText
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front of the rest.
 
@@ -54,6 +53,11 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it > 0 } == true }
     },
+    
+    NonNegativeNumber("nonNegativeAmount", "3", "This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
+            parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it >= 0 } == true }
+    },
 
     Fraction("fraction", docExample = "0.5", "Indicates a fractional number, which can be negative") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
@@ -66,29 +70,15 @@ enum class UniqueParameterType(
     },
 
     Countable("countable", "1000", "This indicates a number or a numeric variable") {
-        // todo add more countables
-        override val staticKnownValues = setOf(
-            "year", "turns", "Cities", "Units", "Completed Policy branches"
-        )
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
+            Countables.isKnownValue(parameterText, ruleset)
 
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText.toIntOrNull() != null -> true
-            parameterText.equalsPlaceholderText("[] Buildings") -> true
-            parameterText.equalsPlaceholderText("[] Cities") -> true
-            parameterText.equalsPlaceholderText("[] Units") -> true
-            parameterText.equalsPlaceholderText("Remaining [] Civilizations") -> true
-            parameterText.equalsPlaceholderText("Owned [] Tiles") -> true
-            else -> super.isKnownValue(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            Countables.getKnownValuesForAutocomplete(ruleset)
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return Countables.getErrorSeverity(parameterText, ruleset)
         }
-
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
-            staticKnownValues +
-                Stat.entries.map { it.name } +
-                ruleset.tileResources.keys +
-                ruleset.units.keys +
-                ruleset.unitTypes.keys.map { "[$it] Units" } +
-                ruleset.buildings.keys.map { "[$it] Buildings" } +
-                ruleset.buildings.keys
     },
 
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes

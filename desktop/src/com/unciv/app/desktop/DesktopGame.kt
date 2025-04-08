@@ -2,6 +2,7 @@ package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.sun.jna.platform.win32.Kernel32Util
 import com.unciv.UncivGame
 
 class DesktopGame(config: Lwjgl3ApplicationConfiguration, override var customDataDirectory: String?) : UncivGame() {
@@ -47,5 +48,15 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration, override var customDat
     override fun dispose() {
         discordUpdater.stopUpdates()
         super.dispose()
+    }
+
+    override fun getSystemErrorMessage(errorCode: Int): String? {
+        return try {
+            if (System.getProperty("os.name")?.contains("Windows") == true)
+                Kernel32Util.formatMessage(errorCode)
+            else null
+        } catch (_: Throwable) {
+            null
+        }
     }
 }

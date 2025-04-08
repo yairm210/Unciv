@@ -869,6 +869,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // The improvement may get removed if it has ruins effects or is a barbarian camp, and will still be needed if removed
         val improvement = tile.improvement
 
+
+        // To allow triggering on barb camps and ruins, must happen before entering them
+        val triggeredUniques = getTriggeredUniques(UniqueType.TriggerUponEnteringTile) { tile.matchesFilter(it.params[0]) }
+        for (triggeredUnique in triggeredUniques)
+            UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
+
         if (civ.isMajorCiv() && tile.getTileImprovement()?.isAncientRuinsEquivalent() == true) {
             getAncientRuinBonus(tile)
         }
@@ -891,10 +897,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val promotion = unique.params[0]
             promotions.addPromotion(promotion, true)
         }
-        
-        val triggeredUniques = getTriggeredUniques(UniqueType.TriggerUponEnteringTile) { tile.matchesFilter(it.params[0]) }
-        for (triggeredUnique in triggeredUniques) 
-            UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
             
         updateVisibleTiles(true, currentTile.position)
     }

@@ -1,0 +1,15 @@
+Added settings for circles vs hexagons for movable tiles
+
+Modding:
+- Added 'civ checkcountable' console command
+- Trigger 'on tile enter' before removing barb camps / ruins
+- Suggest conditional order in uniques, for performance
+- Harden unique parameters to disallow negative numbers where not relevant
+
+Eureka unique - By EmperorPinguin
+
+By SomeTroglodyte:
+- Improve save file name and errors handling
+- Better Countable handling
+
+Fix untranslated strings - By Ouaz

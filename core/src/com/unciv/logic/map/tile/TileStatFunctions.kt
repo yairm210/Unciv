@@ -56,11 +56,15 @@ class TileStatFunctions(val tile: Tile) {
     ): List<Pair<String, Stats>> {
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
         val listOfStats = getTerrainStatsBreakdown(stateForConditionals)
+        
+        val otherYieldsIgnored = tile.allTerrains.any { it.hasUnique(UniqueType.NullifyYields, stateForConditionals) }
 
-        val improvement = tile.getUnpillagedTileImprovement()
+        val improvement = if (otherYieldsIgnored) null // Treat it as if there is no improvement
+            else tile.getUnpillagedTileImprovement()
         val improvementStats = improvement?.cloneStats() ?: Stats.ZERO // If improvement==null, will never be added to
 
-        val road = tile.getUnpillagedRoadImprovement()
+        val road = if (otherYieldsIgnored) null
+            else tile.getUnpillagedRoadImprovement()
         val roadStats = road?.cloneStats() ?: Stats.ZERO
 
         if (city != null) {

@@ -75,6 +75,7 @@ fun displayTab(
     addResetTutorials(this, settings)
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
     optionsPopup.addCheckbox(this, "Never close popups by clicking outside", settings.forbidPopupClickBehindToClose, false) { settings.forbidPopupClickBehindToClose = it }
+    optionsPopup.addCheckbox(this, "Use circles to indicate movable tiles", settings.useCirclesToIndicateMovableTiles, true) { settings.useCirclesToIndicateMovableTiles = it }
     addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addSeparator()
