@@ -123,7 +123,10 @@ private class UncivServerRunner : CliktCommand() {
 
     private fun serverRun(serverPort: Int, fileFolderName: String) {
         val portStr: String = if (serverPort == 80) "" else ":$serverPort"
-        echo("Starting UncivServer for ${File(fileFolderName).absolutePath} on http://localhost$portStr")
+        
+        val file = File(fileFolderName)
+        echo("Starting UncivServer for ${file.absolutePath} on http://localhost$portStr")
+        if (!file.exists()) file.mkdirs()
         val server = embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {

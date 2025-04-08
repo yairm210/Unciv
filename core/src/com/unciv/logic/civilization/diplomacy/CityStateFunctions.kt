@@ -549,12 +549,12 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun getFreeTechForCityState() {
         // City-States automatically get all techs that at least half of the major civs know
-        val researchableTechs = civInfo.gameInfo.ruleset.technologies.keys
-            .filter { civInfo.tech.canBeResearched(it) }
+        val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
+            .filter { !it.hasUnique(UniqueType.ResearchableMultipleTimes) && civInfo.tech.canBeResearched(it.name) }
         for (tech in researchableTechs) {
             val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
-            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.size / 2)
-                civInfo.tech.addTechnology(tech)
+            if (aliveMajorCivs.count { it.tech.isResearched(tech.name) } >= aliveMajorCivs.size / 2)
+                civInfo.tech.addTechnology(tech.name)
         }
         return
     }

@@ -114,6 +114,24 @@ To generate Detekt reports:
     - For errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config .github/workflows/detekt_config/detekt-errors.yml`
 - The report will be generated in `detekt/reports.html`
 
+### Cleaning up obsolete files
+
+From time to time, Unciv bumps the versions of major tools - mainly Gradle, the Android SDK Platform, and the Android SDK Build-Tools.
+The new versions and support files are automatically downloaded for you, but old versions are not cleaned up automatically, nor are intermediate build files specific to Gradle versions.
+This may leave a few gigabytes of dead files on your system. If these bother you, you can clean up as follows:
+ 
+-   Remove obsolete Android SDK Platform and Build-Tools versions from SDK manager (remember all projects share these, so if you have other projects, keep their requirements too).
+-   With Android Studio closed (on Windows, you'll have to manually kill leftover Gradle daemons too):
+    - Delete subfolders named after obsolete Gradle versions from Unciv/.gradle, ~/.gradle/caches (%HOME%\.gradle\caches on Windows) and ~/.gradle/daemon
+    - For a thorough but more costly cleanup, clean out ~/.gradle/caches entirely except for the tag files.
+      This will force the next gradle sync to re-download a large amount of support files, but this way you will also clean out remnants of superseded support libraries for kotlin, Gdx and so on.
+
+Additionally, git prioritizes safety of your changes over efficiency to the extreme, leading to some bloat.
+ `git gc` is automatically done for you, but sparingly, and running it manually won't hurt.
+For a more thorough cleanup, run `git gc --prune=now --aggressive` sporadically from Studio's terminal (or any shell within Unicv's project folder),
+making sure to clean up all your obsolete branches first, and that all remaining branches are in sync with the online branches they're backing
+or based on master if they're local only.
+
 ### UncivServer
 
 The simple multiplayer host included in the sources can be set up to debug or run analogously to the main game:

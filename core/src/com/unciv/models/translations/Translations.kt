@@ -3,7 +3,7 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.metadata.GameSettings.LocaleCode
+import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
@@ -14,7 +14,6 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
-import java.text.NumberFormat
 
 /**
  *  This collection holds all translations for the game.
@@ -209,11 +208,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return getText(englishConditionalOrderingString, language, null)
     }
 
-    fun placeConditionalsAfterUnique(language: String): Boolean {
-        if (get(conditionalUniqueOrderString, language, null)?.get(language) == "before")
-            return false
-        return true
-    }
+    fun placeConditionalsAfterUnique(language: String) =
+        get(conditionalUniqueOrderString, language, null)?.get(language) != "before"
 
     /** Returns the equivalent of a space in the given language
      * Defaults to a space if no translation is provided
@@ -239,26 +235,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
         const val effectBeforeCause = "EffectBeforeCause"
-
-        // NumberFormat cache, key: language, value: NumberFormat
-        private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
-
-        fun getLocaleFromLanguage(language: String): Locale {
-            val bannedCharacters =
-                listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
-            val languageName = language.filterNot { it in bannedCharacters }
-            return try {
-                val code = LocaleCode.valueOf(languageName)
-                Locale(code.language, code.country)
-            } catch (_: Exception) {
-                Locale.getDefault()
-            }
-        }
-
-        fun getNumberFormatFromLanguage(language: String): NumberFormat =
-            languageToNumberFormat.getOrPut(language) {
-                NumberFormat.getInstance(getLocaleFromLanguage(language))
-            }
     }
 }
 
@@ -525,6 +501,8 @@ fun String.getPlaceholderText(): String {
 }
 
 fun String.equalsPlaceholderText(str: String): Boolean {
+    if (isEmpty()) return str.isEmpty()
+    if (str.isEmpty()) return false // Empty strings have no .first()
     if (first() != str.first()) return false // for quick negative return 95% of the time
     return this.getPlaceholderText() == str
 }
@@ -572,5 +550,5 @@ fun Number.tr(): String {
 
 // formats number according to given language
 fun Number.tr(language: String): String {
-    return Translations.getNumberFormatFromLanguage(language).format(this)
+    return LocaleCode.getNumberFormatFromLanguage(language).format(this)
 }

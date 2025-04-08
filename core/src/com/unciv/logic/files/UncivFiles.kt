@@ -3,6 +3,7 @@ package com.unciv.logic.files
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
@@ -59,7 +60,7 @@ class UncivFiles(
     }
 
     fun getModsFolder() = getLocalFile("mods")
-    fun getModFolder(modName: String) = getModsFolder().child(modName)
+    fun getModFolder(modName: String): FileHandle = getModsFolder().child(modName)
 
     /** The folder that holds data that the game changes while running - all the mods, maps, save files, etc */
     fun getDataFolder() = getLocalFile("")
@@ -113,20 +114,21 @@ class UncivFiles(
 
     fun getSaves(autoSaves: Boolean = true): Sequence<FileHandle> {
         val saves = getSaves(SAVE_FILES_FOLDER)
-        val filteredSaves = if (autoSaves) { saves } else { saves.filter { !it.name().startsWith(
-            AUTOSAVE_FILE_NAME
-        ) }}
-        return filteredSaves
+        if (autoSaves) return saves
+        return saves.filter { !it.name().startsWith(AUTOSAVE_FILE_NAME) }
     }
 
     private fun getSaves(saveFolder: String): Sequence<FileHandle> {
         debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
-        val localFiles = getLocalFile(saveFolder).list().asSequence()
+        // This construct instead of asSequence causes the actual list() to happen when the
+        // first element is pulled, not right now before a Sequence is wrapped around the result.
+        // Note that any performance gains are moot when logging is on: See the the `debug` below.
+        val localFiles = Sequence { getLocalFile(saveFolder).list().iterator() }
 
-        val externalFiles = if (files.isExternalStorageAvailable && getDataFolder().file().absolutePath != files.external("").file().absolutePath) {
-            files.external(saveFolder).list().asSequence()
-        } else {
-            emptySequence()
+        val externalFiles = when {
+            !files.isExternalStorageAvailable -> emptySequence()
+            getDataFolder().file().absolutePath == files.external("").file().absolutePath -> emptySequence()
+            else -> Sequence { files.external(saveFolder).list().iterator() }
         }
 
         debug("Local files: %s, external files: %s",
@@ -155,7 +157,7 @@ class UncivFiles(
     }
 
     //endregion
-    
+
     //region Saving
 
     fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
@@ -167,7 +169,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    private fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
@@ -287,7 +289,7 @@ class UncivFiles(
 
 
     //endregion
-    
+
     //region Settings
 
     private fun getGeneralSettingsFile(): FileHandle {
@@ -320,9 +322,9 @@ class UncivFiles(
     }
 
     //endregion
-    
+
     //region Scenarios
-    val scenarioFolder = "scenarios"
+    private val scenarioFolder = "scenarios"
     fun getScenarioFiles() = sequence {
         for (mod in RulesetCache.values) {
             val modFolder = mod.folderLocation ?: continue
@@ -333,7 +335,7 @@ class UncivFiles(
         }
     }
     //endregion
-    
+
     //region Mod caching
     fun saveModCache(modDataList: List<ModUIData>){
         val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
@@ -442,6 +444,25 @@ class UncivFiles(
             return Gzip.zip(json().toJson(game))
         }
 
+        private val charsForbiddenInFileNames = setOf('\\', '/', ':')
+        private val _fileNameTextFieldFilter = TextField.TextFieldFilter { _, char ->
+            char !in charsForbiddenInFileNames
+        }
+        /** Check characters typed into a file name TextField: Disallows both Unix and Windows path separators, plus the
+         *  ['NTFS alternate streams'](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/b134f29a-6278-4f3f-904f-5e58a713d2c5)
+         *  indicator, irrespective of platform, in case players wish to exchange files cross-platform.
+         *  @see isValidFileName
+         *  @return A `TextFieldFilter` appropriate for `TextField`s used to enter a file name for saving
+         */
+        fun fileNameTextFieldFilter() = _fileNameTextFieldFilter
+
+        /** Determines whether a filename is acceptable.
+         *  - Forbids trailing blanks because Windows has trouble with them.
+         *  - Forbids leading blanks because they might confuse users (neither Windows nor Linux have noteworthy problems with them).
+         *  - Does **not** deal with problems that can be recognized inspecting a single character, use [fileNameTextFieldFilter] for that.
+         *  @param  fileName A base file name, not a path.
+         */
+        fun isValidFileName(fileName: String) = fileName.isNotEmpty() && !fileName.endsWith(' ') && !fileName.startsWith(' ')
     }
 }
 
@@ -473,7 +494,7 @@ class Autosaves(val files: UncivFiles) {
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
         // get GameSettings to check the maxAutosavesStored in the autoSave function
         val settings = files.getGeneralSettings()
-        
+
         try {
             files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {

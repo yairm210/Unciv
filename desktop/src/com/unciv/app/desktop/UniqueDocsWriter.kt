@@ -1,15 +1,29 @@
 package com.unciv.app.desktop
 
 import com.unciv.logic.map.mapunit.MapUnitCache
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.utils.Log
 import java.io.File
 
 class UniqueDocsWriter {
     companion object {
+        /** Where the UniqueType file is to be overwritten,
+         *  relative to the current (assets) directory (not incluenced by `--data-dir=`). */
+        private const val uniqueTypesFileName = "../../docs/Modders/uniques.md"
+
+        /** Where the Countables documentation is to inserted,
+         *  relative to the current (assets) directory (not incluenced by `--data-dir=`). */
+        private const val countablesFileName = "../../docs/Modders/Unique-parameters.md"
+        /** Where in the documentation file the Countables are to be inserted, start marker. */
+        private const val countablesBeginMarker = "[//]: # (Countables automatically generated BEGIN)"
+        /** Where in the documentation file the Countables are to be inserted, end marker. An empty line will always be inserted above it. */
+        private const val countablesEndMarker = "[//]: # (Countables automatically generated END)"
+
         /**
          * Switch from each Unique shown once under one UniqueTarget heading chosen from targetTypes (`true`)
          * to showing each Unique repeatedly under each UniqueTarget heading it applies to (`false`).
@@ -35,6 +49,11 @@ class UniqueDocsWriter {
     }
 
     fun write() {
+        writeUniqueTypes()
+        writeCountables()
+    }
+
+    private fun writeUniqueTypes() {
         // This will output each unique only once, even if it has several targets.
         // Each is grouped under the UniqueTarget is is allowed for with the lowest enum ordinal.
         // UniqueTarget.inheritsFrom is _not_ resolved for this.
@@ -106,6 +125,49 @@ class UniqueDocsWriter {
             lines += "*[${paramType.parameterName}]: ${paramType.docDescription}$punctuation"
         }
 
-        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\n"))
+        File(uniqueTypesFileName).writeText(lines.joinToString("\n"))
+    }
+
+    private fun writeCountables() {
+        val file = File(countablesFileName)
+        val oldContent = try {
+            file.readText(Charsets.UTF_8)
+        } catch (ex: Throwable) {
+            Log.error("Can't read $countablesFileName", ex)
+            return
+        }
+        val truncateBegin = oldContent.indexOf(countablesBeginMarker)
+        if (truncateBegin < 0)
+            Log.error("Can't find `%s` in %s", countablesBeginMarker, countablesFileName)
+        val truncateEnd = oldContent.indexOf(countablesEndMarker)
+        if (truncateEnd < 0)
+            Log.error("Can't find `%s` in %s", countablesEndMarker, countablesFileName)
+        if (truncateBegin < 0 || truncateEnd < 0) return
+        if (truncateEnd < truncateBegin) {
+            Log.error("Inverted Countables markers in %s", countablesEndMarker, countablesFileName)
+            return
+        }
+
+        val newContent = StringBuilder(oldContent.length)
+        newContent.append(oldContent, 0, truncateBegin + countablesBeginMarker.length)
+        newContent.appendLine()
+
+        for (countable in Countables.entries) {
+            if (countable.getDeprecationAnnotation() != null) continue
+            newContent.appendLine("-   ${countable.documentationHeader}")
+            for (extraLine in countable.documentationStrings) {
+                newContent.append("    ")
+                newContent.appendLine(extraLine)
+            }
+        }
+
+        newContent.appendLine()
+        newContent.append(oldContent, truncateEnd, oldContent.length)
+        try {
+            file.writeText(newContent.toString(), Charsets.UTF_8)
+        } catch (ex: Throwable) {
+            Log.error("Can't write $countablesFileName", ex)
+            return
+        }
     }
 }

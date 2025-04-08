@@ -32,7 +32,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 
-class TestGame {
+class TestGame(overrideRuleset: (() -> Ruleset)? = null) {
 
     private var objectsCreated = 0
     val ruleset: Ruleset
@@ -50,7 +50,7 @@ class TestGame {
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
         RulesetCache.loadRulesets(noMods = true)
-        ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        ruleset = overrideRuleset?.invoke() ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         gameInfo.ruleset = ruleset
         gameInfo.difficulty = "Prince"
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!

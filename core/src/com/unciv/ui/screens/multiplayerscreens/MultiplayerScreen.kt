@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.ruleset.RulesetCache
@@ -290,7 +291,7 @@ class MultiplayerScreen : PickerScreen() {
             Popup(this).apply {
                 val textField = UncivTextField("Game name", selectedGame!!.name)
                 // slashes in mp names are interpreted as directory separators, so we don't allow them
-                textField.setTextFieldFilter { _, c -> c != '/' && c != '\\' }
+                textField.textFieldFilter = UncivFiles.fileNameTextFieldFilter()
                 add(textField).width(stageToShowOn.width / 2).row()
                 val saveButton = "Save".toTextButton()
 
