@@ -21,10 +21,12 @@ import kotlin.math.abs
 /** A widget holding TextButtons vertically in a Table contained in a ScrollPane, with methods to
  *  hold file names and FileHandle's in those buttons. Used to display existing saves in the Load and Save game dialogs.
  *
+ *  Allows interspersing decorations between the buttons (see [update]'s `beforeRowCallback` parameter).
+ *
  *  @param existingSavesTable exists here for coder convenience. No need to touch.
  */
-class VerticalFileListScrollPane(
-    private val existingSavesTable: Table = Table()
+open class VerticalFileListScrollPane(
+    protected val existingSavesTable: Table = Table()
 ) : AutoScrollPane(existingSavesTable) {
 
     private class FileHandleButton(val file: FileHandle, val index: Int) : TextButton(file.name(), BaseScreen.skin)
@@ -60,7 +62,7 @@ class VerticalFileListScrollPane(
     }
 
     /** repopulate from a FileHandle Sequence - for other sources than saved games */
-    fun update(files: Sequence<FileHandle>) {
+    fun update(files: Sequence<FileHandle>, beforeRowCallback: ((FileHandle)->Unit)? = null) {
         existingSavesTable.clear()
         selectedIndex = -1
         selectedButton = null
@@ -89,6 +91,7 @@ class VerticalFileListScrollPane(
                         selectExistingSave(index)
                         onDoubleClickListener?.invoke(saveGameFile)
                     }
+                    beforeRowCallback?.invoke(saveGameFile)
                     existingSavesTable.add(button).pad(5f).row()
                 }
             }
