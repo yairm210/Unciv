@@ -79,7 +79,7 @@ class CountableTests {
         for (countable in Countables.entries) {
             val parameters = countable.text.getPlaceholderParameters()
             for (parameter in parameters) {
-                assertNotEquals("Countable ${countable.name} parameter ${parameter} is not a UniqueParameterType",
+                assertNotEquals("Countable ${countable.name} parameter $parameter is not a UniqueParameterType",
                     UniqueParameterType.safeValueOf(parameter), UniqueParameterType.Unknown)
             }
         }
@@ -125,7 +125,7 @@ class CountableTests {
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civInfo, tile = game.tileMap[-3,0])
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civInfo, tile = game.tileMap[3,0])
 
-        val city2 = game.addCity(civInfo, game.tileMap[-2,0], initialPopulation = 9)
+        game.addCity(civInfo, game.tileMap[-2,0], initialPopulation = 9)
         val tests = listOf(
             "Owned [All] Tiles" to 14,
             "Owned [worked] Tiles" to 8,
