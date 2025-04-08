@@ -5,13 +5,15 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
- *  Prototype for each new [Countables] instance, to ensure a baseline.
+ *  Prototype for each new [Countables] instance, core functionality, to ensure a baseline.
  *
  *  Notes:
  *  - Each instance ***must*** implement _either_ overload of [matches] and indicate which one via [matchesWithRuleset].
- *  - [matches] is used to look up which instance implements a given string, [getErrorSeverity] is responsible for validating placeholders.
+ *  - [matches] is used to look up which instance implements a given string, **without** validating its placeholders.
+ *  - [getErrorSeverity] is responsible for validating placeholders, _and can assume [matches] was successful_.
  *  - Override [getKnownValuesForAutocomplete] only if a sensible number of suggestions is obvious.
  */
 interface ICountable {
@@ -30,11 +32,13 @@ interface ICountable {
  *
  *  Expansion instructions:
  *  - A new simple "variable" needs to implement only [text] and [eval].
+ *  - Not supplying [text] means the "variable" **must** implement either [matches] overload. If it parses placeholders, then it **must** override [noPlaceholders] to `false`.
  *  - A new "variable" _using placeholder(s)_ needs to implement [matches] and [eval].
- *    - Using [simpleName] inside [validate] as the examples do is only done for readability.
  *    - Implement [getErrorSeverity] in most cases, use [UniqueParameterType] to validate each placeholder content.
  *    - Implement [getKnownValuesForAutocomplete] only when a meaningful, not too large set of suggestions is obvious.
  *  - A new countable that draws from an existing enum or set of RulesetObjects should work along the lines of the [Stats] or [TileResources] examples.
+ *  - **Do** heed the docs of [ICountable] - but be aware the [Countables] Enum class pre-implements some of the methods.
+ *  - Run the unit tests! There's one checking implementation conventions.
  *  - When implementing a formula language for Countables, create a new object in a separate file with the actual
  *    implementation, then a new instance here that delegates all its methods to that object. And delete these lines.
  */
@@ -98,7 +102,7 @@ enum class Countables(
             return cities.count { it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.CityFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.CityFilter.getTranslatedErrorSeverity(parameterText, ruleset)
     },
 
     FilteredUnits("[mapUnitFilter] Units") {
@@ -108,7 +112,7 @@ enum class Countables(
             return unitManager.getCivUnits().count { it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.MapUnitFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
     },
@@ -122,7 +126,7 @@ enum class Countables(
             }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.BuildingFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.BuildingFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
@@ -133,7 +137,7 @@ enum class Countables(
             return civilizations.count { it.isAlive() && it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.CivFilter.getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
+            UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
@@ -143,6 +147,8 @@ enum class Countables(
             val cities = stateForConditionals.civInfo?.cities ?: return null
             return cities.sumOf { city -> city.getTiles().count { it.matchesFilter(filter) } }
         }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
@@ -169,9 +175,11 @@ enum class Countables(
         }
     }
     ;
+
     val placeholderText = text.getPlaceholderText()
-    
-    val noPlaceholders = text.isNotEmpty() && !text.contains('[')
+
+    @VisibleForTesting
+    open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
     override fun matches(parameterText: String) = if (noPlaceholders) parameterText == text 
@@ -181,37 +189,25 @@ enum class Countables(
     open val documentationHeader get() =
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
 
-    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+    /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
+    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
+
+    override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+
+    protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+        val severity = getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
         return when {
-            matches(parameterText) -> null
+            severity != UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique -> severity
             matchesWithRuleset -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     }
-    
-    fun getParameterErrors(parameterText: String, ruleset: Ruleset): List<String> {
-        if (this.noPlaceholders) return emptyList()
-        
-        val errors = mutableListOf<String>()
-        val placeholderParameters = text.getPlaceholderParameters()
-        
-        for ((index, parameter) in placeholderParameters.withIndex()) {
-            val parameterType = UniqueParameterType.safeValueOf(parameter)
-            val actualParameterText = placeholderParameters[index]
-            val severity = parameterType.getErrorSeverity(actualParameterText, ruleset) ?: continue
-            errors.add("`$text` contains parameter `$actualParameterText` which is invalid for type `${parameterType.name}`")
-        }
-        return errors
-    }
-    
-
-    override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
     companion object {
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .filter {
                 if (it.matchesWithRuleset) it.matches(parameterText, ruleset!!) else it.matches(parameterText)
-            }   
+            }
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
