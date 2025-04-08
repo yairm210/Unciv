@@ -160,39 +160,89 @@ class CountableTests {
 
     @Test
     fun testRulesetValidation() {
-        val mod = Ruleset().apply {
-            name = "Testing"
-            globalUniques.uniques.add("[+42 Faith] <when number of [turns] is less than [42]>")
-            globalUniques.uniques.add("[-1 Faith] <for every [turns]> <when number of [turns] is less than [42]>")
-            globalUniques.uniques.add("[+1 Happiness] <for every [City-States]>")
-            globalUniques.uniques.add("[+1 Happiness] <for every [[42] Monkeys]>")
-        }
-        game = TestGame {
-            RulesetCache[mod.name] = mod
-            RulesetCache.getComplexRuleset(RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!, listOf(mod))
-        }
-        val ruleset = game.ruleset
+        val ruleset = setupModdedGame(
+            "[+42 Faith] <when number of [turns] is less than [42]>",
+            "[-1 Faith] <for every [turns]> <when number of [turns] is between [0] and [41]>",
+            "[+1 Happiness] <for every [City-States]>", // 1 deprecation
+            "[+1 Happiness] <for every [Remaining [City-State] Civilizations]>",
+            "[+1 Happiness] <for every [[42] Monkeys]>", // 1 not a countable, 1 monkeys
+            "[+1 Gold] <when number of [year] is equal to [countable]>", // 1 not a countable
+            "[+1 Food] <when number of [-0] is different than [+0]>",
+            "[+1 Food] <when number of [5e1] is more than [0.5]>", // 2 not a countable
+            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>",  // 3 not a countable
+            "[+1 Food] <when number of [[~Nonexisting~] Cities] is between [[Annexed] Cities] and [Cities]>",  // 1 not a countable
+            "[+1 Food] <when number of [[Paratrooper] Units] is between [[Air] Units] and [Units]>",
+            "[+1 Food] <when number of [[~Bogus~] Units] is between [[Land] Units] and [[Air] Units]>", // 1 not a countable
+            "[+1 Food] <when number of [[Barbarian] Units] is between [[Japanese] Units] and [[Embarked] Units]>", // 1 not a countable
+            "[+1 Food] <when number of [[Science] Buildings] is between [[Wonder] Buildings] and [[All] Buildings]>",
+            "[+1 Food] <when number of [[42] Buildings] is between [[Universe] Buildings] and [[Library] Buildings]>", // 2 not a countable
+            "[+1 Food] <when number of [Remaining [Human player] Civilizations] is between [Remaining [City-State] Civilizations] and [Remaining [Major] Civilizations]>",
+            "[+1 Food] <when number of [Remaining [city-state] Civilizations] is between [Remaining [la la la] Civilizations] and [Remaining [all] Civilizations]>", // 2 not a countable
+            "[+1 Food] <when number of [Owned [Land] Tiles] is between [Owned [Desert] Tiles] and [Owned [All] Tiles]>",
+            "[+1 Food] <when number of [Owned [worked] Tiles] is between [Owned [Camp] Tiles] and [Owned [Forest] Tiles]>",
+            // Attention: `Barbarians` is technically a valid TileFilter because it's a CivFilter. Validation can't know it's meaningless for the OwnedTiles countable. 
+            // `Food` is currently not a valid TileFilter, but might be, and the last is just wrong case for a valid filter and should be flagged.
+            "[+1 Food] <when number of [Owned [Barbarians] Tiles] is between [Owned [Food] Tiles] and [Owned [strategic Resource] Tiles]>", // 2 not a countable
+            "[+1 Food] <when number of [Iron] is between [Whales] and [Crab]>",
+            "[+1 Food] <when number of [Cocoa] is between [Bison] and [Maryjane]>", // 3 not a countable
+        )
+        ruleset.modOptions.isBaseRuleset = true  // To get ruleset-specific validation
 
         val errors = RulesetValidator(ruleset).getErrorList()
-        val countDeprecations = errors.count { 
-            it.text.matches(Regex("Countable.*deprecated.*"))
+        var fails = 0
+        val checks = sequenceOf(
+            "deprecated" to "Countable.*deprecated.*" to 1,
+            "monkeys" to ".*Monkeys.*not fit.*countable.*" to 1,
+            "not a countable" to ".*does not fit parameter type countable.*" to 19,
+        )
+
+        println("Countables validation over synthetic test input:")
+        for ((check, expected) in checks) {
+            val (label, pattern) = check
+            val actual = errors.count(pattern)
+            if (actual == expected) continue
+            fails++
+            println("\tTest '$label' should find $expected errors, found: $actual")
         }
-        assertEquals("The test mod should flag one deprecated Countable", 1, countDeprecations)
-        val countInvalid = errors.count {
-            it.text.matches(Regex(".*Monkeys.*not fit.*countable.*"))
-        }
-        assertEquals("The test mod should flag one invalid Countable", 1, countInvalid)
+
+        assertEquals("failure count", 0, fails)
+    }
+
+    @Test
+    fun testForEveryWithInvalidCountable() {
+        setupModdedGame(
+            "[+42 Faith] <when number of [turns] is less than [42]>",
+            "[+1 Happiness] <for every [City-States]>",
+            "[+1 Happiness] <for every [[42] Monkeys]>",
+        )
 
         game.makeHexagonalMap(3)
         civInfo = game.addCiv()
         city = game.addCity(civInfo, game.tileMap[2,0])
 
         val cityState = game.addCiv(cityStateType = game.ruleset.cityStateTypes.keys.first())
-        val cityStateCity = game.addCity(cityState, game.tileMap[-2,0], true)
+        game.addCity(cityState, game.tileMap[-2,0], true)
         civInfo.updateStatsForNextTurn()
 
         val happiness = Countables.getCountableAmount("Happiness", StateForConditionals(civInfo, city))
         // Base 9, -1 city, -3 population +1 deprecated countable should still work, but the bogus one should not
         assertEquals("Testing Happiness", 6, happiness)
+    }
+
+    private fun setupModdedGame(vararg uniques: String): Ruleset {
+        val mod = Ruleset()
+        mod.name = "Testing"
+        for (unique in uniques)
+            mod.globalUniques.uniques.add(unique)
+        game = TestGame {
+            RulesetCache[mod.name] = mod
+            RulesetCache.getComplexRuleset(RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!, listOf(mod))
+        }
+        return game.ruleset
+    }
+
+    private fun RulesetErrorList.count(pattern: String): Int {
+        val regex = Regex(pattern)
+        return count { it.text.matches(regex) }
     }
 }
