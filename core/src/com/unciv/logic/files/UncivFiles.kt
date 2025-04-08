@@ -3,6 +3,7 @@ package com.unciv.logic.files
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
@@ -443,6 +444,25 @@ class UncivFiles(
             return Gzip.zip(json().toJson(game))
         }
 
+        private val charsForbiddenInFileNames = setOf('\\', '/', ':')
+        private val _fileNameTextFieldFilter = TextField.TextFieldFilter { _, char ->
+            char !in charsForbiddenInFileNames
+        }
+        /** Check characters typed into a file name TextField: Disallows both Unix and Windows path separators, plus the
+         *  ['NTFS alternate streams'](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/b134f29a-6278-4f3f-904f-5e58a713d2c5)
+         *  indicator, irrespective of platform, in case players wish to exchange files cross-platform.
+         *  @see isValidFileName
+         *  @return A `TextFieldFilter` appropriate for `TextField`s used to enter a file name for saving
+         */
+        fun fileNameTextFieldFilter() = _fileNameTextFieldFilter
+
+        /** Determines whether a filename is acceptable.
+         *  - Forbids trailing blanks because Windows has trouble with them.
+         *  - Forbids leading blanks because they might confuse users (neither Windows nor Linux have noteworthy problems with them).
+         *  - Does **not** deal with problems that can be recognized inspecting a single character, use [fileNameTextFieldFilter] for that.
+         *  @param  fileName A base file name, not a path.
+         */
+        fun isValidFileName(fileName: String) = fileName.isNotEmpty() && !fileName.endsWith(' ') && !fileName.startsWith(' ')
     }
 }
 

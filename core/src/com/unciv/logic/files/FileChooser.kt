@@ -130,9 +130,7 @@ open class FileChooser(
             result = textField.text
             enableOKButton()
         }
-        fileNameInput.setTextFieldFilter { _, char ->
-            char != File.separatorChar
-        }
+        fileNameInput.textFieldFilter = UncivFiles.fileNameTextFieldFilter()
 
         if (title != null) {
             addGoodSizedLabel(title).colspan(2).center().row()
@@ -283,7 +281,7 @@ open class FileChooser(
         fun getSaveEnable(): Boolean {
             if (currentDir?.exists() != true) return false
             if (allowFolderSelect) return true
-            return result?.run { isEmpty() || startsWith(' ') || endsWith(' ') } == false
+            return result != null && UncivFiles.isValidFileName(result!!)
         }
         okButton.isEnabled = if (fileNameEnabled) getSaveEnable() else getLoadEnable()
     }
