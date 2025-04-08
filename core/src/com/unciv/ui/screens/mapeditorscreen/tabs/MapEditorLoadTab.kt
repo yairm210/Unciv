@@ -79,11 +79,13 @@ class MapEditorLoadTab(
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
+        editorScreen.enableKeyboardPanningListener(enable = false)
         mapFiles.updateMaps()
         selectFile(null)
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        editorScreen.enableKeyboardPanningListener(enable = true)
         pager.setScrollDisabled(false)
     }
 
