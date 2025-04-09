@@ -93,6 +93,9 @@ data class StateForConditionals(
     companion object {
         val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
         val EmptyState = StateForConditionals()
+        /** When caching uniques, we need to cache them unmultiplied, and apply multiplication only on retrieval from cache
+         * This state lets the multiplication function know that it's always 1:1 */
+        val IgnoreMultiplicationForCaching = StateForConditionals(ignoreConditionals = true)
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */

@@ -92,6 +92,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     private fun getUniqueMultiplier(stateForConditionals: StateForConditionals): Int {
+        if (stateForConditionals == StateForConditionals.IgnoreMultiplicationForCaching)
+            return 1
         
         var amount = 1
         
@@ -235,8 +237,9 @@ class LocalUniqueCache(val cache: Boolean = true) {
 
         val citySpecificUniques = get(
             "city-${city.id}-${uniqueType.name}",
-            city.getLocalMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+            city.getLocalMatchingUniques(uniqueType, StateForConditionals.IgnoreMultiplicationForCaching)
         ).filter { it.conditionalsApply(stateForConditionals) }
+            .flatMap { it.getMultiplied(stateForConditionals) }
 
         val civUniques = forCivGetMatchingUniques(city.civ, uniqueType, stateForConditionals)
 
@@ -248,7 +251,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = civ.state
     ): Sequence<Unique> {
-        val sequence = civ.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+        val sequence = civ.getMatchingUniques(uniqueType, StateForConditionals.IgnoreMultiplicationForCaching)
         // The uniques CACHED are ALL civ uniques, regardless of conditional matching.
         // The uniques RETURNED are uniques AFTER conditional matching.
         // This allows reuse of the cached values, between runs with different conditionals -
@@ -258,6 +261,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
             "civ-${civ.civName}-${uniqueType.name}",
             sequence
         ).filter { it.conditionalsApply(stateForConditionals) }
+            .flatMap { it.getMultiplied(stateForConditionals) }
     }
 
     /** Get cached results as a sequence */
