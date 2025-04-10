@@ -389,8 +389,8 @@ class BattleTest {
     @Test
     fun `should always destroy unit directly hit by nuke`() {
         // given
-        val defenderUnit = testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2.Y))
-        defenderUnit.baseUnit.strength = 1_000_000
+        val megaWarrior = testGame.createBaseUnit("Sword").apply { strength = 1_000_000 }
+        val defenderUnit = testGame.addUnit(megaWarrior.name, defenderCiv, testGame.getTile(Vector2.Y))
 
         testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
         val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
