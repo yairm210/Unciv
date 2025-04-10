@@ -163,6 +163,35 @@ class CountableTests {
     }
 
     @Test
+    fun testFilteredBuildingsCountable () {
+        setupGame(withCiv = false)
+        val building = game.createBuilding("Ancestor Tree") // That's a filtering Unique, not the building name 
+        building[Stat.Culture] = 1f
+
+        civ = game.addCiv(
+            "[+1 Culture] from all [Ancestor Tree] buildings <for every [1] [[Ancestor Tree] Buildings]> <when number of [[Ancestor Tree] Buildings] is more than [1]>",
+            "[+50]% [Culture] from every [Ancestor Tree] <when number of [[Ancestor Tree] Buildings] is more than [0]>",
+        )
+        city = game.addCity(civ, game.tileMap[2,0])
+        city.cityConstructions.addBuilding(building)
+        val city2 = game.addCity(civ, game.tileMap[-2,0])
+        city2.cityConstructions.addBuilding(building)
+
+        // updateStatsForNextTurn won't run the city part because no happiness change across a boundary
+        for (city3 in civ.cities)
+            city3.cityStats.update(updateCivStats = false)
+        civ.updateStatsForNextTurn()
+
+        // Expect: (1 Palace + 1 Base Ancestor Tree + 2 for-every) * 1.5 = 6
+        val capitalCulture = city.cityStats.currentCityStats.culture
+        // Expect: capitalCulture + (1 Base Ancestor Tree + 2 for-every) * 1.5 = 10.5
+        val civCulture = civ.stats.statsForNextTurn.culture
+
+        assertEquals(6f, capitalCulture, 0.005f)
+        assertEquals(10.5f, civCulture, 0.005f)
+    }
+
+    @Test
     fun testRulesetValidation() {
         setupGame(
             "[+42 Faith] <when number of [turns] is less than [42]>",
