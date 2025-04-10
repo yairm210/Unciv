@@ -171,6 +171,13 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
+    /** Uncached, use carefully */
+    fun getAdoptedPoliciesMatching(policyFilter: String, stateForConditionals: StateForConditionals) =
+        adoptedPolicies.asSequence()
+            .mapNotNull { getRulesetPolicies()[it] }
+            .filter { it.matchesFilter(policyFilter, stateForConditionals) }
+            .toList()
+
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
     /**
@@ -197,7 +204,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (allPoliciesAdopted(true)) return false
         return true
     }
-    
+
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
 
