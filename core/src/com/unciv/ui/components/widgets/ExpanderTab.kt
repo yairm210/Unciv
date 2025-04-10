@@ -5,13 +5,17 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.Value
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.IconCircleGroup
@@ -25,6 +29,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * @param fontSize Size applied to header text (only)
  * @param icon Optional icon - please use [Image][com.badlogic.gdx.scenes.scene2d.ui.Image] or [IconCircleGroup]
  * @param defaultPad Padding between content and wrapper.
+ * @param topPad Padding between content top and wrapper.
  * @param headerPad Default padding for the header Table.
  * @param expanderWidth If set initializes header width
  * @param expanderHeight If set initializes header height
@@ -38,6 +43,7 @@ class ExpanderTab(
     icon: Actor? = null,
     startsOutOpened: Boolean = true,
     defaultPad: Float = 10f,
+    topPad: Float = defaultPad,
     headerPad: Float = 10f,
     expanderWidth: Float = 0f,
     expanderHeight: Float = 0f,
@@ -55,6 +61,11 @@ class ExpanderTab(
         val persistedStates = HashMap<String, Boolean>()
     }
 
+    @Suppress("ClassName") // Make it look like a static method
+    object wasOpen {
+        operator fun invoke(persistenceID: String) = persistedStates[persistenceID]
+    }
+
     /** Header with label, [headerContent] and icon, touchable to show/hide.
      *  This internal container is public to allow e.g. alignment changes.
      */
@@ -62,9 +73,9 @@ class ExpanderTab(
 
     /** Additional elements can be added to the `ExpanderTab`'s header using this container, empty by default. */
     val headerContent = Table()
-    
+
     private val headerLabel = title.toLabel(fontSize = fontSize, hideIcons = true)
-    private val headerIcon = ImageGetter.getImage(arrowImage)
+    val headerIcon = ImageGetter.getImage(arrowImage)
     private val contentWrapper = Table()  // Wrapper for innerTable, this is what will be shown/hidden
 
     /** The container where the client should add the content to toggle */
@@ -107,7 +118,7 @@ class ExpanderTab(
         if (expanderWidth != 0f)
             defaults().minWidth(expanderWidth)
         defaults().growX()
-        contentWrapper.defaults().growX().pad(defaultPad)
+        contentWrapper.defaults().growX().pad(topPad, defaultPad, defaultPad, defaultPad)
         innerTable.defaults().growX()
         add(header).fill().row()
         add(contentWrapper)
@@ -188,5 +199,25 @@ class ExpanderTab(
     /** Change header label text after initialization (does not auto-translate) */
     fun setText(text: String) {
         headerLabel.setText(text)
+    }
+
+    fun toggleOnIconOnly() {
+        header.clearActivationActions(ActivationTypes.Tap)
+        headerIcon.onActivation { toggle() }
+    }
+
+    private fun Cell<Actor>.resetFixedSize(): Cell<Actor> {
+        minHeight(Value.minHeight)
+        prefHeight(Value.prefHeight)
+        maxHeight(Value.maxHeight)
+        minWidth(Value.minWidth)
+        prefWidth(Value.prefHeight)
+        maxWidth(Value.maxWidth)
+        return this
+    }
+
+    fun setDynamicHeaderSize() {
+        header.cells[0]!!.resetFixedSize().center()
+        header.cells[1]!!.resetFixedSize().center()
     }
 }
