@@ -286,7 +286,7 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
             parameterText in staticKnownValues -> true
             BuildingName.isKnownValue(parameterText, ruleset) -> true
-            ruleset.buildings.values.any { it.hasTagUnique(parameterText) } -> true
+            parameterText.isFilteringUniqueIn(ruleset.buildings) -> true
             TechFilter.isKnownValue(parameterText, ruleset) -> true
             else -> false
         }

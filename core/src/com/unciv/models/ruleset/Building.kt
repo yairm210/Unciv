@@ -495,6 +495,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             else -> {
                 if (filter == name) return true
                 if (filter == replaces) return true
+                if (hasTagUnique(filter)) return true
                 if (::ruleset.isInitialized) // False when loading ruleset and checking buildingsToRemove
                     for (requiredTech: String in requiredTechs())
                         if (ruleset.technologies[requiredTech]?.matchesFilter(filter, multiFilter = false) == true) return true
