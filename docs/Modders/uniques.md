@@ -3528,7 +3528,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[nonNegativeAmount]: This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional.
 *[policy]: The name of any policy.
-*[policyFilter]: The name of any policy.
+*[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), a policy branch as `[branchName] branch` (matching all policies in that branch), or `[all] branch` which matches all branch starter policies.
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
