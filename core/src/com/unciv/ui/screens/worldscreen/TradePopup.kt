@@ -49,7 +49,7 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
         addSeparator()
 
         val tradeOffersTable = Table().apply { defaults().pad(10f) }
-        tradeOffersTable.add("[${nation.name}]'s trade offer".toLabel())
+        tradeOffersTable.add("[${requestingCiv.getDisplayNationName()}]'s trade offer".toLabel())
         // empty column to separate offers columns better
         tradeOffersTable.add().pad(0f, 15f)
         tradeOffersTable.add("Our trade offer".toLabel())
