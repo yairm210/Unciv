@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Specialist
@@ -265,6 +266,20 @@ class TestGame(vararg addGlobalUniques: String) {
     }
     fun createPolicy(vararg uniques: String) =
         createRulesetObject(ruleset.policies, *uniques) { Policy() }
+    fun createPolicyBranch(vararg uniques: String, policy: Policy? = null): PolicyBranch {
+        val branch = createRulesetObject(ruleset.policyBranches, *uniques) { PolicyBranch() }
+        branch.branch = branch
+        ruleset.policies[branch.name] = branch
+        if (policy != null) {
+            branch.policies.add(policy)
+        }
+        val complete = Policy()
+        complete.name = branch.name + Policy.branchCompleteSuffix
+        complete.branch = branch
+        branch.policies.add(complete)
+        ruleset.policies[complete.name] = complete
+        return branch
+    }
     fun createTileImprovement(vararg uniques: String) =
         createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
     fun createUnitType(vararg uniques: String) =
