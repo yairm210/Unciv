@@ -41,11 +41,15 @@ open class Policy : RulesetObject() {
                 state != null && hasUnique(filter, state) ||
                 state == null && hasTagUnique(filter)
         })
-    
+
+    // Remember policy branches are duplicated in `policies` (as subclass carrying more information),
+    // so filtering by a policy branch name matches only the branch itself, filtering by "[name] branch"
+    // will match all policies in that branch plus the branch itself (since the loader sets a branch's branch to itself).
     fun matchesSingleFilter(filter: String): Boolean {
         return when(filter) {
             in Constants.all -> true
             name -> true
+            "[all] branch" -> branch == this
             "[${branch.name}] branch" -> true
             else -> false
         }
