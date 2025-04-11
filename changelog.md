@@ -1,3 +1,20 @@
+## 4.16.3
+
+4.16.2-patch1
+
+Hide perf suggestions from users 
+
+Extract other classes out of Unique.kt
+
+For cached stored in LocalUniqueCache, don't apply multiplication when storing, only when retrieving
+
+Resolved  - City states don't get continually researchable techs automatically
+
+By SomeTroglodyte:
+- Map editor reuses the files widget for load/save 
+- Another countables test 
+- More improvements to internal Countables handling 
+
 ## 4.16.2
 
 Added settings for circles vs hexagons for movable tiles
