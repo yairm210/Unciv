@@ -8,7 +8,6 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
@@ -87,7 +86,7 @@ class CountableTests {
 
     @Test
     fun testPerCountableForGlobalAndLocalResources() {
-        setupGame()
+        setupModdedGame()
         // one coal provided locally
         val providesCoal = game.createBuilding("Provides [1] [Coal]")
         city.cityConstructions.addBuilding(providesCoal)
@@ -100,7 +99,7 @@ class CountableTests {
 
     @Test
     fun testStatsCountables() {
-        setupGame()
+        setupModdedGame()
         fun verifyStats(state: StateForConditionals) {
             for (stat in Stat.entries) {
                 val countableResult = Countables.Stats.eval(stat.name, state)
@@ -124,7 +123,7 @@ class CountableTests {
 
     @Test
     fun testOwnedTilesCountable() {
-        setupGame()
+        setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[3,0])
 
@@ -145,7 +144,7 @@ class CountableTests {
 
     @Test
     fun testFilteredCitiesCountable() {
-        setupGame()
+        setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
 
         val city2 = game.addCity(civ, game.tileMap[-2,0], initialPopulation = 9)
@@ -164,7 +163,7 @@ class CountableTests {
 
     @Test
     fun testFilteredBuildingsCountable () {
-        setupGame(withCiv = false)
+        setupModdedGame(withCiv = false)
         val building = game.createBuilding("Ancestor Tree") // That's a filtering Unique, not the building name 
         building[Stat.Culture] = 1f
 
@@ -193,46 +192,68 @@ class CountableTests {
 
     @Test
     fun testRulesetValidation() {
-        setupGame(
-            "[+42 Faith] <when number of [turns] is less than [42]>",
-            "[-1 Faith] <for every [turns]> <when number of [turns] is between [0] and [41]>",
-            "[+1 Happiness] <for every [City-States]>", // 1 deprecation
-            "[+1 Happiness] <for every [Remaining [City-State] Civilizations]>",
-            "[+1 Happiness] <for every [[42] Monkeys]>", // 1 not a countable, 1 monkeys
-            "[+1 Gold] <when number of [year] is equal to [countable]>", // 1 not a countable
-            "[+1 Food] <when number of [-0] is different than [+0]>",
-            "[+1 Food] <when number of [5e1] is more than [0.5]>", // 2 not a countable
-            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>",  // 3 not a countable
-            "[+1 Food] <when number of [[~Nonexisting~] Cities] is between [[Annexed] Cities] and [Cities]>",  // 1 not a countable
-            "[+1 Food] <when number of [[Paratrooper] Units] is between [[Air] Units] and [Units]>",
-            "[+1 Food] <when number of [[~Bogus~] Units] is between [[Land] Units] and [[Air] Units]>", // 1 not a countable
-            "[+1 Food] <when number of [[Barbarian] Units] is between [[Japanese] Units] and [[Embarked] Units]>", // 1 not a countable
-            "[+1 Food] <when number of [[Science] Buildings] is between [[Wonder] Buildings] and [[All] Buildings]>",
-            "[+1 Food] <when number of [[42] Buildings] is between [[Universe] Buildings] and [[Library] Buildings]>", // 2 not a countable
-            "[+1 Food] <when number of [Remaining [Human player] Civilizations] is between [Remaining [City-State] Civilizations] and [Remaining [Major] Civilizations]>",
-            "[+1 Food] <when number of [Remaining [city-state] Civilizations] is between [Remaining [la la la] Civilizations] and [Remaining [all] Civilizations]>", // 2 not a countable
-            "[+1 Food] <when number of [Owned [Land] Tiles] is between [Owned [Desert] Tiles] and [Owned [All] Tiles]>",
-            "[+1 Food] <when number of [Owned [worked] Tiles] is between [Owned [Camp] Tiles] and [Owned [Forest] Tiles]>",
-            // Attention: `Barbarians` is technically a valid TileFilter because it's a CivFilter. Validation can't know it's meaningless for the OwnedTiles countable. 
+        /** These are `Pair<String, Int>` with the second being the expected number of parameters to fail UniqueParameterType validation */
+        val testData = listOf(
+            "[+42 Faith] <when number of [turns] is less than [42]>" to 0,
+            "[-1 Faith] <for every [turns]> <when number of [turns] is between [0] and [41]>" to 0,
+            "[+1 Happiness] <for every [City-States]>" to 0, // +1 deprecation
+            "[+1 Happiness] <for every [Remaining [City-State] Civilizations]>" to 0,
+            "[+1 Happiness] <for every [[42] Monkeys]>" to 1, // +1 monkeys
+            "[+1 Gold] <when number of [year] is equal to [countable]>" to 1,
+            "[+1 Food] <when number of [-0] is different than [+0]>" to 0,
+            "[+1 Food] <when number of [5e1] is more than [0.5]>" to 2,
+            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>" to 3,
+            "[+1 Food] <when number of [[~Nonexisting~] Cities] is between [[Annexed] Cities] and [Cities]>" to 1,
+            "[+1 Food] <when number of [[Paratrooper] Units] is between [[Air] Units] and [Units]>" to 0,
+            "[+1 Food] <when number of [[~Bogus~] Units] is between [[Land] Units] and [[Air] Units]>" to 1,
+            "[+1 Food] <when number of [[Barbarian] Units] is between [[Japanese] Units] and [[Embarked] Units]>" to 1,
+            "[+1 Food] <when number of [[Science] Buildings] is between [[Wonder] Buildings] and [[All] Buildings]>" to 0,
+            "[+1 Food] <when number of [[42] Buildings] is between [[Universe] Buildings] and [[Library] Buildings]>" to 2,
+            "[+1 Food] <when number of [Remaining [Human player] Civilizations] is between [Remaining [City-State] Civilizations] and [Remaining [Major] Civilizations]>" to 0,
+            "[+1 Food] <when number of [Remaining [city-state] Civilizations] is between [Remaining [la la la] Civilizations] and [Remaining [all] Civilizations]>" to 2,
+            "[+1 Food] <when number of [Owned [Land] Tiles] is between [Owned [Desert] Tiles] and [Owned [All] Tiles]>" to 0,
+            "[+1 Food] <when number of [Owned [worked] Tiles] is between [Owned [Camp] Tiles] and [Owned [Forest] Tiles]>" to 0,
+            // Attention: `Barbarians` is technically a valid TileFilter because it's a CivFilter. Validation can't know it's meaningless for the OwnedTiles countable.
             // `Food` is currently not a valid TileFilter, but might be, and the last is just wrong case for a valid filter and should be flagged.
-            "[+1 Food] <when number of [Owned [Barbarians] Tiles] is between [Owned [Food] Tiles] and [Owned [strategic Resource] Tiles]>", // 2 not a countable
-            "[+1 Food] <when number of [Iron] is between [Whales] and [Crab]>",
-            "[+1 Food] <when number of [Cocoa] is between [Bison] and [Maryjane]>", // 3 not a countable
-            withCiv = false // City founding would massively slow down
+            "[+1 Food] <when number of [Owned [Barbarians] Tiles] is between [Owned [Food] Tiles] and [Owned [strategic Resource] Tiles]>" to 2,
+            "[+1 Food] <when number of [Iron] is between [Whales] and [Crab]>" to 0,
+            "[+1 Food] <when number of [Cocoa] is between [Bison] and [Maryjane]>" to 3,
         )
+        val totalNotACountableExpected = testData.sumOf { it.second }
+        val notACountableRegex = Regex(""".*parameter "(.*)" which does not fit parameter type countable.*""")
 
-        val errors = RulesetValidator(game.ruleset).getErrorList()
-        var fails = 0
-        val checks = sequenceOf(
-            "deprecated" to "Countable.*deprecated.*" to 1,
-            "monkeys" to ".*Monkeys.*not fit.*countable.*" to 1,
-            "not a countable" to ".*does not fit parameter type countable.*" to 19,
+        val ruleset = setupModdedGame(
+            *testData.map { it.first }.toTypedArray(),
+            withCiv = false // City founding would only slow this down
         )
+        ruleset.modOptions.isBaseRuleset = true  // To get ruleset-specific validation
+
+        val errors = RulesetValidator(ruleset).getErrorList()
+        var fails = 0
 
         println("Countables validation over synthetic test input:")
-        for ((check, expected) in checks) {
-            val (label, pattern) = check
-            val actual = errors.count(pattern)
+        for ((uniqueText, expected) in testData) {
+            var actual = 0
+            val badOnes = mutableListOf<String>()
+            for (error in errors) {
+                if (uniqueText !in error.text) continue
+                val match = notACountableRegex.matchEntire(error.text) ?: continue
+                actual++
+                badOnes += match.groups[1]!!.value
+            }
+            if (actual == expected) continue
+            fails++
+            println("\tTest '$uniqueText' should find $expected errors, found: $actual, bad parameters: ${badOnes.joinToString()}")
+        }
+
+        val coarseChecks = sequenceOf(
+            "deprecated" to Regex("Countable.*deprecated.*") to 1,
+            "monkeys" to Regex(".*Monkeys.*not fit.*countable.*") to 1,
+            "not a countable" to notACountableRegex to totalNotACountableExpected,
+        )
+        for ((check, expected) in coarseChecks) {
+            val (label, regex) = check
+            val actual = errors.count { it.text.matches(regex) }
             if (actual == expected) continue
             fails++
             println("\tTest '$label' should find $expected errors, found: $actual")
@@ -243,7 +264,7 @@ class CountableTests {
 
     @Test
     fun testForEveryWithInvalidCountable() {
-        setupGame(
+        setupModdedGame(
             "[+42 Faith] <when number of [turns] is less than [42]>",
             "[+1 Happiness] <for every [City-States]>",
             "[+1 Happiness] <for every [[42] Monkeys]>",
@@ -258,16 +279,12 @@ class CountableTests {
         assertEquals("Testing Happiness", 6, happiness)
     }
 
-    private fun setupGame(vararg addGlobalUniques: String, withCiv: Boolean = true) {
+    private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {
         game = TestGame(*addGlobalUniques)
         game.makeHexagonalMap(3)
-        if (!withCiv) return
+        if (!withCiv) return game.ruleset
         civ = game.addCiv()
         city = game.addCity(civ, game.tileMap[2,0])
-    }
-
-    private fun RulesetErrorList.count(pattern: String): Int {
-        val regex = Regex(pattern)
-        return count { it.text.matches(regex) }
+        return game.ruleset
     }
 }

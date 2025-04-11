@@ -557,15 +557,24 @@ enum class UniqueParameterType(
     },
 
     /** Implemented by [com.unciv.models.ruleset.Policy.matchesFilter] */
-    PolicyFilter("policyFilter", "Oligarchy", "The name of any policy") {
-        override val staticKnownValues = Constants.all
+    PolicyFilter("policyFilter", "Oligarchy",
+        "The name of any policy, a filtering Unique, any branch (matching only the branch itself)," +
+        " a branch name with \" Completed\" appended (matches if the branch is completed)," +
+        " a policy branch as `[branchName] branch` (matching all policies in that branch)," +
+        " or `[all] branch` which matches all branch starter policies."
+    ) {
+        override val staticKnownValues = Constants.all + "[all] branch"
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
             parameterText in staticKnownValues -> true
             parameterText in ruleset.policies -> true
+            parameterText.startsWith('[') && parameterText.endsWith("] branch") &&
+                parameterText.removeSurrounding("[", "] branch") in ruleset.policyBranches -> true
             ruleset.policies.values.any { it.hasTagUnique(parameterText) } -> true
             else -> false
         }
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = staticKnownValues + ruleset.policies.keys
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            staticKnownValues + ruleset.policies.keys +
+            ruleset.policyBranches.keys.map { "[$it] branch" }.toSet()
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },

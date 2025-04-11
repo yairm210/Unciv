@@ -34,13 +34,18 @@ interface ICountable {
  *  - A new simple "variable" needs to implement only [text] and [eval].
  *  - Not supplying [text] means the "variable" **must** implement either [matches] overload. If it parses placeholders, then it **must** override [noPlaceholders] to `false`.
  *  - A new "variable" _using placeholder(s)_ needs to implement [matches] and [eval].
- *    - Implement [getErrorSeverity] in most cases, use [UniqueParameterType] to validate each placeholder content.
+ *    - Implement [getErrorSeverity] in most cases, typically using [UniqueParameterType] to validate each placeholder content.
+ *    - If it uses exactly one UniqueParameterType placeholder, [getErrorSeverity] can use the [UniqueParameterType.getTranslatedErrorSeverity] extension provided below.
  *    - Implement [getKnownValuesForAutocomplete] only when a meaningful, not too large set of suggestions is obvious.
  *  - A new countable that draws from an existing enum or set of RulesetObjects should work along the lines of the [Stats] or [TileResources] examples.
  *  - **Do** heed the docs of [ICountable] - but be aware the [Countables] Enum class pre-implements some of the methods.
  *  - Run the unit tests! There's one checking implementation conventions.
  *  - When implementing a formula language for Countables, create a new object in a separate file with the actual
  *    implementation, then a new instance here that delegates all its methods to that object. And delete these lines.
+ *
+ *  @param text The "key" to recognize this countable. If not empty, it will be included in translations.
+ *              Placeholders should match a `UniqueParameterType` by its `parameterType`.
+ *              If the countable implements non-UniqueParameterType placeholders, it may be better to leave this empty.
  */
 enum class Countables(
     val text: String = "",
