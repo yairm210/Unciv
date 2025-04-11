@@ -1,14 +1,13 @@
 package com.unciv.uniques
 
-import com.unciv.models.metadata.BaseRuleset
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
@@ -25,9 +24,9 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class CountableTests {
-    private var game = TestGame().apply { makeHexagonalMap(3) }
-    private var civInfo = game.addCiv()
-    private var city = game.addCity(civInfo, game.tileMap[2,0])
+    private lateinit var game: TestGame
+    private lateinit var civ: Civilization
+    private lateinit var city: City
 
     @Test
     fun testCountableConventions() {
@@ -87,11 +86,12 @@ class CountableTests {
 
     @Test
     fun testPerCountableForGlobalAndLocalResources() {
+        setupModdedGame()
         // one coal provided locally
         val providesCoal = game.createBuilding("Provides [1] [Coal]")
         city.cityConstructions.addBuilding(providesCoal)
         // one globally
-        UniqueTriggerActivation.triggerUnique(Unique("Provides [1] [Coal] <for [2] turns>"), civInfo)
+        UniqueTriggerActivation.triggerUnique(Unique("Provides [1] [Coal] <for [2] turns>"), civ)
         val providesFaithPerCoal = game.createBuilding("[+1 Faith] [in this city] <for every [Coal]>")
         city.cityConstructions.addBuilding(providesFaithPerCoal)
         assertEquals(2f, city.cityStats.currentCityStats.faith)
@@ -99,10 +99,11 @@ class CountableTests {
 
     @Test
     fun testStatsCountables() {
+        setupModdedGame()
         fun verifyStats(state: StateForConditionals) {
             for (stat in Stat.entries) {
                 val countableResult = Countables.Stats.eval(stat.name, state)
-                val expected = if (stat == Stat.Happiness) civInfo.getHappiness()
+                val expected = if (stat == Stat.Happiness) civ.getHappiness()
                 else state.getStatAmount(stat)
                 assertEquals("Testing $stat countable:", countableResult, expected)
             }
@@ -111,21 +112,22 @@ class CountableTests {
         val providesStats =
             game.createBuilding("[+1 Gold, +2 Food, +3 Production, +4 Happiness, +3 Science, +2 Culture, +1 Faith] [in this city] <when number of [Cities] is equal to [1]>")
         city.cityConstructions.addBuilding(providesStats)
-        verifyStats(StateForConditionals(civInfo, city))
+        verifyStats(StateForConditionals(civ, city))
 
-        val city2 = game.addCity(civInfo, game.tileMap[-2,0])
+        val city2 = game.addCity(civ, game.tileMap[-2,0])
         val providesStats2 =
             game.createBuilding("[+3 Gold, +2 Food, +1 Production, -4 Happiness, +1 Science, +2 Culture, +3 Faith] [in this city] <when number of [Cities] is more than [1]>")
         city2.cityConstructions.addBuilding(providesStats2)
-        verifyStats(StateForConditionals(civInfo, city2))
+        verifyStats(StateForConditionals(civ, city2))
     }
 
     @Test
     fun testOwnedTilesCountable() {
-        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civInfo, tile = game.tileMap[-3,0])
-        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civInfo, tile = game.tileMap[3,0])
+        setupModdedGame()
+        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
+        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[3,0])
 
-        game.addCity(civInfo, game.tileMap[-2,0], initialPopulation = 9)
+        game.addCity(civ, game.tileMap[-2,0], initialPopulation = 9)
         val tests = listOf(
             "Owned [All] Tiles" to 14,
             "Owned [worked] Tiles" to 8,
@@ -135,16 +137,17 @@ class CountableTests {
             "Owned [Farm] Tiles" to 0,
         )
         for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, StateForConditionals(civInfo))
+            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
     }
 
     @Test
     fun testFilteredCitiesCountable() {
-        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civInfo, tile = game.tileMap[-3,0])
+        setupModdedGame()
+        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
 
-        val city2 = game.addCity(civInfo, game.tileMap[-2,0], initialPopulation = 9)
+        val city2 = game.addCity(civ, game.tileMap[-2,0], initialPopulation = 9)
         city2.isPuppet = true
         val tests = listOf(
             "[Capital] Cities" to 1,
@@ -153,9 +156,38 @@ class CountableTests {
             "[Your] Cities" to 2,
         )
         for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, StateForConditionals(civInfo))
+            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
+    }
+
+    @Test
+    fun testFilteredBuildingsCountable () {
+        setupModdedGame(withCiv = false)
+        val building = game.createBuilding("Ancestor Tree") // That's a filtering Unique, not the building name 
+        building[Stat.Culture] = 1f
+
+        civ = game.addCiv(
+            "[+1 Culture] from all [Ancestor Tree] buildings <for every [1] [[Ancestor Tree] Buildings]> <when number of [[Ancestor Tree] Buildings] is more than [1]>",
+            "[+50]% [Culture] from every [Ancestor Tree] <when number of [[Ancestor Tree] Buildings] is more than [0]>",
+        )
+        city = game.addCity(civ, game.tileMap[2,0])
+        city.cityConstructions.addBuilding(building)
+        val city2 = game.addCity(civ, game.tileMap[-2,0])
+        city2.cityConstructions.addBuilding(building)
+
+        // updateStatsForNextTurn won't run the city part because no happiness change across a boundary
+        for (city3 in civ.cities)
+            city3.cityStats.update(updateCivStats = false)
+        civ.updateStatsForNextTurn()
+
+        // Expect: (1 Palace + 1 Base Ancestor Tree + 2 for-every) * 1.5 = 6
+        val capitalCulture = city.cityStats.currentCityStats.culture
+        // Expect: capitalCulture + (1 Base Ancestor Tree + 2 for-every) * 1.5 = 10.5
+        val civCulture = civ.stats.statsForNextTurn.culture
+
+        assertEquals(6f, capitalCulture, 0.005f)
+        assertEquals(10.5f, civCulture, 0.005f)
     }
 
     @Test
@@ -190,7 +222,10 @@ class CountableTests {
         val totalNotACountableExpected = testData.sumOf { it.second }
         val notACountableRegex = Regex(""".*parameter "(.*)" which does not fit parameter type countable.*""")
 
-        val ruleset = setupModdedGame(*testData.map { it.first }.toTypedArray())
+        val ruleset = setupModdedGame(
+            *testData.map { it.first }.toTypedArray(),
+            withCiv = false // City founding would only slow this down
+        )
         ruleset.modOptions.isBaseRuleset = true  // To get ruleset-specific validation
 
         val errors = RulesetValidator(ruleset).getErrorList()
@@ -235,28 +270,21 @@ class CountableTests {
             "[+1 Happiness] <for every [[42] Monkeys]>",
         )
 
-        game.makeHexagonalMap(3)
-        civInfo = game.addCiv()
-        city = game.addCity(civInfo, game.tileMap[2,0])
-
         val cityState = game.addCiv(cityStateType = game.ruleset.cityStateTypes.keys.first())
         game.addCity(cityState, game.tileMap[-2,0], true)
-        civInfo.updateStatsForNextTurn()
+        civ.updateStatsForNextTurn()
 
-        val happiness = Countables.getCountableAmount("Happiness", StateForConditionals(civInfo, city))
+        val happiness = Countables.getCountableAmount("Happiness", StateForConditionals(civ, city))
         // Base 9, -1 city, -3 population +1 deprecated countable should still work, but the bogus one should not
         assertEquals("Testing Happiness", 6, happiness)
     }
 
-    private fun setupModdedGame(vararg uniques: String): Ruleset {
-        val mod = Ruleset()
-        mod.name = "Testing"
-        for (unique in uniques)
-            mod.globalUniques.uniques.add(unique)
-        game = TestGame {
-            RulesetCache[mod.name] = mod
-            RulesetCache.getComplexRuleset(RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!, listOf(mod))
-        }
+    private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {
+        game = TestGame(*addGlobalUniques)
+        game.makeHexagonalMap(3)
+        if (!withCiv) return game.ruleset
+        civ = game.addCiv()
+        city = game.addCity(civ, game.tileMap[2,0])
         return game.ruleset
     }
 }

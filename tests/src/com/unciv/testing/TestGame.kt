@@ -32,7 +32,11 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 
-class TestGame(overrideRuleset: (() -> Ruleset)? = null) {
+/**
+ *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place
+ *  @param addGlobalUniques optional global uniques to add to the ruleset
+ */
+class TestGame(vararg addGlobalUniques: String) {
 
     private var objectsCreated = 0
     val ruleset: Ruleset
@@ -49,8 +53,14 @@ class TestGame(overrideRuleset: (() -> Ruleset)? = null) {
         UncivGame.Current.gameInfo = gameInfo
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
-        RulesetCache.loadRulesets(noMods = true)
-        ruleset = overrideRuleset?.invoke() ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        if (RulesetCache.isEmpty())
+            RulesetCache.loadRulesets(noMods = true)
+        ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone()
+        ruleset.globalUniques.uniques.run {
+            for (unique in addGlobalUniques)
+                add(unique)
+        }
+
         gameInfo.ruleset = ruleset
         gameInfo.difficulty = "Prince"
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
@@ -128,9 +138,8 @@ class TestGame(overrideRuleset: (() -> Ruleset)? = null) {
             cities = arrayListOf("The Capital")
             this.cityStateType = cityStateType
         }
-        val nation = createRulesetObject(ruleset.nations, *uniques) {
-            nationFactory()
-        }
+        val nation = createRulesetObject(ruleset.nations, *uniques, factory = ::nationFactory)
+
         val civInfo = Civilization()
         civInfo.nation = nation
         civInfo.gameInfo = gameInfo

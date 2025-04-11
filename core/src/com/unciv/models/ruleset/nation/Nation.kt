@@ -71,11 +71,11 @@ class Nation : RulesetObject() {
     override fun getUniqueTarget() = UniqueTarget.Nation
 
     @Transient
-    private lateinit var outerColorObject: Color
+    private var outerColorObject = Color.WHITE // Not lateinit for unit tests
     fun getOuterColor(): Color = outerColorObject
 
     @Transient
-    private lateinit var innerColorObject: Color
+    private var innerColorObject = Color.BLACK // Not lateinit for unit tests
 
     fun getInnerColor(): Color = innerColorObject
 

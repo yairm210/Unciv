@@ -1,8 +1,10 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.json.json
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
@@ -52,11 +54,14 @@ class UnitUniquesTests {
     @Test
     fun canConstructResourceRequiringImprovement() {
         // Do this early so the uniqueObjects lazy is still un-triggered
-        val improvement = game.ruleset.tileImprovements["Manufactory"]!!
         val requireUnique = UniqueType.ConsumesResources.text.fillPlaceholders("3", "Iron")
+        // Get a clone with lazies un-tripped
+        val oldImprovement = game.ruleset.tileImprovements["Manufactory"]!!
+        val improvement = json().run { fromJson(TileImprovement::class.java, toJson(oldImprovement)) }
         improvement.uniques.add(requireUnique)
         Assert.assertFalse("Test preparation failed to add ConsumesResources to Manufactory",
             improvement.uniqueObjects.none { it.type == UniqueType.ConsumesResources })
+        game.ruleset.tileImprovements["Manufactory"] = improvement
 
         game.makeHexagonalMap(1)
         val civ = game.addCiv(isPlayer = true)
@@ -72,6 +77,7 @@ class UnitUniquesTests {
         } catch (ex: Throwable) {
             // Give that IndexOutOfBoundsException a nicer name
             Assert.fail("getImprovementConstructionActions throws Exception ${ex.javaClass.simpleName}")
+            game.ruleset.tileImprovements["Manufactory"] = oldImprovement
             return
         }.filter { it.action != null }
         Assert.assertTrue("Great Engineer should NOT be able to create a Manufactory modded to require Iron with 0 Iron",
@@ -94,6 +100,7 @@ class UnitUniquesTests {
             .filter { it.action != null }
         Assert.assertFalse("Great Engineer SHOULD be able to create a Manufactory modded to require Iron once Iron is available",
             actionsWithIron.none())
+        game.ruleset.tileImprovements["Manufactory"] = oldImprovement
     }
 
     @Test
