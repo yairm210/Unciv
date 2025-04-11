@@ -52,18 +52,15 @@ class ExpanderTab(
     private val onChange: (() -> Unit)? = null,
     initContent: ((Table) -> Unit)? = null
 ): Table(BaseScreen.skin) {
-    private companion object {
-        const val arrowSize = 18f
-        const val arrowImage = "OtherIcons/BackArrow"
-        val arrowColor = Color(1f,0.96f,0.75f,1f)
-        const val animationDuration = 0.2f
+    companion object {
+        private const val arrowSize = 18f
+        private const val arrowImage = "OtherIcons/BackArrow"
+        private val arrowColor = Color(1f,0.96f,0.75f,1f)
+        private const val animationDuration = 0.2f
 
-        val persistedStates = HashMap<String, Boolean>()
-    }
+        private val persistedStates = HashMap<String, Boolean>()
 
-    @Suppress("ClassName") // Make it look like a static method
-    object wasOpen {
-        operator fun invoke(persistenceID: String) = persistedStates[persistenceID]
+        fun wasOpen(persistenceID: String) = persistedStates[persistenceID]
     }
 
     /** Header with label, [headerContent] and icon, touchable to show/hide.
