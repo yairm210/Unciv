@@ -2,7 +2,7 @@
 
 Ruleset validation: Hide performance suggestions from users, they're now mod-checker only
 
-Maintaenance for improved Code quality
+Maintenance for improved Code quality
 
 Prevent wrong multiplicators when using the "for every [countable]" Unique in complex ways
 
