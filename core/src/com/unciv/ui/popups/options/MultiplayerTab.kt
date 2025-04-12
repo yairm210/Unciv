@@ -174,7 +174,7 @@ private fun addMultiplayerServerOptions(
                     when (authStatus) {
                         AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
                         AuthStatus.UNREGISTERED -> "Your userId does not have any password associated with it currently"
-                        AuthStatus.VERIFIED -> "Your current password has been verified"
+                        AuthStatus.VERIFIED -> "Your current password has been succesfully verified"
                         AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
                     }
                 } else {

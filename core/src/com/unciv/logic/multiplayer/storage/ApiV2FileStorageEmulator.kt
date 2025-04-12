@@ -85,6 +85,10 @@ class ApiV2FileStorageEmulator(private val api: ApiV2) : FileStorage {
         return runBlocking { api.auth.loginOnly(userId, password) }
     }
 
+    override fun checkAuthStatus(userId: String, password: String): AuthStatus {
+        TODO("Not yet implemented")
+    }
+
     override fun setPassword(newPassword: String): Boolean {
         return runBlocking { api.account.setPassword(newPassword, suppress = true) }
     }
