@@ -1,19 +1,17 @@
 ## 4.16.3
 
-4.16.2-patch1
+Ruleset validation: Hide performance suggestions from users, they're now mod-checker only
 
-Hide perf suggestions from users 
+Maintaenance for improved Code quality
 
-Extract other classes out of Unique.kt
-
-For cached stored in LocalUniqueCache, don't apply multiplication when storing, only when retrieving
+Prevent wrong multiplicators when using the "for every [countable]" Unique in complex ways
 
 Resolved  - City states don't get continually researchable techs automatically
 
 By SomeTroglodyte:
-- Map editor reuses the files widget for load/save 
-- Another countables test 
-- More improvements to internal Countables handling 
+- Map editor save/load now support the PgUp/PgDown keyboard keys
+- Improve validation of Countables
+- Fix NullPointerException from Countables evaluation
 
 ## 4.16.2
 
