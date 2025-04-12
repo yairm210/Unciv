@@ -76,6 +76,24 @@ object UncivServerFileStorage : FileStorage {
         return authenticated
     }
 
+    override fun checkAuthStatus(userId: String, password: String): AuthStatus {
+        var authStatus = AuthStatus.UNKNOWN
+        val preEncodedAuthValue = "$userId:$password"
+        authHeader = mapOf("Authorization" to "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}")
+        SimpleHttp.sendGetRequest("$serverUrl/auth", timeout = timeout, header = authHeader) { success, result, code ->
+            if (success) {
+                authStatus = if (result.lowercase().contains("unregistered")) {
+                    AuthStatus.UNREGISTERED
+                } else {
+                    AuthStatus.VERIFIED
+                }
+            } else if (code == 401) {
+                authStatus = AuthStatus.UNAUTHORIZED
+            }
+        }
+        return authStatus
+    }
+
     override fun setPassword(newPassword: String): Boolean {
         if (authHeader == null)
             return false

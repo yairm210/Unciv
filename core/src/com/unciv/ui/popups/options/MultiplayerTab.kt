@@ -4,23 +4,23 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.UncivGame
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.files.IMediaFinder
 import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.GameSetting
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.format
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
@@ -166,7 +166,17 @@ private fun addMultiplayerServerOptions(
         val passwordStatusTable = Table().apply {
             add(
                 if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
-                    "Your userId is password secured"
+                    val userId = settings.multiplayer.userId
+                    val password = settings.multiplayer.passwords[settings.multiplayer.server] ?: ""
+                    val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
+                        .checkAuthStatus(userId, password)
+
+                    when (authStatus) {
+                        AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
+                        AuthStatus.UNREGISTERED -> "Your userId does not have any password associated with it currently"
+                        AuthStatus.VERIFIED -> "Your current password has been verified"
+                        AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
+                    }
                 } else {
                     "Set a password to secure your userId"
                 }.toLabel()
