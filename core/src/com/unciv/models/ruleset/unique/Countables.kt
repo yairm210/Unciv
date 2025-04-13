@@ -6,6 +6,8 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
+import kotlin.math.pow
+import kotlin.math.log
 
 /**
  *  Prototype for each new [Countables] instance, core functionality, to ensure a baseline.
@@ -178,6 +180,27 @@ enum class Countables(
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.isCityState }
         }
+    },
+    
+    Expression {
+        override fun matches(parameterText: String) =
+            parameterText.contains(Regex("""[+\-*/%^()]|\blog\b"""))
+
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? =
+            evaluateExpression(parameterText, stateForConditionals)?.toInt()
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return try {
+                if (parseExpression(parameterText, mockState(ruleset)) != null) null
+                else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            } catch (e: Exception) {
+                UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            }
+        }
+
+        private fun mockState(ruleset: Ruleset) = StateForConditionals().apply {
+            this.gameInfo?.ruleset = ruleset
+        }
     }
     ;
 
@@ -212,7 +235,7 @@ enum class Countables(
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .filter {
                 if (it.matchesWithRuleset)
-                    ruleset != null && it.matches(parameterText, ruleset!!)
+                    ruleset != null && it.matches(parameterText, ruleset)
                 else it.matches(parameterText)
             }
 
@@ -244,6 +267,189 @@ enum class Countables(
             }
             // return last result or default for simplicity - could do a max() instead
             return result
+        }
+
+        fun evaluateExpression(expression: String, state: StateForConditionals): Double? {
+            return parseExpression(expression, state)
+        }
+
+        private sealed class Token {
+            data class NumberToken(val value: Double) : Token()
+            data class VariableToken(val name: String) : Token()
+            data class OperatorToken(val operator: Char) : Token()
+            data class FunctionToken(val name: String) : Token()
+            data object LeftParen : Token()
+            data object RightParen : Token()
+            data object Comma : Token()
+        }
+
+        private fun tokenize(expr: String): List<Token> {
+            val tokens = mutableListOf<Token>()
+            var i = 0
+            while (i < expr.length) {
+                when (val c = expr[i]) {
+                    ' ' -> { i++ }
+                    '(' -> { tokens.add(Token.LeftParen); i++ }
+                    ')' -> { tokens.add(Token.RightParen); i++ }
+                    ',' -> { tokens.add(Token.Comma); i++ }
+                    in "+-*/%^" -> { tokens.add(Token.OperatorToken(c)); i++ }
+                    '[' -> {
+                        val end = expr.indexOf(']', i)
+                        if (end == -1) throw Exception("Invalid variable")
+                        tokens.add(Token.VariableToken(expr.substring(i + 1, end)))
+                        i = end + 1
+                    }
+                    else -> when {
+                        c.isDigit() || c == '.' -> {
+                            val sb = StringBuilder()
+                            while (i < expr.length && (expr[i].isDigit() || expr[i] == '.')) {
+                                sb.append(expr[i])
+                                i++
+                            }
+                            tokens.add(Token.NumberToken(sb.toString().toDouble()))
+                        }
+                        c.isLetter() -> {
+                            val sb = StringBuilder()
+                            while (i < expr.length && expr[i].isLetter()) {
+                                sb.append(expr[i])
+                                i++
+                            }
+                            when (val str = sb.toString()) {
+                                "log" -> tokens.add(Token.FunctionToken(str))
+                                else -> throw Exception("Unknown function: $str")
+                            }
+                        }
+                        else -> throw Exception("Unexpected char: $c")
+                    }
+                }
+            }
+            return tokens
+        }
+
+        private fun parseExpression(expr: String, state: StateForConditionals): Double? {
+            return try {
+                Parser(tokenize(expr), state).parse()
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        private class Parser(private val tokens: List<Token>, private val state: StateForConditionals) {
+            private var pos = 0
+
+            fun parse(): Double? = parseExpression()
+
+            private fun parseExpression(): Double? {
+                var left = parseTerm()
+                while (pos < tokens.size) {
+                    when (val token = tokens[pos]) {
+                        is Token.OperatorToken -> when (token.operator) {
+                            '+', '-' -> {
+                                pos++
+                                val right = parseTerm()
+                                left = when (token.operator) {
+                                    '+' -> left?.plus(right ?: return null)
+                                    '-' -> left?.minus(right ?: return null)
+                                    else -> null
+                                }
+                            }
+                            else -> break
+                        }
+                        else -> break
+                    }
+                }
+                return left
+            }
+
+            private fun parseTerm(): Double? {
+                var left = parseFactor()
+                while (pos < tokens.size) {
+                    when (val token = tokens[pos]) {
+                        is Token.OperatorToken -> when (token.operator) {
+                            '*', '/', '%' -> {
+                                pos++
+                                val right = parseFactor()
+                                left = when (token.operator) {
+                                    '*' -> left?.times(right ?: return null)
+                                    '/' -> right?.let { left?.div(it) }
+                                    '%' -> right?.let { left?.rem(it) }
+                                    else -> null
+                                }
+                            }
+                            else -> break
+                        }
+                        else -> break
+                    }
+                }
+                return left
+            }
+
+            private fun parseFactor(): Double? {
+                var left = parsePower()
+                while (pos < tokens.size) {
+                    when (val token = tokens[pos]) {
+                        is Token.OperatorToken -> when (token.operator) {
+                            '^' -> {
+                                pos++
+                                val right = parsePower()
+                                left = left?.let { l -> right?.let { r -> l.pow(r) } }
+                            }
+                            else -> break
+                        }
+                        else -> break
+                    }
+                }
+                return left
+            }
+
+            private fun parsePower(): Double? {
+                return when (val token = tokens.getOrNull(pos)) {
+                    is Token.NumberToken -> {
+                        pos++
+                        token.value
+                    }
+                    is Token.VariableToken -> {
+                        pos++
+                        getCountableAmount(token.name, state)?.toDouble()
+                    }
+                    Token.LeftParen -> {
+                        pos++
+                        val expr = parseExpression()
+                        if (tokens.getOrNull(pos) != Token.RightParen) null
+                        else {
+                            pos++
+                            expr
+                        }
+                    }
+                    is Token.FunctionToken -> {
+                        pos++
+                        if (tokens.getOrNull(pos) != Token.LeftParen) return null
+                        pos++
+                        val args = mutableListOf<Double>()
+                        while (true) {
+                            val arg = parseExpression() ?: return null
+                            args.add(arg)
+                            when (tokens.getOrNull(pos)) {
+                                Token.Comma -> pos++
+                                Token.RightParen -> {
+                                    pos++
+                                    break
+                                }
+                                else -> return null
+                            }
+                        }
+                        when (token.name) {
+                            "log" -> when {
+                                args.size != 2 -> null
+                                args[0] <= 0 || args[1] <= 0 -> null
+                                else -> (log(args[1], args[0]))
+                            }
+                            else -> null
+                        }
+                    }
+                    else -> null
+                }
+            }
         }
     }
 }
