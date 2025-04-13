@@ -6,6 +6,7 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.log
 
@@ -384,8 +385,8 @@ enum class Countables(
                                 val right = parseFactor()
                                 left = when (token.operator) {
                                     '*' -> left * right
-                                    '/' -> left / right
-                                    '%' -> left % right
+                                    '/' -> if(abs(right - 0.0) > 1e-5) { left / right } else 0.0
+                                    '%' -> if(abs(right - 0.0) > 1e-5) { left % right } else 0.0
                                     else -> throw Exception("Unexpected operator")
                                 }
                             }
@@ -405,7 +406,7 @@ enum class Countables(
                             '^' -> {
                                 pos++
                                 val right = parsePower()
-                                left = left.pow(right)
+                                left = if(abs(right - 0.0) > 1e-5 && abs(left - 0.0) > 1e-5) { left.pow(right) } else 0.0
                             }
                             else -> break
                         }
@@ -456,8 +457,7 @@ enum class Countables(
                         when (token.name) {
                             "log" -> {
                                 if (args.size != 2) throw Exception("log requires 2 arguments")
-                                if (args[0] <= 0 || args[1] <= 0) throw Exception("log arguments must be positive")
-                                log(args[1], args[0])
+                                if (args[0] <= 0 || args[1] <= 0) 0.0 else log(args[1], args[0])
                             }
                             else -> throw Exception("Unknown function: ${token.name}")
                         }
