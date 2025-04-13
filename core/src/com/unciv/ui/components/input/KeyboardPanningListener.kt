@@ -6,13 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.ui.components.extensions.isControlKeyPressed
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 
 class KeyboardPanningListener(
     private val mapHolder: ZoomableScrollPane,
     allowWASD: Boolean
-) : InputListener() {
+) : InputListener(), Disposable {
     companion object {
         /** The delay between panning steps */
         const val deltaTime = 0.01f
@@ -86,5 +87,9 @@ class KeyboardPanningListener(
             }
         }
         mapHolder.doKeyOrMousePanning(deltaX, deltaY)
+    }
+
+    override fun dispose() {
+        stopLoop()
     }
 }

@@ -100,7 +100,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                 if (conditionals.indexOf(lastCheapConditional) > conditionals.indexOf(firstExpensiveConditional))
                     rulesetErrors.add("$prefix contains multiple conditionals," +
                             " of which \"${firstExpensiveConditional.text}\" is more expensive to calculate than \"${lastCheapConditional.text}\". " +
-                            "For performance, consider switching their locations.", RulesetErrorSeverity.Warning, uniqueContainer, unique)
+                            "For performance, consider switching their locations.", RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
             }
         }
         

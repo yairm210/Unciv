@@ -325,9 +325,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeRemovePolicy -> {
                 val policyFilter = unique.params[0]
-                val policiesToRemove = civInfo.policies.adoptedPolicies
-                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
+                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals)
                 if (policiesToRemove.isEmpty()) return null
 
                 return {
@@ -348,9 +346,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeRemovePolicyRefund -> {
                 val policyFilter = unique.params[0]
                 val refundPercentage = unique.params[1].toInt()
-                val policiesToRemove = civInfo.policies.adoptedPolicies
-                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
+                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals)
                 if (policiesToRemove.isEmpty()) return null
 
                 val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)

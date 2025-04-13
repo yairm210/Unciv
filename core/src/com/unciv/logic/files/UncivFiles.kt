@@ -169,7 +169,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    private fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)

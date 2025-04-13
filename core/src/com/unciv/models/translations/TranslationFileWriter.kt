@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
@@ -126,6 +127,11 @@ object TranslationFileWriter {
 
             for (uniqueTarget in UniqueTarget.entries)
                 linesToTranslate += "$uniqueTarget = "
+
+            linesToTranslate += "\n\n#################### Lines from Countables #######################\n"
+            for (countable in Countables.entries)
+                if (countable.text.isNotEmpty())
+                    linesToTranslate += "${countable.text} = "
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
             for (spyAction in SpyAction.entries)

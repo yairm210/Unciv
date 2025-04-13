@@ -46,9 +46,10 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
 
         rightSideButton.setText(saveButtonText.tr())
         rightSideButton.onActivation {
-            if (game.files.getSave(gameNameTextField.text).exists())
-                doubleClickAction()
-            else saveGame()
+            val saveGameFile = game.files.getSave(gameNameTextField.text)
+            if (saveGameFile.exists())
+                doubleClickAction(saveGameFile)
+            else saveGame(saveGameFile)
         }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.enable()
@@ -128,14 +129,14 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
         add(saveToCustomLocation).row()
     }
 
-    private fun saveGame() {
+    private fun saveGame(saveGameFile: FileHandle) {
         rightSideButton.setText(savingText.tr())
         errorLabel.isVisible = false
         Concurrency.runOnNonDaemonThreadPool("SaveGame") {
-            game.files.saveGame(gameInfo, gameNameTextField.text) {
+            game.files.saveGame(gameInfo, saveGameFile) { exception ->
                 launchOnGLThread {
-                    if (it != null) {
-                        handleException(it, "Could not save game!", game.files.getSave(gameNameTextField.text))
+                    if (exception != null) {
+                        handleException(exception, "Could not save game!", game.files.getSave(gameNameTextField.text))
                         rightSideButton.setText(saveButtonText.tr())
                     }
                     else UncivGame.Current.popScreen()
@@ -148,12 +149,12 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
         gameNameTextField.text = saveGameFile.name()
     }
 
-    override fun doubleClickAction() {
+    override fun doubleClickAction(saveGameFile: FileHandle) {
         ConfirmPopup(
             this,
             "Overwrite existing file?",
             "Overwrite",
-        ) { saveGame() }.open()
+        ) { saveGame(saveGameFile) }.open()
     }
 
 }
