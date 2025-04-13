@@ -44,20 +44,9 @@ class CountableTests {
         for (instance in Countables::class.java.enumConstants) {
             val instanceClazz = instance::class.java
 
-            val matchesRulesetOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
-            val matchesPlainOverridden = instanceClazz.hasOverrideFor("matches", String::class.java)
-            if (instance.matchesWithRuleset && !matchesRulesetOverridden) {
-                println("`$instance` is marked as working _with_ a `Ruleset` but fails to override `matches(String,Ruleset)`,")
-                fails++
-            } else if (instance.matchesWithRuleset && matchesPlainOverridden) {
-                println("`$instance` is marked as working _with_ a `Ruleset` but overrides `matches(String)` which is worthless.")
-                fails++
-            } else if (!instance.matchesWithRuleset && matchesRulesetOverridden) {
-                println("`$instance` is marked as working _without_ a `Ruleset` but overrides `matches(String,Ruleset)` which is worthless.")
-                fails++
-            }
-            if (instance.text.isEmpty() && !matchesPlainOverridden && !matchesRulesetOverridden) {
-                println("`$instance` has no `text` but fails to override either `matches` overload.")
+            val matchesOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
+            if (instance.text.isEmpty() && !matchesOverridden) {
+                println("`$instance` has no `text` but fails to override `matches`.")
                 fails++
             }
 
