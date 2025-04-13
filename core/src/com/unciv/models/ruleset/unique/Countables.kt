@@ -294,10 +294,19 @@ enum class Countables(
                     ',' -> { tokens.add(Token.Comma); i++ }
                     in "+-*/%^" -> { tokens.add(Token.OperatorToken(c)); i++ }
                     '[' -> {
-                        val end = expr.indexOf(']', i)
-                        if (end == -1) throw Exception("Invalid variable")
-                        tokens.add(Token.VariableToken(expr.substring(i + 1, end)))
-                        i = end + 1
+                        var bracketCount = 1
+                        var j = i + 1
+                        while (j < expr.length && bracketCount > 0) {
+                            when (expr[j]) {
+                                '[' -> bracketCount++
+                                ']' -> bracketCount--
+                            }
+                            j++
+                        }
+                        if (bracketCount != 0) throw Exception("Invalid variable: unmatched brackets")
+                        val variableName = expr.substring(i + 1, j - 1)
+                        tokens.add(Token.VariableToken(variableName))
+                        i = j
                     }
                     else -> when {
                         c.isDigit() || c == '.' -> {
@@ -337,9 +346,13 @@ enum class Countables(
         private class Parser(private val tokens: List<Token>, private val state: StateForConditionals) {
             private var pos = 0
 
-            fun parse(): Double? = parseExpression()
+            fun parse(): Double {
+                val result = parseExpression()
+                if (pos != tokens.size) throw Exception("Unexpected token at position $pos")
+                return result
+            }
 
-            private fun parseExpression(): Double? {
+            private fun parseExpression(): Double {
                 var left = parseTerm()
                 while (pos < tokens.size) {
                     when (val token = tokens[pos]) {
@@ -348,9 +361,9 @@ enum class Countables(
                                 pos++
                                 val right = parseTerm()
                                 left = when (token.operator) {
-                                    '+' -> left?.plus(right ?: return null)
-                                    '-' -> left?.minus(right ?: return null)
-                                    else -> null
+                                    '+' -> left + right
+                                    '-' -> left - right
+                                    else -> throw Exception("Unexpected operator")
                                 }
                             }
                             else -> break
@@ -361,7 +374,7 @@ enum class Countables(
                 return left
             }
 
-            private fun parseTerm(): Double? {
+            private fun parseTerm(): Double {
                 var left = parseFactor()
                 while (pos < tokens.size) {
                     when (val token = tokens[pos]) {
@@ -370,10 +383,10 @@ enum class Countables(
                                 pos++
                                 val right = parseFactor()
                                 left = when (token.operator) {
-                                    '*' -> left?.times(right ?: return null)
-                                    '/' -> right?.let { left?.div(it) }
-                                    '%' -> right?.let { left?.rem(it) }
-                                    else -> null
+                                    '*' -> left * right
+                                    '/' -> left / right
+                                    '%' -> left % right
+                                    else -> throw Exception("Unexpected operator")
                                 }
                             }
                             else -> break
@@ -384,7 +397,7 @@ enum class Countables(
                 return left
             }
 
-            private fun parseFactor(): Double? {
+            private fun parseFactor(): Double {
                 var left = parsePower()
                 while (pos < tokens.size) {
                     when (val token = tokens[pos]) {
@@ -392,7 +405,7 @@ enum class Countables(
                             '^' -> {
                                 pos++
                                 val right = parsePower()
-                                left = left?.let { l -> right?.let { r -> l.pow(r) } }
+                                left = left.pow(right)
                             }
                             else -> break
                         }
@@ -402,7 +415,7 @@ enum class Countables(
                 return left
             }
 
-            private fun parsePower(): Double? {
+            private fun parsePower(): Double {
                 return when (val token = tokens.getOrNull(pos)) {
                     is Token.NumberToken -> {
                         pos++
@@ -411,43 +424,45 @@ enum class Countables(
                     is Token.VariableToken -> {
                         pos++
                         getCountableAmount(token.name, state)?.toDouble()
+                            ?: throw Exception("Unknown variable: ${token.name}")
                     }
                     Token.LeftParen -> {
                         pos++
                         val expr = parseExpression()
-                        if (tokens.getOrNull(pos) != Token.RightParen) null
-                        else {
-                            pos++
-                            expr
+                        if (tokens.getOrNull(pos) != Token.RightParen) {
+                            throw Exception("Missing closing parenthesis")
                         }
+                        pos++
+                        expr
                     }
                     is Token.FunctionToken -> {
                         pos++
-                        if (tokens.getOrNull(pos) != Token.LeftParen) return null
+                        if (tokens.getOrNull(pos) != Token.LeftParen) {
+                            throw Exception("Missing opening parenthesis after function")
+                        }
                         pos++
                         val args = mutableListOf<Double>()
                         while (true) {
-                            val arg = parseExpression() ?: return null
-                            args.add(arg)
+                            args.add(parseExpression())
                             when (tokens.getOrNull(pos)) {
                                 Token.Comma -> pos++
                                 Token.RightParen -> {
                                     pos++
                                     break
                                 }
-                                else -> return null
+                                else -> throw Exception("Unexpected token in function arguments")
                             }
                         }
                         when (token.name) {
-                            "log" -> when {
-                                args.size != 2 -> null
-                                args[0] <= 0 || args[1] <= 0 -> null
-                                else -> (log(args[1], args[0]))
+                            "log" -> {
+                                if (args.size != 2) throw Exception("log requires 2 arguments")
+                                if (args[0] <= 0 || args[1] <= 0) throw Exception("log arguments must be positive")
+                                log(args[1], args[0])
                             }
-                            else -> null
+                            else -> throw Exception("Unknown function: ${token.name}")
                         }
                     }
-                    else -> null
+                    else -> throw Exception("Unexpected token: $token")
                 }
             }
         }
