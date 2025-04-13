@@ -1,3 +1,18 @@
+## 4.16.3
+
+Ruleset validation: Hide performance suggestions from users, they're now mod-checker only
+
+Maintenance for improved Code quality
+
+Prevent wrong multiplicators when using the "for every [countable]" Unique in complex ways
+
+Resolved  - City states don't get continually researchable techs automatically
+
+By SomeTroglodyte:
+- Map editor save/load now support the PgUp/PgDown keyboard keys
+- Improve validation of Countables
+- Fix NullPointerException from Countables evaluation
+
 ## 4.16.2
 
 Added settings for circles vs hexagons for movable tiles

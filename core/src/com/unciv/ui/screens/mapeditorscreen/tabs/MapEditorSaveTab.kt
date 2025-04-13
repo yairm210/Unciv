@@ -17,13 +17,12 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesTable
+import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesScroll
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -34,7 +33,7 @@ class MapEditorSaveTab(
     private val editorScreen: MapEditorScreen,
     headerHeight: Float
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private val mapFiles = MapEditorFilesTable(
+    private val mapFiles = MapEditorFilesScroll(
         initWidth = editorScreen.getToolsWidth() - 40f,
         includeMods = false,
         this::selectFile,
@@ -74,9 +73,7 @@ class MapEditorSaveTab(
         buttonTable.pack()
 
         val fileTableHeight = editorScreen.stage.height - headerHeight - mapNameTextField.prefHeight - buttonTable.height - 22f
-        val scrollPane = AutoScrollPane(mapFiles, skin)
-        scrollPane.setOverscroll(false, true)
-        add(scrollPane).height(fileTableHeight).fillX().row()
+        add(mapFiles).height(fileTableHeight).fillX().row()
         add(buttonTable).row()
     }
 
@@ -85,7 +82,8 @@ class MapEditorSaveTab(
         saveButton.setText((if (enabled) "Save map" else Constants.working).tr())
     }
 
-    private fun saveHandler() {
+    private fun saveHandler(mapFile: FileHandle? = null) {
+        if (mapFile != null) mapNameTextField.text = mapFile.name()
         if (mapNameTextField.text.isBlank()) return
         editorScreen.tileMap.mapParameters.name = mapNameTextField.text
         editorScreen.tileMap.mapParameters.type = MapGeneratedMainType.custom
@@ -102,17 +100,19 @@ class MapEditorSaveTab(
             "Delete map",
         ) {
             chosenMap!!.delete()
-            mapFiles.update()
+            mapFiles.updateMaps()
         }.open()
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
-        mapFiles.update()
+        editorScreen.enableKeyboardPanningListener(enable = false)
+        mapFiles.updateMaps()
         selectFile(null)
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        editorScreen.enableKeyboardPanningListener(enable = true)
         pager.setScrollDisabled(false)
         stage.keyboardFocus = null
     }

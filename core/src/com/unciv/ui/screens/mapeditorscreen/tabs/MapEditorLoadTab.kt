@@ -14,14 +14,13 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesTable
+import com.unciv.ui.screens.mapeditorscreen.MapEditorFilesScroll
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -32,7 +31,7 @@ class MapEditorLoadTab(
     private val editorScreen: MapEditorScreen,
     headerHeight: Float
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private val mapFiles = MapEditorFilesTable(
+    private val mapFiles = MapEditorFilesScroll(
         initWidth = editorScreen.getToolsWidth() - 20f,
         includeMods = true,
         this::selectFile,
@@ -47,7 +46,7 @@ class MapEditorLoadTab(
     init {
         val buttonTable = Table(skin)
         buttonTable.defaults().pad(10f).fillX()
-        loadButton.onActivation { loadHandler() }
+        loadButton.onActivation { chosenMap?.let { loadHandler(it) } }
         loadButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         buttonTable.add(loadButton)
         deleteButton.onActivation { deleteHandler() }
@@ -56,16 +55,13 @@ class MapEditorLoadTab(
         buttonTable.pack()
 
         val fileTableHeight = editorScreen.stage.height - headerHeight - buttonTable.height - 2f
-        val scrollPane = AutoScrollPane(mapFiles, skin)
-        scrollPane.setOverscroll(false, true)
-        add(scrollPane).size(editorScreen.getToolsWidth() - 20f, fileTableHeight).padTop(10f).row()
+        add(mapFiles).size(editorScreen.getToolsWidth() - 20f, fileTableHeight).padTop(10f).row()
         add(buttonTable).row()
     }
 
-    private fun loadHandler() {
-        if (chosenMap == null) return
+    private fun loadHandler(mapFile: FileHandle) {
         editorScreen.askIfDirtyForLoad {
-            editorScreen.startBackgroundJob("MapLoader") { loaderThread() }
+            editorScreen.startBackgroundJob("MapLoader") { loaderThread(mapFile) }
         }
     }
 
@@ -77,17 +73,19 @@ class MapEditorLoadTab(
             "Delete map",
         ) {
             chosenMap!!.delete()
-            mapFiles.update()
+            mapFiles.updateMaps()
         }.open()
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
-        mapFiles.update()
+        editorScreen.enableKeyboardPanningListener(enable = false)
+        mapFiles.updateMaps()
         selectFile(null)
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        editorScreen.enableKeyboardPanningListener(enable = true)
         pager.setScrollDisabled(false)
     }
 
@@ -98,7 +96,7 @@ class MapEditorLoadTab(
         deleteButton.color = if (file != null) Color.SCARLET else Color.BROWN
     }
 
-    private fun CoroutineScope.loaderThread() {
+    private fun CoroutineScope.loaderThread(mapFile: FileHandle) {
         var popup: Popup? = null
         var needPopup = true    // loadMap can fail faster than postRunnable runs
         Concurrency.runOnGLThread {
@@ -106,7 +104,7 @@ class MapEditorLoadTab(
             popup = LoadingPopup(editorScreen)
         }
         try {
-            val map = MapSaver.loadMap(chosenMap!!)
+            val map = MapSaver.loadMap(mapFile)
             if (!isActive) return
 
             // For deprecated maps, set the base ruleset field if it's still saved in the mods field
@@ -140,7 +138,7 @@ class MapEditorLoadTab(
                 } catch (ex: Throwable) {
                     needPopup = false
                     popup?.close()
-                    Log.error("Error displaying map \"$chosenMap\"", ex)
+                    Log.error("Error displaying map \"$mapFile\"", ex)
                     Gdx.input.inputProcessor = editorScreen.stage
                     ToastPopup("Error loading map!", editorScreen)
                 }
@@ -149,7 +147,7 @@ class MapEditorLoadTab(
             needPopup = false
             Concurrency.runOnGLThread {
                 popup?.close()
-                Log.error("Error loading map \"$chosenMap\"", ex)
+                Log.error("Error loading map \"$mapFile\"", ex)
 
                 @Suppress("InstanceOfCheckForException") // looks cleaner like this than having 2 catch statements
                 ToastPopup("{Error loading map!}" +

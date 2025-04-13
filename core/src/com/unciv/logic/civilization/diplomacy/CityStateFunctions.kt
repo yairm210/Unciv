@@ -806,6 +806,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 getCityStateBonuses(it.cityStateType, relationshipLevel, uniqueType)
             }
             .filter { it.conditionalsApply(stateForConditionals) }
+            .flatMap { it.getMultiplied(stateForConditionals) }
     }
 
 
