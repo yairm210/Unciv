@@ -225,7 +225,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
                 Actions.repeat(
                     RepeatAction.FOREVER,
                     Actions.sequence(
-                        Actions.alpha(opacity*0.7f, 1f),
+                        Actions.alpha(0f, 1f),
                         Actions.alpha(opacity, 1f)
                     )
                 )

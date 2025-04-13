@@ -8,7 +8,7 @@ import com.unciv.json.json
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.SpyAction
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.metadata.GameSettings.LocaleCode
+import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Event
@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
@@ -126,6 +127,11 @@ object TranslationFileWriter {
 
             for (uniqueTarget in UniqueTarget.entries)
                 linesToTranslate += "$uniqueTarget = "
+
+            linesToTranslate += "\n\n#################### Lines from Countables #######################\n"
+            for (countable in Countables.entries)
+                if (countable.text.isNotEmpty())
+                    linesToTranslate += "${countable.text} = "
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
             for (spyAction in SpyAction.entries)
@@ -558,8 +564,7 @@ object TranslationFileWriter {
                 !endWithNewline && translated.endsWith('\n') -> translated.removeSuffix("\n")
                 else -> translated
             }
-            val localeCode = LocaleCode.valueOf(language.replace("_",""))
-            val path = fastlanePath + (localeCode.trueLanguage ?: localeCode.language)
+            val path = fastlanePath + LocaleCode.fastlaneFolder(language)
             File(path).mkdirs()
             File(path + File.separator + fileName).writeText(fileContent)
         }

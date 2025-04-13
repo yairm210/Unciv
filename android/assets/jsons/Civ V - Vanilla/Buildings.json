@@ -966,7 +966,7 @@
 		"name": "Utopia Project",
 		"cost": 1500,
 		"isNationalWonder": true,
-		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start",
+		"uniques": ["Unavailable <when number of [Completed Policy branches] is less than [5]>", "Triggers a global alert upon build start",
 			"Triggers a Cultural Victory upon completion", "Only available <when [Cultural] Victory is enabled>", "Cannot be hurried"]
 	}
 

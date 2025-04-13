@@ -325,9 +325,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeRemovePolicy -> {
                 val policyFilter = unique.params[0]
-                val policiesToRemove = civInfo.policies.adoptedPolicies
-                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
+                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals)
                 if (policiesToRemove.isEmpty()) return null
 
                 return {
@@ -348,9 +346,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeRemovePolicyRefund -> {
                 val policyFilter = unique.params[0]
                 val refundPercentage = unique.params[1].toInt()
-                val policiesToRemove = civInfo.policies.adoptedPolicies
-                    .mapNotNull { civInfo.gameInfo.ruleset.policies[it] }
-                    .filter { it.matchesFilter(policyFilter, stateForConditionals) }
+                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals)
                 if (policiesToRemove.isEmpty()) return null
 
                 val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
@@ -731,6 +727,35 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+
+            UniqueType.OneTimeGainTechPercent -> {
+                val tech = unique.params[1]
+                val amount = unique.params[0].toFloatOrNull()
+                if (amount == null || tech !in civInfo.gameInfo.ruleset.technologies || civInfo.tech.isResearched(tech)) return null
+                val scienceGain = (civInfo.tech.costOfTech(tech) * amount / 100).roundToInt()
+                if (scienceGain == 0) return null
+
+                return {
+                    if (civInfo.tech.techsInProgress[tech] == null) {
+                        civInfo.tech.techsInProgress[tech] = scienceGain
+                    }
+                    else civInfo.tech.techsInProgress[tech] = civInfo.tech.techsInProgress[tech]!! + scienceGain
+
+                    val filledNotification = if (notification != null && notification.hasPlaceholderParameters())
+                        notification.fillPlaceholders(scienceGain.tr())
+                    else notification
+
+                    val notificationText = getNotificationText(
+                        filledNotification, triggerNotificationText,
+                        "You have gained [$scienceGain] Science towards researching [$tech]"
+                    )
+
+                    civInfo.addNotification(notificationText!!, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Science)
+
+                    true
+                }
+            }
+
             UniqueType.OneTimeFreeBelief -> {
                 if (!civInfo.isMajorCiv()) return null
                 val beliefType = BeliefType.valueOf(unique.params[0])

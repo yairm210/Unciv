@@ -10,9 +10,13 @@ import com.unciv.models.ruleset.unique.UniqueType
 class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
 
 enum class RulesetErrorSeverity(val color: Color) {
+    /** Only appears in mod checker */
     OK(Color.GREEN),
+    /** Only appears in mod checker */
     WarningOptionsOnly(Color.YELLOW),
     Warning(Color.YELLOW),
+    /** Only appears in mod checker */
+    ErrorOptionsOnly(Color.ORANGE),
     Error(Color.RED),
 }
 

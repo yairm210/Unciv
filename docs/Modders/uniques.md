@@ -138,12 +138,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Gain enough Faith for a Pantheon"
 	Applicable to: Triggerable
 
-??? example  "Gain enough Faith for [amount]% of a Great Prophet"
+??? example  "Gain enough Faith for [positiveAmount]% of a Great Prophet"
 	Example: "Gain enough Faith for [3]% of a Great Prophet"
 
 	Applicable to: Triggerable
 
-??? example  "Gain control over [tileFilter] tiles in a [amount]-tile radius"
+??? example  "Research [relativeAmount]% of [tech]"
+	Example: "Research [+20]% of [Agriculture]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain control over [tileFilter] tiles in a [nonNegativeAmount]-tile radius"
 	Example: "Gain control over [Farm] tiles in a [3]-tile radius"
 
 	Applicable to: Triggerable
@@ -158,7 +163,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Promotes all spies [amount] time(s)"
+??? example  "Promotes all spies [positiveAmount] time(s)"
 	Example: "Promotes all spies [3] time(s)"
 
 	Applicable to: Triggerable
@@ -243,12 +248,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
-??? example  "[unitTriggerTarget] gains [amount] movement"
+??? example  "[unitTriggerTarget] gains [positiveAmount] movement"
 	Example: "[This Unit] gains [3] movement"
 
 	Applicable to: UnitTriggerable
 
-??? example  "[unitTriggerTarget] loses [amount] movement"
+??? example  "[unitTriggerTarget] loses [positiveAmount] movement"
 	Example: "[This Unit] loses [3] movement"
 
 	Applicable to: UnitTriggerable
@@ -289,18 +294,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[stats] per [amount] population [cityFilter]"
+??? example  "[stats] per [positiveAmount] population [cityFilter]"
 	Example: "[+1 Gold, +2 Production] per [3] population [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[stats] per [amount] social policies adopted"
+??? example  "[stats] per [positiveAmount] social policies adopted"
 	Only works for civ-wide stats
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
 
 	Applicable to: Global
 
-??? example  "[stats] per every [amount] [civWideStat]"
+??? example  "[stats] per every [positiveAmount] [civWideStat]"
 	Example: "[+1 Gold, +2 Production] per every [3] [Gold]"
 
 	Applicable to: Global
@@ -395,12 +400,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Military Units gifted from City-States start with [amount] XP"
+??? example  "[relativeAmount]% Yield from pillaging tiles"
+	Example: "[+20]% Yield from pillaging tiles"
+
+	Applicable to: Global, Unit
+
+??? example  "[relativeAmount]% Health from pillaging tiles"
+	Example: "[+20]% Health from pillaging tiles"
+
+	Applicable to: Global, Unit
+
+??? example  "Military Units gifted from City-States start with [positiveAmount] XP"
 	Example: "Military Units gifted from City-States start with [3] XP"
 
 	Applicable to: Global
 
-??? example  "Militaristic City-States grant units [amount] times as fast when you are at war with a common nation"
+??? example  "Militaristic City-States grant units [positiveAmount] times as fast when you are at war with a common nation"
 	Example: "Militaristic City-States grant units [3] times as fast when you are at war with a common nation"
 
 	Applicable to: Global
@@ -410,7 +425,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns"
+??? example  "Can spend Gold to annex or puppet a City-State that has been your Ally for [nonNegativeAmount] turns"
 	Example: "Can spend Gold to annex or puppet a City-State that has been your Ally for [3] turns"
 
 	Applicable to: Global
@@ -497,22 +512,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Enables construction of Spaceship parts"
 	Applicable to: Global
 
-??? example  "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])"
+??? example  "May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])"
 	Example: "May buy [Melee] units for [3] [Culture] [in all cities] at an increasing price ([3])"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])"
+??? example  "May buy [buildingFilter] buildings for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])"
 	Example: "May buy [Culture] buildings for [3] [Culture] [in all cities] at an increasing price ([3])"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]"
+??? example  "May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter]"
 	Example: "May buy [Melee] units for [3] [Culture] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]"
+??? example  "May buy [buildingFilter] buildings for [nonNegativeAmount] [stat] [cityFilter]"
 	Example: "May buy [Culture] buildings for [3] [Culture] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -527,12 +542,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost"
+??? example  "May buy [baseUnitFilter] units with [stat] for [nonNegativeAmount] times their normal Production cost"
 	Example: "May buy [Melee] units with [Culture] for [3] times their normal Production cost"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost"
+??? example  "May buy [buildingFilter] buildings with [stat] for [nonNegativeAmount] times their normal Production cost"
 	Example: "May buy [Culture] buildings with [Culture] for [3] times their normal Production cost"
 
 	Applicable to: Global, FollowerBelief
@@ -675,7 +690,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[amount] Unit Supply per [amount] population [cityFilter]"
+??? example  "[amount] Unit Supply per [positiveAmount] population [cityFilter]"
 	Example: "[3] Unit Supply per [3] population [in all cities]"
 
 	Applicable to: Global
@@ -708,7 +723,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global
 
-??? example  "Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory"
+??? example  "Enemy [mapUnitFilter] units must spend [positiveAmount] extra movement points when inside your territory"
 	Example: "Enemy [Wounded] units must spend [3] extra movement points when inside your territory"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
@@ -1029,13 +1044,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "[amount] Movement point cost to disembark"
+??? example  "[nonNegativeAmount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global, Unit
 
-??? example  "[amount] Movement point cost to embark"
+??? example  "[nonNegativeAmount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
@@ -1153,7 +1168,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
-??? example  "[stats] from every [amount] global followers [cityFilter]"
+??? example  "[stats] from every [positiveAmount] global followers [cityFilter]"
 	Example: "[+1 Gold, +2 Production] from every [3] global followers [in all cities]"
 
 	Applicable to: FounderBelief
@@ -1191,7 +1206,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[stats] per [amount] population [cityFilter]"
+??? example  "[stats] per [positiveAmount] population [cityFilter]"
 	Example: "[+1 Gold, +2 Production] per [3] population [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -1291,22 +1306,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])"
+??? example  "May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])"
 	Example: "May buy [Melee] units for [3] [Culture] [in all cities] at an increasing price ([3])"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])"
+??? example  "May buy [buildingFilter] buildings for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])"
 	Example: "May buy [Culture] buildings for [3] [Culture] [in all cities] at an increasing price ([3])"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]"
+??? example  "May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter]"
 	Example: "May buy [Melee] units for [3] [Culture] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]"
+??? example  "May buy [buildingFilter] buildings for [nonNegativeAmount] [stat] [cityFilter]"
 	Example: "May buy [Culture] buildings for [3] [Culture] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -1321,12 +1336,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost"
+??? example  "May buy [baseUnitFilter] units with [stat] for [nonNegativeAmount] times their normal Production cost"
 	Example: "May buy [Melee] units with [Culture] for [3] times their normal Production cost"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost"
+??? example  "May buy [buildingFilter] buildings with [stat] for [nonNegativeAmount] times their normal Production cost"
 	Example: "May buy [Culture] buildings with [Culture] for [3] times their normal Production cost"
 
 	Applicable to: Global, FollowerBelief
@@ -1451,11 +1466,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Limited to [amount] per Civilization"
 	Example: "Limited to [3] per Civilization"
-
-	Applicable to: Building, Unit
-
-??? example  "Hidden until [amount] social policy branches have been completed"
-	Example: "Hidden until [3] social policy branches have been completed"
 
 	Applicable to: Building, Unit
 
@@ -1626,6 +1636,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that can be added to units, unit types, or promotions
 
+??? example  "[relativeAmount]% Yield from pillaging tiles"
+	Example: "[+20]% Yield from pillaging tiles"
+
+	Applicable to: Global, Unit
+
+??? example  "[relativeAmount]% Health from pillaging tiles"
+	Example: "[+20]% Health from pillaging tiles"
+
+	Applicable to: Global, Unit
+
 ??? example  "[relativeAmount]% construction time for [improvementFilter] improvements"
 	Example: "[+20]% construction time for [All Road] improvements"
 
@@ -1670,11 +1690,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Limited to [amount] per Civilization"
 	Example: "Limited to [3] per Civilization"
-
-	Applicable to: Building, Unit
-
-??? example  "Hidden until [amount] social policy branches have been completed"
-	Example: "Hidden until [3] social policy branches have been completed"
 
 	Applicable to: Building, Unit
 
@@ -2112,13 +2127,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
-??? example  "[amount] Movement point cost to disembark"
+??? example  "[nonNegativeAmount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Global, Unit
 
-??? example  "[amount] Movement point cost to embark"
+??? example  "[nonNegativeAmount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
@@ -2274,6 +2289,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Provides a one-time bonus of [+1 Gold, +2 Production] to the closest city when cut down"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
@@ -2527,11 +2543,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Pillaging this improvement yields approximately [stats]"
 	Example: "Pillaging this improvement yields approximately [+1 Gold, +2 Production]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
 	Applicable to: Improvement
 
 ??? example  "Pillaging this improvement yields [stats]"
 	Example: "Pillaging this improvement yields [+1 Gold, +2 Production]"
 
+	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
 	Applicable to: Improvement
 
 ??? example  "Destroyed when pillaged"
@@ -2691,7 +2711,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## Tutorial uniques
 ## CityState uniques
-??? example  "Provides military units every ≈[amount] turns"
+??? example  "Provides military units every ≈[positiveAmount] turns"
 	Example: "Provides military units every ≈[3] turns"
 
 	Applicable to: CityState
@@ -2796,12 +2816,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;before turn number [amount]&gt;"
+??? example  "&lt;before turn number [nonNegativeAmount]&gt;"
 	Example: "&lt;before turn number [3]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;after turn number [amount]&gt;"
+??? example  "&lt;after turn number [nonNegativeAmount]&gt;"
 	Example: "&lt;after turn number [3]&gt;"
 
 	Applicable to: Conditional
@@ -2841,7 +2861,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when nuclear weapons are enabled&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;with [amount]% chance&gt;"
+??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
 
 	Applicable to: Conditional
@@ -3061,12 +3081,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;in cities with at least [amount] [populationFilter]&gt;"
+??? example  "&lt;in cities with at least [positiveAmount] [populationFilter]&gt;"
 	Example: "&lt;in cities with at least [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;in cities with [amount] [populationFilter]&gt;"
+??? example  "&lt;in cities with [positiveAmount] [populationFilter]&gt;"
 	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3141,12 +3161,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [amount] HP&gt;"
+??? example  "&lt;when above [positiveAmount] HP&gt;"
 	Example: "&lt;when above [3] HP&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;when below [amount] HP&gt;"
+??? example  "&lt;when below [positiveAmount] HP&gt;"
 	Example: "&lt;when below [3] HP&gt;"
 
 	Applicable to: Conditional
@@ -3154,7 +3174,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;if it hasn't used other actions yet&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;with [amount] to [amount] neighboring [tileFilter] tiles&gt;"
+??? example  "&lt;with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles&gt;"
 	Example: "&lt;with [3] to [3] neighboring [Farm] tiles&gt;"
 
 	Applicable to: Conditional
@@ -3169,7 +3189,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;within [amount] tiles of a [tileFilter]&gt;"
+??? example  "&lt;within [positiveAmount] tiles of a [tileFilter]&gt;"
 	Example: "&lt;within [3] tiles of a [Farm]&gt;"
 
 	Applicable to: Conditional
@@ -3366,7 +3386,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerCondition
 
-??? example  "&lt;upon losing at least [amount] HP in a single attack&gt;"
+??? example  "&lt;upon losing at least [positiveAmount] HP in a single attack&gt;"
 	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
 
 	Applicable to: UnitTriggerCondition
@@ -3404,8 +3424,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Will consume all Movement to execute
 	Applicable to: UnitActionModifier
 
-??? example  "&lt;requires [amount] movement&gt;"
-	Requires [amount] of Movement to execute. Unit's Movement is rounded up
+??? example  "&lt;requires [nonNegativeAmount] movement&gt;"
+	Requires [nonNegativeAmount] of Movement to execute. Unit's Movement is rounded up
 	Example: "&lt;requires [3] movement&gt;"
 
 	Applicable to: UnitActionModifier
@@ -3431,12 +3451,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;once&gt;"
 	Applicable to: UnitActionModifier
 
-??? example  "&lt;[amount] times&gt;"
+??? example  "&lt;[positiveAmount] times&gt;"
 	Example: "&lt;[3] times&gt;"
 
 	Applicable to: UnitActionModifier
 
-??? example  "&lt;[amount] additional time(s)&gt;"
+??? example  "&lt;[nonNegativeAmount] additional time(s)&gt;"
 	Example: "&lt;[3] additional time(s)&gt;"
 
 	Applicable to: UnitActionModifier
@@ -3449,7 +3469,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Modifiers that can be added to other uniques changing user experience, not their behavior
 
-??? example  "&lt;for [amount] turns&gt;"
+??? example  "&lt;for [nonNegativeAmount] turns&gt;"
 	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
 	Example: "&lt;for [3] turns&gt;"
 
@@ -3468,13 +3488,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: MetaModifier
 
-??? example  "&lt;for every [amount] [countable]&gt;"
+??? example  "&lt;for every [positiveAmount] [countable]&gt;"
 	Example: "&lt;for every [3] [1000]&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;(modified by game speed)&gt;"
 	Can only be applied to certain uniques, see details of each unique for specifics
+	Applicable to: MetaModifier
+
+??? example  "&lt;(modified by game progress up to [relativeAmount]%)&gt;"
+	Can only be applied to certain uniques, see details of each unique for specifics
+	Example: "&lt;(modified by game progress up to [+20]%)&gt;"
+
 	Applicable to: MetaModifier
 
 ??? example  "&lt;Suppress warning [validationWarning]&gt;"
@@ -3500,8 +3526,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement excluding 'Cancel improvement order'
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
+*[nonNegativeAmount]: This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional.
 *[policy]: The name of any policy.
-*[policyFilter]: The name of any policy.
+*[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), a policy branch as `[branchName] branch` (matching all policies in that branch), or `[all] branch` which matches all branch starter policies.
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
