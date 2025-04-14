@@ -201,6 +201,29 @@ enum class Countables(
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.isCityState }
         }
+    },
+
+    @InDevelopment("@AutumnPizazz", eta = "2025-06-30")
+    Expression {
+        override val noPlaceholders = false
+
+        private val engine = Expressions()
+
+        override fun matches(parameterText: String, ruleset: Ruleset?) =
+            engine.matches(parameterText, ruleset)
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? =
+            engine.eval(parameterText, stateForConditionals)
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            engine.getErrorSeverity(parameterText, ruleset)
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = emptySet<String>()
+
+        override val documentationHeader = "Evaluate expressions!"
+        override val documentationStrings = listOf(
+            "Expressions support `+`, `-`, `*`, `/`, `%`, `^` and `log` as binary operators.",
+            "Operands can be floating point constants or other countables in square brackets",
+            "..."
+        )
     }
     ; //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
