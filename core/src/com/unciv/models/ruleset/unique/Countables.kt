@@ -5,7 +5,11 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 /**
  *  Prototype for each new [Countables] instance, core functionality, to ensure a baseline.
@@ -230,14 +234,41 @@ enum class Countables(
             else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
         }
     }
+    //endregion
 
-    fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+    //region ' Deprecation and InDevelopment'
+    fun getDeprecationAnnotation(): Deprecated? = getDeprecatedAnnotation() ?: getDeprecationFromInDevelopment()
+
+    /**
+     *  This annotation marks a [Countables] instance as active for debug builds only.
+     *  - If you add both @Deprecated and @InDevelopment to the same instance, the validator will only see the @Deprecated one,
+     *    while @InDevelopment still controls whether it si active (evaluated at all).
+     *  @param developer - the responsible dev as `@` plus github account
+     *  @param eta - An expiration date in the form 'yyyy-mm-dd', UTC, after which the instance is treated as deprecated **and** inactive
+     */
+    @Retention(AnnotationRetention.RUNTIME)
+    @Target(AnnotationTarget.FIELD)
+    annotation class InDevelopment(val developer: String, val eta: String)
+
+    private fun getDeprecatedAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+    private fun getInDevelopmentAnnotation(): InDevelopment? = declaringJavaClass.getField(name).getAnnotation(InDevelopment::class.java)
+    private fun InDevelopment.isExpired(): Boolean {
+        val etaDate = LocalDate.parse(eta, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return etaDate.isBefore(LocalDate.now(ZoneOffset.UTC))
+    }
+    private fun isInactive(): Boolean {
+        val inDev = getInDevelopmentAnnotation() ?: return false
+        if (inDev.isExpired()) return true
+        return Log.backend.isRelease()
+    }
+    private fun getDeprecationFromInDevelopment(): Deprecated? =
+        if (getInDevelopmentAnnotation()?.isExpired() == true) Deprecated("InDevelopment ETA has expired") else null
     //endregion
 
     companion object {
         private fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .filter {
-                it.matches(parameterText, ruleset).isOK(strict = true)
+                !it.isInactive() && it.matches(parameterText, ruleset).isOK(strict = true)
             }
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
@@ -263,6 +294,7 @@ enum class Countables(
         fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             var result: UniqueType.UniqueParameterErrorSeverity? = null
             for (countable in Countables.entries) {
+                if (countable.isInactive()) continue
                 val thisResult = when (countable.matches(parameterText, ruleset)) {
                     ICountable.MatchResult.No -> continue
                     ICountable.MatchResult.Yes ->
@@ -280,7 +312,7 @@ enum class Countables(
         /** Get deprecated [Countables] with their [Deprecated] object matching a [parameterText], for `UniqueValidator` */
         fun getDeprecatedCountablesMatching(parameterText: String): List<Pair<Countables, Deprecated>> =
             Countables.entries.filter {
-                it.matches(parameterText, null).isOK(strict = false)
+                !it.isInactive() && it.matches(parameterText, null).isOK(strict = false)
             }.mapNotNull { countable ->
                 countable.getDeprecationAnnotation()?.let { countable to it }
             }
