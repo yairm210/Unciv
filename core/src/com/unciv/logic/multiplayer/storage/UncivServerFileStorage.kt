@@ -80,15 +80,12 @@ object UncivServerFileStorage : FileStorage {
         var authStatus = AuthStatus.UNKNOWN
         val preEncodedAuthValue = "$userId:$password"
         authHeader = mapOf("Authorization" to "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}")
-        SimpleHttp.sendGetRequest("$serverUrl/auth", timeout = timeout, header = authHeader) { success, result, code ->
-            if (success) {
-                authStatus = if (result.lowercase().contains("unregistered")) {
-                    AuthStatus.UNREGISTERED
-                } else {
-                    AuthStatus.VERIFIED
-                }
-            } else if (code == 401) {
-                authStatus = AuthStatus.UNAUTHORIZED
+        SimpleHttp.sendGetRequest("$serverUrl/auth", timeout = timeout, header = authHeader) { _, _, code ->
+            authStatus = when (code) {
+                200 -> AuthStatus.VERIFIED
+                204 -> AuthStatus.UNREGISTERED
+                401 -> AuthStatus.UNAUTHORIZED
+                else -> AuthStatus.UNKNOWN
             }
         }
         return authStatus
