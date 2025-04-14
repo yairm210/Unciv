@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.testing.GdxTestRunner
@@ -209,7 +210,7 @@ class CountableTests {
             "[+1 Food] <when number of [Cocoa] is between [Bison] and [Maryjane]>" to 3,
         )
         val totalNotACountableExpected = testData.sumOf { it.second }
-        val notACountableRegex = Regex(""".*parameter "(.*)" which does not fit parameter type countable.*""")
+        val notACountableRegex = Regex(""".*parameter "(.*)" ${UniqueValidator.whichDoesNotFitParameterType} countable.*""")
 
         val ruleset = setupModdedGame(
             *testData.map { it.first }.toTypedArray(),
