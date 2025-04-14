@@ -197,9 +197,11 @@ private class UncivServerRunner : CliktCommand() {
                             return@get
                         }
 
-                        if (authMap[userId] == null) call.respond(HttpStatusCode.NoContent)
-                        else if (authMap[userId] == password) call.respond(HttpStatusCode.OK)
-                        else call.respond(HttpStatusCode.Unauthorized)
+                        when (authMap[userId]) {
+                            null -> call.respond(HttpStatusCode.NoContent)
+                            password -> call.respond(HttpStatusCode.OK)
+                            else -> call.respond(HttpStatusCode.Unauthorized)
+                        }
                     }
                     put("/auth") {
                         log.info("Received auth password set from ${call.request.local.remoteHost}")
