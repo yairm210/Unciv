@@ -108,7 +108,7 @@ private class UncivServerRunner : CliktCommand() {
         if (!authV1Enabled)
             return null
 
-        // If auth is enabled a auth string is required
+        // If auth is enabled an auth string is required
         if (authString == null || !authString.startsWith("Basic "))
             return null
 
@@ -186,12 +186,20 @@ private class UncivServerRunner : CliktCommand() {
                 if (authV1Enabled) {
                     get("/auth") {
                         log.info("Received auth request from ${call.request.local.remoteHost}")
-                        val authHeader = call.request.headers["Authorization"]
-                        if (validateAuth(authHeader)) {
-                            call.respond(HttpStatusCode.OK)
-                        } else {
-                            call.respond(HttpStatusCode.Unauthorized)
+
+                        val authHeader = call.request.headers["Authorization"] ?: run {
+                            call.respond(HttpStatusCode.Unauthorized, "Missing authorization header!")
+                            return@get
                         }
+
+                        val (userId, password) = extractAuth(authHeader) ?: run {
+                            call.respond(HttpStatusCode.BadRequest, "Malformed authorization header!")
+                            return@get
+                        }
+
+                        if (authMap[userId] == null) call.respond(HttpStatusCode.NoContent)
+                        else if (authMap[userId] == password) call.respond(HttpStatusCode.OK)
+                        else call.respond(HttpStatusCode.Unauthorized)
                     }
                     put("/auth") {
                         log.info("Received auth password set from ${call.request.local.remoteHost}")
