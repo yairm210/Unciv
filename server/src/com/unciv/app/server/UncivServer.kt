@@ -186,7 +186,7 @@ private class UncivServerRunner : CliktCommand() {
                         log.info("Received auth request from ${call.request.local.remoteHost}")
 
                         val authHeader = call.request.headers["Authorization"] ?: run {
-                            call.respond(HttpStatusCode.Unauthorized, "Missing authorization header!")
+                            call.respond(HttpStatusCode.BadRequest, "Missing authorization header!")
                             return@get
                         }
 
