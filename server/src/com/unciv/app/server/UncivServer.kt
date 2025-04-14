@@ -102,15 +102,15 @@ private class UncivServerRunner : CliktCommand() {
         return authMap[userId] == null || authMap[userId] == password
     }
 
-    private fun extractAuth(authString: String?): Pair<String, String>? {
+    private fun extractAuth(authHeader: String?): Pair<String, String>? {
         if (!authV1Enabled)
             return null
 
-        // If auth is enabled an auth string is required
-        if (authString == null || !authString.startsWith("Basic "))
+        // If auth is enabled an authorization header is required
+        if (authHeader == null || !authHeader.startsWith("Basic "))
             return null
 
-        val decodedString = String(Base64.getDecoder().decode(authString.drop(6)))
+        val decodedString = String(Base64.getDecoder().decode(authHeader.drop(6)))
         val splitAuthString = decodedString.split(":", limit=2)
         if (splitAuthString.size != 2)
             return null
