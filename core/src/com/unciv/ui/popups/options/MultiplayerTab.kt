@@ -171,8 +171,6 @@ private fun addMultiplayerServerOptions(
                     val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
                         .checkAuthStatus(userId, password)
 
-                    Concurrency.run
-
                     when (authStatus) {
                         AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
                         AuthStatus.UNREGISTERED -> "You userId is unregistered! Set password to secure your userId"
