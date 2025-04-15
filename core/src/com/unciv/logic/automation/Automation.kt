@@ -484,8 +484,8 @@ object Automation {
             if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= city.getWorkRange()) score -= 104
         } else {
-            // Water tiles without resources aren't great
-            if (tile.isWater) score += 25
+            // Water tiles without resources aren't great unless they're Atolls
+            if (tile.isWater) score += 3
             // Can't work it anyways
             if (distance > city.getWorkRange()) score += 100
         }
