@@ -184,15 +184,30 @@ enum class Countables(
     },
     
     Expression {
-        override fun matches(parameterText: String) =
-            parameterText.contains(Regex("""[+\-*/%^()]|\blog\b"""))
+        override val documentationHeader = """A composite mathematical expression to perform operations on the other simple parameters above."""
 
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? =
-            evaluateExpression(parameterText, stateForConditionals)?.toInt()
+        override val documentationStrings = listOf(
+            "As an identifier, the beginning and end of the expression need to be separated by `\$`, for example, `\$ [Cities] * 2 \$`.",
+            "You can use `+`, `-`, `*`, `/`, `^`, `%`, and `log` to perform operations on the simple parameters provided above.",
+            "The default order of operations follows mathematical intuition, and parentheses `()` can also be used to adjust the precedence.",
+            "For example: `$ ([Cities] + 1) * log([Units], 2) $`",
+            "For expressions that are mathematically undefined — such as `n/0`, `n%0`, `0^0`, and `log(notPositive, notPositive)`—the result will be **0**.",
+            "All parameters will be converted to Double-type floating-point numbers during computation. After the operation is completed, the decimal part will be truncated (rounded down) to convert the result into an Int type. Therefore, precision loss may occur in large-number operations."
+        )
+        
+        override fun matches(parameterText: String) =
+            parameterText.contains(Regex("""^\$(.*)\$"""))
+
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            if (!parameterText.matches(Regex("""^\$(.*)\$"""))) return null
+            return evaluateExpression(parameterText, stateForConditionals)?.toInt()
+        }
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             return try {
-                if (parseExpression(parameterText, mockState(ruleset)) != null) null
+                if (!parameterText.startsWith('$') || !parameterText.endsWith('$')) return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                val stripped = parameterText.substring(1, parameterText.length - 1)
+                if (parseExpression(stripped, mockState(ruleset)) != null) null
                 else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             } catch (e: Exception) {
                 UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
@@ -271,7 +286,9 @@ enum class Countables(
         }
 
         fun evaluateExpression(expression: String, state: StateForConditionals): Double? {
-            return parseExpression(expression, state)
+            if (!expression.startsWith('$') || !expression.endsWith('$')) return null
+            val stripped = expression.substring(1, expression.length - 1)
+            return parseExpression(stripped, state)
         }
 
         private sealed class Token {
