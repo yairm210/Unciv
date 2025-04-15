@@ -60,7 +60,7 @@ Unciv uses Gradle 8.7 and the Android Gradle Plugin 8.5. Can check in File > Pro
 -   Running: `gradlew desktop:run`
 -   Building: `gradlew desktop:dist`
 
-### Linux / MacOS / Windows (PowerShell)
+### Linux / macOS / Windows (PowerShell)
 
 -   Running: `./gradlew desktop:run`
 -   Building: `./gradlew desktop:dist`
