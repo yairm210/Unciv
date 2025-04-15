@@ -163,24 +163,34 @@ private fun addMultiplayerServerOptions(
         serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
         serverIpTable.add(passwordTextField).colspan(2).growX().padBottom(8f).row()
 
-        val passwordStatusTable = Table().apply {
-            add(
-                if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
-                    val userId = settings.multiplayer.userId
-                    val password = settings.multiplayer.passwords[settings.multiplayer.server] ?: ""
-                    val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
-                        .checkAuthStatus(userId, password)
+        // initially assume no password
+        val authStatusLabel = "Set a password to secure your userId".toLabel()
 
-                    when (authStatus) {
-                        AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
-                        AuthStatus.UNREGISTERED -> "You userId is unregistered! Set password to secure your userId"
-                        AuthStatus.VERIFIED -> "Your current password has been succesfully verified"
-                        AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
-                    }
-                } else {
-                    "Set a password to secure your userId"
-                }.toLabel()
-            )
+        if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
+            val userId = settings.multiplayer.userId
+            val password = settings.multiplayer.passwords[settings.multiplayer.server] ?: ""
+
+
+            authStatusLabel.setText("Validating your authentication status...")
+            Concurrency.run {
+                val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
+                    .checkAuthStatus(userId, password)
+
+                val newAuthStatusText = when (authStatus) {
+                    AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
+                    AuthStatus.UNREGISTERED -> "You userId is unregistered! Set password to secure your userId"
+                    AuthStatus.VERIFIED -> "Your current password has been succesfully verified"
+                    AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
+                }
+
+                Concurrency.runOnGLThread {
+                    authStatusLabel.setText(newAuthStatusText)
+                }
+            }
+        }
+
+        val passwordStatusTable = Table().apply {
+            add(authStatusLabel)
             add(setPasswordButton.onClick {
                 setPassword(passwordTextField.text, optionsPopup)
             }).padLeft(16f)
