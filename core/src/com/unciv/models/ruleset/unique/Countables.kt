@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
@@ -293,6 +294,16 @@ enum class Countables(
             .filter {
                 !it.isInactive() && it.matches(parameterText, ruleset).isOK(strict = true)
             }
+
+        fun getBestMatching(parameterText: String, ruleset: Ruleset?): Pair<Countables?, ICountable.MatchResult> =
+            Countables.entries
+            .filter {
+                !it.isInactive() && it.matches(parameterText, ruleset).isOK(strict = true)
+            }.mapNotNull {
+                val result = it.matches(parameterText, ruleset)
+                if (result.isOK(strict = false)) it to result else null
+            }.minByOrNull { it.second }
+            ?: Pair(null, ICountable.MatchResult.No)
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
