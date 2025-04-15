@@ -191,8 +191,8 @@ class CountableTests {
             "[+1 Happiness] <for every [[42] Monkeys]>" to 1, // +1 monkeys
             "[+1 Gold] <when number of [year] is equal to [countable]>" to 1,
             "[+1 Food] <when number of [-0] is different than [+0]>" to 0,
-            "[+1 Food] <when number of [5e1] is more than [0.5]>" to 2,
-            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>" to 3,
+            "[+1 Food] <when number of [5e1] is more than [0.5]>" to 1, // The Expression countable supports fractional numbers
+            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>" to 1, // dito
             "[+1 Food] <when number of [[~Nonexisting~] Cities] is between [[Annexed] Cities] and [Cities]>" to 1,
             "[+1 Food] <when number of [[Paratrooper] Units] is between [[Air] Units] and [Units]>" to 0,
             "[+1 Food] <when number of [[~Bogus~] Units] is between [[Land] Units] and [[Air] Units]>" to 1,
