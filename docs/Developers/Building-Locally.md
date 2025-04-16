@@ -55,12 +55,12 @@ Unciv uses Gradle 8.7 and the Android Gradle Plugin 8.5. Can check in File > Pro
 - Clone the project (see above initial steps)
 - Open a terminal in the Unciv folder and run the following commands
 
-### Windows
+### Windows (CMD)
 
 -   Running: `gradlew desktop:run`
 -   Building: `gradlew desktop:dist`
 
-### Linux/Mac OS
+### Linux / macOS / Windows (PowerShell)
 
 -   Running: `./gradlew desktop:run`
 -   Building: `./gradlew desktop:dist`

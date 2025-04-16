@@ -27,7 +27,7 @@ import kotlin.math.min
 
 object Automation {
 
-    fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Float {
+    fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
         return rankStatsForCityWork(stats, city, false, localUniqueCache)
     }
