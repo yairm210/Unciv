@@ -434,7 +434,12 @@ enum class Countables(
             }
 
             private fun parsePower(): Double {
-                return when (val token = tokens.getOrNull(pos)) {
+                var isNegative = false
+                if (tokens.getOrNull(pos) is Token.OperatorToken && (tokens[pos] as Token.OperatorToken).operator == '-') {
+                    isNegative = true
+                    pos++
+                }
+                var value = when (val token = tokens.getOrNull(pos)) {
                     is Token.NumberToken -> {
                         pos++
                         token.value
@@ -481,6 +486,8 @@ enum class Countables(
                     }
                     else -> throw Exception("Unexpected token: $token")
                 }
+                if (isNegative) value = -value
+                return value
             }
         }
     }
