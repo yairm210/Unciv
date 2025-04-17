@@ -228,7 +228,7 @@ object Automation {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID
             val findWaterConnectedCitiesAndEnemies =
-                    BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
+                    BFS(city.getCenterTile()) { it.isWater && !it.isImpassible() || it.isCityCenter() }
             findWaterConnectedCitiesAndEnemies.stepToEnd()
 
             val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
