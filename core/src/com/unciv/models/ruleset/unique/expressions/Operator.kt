@@ -1,16 +1,6 @@
 package com.unciv.models.ruleset.unique.expressions
 
-import kotlin.math.abs
-import kotlin.math.atan
-import kotlin.math.cbrt
-import kotlin.math.cos
-import kotlin.math.exp
-import kotlin.math.ln
-import kotlin.math.log10
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
-import kotlin.math.tan
+import kotlin.math.*
 
 internal sealed interface Operator : Tokenizer.Token {
     val symbol: String
@@ -39,17 +29,11 @@ internal sealed interface Operator : Tokenizer.Token {
     ) : Unary {
         Identity("+", { operand -> operand }),
         Negation("-", { operand -> -operand }),
-        Sqrt("√", ::sqrt),
+        Ciel("√", ::sqrt),
         Abs("abs", ::abs),
         Sqrt2("sqrt", ::sqrt),
-        Cbrt("cbtr", ::cbrt),
-        Exp("exp", ::exp),
-        Log("ln", ::ln),
-        Log10("log10", ::log10),
-        Sin("sin", ::sin),
-        Cos("cos", ::cos),
-        Tan("tan", ::tan),
-        Atan("atan", ::atan),
+        Floor("floor", ::floor),
+        Ceil("ceil", ::ceil),
         ;
         override fun toString() = symbol
     }
