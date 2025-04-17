@@ -45,19 +45,20 @@ object Parser {
     //region Exceptions
     /** Parent of all exceptions [parse] can throw.
      *  If the exception caught is not [SyntaxError], then an Expression Countable should say NO "that can't possibly an expression". */
-    open class ParsingError(override val message: String, open val severity: ICountable.MatchResult = ICountable.MatchResult.No) : Exception()
+    open class ParsingError(override val message: String, val position:Int,
+                            open val severity: ICountable.MatchResult = ICountable.MatchResult.No) : Exception()
     /** Less severe than [ParsingError].
      *  It allows an Expression Countable to say "Maybe", meaning the string might be of type Expression, but malformed. */
-    open class SyntaxError(message: String) : ParsingError(message, ICountable.MatchResult.Maybe)
-    class UnmatchedBraces(pos: Int) : ParsingError("Unmatched square braces at $pos")
-    class EmptyBraces : ParsingError("Empty square braces")
-    class UnmatchedParentheses(name: String) : SyntaxError("Unmatched $name parenthesis")
-    internal class UnexpectedToken(expected: Token, found: Token) : ParsingError("Unexpected token: $found instead of $expected")
-    class MissingOperand : SyntaxError("Missing operand")
-    class InvalidConstant(text: String) : SyntaxError("Invalid constant: $text")
-    class MalformedCountable(countable: Countables, text: String) : SyntaxError("Token \"$text\" seems to be a Countable(${countable.name}), but is malformed")
-    class UnrecognizedToken : ParsingError("Unrecognized token")
-    class InternalError : ParsingError("Internal error")
+    open class SyntaxError(message: String, position: Int) : ParsingError(message, position, ICountable.MatchResult.Maybe)
+    class UnmatchedBraces(position: Int) : ParsingError("Unmatched square braces", position)
+    class EmptyBraces(position: Int) : ParsingError("Empty square braces", position)
+    class UnmatchedParentheses(position: Int, name: String) : SyntaxError("Unmatched $name parenthesis", position)
+    internal class UnexpectedToken(position: Int, expected: Token, found: Token) : ParsingError("Unexpected token: $found instead of $expected", position)
+    class MissingOperand(position: Int) : SyntaxError("Missing operand", position)
+    class InvalidConstant(position: Int, text: String) : SyntaxError("Invalid constant: $text", position)
+    class MalformedCountable(position: Int, countable: Countables, text: String) : SyntaxError("Token \"$text\" seems to be a Countable(${countable.name}), but is malformed", position)
+    class UnrecognizedToken(position: Int) : ParsingError("Unrecognized token", position)
+    class InternalError(position: Int) : ParsingError("Internal error", position)
     //endregion
 
     /** Marker for beginning of the expression */
@@ -69,18 +70,19 @@ object Parser {
         override fun toString() = "end of expression"
     }
 
-    private class StateEngine(input: Sequence<Token>) {
+    private class StateEngine(input: Sequence<Pair<Int,Token>>) {
         private var currentToken: Token = StartToken
+        private var currentPosition: Int = 0
         private val iterator = input.iterator()
         private var openParenthesesCount = 0
 
         private fun expect(expected: Token) {
             if (currentToken == expected) return
             if (expected == Parentheses.Closing && currentToken == EndToken)
-                throw UnmatchedParentheses(Parentheses.Opening.name.lowercase())
+                throw UnmatchedParentheses(currentPosition, Parentheses.Opening.name.lowercase())
             if (expected == EndToken && currentToken == Parentheses.Closing)
-                throw UnmatchedParentheses(Parentheses.Closing.name.lowercase())
-            throw UnexpectedToken(expected, currentToken)
+                throw UnmatchedParentheses(currentPosition, Parentheses.Closing.name.lowercase())
+            throw UnexpectedToken(currentPosition, expected, currentToken)
         }
 
         private fun next() {
@@ -88,10 +90,17 @@ object Parser {
                 openParenthesesCount++
             } else if (currentToken == Parentheses.Closing) {
                 if (openParenthesesCount == 0)
-                    throw UnmatchedParentheses(Parentheses.Closing.name.lowercase())
+                    throw UnmatchedParentheses(currentPosition, Parentheses.Closing.name.lowercase())
                 openParenthesesCount--
             }
-            currentToken = if (iterator.hasNext()) iterator.next() else EndToken
+            if (iterator.hasNext()){
+                val (position, token) = iterator.next()
+                currentToken = token
+                currentPosition = position
+            } else {
+                currentToken = EndToken
+                // TODO: Not sure what to do about current position here
+            }
         }
 
         private fun handleUnary(): Node {
@@ -127,7 +136,7 @@ object Parser {
                 next()
                 return node
             } else {
-                throw MissingOperand()
+                throw MissingOperand(currentPosition)
             }
         }
 

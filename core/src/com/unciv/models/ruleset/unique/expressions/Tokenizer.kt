@@ -5,7 +5,6 @@ import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.ICountable
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyBraces
-import com.unciv.models.ruleset.unique.expressions.Parser.InternalError
 import com.unciv.models.ruleset.unique.expressions.Parser.InvalidConstant
 import com.unciv.models.ruleset.unique.expressions.Parser.MalformedCountable
 import com.unciv.models.ruleset.unique.expressions.Parser.UnmatchedBraces
@@ -40,40 +39,43 @@ internal object Tokenizer {
     private fun Char.isIdentifierStart() = isLetter() // Allow potentially non-latin script //TODO questionable
     private fun Char.isIdentifierContinuation() = this == '_' || isLetterOrDigit()
 
-    fun String.toToken(ruleset: Ruleset?): Token {
-        assert(isNotBlank())
-        if (first().isDigit() || first() == '.')
-            return Node.NumericConstant(toDouble())
-        val operator = Operator.of(this)
-        if (operator != null) return operator
+    // Position in text, to token found
+    fun Pair<Int,String>.toToken(ruleset: Ruleset?): Pair<Int,Token> {
+        val (position, text) = this
+        if (text.isEmpty()) throw UnrecognizedToken(position)
+        assert(text.isNotBlank())
+        if (text.first().isDigit() || text.first() == '.')
+            return position to Node.NumericConstant(text.toDouble())
+        val operator = Operator.of(text)
+        if (operator != null) return position to operator
         // Countable tokens must come here still wrapped in braces to avoid infinite recursion
-        if(!startsWith('[') || !endsWith(']'))
-            throw UnrecognizedToken()
-        val countableText = substring(1, length - 1)
+        if(!text.startsWith('[') || !text.endsWith(']'))
+            throw UnrecognizedToken(position)
+        val countableText = text.substring(1, text.length - 1)
         val (countable, severity) = Countables.getBestMatching(countableText, ruleset)
         if (severity == ICountable.MatchResult.Yes)
-            return Node.Countable(countable!!, countableText)
+            return position to Node.Countable(countable!!, countableText)
         if (severity == ICountable.MatchResult.Maybe)
-            throw MalformedCountable(countable!!, countableText)
-        throw UnrecognizedToken()
+            throw MalformedCountable(position, countable!!, countableText)
+        throw UnrecognizedToken(position)
     }
 
-    fun String.tokenize() = sequence {
+    fun String.tokenize() = sequence<Pair<Int, String>> {
         var firstLetter = -1
         var firstDigit = -1
         var openingBraceAt = -1
         var braceNestingLevel = 0
 
-        suspend fun SequenceScope<String>.emitIdentifier(pos: Int = this@tokenize.length) {
+        suspend fun SequenceScope<Pair<Int, String>>.emitIdentifier(pos: Int) {
             assert(firstDigit < 0)
-            yield(this@tokenize.substring(firstLetter, pos))
+            yield(pos to this@tokenize.substring(firstLetter, pos))
             firstLetter = -1
         }
-        suspend fun SequenceScope<String>.emitNumericLiteral(pos: Int = this@tokenize.length) {
+        suspend fun SequenceScope<Pair<Int, String>>.emitNumericLiteral(pos: Int) {
             assert(firstLetter < 0)
             val token = this@tokenize.substring(firstDigit, pos)
-            if (token.toDoubleOrNull() == null) throw InvalidConstant(token)
-            yield(token)
+            if (token.toDoubleOrNull() == null) throw InvalidConstant(pos, token)
+            yield(pos to token)
             firstDigit = -1
         }
 
@@ -93,8 +95,8 @@ internal object Tokenizer {
                 else if (char == ']')
                     braceNestingLevel--
                 if (braceNestingLevel == 0) {
-                    if (pos - openingBraceAt <= 1) throw EmptyBraces()
-                    yield(this@tokenize.substring(openingBraceAt, pos + 1)) // Leave the braces
+                    if (pos - openingBraceAt <= 1) throw EmptyBraces(pos)
+                    yield(pos to this@tokenize.substring(openingBraceAt, pos + 1)) // Leave the braces
                     openingBraceAt = -1
                 }
             } else if (char.isIdentifierStart()) {
@@ -110,11 +112,11 @@ internal object Tokenizer {
             } else if (char == ']') {
                 throw UnmatchedBraces(pos)
             } else {
-                yield(char.toString())
+                yield(pos to char.toString())
             }
         }
-        if (firstLetter >= 0) emitIdentifier()
-        if (firstDigit >= 0) emitNumericLiteral()
+        if (firstLetter >= 0) emitIdentifier(this@tokenize.length)
+        if (firstDigit >= 0) emitNumericLiteral(this@tokenize.length)
         if (braceNestingLevel > 0) throw UnmatchedBraces(this@tokenize.length)
     }
 }
