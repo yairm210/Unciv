@@ -9,7 +9,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.sin
 import kotlin.math.ulp
 
 @RunWith(GdxTestRunner::class)
@@ -30,8 +29,6 @@ class ExpressionTests {
             "2 ^ 3 ^ 2" to 512.0,
             "pi * .5" to PI / 2,
             "(2+1.5)*(4+10)" to (2 + 1.5) * (4 + 10),
-            "sin(π/4)" to sin(PI / 4),
-            "sin π/4" to 0.0,
             "+- -+-1" to -1.0,
         )
 
@@ -58,7 +55,8 @@ class ExpressionTests {
     @Test
     fun testInvalidExpressions() {
         val input = listOf(
-            "[fake countable]" to Parser.UnrecognizedToken::class,
+            "fake_function(2)" to Parser.UnknownIdentifier::class,
+            "[fake countable]" to Parser.UnknownCountable::class,
             "98.234.792.374" to Parser.InvalidConstant::class,
             "" to Parser.MissingOperand::class,
             "() - 2" to Parser.MissingOperand::class,

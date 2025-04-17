@@ -6,9 +6,11 @@ import com.unciv.models.ruleset.unique.ICountable
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyBraces
 import com.unciv.models.ruleset.unique.expressions.Parser.InvalidConstant
+import com.unciv.models.ruleset.unique.expressions.Parser.UnknownCountable
 import com.unciv.models.ruleset.unique.expressions.Parser.MalformedCountable
 import com.unciv.models.ruleset.unique.expressions.Parser.UnmatchedBraces
-import com.unciv.models.ruleset.unique.expressions.Parser.UnrecognizedToken
+import com.unciv.models.ruleset.unique.expressions.Parser.UnknownIdentifier
+import com.unciv.models.ruleset.unique.expressions.Parser.EmptyExpression
 
 internal object Tokenizer {
     /**
@@ -42,7 +44,7 @@ internal object Tokenizer {
     // Position in text, to token found
     fun Pair<Int,String>.toToken(ruleset: Ruleset?): Pair<Int,Token> {
         val (position, text) = this
-        if (text.isEmpty()) throw UnrecognizedToken(position)
+        if (text.isEmpty()) throw EmptyExpression()
         assert(text.isNotBlank())
         if (text.first().isNumberLiteral())
             return position to Node.NumericConstant(text.toDouble())
@@ -51,14 +53,15 @@ internal object Tokenizer {
         
         // Countable tokens must come here still wrapped in braces to avoid infinite recursion
         if (!text.startsWith('[') || !text.endsWith(']'))
-            throw UnrecognizedToken(position)
+            throw UnknownIdentifier(position, text)
+        
         val countableText = text.substring(1, text.length - 1)
         val (countable, severity) = Countables.getBestMatching(countableText, ruleset)
         if (severity == ICountable.MatchResult.Yes)
             return position to Node.Countable(countable!!, countableText)
         if (severity == ICountable.MatchResult.Maybe)
             throw MalformedCountable(position, countable!!, countableText)
-        throw UnrecognizedToken(position)
+        throw UnknownCountable(position, text)
     }
 
     fun String.tokenize() = sequence<Pair<Int, String>> {

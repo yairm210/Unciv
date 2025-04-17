@@ -56,9 +56,10 @@ object Parser {
     internal class UnexpectedToken(position: Int, expected: Token, found: Token) : ParsingError("Unexpected token: $found instead of $expected", position)
     class MissingOperand(position: Int) : SyntaxError("Missing operand", position)
     class InvalidConstant(position: Int, text: String) : SyntaxError("Invalid constant: $text", position)
-    class MalformedCountable(position: Int, countable: Countables, text: String) : SyntaxError("Token \"$text\" seems to be a Countable(${countable.name}), but is malformed", position)
-    class UnrecognizedToken(position: Int) : ParsingError("Unrecognized token", position)
-    class InternalError(position: Int) : ParsingError("Internal error", position)
+    class MalformedCountable(position: Int, countable: Countables, text: String) : SyntaxError("\"$text\" seems to be a Countable(${countable.name}), but is malformed", position)
+    class UnknownCountable(position: Int, text: String) : ParsingError("Unknown countable: \"$text\"", position)
+    class UnknownIdentifier(position: Int, text: String) : ParsingError("Unknown identifier: \"$text\"", position)
+    class EmptyExpression : ParsingError("Empty expression", 0)
     //endregion
 
     /** Marker for beginning of the expression */
