@@ -290,11 +290,11 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             // Failure
             val spy = allyCiv?.espionageManager?.getSpyAssignedToCity(getCity())
             cityState.getDiplomacyManager(civInfo)!!.addInfluence(-20f)
-            allyCiv?.addNotification("A spy from [${civInfo.civName}] failed to stag a coup in our ally [${cityState.civName}] and was killed!", getCity().location,
+            allyCiv?.addNotification("A spy from [${civInfo.civName}] failed to stage a coup in our ally [${cityState.civName}] and was killed!", getCity().location,
                     NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
             allyCiv?.getDiplomacyManagerOrMeet(civInfo)?.addModifier(DiplomaticModifiers.SpiedOnUs, -10f)
 
-            civInfo.addNotification("Our spy [$name] failed to stag a coup in [${cityState.civName}] and was killed!", getCity().location,
+            civInfo.addNotification("Our spy [$name] failed to stage a coup in [${cityState.civName}] and was killed!", getCity().location,
                     NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
 
             killSpy()
