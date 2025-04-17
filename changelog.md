@@ -1,40 +1,19 @@
-## 4.16.3
+## 4.16.4
 
-.
+Tile swapping with transported units in the tile, checks *who* is transporting the units
 
-Resolve crash in automation for units that have "gain free [building]" uniques
+City states don't get continually researchable techs automatically
 
-translation fixes:  continued
-
-Resolved  - Tile swapping with transported units in the tile, checks *who* is transporting the units
-
-Version rollout 
-
-4.16.2-patch1
-
-Hide perf suggestions from users 
-
-Extract other classes out of Unique.kt
-
-For cached stored in LocalUniqueCache, don't apply multiplication when storing, only when retrieving
-
-Resolved  - City states don't get continually researchable techs automatically
-
-By Ouaz:
-- Fix untranslated strings 
-- Fix untranslated strings 
+Modding:
+- Resolved automation crash for units with "gain free [building]" uniques
+- Allow multipying cached uniques
 
 By touhidurrr:
-- more detailed password authentication status 
-- fix some docs 
+- more detailed multiplayer authentication
 
 By SomeTroglodyte:
-- Make CityScreen's top-right widget use an ExpanderTab 
-- Fix typo
-- 4.16.3 
-- Map editor reuses the files widget for load/save 
-- Another countables test 
-- More improvements to internal Countables handling 
+- CityScreen's top-right widget better sized for mobile
+- Better save/load in map editor
 
 ## 4.16.3
 
