@@ -50,7 +50,7 @@ private class UncivServerRunner : CliktCommand() {
         help = "Enable Authentication"
     ).flag("-no-auth", default = false)
 
-     private val IdentifyOperators by option(
+     private val identifyOperators by option(
         "-i", "-Identify",
         envvar = "UncivServerIdentify",
         help = "Display each operation archive request IP to assist management personnel"
@@ -99,20 +99,18 @@ private class UncivServerRunner : CliktCommand() {
             return true
 
         val (userId, password) = extractAuth(authString) ?: return false
-        if (authMap[userId] == null || authMap[userId] == password)
-            return true
-        return false
+        return authMap[userId] == null || authMap[userId] == password
     }
 
-    private fun extractAuth(authString: String?): Pair<String, String>? {
+    private fun extractAuth(authHeader: String?): Pair<String, String>? {
         if (!authV1Enabled)
             return null
 
-        // If auth is enabled a auth string is required
-        if (authString == null || !authString.startsWith("Basic "))
+        // If auth is enabled an authorization header is required
+        if (authHeader == null || !authHeader.startsWith("Basic "))
             return null
 
-        val decodedString = String(Base64.getDecoder().decode(authString.drop(6)))
+        val decodedString = String(Base64.getDecoder().decode(authHeader.drop(6)))
         val splitAuthString = decodedString.split(":", limit=2)
         if (splitAuthString.size != 2)
             return null
@@ -136,11 +134,11 @@ private class UncivServerRunner : CliktCommand() {
                 put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
                     
-                    // If IdentifyOperators is enabled a Operator IP is displayed
-                    if (IdentifyOperators) {
-                        log.info("Receiving file: ${fileName} --Operation sourced from ${call.request.local.remoteHost}")
+                    // If IdentifyOperators is enabled an Operator IP is displayed
+                    if (identifyOperators) {
+                        log.info("Receiving file: $fileName --Operation sourced from ${call.request.local.remoteHost}")
                     }else{
-                        log.info("Receiving file: ${fileName}")
+                        log.info("Receiving file: $fileName")
                     }
                      
                     val file = File(fileFolderName, fileName)
@@ -160,20 +158,20 @@ private class UncivServerRunner : CliktCommand() {
                 get("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
                     
-                    // If IdentifyOperators is enabled a Operator IP is displayed
-                    if (IdentifyOperators) {
-                        log.info("File requested: ${fileName} --Operation sourced from ${call.request.local.remoteHost}")
+                    // If IdentifyOperators is enabled an Operator IP is displayed
+                    if (identifyOperators) {
+                        log.info("File requested: $fileName --Operation sourced from ${call.request.local.remoteHost}")
                     }else{
                         log.info("File requested: $fileName")
                     }
                      
                     val file = File(fileFolderName, fileName)
                     if (!file.exists()) {
-                        
-                        // If IdentifyOperators is enabled a Operator IP is displayed
-                        if (IdentifyOperators) {
-                            log.info("File ${fileName} not found --Operation sourced from ${call.request.local.remoteHost}")
-                        }else{
+
+                        // If IdentifyOperators is enabled an Operator IP is displayed
+                        if (identifyOperators) {
+                            log.info("File $fileName not found --Operation sourced from ${call.request.local.remoteHost}")
+                        } else {
                             log.info("File $fileName not found")
                         }
                         call.respond(HttpStatusCode.NotFound, "File does not exist")
@@ -186,11 +184,21 @@ private class UncivServerRunner : CliktCommand() {
                 if (authV1Enabled) {
                     get("/auth") {
                         log.info("Received auth request from ${call.request.local.remoteHost}")
-                        val authHeader = call.request.headers["Authorization"]
-                        if (validateAuth(authHeader)) {
-                            call.respond(HttpStatusCode.OK)
-                        } else {
-                            call.respond(HttpStatusCode.Unauthorized)
+
+                        val authHeader = call.request.headers["Authorization"] ?: run {
+                            call.respond(HttpStatusCode.BadRequest, "Missing authorization header!")
+                            return@get
+                        }
+
+                        val (userId, password) = extractAuth(authHeader) ?: run {
+                            call.respond(HttpStatusCode.BadRequest, "Malformed authorization header!")
+                            return@get
+                        }
+
+                        when (authMap[userId]) {
+                            null -> call.respond(HttpStatusCode.NoContent)
+                            password -> call.respond(HttpStatusCode.OK)
+                            else -> call.respond(HttpStatusCode.Unauthorized)
                         }
                     }
                     put("/auth") {
