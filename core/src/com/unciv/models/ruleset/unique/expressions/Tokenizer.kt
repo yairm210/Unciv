@@ -44,12 +44,13 @@ internal object Tokenizer {
         val (position, text) = this
         if (text.isEmpty()) throw UnrecognizedToken(position)
         assert(text.isNotBlank())
-        if (text.first().isDigit() || text.first() == '.')
+        if (text.first().isNumberLiteral())
             return position to Node.NumericConstant(text.toDouble())
         val operator = Operator.of(text)
         if (operator != null) return position to operator
+        
         // Countable tokens must come here still wrapped in braces to avoid infinite recursion
-        if(!text.startsWith('[') || !text.endsWith(']'))
+        if (!text.startsWith('[') || !text.endsWith(']'))
             throw UnrecognizedToken(position)
         val countableText = text.substring(1, text.length - 1)
         val (countable, severity) = Countables.getBestMatching(countableText, ruleset)
@@ -61,52 +62,55 @@ internal object Tokenizer {
     }
 
     fun String.tokenize() = sequence<Pair<Int, String>> {
-        var firstLetter = -1
-        var firstDigit = -1
-        var openingBraceAt = -1
+        /** If set, indicates we're in the middle of an identifier */
+        var firstIdentifierPosition = -1
+        /** If set, indicates we're in the middle of a number */
+        var firstNumberPosition = -1
+        /** If set, indicates we're in the middle of a countable */
+        var openingBracePosition = -1
         var braceNestingLevel = 0
 
         suspend fun SequenceScope<Pair<Int, String>>.emitIdentifier(pos: Int) {
-            assert(firstDigit < 0)
-            yield(pos to this@tokenize.substring(firstLetter, pos))
-            firstLetter = -1
+            assert(firstNumberPosition < 0)
+            yield(firstIdentifierPosition to this@tokenize.substring(firstIdentifierPosition, pos))
+            firstIdentifierPosition = -1
         }
         suspend fun SequenceScope<Pair<Int, String>>.emitNumericLiteral(pos: Int) {
-            assert(firstLetter < 0)
-            val token = this@tokenize.substring(firstDigit, pos)
-            if (token.toDoubleOrNull() == null) throw InvalidConstant(pos, token)
-            yield(pos to token)
-            firstDigit = -1
+            assert(firstIdentifierPosition < 0)
+            val token = this@tokenize.substring(firstNumberPosition, pos)
+            if (token.toDoubleOrNull() == null) throw InvalidConstant(firstNumberPosition, token)
+            yield(firstNumberPosition to token)
+            firstNumberPosition = -1
         }
 
         for ((pos, char) in this@tokenize.withIndex()) {
-            if (firstLetter >= 0) {
+            if (firstIdentifierPosition >= 0) {
                 if (char.isIdentifierContinuation()) continue
                 emitIdentifier(pos)
-            } else if (firstDigit >= 0) {
+            } else if (firstNumberPosition >= 0) {
                 if (char.isNumberLiteral()) continue
                 emitNumericLiteral(pos)
             }
-            if (char.isWhitespace()) {
-                continue
-            } else if (openingBraceAt >= 0) {
+            if (char.isWhitespace()) continue
+            
+            if (openingBracePosition >= 0) {
                 if (char == '[')
                     braceNestingLevel++
                 else if (char == ']')
                     braceNestingLevel--
                 if (braceNestingLevel == 0) {
-                    if (pos - openingBraceAt <= 1) throw EmptyBraces(pos)
-                    yield(pos to this@tokenize.substring(openingBraceAt, pos + 1)) // Leave the braces
-                    openingBraceAt = -1
+                    if (pos - openingBracePosition <= 1) throw EmptyBraces(pos)
+                    yield(pos to this@tokenize.substring(openingBracePosition, pos + 1)) // Leave the braces
+                    openingBracePosition = -1
                 }
             } else if (char.isIdentifierStart()) {
-                firstLetter = pos
+                firstIdentifierPosition = pos
                 continue
             } else if (char.isNumberLiteral()) {
-                firstDigit = pos
+                firstNumberPosition = pos
                 continue
             } else if (char == '[') {
-                openingBraceAt = pos
+                openingBracePosition = pos
                 assert(braceNestingLevel == 0)
                 braceNestingLevel++
             } else if (char == ']') {
@@ -115,8 +119,9 @@ internal object Tokenizer {
                 yield(pos to char.toString())
             }
         }
-        if (firstLetter >= 0) emitIdentifier(this@tokenize.length)
-        if (firstDigit >= 0) emitNumericLiteral(this@tokenize.length)
+        // End of expression, let's see if there's still anything open
+        if (firstIdentifierPosition >= 0) emitIdentifier(this@tokenize.length)
+        if (firstNumberPosition >= 0) emitNumericLiteral(this@tokenize.length)
         if (braceNestingLevel > 0) throw UnmatchedBraces(this@tokenize.length)
     }
 }
