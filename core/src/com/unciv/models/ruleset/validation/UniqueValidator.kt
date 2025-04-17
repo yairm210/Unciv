@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.expressions.Expressions
 
 class UniqueValidator(val ruleset: Ruleset) {
 
@@ -85,6 +86,8 @@ class UniqueValidator(val ruleset: Ruleset) {
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
+            
+            addExpressionParseErrors(complianceError, rulesetErrors, uniqueContainer, unique)
         }
 
         for (conditional in unique.modifiers) {
@@ -122,6 +125,25 @@ class UniqueValidator(val ruleset: Ruleset) {
             addDeprecationAnnotationErrors(unique, prefix, rulesetErrors, uniqueContainer)
 
         return rulesetErrors
+    }
+
+    private fun addExpressionParseErrors(
+        complianceError: UniqueComplianceError,
+        rulesetErrors: RulesetErrorList,
+        uniqueContainer: IHasUniques?,
+        unique: Unique
+    ) {
+        if (!complianceError.acceptableParameterTypes.contains(UniqueParameterType.Countable)) return
+        val parseError = Expressions.getParsingError(complianceError.parameterName, ruleset) ?: return
+        
+        val marker = "HERE➡"
+        val errorLocation = parseError.position
+        val parameterWithErrorLocationMarked =
+            complianceError.parameterName.substring(0, errorLocation) + marker +
+                    complianceError.parameterName.substring(errorLocation)
+        val text = "\"${complianceError.parameterName}\" could not be parsed as an expression due to:" +
+                " ${parseError.message}. \n$parameterWithErrorLocationMarked"
+        rulesetErrors.add(text, RulesetErrorSeverity.Error, uniqueContainer, unique)
     }
 
     private val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
@@ -221,6 +243,8 @@ class UniqueValidator(val ruleset: Ruleset) {
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
+            
+            addExpressionParseErrors(complianceError, rulesetErrors, uniqueContainer, unique)
         }
 
         addDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", rulesetErrors, uniqueContainer)

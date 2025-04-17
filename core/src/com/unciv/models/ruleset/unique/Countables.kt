@@ -26,19 +26,13 @@ import java.time.format.DateTimeFormatter
 interface ICountable {
     /** Supports `MatchResult(true)`to get [Yes], MatchResult(false)`to get [No], or MatchResult(null)`to get [Maybe] */
     enum class MatchResult {
-        No {
-            override fun isOK(strict: Boolean) = false
-        },
-        Maybe {
-            override fun isOK(strict: Boolean) = !strict
-        },
-        Yes {
-            override fun isOK(strict: Boolean) = true
-        }
+        No { override fun isOK(strict: Boolean) = false },
+        Maybe { override fun isOK(strict: Boolean) = !strict },
+        Yes { override fun isOK(strict: Boolean) = true }
         ;
         abstract fun isOK(strict: Boolean): Boolean
         companion object {
-            operator fun invoke(bool: Boolean?) = when(bool) {
+            fun from(bool: Boolean?) = when(bool) {
                 true -> Yes
                 false -> No
                 else -> Maybe
@@ -79,7 +73,7 @@ enum class Countables(
 ) : ICountable {
     Integer {
         override val documentationHeader = "Integer constant - any positive or negative integer number"
-        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult(parameterText.toIntOrNull() != null)
+        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(parameterText.toIntOrNull() != null)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) = parameterText.toIntOrNull()
     },
 
@@ -105,7 +99,11 @@ enum class Countables(
     Stats {
         override val documentationHeader = "Stat name (${Stat.names().niceJoin()})"
         override val documentationStrings = listOf("gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
-        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult(Stat.isStat(parameterText))
+        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(
+            Stat.isStat(
+                parameterText
+            )
+        )
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
             // This one isn't covered by City.getStatReserve or Civilization.getStatReserve but should be available here
@@ -189,7 +187,9 @@ enum class Countables(
             "For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.",
             "This can make a difference for e.g. local resources, which are counted per city."
         )
-        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult(ruleset?.tileResources?.containsKey(parameterText))
+        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(
+            ruleset?.tileResources?.containsKey(parameterText)
+        )
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.getResourceAmount(parameterText)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
@@ -204,7 +204,6 @@ enum class Countables(
         }
     },
 
-    @InDevelopment("@AutumnPizazz", eta = "2025-06-30")
     Expression {
         override val noPlaceholders = false
 
@@ -221,7 +220,7 @@ enum class Countables(
 
         override val documentationHeader = "Evaluate expressions!"
         override val documentationStrings = listOf(
-            "Expressions support `+`, `-`, `*`, `/`, `%`, `^` and `log` as binary operators.",
+            "Expressions support `+`, `-`, `*`, `/`, `%`, `^` operations.",
             "Operands can be floating point constants or other countables in square brackets",
             "..."
         )
@@ -235,7 +234,7 @@ enum class Countables(
     open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult(
+    override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(
         if (noPlaceholders) parameterText == text
         else parameterText.equalsPlaceholderText(placeholderText)
     )
@@ -268,7 +267,6 @@ enum class Countables(
      *  - If you add both @Deprecated and @InDevelopment to the same instance, the validator will only see the @Deprecated one,
      *    while @InDevelopment still controls whether it si active (evaluated at all).
      *  @param developer - the responsible dev as `@` plus github account
-     *  @param eta - An expiration date in the form 'yyyy-mm-dd', UTC, after which the instance is treated as deprecated **and** inactive
      */
     @Retention(AnnotationRetention.RUNTIME)
     @Target(AnnotationTarget.FIELD)

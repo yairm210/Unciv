@@ -22,7 +22,7 @@ class Expressions : ICountable {
             ICountable.MatchResult.Yes -> null
         }
 
-    private data class ParseResult(val severity: ICountable.MatchResult, val node: Node?)
+    private data class ParseResult(val severity: ICountable.MatchResult, val node: Node?, val exception: Parser.ParsingError?)
 
     companion object {
         private val cache: MutableMap<String, ParseResult> = mutableMapOf()
@@ -30,10 +30,13 @@ class Expressions : ICountable {
         private fun parse(parameterText: String, ruleset: Ruleset?): ParseResult = cache.getOrPut(parameterText) {
             try {
                 val node = Parser.parse(parameterText, ruleset)
-                ParseResult(ICountable.MatchResult.Yes, node)
+                ParseResult(ICountable.MatchResult.Yes, node, null)
             } catch (ex: Parser.ParsingError) {
-                ParseResult(ex.severity, null)
+                ParseResult(ex.severity, null, ex)
             }
         }
+        
+        fun getParsingError(parameterText: String, ruleset: Ruleset?): Parser.ParsingError? = 
+            parse(parameterText, ruleset).exception
     }
 }
