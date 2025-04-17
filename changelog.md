@@ -1,5 +1,43 @@
 ## 4.16.3
 
+.
+
+Resolve crash in automation for units that have "gain free [building]" uniques
+
+translation fixes:  continued
+
+Resolved  - Tile swapping with transported units in the tile, checks *who* is transporting the units
+
+Version rollout 
+
+4.16.2-patch1
+
+Hide perf suggestions from users 
+
+Extract other classes out of Unique.kt
+
+For cached stored in LocalUniqueCache, don't apply multiplication when storing, only when retrieving
+
+Resolved  - City states don't get continually researchable techs automatically
+
+By Ouaz:
+- Fix untranslated strings 
+- Fix untranslated strings 
+
+By touhidurrr:
+- more detailed password authentication status 
+- fix some docs 
+
+By SomeTroglodyte:
+- Make CityScreen's top-right widget use an ExpanderTab 
+- Fix typo
+- 4.16.3 
+- Map editor reuses the files widget for load/save 
+- Another countables test 
+- More improvements to internal Countables handling 
+
+## 4.16.3
+
 Ruleset validation: Hide performance suggestions from users, they're now mod-checker only
 
 Maintenance for improved Code quality
