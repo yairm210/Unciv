@@ -50,6 +50,7 @@ private class UncivServerRunner : CliktCommand() {
         help = "Enable Authentication"
     ).flag("-no-auth", default = false)
 
+     @Suppress("PrivatePropertyName") // Part of API spec
      private val IdentifyOperators by option(
         "-i", "-Identify",
         envvar = "UncivServerIdentify",
@@ -99,9 +100,7 @@ private class UncivServerRunner : CliktCommand() {
             return true
 
         val (userId, password) = extractAuth(authString) ?: return false
-        if (authMap[userId] == null || authMap[userId] == password)
-            return true
-        return false
+        return authMap[userId] == null || authMap[userId] == password
     }
 
     private fun extractAuth(authString: String?): Pair<String, String>? {
@@ -123,10 +122,10 @@ private class UncivServerRunner : CliktCommand() {
 
     private fun serverRun(serverPort: Int, fileFolderName: String) {
         val portStr: String = if (serverPort == 80) "" else ":$serverPort"
-        
-        val file = File(fileFolderName)
-        echo("Starting UncivServer for ${file.absolutePath} on http://localhost$portStr")
-        if (!file.exists()) file.mkdirs()
+
+        val fileFolder = File(fileFolderName)
+        echo("Starting UncivServer for ${fileFolder.absolutePath} on http://localhost$portStr")
+        if (!fileFolder.exists()) fileFolder.mkdirs()
         val server = embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
@@ -135,14 +134,14 @@ private class UncivServerRunner : CliktCommand() {
                 }
                 put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
-                    
+
                     // If IdentifyOperators is enabled a Operator IP is displayed
                     if (IdentifyOperators) {
-                        log.info("Receiving file: ${fileName} --Operation sourced from ${call.request.local.remoteHost}")
+                        log.info("Receiving file: $fileName --Operation sourced from ${call.request.local.remoteHost}")
                     }else{
-                        log.info("Receiving file: ${fileName}")
+                        log.info("Receiving file: $fileName")
                     }
-                     
+
                     val file = File(fileFolderName, fileName)
 
                     if (!validateGameAccess(file, call.request.headers["Authorization"])) {
@@ -159,20 +158,20 @@ private class UncivServerRunner : CliktCommand() {
                 }
                 get("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
-                    
+
                     // If IdentifyOperators is enabled a Operator IP is displayed
                     if (IdentifyOperators) {
-                        log.info("File requested: ${fileName} --Operation sourced from ${call.request.local.remoteHost}")
+                        log.info("File requested: $fileName --Operation sourced from ${call.request.local.remoteHost}")
                     }else{
                         log.info("File requested: $fileName")
                     }
-                     
+
                     val file = File(fileFolderName, fileName)
                     if (!file.exists()) {
-                        
+
                         // If IdentifyOperators is enabled a Operator IP is displayed
                         if (IdentifyOperators) {
-                            log.info("File ${fileName} not found --Operation sourced from ${call.request.local.remoteHost}")
+                            log.info("File $fileName not found --Operation sourced from ${call.request.local.remoteHost}")
                         }else{
                             log.info("File $fileName not found")
                         }
