@@ -30,7 +30,6 @@ fun IHasUniques.uniquesToDescription(
  *  A Sequence of user-visible Uniques as [FormattedLine]s.
  *
  *  @param leadingSeparator Tristate: If there are lines to display and this parameter is not `null`, a leading line is output, as separator or empty line.
- *  @param sorted If set, sorts alphabetically (**not** using a locale-specific Collator). Otherwise lists in json order.
  *  @param colorConsumesResources If set, ConsumesResources Uniques get a reddish color.
  *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
  */
@@ -59,7 +58,6 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
  *  Appends user-visible Uniques as [FormattedLine]s to [lineList].
  *
  *  @param leadingSeparator Tristate: If there are lines to display and this parameter is not `null`, a leading line is output, as separator or empty line.
- *  @param sorted If set, sorts alphabetically (**not** using a locale-specific Collator). Otherwise lists in json order.
  *  @param colorConsumesResources If set, ConsumesResources Uniques get a reddish color.
  *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
  */
