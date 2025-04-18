@@ -36,13 +36,11 @@ fun IHasUniques.uniquesToDescription(
  */
 fun IHasUniques.uniquesToCivilopediaTextLines(
     leadingSeparator: Boolean? = false,
-    sorted: Boolean = false,
     colorConsumesResources: Boolean = false,
     exclude: Unique.() -> Boolean = {false}
 ) = sequence {
-    var orderedUniques = uniqueObjects.asSequence()
+    val orderedUniques = uniqueObjects.asSequence()
         .filterNot { it.isHiddenToUsers() || it.exclude() }
-    if (sorted) orderedUniques = orderedUniques.sortedBy { it.text }
 
     for ((index, unique) in orderedUniques.withIndex()) {
         if (leadingSeparator != null && index == 0)
@@ -68,10 +66,9 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
 fun IHasUniques.uniquesToCivilopediaTextLines(
     lineList: MutableCollection<FormattedLine>,
     leadingSeparator: Boolean? = false,
-    sorted: Boolean = false,
     colorConsumesResources: Boolean = false,
     exclude: Unique.() -> Boolean = {false}
 ) {
-    uniquesToCivilopediaTextLines(leadingSeparator, sorted, colorConsumesResources, exclude)
+    uniquesToCivilopediaTextLines(leadingSeparator, colorConsumesResources, exclude)
         .toCollection(lineList)
 }

@@ -212,7 +212,7 @@ enum class Countables(
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .filter {
                 if (it.matchesWithRuleset)
-                    ruleset != null && it.matches(parameterText, ruleset!!)
+                    ruleset != null && it.matches(parameterText, ruleset)
                 else it.matches(parameterText)
             }
 
