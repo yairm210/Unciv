@@ -167,7 +167,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         val goldenAges = civInfo.goldenAges
         happinessText +=
             if (goldenAges.isGoldenAge())
-                "    {GOLDEN AGE}(${goldenAges.turnsLeftForCurrentGoldenAge})".tr()
+                "    ${civInfo.nation.goldenAgeName.tr().uppercase()}(${goldenAges.turnsLeftForCurrentGoldenAge})".tr()
             else
                 " (${goldenAges.storedHappiness.tr()}/${goldenAges.happinessRequiredForNextGoldenAge().tr()})"
         return happinessText

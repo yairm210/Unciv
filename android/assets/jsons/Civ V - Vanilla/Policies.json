@@ -113,7 +113,7 @@
                 "name": "Representation",
                 "uniques": [
                     "Each city founded increases culture cost of policies [33]% less than normal",
-                    "Empire enters golden age"
+                    "Empire enters [Golden Age]"
                 ],
                 "requires": ["Citizenship"],
                 "row": 2,
@@ -249,7 +249,7 @@
                 "name": "Reformation",
                 "uniques": [
                     "[+33]% [Culture] [in all cities with a world wonder]",
-                    "Empire enters golden age"
+                    "Empire enters [Golden Age]"
                 ],
                 "requires": ["Organized Religion"],
                 "row": 2,

@@ -49,7 +49,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
 
     fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
         turnsLeftForCurrentGoldenAge += calculateGoldenAgeLength(unmodifiedNumberOfTurns)
-        civInfo.addNotification("You have entered a Golden Age!",
+        civInfo.addNotification("[${civInfo.nation.enteredGoldenAge}]!",
             CivilopediaAction("Tutorial/Golden Age"),
             NotificationCategory.General, "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
