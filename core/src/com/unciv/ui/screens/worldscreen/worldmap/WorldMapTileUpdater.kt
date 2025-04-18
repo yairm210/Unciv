@@ -227,6 +227,8 @@ object WorldMapTileUpdater {
                         0.5f
                     else 1f
                 )
+                if (attackableTile.tileToAttack == selectedTile)
+                    tileGroups[attackableTile.tileToAttackFrom]!!.layerOverlay.showHighlight(Color.SKY, 0.7f)
             }
         }
 
