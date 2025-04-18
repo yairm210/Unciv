@@ -81,8 +81,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                 continue
 
             rulesetErrors.add(
-                "$prefix contains parameter ${complianceError.parameterName}," +
-                " which does not fit parameter type" +
+                "$prefix contains parameter \"${complianceError.parameterName}\", $whichDoesNotFitParameterType" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
@@ -218,7 +217,7 @@ class UniqueValidator(val ruleset: Ruleset) {
 
             rulesetErrors.add(
                 "$prefix contains modifier \"${conditional.text}\"." +
-                " This contains the parameter \"${complianceError.parameterName}\" which does not fit parameter type" +
+                " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
@@ -252,9 +251,8 @@ class UniqueValidator(val ruleset: Ruleset) {
             unique.type.parameterTypeMap.withIndex()
             .filter { UniqueParameterType.Countable in it.value }
             .map { unique.params[it.index] }
-            .flatMap { Countables.getMatching(it, ruleset) }
-        for (countable in countables) {
-            val deprecation = countable.getDeprecationAnnotation() ?: continue
+            .flatMap { Countables.getDeprecatedCountablesMatching(it) }
+        for ((countable, deprecation) in countables) {
             // This is less flexible than unique.getReplacementText(ruleset)
             val replaceExpression = deprecation.replaceWith.expression
             val text = "Countable `${countable.name}` is deprecated ${deprecation.message}" +
@@ -369,6 +367,8 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     companion object {
+        const val whichDoesNotFitParameterType = "which does not fit parameter type"
+
         internal fun getUniqueContainerPrefix(uniqueContainer: IHasUniques?) =
             (if (uniqueContainer is IRulesetObject) "${uniqueContainer.originRuleset}: " else "") +
                 (if (uniqueContainer == null) "The" else "(${uniqueContainer.getUniqueTarget().name}) ${uniqueContainer.name}'s") +
