@@ -547,8 +547,8 @@ class UnitMovement(val unit: MapUnit) {
         val ourOldPosition = unit.getTile()
         val theirOldPosition = otherUnit.getTile()
 
-        val ourPayload = ourOldPosition.getUnits().filter { it.isTransported }.toList()
-        val theirPayload = theirOldPosition.getUnits().filter { it.isTransported }.toList()
+        val ourPayload = ourOldPosition.getUnits().filter { it.isTransported && unit.isTransportTypeOf(it) }.toList()
+        val theirPayload = theirOldPosition.getUnits().filter { it.isTransported && otherUnit.isTransportTypeOf(it) }.toList()
 
         // Swap the units
         // Step 1: Release the destination tile

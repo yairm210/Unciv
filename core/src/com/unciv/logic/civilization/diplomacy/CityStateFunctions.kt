@@ -299,7 +299,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             )
             newAllyCiv.cache.updateViewableTiles()
             newAllyCiv.cache.updateCivResources()
-            for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold) + newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGoldOld))
+            for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
                 newAllyCiv.getDiplomacyManager(civInfo)!!.setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
 
             // Join the wars of our new ally - loop through all civs they are at war with
@@ -365,7 +365,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 && civInfo.cities.any()
                 && civInfo.getDiplomacyManager(otherCiv)!!.isRelationshipLevelEQ(RelationshipLevel.Ally)
                 && !otherCiv.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.MarriageCooldown)
-                && (otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any() || otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGoldOld).any())
+                && otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any()
                 && otherCiv.gold >= getDiplomaticMarriageCost())
 
     }

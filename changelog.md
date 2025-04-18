@@ -1,3 +1,20 @@
+## 4.16.4
+
+Tile swapping with transported units in the tile, checks *who* is transporting the units
+
+City states don't get continually researchable techs automatically
+
+Modding:
+- Resolved automation crash for units with "gain free [building]" uniques
+- Allow multipying cached uniques
+
+By touhidurrr:
+- more detailed multiplayer authentication
+
+By SomeTroglodyte:
+- CityScreen's top-right widget better sized for mobile
+- Better save/load in map editor
+
 ## 4.16.3
 
 Ruleset validation: Hide performance suggestions from users, they're now mod-checker only

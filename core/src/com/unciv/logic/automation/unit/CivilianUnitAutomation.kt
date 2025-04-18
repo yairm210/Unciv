@@ -123,10 +123,12 @@ object CivilianUnitAutomation {
             val cityToGainBuilding = unit.civ.cities.filter {
                 !it.cityConstructions.containsBuildingOrEquivalent(buildingName)
                     && (unit.movement.canMoveTo(it.getCenterTile()) || unit.currentTile == it.getCenterTile())
-            }.minByOrNull {
+            }.map {
                 val path = unit.movement.getShortestPath(it.getCenterTile())
-                path.size
-            }
+                // We want to calc path once, but still filter out unreachable cities
+                it to path.size
+            }.filter { it.second > 0 }.minByOrNull { it.second }?.first
+            
 
             if (cityToGainBuilding != null) {
                 if (unit.currentTile == cityToGainBuilding.getCenterTile()) {

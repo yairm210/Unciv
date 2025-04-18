@@ -34,7 +34,7 @@ If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a p
 - **Raspberry Pi** - [Pi-apps](https://github.com/Botspot/pi-apps)
 - **MacOS** - Via [Brew](https://brew.sh/) (`brew update && brew install unciv`) or install [with this guide](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/) 
 - Jars, APKs and Windows/Linux builds also available in [Releases](https://github.com/yairm210/Unciv/releases) (run jar with `java -jar Unciv.jar`) - *not recommended* since we update frequently and you will quickly become out-of-date
-- [Build from scratch](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/) if that's your thing
+- [Build from scratch](https://yairm210.github.io/Unciv/Developers/Building-Locally/#without-android-studio) if that's your thing
 
 ## What's the roadmap?
 

@@ -1,12 +1,14 @@
-Ruleset validation: Hide performance suggestions from users, they're now mod-checker only
+Tile swapping with transported units in the tile, checks *who* is transporting the units
 
-Maintaenance for improved Code quality
+City states don't get continually researchable techs automatically
 
-Prevent wrong multiplicators when using the "for every [countable]" Unique in complex ways
+Modding:
+- Resolved automation crash for units with "gain free [building]" uniques
+- Allow multipying cached uniques
 
-Resolved  - City states don't get continually researchable techs automatically
+By touhidurrr:
+- more detailed multiplayer authentication
 
 By SomeTroglodyte:
-- Map editor save/load now support the PgUp/PgDown keyboard keys
-- Improve validation of Countables
-- Fix NullPointerException from Countables evaluation
+- CityScreen's top-right widget better sized for mobile
+- Better save/load in map editor
