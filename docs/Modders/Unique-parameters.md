@@ -359,5 +359,9 @@ Allowed values:
     (can be city stats or civilization stats, depending on where the unique is used)
     For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
     This can make a difference for e.g. local resources, which are counted per city.
+-   Evaluate expressions!
+    Expressions support `+`, `-`, `*`, `/`, `%`, `^` operations.
+    Operands can be floating point constants or other countables in square brackets
+    ...
 
 [//]: # (Countables automatically generated END)

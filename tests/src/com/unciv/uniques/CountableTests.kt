@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.testing.GdxTestRunner
@@ -44,20 +45,9 @@ class CountableTests {
         for (instance in Countables::class.java.enumConstants) {
             val instanceClazz = instance::class.java
 
-            val matchesRulesetOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
-            val matchesPlainOverridden = instanceClazz.hasOverrideFor("matches", String::class.java)
-            if (instance.matchesWithRuleset && !matchesRulesetOverridden) {
-                println("`$instance` is marked as working _with_ a `Ruleset` but fails to override `matches(String,Ruleset)`,")
-                fails++
-            } else if (instance.matchesWithRuleset && matchesPlainOverridden) {
-                println("`$instance` is marked as working _with_ a `Ruleset` but overrides `matches(String)` which is worthless.")
-                fails++
-            } else if (!instance.matchesWithRuleset && matchesRulesetOverridden) {
-                println("`$instance` is marked as working _without_ a `Ruleset` but overrides `matches(String,Ruleset)` which is worthless.")
-                fails++
-            }
-            if (instance.text.isEmpty() && !matchesPlainOverridden && !matchesRulesetOverridden) {
-                println("`$instance` has no `text` but fails to override either `matches` overload.")
+            val matchesOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
+            if (instance.text.isEmpty() && !matchesOverridden) {
+                println("`$instance` has no `text` but fails to override `matches`.")
                 fails++
             }
 
@@ -201,8 +191,8 @@ class CountableTests {
             "[+1 Happiness] <for every [[42] Monkeys]>" to 1, // +1 monkeys
             "[+1 Gold] <when number of [year] is equal to [countable]>" to 1,
             "[+1 Food] <when number of [-0] is different than [+0]>" to 0,
-            "[+1 Food] <when number of [5e1] is more than [0.5]>" to 2,
-            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>" to 3,
+            "[+1 Food] <when number of [5e1] is more than [0.5]>" to 1, // The Expression countable supports fractional numbers
+            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>" to 1, // dito
             "[+1 Food] <when number of [[~Nonexisting~] Cities] is between [[Annexed] Cities] and [Cities]>" to 1,
             "[+1 Food] <when number of [[Paratrooper] Units] is between [[Air] Units] and [Units]>" to 0,
             "[+1 Food] <when number of [[~Bogus~] Units] is between [[Land] Units] and [[Air] Units]>" to 1,
@@ -220,7 +210,7 @@ class CountableTests {
             "[+1 Food] <when number of [Cocoa] is between [Bison] and [Maryjane]>" to 3,
         )
         val totalNotACountableExpected = testData.sumOf { it.second }
-        val notACountableRegex = Regex(""".*parameter "(.*)" which does not fit parameter type countable.*""")
+        val notACountableRegex = Regex(""".*parameter "(.*)" ${UniqueValidator.whichDoesNotFitParameterType} countable.*""")
 
         val ruleset = setupModdedGame(
             *testData.map { it.first }.toTypedArray(),
