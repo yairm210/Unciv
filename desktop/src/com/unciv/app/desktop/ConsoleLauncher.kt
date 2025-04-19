@@ -66,7 +66,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            mapSize = MapSize.Small
+            mapSize = MapSize.Duel
             noRuins = true
             noNaturalWonders = true
             mirroring = MirroringType.aroundCenterTile
