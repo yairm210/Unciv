@@ -78,9 +78,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         get() {
             val value = HashMap<PolicyBranch, Int>()
             for (branch in branches) {
-                value[branch] = adoptedPolicies.count {
+                val adoptedCount = adoptedPolicies.count {
                     branch.policies.contains(getPolicyByName(it))
                 }
+                value[branch] = if (isAdopted(branch.name)) 1 + adoptedCount else adoptedCount
             }
             return value
         }
@@ -327,4 +328,21 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     fun allPoliciesAdopted(checkEra: Boolean) =
         getRulesetPolicies().values.none { isAdoptable(it, checkEra) }
+    
+    /**
+     * Leader title corresponds with the branch that has the most policies adopted
+     * TODO:
+     * 2. `Lady` title for female leaders instead of `Lord`
+     */
+    fun getMostAdoptedPolicyBranch(): PolicyBranch? {
+        if (adoptedPolicies.isEmpty()) return null
+
+        return branchCompletionMap.entries
+            .filter { it.value > 0 } // Only consider branches with at least one policy adopted
+            .maxByOrNull { it.value }?.key // Get the branch with most policies
+    }
+
+    fun getLeaderTitle(): String {
+        return getMostAdoptedPolicyBranch()?.title?: ""
+    }
 }
