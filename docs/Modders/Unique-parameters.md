@@ -353,6 +353,7 @@ Allowed values:
 -   `[cityFilter] Cities`
 -   `[mapUnitFilter] Units`
 -   `[buildingFilter] Buildings`
+-   `Adopted [policyFilter] Policies`
 -   `Remaining [civFilter] Civilizations`
 -   `Owned [tileFilter] Tiles`
 -   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
