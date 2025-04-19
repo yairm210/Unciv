@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -156,7 +157,49 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     var civName = ""
         private set
+    private var displayCivName: String? = null
+    fun getDisplayCivName() = displayCivName ?: civName
+    fun setDisplayCivName(value: String) { displayCivName = if (value == civName) null else value }
 
+    private var displayNation: String? = null
+        fun getDisplayNationName() = displayNation ?: civName
+        fun getDisplayNation() = if (displayNation == null) nation else gameInfo.ruleset.nations[displayNation] ?: nation
+        fun setDisplayNation(value: String) { displayNation = if (value == civName) null else value }
+    
+    fun setDisplayColorTransients() {
+        val currentCivEra = getEra()
+        val erasNamesList =  mutableSetOf<String>()
+        /*
+        Gets a set of all the era up to current era.
+        Doing this to get the last unique that change to color of the civ and 
+        getting the correct color after reloading a save file.
+        */
+        for (eraName in gameInfo.ruleset.eras.keys) {
+            if (currentCivEra.name == eraName) {
+                erasNamesList.add(eraName)
+                break
+            }
+            erasNamesList.add(eraName)
+        }
+        
+        for (eras in gameInfo.ruleset.eras.values) {
+            if (eras.name !in erasNamesList) return
+            for (unique in eras.getMatchingUniques(UniqueType.ChangeCivilizationColors)) {
+                
+                if (civName != unique.params[0]) return
+                // check if there any civ with the same name in the ingame (not during the current gme)
+                if (gameInfo.civilizations.firstOrNull { it.civName == unique.params[0] } != null) {
+                    val dummyNation = gameInfo.ruleset.nations[unique.params[1]]
+                    if (dummyNation != null) {
+                        this.nation.innerColor = dummyNation.innerColor
+                        this.nation.outerColor = dummyNation.outerColor
+                        this.nation.setTransients()
+                    }
+                }
+            }
+        }
+    }
+    
     var tech = TechManager()
     var policies = PolicyManager()
     var civConstructions = CivConstructions()
@@ -259,6 +302,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     constructor(civName: String) {
         this.civName = civName
+        this.displayCivName = civName
     }
 
     fun clone(): Civilization {
@@ -267,6 +311,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.playerType = playerType
         toReturn.playerId = playerId
         toReturn.civName = civName
+        toReturn.displayCivName = displayCivName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
         toReturn.civConstructions = civConstructions.clone()
@@ -305,6 +350,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.displayNation = displayNation
         return toReturn
     }
 
