@@ -6,6 +6,9 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.log
 
 /**
  *  Prototype for each new [Countables] instance, core functionality, to ensure a baseline.
@@ -178,6 +181,42 @@ enum class Countables(
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.isCityState }
         }
+    },
+    
+    Expression {
+        override val documentationHeader = """A composite mathematical expression to perform operations on the other simple parameters above."""
+
+        override val documentationStrings = listOf(
+            "As an identifier, the beginning and end of the expression need to be separated by `\$`, for example, `\$ [Cities] * 2 \$`.",
+            "You can use `+`, `-`, `*`, `/`, `^`, `%`, and `log` to perform operations on the simple parameters provided above.",
+            "The default order of operations follows mathematical intuition, and parentheses `()` can also be used to adjust the precedence.",
+            "For example: `$ ([Cities] + 1) * log([Units], 2) $`",
+            "For expressions that are mathematically undefined — such as `n/0`, `n%0`, `0^0`, and `log(notPositive, notPositive)`—the result will be **0**.",
+            "All parameters will be converted to Double-type floating-point numbers during computation. After the operation is completed, the decimal part will be truncated (rounded down) to convert the result into an Int type. Therefore, precision loss may occur in large-number operations."
+        )
+        
+        override fun matches(parameterText: String) =
+            parameterText.contains(Regex("""^\$(.*)\$"""))
+
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            if (!parameterText.matches(Regex("""^\$(.*)\$"""))) return null
+            return evaluateExpression(parameterText, stateForConditionals)?.toInt()
+        }
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return try {
+                if (!parameterText.startsWith('$') || !parameterText.endsWith('$')) return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                val stripped = parameterText.substring(1, parameterText.length - 1)
+                if (parseExpression(stripped, mockState(ruleset)) != null) null
+                else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            } catch (e: Exception) {
+                UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            }
+        }
+
+        private fun mockState(ruleset: Ruleset) = StateForConditionals().apply {
+            this.gameInfo?.ruleset = ruleset
+        }
     }
     ;
 
@@ -244,6 +283,212 @@ enum class Countables(
             }
             // return last result or default for simplicity - could do a max() instead
             return result
+        }
+
+        fun evaluateExpression(expression: String, state: StateForConditionals): Double? {
+            if (!expression.startsWith('$') || !expression.endsWith('$')) return null
+            val stripped = expression.substring(1, expression.length - 1)
+            return parseExpression(stripped, state)
+        }
+
+        private sealed class Token {
+            data class NumberToken(val value: Double) : Token()
+            data class VariableToken(val name: String) : Token()
+            data class OperatorToken(val operator: Char) : Token()
+            data class FunctionToken(val name: String) : Token()
+            data object LeftParen : Token()
+            data object RightParen : Token()
+            data object Comma : Token()
+        }
+
+        private fun tokenize(expr: String): List<Token> {
+            val tokens = mutableListOf<Token>()
+            var i = 0
+            while (i < expr.length) {
+                when (val c = expr[i]) {
+                    ' ' -> { i++ }
+                    '(' -> { tokens.add(Token.LeftParen); i++ }
+                    ')' -> { tokens.add(Token.RightParen); i++ }
+                    ',' -> { tokens.add(Token.Comma); i++ }
+                    in "+-*/%^" -> { tokens.add(Token.OperatorToken(c)); i++ }
+                    '[' -> {
+                        var bracketCount = 1
+                        var j = i + 1
+                        while (j < expr.length && bracketCount > 0) {
+                            when (expr[j]) {
+                                '[' -> bracketCount++
+                                ']' -> bracketCount--
+                            }
+                            j++
+                        }
+                        if (bracketCount != 0) throw Exception("Invalid variable: unmatched brackets")
+                        val variableName = expr.substring(i + 1, j - 1)
+                        tokens.add(Token.VariableToken(variableName))
+                        i = j
+                    }
+                    else -> when {
+                        c.isDigit() || c == '.' -> {
+                            val sb = StringBuilder()
+                            while (i < expr.length && (expr[i].isDigit() || expr[i] == '.')) {
+                                sb.append(expr[i])
+                                i++
+                            }
+                            tokens.add(Token.NumberToken(sb.toString().toDouble()))
+                        }
+                        c.isLetter() -> {
+                            val sb = StringBuilder()
+                            while (i < expr.length && expr[i].isLetter()) {
+                                sb.append(expr[i])
+                                i++
+                            }
+                            when (val str = sb.toString()) {
+                                "log" -> tokens.add(Token.FunctionToken(str))
+                                else -> throw Exception("Unknown function: $str")
+                            }
+                        }
+                        else -> throw Exception("Unexpected char: $c")
+                    }
+                }
+            }
+            return tokens
+        }
+
+        private fun parseExpression(expr: String, state: StateForConditionals): Double? {
+            return try {
+                Parser(tokenize(expr), state).parse()
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        private class Parser(private val tokens: List<Token>, private val state: StateForConditionals) {
+            private var pos = 0
+
+            fun parse(): Double {
+                val result = parseExpression()
+                if (pos != tokens.size) throw Exception("Unexpected token at position $pos")
+                return result
+            }
+
+            private fun parseExpression(): Double {
+                var left = parseTerm()
+                while (pos < tokens.size) {
+                    when (val token = tokens[pos]) {
+                        is Token.OperatorToken -> when (token.operator) {
+                            '+', '-' -> {
+                                pos++
+                                val right = parseTerm()
+                                left = when (token.operator) {
+                                    '+' -> left + right
+                                    '-' -> left - right
+                                    else -> throw Exception("Unexpected operator")
+                                }
+                            }
+                            else -> break
+                        }
+                        else -> break
+                    }
+                }
+                return left
+            }
+
+            private fun parseTerm(): Double {
+                var left = parseFactor()
+                while (pos < tokens.size) {
+                    when (val token = tokens[pos]) {
+                        is Token.OperatorToken -> when (token.operator) {
+                            '*', '/', '%' -> {
+                                pos++
+                                val right = parseFactor()
+                                left = when (token.operator) {
+                                    '*' -> left * right
+                                    '/' -> if(abs(right - 0.0) > 1e-5) { left / right } else 0.0
+                                    '%' -> if(abs(right - 0.0) > 1e-5) { left % right } else 0.0
+                                    else -> throw Exception("Unexpected operator")
+                                }
+                            }
+                            else -> break
+                        }
+                        else -> break
+                    }
+                }
+                return left
+            }
+
+            private fun parseFactor(): Double {
+                var left = parsePower()
+                while (pos < tokens.size) {
+                    when (val token = tokens[pos]) {
+                        is Token.OperatorToken -> when (token.operator) {
+                            '^' -> {
+                                pos++
+                                val right = parsePower()
+                                left = if(abs(right - 0.0) > 1e-5 && abs(left - 0.0) > 1e-5) { left.pow(right) } else 0.0
+                            }
+                            else -> break
+                        }
+                        else -> break
+                    }
+                }
+                return left
+            }
+
+            private fun parsePower(): Double {
+                var isNegative = false
+                if (tokens.getOrNull(pos) is Token.OperatorToken && (tokens[pos] as Token.OperatorToken).operator == '-') {
+                    isNegative = true
+                    pos++
+                }
+                var value = when (val token = tokens.getOrNull(pos)) {
+                    is Token.NumberToken -> {
+                        pos++
+                        token.value
+                    }
+                    is Token.VariableToken -> {
+                        pos++
+                        getCountableAmount(token.name, state)?.toDouble()
+                            ?: throw Exception("Unknown variable: ${token.name}")
+                    }
+                    Token.LeftParen -> {
+                        pos++
+                        val expr = parseExpression()
+                        if (tokens.getOrNull(pos) != Token.RightParen) {
+                            throw Exception("Missing closing parenthesis")
+                        }
+                        pos++
+                        expr
+                    }
+                    is Token.FunctionToken -> {
+                        pos++
+                        if (tokens.getOrNull(pos) != Token.LeftParen) {
+                            throw Exception("Missing opening parenthesis after function")
+                        }
+                        pos++
+                        val args = mutableListOf<Double>()
+                        while (true) {
+                            args.add(parseExpression())
+                            when (tokens.getOrNull(pos)) {
+                                Token.Comma -> pos++
+                                Token.RightParen -> {
+                                    pos++
+                                    break
+                                }
+                                else -> throw Exception("Unexpected token in function arguments")
+                            }
+                        }
+                        when (token.name) {
+                            "log" -> {
+                                if (args.size != 2) throw Exception("log requires 2 arguments")
+                                if (args[0] <= 0 || args[1] <= 0) 0.0 else log(args[1], args[0])
+                            }
+                            else -> throw Exception("Unknown function: ${token.name}")
+                        }
+                    }
+                    else -> throw Exception("Unexpected token: $token")
+                }
+                if (isNegative) value = -value
+                return value
+            }
         }
     }
 }
