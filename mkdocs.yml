@@ -1,6 +1,5 @@
 site_name: Unciv
 theme:
-
   name: material
   logo: assets/Icon.png
   favicon: assets/favicon.png
