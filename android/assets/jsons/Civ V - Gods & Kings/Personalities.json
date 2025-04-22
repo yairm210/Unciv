@@ -168,7 +168,7 @@
     ]
   },
   {
-    "name": "Atilla",
+    "name": "Attila the Hun",
     "production": 6,
     "food": 4,
     "gold": 7,
@@ -236,7 +236,7 @@
     ]
   },
   {
-    "name": "Bismarck",
+    "name": "Otto von Bismarck",
     "production": 8,
     "food": 5,
     "gold": 5,
@@ -768,7 +768,7 @@
     }
   },
   {
-    "name": "Maria I",
+    "name": "Maria Theresa",
     "production": 6,
     "food": 4,
     "gold": 8,
@@ -1174,7 +1174,7 @@
     }
   },
   {
-    "name": "Suleiman",
+    "name": "Suleiman I",
     "production": 5,
     "food": 4,
     "gold": 5,
@@ -1232,7 +1232,7 @@
     }
   },
   {
-    "name": "Washington",
+    "name": "George Washington",
     "production": 5,
     "food": 3,
     "gold": 6,
