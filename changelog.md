@@ -1,3 +1,25 @@
+## 4.16.5
+
+Resolved  - Added improvement image toggle next to minimap
+
+Resolved  - Added indication when attacking, for which tile we will attack from
+
+Fix opening Civilopedia from main menu when easter eggs enabled
+
+.
+
+Uniques are never sorted alphabetically
+
+chore: deprecate unique
+
+Ignore messages from defeated civilizations
+
+Resolved  - Don't automate naval units in cities that only lead to enemies via impassible water routes (e.g. ice)
+
+By Ouaz:
+- Fix untranslated string 
+- Fix personality names 
+
 ## 4.16.4
 
 Tile swapping with transported units in the tile, checks *who* is transporting the units
