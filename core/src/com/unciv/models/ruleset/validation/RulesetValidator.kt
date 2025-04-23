@@ -15,6 +15,8 @@ import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -46,7 +48,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
         addModOptionsErrors(lines, tryFixUnknownUniques)
-        uniqueValidator.checkUniques(ruleset.globalUniques, lines, false, tryFixUnknownUniques)
+        
+        addGlobalUniqueErrors(lines, false, tryFixUnknownUniques)
+        
         addUnitErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechColumnErrorsRulesetInvariant(lines)
@@ -73,7 +77,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val lines = RulesetErrorList(ruleset)
         addModOptionsErrors(lines, tryFixUnknownUniques)
-        uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
+        addGlobalUniqueErrors(lines, true, tryFixUnknownUniques)
 
         addUnitErrorsBaseRuleset(lines, tryFixUnknownUniques)
         addBuildingErrors(lines, tryFixUnknownUniques)
@@ -655,6 +659,22 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("${building.name} requires ${building.requiredBuilding} which does not exist!", sourceObject = building)
             uniqueValidator.checkUniques(building, lines, true, tryFixUnknownUniques)
         }
+    }
+    
+    private fun addGlobalUniqueErrors(lines: RulesetErrorList, reportRulesetSpecificErrors: Boolean, tryFixUnknownUniques: Boolean) {
+        uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+
+        for (uniqueText in ruleset.globalUniques.unitUniques) {
+            val unique = Unique(uniqueText, sourceObjectType = UniqueTarget.Unit, "Global unit uniques")
+            val errors = uniqueValidator.checkUnique(
+                unique,
+                tryFixUnknownUniques,
+                ruleset.globalUniques,
+                reportRulesetSpecificErrors
+            )
+            lines.addAll(errors)
+        }
+        
     }
 
 
