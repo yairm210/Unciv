@@ -112,4 +112,44 @@ object UncivServerFileStorage : FileStorage {
     }
 
     private fun fileUrl(fileName: String) = "$serverUrl/files/$fileName"
+
+    fun authenticate(username: String, password: String): Boolean {
+        var authenticated = false
+        val preEncodedAuthValue = "$username:$password"
+        authHeader = mapOf("Authorization" to "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}")
+        SimpleHttp.sendGetRequest("$serverUrl/auth", timeout=timeout, header=authHeader) {
+                success, result, code ->
+            if (!success) {
+                debug("Error from UncivServer during authentication: %s", result)
+                authHeader = null
+                when (code) {
+                    401 -> throw MultiplayerAuthException(Exception(result))
+                    else -> throw Exception(result)
+                }
+            } else {
+                authenticated = true
+            }
+        }
+        return authenticated
+    }
+
+    fun setPassword(newPassword: String): Boolean {
+        if (authHeader == null)
+            return false
+
+        var setSuccessful = false
+        SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/auth", content=newPassword, timeout=timeout, header=authHeader) {
+                success, result, code ->
+            if (!success) {
+                debug("Error from UncivServer during password set: %s", result)
+                when (code) {
+                    401 -> throw MultiplayerAuthException(Exception(result))
+                    else -> throw Exception(result)
+                }
+            } else {
+                setSuccessful = true
+            }
+        }
+        return setSuccessful
+    }
 }

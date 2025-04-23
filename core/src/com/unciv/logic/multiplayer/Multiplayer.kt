@@ -106,6 +106,16 @@ class Multiplayer {
         }
     }
 
+    /**
+     * Authenticates the user with the provided username and password.
+     *
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @return true if authentication was successful, false otherwise.
+     */
+    suspend fun authenticateUser(username: String, password: String): Boolean {
+        return multiplayerServer.authenticate(username, password)
+    }
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time

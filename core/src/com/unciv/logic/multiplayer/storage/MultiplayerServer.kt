@@ -59,22 +59,16 @@ class MultiplayerServer(
         return statusOk
     }
 
-
     /**
      * @return true if the authentication was successful or the server does not support authentication.
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    fun authenticate(password: String?): Boolean {
-        if (featureSet.authVersion == 0) return true
-
-        val settings = UncivGame.Current.settings.multiplayer
-
-        val success = fileStorage().authenticate(
-            userId=settings.userId,
-            password=password ?: settings.passwords[settings.server] ?: ""
-        )
-        if (password != null && success) {
+    fun authenticate(username: String, password: String): Boolean {
+        val success = fileStorage().authenticate(username, password)
+        if (success) {
+            val settings = UncivGame.Current.settings.multiplayer
+            settings.userName = username
             settings.passwords[settings.server] = password
         }
         return success
@@ -94,7 +88,6 @@ class MultiplayerServer(
 
         return false
     }
-
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
@@ -141,7 +134,6 @@ class MultiplayerServer(
         gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.server
         return gameInfo
     }
-
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
