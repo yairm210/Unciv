@@ -87,6 +87,7 @@ enum class KeyboardBinding(
     ToggleUI(Category.WorldScreen, "Toggle UI", KeyCharAndCode.ctrl('u')),
     ToggleWorkedTilesDisplay(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
     ToggleMovementDisplay(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
+    ToggleImprovementDisplay(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
     ZoomIn(Category.WorldScreen, Input.Keys.NUMPAD_ADD),
     ZoomOut(Category.WorldScreen, Input.Keys.NUMPAD_SUBTRACT),
 

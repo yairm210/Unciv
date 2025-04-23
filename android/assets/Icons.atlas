@@ -139,21 +139,21 @@ EmojiIcons/Happiness
   index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 1340, 994
+  xy: 1398, 1052
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 1514, 1168
+  xy: 1572, 1226
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 1398, 994
+  xy: 1456, 1052
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -198,34 +198,6 @@ OtherIcons/Stop
   xy: 1771, 1932
   size: 100, 100
   orig: 100, 100
-  offset: 0, 0
-  index: -1
-ImprovementIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-OtherIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-ResourceIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-StatIcons/Circle
-  rotate: false
-  xy: 289, 1590
-  size: 178, 178
-  orig: 178, 178
   offset: 0, 0
   index: -1
 ImprovementIcons/Citadel
@@ -487,27 +459,6 @@ StatIcons/Faith
   orig: 100, 100
   offset: 0, 0
   index: -1
-NotificationIcons/Loading
-  rotate: false
-  xy: 907, 1686
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Working
-  rotate: false
-  xy: 907, 1686
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Loading
-  rotate: false
-  xy: 907, 1686
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 NotificationIcons/PickConstruction
   rotate: false
   xy: 1771, 1500
@@ -667,6 +618,34 @@ NotificationIcons/NextTurn
   xy: 1879, 1932
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+ResourceIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+StatIcons/Circle
+  rotate: false
+  xy: 289, 1590
+  size: 178, 178
+  orig: 178, 178
   offset: 0, 0
   index: -1
 OtherIcons/Cities
@@ -844,6 +823,27 @@ OtherIcons/Load
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/Loading
+  rotate: false
+  xy: 907, 1686
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Loading
+  rotate: false
+  xy: 907, 1686
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Working
+  rotate: false
+  xy: 907, 1686
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 OtherIcons/LockSmall
   rotate: false
   xy: 1398, 1168
@@ -888,7 +888,7 @@ OtherIcons/NationSwap
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 1456, 1168
+  xy: 1514, 1226
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -916,7 +916,7 @@ OtherIcons/Options
   index: -1
 OtherIcons/Pause
   rotate: false
-  xy: 1514, 1226
+  xy: 1340, 994
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1483,14 +1483,14 @@ TileIcons/Worked
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 1398, 1052
+  xy: 1456, 1110
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 1456, 1110
+  xy: 1514, 1168
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1518,7 +1518,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 1572, 1226
+  xy: 1398, 994
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1551,30 +1551,37 @@ TileIcons/Locked
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileIcons/MapOverlayToggleMovement
+TileIcons/MapOverlayToggleImprovements
   rotate: false
   xy: 1456, 1226
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-TileIcons/MapOverlayToggleResources
+TileIcons/MapOverlayToggleMovement
   rotate: false
   xy: 1282, 994
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-TileIcons/MapOverlayToggleWorkedTiles
+TileIcons/MapOverlayToggleResources
   rotate: false
   xy: 1340, 1052
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-TileIcons/MapOverlayToggleYields
+TileIcons/MapOverlayToggleWorkedTiles
   rotate: false
   xy: 1398, 1110
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+TileIcons/MapOverlayToggleYields
+  rotate: false
+  xy: 1456, 1168
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
