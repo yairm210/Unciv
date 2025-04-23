@@ -1,21 +1,17 @@
+Added improvement image toggle next to minimap
 
-
-Resolved  - Added improvement image toggle next to minimap
-
-Resolved  - Added indication when attacking, for which tile we will attack from
+Added indication when attacking, for which tile we will attack from
 
 Fix opening Civilopedia from main menu when easter eggs enabled
 
-.
+Remove messages from defeated civilizations
+
+Don't automate naval units in cities that only lead to enemies via impassible water routes (e.g. ice)
 
 Uniques are never sorted alphabetically
 
-chore: deprecate unique
-
-Ignore messages from defeated civilizations
-
-Resolved  - Don't automate naval units in cities that only lead to enemies via impassible water routes (e.g. ice)
+Modding: Added validation for global unit uniques
 
 By Ouaz:
 - Fix untranslated string 
-- Fix personality names 
+- Fix personality names
