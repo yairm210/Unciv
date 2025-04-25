@@ -66,6 +66,7 @@ class UnitManager(val civInfo: Civilization) {
             ?: return null
         if (unit.isGreatPerson) {
             civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", MapUnitAction(placedUnit), NotificationCategory.General, unit.name)
+            civInfo.questManager.handleIndividualQuests() // Maybe there's a "aquire great person" quest active
         }
 
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
