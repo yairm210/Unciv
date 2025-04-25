@@ -212,6 +212,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             // we do it all in one swoop on the same thread and the application just "freezes" without loading screen for the duration.
             loadingScreen = LoadingScreen(getScreen())
             setScreen(loadingScreen)
+            Gdx.input.inputProcessor = null // It's just been set by setScreen, so unset it to avoid ANRs while loading
         }
 
         return@toplevel withGLContext {
@@ -219,7 +220,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             screenStack.clear()
 
             worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
-            Gdx.input.inputProcessor = null // Avoid ANRs while loading
             val newWorldScreen = WorldScreen(newGameInfo, autoPlay, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
             worldScreen = newWorldScreen
 
