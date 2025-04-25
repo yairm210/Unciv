@@ -229,6 +229,8 @@ object ReligionAutomation {
 
         if (belief.type == BeliefType.Pantheon)
             score *= 0.9f
+        
+        score *= belief.getWeightForAiDecision(StateForConditionals(civInfo))
 
         return score
     }
