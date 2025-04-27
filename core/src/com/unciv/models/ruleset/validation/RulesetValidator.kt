@@ -14,8 +14,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitMovementType
@@ -46,7 +45,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
         addModOptionsErrors(lines, tryFixUnknownUniques)
-        uniqueValidator.checkUniques(ruleset.globalUniques, lines, false, tryFixUnknownUniques)
+        
+        addGlobalUniqueErrors(lines, false, tryFixUnknownUniques)
+        
         addUnitErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechErrorsRulesetInvariant(lines, tryFixUnknownUniques)
         addTechColumnErrorsRulesetInvariant(lines)
@@ -73,7 +74,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val lines = RulesetErrorList(ruleset)
         addModOptionsErrors(lines, tryFixUnknownUniques)
-        uniqueValidator.checkUniques(ruleset.globalUniques, lines, true, tryFixUnknownUniques)
+        addGlobalUniqueErrors(lines, true, tryFixUnknownUniques)
 
         addUnitErrorsBaseRuleset(lines, tryFixUnknownUniques)
         addBuildingErrors(lines, tryFixUnknownUniques)
@@ -565,6 +566,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("${improvement.name} replaces ${improvement.replaces} which does not exist!", sourceObject = improvement)
             if (improvement.replaces != null && improvement.uniqueTo == null)
                 lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
+            checkUniqueToMisspelling(improvement, improvement.uniqueTo, lines)
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!ruleset.terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines.add("${improvement.name} can be built on terrain $terrain which does not exist!", sourceObject = improvement)
@@ -653,8 +655,26 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("${building.name} replaces ${building.replaces} which does not exist!", sourceObject = building)
             if (building.requiredBuilding != null && !ruleset.buildings.containsKey(building.requiredBuilding!!))
                 lines.add("${building.name} requires ${building.requiredBuilding} which does not exist!", sourceObject = building)
+
+            checkUniqueToMisspelling(building, building.uniqueTo, lines)
             uniqueValidator.checkUniques(building, lines, true, tryFixUnknownUniques)
         }
+    }
+    
+    private fun addGlobalUniqueErrors(lines: RulesetErrorList, reportRulesetSpecificErrors: Boolean, tryFixUnknownUniques: Boolean) {
+        uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+
+        for (uniqueText in ruleset.globalUniques.unitUniques) {
+            val unique = Unique(uniqueText, sourceObjectType = UniqueTarget.Unit, "Global unit uniques")
+            val errors = uniqueValidator.checkUnique(
+                unique,
+                tryFixUnknownUniques,
+                ruleset.globalUniques,
+                reportRulesetSpecificErrors
+            )
+            lines.addAll(errors)
+        }
+        
     }
 
 
@@ -679,6 +699,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             checkUnitRulesetInvariant(unit, lines)
             checkUnitRulesetSpecific(unit, lines)
             uniqueValidator.checkUniques(unit, lines, true, tryFixUnknownUniques)
+            checkUniqueToMisspelling(unit, unit.uniqueTo, lines)
         }
     }
 
@@ -883,6 +904,22 @@ class RulesetValidator(val ruleset: Ruleset) {
         
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
+    }
+    
+    private fun checkUniqueToMisspelling(obj: IHasUniques, uniqueTo: String?, lines: RulesetErrorList){
+        if (uniqueTo == null || uniqueTo in ruleset.nations) return
+        
+        val civUniques = ruleset.nations.values.flatMap { it.uniques }.toSet()
+        if (uniqueTo in civUniques) return
+        
+        val possibleMisspellings = getPossibleMisspellings(uniqueTo,
+            civUniques.toList() + ruleset.nations.keys)
+        if (possibleMisspellings.isEmpty()) return
+        lines.add(
+            "${obj.name} has uniqueTo \"$uniqueTo\" does not match any nation/unique - may be a misspelling of " +
+                    possibleMisspellings.joinToString(" OR ") { "\"$it\"" }, sourceObject = obj,
+            errorSeverityToReport = RulesetErrorSeverity.OK
+        )
     }
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
