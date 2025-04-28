@@ -123,6 +123,10 @@ class ModConstants {
     // Score value of things
     var scoreFromPopulation = 3 // 4 in BNW
     var scoreFromWonders = 40 // 25 in BNW
+    
+    // Gold for great merchant trade missions
+    var tradeMissionBaseGold = 350 // 300 in BNW
+    var tradeMissionEraMultiplier = 50 // 100 in BNW
 
     // UI: If set >= 0, ImprovementPicker will silently skip improvements whose tech requirement is more advanced than your current Era + this
     var maxImprovementTechErasForward = -1
