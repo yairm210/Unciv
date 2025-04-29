@@ -107,6 +107,10 @@ object DropBox: FileStorage {
         throw NotImplementedError()
     }
 
+    override fun checkAuthStatus(userId: String, password: String): AuthStatus {
+        throw NotImplementedError()
+    }
+
     override fun setPassword(newPassword: String): Boolean {
         throw NotImplementedError()
     }

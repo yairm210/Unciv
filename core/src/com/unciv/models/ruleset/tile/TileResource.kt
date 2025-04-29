@@ -86,7 +86,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
         textList += FormattedLine()
 
-        uniquesToCivilopediaTextLines(textList, sorted = true)
+        uniquesToCivilopediaTextLines(textList)
 
         textList += FormattedLine(cloneStats().toString())
 

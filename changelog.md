@@ -1,3 +1,40 @@
+## 4.16.5
+
+Added improvement image toggle next to minimap
+
+Added indication when attacking, for which tile we will attack from
+
+Fix opening Civilopedia from main menu when easter eggs enabled
+
+Remove messages from defeated civilizations
+
+Don't automate naval units in cities that only lead to enemies via impassible water routes (e.g. ice)
+
+Uniques are never sorted alphabetically
+
+Modding: Added validation for global unit uniques
+
+By Ouaz:
+- Fix untranslated string 
+- Fix personality names 
+
+## 4.16.4
+
+Tile swapping with transported units in the tile, checks *who* is transporting the units
+
+City states don't get continually researchable techs automatically
+
+Modding:
+- Resolved automation crash for units with "gain free [building]" uniques
+- Allow multipying cached uniques
+
+By touhidurrr:
+- more detailed multiplayer authentication
+
+By SomeTroglodyte:
+- CityScreen's top-right widget better sized for mobile
+- Better save/load in map editor
+
 ## 4.16.3
 
 Ruleset validation: Hide performance suggestions from users, they're now mod-checker only

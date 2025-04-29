@@ -4,23 +4,23 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.UncivGame
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.files.IMediaFinder
 import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.GameSetting
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.format
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
@@ -163,14 +163,34 @@ private fun addMultiplayerServerOptions(
         serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
         serverIpTable.add(passwordTextField).colspan(2).growX().padBottom(8f).row()
 
+        // initially assume no password
+        val authStatusLabel = "Set a password to secure your userId".toLabel()
+
+        if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
+            val userId = settings.multiplayer.userId
+            val password = settings.multiplayer.passwords[settings.multiplayer.server] ?: ""
+
+
+            authStatusLabel.setText("Validating your authentication status...")
+            Concurrency.run {
+                val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
+                    .checkAuthStatus(userId, password)
+
+                val newAuthStatusText = when (authStatus) {
+                    AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
+                    AuthStatus.UNREGISTERED -> "You userId is unregistered! Set password to secure your userId"
+                    AuthStatus.VERIFIED -> "Your current password has been succesfully verified"
+                    AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
+                }
+
+                Concurrency.runOnGLThread {
+                    authStatusLabel.setText(newAuthStatusText)
+                }
+            }
+        }
+
         val passwordStatusTable = Table().apply {
-            add(
-                if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
-                    "Your userId is password secured"
-                } else {
-                    "Set a password to secure your userId"
-                }.toLabel()
-            )
+            add(authStatusLabel)
             add(setPasswordButton.onClick {
                 setPassword(passwordTextField.text, optionsPopup)
             }).padLeft(16f)

@@ -306,7 +306,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     }
 
     private fun getDiplomaticMarriageButton(otherCiv: Civilization): TextButton? {
-        if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGold) && !viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGoldOld))
+        if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGold))
             return null
 
         val diplomaticMarriageButton =
@@ -349,7 +349,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         return diplomacyTable
     }
 
-    private fun getImprovableResourceTiles(otherCiv:Civilization) = otherCiv.getCapital()!!.getTiles().filter {
+    private fun getImprovableResourceTiles(otherCiv:Civilization) = otherCiv.cities.flatMap { it.getTiles() }.filter {
         it.hasViewableResource(otherCiv)
             && it.tileResource.resourceType != ResourceType.Bonus
             && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
