@@ -171,7 +171,7 @@ object UnitAutomation {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
-        if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
+        if (unit.getDamageFromTerrain() > 0 && tryHealUnit(unit)) return
 
 
         if (unit.isCivilian()) {
