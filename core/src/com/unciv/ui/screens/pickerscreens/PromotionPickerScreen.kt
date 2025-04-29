@@ -62,7 +62,7 @@ class PromotionPickerScreen private constructor(
     private val tree = PromotionTree(unit)
 
     // This if we should save the unit promotion or not.
-    private var saveUnitTypePromotion = false
+    private var saveUnitPromotion = false
 
     init {
         closeButton.onActivation {
@@ -77,7 +77,7 @@ class PromotionPickerScreen private constructor(
             rightSideButton.onClick(UncivSound.Silent) {
                 acceptPromotion(selectedPromotion)
                 
-                checkSaveUnitTypePrormotion()
+                checkSaveUnitPrormotion()
             }
         } else {
             rightSideButton.isVisible = false
@@ -190,28 +190,29 @@ class PromotionPickerScreen private constructor(
             // Each root tree should start from a completely empty row.
             row += 1
         }
-
         topTable.add(promotionsTable).row()
-        saveUnitTypePromotionForCity()
+        saveUnitPromotionForCity()
+        
         if (unit.statusMap.isNotEmpty()) addStatuses()
         addConnectingLines(emptySet())
     }
 
     // adds the checkBoxs to choice to save unit promotion.
-    private fun saveUnitTypePromotionForCity() {
-        // if you are not in a city tile then don't show up 
-        // then player should not be able to save promotion in enermy tiles/puppet citys 
-        // even their own because you can't build any unit there.
+    private fun saveUnitPromotionForCity() {
+        /* if you are not in a city tile then don't show up 
+         then player should not be able to save promotion in enermy tiles/puppet citys 
+         even their own because you can't build any unit there.
+        */ 
         val currentCity = unit.currentTile.getCity() ?: return
         if (currentCity.civ.civName != unit.civ.civName) return
         if (currentCity.isPuppet) return
-        val checkBoxSaveUnitPromotion = "Default promotions for [${unit.baseUnit.name}]".toCheckBox(saveUnitTypePromotion) {saveUnitTypePromotion = it}
-        promotionsTable.add(checkBoxSaveUnitPromotion)
+        val checkBoxSaveUnitPromotion = "Default promotions for [${unit.baseUnit.name}]".toCheckBox(saveUnitPromotion) {saveUnitPromotion = it}
+        topTable.add(checkBoxSaveUnitPromotion).left().padTop(10f)
     }
     
     // going to reuse this bit of code 2 time so turn it into a funtion
-    private fun checkSaveUnitTypePrormotion() {
-        if (!saveUnitTypePromotion)  return
+    private fun checkSaveUnitPrormotion() {
+        if (!saveUnitPromotion)  return
         val unitCurrentCity = unit.currentTile.getCity()
         if (unitCurrentCity != null) {
             // If you are clicked the save baseUnit promotion, you want the next baseUnit to have the same promotion.
@@ -247,7 +248,7 @@ class PromotionPickerScreen private constructor(
         if (isPickable)
             button.onDoubleClick(UncivSound.Silent) {
                 acceptPromotion(button)
-                checkSaveUnitTypePrormotion()
+                checkSaveUnitPrormotion()
             }
 
         return button
