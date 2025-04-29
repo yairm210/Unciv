@@ -112,6 +112,7 @@ class AlertPopup(
             AlertType.Event -> shouldOpen = addEvent()
         }
         if (shouldOpen) open()
+        else viewingCiv.popupAlerts.remove(popupAlert)
     }
 
     //region AlertType handlers
