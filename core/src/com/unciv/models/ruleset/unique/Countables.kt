@@ -1,49 +1,30 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
-import java.time.LocalDate
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 /**
  *  Prototype for each new [Countables] instance, core functionality, to ensure a baseline.
  *
  *  Notes:
+ *  - Each instance ***must*** implement _either_ overload of [matches] and indicate which one via [matchesWithRuleset].
  *  - [matches] is used to look up which instance implements a given string, **without** validating its placeholders.
- *    It can be called with or without a ruleset. The ruleset is **only** to be used if there is no selective pattern
- *    to detect when a specific countable is "responsible" for a certain input, and for these, when `matches` is called
- *    without a ruleset, they must return `MatchResult.No` (Example below: TileResource).
  *  - [getErrorSeverity] is responsible for validating placeholders, _and can assume [matches] was successful_.
  *  - Override [getKnownValuesForAutocomplete] only if a sensible number of suggestions is obvious.
  */
 interface ICountable {
-    /** Supports `MatchResult(true)`to get [Yes], MatchResult(false)`to get [No], or MatchResult(null)`to get [Maybe] */
-    enum class MatchResult {
-        No { override fun isOK(strict: Boolean) = false },
-        Maybe { override fun isOK(strict: Boolean) = !strict },
-        Yes { override fun isOK(strict: Boolean) = true }
-        ;
-        abstract fun isOK(strict: Boolean): Boolean
-        companion object {
-            fun from(bool: Boolean?) = when(bool) {
-                true -> Yes
-                false -> No
-                else -> Maybe
-            }
-        }
-    }
-
-    fun matches(parameterText: String, ruleset: Ruleset? = null): MatchResult = MatchResult.No
+    fun matches(parameterText: String): Boolean = false
+    val matchesWithRuleset: Boolean
+        get() = false
+    fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
     fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int?
     fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> = emptySet()
     fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity?
+    fun getDeprecationAnnotation(): Deprecated?
 }
 
 /**
@@ -73,7 +54,7 @@ enum class Countables(
 ) : ICountable {
     Integer {
         override val documentationHeader = "Integer constant - any positive or negative integer number"
-        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(parameterText.toIntOrNull() != null)
+        override fun matches(parameterText: String) = parameterText.toIntOrNull() != null
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) = parameterText.toIntOrNull()
     },
 
@@ -99,11 +80,7 @@ enum class Countables(
     Stats {
         override val documentationHeader = "Stat name (${Stat.names().niceJoin()})"
         override val documentationStrings = listOf("gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
-        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(
-            Stat.isStat(
-                parameterText
-            )
-        )
+        override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
             // This one isn't covered by City.getStatReserve or Civilization.getStatReserve but should be available here
@@ -187,9 +164,8 @@ enum class Countables(
             "For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.",
             "This can make a difference for e.g. local resources, which are counted per city."
         )
-        override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(
-            ruleset?.tileResources?.containsKey(parameterText)
-        )
+        override val matchesWithRuleset = true
+        override fun matches(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.getResourceAmount(parameterText)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
@@ -202,43 +178,17 @@ enum class Countables(
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.isCityState }
         }
-    },
-
-    Expression {
-        override val noPlaceholders = false
-
-        private val engine = Expressions()
-
-        override fun matches(parameterText: String, ruleset: Ruleset?) =
-            engine.matches(parameterText, ruleset)
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? =
-            engine.eval(parameterText, stateForConditionals)
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            engine.getErrorSeverity(parameterText, ruleset)
-
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = emptySet<String>()
-
-        override val documentationHeader = "Evaluate expressions!"
-        override val documentationStrings = listOf(
-            "Expressions support `+`, `-`, `*`, `/`, `%`, `^` operations.",
-            "Operands can be floating point constants or other countables in square brackets",
-            "..."
-        )
     }
-    ; //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ;
 
-    //region ' class-wide elements and ICountable'
     val placeholderText = text.getPlaceholderText()
 
     @VisibleForTesting
     open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    override fun matches(parameterText: String, ruleset: Ruleset?) = ICountable.MatchResult.from(
-        if (noPlaceholders) parameterText == text
-        else parameterText.equalsPlaceholderText(placeholderText)
-    )
-
+    override fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
+    else parameterText.equalsPlaceholderText(placeholderText)
     override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
 
     open val documentationHeader get() =
@@ -247,61 +197,24 @@ enum class Countables(
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
     override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
-    /** Helper for Countables with exactly one placeholder that is a UniqueParameterType */
+    override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+
     protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-        // This calls UniqueParameterType's getErrorSeverity:
         val severity = getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
-        // Map PossibleFilteringUnique to RulesetSpecific otherwise those mistakes would be hidden later on in RulesetValidator
         return when {
             severity != UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique -> severity
-            else -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            matchesWithRuleset -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
+            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         }
     }
-    //endregion
-
-    //region ' Deprecation and InDevelopment'
-    fun getDeprecationAnnotation(): Deprecated? = getDeprecatedAnnotation() ?: getDeprecationFromInDevelopment()
-
-    /**
-     *  This annotation marks a [Countables] instance as active for debug builds only.
-     *  - If you add both @Deprecated and @InDevelopment to the same instance, the validator will only see the @Deprecated one,
-     *    while @InDevelopment still controls whether it si active (evaluated at all).
-     *  @param developer - the responsible dev as `@` plus github account
-     */
-    @Retention(AnnotationRetention.RUNTIME)
-    @Target(AnnotationTarget.FIELD)
-    annotation class InDevelopment(val developer: String, val eta: String)
-
-    private fun getDeprecatedAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
-    private fun getInDevelopmentAnnotation(): InDevelopment? = declaringJavaClass.getField(name).getAnnotation(InDevelopment::class.java)
-    private fun InDevelopment.isExpired(): Boolean {
-        val etaDate = LocalDate.parse(eta, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        return etaDate.isBefore(LocalDate.now(ZoneOffset.UTC))
-    }
-    private fun isInactive(): Boolean {
-        val inDev = getInDevelopmentAnnotation() ?: return false
-        if (inDev.isExpired()) return true
-        return Log.backend.isRelease()
-    }
-    private fun getDeprecationFromInDevelopment(): Deprecated? =
-        if (getInDevelopmentAnnotation()?.isExpired() == true) Deprecated("InDevelopment ETA has expired") else null
-    //endregion
 
     companion object {
-        private fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
+        fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .filter {
-                !it.isInactive() && it.matches(parameterText, ruleset).isOK(strict = true)
+                if (it.matchesWithRuleset)
+                    ruleset != null && it.matches(parameterText, ruleset)
+                else it.matches(parameterText)
             }
-
-        fun getBestMatching(parameterText: String, ruleset: Ruleset?): Pair<Countables?, ICountable.MatchResult> =
-            Countables.entries
-            .filter {
-                !it.isInactive() && it.matches(parameterText, ruleset).isOK(strict = true)
-            }.mapNotNull {
-                val result = it.matches(parameterText, ruleset)
-                if (result.isOK(strict = false)) it to result else null
-            }.minByOrNull { it.second }
-            ?: Pair(null, ICountable.MatchResult.No)
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
@@ -324,29 +237,13 @@ enum class Countables(
             }
 
         fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-            var result: UniqueType.UniqueParameterErrorSeverity? = null
-            for (countable in Countables.entries) {
-                if (countable.isInactive()) continue
-                val thisResult = when (countable.matches(parameterText, ruleset)) {
-                    ICountable.MatchResult.No -> continue
-                    ICountable.MatchResult.Yes ->
-                        countable.getErrorSeverity(parameterText, ruleset)
-                        // If any Countable is happy, we're happy: Should be the only path to return `null`, meaning perfectly OK
-                            ?: return null
-                    else -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
-                }
-                if (result == null || thisResult > result) result = thisResult
+            var result = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            for (countable in Countables.getMatching(parameterText, ruleset)) {
+                // If any Countable is happy, we're happy
+                result = countable.getErrorSeverity(parameterText, ruleset) ?: return null
             }
-            // return worst result - or if the loop found nothing, max severity
-            return result ?: UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            // return last result or default for simplicity - could do a max() instead
+            return result
         }
-
-        /** Get deprecated [Countables] with their [Deprecated] object matching a [parameterText], for `UniqueValidator` */
-        fun getDeprecatedCountablesMatching(parameterText: String): List<Pair<Countables, Deprecated>> =
-            Countables.entries.filter {
-                !it.isInactive() && it.matches(parameterText, null).isOK(strict = false)
-            }.mapNotNull { countable ->
-                countable.getDeprecationAnnotation()?.let { countable to it }
-            }
     }
 }
