@@ -101,6 +101,15 @@ class Nation : RulesetObject() {
         forestsAndJunglesAreRoads = uniqueMap.hasUnique(UniqueType.ForestsAndJunglesAreRoads)
         ignoreHillMovementCost = uniqueMap.hasUnique(UniqueType.IgnoreHillMovementCost)
     }
+    fun setTransientsColor(outerColorTransient: List<Int>,innerColorTransient: List<Int>?) {
+        outerColorObject = colorFromRGB(outerColorTransient)
+
+        innerColorObject = if (innerColorTransient == null) ImageGetter.CHARCOAL
+        else colorFromRGB(innerColorTransient)
+
+        forestsAndJunglesAreRoads = uniqueMap.hasUnique(UniqueType.ForestsAndJunglesAreRoads)
+        ignoreHillMovementCost = uniqueMap.hasUnique(UniqueType.IgnoreHillMovementCost)
+    }
     
     override fun makeLink() = "Nation/$name"
     override fun getSortGroup(ruleset: Ruleset) = when {

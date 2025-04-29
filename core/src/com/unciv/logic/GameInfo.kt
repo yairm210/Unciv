@@ -704,8 +704,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         migrateGreatGeneralPools()
         ensureUnitIds()
 
+       
+        // check if ther is there is that change color unique before
         // check for era unique to change civ color.
-        for (civInfo in civilizations) civInfo.setDisplayColorTransients()
+        if (ruleset.eras.values.any { it.getMatchingUniques(UniqueType.ChangeCivilizationColors).count() > 0 }) {
+            for (civInfo in civilizations) civInfo.setDisplayCivColor()
+        }
+        
     }
 
     private fun updateCivilizationState() {

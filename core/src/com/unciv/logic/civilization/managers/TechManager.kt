@@ -494,9 +494,8 @@ class TechManager : IsPartOfGameInfoSerialization {
                 val civ = civInfo.gameInfo.getCivilization(unique.params[0])
                 val dummyNation = civInfo.gameInfo.ruleset.nations[unique.params[1]]
                 if (dummyNation != null) {
-                    civ.nation.innerColor = dummyNation.innerColor
-                    civ.nation.outerColor = dummyNation.outerColor
-                    civ.nation.setTransients()
+                    civ.setDisplayCivName(unique.params[1])
+                    civ.nation.setTransientsColor(dummyNation.outerColor,dummyNation.innerColor)
                 }
             }
         }
