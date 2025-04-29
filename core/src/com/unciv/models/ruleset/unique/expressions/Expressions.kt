@@ -7,22 +7,27 @@ import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.roundToInt
 
 class Expressions : ICountable {
-    override fun matches(parameterText: String, ruleset: Ruleset?) =
-        parse(parameterText, ruleset).severity
+    override fun matches(parameterText: String, ruleset: Ruleset) =
+        parse(parameterText, ruleset).node != null // TODO add checing the actual countables
 
     override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
         val node = parse(parameterText, null).node ?: return null
         return node.eval(stateForConditionals).roundToInt()
     }
 
-    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
-        when(parse(parameterText, ruleset).severity) {
-            ICountable.MatchResult.No -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-            ICountable.MatchResult.Maybe -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
-            ICountable.MatchResult.Yes -> null
+    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+        val parseResult = parse(parameterText, ruleset)
+        return when {
+            parseResult.node == null -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            // TODO add parse result checking for actual ruleset
+//            parseResult.node.check -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+            else -> null
         }
+    }
 
-    private data class ParseResult(val severity: ICountable.MatchResult, val node: Node?, val exception: Parser.ParsingError?)
+    override fun getDeprecationAnnotation(): Deprecated? = null
+
+    private data class ParseResult(/** null if there was a parse error */ val node: Node?, val exception: Parser.ParsingError?)
 
     companion object {
         private val cache: MutableMap<String, ParseResult> = mutableMapOf()
@@ -30,9 +35,9 @@ class Expressions : ICountable {
         private fun parse(parameterText: String, ruleset: Ruleset?): ParseResult = cache.getOrPut(parameterText) {
             try {
                 val node = Parser.parse(parameterText, ruleset)
-                ParseResult(ICountable.MatchResult.Yes, node, null)
+                ParseResult(node, null)
             } catch (ex: Parser.ParsingError) {
-                ParseResult(ex.severity, null, ex)
+                ParseResult(null, ex)
             }
         }
         

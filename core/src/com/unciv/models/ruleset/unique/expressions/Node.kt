@@ -28,8 +28,8 @@ internal sealed interface Node {
         override fun toString() = "($left $operator $right)"
     }
 
-    class Countable(private val countable: Countables, private val parameterText: String): Node, Tokenizer.Token {
-        override fun eval(context: StateForConditionals): Double = countable.eval(parameterText, context)?.toDouble() ?: 0.0
-        override fun toString() = "[Countables.${countable.name}: $parameterText]"
+    class Countable(private val parameterText: String): Node, Tokenizer.Token {
+        override fun eval(context: StateForConditionals): Double = 0.0 // todo countable.eval(parameterText, context)?.toDouble() ?: 0.0
+        override fun toString() = "[Countable: $parameterText]"
     }
 }

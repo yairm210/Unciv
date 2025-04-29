@@ -1,16 +1,12 @@
 package com.unciv.models.ruleset.unique.expressions
 
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Countables
-import com.unciv.models.ruleset.unique.ICountable
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyBraces
-import com.unciv.models.ruleset.unique.expressions.Parser.InvalidConstant
-import com.unciv.models.ruleset.unique.expressions.Parser.UnknownCountable
-import com.unciv.models.ruleset.unique.expressions.Parser.MalformedCountable
-import com.unciv.models.ruleset.unique.expressions.Parser.UnmatchedBraces
-import com.unciv.models.ruleset.unique.expressions.Parser.UnknownIdentifier
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyExpression
+import com.unciv.models.ruleset.unique.expressions.Parser.InvalidConstant
+import com.unciv.models.ruleset.unique.expressions.Parser.UnknownIdentifier
+import com.unciv.models.ruleset.unique.expressions.Parser.UnmatchedBraces
 
 internal object Tokenizer {
     /**
@@ -56,12 +52,7 @@ internal object Tokenizer {
             throw UnknownIdentifier(position, text)
         
         val countableText = text.substring(1, text.length - 1)
-        val (countable, severity) = Countables.getBestMatching(countableText, ruleset)
-        if (severity == ICountable.MatchResult.Yes)
-            return position to Node.Countable(countable!!, countableText)
-        if (severity == ICountable.MatchResult.Maybe)
-            throw MalformedCountable(position, countable!!, countableText)
-        throw UnknownCountable(position, text)
+        return position to Node.Countable(countableText)
     }
 
     fun String.tokenize() = sequence<Pair<Int, String>> {

@@ -2,7 +2,6 @@ package com.unciv.models.ruleset.unique.expressions
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Countables
-import com.unciv.models.ruleset.unique.ICountable
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
 import com.unciv.models.ruleset.unique.expressions.Tokenizer.Token
@@ -45,11 +44,10 @@ object Parser {
     //region Exceptions
     /** Parent of all exceptions [parse] can throw.
      *  If the exception caught is not [SyntaxError], then an Expression Countable should say NO "that can't possibly an expression". */
-    open class ParsingError(override val message: String, val position:Int,
-                            open val severity: ICountable.MatchResult = ICountable.MatchResult.No) : Exception()
+    open class ParsingError(override val message: String, val position:Int) : Exception()
     /** Less severe than [ParsingError].
      *  It allows an Expression Countable to say "Maybe", meaning the string might be of type Expression, but malformed. */
-    open class SyntaxError(message: String, position: Int) : ParsingError(message, position, ICountable.MatchResult.Maybe)
+    open class SyntaxError(message: String, position: Int) : ParsingError(message, position)
     class UnmatchedBraces(position: Int) : ParsingError("Unmatched square braces", position)
     class EmptyBraces(position: Int) : ParsingError("Empty square braces", position)
     class UnmatchedParentheses(position: Int, name: String) : SyntaxError("Unmatched $name parenthesis", position)
