@@ -1,20 +1,19 @@
 ## 4.16.6
 
-Resolved  - Can pay to improve resource in any CS city, not just capital; Water improvements can be built for city states
+Demands/Requests from other civs do not stop other events registering
 
-Modding: Added misspelling tests for uniqueTo for buildings, units and improvements
+Better 'Pay to improve CS resource'
 
-Seed pillage randomness to avoid save-scumming
+Seed pillage randomness to avoid save-scum
 
-Better ANR avoiding when loading game
+Modding: 
+- Added misspelling tests for uniqueTo for buildings, units and improvements
+- Triggerable uniques on promotions only activate once when added on creation
+- Beliefs can have AI decision modifiers, and do in base rulesets
 
-Resolved  - Triggerable uniques on promotions will only activate once when added to unit on creation
+Finish city-state quests upon acquiring great person
 
-Resolved  - Beliefs can be modified with AI decision modifiers; AI will no longer choose Religious Unity / Papal Primacy with no city states
-
-Resolved  - Finish city-state quest upon acquiring great person
-
-Fix toggle improvements button color - By Ouaz
+Prevent AI placing units near citadels - by EmperorPinguin
 
 ## 4.16.5
 
