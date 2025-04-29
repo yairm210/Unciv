@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset.unique.expressions
 
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyBraces
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyExpression
@@ -38,7 +37,7 @@ internal object Tokenizer {
     private fun Char.isIdentifierContinuation() = this == '_' || isLetterOrDigit()
 
     // Position in text, to token found
-    fun Pair<Int,String>.toToken(ruleset: Ruleset?): Pair<Int,Token> {
+    fun Pair<Int,String>.toToken(): Pair<Int,Token> {
         val (position, text) = this
         if (text.isEmpty()) throw EmptyExpression()
         assert(text.isNotBlank())

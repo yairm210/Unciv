@@ -134,7 +134,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique
     ) {
         if (!complianceError.acceptableParameterTypes.contains(UniqueParameterType.Countable)) return
-        val parseError = Expressions.getParsingError(complianceError.parameterName, ruleset) ?: return
+        val parseError = Expressions.getParsingError(complianceError.parameterName) ?: return
         
         val marker = "HERE➡"
         val errorLocation = parseError.position

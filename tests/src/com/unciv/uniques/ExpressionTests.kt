@@ -1,6 +1,7 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.expressions.Parser
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -43,7 +44,7 @@ class ExpressionTests {
             if (actual == null)
                 println("Expression \"$expression\" failed to evaluate, expected: $expected")
             else {
-                println("AST: ${Parser.getASTDebugDescription(expression, null)}")
+                println("AST: ${Parser.getASTDebugDescription(expression)}")
                 println("Expression \"$expression\" evaluated to $actual, expected: $expected")
             }
             fails++
@@ -56,7 +57,6 @@ class ExpressionTests {
     fun testInvalidExpressions() {
         val input = listOf(
             "fake_function(2)" to Parser.UnknownIdentifier::class,
-            "[fake countable]" to Parser.UnknownCountable::class,
             "98.234.792.374" to Parser.InvalidConstant::class,
             "" to Parser.MissingOperand::class,
             "() - 2" to Parser.MissingOperand::class,
@@ -101,7 +101,7 @@ class ExpressionTests {
         var fails = 0
         for ((expression, expected) in input) {
             val actual = try {
-                Parser.eval(expression, game.ruleset, city.state)
+                Parser.eval(expression, StateForConditionals(city))
             } catch (_: Parser.ParsingError) {
                 null
             }
@@ -109,7 +109,7 @@ class ExpressionTests {
             if (actual == null)
                 println("Expression \"$expression\" failed to evaluate, expected: $expected")
             else {
-                println("AST: ${Parser.getASTDebugDescription(expression, game.ruleset)}")
+                println("AST: ${Parser.getASTDebugDescription(expression)}")
                 println("Expression \"$expression\" evaluated to $actual, expected: $expected")
             }
             fails++

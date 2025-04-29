@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset.unique.expressions
 
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
@@ -26,20 +25,20 @@ import org.jetbrains.annotations.VisibleForTesting
  */
 object Parser {
     /**
-     *  Parse and evaluate an expression. If it needs to support countables, [ruleset] and [context] should be supplied.
+     *  Parse and evaluate an expression. If it needs to support countables, [context] should be supplied.
      */
-    fun eval(text: String, ruleset: Ruleset? = null, context: StateForConditionals = StateForConditionals.EmptyState): Double =
-        parse(text, ruleset).eval(context)
+    fun eval(text: String, context: StateForConditionals = StateForConditionals.EmptyState): Double =
+        parse(text).eval(context)
 
-    internal fun parse(text: String, ruleset: Ruleset?): Node {
-        val tokens = text.tokenize().map { it.toToken(ruleset) }
+    internal fun parse(text: String): Node {
+        val tokens = text.tokenize().map { it.toToken() }
         val engine = StateEngine(tokens)
         return engine.buildAST()
     }
 
     @VisibleForTesting
-    fun getASTDebugDescription(text: String, ruleset: Ruleset?) =
-        parse(text, ruleset).toString()
+    fun getASTDebugDescription(text: String) =
+        parse(text).toString()
 
     //region Exceptions
     /** Parent of all exceptions [parse] can throw.
@@ -55,6 +54,8 @@ object Parser {
     class MissingOperand(position: Int) : SyntaxError("Missing operand", position)
     class InvalidConstant(position: Int, text: String) : SyntaxError("Invalid constant: $text", position)
     class MalformedCountable(position: Int, countable: Countables, text: String) : SyntaxError("\"$text\" seems to be a Countable(${countable.name}), but is malformed", position)
+    
+    class EvaluatingCountableWithoutRuleset(position: Int, text: String) : ParsingError("Evaluating countable \"$text\" without ruleset", position)
     class UnknownCountable(position: Int, text: String) : ParsingError("Unknown countable: \"$text\"", position)
     class UnknownIdentifier(position: Int, text: String) : ParsingError("Unknown identifier: \"$text\"", position)
     class EmptyExpression : ParsingError("Empty expression", 0)

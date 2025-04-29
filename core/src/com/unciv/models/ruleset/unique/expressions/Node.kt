@@ -11,7 +11,7 @@ internal sealed interface Node {
 
     interface Constant : Node, Tokenizer.Token {
         val value: Double
-        override fun eval(context: StateForConditionals) = value
+        override fun eval(context: StateForConditionals): Double = value
     }
 
     class NumericConstant(override val value: Double) : Constant {
@@ -29,7 +29,14 @@ internal sealed interface Node {
     }
 
     class Countable(private val parameterText: String): Node, Tokenizer.Token {
-        override fun eval(context: StateForConditionals): Double = 0.0 // todo countable.eval(parameterText, context)?.toDouble() ?: 0.0
+        override fun eval(context: StateForConditionals): Double {
+            val ruleset = context.gameInfo?.ruleset
+                ?: throw Parser.EvaluatingCountableWithoutRuleset(0, parameterText)
+            val countable = Countables.getMatching(parameterText, ruleset).firstOrNull()
+                ?: throw Parser.UnknownCountable(0, parameterText)
+            return countable.eval(parameterText, context)?.toDouble() ?: 0.0
+        }
+
         override fun toString() = "[Countable: $parameterText]"
     }
 }

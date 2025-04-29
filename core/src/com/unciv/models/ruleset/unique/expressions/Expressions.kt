@@ -8,15 +8,15 @@ import kotlin.math.roundToInt
 
 class Expressions : ICountable {
     override fun matches(parameterText: String, ruleset: Ruleset) =
-        parse(parameterText, ruleset).node != null // TODO add checing the actual countables
+        parse(parameterText).node != null // TODO add checing the actual countables
 
     override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
-        val node = parse(parameterText, null).node ?: return null
+        val node = parse(parameterText).node ?: return null
         return node.eval(stateForConditionals).roundToInt()
     }
 
     override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-        val parseResult = parse(parameterText, ruleset)
+        val parseResult = parse(parameterText)
         return when {
             parseResult.node == null -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             // TODO add parse result checking for actual ruleset
@@ -32,16 +32,16 @@ class Expressions : ICountable {
     companion object {
         private val cache: MutableMap<String, ParseResult> = mutableMapOf()
 
-        private fun parse(parameterText: String, ruleset: Ruleset?): ParseResult = cache.getOrPut(parameterText) {
+        private fun parse(parameterText: String): ParseResult = cache.getOrPut(parameterText) {
             try {
-                val node = Parser.parse(parameterText, ruleset)
+                val node = Parser.parse(parameterText)
                 ParseResult(node, null)
             } catch (ex: Parser.ParsingError) {
                 ParseResult(null, ex)
             }
         }
         
-        fun getParsingError(parameterText: String, ruleset: Ruleset?): Parser.ParsingError? = 
-            parse(parameterText, ruleset).exception
+        fun getParsingError(parameterText: String): Parser.ParsingError? = 
+            parse(parameterText).exception
     }
 }

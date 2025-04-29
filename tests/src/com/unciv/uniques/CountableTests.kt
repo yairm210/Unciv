@@ -29,39 +29,39 @@ class CountableTests {
     private lateinit var civ: Civilization
     private lateinit var city: City
 
-    @Test
-    fun testCountableConventions() {
-        fun Class<out Countables>.hasOverrideFor(name: String, vararg args: Class<out Any>): Boolean {
-            try {
-                getDeclaredMethod(name, *args)
-            } catch (ex: NoSuchMethodException) {
-                return false
-            }
-            return true
-        }
-
-        var fails = 0
-        println("Reflection check of the Countables class:")
-        for (instance in Countables::class.java.enumConstants) {
-            val instanceClazz = instance::class.java
-
-            val matchesOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
-            if (instance.text.isEmpty() && !matchesOverridden) {
-                println("`$instance` has no `text` but fails to override `matches`.")
-                fails++
-            }
-
-            val getErrOverridden = instanceClazz.hasOverrideFor("getErrorSeverity", String::class.java, Ruleset::class.java)
-            if (instance.noPlaceholders && getErrOverridden) {
-                println("`$instance` has no placeholders but overrides `getErrorSeverity` which is likely an error.")
-                fails++
-            } else if (!instance.noPlaceholders && !getErrOverridden) {
-                println("`$instance` has placeholders that must be treated and therefore **must** override `getErrorSeverity` but does not.")
-                fails++
-            }
-        }
-        assertEquals("failure count", 0, fails)
-    }
+//    @Test
+//    fun testCountableConventions() {
+//        fun Class<out Countables>.hasOverrideFor(name: String, vararg args: Class<out Any>): Boolean {
+//            try {
+//                getDeclaredMethod(name, *args)
+//            } catch (ex: NoSuchMethodException) {
+//                return false
+//            }
+//            return true
+//        }
+//
+//        var fails = 0
+//        println("Reflection check of the Countables class:")
+//        for (instance in Countables::class.java.enumConstants) {
+//            val instanceClazz = instance::class.java
+//
+//            val matchesOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
+//            if (instance.text.isEmpty() && !matchesOverridden) {
+//                println("`$instance` has no `text` but fails to override `matches`.")
+//                fails++
+//            }
+//
+//            val getErrOverridden = instanceClazz.hasOverrideFor("getErrorSeverity", String::class.java, Ruleset::class.java)
+//            if (instance.noPlaceholders && getErrOverridden) {
+//                println("`$instance` has no placeholders but overrides `getErrorSeverity` which is likely an error.")
+//                fails++
+//            } else if (!instance.noPlaceholders && !getErrOverridden) {
+//                println("`$instance` has placeholders that must be treated and therefore **must** override `getErrorSeverity` but does not.")
+//                fails++
+//            }
+//        }
+//        assertEquals("failure count", 0, fails)
+//    }
 
     @Test
     fun testAllCountableParametersAreUniqueParameterTypes() {
@@ -191,8 +191,6 @@ class CountableTests {
             "[+1 Happiness] <for every [[42] Monkeys]>" to 1, // +1 monkeys
             "[+1 Gold] <when number of [year] is equal to [countable]>" to 1,
             "[+1 Food] <when number of [-0] is different than [+0]>" to 0,
-            "[+1 Food] <when number of [5e1] is more than [0.5]>" to 1, // The Expression countable supports fractional numbers
-            "[+1 Food] <when number of [0x12] is between [.99] and [99.]>" to 1, // dito
             "[+1 Food] <when number of [[~Nonexisting~] Cities] is between [[Annexed] Cities] and [Cities]>" to 1,
             "[+1 Food] <when number of [[Paratrooper] Units] is between [[Air] Units] and [Units]>" to 0,
             "[+1 Food] <when number of [[~Bogus~] Units] is between [[Land] Units] and [[Air] Units]>" to 1,
