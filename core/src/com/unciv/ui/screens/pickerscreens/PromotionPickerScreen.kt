@@ -77,7 +77,7 @@ class PromotionPickerScreen private constructor(
             rightSideButton.onClick(UncivSound.Silent) {
                 acceptPromotion(selectedPromotion)
                 
-                checkSaveUnitPrormotion()
+                checkSaveUnitPromotion()
             }
         } else {
             rightSideButton.isVisible = false
@@ -211,7 +211,7 @@ class PromotionPickerScreen private constructor(
     }
     
     // going to re-use this bit of code 2 time so turn it into a funtion
-    private fun checkSaveUnitPrormotion() {
+    private fun checkSaveUnitPromotion() {
         if (!saveUnitPromotion)  return
         val unitCurrentCity = unit.currentTile.getCity()
         if (unitCurrentCity != null) {
@@ -248,7 +248,7 @@ class PromotionPickerScreen private constructor(
         if (isPickable)
             button.onDoubleClick(UncivSound.Silent) {
                 acceptPromotion(button)
-                checkSaveUnitPrormotion()
+                checkSaveUnitPromotion()
             }
 
         return button
