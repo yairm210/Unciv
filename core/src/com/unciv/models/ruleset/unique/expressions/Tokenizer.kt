@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique.expressions
 
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyBraces
 import com.unciv.models.ruleset.unique.expressions.Parser.EmptyExpression
@@ -51,7 +52,11 @@ internal object Tokenizer {
             throw UnknownIdentifier(position, text)
         
         val countableText = text.substring(1, text.length - 1)
-        return position to Node.Countable(countableText)
+
+        val rulesetInvariantCountable = Countables.getMatching(countableText, null)
+            .firstOrNull()
+        
+        return position to Node.Countable(countableText, rulesetInvariantCountable)
     }
 
     fun String.tokenize() = sequence<Pair<Int, String>> {

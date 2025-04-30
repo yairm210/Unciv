@@ -28,12 +28,17 @@ internal sealed interface Node {
         override fun toString() = "($left $operator $right)"
     }
 
-    class Countable(private val parameterText: String): Node, Tokenizer.Token {
+    class Countable(private val parameterText: String, 
+                    /** Most countables can be detected via string pattern */ private val rulesetInvariantCountable: Countables?): Node, Tokenizer.Token {
         override fun eval(context: StateForConditionals): Double {
+
             val ruleset = context.gameInfo?.ruleset
-                ?: throw Parser.EvaluatingCountableWithoutRuleset(0, parameterText)
-            val countable = Countables.getMatching(parameterText, ruleset).firstOrNull()
-                ?: throw Parser.UnknownCountable(0, parameterText)
+                ?: return 0.0 // We use "surprised pikachu face" for any unexpected issue so games don't crash 
+            
+            val countable = rulesetInvariantCountable 
+                ?: Countables.getMatching(parameterText, ruleset).firstOrNull()
+                ?: return 0.0
+            
             return countable.eval(parameterText, context)?.toDouble() ?: 0.0
         }
 
