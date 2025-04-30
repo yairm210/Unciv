@@ -210,7 +210,7 @@ class PromotionPickerScreen private constructor(
         topTable.add(checkBoxSaveUnitPromotion).left().padTop(10f)
     }
     
-    // going to reuse this bit of code 2 time so turn it into a funtion
+    // going to re-use this bit of code 2 time so turn it into a funtion
     private fun checkSaveUnitPrormotion() {
         if (!saveUnitPromotion)  return
         val unitCurrentCity = unit.currentTile.getCity()
