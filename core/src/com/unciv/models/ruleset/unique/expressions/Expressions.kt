@@ -7,8 +7,10 @@ import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.roundToInt
 
 class Expressions : ICountable {
-    override fun matches(parameterText: String, ruleset: Ruleset) =
-        parse(parameterText).node != null // TODO add checing the actual countables
+    override fun matches(parameterText: String, ruleset: Ruleset): Boolean {
+        val parseResult = parse(parameterText)
+        return parseResult.node != null && parseResult.node.getErrors(ruleset).isEmpty()
+    }
 
     override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
         val node = parse(parameterText).node ?: return null
@@ -19,8 +21,7 @@ class Expressions : ICountable {
         val parseResult = parse(parameterText)
         return when {
             parseResult.node == null -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-            // TODO add parse result checking for actual ruleset
-//            parseResult.node.check -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
+            parseResult.node.getErrors(ruleset).isNotEmpty() -> UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique
             else -> null
         }
     }
@@ -43,5 +44,10 @@ class Expressions : ICountable {
         
         fun getParsingError(parameterText: String): Parser.ParsingError? = 
             parse(parameterText).exception
+        
+        fun getCountableErrors(parameterText: String, ruleset: Ruleset): List<String> {
+            val parseResult = parse(parameterText)
+            return if (parseResult.node == null) emptyList() else parseResult.node.getErrors(ruleset)
+        }
     }
 }

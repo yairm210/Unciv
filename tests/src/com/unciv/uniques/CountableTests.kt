@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -72,6 +73,13 @@ class CountableTests {
                     UniqueParameterType.safeValueOf(parameter), UniqueParameterType.Unknown)
             }
         }
+    }
+    
+    @Test
+    fun testPlaceholderParams(){
+        val text = "when number of [Iron] is equal to [3 * 2 + [Iron] + [bob]]"
+        val placeholderText = text.getPlaceholderText()
+        assertEquals("when number of [] is equal to []", placeholderText)
     }
 
     @Test

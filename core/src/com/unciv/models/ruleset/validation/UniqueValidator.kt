@@ -134,16 +134,26 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique
     ) {
         if (!complianceError.acceptableParameterTypes.contains(UniqueParameterType.Countable)) return
-        val parseError = Expressions.getParsingError(complianceError.parameterName) ?: return
         
-        val marker = "HERE➡"
-        val errorLocation = parseError.position
-        val parameterWithErrorLocationMarked =
-            complianceError.parameterName.substring(0, errorLocation) + marker +
-                    complianceError.parameterName.substring(errorLocation)
-        val text = "\"${complianceError.parameterName}\" could not be parsed as an expression due to:" +
-                " ${parseError.message}. \n$parameterWithErrorLocationMarked"
-        rulesetErrors.add(text, RulesetErrorSeverity.Error, uniqueContainer, unique)
+        val parseError = Expressions.getParsingError(complianceError.parameterName)
+        if (parseError != null) {
+            val marker = "HERE➡"
+            val errorLocation = parseError.position
+            val parameterWithErrorLocationMarked =
+                complianceError.parameterName.substring(0, errorLocation) + marker +
+                        complianceError.parameterName.substring(errorLocation)
+            val text = "\"${complianceError.parameterName}\" could not be parsed as an expression due to:" +
+                    " ${parseError.message}. \n$parameterWithErrorLocationMarked"
+            rulesetErrors.add(text, RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
+            return
+        }
+        
+        val countableErrors = Expressions.getCountableErrors(complianceError.parameterName, ruleset)
+        if (countableErrors.isNotEmpty()) {
+            val text = "\"${complianceError.parameterName}\" was parsed as an expression, but has the following errors with this ruleset:" +
+                    " ${countableErrors.joinToString(", ")}"
+            rulesetErrors.add(text, RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
+        }
     }
 
     private val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
