@@ -244,7 +244,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp() && getCity().civ.getAllyCiv() != civInfo.civName
+    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp() && getCity().civ.getAllyCivName() != civInfo.civName
 
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
@@ -259,7 +259,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             return
         }
         val cityState = getCity().civ
-        val allyCiv = cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }
+        val allyCiv = cityState.getAllyCivName()?.let { civInfo.gameInfo.getCivilization(it) }
 
         val successChance = getCoupChanceOfSuccess(true)
         val randomValue = Random(randomSeed()).nextFloat()
@@ -310,15 +310,15 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         var successPercentage = 50f
 
         // Influence difference should always be a positive value
-        var influenceDifference: Float = if (cityState.getAllyCiv() != null)
-            cityState.getDiplomacyManager(cityState.getAllyCiv()!!)!!.getInfluence()
+        var influenceDifference: Float = if (cityState.getAllyCivName() != null)
+            cityState.getDiplomacyManager(cityState.getAllyCivName()!!)!!.getInfluence()
         else 60f
         influenceDifference -= cityState.getDiplomacyManager(civInfo)!!.getInfluence()
         successPercentage -= influenceDifference / 2f
 
         // If we are viewing the success chance we don't want to reveal that there is a defending spy
         val defendingSpy = if (includeunknownFactors) 
-            cityState.getAllyCiv()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
+            cityState.getAllyCivName()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
 
         val spyRanks = getSkillModifierPercent() - (defendingSpy?.getSkillModifierPercent() ?: 0)
