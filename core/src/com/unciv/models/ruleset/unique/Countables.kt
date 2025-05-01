@@ -40,12 +40,12 @@ enum class Countables(
     },
 
     Turns("turns", shortDocumentation = "Number of turns played") {
-        override val documentationStrings = listOf("(Always starts at zero irrespective of game speed or start era)")
+        override val documentationStrings = listOf("Always starts at zero irrespective of game speed or start era")
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.gameInfo?.turns
     },
     Year("year", shortDocumentation = "The current year") {
-        override val documentationStrings = listOf("(Depends on game speed or start era, negative for years BC)")
+        override val documentationStrings = listOf("Depends on game speed or start era, negative for years BC")
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.gameInfo?.run { getYear(turns) }
     },
@@ -60,7 +60,7 @@ enum class Countables(
 
     Stats {
         override val documentationHeader = "Stat name (${Stat.names().niceJoin()})"
-        override val documentationStrings = listOf("gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
+        override val documentationStrings = listOf("Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
@@ -141,7 +141,7 @@ enum class Countables(
     TileResources {
         override val documentationHeader = "Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)"
         override val documentationStrings = listOf(
-            "(can be city stats or civilization stats, depending on where the unique is used)",
+            "Can be city stats or civilization stats, depending on where the unique is used",
             "For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.",
             "This can make a difference for e.g. local resources, which are counted per city."
         )
