@@ -1,3 +1,19 @@
+## 4.16.7
+
+Added 'search mods' in new game screen
+
+Resolved  - Fixed a bug in unique validation and in countable validation
+
+Removed ICountable - all base functions are, and should be, contained in Countables.
+
+Added search bar for mods in mod checker
+
+Resolved  - Allow automation for settlers with conditional settling uniques
+
+Add "Cannot embark" unit unique - By PLynx01
+
+Expressions as Countable - By SomeTroglodyte
+
 ## 4.16.6
 
 Demands/Requests from other civs do not stop other events registering
