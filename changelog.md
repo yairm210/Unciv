@@ -1,18 +1,14 @@
 ## 4.16.7
 
-Added 'search mods' in new game screen
+Countable can accept arbitrary mathematical Expressions - Kudos AutumnPizazz for kicking this off, SomeTroglodyte for parser implementation!
 
-Resolved  - Fixed a bug in unique validation and in countable validation
+Added 'search mods' in new game screen and mod checker
 
-Removed ICountable - all base functions are, and should be, contained in Countables.
+Fixed bugs in unique validation and in countable validation
 
-Added search bar for mods in mod checker
-
-Resolved  - Allow automation for settlers with conditional settling uniques
+Allow automation for settlers with conditional settling uniques
 
 Add "Cannot embark" unit unique - By PLynx01
-
-Expressions as Countable - By SomeTroglodyte
 
 ## 4.16.6
 
