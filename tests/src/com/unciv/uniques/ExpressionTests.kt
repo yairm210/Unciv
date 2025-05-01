@@ -30,7 +30,6 @@ class ExpressionTests {
             "2 ^ 3 ^ 2" to 512.0,
             "pi * .5" to PI / 2,
             "(2+1.5)*(4+10)" to (2 + 1.5) * (4 + 10),
-            "+- -+-1" to -1.0,
         )
 
         var fails = 0

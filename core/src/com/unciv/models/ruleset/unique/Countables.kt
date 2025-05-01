@@ -238,7 +238,7 @@ enum class Countables(
 
     companion object {
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
-            .filter {
+            .firstOrNull {
                 if (it.matchesWithRuleset)
                     ruleset != null && it.matches(parameterText, ruleset)
                 else it.matches(parameterText)
@@ -246,14 +246,12 @@ enum class Countables(
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
-            for (countable in Countables.getMatching(parameterText, ruleset)) {
-                val potentialResult = countable.eval(parameterText, stateForConditionals)
-                if (potentialResult != null) return potentialResult
-            }
-            return null
+            val countable = getMatching(parameterText, ruleset) ?: return null
+            val potentialResult = countable.eval(parameterText, stateForConditionals) ?: return null
+            return potentialResult
         }
 
-        fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset).any()
+        fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset) != null
 
         // This will "leak memory" if game rulesets are changed over application lifetime, but it's a simple way to cache
         private val autocompleteCache = mutableMapOf<Ruleset, Set<String>>()
@@ -265,13 +263,9 @@ enum class Countables(
             }
 
         fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-            var result = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-            for (countable in Countables.getMatching(parameterText, ruleset)) {
-                // If any Countable is happy, we're happy
-                result = countable.getErrorSeverity(parameterText, ruleset) ?: return null
-            }
-            // return last result or default for simplicity - could do a max() instead
-            return result
+            val countable = getMatching(parameterText, ruleset)
+                ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            return countable.getErrorSeverity(parameterText, ruleset)
         }
     }
 }

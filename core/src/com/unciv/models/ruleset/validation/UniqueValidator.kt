@@ -285,7 +285,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             unique.type.parameterTypeMap.withIndex()
             .filter { UniqueParameterType.Countable in it.value }
             .map { unique.params[it.index] }
-            .flatMap { Countables.getMatching(it, ruleset) }
+            .mapNotNull { Countables.getMatching(it, ruleset) }
         for (countable in countables) {
             val deprecation = countable.getDeprecationAnnotation() ?: continue
             // This is less flexible than unique.getReplacementText(ruleset)

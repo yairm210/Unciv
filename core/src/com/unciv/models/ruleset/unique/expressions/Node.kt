@@ -51,7 +51,7 @@ internal sealed interface Node {
         
         private fun getCountable(ruleset: Ruleset): Countables? {
             return rulesetInvariantCountable
-                ?: Countables.getMatching(parameterText, ruleset).firstOrNull()
+                ?: Countables.getMatching(parameterText, ruleset)
         }
 
         override fun getErrors(ruleset: Ruleset): List<String> {

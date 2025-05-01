@@ -54,7 +54,6 @@ internal object Tokenizer {
         val countableText = text.substring(1, text.length - 1)
 
         val rulesetInvariantCountable = Countables.getMatching(countableText, null)
-            .firstOrNull()
         
         return position to Node.Countable(countableText, rulesetInvariantCountable)
     }
