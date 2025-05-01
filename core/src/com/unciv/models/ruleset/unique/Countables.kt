@@ -1,6 +1,8 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.expressions.Expressions
+import com.unciv.models.ruleset.unique.expressions.Operator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
@@ -178,6 +180,32 @@ enum class Countables(
             val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.isCityState }
         }
+    },
+
+
+    Expression {
+        override val noPlaceholders = false
+
+        private val engine = Expressions()
+        override val matchesWithRuleset: Boolean = true
+
+        override fun matches(parameterText: String, ruleset: Ruleset) =
+            engine.matches(parameterText, ruleset)
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? =
+            engine.eval(parameterText, stateForConditionals)
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            engine.getErrorSeverity(parameterText, ruleset)
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = emptySet<String>()
+
+        override val documentationHeader = "Evaluate expressions!"
+        override val documentationStrings = listOf(
+            "Expressions support arbitrary math operations, and can include other countables",
+            "For example, something like: `([[Melee] units] + 1) / [Cities]`",
+            "Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`",
+            "Supported operations between 2 values are: "+ Operator.BinaryOperators.entries.joinToString { it.symbol },
+            "Supported operations on 1 value are: " + Operator.UnaryOperators.entries.joinToString { it.symbol+" (${it.description})" },
+        )
     }
     ;
 
@@ -187,8 +215,8 @@ enum class Countables(
     open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    override fun matches(parameterText: String) = if (noPlaceholders) parameterText == text 
-        else parameterText.equalsPlaceholderText(placeholderText)
+    override fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
+    else parameterText.equalsPlaceholderText(placeholderText)
     override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
 
     open val documentationHeader get() =
@@ -210,7 +238,7 @@ enum class Countables(
 
     companion object {
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
-            .filter {
+            .firstOrNull {
                 if (it.matchesWithRuleset)
                     ruleset != null && it.matches(parameterText, ruleset)
                 else it.matches(parameterText)
@@ -218,14 +246,12 @@ enum class Countables(
 
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
-            for (countable in Countables.getMatching(parameterText, ruleset)) {
-                val potentialResult = countable.eval(parameterText, stateForConditionals)
-                if (potentialResult != null) return potentialResult
-            }
-            return null
+            val countable = getMatching(parameterText, ruleset) ?: return null
+            val potentialResult = countable.eval(parameterText, stateForConditionals) ?: return null
+            return potentialResult
         }
 
-        fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset).any()
+        fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset) != null
 
         // This will "leak memory" if game rulesets are changed over application lifetime, but it's a simple way to cache
         private val autocompleteCache = mutableMapOf<Ruleset, Set<String>>()
@@ -237,13 +263,9 @@ enum class Countables(
             }
 
         fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-            var result = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-            for (countable in Countables.getMatching(parameterText, ruleset)) {
-                // If any Countable is happy, we're happy
-                result = countable.getErrorSeverity(parameterText, ruleset) ?: return null
-            }
-            // return last result or default for simplicity - could do a max() instead
-            return result
+            val countable = getMatching(parameterText, ruleset)
+                ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            return countable.getErrorSeverity(parameterText, ruleset)
         }
     }
 }

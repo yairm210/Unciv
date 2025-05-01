@@ -496,7 +496,7 @@ fun String.getPlaceholderText(): String {
     var stringToReturn = this.removeConditionals()
     val placeholderParameters = stringToReturn.getPlaceholderParameters()
     for (placeholderParameter in placeholderParameters)
-        stringToReturn = stringToReturn.replace("[$placeholderParameter]", "[]")
+        stringToReturn = stringToReturn.replaceFirst("[$placeholderParameter]", "[]")
     return stringToReturn
 }
 

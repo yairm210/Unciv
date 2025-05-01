@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.expressions.Expressions
 
 class UniqueValidator(val ruleset: Ruleset) {
 
@@ -81,11 +82,12 @@ class UniqueValidator(val ruleset: Ruleset) {
                 continue
 
             rulesetErrors.add(
-                "$prefix contains parameter ${complianceError.parameterName}," +
-                " which does not fit parameter type" +
+                "$prefix contains parameter \"${complianceError.parameterName}\", $whichDoesNotFitParameterType" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
+            
+            addExpressionParseErrors(complianceError, rulesetErrors, uniqueContainer, unique)
         }
 
         for (conditional in unique.modifiers) {
@@ -123,6 +125,35 @@ class UniqueValidator(val ruleset: Ruleset) {
             addDeprecationAnnotationErrors(unique, prefix, rulesetErrors, uniqueContainer)
 
         return rulesetErrors
+    }
+
+    private fun addExpressionParseErrors(
+        complianceError: UniqueComplianceError,
+        rulesetErrors: RulesetErrorList,
+        uniqueContainer: IHasUniques?,
+        unique: Unique
+    ) {
+        if (!complianceError.acceptableParameterTypes.contains(UniqueParameterType.Countable)) return
+        
+        val parseError = Expressions.getParsingError(complianceError.parameterName)
+        if (parseError != null) {
+            val marker = "HERE➡"
+            val errorLocation = parseError.position
+            val parameterWithErrorLocationMarked =
+                complianceError.parameterName.substring(0, errorLocation) + marker +
+                        complianceError.parameterName.substring(errorLocation)
+            val text = "\"${complianceError.parameterName}\" could not be parsed as an expression due to:" +
+                    " ${parseError.message}. \n$parameterWithErrorLocationMarked"
+            rulesetErrors.add(text, RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
+            return
+        }
+        
+        val countableErrors = Expressions.getCountableErrors(complianceError.parameterName, ruleset)
+        if (countableErrors.isNotEmpty()) {
+            val text = "\"${complianceError.parameterName}\" was parsed as an expression, but has the following errors with this ruleset:" +
+                    " ${countableErrors.joinToString(", ")}"
+            rulesetErrors.add(text, RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
+        }
     }
 
     private val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
@@ -218,10 +249,12 @@ class UniqueValidator(val ruleset: Ruleset) {
 
             rulesetErrors.add(
                 "$prefix contains modifier \"${conditional.text}\"." +
-                " This contains the parameter \"${complianceError.parameterName}\" which does not fit parameter type" +
+                " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
+            
+            addExpressionParseErrors(complianceError, rulesetErrors, uniqueContainer, unique)
         }
 
         addDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
@@ -252,7 +285,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             unique.type.parameterTypeMap.withIndex()
             .filter { UniqueParameterType.Countable in it.value }
             .map { unique.params[it.index] }
-            .flatMap { Countables.getMatching(it, ruleset) }
+            .mapNotNull { Countables.getMatching(it, ruleset) }
         for (countable in countables) {
             val deprecation = countable.getDeprecationAnnotation() ?: continue
             // This is less flexible than unique.getReplacementText(ruleset)
@@ -369,6 +402,8 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     companion object {
+        const val whichDoesNotFitParameterType = "which does not fit parameter type"
+
         internal fun getUniqueContainerPrefix(uniqueContainer: IHasUniques?) =
             (if (uniqueContainer is IRulesetObject) "${uniqueContainer.originRuleset}: " else "") +
                 (if (uniqueContainer == null) "The" else "(${uniqueContainer.getUniqueTarget().name}) ${uniqueContainer.name}'s") +

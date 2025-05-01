@@ -359,5 +359,11 @@ Allowed values:
     (can be city stats or civilization stats, depending on where the unique is used)
     For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
     This can make a difference for e.g. local resources, which are counted per city.
+-   Evaluate expressions!
+    Expressions support arbitrary math operations, and can include other countables
+    For example, something like: `([[Melee] units] + 1) / [Cities]`
+    Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`
+    Supported operations between 2 values are: +, -, *, /, %, ^
+    Supported operations on 1 value are: - (negation), √ (square root), abs (absolute value - turns negative into positive), sqrt (square root), floor (round down), ceil (round up)
 
 [//]: # (Countables automatically generated END)
