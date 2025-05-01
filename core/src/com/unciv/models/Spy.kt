@@ -244,7 +244,8 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp() && getCity().civ.getAllyCivName() != civInfo.civName
+    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
+            && getCity().civ.getAllyCivName() != civInfo.civName
 
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
@@ -318,7 +319,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
         // If we are viewing the success chance we don't want to reveal that there is a defending spy
         val defendingSpy = if (includeunknownFactors) 
-            cityState.getAllyCivName()?.let { civInfo.gameInfo.getCivilization(it) }?.espionageManager?.getSpyAssignedToCity(getCity()) 
+            cityState.getAllyCiv()?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
 
         val spyRanks = getSkillModifierPercent() - (defendingSpy?.getSkillModifierPercent() ?: 0)

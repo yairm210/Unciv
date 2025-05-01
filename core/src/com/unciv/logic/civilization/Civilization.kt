@@ -1040,6 +1040,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital, oldCapital)
     }
 
+    fun getAllyCiv(): Civilization? = if (allyCivName == null) null
+        else gameInfo.getCivilization(allyCivName!!)
     fun getAllyCivName() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 

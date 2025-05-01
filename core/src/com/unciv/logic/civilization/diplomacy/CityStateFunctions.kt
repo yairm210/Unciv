@@ -93,7 +93,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // There may be no winner, in that case all spies will loose 5 influence
         if (winner != null) {
-            val allyCiv = civInfo.getAllyCivName()?.let { civInfo.gameInfo.getCivilization(it) }
+            val allyCiv = civInfo.getAllyCiv()
 
             // Winning civ gets influence and all others loose influence
             for (civ in civInfo.getKnownCivs().toList()) {
@@ -711,8 +711,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     private fun triggerAllyCivs(attacker: Civilization) {
-        val allyCivName = civInfo.getAllyCivName()
-        val allyCiv = if (allyCivName != null) civInfo.gameInfo.getCivilization(allyCivName) else null
+        val allyCiv = civInfo.getAllyCiv()
         if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs() && allyCiv.knows(attacker)) {
             val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
             // Less than if we were protectors
