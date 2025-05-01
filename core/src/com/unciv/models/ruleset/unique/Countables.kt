@@ -10,26 +10,6 @@ import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
 
 /**
- *  Prototype for each new [Countables] instance, core functionality, to ensure a baseline.
- *
- *  Notes:
- *  - Each instance ***must*** implement _either_ overload of [matches] and indicate which one via [matchesWithRuleset].
- *  - [matches] is used to look up which instance implements a given string, **without** validating its placeholders.
- *  - [getErrorSeverity] is responsible for validating placeholders, _and can assume [matches] was successful_.
- *  - Override [getKnownValuesForAutocomplete] only if a sensible number of suggestions is obvious.
- */
-interface ICountable {
-    fun matches(parameterText: String): Boolean = false
-    val matchesWithRuleset: Boolean
-        get() = false
-    fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
-    fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int?
-    fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> = emptySet()
-    fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity?
-    fun getDeprecationAnnotation(): Deprecated?
-}
-
-/**
  *  Contains all knowledge about how to check and evaluate [countable Unique parameters][UniqueParameterType.Countable].
  *
  *  Expansion instructions:
@@ -40,7 +20,6 @@ interface ICountable {
  *    - If it uses exactly one UniqueParameterType placeholder, [getErrorSeverity] can use the [UniqueParameterType.getTranslatedErrorSeverity] extension provided below.
  *    - Implement [getKnownValuesForAutocomplete] only when a meaningful, not too large set of suggestions is obvious.
  *  - A new countable that draws from an existing enum or set of RulesetObjects should work along the lines of the [Stats] or [TileResources] examples.
- *  - **Do** heed the docs of [ICountable] - but be aware the [Countables] Enum class pre-implements some of the methods.
  *  - Run the unit tests! There's one checking implementation conventions.
  *  - When implementing a formula language for Countables, create a new object in a separate file with the actual
  *    implementation, then a new instance here that delegates all its methods to that object. And delete these lines.
@@ -53,7 +32,7 @@ enum class Countables(
     val text: String = "",
     private val shortDocumentation: String = "",
     open val documentationStrings: List<String> = emptyList()
-) : ICountable {
+) {
     Integer {
         override val documentationHeader = "Integer constant - any positive or negative integer number"
         override fun matches(parameterText: String) = parameterText.toIntOrNull() != null
@@ -210,22 +189,27 @@ enum class Countables(
     ;
 
     val placeholderText = text.getPlaceholderText()
+    open val matchesWithRuleset = false
 
     @VisibleForTesting
     open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    override fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
-    else parameterText.equalsPlaceholderText(placeholderText)
-    override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
+    open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
+        else parameterText.equalsPlaceholderText(placeholderText)
+    
+    open fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
+    
+    open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
+    abstract fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int?
 
     open val documentationHeader get() =
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
 
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
-    override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
+    open fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
-    override fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+    fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
     protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
         val severity = getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
@@ -264,7 +248,7 @@ enum class Countables(
 
         fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val countable = getMatching(parameterText, ruleset)
-                ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+                ?: return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
             return countable.getErrorSeverity(parameterText, ruleset)
         }
     }
