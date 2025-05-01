@@ -19,6 +19,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.TranslatedSelectBox
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.UniqueBuilderScreen
@@ -38,6 +39,7 @@ class ModCheckTab(
     private var modCheckFirstRun = true
 
     private var modCheckBaseSelect: TranslatedSelectBox? = null
+    private val searchModsTextField: UncivTextField
     private val modCheckResultTable = Table()
 
     init {
@@ -46,6 +48,9 @@ class ModCheckTab(
         fixedContent.defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick(::runAction)
         fixedContent.add(reloadModsButton).row()
+        searchModsTextField = UncivTextField("Seach for mods")
+        searchModsTextField.onChange { runAction() }
+        fixedContent.add(searchModsTextField).fillX() .row()
 
         val labeledBaseSelect = Table().apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)
@@ -94,7 +99,9 @@ class ModCheckTab(
         modCheckBaseSelect!!.isDisabled = true
 
         Concurrency.run("ModChecker") {
-            for (mod in RulesetCache.values.sortedBy { it.name }.sortedByDescending { it.name in openedExpanderTitles }) {
+            for (mod in RulesetCache.values
+                .filter { it.name.lowercase().contains(searchModsTextField.text.lowercase()) }
+                .sortedBy { it.name }.sortedByDescending { it.name in openedExpanderTitles }) {
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
