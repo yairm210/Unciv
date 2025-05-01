@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.ruleset.unique.expressions.Operator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
@@ -37,6 +38,7 @@ enum class Countables(
         override val documentationHeader = "Integer constant - any positive or negative integer number"
         override fun matches(parameterText: String) = parameterText.toIntOrNull() != null
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) = parameterText.toIntOrNull()
+        override val example: String = "123"
     },
 
     Turns("turns", shortDocumentation = "Number of turns played") {
@@ -69,6 +71,8 @@ enum class Countables(
                 return stateForConditionals.civInfo?.getHappiness()
             return stateForConditionals.getStatAmount(relevantStat)
         }
+
+        override val example = "Science"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names()
         private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
             val index = lastIndexOf("`, `")
@@ -149,6 +153,8 @@ enum class Countables(
         override fun matches(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.getResourceAmount(parameterText)
+
+        override val example = "Iron"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
     },
 
@@ -176,6 +182,7 @@ enum class Countables(
             engine.getErrorSeverity(parameterText, ruleset)
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = emptySet<String>()
+        override val example: String = "[Iron] + 2"
 
         override val documentationHeader = "Evaluate expressions!"
         override val documentationStrings = listOf(
@@ -209,6 +216,14 @@ enum class Countables(
 
     open val documentationHeader get() =
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
+    
+    open val example: String
+        get() {
+            if (noPlaceholders) return text
+            val placeholderParams = text.getPlaceholderParameters()
+                .map { UniqueParameterType.safeValueOf(it).docExample }
+            return text.fillPlaceholders(*placeholderParams.toTypedArray())
+        }
 
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
     open fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
