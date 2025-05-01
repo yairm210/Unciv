@@ -156,7 +156,7 @@ class UniqueDocsWriter {
             if (countable.getDeprecationAnnotation() != null) continue
             newContent.appendLine("-   ${countable.documentationHeader}")
             for (extraLine in countable.documentationStrings) {
-                newContent.append("  - ") // Sublist
+                newContent.append("    - ") // Sublist
                 newContent.appendLine(extraLine)
             }
         }
