@@ -41,6 +41,8 @@ class ModCheckTab(
     private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val searchModsTextField: UncivTextField
     private val modCheckResultTable = Table()
+    /** Used to repolulate modCheckResultTable when searching */
+    private val modResultExpanderTabs = ArrayList<ExpanderTab>()
 
     init {
         defaults().pad(10f).align(Align.top)
@@ -48,8 +50,16 @@ class ModCheckTab(
         fixedContent.defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick(::runAction)
         fixedContent.add(reloadModsButton).row()
-        searchModsTextField = UncivTextField("Seach for mods")
-        searchModsTextField.onChange { runAction() }
+        
+        searchModsTextField = UncivTextField("Search mods")
+        searchModsTextField.onChange {
+            modCheckResultTable.clear()
+            for (expanderTab in modResultExpanderTabs) {
+                if (expanderTab.title.lowercase().contains(searchModsTextField.text.lowercase()))
+                    modCheckResultTable.add(expanderTab).row()
+            }
+        }
+        
         fixedContent.add(searchModsTextField).fillX() .row()
 
         val labeledBaseSelect = Table().apply {
@@ -86,6 +96,7 @@ class ModCheckTab(
             .filter { it.isOpen }.map { it.title }.toSet()
 
         modCheckResultTable.clear()
+        modResultExpanderTabs.clear()
 
         val rulesetErrors = RulesetCache.loadRulesets()
         if (rulesetErrors.isNotEmpty()) {
@@ -159,6 +170,7 @@ class ModCheckTab(
                             }).row()
                     }
                     expanderTab.header.left()
+                    modResultExpanderTabs.add(expanderTab)
 
                     val loadingLabel = modCheckResultTable.children.last()
                     modCheckResultTable.removeActor(loadingLabel)
