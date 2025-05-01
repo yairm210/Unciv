@@ -313,6 +313,9 @@ object DiplomacyAutomation {
                 // We can still fight. Refuse peace.
                 continue
             }
+            
+            if (enemy.cities.any{ (it.health / it.getMaxHealth()) < 0.5f }) // We are just about to take their city!
+                continue
 
             if (civInfo.getStatForRanking(RankingType.Force) - 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs() > 0) {
                 val randomSeed = civInfo.gameInfo.civilizations.indexOf(enemy) + civInfo.getCivsAtWarWith().count() + 123 * civInfo.gameInfo.turns
