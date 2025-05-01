@@ -5,9 +5,11 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.canUse
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 object CivilianUnitAutomation {
@@ -19,11 +21,16 @@ object CivilianUnitAutomation {
 
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         // To allow "found city" actions that can only trigger a limited number of times
-        val settlerUnique = 
-            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity).firstOrNull() ?: 
-            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundPuppetCity).firstOrNull()
         
-        if (settlerUnique != null)
+        // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
+        fun hasSettlerAction(uniqueType: UniqueType) =
+            unit.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+                .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
+                .any { canUse(unit, it) }
+        
+        val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
+        
+        if (hasSettlerUnique)
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (tryRunAwayIfNeccessary(unit)) return
