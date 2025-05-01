@@ -2124,6 +2124,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
+??? example  "Cannot embark"
+	Applicable to: Unit
+
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
