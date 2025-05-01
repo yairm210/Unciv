@@ -316,7 +316,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                 acceptableParamTypes.map { getParamTypeErrorSeverityCached(it, param) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
             if (errorTypesForAcceptableParameters.contains(UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique)
-                && param in allUniqueParameters)
+                && param in allNonTypedUniques)
                 continue // This is a filtering param, and the unique it's filtering for actually exists, no problem here!
             val leastSevereWarning =
                 errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!

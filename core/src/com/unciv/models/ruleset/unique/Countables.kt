@@ -200,6 +200,9 @@ enum class Countables(
     
     open fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
     
+    /** This indicates whether a parameter *is of this countable type*, not *whether its parameters are correct*
+     * E.g. "[fakeBuilding] Buildings" is obviously a countable of type "[buildingFilter] Buildings", therefore matches will return true.
+     * But it has another problem, which is that the building filter is bad, so its getErrorSeverity will return "ruleset specific" */
     open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
     abstract fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int?
 
@@ -211,14 +214,8 @@ enum class Countables(
 
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
-    protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-        val severity = getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
-        return when {
-            severity != UniqueType.UniqueParameterErrorSeverity.PossibleFilteringUnique -> severity
-            matchesWithRuleset -> UniqueType.UniqueParameterErrorSeverity.RulesetSpecific
-            else -> UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
-        }
-    }
+    protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+        getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
 
     companion object {
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
