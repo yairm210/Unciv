@@ -25,15 +25,15 @@ internal sealed interface Operator : Tokenizer.Token {
 
     enum class UnaryOperators(
         override val symbol: String,
-        override val implementation: (Double) -> Double
+        override val implementation: (Double) -> Double,
+        val description: String
     ) : Unary {
-        Identity("+", { operand -> operand }),
-        Negation("-", { operand -> -operand }),
-        Ciel("√", ::sqrt),
-        Abs("abs", ::abs),
-        Sqrt2("sqrt", ::sqrt),
-        Floor("floor", ::floor),
-        Ceil("ceil", ::ceil),
+        Negation("-", { operand -> -operand }, "negation"),
+        Ciel("√", ::sqrt, "square root"),
+        Abs("abs", ::abs, "absolute value - turns negative into positive"),
+        Sqrt2("sqrt", ::sqrt, "square root"),
+        Floor("floor", ::floor, "round down"),
+        Ceil("ceil", ::ceil, "round up"),
         ;
         override fun toString() = symbol
     }
@@ -59,16 +59,15 @@ internal sealed interface Operator : Tokenizer.Token {
         override val unary: Unary,
         override val binary: Binary
     ) : UnaryOrBinary {
-        Plus("+", UnaryOperators.Identity, BinaryOperators.Addition),
         Minus("-", UnaryOperators.Negation, BinaryOperators.Subtraction),
         ;
         override fun toString() = symbol
     }
 
     enum class NamedConstants(override val symbol: String, override val value: Double) : Node.Constant, Operator {
-        Pi("pi", kotlin.math.PI),
-        Pi2("π", kotlin.math.PI),
-        Euler("e", kotlin.math.E),
+        Pi("pi", PI),
+        Pi2("π", PI),
+        Euler("e", E),
         ;
         override fun toString() = symbol
     }

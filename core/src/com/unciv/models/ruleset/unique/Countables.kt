@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.expressions.Expressions
+import com.unciv.models.ruleset.unique.expressions.Operator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
@@ -199,9 +200,11 @@ enum class Countables(
 
         override val documentationHeader = "Evaluate expressions!"
         override val documentationStrings = listOf(
-            "Expressions support `+`, `-`, `*`, `/`, `%`, `^` operations.",
-            "Operands can be floating point constants or other countables in square brackets",
-            "..."
+            "Expressions support arbitrary math operations, and can include other countables",
+            "For example, something like: `([[Melee] units] + 1) / [Cities]`",
+            "Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`",
+            "Supported operations between 2 values are: "+ Operator.BinaryOperators.entries.joinToString { it.symbol },
+            "Supported operations on 1 value are: " + Operator.UnaryOperators.entries.joinToString { it.symbol+" (${it.description})" },
         )
     }
     ;
