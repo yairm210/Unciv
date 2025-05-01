@@ -342,13 +342,13 @@ Allowed values:
 [//]: # (Countables automatically generated BEGIN)
 -   Integer constant - any positive or negative integer number
 -   `turns` - Number of turns played
-    - (Always starts at zero irrespective of game speed or start era)
+    - Always starts at zero irrespective of game speed or start era
 -   `year` - The current year
-    - (Depends on game speed or start era, negative for years BC)
+    - Depends on game speed or start era, negative for years BC
 -   `Cities` - The number of cities the relevant Civilization owns
 -   `Units` - The number of units the relevant Civilization owns
 -   Stat name (`Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` or `Faith`)
-    - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
+    - Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
 -   `Completed Policy branches`
 -   `[cityFilter] Cities`
 -   `[mapUnitFilter] Units`
@@ -356,12 +356,12 @@ Allowed values:
 -   `Remaining [civFilter] Civilizations`
 -   `Owned [tileFilter] Tiles`
 -   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
-    - (can be city stats or civilization stats, depending on where the unique is used)
+    - Can be city stats or civilization stats, depending on where the unique is used
     - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
     - This can make a difference for e.g. local resources, which are counted per city.
 -   Evaluate expressions!
-    - Expressions support arbitrary math operations, and can include other countables
-    - For example, something like: `([[Melee] units] + 1) / [Cities]`
+    - Expressions support arbitrary math operations, and can include other countables, when surrounded by square brackets.
+    - For example, since `Cities` is a countable, and `[Melee] units` is a countable, you can have something like: `([[Melee] units] + 1) / [Cities]` (the whitespace is optional but helps readability)
     - Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`
     - Supported operations between 2 values are: +, -, *, /, %, ^
     - Supported operations on 1 value are: - (negation), √ (square root), abs (absolute value - turns negative into positive), sqrt (square root), floor (round down), ceil (round up)

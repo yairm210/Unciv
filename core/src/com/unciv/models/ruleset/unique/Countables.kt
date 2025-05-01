@@ -179,8 +179,9 @@ enum class Countables(
 
         override val documentationHeader = "Evaluate expressions!"
         override val documentationStrings = listOf(
-            "Expressions support arbitrary math operations, and can include other countables",
-            "For example, something like: `([[Melee] units] + 1) / [Cities]`",
+            "Expressions support arbitrary math operations, and can include other countables, when surrounded by square brackets.",
+            "For example, since `Cities` is a countable, and `[Melee] units` is a countable, " +
+                    "you can have something like: `([[Melee] units] + 1) / [Cities]` (the whitespace is optional but helps readability)",
             "Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`",
             "Supported operations between 2 values are: "+ Operator.BinaryOperators.entries.joinToString { it.symbol },
             "Supported operations on 1 value are: " + Operator.UnaryOperators.entries.joinToString { it.symbol+" (${it.description})" },
