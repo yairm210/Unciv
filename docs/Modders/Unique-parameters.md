@@ -341,24 +341,32 @@ Allowed values:
 
 [//]: # (Countables automatically generated BEGIN)
 -   Integer constant - any positive or negative integer number
+    - For example: `[+25]% Strength <for [30] turns>`
 -   `turns` - Number of turns played
     - (Always starts at zero irrespective of game speed or start era)
+    - For example: `Only available <if tutorials are enabled> <when number of [turns] is less than [3]>`
 -   `year` - The current year
     - (Depends on game speed or start era, negative for years BC)
 -   `Cities` - The number of cities the relevant Civilization owns
+    - For example: `Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>`
 -   `Units` - The number of units the relevant Civilization owns
+    - For example: `Only available <if tutorials are enabled> <when number of [Units] is more than [0]>`
 -   Stat name (`Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` or `Faith`)
     - gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
+    - For example: `Enables conversion of city production to [Science]`
 -   `Completed Policy branches`
+    - For example: `Unavailable <when number of [Completed Policy branches] is less than [5]>`
 -   `[cityFilter] Cities`
 -   `[mapUnitFilter] Units`
+    - For example: `Only available <if tutorials are enabled> <when number of [[Settler] Units] is more than [0]>`
 -   `[buildingFilter] Buildings`
 -   `Remaining [civFilter] Civilizations`
+    - For example: `[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>`
 -   `Owned [tileFilter] Tiles`
 -   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
-    - (can be city stats or civilization stats, depending on where the unique is used)
-    - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
-    - This can make a difference for e.g. local resources, which are counted per city.
+    - Can be city stats or civilization stats, depending on where the unique is used.
+    - If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization. This can make a difference for e.g. local resources, which are counted per city.
+    - For example: `[+1 Food] from [Deer] tiles [in this city]`
 -   Evaluate expressions!
     - Expressions support arbitrary math operations, and can include other countables
     - For example, something like: `([[Melee] units] + 1) / [Cities]`
