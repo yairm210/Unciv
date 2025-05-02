@@ -3330,10 +3330,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon turn end&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon turn start&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
@@ -3355,6 +3355,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
 	Example: "&lt;upon building a [All Road] improvement&gt;"
 
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
+??? example  "&lt;upon turn end&gt;"
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
+??? example  "&lt;upon turn start&gt;"
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
