@@ -664,12 +664,20 @@ class RulesetValidator(val ruleset: Ruleset) {
     private fun addGlobalUniqueErrors(lines: RulesetErrorList, reportRulesetSpecificErrors: Boolean, tryFixUnknownUniques: Boolean) {
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
 
+        val fakeUniqueContainer = object : IHasUniques{
+            override var uniques: ArrayList<String> = ArrayList()
+            override val uniqueObjects: List<Unique> = emptyList()
+            override val uniqueMap: UniqueMap = UniqueMap.EMPTY
+            override fun getUniqueTarget() = UniqueTarget.Unit
+            override var name = "Global unit uniques"
+        }
+        
         for (uniqueText in ruleset.globalUniques.unitUniques) {
-            val unique = Unique(uniqueText, sourceObjectType = UniqueTarget.Unit, "Global unit uniques")
+            val unique = Unique(uniqueText)
             val errors = uniqueValidator.checkUnique(
                 unique,
                 tryFixUnknownUniques,
-                ruleset.globalUniques,
+                fakeUniqueContainer,
                 reportRulesetSpecificErrors
             )
             lines.addAll(errors)
