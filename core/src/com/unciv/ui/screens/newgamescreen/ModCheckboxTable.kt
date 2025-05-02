@@ -11,6 +11,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
@@ -99,9 +100,23 @@ class ModCheckboxTable(
 
         add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods", defaultPad = 0f) {
             it.defaults().pad(5f,0f)
-            for (mod in compatibleMods) {
-                it.add(mod.widget).row()
+
+            val searchModsTextField = UncivTextField("Search mods")
+            it.add(searchModsTextField).row()
+            
+            val modsTable = Table()
+            modsTable.defaults().pad(5f)
+            it.add(modsTable)
+            
+            fun populateModsTable(){
+                modsTable.clear()
+                val searchText = searchModsTextField.text.lowercase()
+                for (mod in compatibleMods)
+                    if (searchText.isEmpty() || mod.mod.name.lowercase().contains(searchText))
+                        modsTable.add(mod.widget).left().row()
             }
+            populateModsTable()
+            searchModsTextField.onChange { populateModsTable() }
         }).padTop(expanderPadTop).growX().row()
 
         disableIncompatibleMods()

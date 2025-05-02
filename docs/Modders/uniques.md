@@ -2124,6 +2124,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
+??? example  "Cannot embark"
+	Applicable to: Unit
+
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
@@ -3528,7 +3531,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
-*[countable]: This indicates a number or a numeric variable.
+*[countable]: This indicates a number or a numeric variable.They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable "[Iron]+2"`.
 *[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
 *[event]: The name of any event.

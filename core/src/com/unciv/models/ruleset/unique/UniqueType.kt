@@ -496,6 +496,7 @@ enum class UniqueType(
     IgnoresZOC("Ignores Zone of Control", UniqueTarget.Unit),
     RoughTerrainPenalty("Rough terrain penalty", UniqueTarget.Unit),
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
+    CannotEmbark("Cannot embark", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CanEnterForeignTiles("May enter foreign tiles without open borders", UniqueTarget.Unit),
     CanEnterForeignTilesButLosesReligiousStrength("May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", UniqueTarget.Unit),
@@ -902,8 +903,8 @@ enum class UniqueType(
     // We have a separate trigger to include the cityFilter, since '[in all cities]' can be read '*only* if it's in all cities'
     TriggerUponConstructingBuildingCityFilter("upon constructing [buildingFilter] [cityFilter]", UniqueTarget.TriggerCondition),
     TriggerUponGainingUnit("upon gaining a [baseUnitFilter] unit", UniqueTarget.TriggerCondition),
-    TriggerUponTurnEnd("upon turn end", UniqueTarget.TriggerCondition),
-    TriggerUponTurnStart("upon turn start", UniqueTarget.TriggerCondition),
+    TriggerUponTurnEnd("upon turn end", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
+    TriggerUponTurnStart("upon turn start", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
 
     TriggerUponFoundingPantheon("upon founding a Pantheon", UniqueTarget.TriggerCondition),
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),

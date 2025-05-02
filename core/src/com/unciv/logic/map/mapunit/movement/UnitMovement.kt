@@ -669,6 +669,7 @@ class UnitMovement(val unit: MapUnit) {
         }
         if (tile.isWater && unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater) {
             if (!unit.civ.tech.unitsCanEmbark) return false
+            if (unit.cache.cannotEmbark) return false
             if (tile.isOcean && !unit.civ.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
                 return false
         }
