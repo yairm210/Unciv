@@ -109,7 +109,32 @@ object Parser {
             return Node.UnaryOperation(operator, fetchOperand())
         }
 
-        private fun expression(minPrecedence: Int = 0): Node {
+        /**
+         * EXAMPLE 1 - 1+2*3
+         * We first build the '1' node in the initial fetchOperand().
+         * Since the next token `+` is binary, we enter the while loop. But, do we build a `+` node now?
+         * Let's see: We started minPrecedence of 0, so yes! We build (+ 1 PENDING), and run expression with minPrecedence 2.
+         *  - This ensures that if we get another '+' token it will NOT be added to this tree, but this tree will be added to IT.
+         *  - This is relevant in cases like e.g. 4/2/2, which is parsed as (4/2)/2, and not as 4/(2/2). That's what 'isLeftAssociative' is about.
+         * Now we're in expression again, trying to build PENDING.
+         * We fetch the operand - 2. The next token - * is binary, and has precedence 3.
+         * OK, operator precedence (3) is >= than our minPrecedence (2), so we build a `*` node, and call expression again.
+         * So far we have (+ 1 (* 2 PENDING)).
+         * We fetch the next operand - 3 - and since the next token is EndToken, NOT binary, we return.
+         * 
+         * EXAMPLE 2 - 1*2+3
+         * The first level is the same - we build (* 1 PENDING). We then call expression(3+1), since * has precedence 3.
+         * We fetch the 2, we see the next token is binary. Do we build a + node now? 
+         * The precedence is higher, so WE DO NOT. We break! The result here is just `2`,
+         * We return to the first level, expression(0). So far we have (* 1 2), but the original `while` loop is still going! 
+         * So we check the next token. It's STILL a binary operator, `+`! The precedence is still fine (2 >= 0)!
+         * So we build a + node, taking the previous value (* 1 2) as the left operand. (+ (* 1 2) PENDING)
+         * Next expression() call returns just 3, we put it in (+ (* 1 2) 3), check next token. It's EndToken, not binary, we return.
+         */
+        private fun expression(
+            /** Precedence of the operator that called this function.
+             * Each node under an operator will always be of equal or higher precenence */
+            minPrecedence: Int = 0): Node {
             var result = fetchOperand()
             while (currentToken.canBeBinary()) {
                 val operator = currentToken.fetchBinaryOperator()

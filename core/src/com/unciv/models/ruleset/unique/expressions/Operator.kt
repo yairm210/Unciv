@@ -13,6 +13,7 @@ internal sealed interface Operator : Tokenizer.Token {
     }
 
     interface Binary : Operator {
+        /** Higher numbers are evaluated *first* */
         val precedence: Int
         val isLeftAssociative: Boolean
         val implementation: (Double, Double) -> Double
