@@ -323,7 +323,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     Lets hope it works with gamePreview as they are a lot smaller and faster to save
                      */
                     Log.i(LOG_TAG, "doWork save gameName: ${gameNames[idx]}")
-                    files.saveGame(gamePreview, gameNames[idx])
+                    files.saveMultiplayerGamePreview(gamePreview, gameNames[idx])
                     Log.i(LOG_TAG, "doWork save ${gameNames[idx]} done")
 
                     if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame == null) {
