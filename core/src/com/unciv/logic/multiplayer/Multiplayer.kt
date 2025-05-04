@@ -179,8 +179,10 @@ class Multiplayer {
     }
 
     /** Returns false if game was not up to date
-     * Returned value indicates an error string - will be null if successful  */
-    suspend fun skipCurrentPlayerTurn(game: MultiplayerGamePreview): String? {
+     * Returned value indicates an error string - will be null if successful
+     * We always pass in the player name to ensure if the button was clicked twice we don't skip 2 turns 
+     * */
+    suspend fun skipCurrentPlayerTurn(game: MultiplayerGamePreview, player: String): String? {
         val preview = game.preview ?: return game.error!!.message
         // download to work with the latest game state
         val gameInfo: GameInfo
@@ -193,7 +195,11 @@ class Multiplayer {
         
         if (gameInfo.currentPlayer != preview.currentPlayer) {
             game.updatePreview(gameInfo.asPreview())
-            return "Could not pass turn - current player has been updated!"
+            return "Could not pass turn - current player has been updated"
+        }
+        
+        if (gameInfo.currentPlayer != player) {
+            return "Could not pass turn - current player is ${gameInfo.currentPlayer}, not $player"
         }
 
         val playerCiv = gameInfo.getCurrentPlayerCivilization()

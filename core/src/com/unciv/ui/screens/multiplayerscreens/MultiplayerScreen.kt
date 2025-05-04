@@ -172,12 +172,13 @@ class MultiplayerScreen : PickerScreen() {
         val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
         val skipTurnButton = "Skip turn of current player".toTextButton(negativeButtonStyle).apply { isVisible = false }
         skipTurnButton.onClick {
+            val civName = selectedGame!!.preview!!.currentPlayer
             val askPopup = ConfirmPopup(
                 this,
-                "Are you sure you want to skip the turn of the current player?",
+                "Are you sure you want to skip the turn of [$civName]?",
                 "Yes",
             ) {
-                skipCurrentPlayerTurn(selectedGame!!)
+                skipCurrentPlayerTurn(selectedGame!!, civName)
             }
             askPopup.open()
         }
@@ -226,7 +227,7 @@ class MultiplayerScreen : PickerScreen() {
     /**
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun skipCurrentPlayerTurn(multiplayerGamePreview: MultiplayerGamePreview) {
+    private fun skipCurrentPlayerTurn(multiplayerGamePreview: MultiplayerGamePreview, playerToSkip: String) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel(Constants.working).row()
@@ -234,7 +235,7 @@ class MultiplayerScreen : PickerScreen() {
 
         Concurrency.runOnNonDaemonThreadPool("Skip turn") {
             try {
-                val skipTurnErrorMessage = game.onlineMultiplayer.skipCurrentPlayerTurn(multiplayerGamePreview)
+                val skipTurnErrorMessage = game.onlineMultiplayer.skipCurrentPlayerTurn(multiplayerGamePreview, playerToSkip)
 
                 launchOnGLThread {
                     if (skipTurnErrorMessage == null) {
