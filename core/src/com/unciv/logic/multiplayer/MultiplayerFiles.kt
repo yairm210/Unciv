@@ -12,7 +12,7 @@ import java.util.*
 /** Files that are stored locally */
 class MultiplayerFiles {
     internal val files = UncivGame.Current.files
-    internal val savedGames: MutableMap<FileHandle, MultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
+    internal val savedGames: MutableMap<FileHandle, MultiplayerGamePreview> = Collections.synchronizedMap(mutableMapOf())
 
     internal fun updateSavesFromFiles() {
         val saves = files.getMultiplayerSaves()
@@ -31,8 +31,8 @@ class MultiplayerFiles {
     /**
      * Deletes the game from disk, does not delete it remotely.
      */
-    fun deleteGame(multiplayerGame: MultiplayerGame) {
-        deleteGame(multiplayerGame.fileHandle)
+    fun deleteGame(multiplayerGamePreview: MultiplayerGamePreview) {
+        deleteGame(multiplayerGamePreview.fileHandle)
     }
 
     private fun deleteGame(fileHandle: FileHandle) {
@@ -56,15 +56,15 @@ class MultiplayerFiles {
 
     private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview? = null) {
         debug("Adding game %s", fileHandle.name())
-        val game = MultiplayerGame(fileHandle, preview, if (preview != null) Instant.now() else null)
+        val game = MultiplayerGamePreview(fileHandle, preview, if (preview != null) Instant.now() else null)
         savedGames[fileHandle] = game
     }
 
-    fun getGameByName(name: String): MultiplayerGame? {
+    fun getGameByName(name: String): MultiplayerGamePreview? {
         return savedGames.values.firstOrNull { it.name == name }
     }
 
-    fun getGameByGameId(gameId: String): MultiplayerGame? {
+    fun getGameByGameId(gameId: String): MultiplayerGamePreview? {
         return savedGames.values.firstOrNull { it.preview?.gameId == gameId }
     }
 
@@ -72,14 +72,14 @@ class MultiplayerFiles {
     /**
      * Fires [MultiplayerGameNameChanged]
      */
-    fun changeGameName(game: MultiplayerGame, newName: String, onException: (Exception?)->Unit) {
+    fun changeGameName(game: MultiplayerGamePreview, newName: String, onException: (Exception?)->Unit) {
         debug("Changing name of game %s to", game.name, newName)
         val oldPreview = game.preview ?: throw game.error!!
         val oldLastUpdate = game.getLastUpdate()
         val oldName = game.name
 
         val newFileHandle = files.saveMultiplayerGamePreview(oldPreview, newName, onException)
-        val newGame = MultiplayerGame(newFileHandle, oldPreview, oldLastUpdate)
+        val newGame = MultiplayerGamePreview(newFileHandle, oldPreview, oldLastUpdate)
         savedGames[newFileHandle] = newGame
 
         savedGames.remove(game.fileHandle)

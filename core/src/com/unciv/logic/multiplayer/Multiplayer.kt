@@ -48,7 +48,7 @@ class Multiplayer {
     private val lastAllGamesRefresh: AtomicReference<Instant?> = AtomicReference()
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
-    val games: Set<MultiplayerGame> get() = multiplayerFiles.savedGames.values.toSet()
+    val games: Set<MultiplayerGamePreview> get() = multiplayerFiles.savedGames.values.toSet()
     val multiplayerGameUpdater: Job
 
     init {
@@ -78,7 +78,7 @@ class Multiplayer {
         }.launchIn(CoroutineScope(Dispatcher.DAEMON))
     }
 
-    private fun getCurrentGame(): MultiplayerGame? {
+    private fun getCurrentGame(): MultiplayerGamePreview? {
         val gameInfo = UncivGame.Current.gameInfo
         return if (gameInfo != null && gameInfo.gameParameters.isOnlineMultiplayer) {
             multiplayerFiles.getGameByGameId(gameInfo.gameId)
@@ -92,7 +92,7 @@ class Multiplayer {
      *
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      */
-    suspend fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<MultiplayerGame> = listOf()) {
+    suspend fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<MultiplayerGamePreview> = listOf()) {
         val fileThrottleInterval = if (forceUpdate) Duration.ZERO else FILE_UPDATE_THROTTLE_PERIOD
         // An exception only happens here if the files can't be listed, should basically never happen
         throttle(lastFileUpdate, fileThrottleInterval, {}, action = {multiplayerFiles.updateSavesFromFiles()})
@@ -144,14 +144,14 @@ class Multiplayer {
      * @throws MultiplayerAuthException if the authentication failed
      * @return false if it's not the user's turn and thus resigning did not happen
      */
-    suspend fun resignCurrentPlayer(game: MultiplayerGame): Boolean {
+    suspend fun resignCurrentPlayer(game: MultiplayerGamePreview): Boolean {
         val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
 
 
         if (gameInfo.currentPlayer != preview.currentPlayer) {
-            game.doManualUpdate(gameInfo.asPreview())
+            game.updatePreview(gameInfo.asPreview())
             return false
         }
 
@@ -174,13 +174,13 @@ class Multiplayer {
         val newPreview = gameInfo.asPreview()
         multiplayerFiles.files.saveMultiplayerGamePreview(newPreview, game.fileHandle)
         multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
-        game.doManualUpdate(newPreview)
+        game.updatePreview(newPreview)
         return true
     }
 
     /** Returns false if game was not up to date
      * Returned value indicates an error string - will be null if successful  */
-    suspend fun skipCurrentPlayerTurn(game: MultiplayerGame): String? {
+    suspend fun skipCurrentPlayerTurn(game: MultiplayerGamePreview): String? {
         val preview = game.preview ?: return game.error!!.message
         // download to work with the latest game state
         val gameInfo: GameInfo
@@ -192,7 +192,7 @@ class Multiplayer {
         }
         
         if (gameInfo.currentPlayer != preview.currentPlayer) {
-            game.doManualUpdate(gameInfo.asPreview())
+            game.updatePreview(gameInfo.asPreview())
             return "Could not pass turn - current player has been updated!"
         }
 
@@ -203,7 +203,7 @@ class Multiplayer {
         val newPreview = gameInfo.asPreview()
         multiplayerFiles.files.saveMultiplayerGamePreview(newPreview, game.fileHandle)
         multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
-        game.doManualUpdate(newPreview)
+        game.updatePreview(newPreview)
         return null
     }
 
@@ -211,7 +211,7 @@ class Multiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
      */
-    suspend fun loadGame(game: MultiplayerGame) {
+    suspend fun loadGame(game: MultiplayerGamePreview) {
         val preview = game.preview ?: throw game.error!!
         loadGame(preview.gameId)
     }
@@ -228,7 +228,7 @@ class Multiplayer {
         if (onlineGame == null) {
             createGame(gameInfo)
         } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)) {
-            onlineGame.doManualUpdate(preview)
+            onlineGame.updatePreview(preview)
         }
         UncivGame.Current.loadGame(gameInfo)
     }
@@ -263,7 +263,7 @@ class Multiplayer {
         if (game == null) {
             multiplayerFiles.addGame(gameInfo)
         } else {
-            game.doManualUpdate(gameInfo.asPreview())
+            game.updatePreview(gameInfo.asPreview())
         }
     }
 
