@@ -172,7 +172,7 @@ class Multiplayer {
         }
 
         val newPreview = gameInfo.asPreview()
-        multiplayerFiles.files.saveGamePreview(newPreview, game.fileHandle)
+        multiplayerFiles.files.saveMultiplayerGamePreview(newPreview, game.fileHandle)
         multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         return true
@@ -201,7 +201,7 @@ class Multiplayer {
         gameInfo.nextTurn()
 
         val newPreview = gameInfo.asPreview()
-        multiplayerFiles.files.saveGamePreview(newPreview, game.fileHandle)
+        multiplayerFiles.files.saveMultiplayerGamePreview(newPreview, game.fileHandle)
         multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         return null

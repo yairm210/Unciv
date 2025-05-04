@@ -50,7 +50,7 @@ class MultiplayerFiles {
     }
 
     internal fun addGame(preview: GameInfoPreview, saveFileName: String) {
-        val fileHandle = files.saveGamePreview(preview, saveFileName)
+        val fileHandle = files.saveMultiplayerGamePreview(preview, saveFileName)
         return addGame(fileHandle, preview)
     }
 
@@ -78,7 +78,7 @@ class MultiplayerFiles {
         val oldLastUpdate = game.getLastUpdate()
         val oldName = game.name
 
-        val newFileHandle = files.saveGamePreview(oldPreview, newName, onException)
+        val newFileHandle = files.saveMultiplayerGamePreview(oldPreview, newName, onException)
         val newGame = MultiplayerGame(newFileHandle, oldPreview, oldLastUpdate)
         savedGames[newFileHandle] = newGame
 
