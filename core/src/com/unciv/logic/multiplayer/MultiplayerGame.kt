@@ -109,7 +109,7 @@ class MultiplayerGame(
         val serverIdentifier = curPreview.gameParameters.multiplayerServerUrl
         val newPreview = MultiplayerServer(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
-        UncivGame.Current.files.saveGame(newPreview, fileHandle)
+        UncivGame.Current.files.saveGamePreview(newPreview, fileHandle)
         preview = newPreview
         return GameUpdateResult(CHANGED, newPreview)
     }
