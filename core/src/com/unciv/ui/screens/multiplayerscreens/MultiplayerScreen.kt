@@ -140,12 +140,13 @@ class MultiplayerScreen : PickerScreen() {
         val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
         val resignButton = "Resign".toTextButton(negativeButtonStyle).apply { disable() }
         resignButton.onClick {
+            val civName = selectedGame!!.preview!!.currentPlayer
             val askPopup = ConfirmPopup(
                     this,
-                    "Are you sure you want to resign?",
+                    "Are you sure you ([$civName]) want to resign?",
                     "Resign",
             ) {
-                resignCurrentPlayer(selectedGame!!)
+                resignPlayer(selectedGame!!, civName)
             }
             askPopup.open()
         }
@@ -156,12 +157,13 @@ class MultiplayerScreen : PickerScreen() {
         val negativeButtonStyle = skin.get("negative", TextButton.TextButtonStyle::class.java)
         val resignButton = "Force current player to resign".toTextButton(negativeButtonStyle).apply { isVisible = false }
         resignButton.onClick {
+            val currentPlayer = selectedGame!!.preview!!.currentPlayer
             val askPopup = ConfirmPopup(
                 this,
-                "Are you sure you want to force the current player to resign?",
+                "Are you sure you want to force the current player ([$currentPlayer]) to resign?",
                 "Yes",
             ) {
-                resignCurrentPlayer(selectedGame!!)
+                resignPlayer(selectedGame!!, currentPlayer)
             }
             askPopup.open()
         }
@@ -188,7 +190,7 @@ class MultiplayerScreen : PickerScreen() {
     /**
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun resignCurrentPlayer(multiplayerGamePreview: MultiplayerGamePreview) {
+    private fun resignPlayer(multiplayerGamePreview: MultiplayerGamePreview, playerCiv: String) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel(Constants.working).row()
@@ -196,13 +198,13 @@ class MultiplayerScreen : PickerScreen() {
 
         Concurrency.runOnNonDaemonThreadPool("Resign") {
             try {
-                val resignSuccess = game.onlineMultiplayer.resignCurrentPlayer(multiplayerGamePreview)
+                val errorMessage = game.onlineMultiplayer.resignPlayer(multiplayerGamePreview, playerCiv)
 
                 launchOnGLThread {
-                    if (resignSuccess) {
+                    if (errorMessage.isEmpty()) {
                         popup.close()
                     } else {
-                        popup.reuseWith("You can only resign if it's your turn", true)
+                        popup.reuseWith(errorMessage, true)
                     }
                 }
             } catch (ex: Exception) {
@@ -211,7 +213,7 @@ class MultiplayerScreen : PickerScreen() {
                 if (ex is MultiplayerAuthException) {
                     launchOnGLThread {
                         AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) resignCurrentPlayer(multiplayerGamePreview)
+                            if (success) resignPlayer(multiplayerGamePreview, playerCiv)
                         }.open(true)
                     }
                     return@runOnNonDaemonThreadPool
@@ -251,7 +253,7 @@ class MultiplayerScreen : PickerScreen() {
                 if (ex is MultiplayerAuthException) {
                     launchOnGLThread {
                         AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) resignCurrentPlayer(multiplayerGamePreview)
+                            if (success) skipCurrentPlayerTurn(multiplayerGamePreview, playerToSkip)
                         }.open(true)
                     }
                     return@runOnNonDaemonThreadPool

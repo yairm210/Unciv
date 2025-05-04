@@ -26,7 +26,7 @@ object MultiplayerHelpers {
 
         Concurrency.run("JoinMultiplayerGame") {
             try {
-                UncivGame.Current.onlineMultiplayer.loadGame(selectedGame)
+                UncivGame.Current.onlineMultiplayer.downloadGame(selectedGame)
             } catch (ex: Exception) {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {

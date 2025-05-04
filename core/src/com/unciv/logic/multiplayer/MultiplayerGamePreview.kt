@@ -61,7 +61,7 @@ class MultiplayerGamePreview(
         return previewFromFile
     }
 
-    private fun setPreview(gamePreview: GameInfoPreview) {
+    private fun setNewPreview(gamePreview: GameInfoPreview) {
         UncivGame.Current.files.saveMultiplayerGamePreview(gamePreview, fileHandle)
         preview = gamePreview
         error = null
@@ -118,7 +118,7 @@ class MultiplayerGamePreview(
         val newPreview = MultiplayerServer(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
         
-        setPreview(newPreview)
+        setNewPreview(newPreview)
         
         return GameUpdateResult(CHANGED, newPreview)
     }
@@ -127,7 +127,7 @@ class MultiplayerGamePreview(
         debug("Doing manual update of game %s", gameInfo.gameId)
         
         lastOnlineUpdate.set(Instant.now())
-        setPreview(gameInfo)
+        setNewPreview(gameInfo)
         
         withGLContext {
             EventBus.send(MultiplayerGameUpdated(name, gameInfo))

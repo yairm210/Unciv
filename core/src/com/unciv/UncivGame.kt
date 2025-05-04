@@ -366,7 +366,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             }
         }
         try {
-            onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
+            onlineMultiplayer.downloadGame(deepLinkedMultiplayerGame!!)
         } catch (ex: Exception) {
             launchOnGLThread {
                 val mainMenu = MainMenuScreen()

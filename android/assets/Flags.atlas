@@ -151,156 +151,163 @@ FlagIcons/Japanese
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Korean
+FlagIcons/Kazakh
   rotate: false
   xy: 820, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Latin
+FlagIcons/Korean
   rotate: false
   xy: 956, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Lithuanian
+FlagIcons/Latin
   rotate: false
   xy: 1092, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Macedonian
+FlagIcons/Lithuanian
   rotate: false
   xy: 956, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Malay
+FlagIcons/Macedonian
   rotate: false
   xy: 1092, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Norwegian
+FlagIcons/Malay
   rotate: false
   xy: 1228, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
+FlagIcons/Norwegian
+  rotate: false
+  xy: 1092, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
 FlagIcons/Persian_(Pinglish-DIN)
-  rotate: false
-  xy: 1092, 4
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-FlagIcons/Persian_(Pinglish-UN)
-  rotate: false
-  xy: 1092, 4
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-FlagIcons/Polish
   rotate: false
   xy: 1228, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Portuguese
+FlagIcons/Persian_(Pinglish-UN)
+  rotate: false
+  xy: 1228, 140
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Polish
   rotate: false
   xy: 1364, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Romanian
+FlagIcons/Portuguese
   rotate: false
   xy: 1228, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Russian
+FlagIcons/Romanian
   rotate: false
   xy: 1364, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Rusyn
+FlagIcons/Russian
   rotate: false
   xy: 1500, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Simplified_Chinese
+FlagIcons/Rusyn
   rotate: false
   xy: 1364, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Spanish
+FlagIcons/Simplified_Chinese
   rotate: false
   xy: 1500, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Swedish
+FlagIcons/Spanish
   rotate: false
   xy: 1636, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Thai
+FlagIcons/Swedish
   rotate: false
   xy: 1500, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Traditional_Chinese
+FlagIcons/Thai
   rotate: false
   xy: 1636, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Turkish
+FlagIcons/Traditional_Chinese
   rotate: false
   xy: 1772, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Ukrainian
+FlagIcons/Turkish
   rotate: false
   xy: 1636, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Vietnamese
+FlagIcons/Ukrainian
   rotate: false
   xy: 1772, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Zulu
+FlagIcons/Vietnamese
   rotate: false
   xy: 1908, 276
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Zulu
+  rotate: false
+  xy: 1772, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
