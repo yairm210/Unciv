@@ -700,7 +700,8 @@ enum class UniqueType(
     ConditionalWLTKD("during We Love The King Day", UniqueTarget.Conditional),
 
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
-    ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),
+    ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional,
+        docDescription = " 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
     ConditionalAboveHappiness("when above [amount] Happiness", UniqueTarget.Conditional),
     ConditionalBelowHappiness("when below [amount] Happiness", UniqueTarget.Conditional),
 
@@ -742,7 +743,8 @@ enum class UniqueType(
     ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
         docDescription = "Stats refers to the accumulated stat, not stat-per-turn"),
     ConditionalWhenBetweenStatResource("when between [amount] and [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
-        docDescription = "Stats refers to the accumulated stat, not stat-per-turn"),
+        docDescription = "Stats refers to the accumulated stat, not stat-per-turn." +
+                " 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),
@@ -757,7 +759,8 @@ enum class UniqueType(
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalPopulationFilter("in cities with at least [positiveAmount] [populationFilter]", UniqueTarget.Conditional),
     ConditionalExactPopulationFilter("in cities with [positiveAmount] [populationFilter]", UniqueTarget.Conditional),
-    ConditionalBetweenPopulationFilter("in cities with between [amount] and [amount] [populationFilter]", UniqueTarget.Conditional),
+    ConditionalBetweenPopulationFilter("in cities with between [amount] and [amount] [populationFilter]", UniqueTarget.Conditional,
+        docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
     ConditionalBelowPopulationFilter("in cities with less than [amount] [populationFilter]", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
 
@@ -800,7 +803,8 @@ enum class UniqueType(
     ConditionalCountableDifferentThan("when number of [countable] is different than [countable]", UniqueTarget.Conditional),
     ConditionalCountableMoreThan("when number of [countable] is more than [countable]", UniqueTarget.Conditional),
     ConditionalCountableLessThan("when number of [countable] is less than [countable]", UniqueTarget.Conditional),
-    ConditionalCountableBetween("when number of [countable] is between [countable] and [countable]", UniqueTarget.Conditional),
+    ConditionalCountableBetween("when number of [countable] is between [countable] and [countable]", UniqueTarget.Conditional,
+        docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
 
     //endregion
 
