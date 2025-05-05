@@ -1,58 +1,23 @@
 ## 4.16.8
 
-Resolved  - Unit triggerables with triggers, no longer trigger when creating units
+Unit triggerables with triggers, no longer trigger on new units
 
-chore: Added test that battle triggers work, investigating 
+Clicking on statuses opens promotion screen
 
-Clicking on statuses opens the promotion screen, where statuses are visible
+AI: 
+- City states disband great prophets
+- Don't offer peace when we're just about to take a city
 
-Resolved  - Capitals which were previously city-states no longer display icons in victory screen
+Multiplayer:
+- Better, less buggy resign/skip
 
-docs: 'between' is inclusive everywhere
-
-AI: City states disband great prophets (they can't found religions)
-
-Fix Android MP checker
-
-Resolved  - MP: Simplified resign/skip in multiplayer, show affected civ in popups, fixed 'resign on auth instead of skip' bug
-
-MP: "Skip current player turn" shows what player will be skipped, and is guaranteed to skip ONLY that player
-
-MP: Unify preview updating to ensure disk and memory previews are always the same
-
-.
-
-chore: rename UncivFiles.saveGame(GameInfoPreview) -> saveGamePreview
-
-4.16.7-patch1
-
-Fix global unique validation 
-
-chore: removed dead exceptions
-
-Validation catches 'global triggers attached to unit triggerables', which will have no effect
-
-Added documentation explaining the expression parsing
-
-Resolved  - Added examples for all countables
-
-Better Expression documentation
-
-Cleaned up other countable doc things
-
-Countable doc sublist take 2
-
-AI: Don't offer peace when we're just about to take a city
-
-Better looking Countable documentation
-
-chore: Added Civilization.getAllyCiv():Civilization?
-
-chore: rename Civilization.getAllyCiv -> getAllyCivName
+Modding:
+- Fix global unique validation
+- Validation catches 'global triggers attached to unit triggerables', which will have no effect
 
 By SomeTroglodyte:
 - Fix Resources Overview to work as intended 
-- Add an 'XP' column to Units Overview 
+- Add an 'XP' column to Units Overview
 
 ## 4.16.7
 
