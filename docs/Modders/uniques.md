@@ -2911,6 +2911,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] Happiness&gt;"
+	 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when between [3] and [3] Happiness&gt;"
 
 	Applicable to: Conditional
@@ -3048,7 +3049,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn
+	Stats refers to the accumulated stat, not stat-per-turn. 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -3105,6 +3106,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with between [amount] and [amount] [populationFilter]&gt;"
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;in cities with between [3] and [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3251,6 +3253,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
 
 	Applicable to: Conditional
