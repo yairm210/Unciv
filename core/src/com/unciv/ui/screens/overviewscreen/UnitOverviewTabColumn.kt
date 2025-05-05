@@ -115,6 +115,14 @@ enum class UnitOverviewTabColumn(
         override fun getEntryString(item: MapUnit) = if (item.health == 100) null else item.health.tr()
         override fun getTotalsActor(items: Iterable<MapUnit>) = items.count { it.health < 100 }.toCenteredLabel()
     },
+
+    XP {
+        override fun getEntryValue(item: MapUnit) = item.promotions.XP
+        override fun getEntryString(item: MapUnit) = if (item.isCivilian()) ""
+            else "{${item.promotions.XP}}/{${item.promotions.xpForNextPromotion()}}"
+        override fun getComparator() = compareBy<MapUnit> { it.promotions.xpForNextPromotion() }.thenBy { it.promotions.XP }
+        override fun getTotalsActor(items: Iterable<MapUnit>) = items.map { it.promotions.XP }.sum().toLabel()
+    },
     ;
     //endregion
 
