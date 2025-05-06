@@ -514,4 +514,24 @@ class BattleTest {
         // then
         assertTrue(attackerUnit.isDestroyed)
     }
+
+    
+    @Test
+    fun `should trigger damage triggers when ranged attacking`() {
+        // given
+        val unitType = testGame.createBaseUnit("Archery",
+            "[This Unit] takes [5] damage <upon damaging a [Test] unit>")
+        unitType.rangedStrength = 10
+        val attackerUnit = testGame.addUnit(unitType.name, attackerCiv, testGame.getTile(Vector2.Y))
+        attackerUnit.currentMovement = 2f
+        defaultDefenderUnit.health = 1
+
+        // when
+        defaultDefenderUnit.setStatus("Test", 1)
+        Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(95, attackerUnit.health)
+        assertTrue(defaultDefenderUnit.isDestroyed)
+    }
 }

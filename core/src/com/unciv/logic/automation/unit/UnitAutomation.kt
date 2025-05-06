@@ -171,7 +171,7 @@ object UnitAutomation {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
-        if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
+        if (unit.getDamageFromTerrain() > 0 && tryHealUnit(unit)) return
 
 
         if (unit.isCivilian()) {
@@ -482,12 +482,11 @@ object UnitAutomation {
             unitDistanceToTiles,
             tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
-            // Ignore units that would 1-shot you if you attacked. Account for taking terrain damage after the fact.
+            // Ignore units that would 1-shot you if you attacked, as well as avoid parking your units next to enemy citadels
             BattleDamage.calculateDamageToAttacker(
                 MapUnitCombatant(unit),
                 Battle.getMapCombatantOfTile(it.tileToAttack)!!
-            )
-                    + unit.getDamageFromTerrain(it.tileToAttackFrom) < unit.health
+            ) < unit.health || unit.getDamageFromTerrain(it.tileToAttackFrom) > 0
         }
 
         if (unit.baseUnit.isRanged())

@@ -105,7 +105,7 @@ object BaseUnitDescriptions {
             textList += FormattedLine()
             textList += FormattedLine(baseUnit.replacementTextForUniques)
         } else {
-            baseUnit.uniquesToCivilopediaTextLines(textList, sorted = true, colorConsumesResources = true)
+            baseUnit.uniquesToCivilopediaTextLines(textList, colorConsumesResources = true)
         }
 
         if (baseUnit.requiredResource != null) {

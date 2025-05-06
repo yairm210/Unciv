@@ -30,19 +30,16 @@ fun IHasUniques.uniquesToDescription(
  *  A Sequence of user-visible Uniques as [FormattedLine]s.
  *
  *  @param leadingSeparator Tristate: If there are lines to display and this parameter is not `null`, a leading line is output, as separator or empty line.
- *  @param sorted If set, sorts alphabetically (**not** using a locale-specific Collator). Otherwise lists in json order.
  *  @param colorConsumesResources If set, ConsumesResources Uniques get a reddish color.
  *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
  */
 fun IHasUniques.uniquesToCivilopediaTextLines(
     leadingSeparator: Boolean? = false,
-    sorted: Boolean = false,
     colorConsumesResources: Boolean = false,
     exclude: Unique.() -> Boolean = {false}
 ) = sequence {
-    var orderedUniques = uniqueObjects.asSequence()
+    val orderedUniques = uniqueObjects.asSequence()
         .filterNot { it.isHiddenToUsers() || it.exclude() }
-    if (sorted) orderedUniques = orderedUniques.sortedBy { it.text }
 
     for ((index, unique) in orderedUniques.withIndex()) {
         if (leadingSeparator != null && index == 0)
@@ -61,17 +58,15 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
  *  Appends user-visible Uniques as [FormattedLine]s to [lineList].
  *
  *  @param leadingSeparator Tristate: If there are lines to display and this parameter is not `null`, a leading line is output, as separator or empty line.
- *  @param sorted If set, sorts alphabetically (**not** using a locale-specific Collator). Otherwise lists in json order.
  *  @param colorConsumesResources If set, ConsumesResources Uniques get a reddish color.
  *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
  */
 fun IHasUniques.uniquesToCivilopediaTextLines(
     lineList: MutableCollection<FormattedLine>,
     leadingSeparator: Boolean? = false,
-    sorted: Boolean = false,
     colorConsumesResources: Boolean = false,
     exclude: Unique.() -> Boolean = {false}
 ) {
-    uniquesToCivilopediaTextLines(leadingSeparator, sorted, colorConsumesResources, exclude)
+    uniquesToCivilopediaTextLines(leadingSeparator, colorConsumesResources, exclude)
         .toCollection(lineList)
 }

@@ -1124,7 +1124,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
-	Applicable to: Tech, Policy, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
@@ -1147,7 +1147,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
-	Applicable to: Tech, Policy, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
@@ -1181,6 +1181,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
@@ -1424,6 +1429,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Mana] when killed within 4 tiles of a city following this religion"
 
 	Applicable to: FollowerBelief
+
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
@@ -2114,6 +2124,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
+??? example  "Cannot embark"
+	Applicable to: Unit
+
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
@@ -2205,7 +2218,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
-	Applicable to: Tech, Policy, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
@@ -2898,6 +2911,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] Happiness&gt;"
+	 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when between [3] and [3] Happiness&gt;"
 
 	Applicable to: Conditional
@@ -3035,7 +3049,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn
+	Stats refers to the accumulated stat, not stat-per-turn. 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -3092,6 +3106,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with between [amount] and [amount] [populationFilter]&gt;"
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;in cities with between [3] and [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3238,6 +3253,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
 
 	Applicable to: Conditional
@@ -3317,10 +3333,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon turn end&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon turn start&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
@@ -3342,6 +3358,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
 	Example: "&lt;upon building a [All Road] improvement&gt;"
 
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
+??? example  "&lt;upon turn end&gt;"
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
+??? example  "&lt;upon turn start&gt;"
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
@@ -3518,7 +3540,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
-*[countable]: This indicates a number or a numeric variable.
+*[countable]: This indicates a number or a numeric variable.They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable "[Iron]+2"`.
 *[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
 *[event]: The name of any event.

@@ -27,7 +27,7 @@ import kotlin.math.min
 
 object Automation {
 
-    fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Float {
+    fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
         return rankStatsForCityWork(stats, city, false, localUniqueCache)
     }
@@ -228,7 +228,7 @@ object Automation {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID
             val findWaterConnectedCitiesAndEnemies =
-                    BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
+                    BFS(city.getCenterTile()) { it.isWater && !it.isImpassible() || it.isCityCenter() }
             findWaterConnectedCitiesAndEnemies.stepToEnd()
 
             val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
@@ -484,8 +484,8 @@ object Automation {
             if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= city.getWorkRange()) score -= 104
         } else {
-            // Water tiles without resources aren't great
-            if (tile.isWater) score += 25
+            // Water tiles without resources aren't great unless they're Atolls
+            if (tile.isWater) score += 3
             // Can't work it anyways
             if (distance > city.getWorkRange()) score += 100
         }

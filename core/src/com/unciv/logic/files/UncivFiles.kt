@@ -169,7 +169,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    private fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
@@ -183,16 +183,16 @@ class UncivFiles(
     /**
      * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
      */
-    fun saveGame(game: GameInfoPreview, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+    fun saveMultiplayerGamePreview(game: GameInfoPreview, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
         val file = getMultiplayerSave(gameName)
-        saveGame(game, file, saveCompletionCallback)
+        saveMultiplayerGamePreview(game, file, saveCompletionCallback)
         return file
     }
 
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveMultiplayerGamePreview(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving GameInfoPreview %s to %s", game.gameId, file.path())
             json().toJson(game, file)

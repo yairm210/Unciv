@@ -15,7 +15,7 @@ import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
-import com.unciv.logic.multiplayer.MultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGamePreview
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.setSize
@@ -30,7 +30,7 @@ import kotlinx.coroutines.delay
 
 class MultiplayerStatusButton(
     screen: BaseScreen,
-    curGame: MultiplayerGame?
+    curGame: MultiplayerGamePreview?
 ) : Button(BaseScreen.skin), Disposable {
     private var curGameName = curGame?.name
     private val loadingImage = LoadingImage(style = LoadingImage.Style(
@@ -87,7 +87,7 @@ class MultiplayerStatusButton(
     }
 
     /** @return set of gameIds */
-    private fun findGamesToBeNotifiedAbout(games: Iterable<MultiplayerGame>): MutableSet<String> {
+    private fun findGamesToBeNotifiedAbout(games: Iterable<MultiplayerGamePreview>): MutableSet<String> {
         return games
             .filter { it.name != curGameName }
             .filter { it.preview?.isUsersTurn() == true }

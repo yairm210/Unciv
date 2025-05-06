@@ -1,3 +1,105 @@
+## 4.16.8
+
+Unit triggerables with triggers, no longer trigger on new units
+
+Clicking on statuses opens promotion screen
+
+AI: 
+- City states disband great prophets
+- Don't offer peace when we're just about to take a city
+
+Multiplayer:
+- Better, less buggy resign/skip
+
+Modding:
+- Fix global unique validation
+- Validation catches 'global triggers attached to unit triggerables', which will have no effect
+
+By SomeTroglodyte:
+- Fix Resources Overview to work as intended 
+- Add an 'XP' column to Units Overview
+
+## 4.16.7
+
+Countable can accept arbitrary mathematical Expressions - Kudos AutumnPizazz for kicking this off, SomeTroglodyte for parser implementation!
+
+Added 'search mods' in new game screen and mod checker
+
+Fixed bugs in unique validation and in countable validation
+
+Allow automation for settlers with conditional settling uniques
+
+Add "Cannot embark" unit unique - By PLynx01
+
+## 4.16.6
+
+Demands/Requests from other civs do not stop other events registering
+
+Better 'Pay to improve CS resource'
+
+Seed pillage randomness to avoid save-scum
+
+Modding: 
+- Added misspelling tests for uniqueTo for buildings, units and improvements
+- Triggerable uniques on promotions only activate once when added on creation
+- Beliefs can have AI decision modifiers, and do in base rulesets
+
+Finish city-state quests upon acquiring great person
+
+Prevent AI placing units near citadels - by EmperorPinguin
+
+## 4.16.5
+
+Added improvement image toggle next to minimap
+
+Added indication when attacking, for which tile we will attack from
+
+Fix opening Civilopedia from main menu when easter eggs enabled
+
+Remove messages from defeated civilizations
+
+Don't automate naval units in cities that only lead to enemies via impassible water routes (e.g. ice)
+
+Uniques are never sorted alphabetically
+
+Modding: Added validation for global unit uniques
+
+By Ouaz:
+- Fix untranslated string 
+- Fix personality names 
+
+## 4.16.4
+
+Tile swapping with transported units in the tile, checks *who* is transporting the units
+
+City states don't get continually researchable techs automatically
+
+Modding:
+- Resolved automation crash for units with "gain free [building]" uniques
+- Allow multipying cached uniques
+
+By touhidurrr:
+- more detailed multiplayer authentication
+
+By SomeTroglodyte:
+- CityScreen's top-right widget better sized for mobile
+- Better save/load in map editor
+
+## 4.16.3
+
+Ruleset validation: Hide performance suggestions from users, they're now mod-checker only
+
+Maintenance for improved Code quality
+
+Prevent wrong multiplicators when using the "for every [countable]" Unique in complex ways
+
+Resolved  - City states don't get continually researchable techs automatically
+
+By SomeTroglodyte:
+- Map editor save/load now support the PgUp/PgDown keyboard keys
+- Improve validation of Countables
+- Fix NullPointerException from Countables evaluation
+
 ## 4.16.2
 
 Added settings for circles vs hexagons for movable tiles
