@@ -106,7 +106,7 @@ class UnitManager(val civInfo: Civilization) {
                     && unique.conditionalsApply(unit.cache.state))
                     UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
 
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit) 
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit, unit.cache.state) 
                     { unit.matchesFilter(it.params[0]) })
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
 

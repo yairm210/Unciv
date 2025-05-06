@@ -1,8 +1,14 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.nation.PersonalityValue
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 object DeclareWar {
@@ -34,7 +40,9 @@ object DeclareWar {
 
         breakTreaties(diplomacyManager)
 
-        if (otherCiv.isMajorCiv()) civInfo.triggerUniques(UniqueType.TriggerUponDeclaringWar)
+        if (otherCiv.isMajorCiv())
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
     }
 
     private fun handleCityStateDirectAttack(diplomacyManager: DiplomacyManager) {

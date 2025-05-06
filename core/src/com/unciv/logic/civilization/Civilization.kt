@@ -552,20 +552,10 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(gameInfo.ruleset.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
-    
-    /** Good for generic, non-filtered triggers */
-    fun triggerUniques(uniqueType: UniqueType){
-
-        for (unique in getTriggeredUniques(uniqueType))
-            UniqueTriggerActivation.triggerUnique(unique, this)
-    }
 
     fun getTriggeredUniques(
         trigger: UniqueType,
-        // Ignore conditionals, as triggerUnique will check again.
-        // If we check twice, that breaks UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        /** Only set this if the state contains something other than civ, city, unit, tile - since those are checked in triggerUnique() */
-        stateForConditionals: StateForConditionals = StateForConditionals.IgnoreConditionals,
+        stateForConditionals: StateForConditionals = state,
         triggerFilter: (Unique) -> Boolean = { true }
     ) : Iterable<Unique> = sequence {
         yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))

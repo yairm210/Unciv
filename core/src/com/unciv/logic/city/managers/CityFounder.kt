@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -85,10 +86,13 @@ class CityFounder {
 
         addStartingBuildings(city, civInfo, startingEra)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
+            StateForConditionals(civInfo, city, unit)
+        ))
             UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
         if (unit != null)
-            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponFoundingCity))
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
+                StateForConditionals(civInfo, city, unit)))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
 
         return city
