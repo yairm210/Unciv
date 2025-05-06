@@ -175,18 +175,18 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                     .row()
         }
 
-        fun addBonusLabels(header: String, bonusLevel: RelationshipLevel, relationLevel: RelationshipLevel) {
+        fun addBonusLabels(header: String, bonusLevel: RelationshipLevel, currentRelationLevel: RelationshipLevel) {
 
             val bonuses = viewingCiv.cityStateFunctions
-                .getCityStateBonuses(otherCiv.cityStateType, relationLevel)
+                .getCityStateBonuses(otherCiv.cityStateType, bonusLevel)
                 .filterNot { it.isHiddenToUsers() }
             if (bonuses.none()) return
             
-            val headerColor = if (relationLevel == bonusLevel) Color.GREEN else Color.WHITE
+            val headerColor = if (currentRelationLevel == bonusLevel) Color.GREEN else Color.WHITE
             diplomacyTable.add(header.toLabel(fontColor = headerColor).apply { setAlignment(Align.center) }).row()
             val stateForConditionals = StateForConditionals(viewingCiv)
             for (bonus in bonuses) {
-                val bonusLabelColor = if (relationLevel == bonusLevel && bonus.conditionalsApply(stateForConditionals))
+                val bonusLabelColor = if (currentRelationLevel == bonusLevel && bonus.conditionalsApply(stateForConditionals))
                     Color.GREEN else Color.GRAY
                 val bonusLabel = ColorMarkupLabel(bonus.getDisplayText(), bonusLabelColor)
                     .apply { setAlignment(Align.center) }
