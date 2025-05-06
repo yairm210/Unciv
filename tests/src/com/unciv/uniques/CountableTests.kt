@@ -206,12 +206,12 @@ class CountableTests {
             adopt(taggedPolicyBranch) // Will be completed as it has no member policies
         }
         val tests = listOf(
-            "Completed Policy branches" to 2,
+            "Completed Policy branches" to 2,               // Tradition and taggedPolicyBranch
             "Adopted [Tradition Complete] Policies" to 1,
-            "Adopted [[Tradition] branch] Policies" to 7,
+            "Adopted [[Tradition] branch] Policies" to 7,   // Branch start and completion plus 5 members
             "Adopted [Liberty Complete] Policies" to 0,
-            "Adopted [[Liberty] branch] Policies" to 2,
-            "Adopted [[all] branch] Policies" to 5,
+            "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
+            "Adopted [[all] branch] Policies" to 5,         // Counts branch starters, not member policies
             "Adopted [Some marker] Policies" to 1,
         )
         for ((test, expected) in tests) {

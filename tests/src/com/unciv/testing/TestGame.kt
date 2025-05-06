@@ -264,13 +264,27 @@ class TestGame(vararg addGlobalUniques: String) {
         createdBuilding.isWonder = true
         return createdBuilding
     }
+
+    /**
+     *  Creates a new Policy.
+     *  - This is internally inconsistent as it has no branch, and thus only supports simple tests.
+     *  - Do not run policyFilter on a TestGame with such a Policy (or you'll get a lateinit not initialized exception).
+     *  - Use [createPolicyBranch] to create a wrapping branch and a consistent state that supports testing filters.
+     */
     fun createPolicy(vararg uniques: String) =
         createRulesetObject(ruleset.policies, *uniques) { Policy() }
+
+    /**
+     *  Creates a new PolicyBranch, optionally including [policy] as member Policy,
+     *  and including its own "... complete" Policy.
+     *  @see createPolicy
+     */
     fun createPolicyBranch(vararg uniques: String, policy: Policy? = null): PolicyBranch {
         val branch = createRulesetObject(ruleset.policyBranches, *uniques) { PolicyBranch() }
         branch.branch = branch
         ruleset.policies[branch.name] = branch
         if (policy != null) {
+            policy.branch = branch
             branch.policies.add(policy)
         }
         val complete = Policy()
@@ -280,6 +294,7 @@ class TestGame(vararg addGlobalUniques: String) {
         ruleset.policies[complete.name] = complete
         return branch
     }
+
     fun createTileImprovement(vararg uniques: String) =
         createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
     fun createUnitType(vararg uniques: String) =
