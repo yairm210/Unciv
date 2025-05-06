@@ -9,6 +9,12 @@ open class UniqueMap() {
     // This is a memory/speed tradeoff, since there are *600 unique types*,
     // 750 including deprecated, and EnumMap creates a N-sized array where N is the number of objects in the enum
     private val typedUniqueMap = EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.java)
+    
+    // Another memory-speed tradeoff - enumset is super fast and also super cheap, but it's not nothing
+    // This is used to speed up triggered uniques - in other words, when we want to find all uniques with a certain modifier.
+    // Rather than mapping all uniques thus triggered, this just stores whether any unique has that trigger - 
+    //   because most of the time is spent iterating on uniques, in uniquemaps that have no such trigger in the first place!
+    private val triggerEnumSet = EnumSet.noneOf(UniqueType::class.java)
 
     constructor(uniques: Sequence<Unique>) : this() {
         addUniques(uniques.asIterable())
@@ -25,6 +31,7 @@ open class UniqueMap() {
         if (unique.type == null) return
         if (typedUniqueMap[unique.type] != null) return
         typedUniqueMap[unique.type] = innerUniqueMap[unique.placeholderText]
+        triggerEnumSet.add(unique.type)
     }
 
     /** Calls [addUnique] on each item from [uniques] */
@@ -95,6 +102,7 @@ open class UniqueMap() {
 
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals,
                             triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
+        if (!triggerEnumSet.contains(trigger)) return emptySequence() // Common case - no such unique exists
         return getAllUniques().filter { unique ->
             unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(stateForConditionals)
         }.flatMap { it.getMultiplied(stateForConditionals) }

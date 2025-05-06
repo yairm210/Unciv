@@ -618,6 +618,8 @@ object Battle {
         if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
 
+        // Here, we DO need the stateForConditionals - since it contains MORE than the civ+city+unit+tile that is checked when triggering
+        // This means that the conditionalChance WILL be checked twice, and will not function as expected
         for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals)
                 + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals))
             UniqueTriggerActivation.triggerUnique(unique, attacker.unit)

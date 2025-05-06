@@ -141,7 +141,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** @param constructionName needs to be a non-perpetual construction, else an empty string is returned */
-    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction: Boolean = true) =
+    private fun getTurnsToConstructionString(constructionName: String, useStoredProduction: Boolean = true) =
         getTurnsToConstructionString(getConstruction(constructionName), useStoredProduction)
 
     /** @param construction needs to be a non-perpetual construction, else an empty string is returned */
@@ -588,19 +588,19 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.civ.civConstructions.tryAddFreeBuildings()
     }
 
-    fun triggerNewBuildingUniques(building: Building) {
+    private fun triggerNewBuildingUniques(building: Building) {
         val stateForConditionals = city.state
         val triggerNotificationText ="due to constructing [${building.name}]"
 
         for (unique in building.uniqueObjects)
-            if (!unique.hasTriggerConditional() && unique.conditionalsApply(stateForConditionals))
+            if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals)
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding)
                 { building.matchesFilter(it.params[0], stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals)
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter)
                 { building.matchesFilter(it.params[0], stateForConditionals) && city.matchesFilter(it.params[1]) })
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
     }
@@ -628,7 +628,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         setTransients()
     }
 
-    fun updateUniques(onLoadGame: Boolean = false) {
+    private fun updateUniques(onLoadGame: Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
@@ -799,7 +799,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         PerpetualConstruction.isNamePerpetual(constructionQueue.last())
         // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
 
-    fun isQueueEmptyOrIdle() = currentConstructionFromQueue.isEmpty()
+    private fun isQueueEmptyOrIdle() = currentConstructionFromQueue.isEmpty()
         || currentConstructionFromQueue == PerpetualConstruction.idle.name
 
     /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)

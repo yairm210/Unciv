@@ -384,18 +384,15 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         when (religionState) {
             ReligionState.None -> {
                 religionState = ReligionState.Pantheon
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
-                    UniqueTriggerActivation.triggerUnique(unique, civInfo)
+                civInfo.triggerUniques(UniqueType.TriggerUponFoundingPantheon)
             }
             ReligionState.FoundingReligion -> {
                 religionState = ReligionState.Religion
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
-                    UniqueTriggerActivation.triggerUnique(unique, civInfo)
+                civInfo.triggerUniques(UniqueType.TriggerUponFoundingReligion)
             }
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
-                    UniqueTriggerActivation.triggerUnique(unique, civInfo)
+                civInfo.triggerUniques(UniqueType.TriggerUponEnhancingReligion)
             }
             else -> {}
         }

@@ -265,16 +265,15 @@ class TileImprovementFunctions(val tile: Tile) {
             civ.gainStockpiledResource(resource, -amount)
         }
 
-        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
-            && it.conditionalsApply(stateForConditionals) })
+        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional() })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
-        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
             { improvement.matchesFilter(it.params[0], stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         if (unit == null) return
-        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement)
             { improvement.matchesFilter(it.params[0], stateForConditionals) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }

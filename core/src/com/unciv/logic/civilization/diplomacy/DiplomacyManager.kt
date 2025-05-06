@@ -6,14 +6,8 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.trade.Trade
-import com.unciv.logic.trade.TradeEvaluation
-import com.unciv.logic.trade.TradeLogic
-import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeOfferType
+import com.unciv.logic.trade.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.ceil
@@ -564,10 +558,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerUnique(unique, otherCiv())
+        civInfo.triggerUniques(UniqueType.TriggerUponDeclaringFriendship)
+        otherCiv().triggerUniques(UniqueType.TriggerUponDeclaringFriendship)
     }
 
     internal fun setFriendshipBasedModifier() {
@@ -614,10 +606,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
-            UniqueTriggerActivation.triggerUnique(unique, otherCiv())
+        civInfo.triggerUniques(UniqueType.TriggerUponSigningDefensivePact)
+        otherCiv().triggerUniques(UniqueType.TriggerUponSigningDefensivePact)
     }
 
     internal fun setDefensivePactBasedModifier() {
