@@ -50,23 +50,17 @@ class MapSize private constructor(
         val techCostMultiplier: Float = 1f,
         val techCostPerCityModifier: Float = 0.05f,
         val policyCostPerCityModifier: Float = 0.1f,
+        val unHappinesPerCity: Float = 3f,
     ) {
-        Tiny(10, 23, 15),
-        Small(15, 33, 21),
-        Medium(20, 44, 29, 1.1f),
-        Large(30, 66, 43, 1.2f, 0.0375f,0.075f),
-        Huge(40, 87, 57, 1.3f, 0.025f,0.05f);
-        /* - ours are a little lighter than the original values. For reference those are:
-            Civ5Duel(40,24,17),
-            Civ5Tiny(56,36,25),
-            Civ5Small(66,42,30),
-            Civ5Medium(80,52,37),
-            Civ5Large(104,64,47),
-            Civ5Huge(128,80,58),
-         */
+        Duel(16, 40, 24),
+        Tiny(24, 56, 36),
+        Small(28, 66, 42),
+        Medium(34, 80, 52, 1.1f),
+        Large(43, 104, 64, 1.2f, 0.03f,0.075f, 2.4f),
+        Huge(54, 128, 80, 1.3f, 0.02f,0.05f, 1.8f);
 
         companion object {
-            fun safeValueOf(name: String) = values().firstOrNull { it.name == name } ?: Tiny
+            fun safeValueOf(name: String) = values().firstOrNull { it.name == name } ?: Duel
         }
     }
 
@@ -75,6 +69,7 @@ class MapSize private constructor(
          * used in [name] to indicate user-defined dimensions.
          * Do not mistake for [MapGeneratedMainType.custom]. */
         const val custom = "Custom"
+        val Duel get() = MapSize(Predefined.Duel)
         val Tiny get() = MapSize(Predefined.Tiny)
         val Small get() = MapSize(Predefined.Small)
         val Medium get() = MapSize(Predefined.Medium)
