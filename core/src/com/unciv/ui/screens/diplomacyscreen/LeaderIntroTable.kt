@@ -27,7 +27,7 @@ class LeaderIntroTable (
      */
     init {
         defaults().align(Align.center)
-        val nation = civInfo.nation
+        val nation = civInfo.getDisplayNation()
         val leaderPortraitFile = "LeaderIcons/" + nation.leaderName
         val leaderLabel = civInfo.getLeaderDisplayName().toLabel(fontSize = Constants.headingFontSize, hideIcons = true)
         val nationIndicator = ImageGetter.getNationPortrait(nation, 24f)
