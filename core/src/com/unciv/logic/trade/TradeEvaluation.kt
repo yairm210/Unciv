@@ -215,7 +215,7 @@ class TradeEvaluation {
                     return 0 // we can't really afford to go into negative happiness because of buying a city
                 val sumOfPop = city.population.population
                 val sumOfBuildings = city.cityConstructions.getBuiltBuildings().count()
-                return (sumOfPop * 4 + sumOfBuildings * 1 + 4 + surrounded) * 100
+                return (sumOfPop * 4 + sumOfBuildings + surrounded) * 100
             }
             TradeOfferType.Agreement -> {
                 if (offer.name == Constants.openBorders) return 100
@@ -227,7 +227,7 @@ class TradeEvaluation {
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
         val borderingCivs: Set<String> = getNeighbouringCivs(city)
         if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)) {
-            return 10 // if the city is surrounded only by trading civ
+            return 5 // if the city is surrounded only by trading civ
         }
         if (borderingCivs.contains(civInfo.civName))
             return 2 // if the city has a border with trading civ
