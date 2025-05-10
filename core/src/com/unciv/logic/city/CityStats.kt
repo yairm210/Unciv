@@ -337,6 +337,12 @@ class CityStats(val city: City) {
         for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenance)) {
             buildingsMaintenance *= unique.params[0].toPercent()
         }
+        
+        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenanceFiltered)) {
+            city.cityConstructions.getBuiltBuildings().filter { it.matchesFilter(unique.params[1]) }.forEach { 
+                buildingsMaintenance *= unique.params[0].toPercent()
+            }
+        }
 
         return buildingsMaintenance
     }
