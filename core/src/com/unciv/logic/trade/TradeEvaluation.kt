@@ -282,7 +282,7 @@ class TradeEvaluation {
                     civInfo.getResourceAmount(offer.name) > 1 -> 250 // fair price
                     civInfo.hasUnique(UniqueType.RetainHappinessFromLuxury) -> // If we retain 100% happiness, value it as a duplicate lux
                         600 - (civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury)
-                            .first().params[0] * 3.5f).toInt()
+                            .first().params[0].toFloat() * 3.5f).toInt()
                     else -> 600 // you want to take away our last lux of this type?!
                 }
             }
