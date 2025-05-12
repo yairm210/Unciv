@@ -60,6 +60,13 @@ object CivilianUnitAutomation {
             && unit.civ.religionManager.mayFoundReligionAtAll()
         )
             return ReligiousUnitAutomation.foundReligion(unit)
+        
+        if (unit.hasUnique(UniqueType.MayFoundReligion) && unit.civ.isCityState){
+            // We have literally nothing to do with this unit, at least stop costing money
+            unit.disband()
+            return 
+        }
+            
 
         if (unit.hasUnique(UniqueType.MayEnhanceReligion)
             && unit.civ.religionManager.religionState < ReligionState.EnhancedReligion

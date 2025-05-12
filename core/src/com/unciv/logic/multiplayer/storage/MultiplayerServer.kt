@@ -100,7 +100,7 @@ class MultiplayerServer(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
+    suspend fun uploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true, updateChecksum = true)
         fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
 
@@ -123,7 +123,7 @@ class MultiplayerServer(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      *
-     * @see tryUploadGame
+     * @see uploadGame
      * @see GameInfo.asPreview
      */
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
