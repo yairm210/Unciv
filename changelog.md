@@ -1,3 +1,25 @@
+## 4.16.9
+
+AI: Don't choose one-time-action promotions
+
+Revert "Added enumset to uniquemap to speed up getTriggeredUniques calls - should make iterating on all units and getting all unit triggers, viable :D"
+
+Added enumset to uniquemap to speed up getTriggeredUniques calls - should make iterating on all units and getting all unit triggers, viable :D
+
+Revert "Modding: Fixed chance conditionals attached to triggered uniques"
+
+Modding: Fixed chance conditionals attached to triggered uniques
+
+Fixed - display bonuses per relationship level
+
+Conditional city-state bonuses colored green only when conditional applies
+
+By RobLoach:
+- Add ability to remove entire policy branches 
+- Gods & Kings: Great Generals cannot enter a golden age 
+
+Netherlands trade bugfix - By EmperorPinguin
+
 ## 4.16.8
 
 Unit triggerables with triggers, no longer trigger on new units
