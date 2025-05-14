@@ -12,10 +12,6 @@
         "civilopediaText": [
             {
                 "text": "Workers are vital to your cities' growth, since only they can construct improvements on tiles.\nImprovements raise the yield of your tiles, allowing your city to produce more and grow faster while working the same amount of tiles!"
-            },
-            {
-                "text": "Improvements",
-                "link": "Tile Improvements"
             }
         ]
 	},
