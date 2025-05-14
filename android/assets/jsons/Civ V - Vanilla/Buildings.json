@@ -934,7 +934,12 @@
 		"isNationalWonder": true,
 		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion",
 			"Only available <when [Scientific] Victory is enabled>", "Cannot be hurried"],
-		"requiredTech": "Rocketry"
+		"requiredTech": "Rocketry",
+		"civilopediaText": [
+			{
+				"text": "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a Scientific Victory!"
+			}
+		]
 	},
 
 	// Information Era

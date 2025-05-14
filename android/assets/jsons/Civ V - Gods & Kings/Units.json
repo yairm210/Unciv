@@ -8,7 +8,16 @@
 		"unitType": "Civilian",
 		"movement": 2,
 		"uniques": ["Can build [Land] improvements on tiles", "Automation is a primary action"],
-		"cost": 70
+		"cost": 70,
+        "civilopediaText": [
+            {
+                "text": "Workers are vital to your cities' growth, since only they can construct improvements on tiles.\nImprovements raise the yield of your tiles, allowing your city to produce more and grow faster while working the same amount of tiles!"
+            },
+            {
+                "text": "Improvements",
+                "link": "Tile Improvements"
+            }
+        ]
 	},
 	{
 		"name": "Settler",
@@ -17,7 +26,12 @@
 		"cost": 106,
 		"uniques": ["Founds a new city <by consuming this unit>", "Excess Food converted to Production when under construction",
 			"Requires at least [2] population"],
-		"hurryCostModifier": 20
+		"hurryCostModifier": 20,
+        "civilopediaText": [
+            {"text": "Founding Cities\nThe Settler is a unit that can found a new city. You can build a Settler unit in a city with at least 2 population, and then move them to a good location to found a new city. This will usually be your main way of acquiring more cities."},
+            {},
+            {"text": "Food conversion to Production\nDuring the construction of a Settler, the city will not grow. Instead, the 1st, 2nd, 4th, and from there on every 4th, excess Food (Growth) is converted into Production, with the rest of the excess Food being lost."}
+        ]
 	},
 	{
 		"name": "Scout",
@@ -1675,7 +1689,14 @@
             "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
 			"[+1] Sight", "Only available <when religion is enabled>", "Unbuildable", "Religious Unit"
 		],
-		"movement": 3
+		"movement": 3,
+        "civilopediaText": [
+            {"text": "Inquisitors are the last religious unit, and their strength is removing other religions."},
+            {"text": "They can remove all other religions from one of your own cities, removing any pressures built up."},
+            {"text": "Great prophets also have this ability, and remove all other religions in the city when spreading their religion."},
+            {"text": "Often this results in the city immediately converting to their religion"},
+            {"text": "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is unaffected."}
+        ]
 	},
 
 	/* Spaceship Parts */
