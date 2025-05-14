@@ -121,6 +121,20 @@
     ]
   },
   {
+    "name": "Roads and Railroads",
+    "civilopediaText": [
+        {"text":"Roads reduce the Movement Points required to move between two tiles connected by Roads.","link":"Tile Improvements/Road"},
+        {"text":"Railroads improve this reduction even more!","link":"Tile Improvements/Railroad"},
+        {"text":"This greatly improves the speed you can get Units around the map."},
+        {"text":"Until you research the technology that removes it, Roads do not cross Rivers"},
+        {"text":"Connecting your cities to the capital by Roads and/or Railroads will generate Gold via the Trade Route.","link":"Tutorials/Trade Route"},
+        {"text":"However, since each Road and Railroad have a Maintenance Cost, it may be more economical to wait until the cities grow and only place where needed."}
+    ],
+    "uniques": [
+        "Will not be displayed in Civilopedia"
+    ]
+  },
+  {
       "name": "Trade Route",
       "civilopediaText": [
           {"text":"Connecting your cities to the capital by Roads and/or Railroads will generate Gold via the Trade Route. You earn more Gold the more Population the City and your Capital has."},
@@ -196,10 +210,40 @@
     "uniques": ["Will not be displayed in Civilopedia"]
   },
   {
+    "name": "Apollo Program",
+    "steps": [
+      "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a Scientific Victory!"
+    ],
+    "civilopediaText": [
+        {"text": "Apollo Program", "link": "Building/Apollo Program"}
+    ],
+    "uniques": ["Will not be displayed in Civilopedia"]
+  },
+  {
     "name": "Injured Units",
     "steps": [
       "Injured units deal less damage, but recover after turns that they have been inactive.\nUnits heal 10 health per turn in enemy territory or neutral land,\n  20 inside your territory and 25 in your cities."
     ]
+  },
+  {
+    "name": "Workers",
+    "steps": [
+      "Workers are vital to your cities' growth, since only they can construct improvements on tiles.\nImprovements raise the yield of your tiles, allowing your city to produce more and grow faster while working the same amount of tiles!"
+    ],
+    "civilopediaText": [
+        {"text": "Worker", "link": "Unit/Worker"}
+    ],
+    "uniques": ["Will not be displayed in Civilopedia"]
+  },
+  {
+    "name": "Siege Units",
+    "steps": [
+      "Siege units are extremely powerful against cities, but need to be Set Up before they can attack.\nOnce your siege unit is set up, it can attack from the current tile,\n  but once moved to another tile, it will need to be set up again."
+    ],
+    "civilopediaText": [
+        {"text": "Siege", "link": "Unit Type/Siege"}
+    ],
+    "uniques": ["Will not be displayed in Civilopedia"]
   },
   {
     "name": "Embarking",
@@ -434,6 +478,20 @@
         "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
         "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet."
       ],
+    "uniques": ["Only available <when religion is enabled>"]
+  },
+  {
+    "name": "Inquisitors",
+    "steps": [
+        "Inquisitors are the last religious unit, and their strength is removing other religions.",
+        "They can remove all other religions from one of your own cities, removing any pressures built up.",
+        "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
+        "Often this results in the city immediately converting to their religion",
+        "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is unaffected."
+    ],
+    "civilopediaText": [
+        {"text": "Inquisitor", "link": "Unit/Inquisitor"}
+    ],
     "uniques": ["Only available <when religion is enabled>"]
   },
   {

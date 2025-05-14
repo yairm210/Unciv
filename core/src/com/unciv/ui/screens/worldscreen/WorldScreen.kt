@@ -751,8 +751,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
         displayTutorial(TutorialTrigger.ContactMe) { gameInfo.turns >= 100 }
         val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
-        displayTutorial(TutorialTrigger.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
-        displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
+        displayTutorial(TutorialTrigger.Resources) { resources.any { it.resource.resourceType == ResourceType.Luxury || it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
             viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
