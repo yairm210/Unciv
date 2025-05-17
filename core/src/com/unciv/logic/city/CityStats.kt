@@ -333,9 +333,11 @@ class CityStats(val city: City) {
         if (!city.civ.isHuman()) {
             buildingsMaintenance *= city.civ.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
-
+        
         for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenance)) {
-            buildingsMaintenance *= unique.params[0].toPercent()
+            city.cityConstructions.getBuiltBuildings().filter { it.matchesFilter(unique.params[1]) }.forEach { 
+                buildingsMaintenance *= unique.params[0].toPercent()
+            }
         }
 
         return buildingsMaintenance
