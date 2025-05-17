@@ -31,7 +31,7 @@ class ModCheckboxTable(
     initialBaseRuleset: String,
     private val screen: BaseScreen,
     isPortrait: Boolean = false,
-    private val onUpdate: (String) -> Unit
+    private val onUpdate: (String) -> Unit, private val expanderPadOther: Float = if (isPortrait) 0f else 10f
 ): Table() {
     private var baseRulesetName = ""
     private lateinit var baseRuleset: Ruleset
@@ -49,7 +49,6 @@ class ModCheckboxTable(
     private var disableChangeEvents = false
 
     private val expanderPadTop = if (isPortrait) 0f else 16f
-    private val expanderPadOther = if (isPortrait) 0f else 10f
 
     init {
         val modRulesets = RulesetCache.values.filter {
@@ -102,7 +101,9 @@ class ModCheckboxTable(
             it.defaults().pad(5f,0f)
 
             val searchModsTextField = UncivTextField("Search mods")
-            it.add(searchModsTextField).row()
+            
+            if (compatibleMods.size > 10) 
+                it.add(searchModsTextField).row()
             
             val modsTable = Table()
             modsTable.defaults().pad(5f)
