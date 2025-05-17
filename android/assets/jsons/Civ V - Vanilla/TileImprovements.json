@@ -113,9 +113,14 @@
 		"uniques": ["Can be built outside your borders", "Costs [1] [Gold] per turn when in your territory"],
 		"shortcutKey": "R",
         "civilopediaText": [
+            {"text":"Roads reduce the Movement Points required to move between two tiles connected by Roads."},
+            {"text":"Connecting your cities to the capital by Roads and/or Railroads will generate Gold via the Trade Route."},
+            {"text":"However, since each Road and Railroad have a Maintenance Cost, it may be more economical to wait until the cities grow and only place where needed."},
+            {"separator": true},
             {"text":"Reduces movement cost to ½ if the other tile also has a Road or Railroad"},
             {"text":"Reduces movement cost to ⅓ with Machinery", "link":"Technology/Machinery"},
-            {"text":"Requires Engineering to bridge rivers", "link":"Technology/Engineering"}
+            {"text":"Requires Engineering to bridge rivers", "link":"Technology/Engineering"},
+            {"text":"Trade Route", "link":"Tutorials/Trade Route"}
         ]
 	},
 	{
@@ -126,8 +131,14 @@
 		"uniques": ["Can be built outside your borders", "Costs [2] [Gold] per turn when in your territory"],
 		"shortcutKey": "R",
         "civilopediaText": [
+            {"text":"Railroads reduce the Movement Points required to move between two tiles connected by Roads."},
+            {"text":"This greatly improves the speed you can get Units around the map."},
+            {"text":"Connecting your cities to the capital by Roads and/or Railroads will generate Gold via the Trade Route."},
+            {"text":"However, since each Road and Railroad have a Maintenance Cost, it may be more economical to wait until the cities grow and only place where needed."},
+            {"separator": true},
             {"text":"Reduces movement cost to ⅒ if the other tile also has a Railroad"},
-            {"text":"Provides a +25% [Production] bonus to cities connected to the capital by Railroads"}
+            {"text":"Provides a +25% [Production] bonus to cities connected to the capital by Railroads"},
+            {"text":"Trade Route", "link":"Tutorials/Trade Route"}
         ]
 	},
 
