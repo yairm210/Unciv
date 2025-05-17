@@ -31,7 +31,7 @@ class ModCheckboxTable(
     initialBaseRuleset: String,
     private val screen: BaseScreen,
     isPortrait: Boolean = false,
-    private val onUpdate: (String) -> Unit, private val expanderPadOther: Float = if (isPortrait) 0f else 10f
+    private val onUpdate: (String) -> Unit
 ): Table() {
     private var baseRulesetName = ""
     private lateinit var baseRuleset: Ruleset
