@@ -3024,6 +3024,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;if [buildingFilter] is not constructed by anybody&gt;"
+	Example: "&lt;if [Culture] is not constructed by anybody&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;with [resource]&gt;"
 	Example: "&lt;with [Iron]&gt;"
 
