@@ -1101,7 +1101,7 @@
 	},
 	{
 		"name": "Kabul",
-		"adjective": ["Kabul"],
+		"adjective": ["Kabuli"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1113,7 +1113,7 @@
 	},
 	{
 		"name": "Kathmandu",
-		"adjective": ["Kathmandu"],
+		"adjective": ["Kathmanduites"],
 		"cityStateType": "Cultured", // Changed from Cultured to Religious in BNW
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1149,7 +1149,7 @@
 	},
 	{
 		"name": "Monaco",
-		"adjective": ["Monaco"],
+		"adjective": ["Monegasque"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1161,7 +1161,7 @@
 	},
 	{
 		"name": "Prague",
-		"adjective": ["Prague"],
+		"adjective": ["Praguer", "Pragueite"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1173,7 +1173,7 @@
 	},
 	{
 		"name": "Yerevan",
-		"adjective": ["Yerevan"],
+		"adjective": ["Yerevantsi"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1186,7 +1186,7 @@
 
 	{
 		"name": "Cape Town",
-		"adjective": ["Cape Town"],
+		"adjective": ["Capetonian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1198,7 +1198,7 @@
 	},
 	{
 		"name": "Helsinki", // In GK, Helsinki becomes a Swedish city.
-		"adjective": ["Helsinki"],
+		"adjective": ["Helsinkian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1223,7 +1223,7 @@
 	},
 	{
 		"name": "Mogadishu", // Introduced in BNW
-		"adjective": ["Mogadishu"],
+		"adjective": ["Maqdishawi"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1236,7 +1236,7 @@
 	},
 	{
 		"name": "Mombasa",
-		"adjective": ["Mombasa"],
+		"adjective": ["Mombasaan"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1260,8 +1260,9 @@
 	},
 	{
 		"name": "Ragusa",
-		"adjective": ["Ragusa"],
+		"adjective": ["Ragusan"],
 		"cityStateType": "Maritime",
+		"startBias": ["Coast"],
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
@@ -1285,7 +1286,7 @@
 	},
 	{
 		"name": "Sydney",
-		"adjective": ["Sydney"],
+		"adjective": ["Sydneysider"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
@@ -1297,7 +1298,7 @@
 	},
 	{
 		"name": "Ur", // Introduced in BNW
-		"adjective": ["Ur"],
+		"adjective": ["Urian"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
@@ -1338,7 +1339,7 @@
 
 	{
 		"name": "Antwerp",
-		"adjective": ["Antwerp"],
+		"adjective": ["Antwerpenaar", "Antwerpian"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
@@ -1351,7 +1352,7 @@
 	},
 	{
 		"name": "Cahokia",
-		"adjective": ["Cahokia"],
+		"adjective": ["Cahokian"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "We have wanted this for a LONG time. War it shall be.",
@@ -1363,7 +1364,7 @@
 	},
 	{
 		"name": "Colombo",
-		"adjective": ["Colombo"],
+		"adjective": ["Colomboan"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "We have wanted this for a LONG time. War it shall be.",
@@ -1388,7 +1389,7 @@
 	},
 	{
 		"name": "Hong Kong",
-		"adjective": ["Hong Kong"],
+		"adjective": ["Hongkonger", "Hongkongese"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1425,7 +1426,7 @@
 	},
 	{
 		"name": "Zanzibar",
-		"adjective": ["Zanzibar"],
+		"adjective": ["Zanzibari"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1437,7 +1438,7 @@
 	},
 	{
 		"name": "Zurich",
-		"adjective": ["Zurich"],
+		"adjective": ["Zuricher"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1450,7 +1451,7 @@
 
 	{
 		"name": "Almaty",
-		"adjective": ["Almaty"],
+		"adjective": ["Almatinian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1462,7 +1463,7 @@
 	},
 	{
 		"name": "Belgrade",
-		"adjective": ["Belgrade"],
+		"adjective": ["Belgradian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Let's have a nice little War, shall we?",
@@ -1474,7 +1475,7 @@
 	},
 	{
 		"name": "Budapest",
-		"adjective": ["Budapest"],
+		"adjective": ["Budapester", "Budapesti"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Let's have a nice little War, shall we?",
@@ -1512,7 +1513,7 @@
 	},
 	{
 		"name": "Hanoi",
-		"adjective": ["Hanoi"],
+		"adjective": ["Hanoian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1524,7 +1525,7 @@
 	},
 	{
 		"name": "M'Banza-Kongo", // Introduced in BNW
-		"adjective": ["M'Banza-Kongo"],
+		"adjective": ["Angolan"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
@@ -1537,7 +1538,7 @@
 	},
 	{
 		"name": "Sidon",
-		"adjective": ["Sidon"],
+		"adjective": ["Sidonian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1549,7 +1550,7 @@
 	},
 	{
 		"name": "Valletta",
-		"adjective": ["Maltese"],
+		"adjective": ["Beltin"],
 		"cityStateType": "Militaristic",
 		"startBias": ["Coast"],
 
@@ -1563,7 +1564,7 @@
 
 	{
 		"name": "Bratislava",
-		"adjective": ["Bratislava"],
+		"adjective": ["Bratislavan"],
 		"cityStateType": "Religious",
 
 		"declaringWar": "I didn't want to do this. We declare war.",
@@ -1587,7 +1588,7 @@
 	},
 	{
 		"name": "Jerusalem",
-		"adjective": ["Jerusalem"],
+		"adjective": ["Jerusalemite"],
 		"cityStateType": "Religious",
 
 		"declaringWar": "By god's grace we will not allow these atrocities to occur any longer. We declare war!",
@@ -1611,7 +1612,7 @@
 	},
 	{
 		"name": "Lhasa",
-		"adjective": ["tibetano"],
+		"adjective": ["Tibetano"],
 		"cityStateType": "Religious", // Changed from Cultured to Religious in GK
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1635,7 +1636,7 @@
 	},
 	{
 		"name": "Wittenberg",
-		"adjective": ["Wittenberg"],
+		"adjective": ["Wittenberger"],
 		"cityStateType": "Religious",
 
 		"declaringWar": "You leave us no choice. War it must be.",

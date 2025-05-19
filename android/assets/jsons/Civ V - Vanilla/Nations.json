@@ -757,7 +757,7 @@
 	},
 	{
 		"name": "Kabul",
-		"adjective": ["Kabul"],
+		"adjective": ["Kabuli"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -769,7 +769,7 @@
 	},
 	{
 		"name": "Kathmandu",
-		"adjective": ["Kathmandu"],
+		"adjective": ["Kathmanduites"],
 		"cityStateType": "Cultured", // Changed from Cultured to Religious in BNW
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -793,7 +793,7 @@
 	},
 	{
 		"name": "Lhasa",
-		"adjective": ["tibetano"],
+		"adjective": ["Tibetano"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -818,7 +818,7 @@
 	},
 	{
 		"name": "Monaco",
-		"adjective": ["Monaco"],
+		"adjective": ["Monegasque"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -831,7 +831,7 @@
 
 	{
 		"name": "Cape Town",
-		"adjective": ["Cape Town"],
+		"adjective": ["Capetonian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -856,7 +856,7 @@
 	},
 	{
 		"name": "Helsinki",
-		"adjective": ["Helsinki"],
+		"adjective": ["Helsinkian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -881,7 +881,7 @@
 	},
 	{
 		"name": "Mogadishu", // Introduced in BNW
-		"adjective": ["Mogadishu"],
+		"adjective": ["Maqdishawi"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -906,8 +906,9 @@
 	},
 	{
 		"name": "Ragusa",
-		"adjective": ["Ragusa"],
+		"adjective": ["Ragusan"],
 		"cityStateType": "Maritime",
+		"startBias": ["Coast"],
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
@@ -943,7 +944,7 @@
 	},
 	{
 		"name": "Sydney",
-		"adjective": ["Sydney"],
+		"adjective": ["Sydneysider"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
@@ -955,7 +956,7 @@
 	},
 	{
 		"name": "Ur", // Introduced in BNW
-		"adjective": ["Ur"],
+		"adjective": ["Urian"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
@@ -996,7 +997,7 @@
 
 	{
 		"name": "Antwerp", // Introduced in GK
-		"adjective": ["Antwerp"],
+		"adjective": ["Antwerpenaar", "Antwerpian"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
@@ -1010,7 +1011,7 @@
 	},
 	{
 		"name": "Zanzibar", // Introduced in GK
-		"adjective": ["Zanzibar"],
+		"adjective": ["Zanzibari"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1024,7 +1025,7 @@
 
 	{
 		"name": "Almaty",
-		"adjective": ["Almaty"],
+		"adjective": ["Almatinian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1036,7 +1037,7 @@
 	},
 	{
 		"name": "Belgrade",
-		"adjective": ["Belgrade"],
+		"adjective": ["Belgradian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Let's have a nice little War, shall we?",
@@ -1048,7 +1049,7 @@
 	},
 	{
 		"name": "Budapest",
-		"adjective": ["Budapest"],
+		"adjective": ["Budapester", "Budapesti"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Let's have a nice little War, shall we?",
@@ -1084,7 +1085,7 @@
 	},
 	{
 		"name": "Hanoi",
-		"adjective": ["Hanoi"],
+		"adjective": ["Hanoian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1096,7 +1097,7 @@
 	},
 	{
 		"name": "M'Banza-Kongo", // Introduced in BNW
-		"adjective": ["M'Banza-Kongo"],
+		"adjective": ["Angolan"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
@@ -1109,7 +1110,7 @@
 	},
 	{
 		"name": "Sidon",
-		"adjective": ["Sidon"],
+		"adjective": ["Sidonian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1134,8 +1135,9 @@
 	},
 	{
 		"name": "Valletta", // Introduced in GK
-		"adjective": ["Maltese"],
+		"adjective": ["Beltin"],
 		"cityStateType": "Militaristic",
+		"startBias": ["Coast"],
 
 		"declaringWar": "We don't like your face. To arms!",
 		"attacked": "You will see you have just bitten off more than you can chew.",
