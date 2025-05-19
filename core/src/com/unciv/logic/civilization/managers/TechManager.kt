@@ -111,6 +111,10 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
+        
+        if (techCost < 0) 
+            return -1;
+        
         if (civInfo.isHuman())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
@@ -260,9 +264,15 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun addScience(scienceGet: Int) {
         val currentTechnology = currentTechnologyName() ?: return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
-        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
+        val techCost = costOfTech(currentTechnology)
+        if (techsInProgress[currentTechnology]!! < techCost)
             return
-
+        
+        // New proposal: Set techCost to -1 for the last tech to ensure that program does not keep
+        //               recursing for high science values.
+        if (techCost == -1) 
+            return 
+        
         // We finished it!
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         val extraScienceLeftOver = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
