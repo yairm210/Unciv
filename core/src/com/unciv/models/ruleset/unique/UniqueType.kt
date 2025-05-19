@@ -186,8 +186,6 @@ enum class UniqueType(
     /// Unit Abilities
 
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] XP [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"))
-    UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -993,6 +991,8 @@ enum class UniqueType(
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
+    @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"), DeprecationLevel.ERROR)
+    UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 4.15.2", ReplaceWith("Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns"), DeprecationLevel.ERROR)
     CityStateCanBeBoughtForGoldOld("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
     @Deprecated("As of 4.14.6", ReplaceWith("[+100]% Strength <when defending> <when [Embarked]>"), DeprecationLevel.ERROR)
