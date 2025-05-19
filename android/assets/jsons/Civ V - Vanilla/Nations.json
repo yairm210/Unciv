@@ -716,8 +716,20 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "I guess you weren't here for the sprouts after all...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [153,255,51],
+		"innerColor": [127, 177, 236],
 		"cities": ["Brussels"]
+	},
+	{
+		"name": "Bucharest",
+		"adjective": ["Bucuresti"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "I guess you weren't here for the sprouts after all...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [113, 227, 114],
+		"cities": ["Bucharest"]
 	},
 	{
 		"name": "Florence",
@@ -728,7 +740,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "And so the flower of Florence falls to barbaric hands...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [62,197,252],
+		"innerColor": [18, 188, 221],
 		"cities": ["Florence"]
 	},
 	{
@@ -740,7 +752,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "So this is how it feels to die...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [51,51,255],
+		"innerColor": [167, 162, 216],
 		"cities": ["Hanoi"]
 	},
 	{
@@ -752,7 +764,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Unacceptable!",
         "outerColor": [0, 0, 0],
-        "innerColor": [168,38,102],
+		"innerColor": [121, 226, 0],
 		"cities": ["Kabul"]
 	},
 	{
@@ -764,7 +776,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Today, the Malay people obey you, but do not think this is over...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,102,102],
+		"innerColor": [222, 237, 59],
 		"cities": ["Kuala Lumpur"]
 	},
 	{
@@ -776,7 +788,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Perhaps now we will find peace in death...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [204,102,0],
+		"innerColor": [113, 227, 114],
 		"cities": ["Lhasa"]
 	},
 	{
@@ -788,8 +800,20 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "You fiend! History shall remember this!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [185,132,66],
+		"innerColor": [225, 194, 129],
 		"cities": ["Milan"]
+	},
+	{
+		"name": "Monaco",
+		"adjective": ["Monaco"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "You fiend! History shall remember this!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [193, 84, 255],
+		"cities": ["Monaco"]
 	},
 	{
 		"name": "Quebec City",
@@ -800,7 +824,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "We were too weak to protect ourselves...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [51,102,0],
+		"innerColor": [51, 97, 242],
 		"cities": ["Quebec City"]
 	},
 
@@ -813,7 +837,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "I have failed. May you, at least, know compassion towards our people.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,153],
+		"innerColor": [217, 158, 78],
 		"cities": ["Cape Town"]
 	},
 	{
@@ -837,7 +861,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Ah, Gods! Why have you forsaken us?",
 		"outerColor": [0, 0, 0],
-		"innerColor": [96,96,96],
+		"innerColor": [113, 227, 114],
 		"cities": ["Manila"]
 	},
 	{
@@ -849,7 +873,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Congratulations, conqueror. This tribe serves you now.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [224,224,224],
+		"innerColor": [127, 177, 236],
 		"cities": ["Mogadishu"]
 	},
 	{
@@ -874,7 +898,7 @@
 		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
 		"defeated": "The principles for which we have fought will survive longer than any nation you could ever build.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,204,204],
+		"innerColor": [51, 97, 242],
 		"cities": ["Sydney"]
 	},
 	{
@@ -887,7 +911,7 @@
 		"attacked": "Why do we fight? Because Inanna demands it. Now, witness the power of the Sumerians!",
 		"defeated": "What treachery has struck us? No, what evil?",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,69,0],
+		"innerColor": [167, 16, 216],
 		"cities": ["Ur"]
 	},
 	{
@@ -899,7 +923,7 @@
 		"attacked": "As we can reach no peaceful resolution with you, Canada must turn, with reluctance, to war.",
 		"defeated": "I regret not defending my country to the last, although it was not of use.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,255,128],
+		"innerColor": [193, 84, 255],
 		"cities": ["Vancouver"]
 	},
 	{
@@ -926,7 +950,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "They will write songs of this.... pray that they shall be in your favor.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [194,97,255],
+		"innerColor": [193, 84, 255],
 		"cities": ["Antwerp"]
 	},
 	{
@@ -939,7 +963,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [45,255,86],
+		"innerColor": [0, 163, 181],
 		"cities": ["Genoa"]
 	},
 	{
@@ -951,7 +975,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "We... defeated? No... we had so much work to do!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [151,125,0],
+		"innerColor": [186, 18, 202],
 		"cities": ["Kathmandu"]
 	},
 	{
@@ -963,7 +987,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Perhaps, in another world, we could have been friends...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,255,0],
+		"innerColor": [246, 253, 160],
 		"cities": ["Singapore"]
 	},
 	{
@@ -976,7 +1000,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "We never fully trusted you from the start.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,97,255],
+		"innerColor": [121, 226, 0],
 		"cities": ["Tyre"]
 	},
 	{
@@ -988,7 +1012,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "May the Heavens forgive you for inflicting this humiliation to our people.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,255],
+		"innerColor": [127, 177, 236],
 		"cities": ["Zanzibar"]
 	},
 
@@ -1001,7 +1025,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "How could we fall to the likes of you?!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [152,0,241],
+		"innerColor": [217, 158, 78],
 		"cities": ["Almaty"]
 	},
 	{
@@ -1013,7 +1037,7 @@
 		"attacked": "If you need your nose bloodied, we'll happily serve.",
 		"defeated": "The serbian guerilla will never stop haunting you!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [211,180,113],
+		"innerColor": [121, 226, 0],
 		"cities": ["Belgrade"]
 	},
 	{
@@ -1051,7 +1075,7 @@
 		"attacked": "We are no strangers to war. You have strayed from the right path, and now we will correct it.",
 		"defeated": "You are nothing but a glorified barbarian. Cruel, and ruthless.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,128,0],
+		"innerColor": [18, 188, 221],
 		"cities": ["M'Banza-Kongo"]
 	},
 	{
@@ -1063,7 +1087,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "What a fine battle! Sidon is willing to serve you!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [250,128,114],
+		"innerColor": [186, 18, 202],
 		"cities": ["Sidon"]
 	},
 	{
@@ -1075,7 +1099,7 @@
 		"attacked": "You will see you have just bitten off more than you can chew.",
 		"defeated": "This ship may sink, but our spirits will linger.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,102,102],
+		"innerColor": [222, 237, 59],
 		"cities": ["Valletta"]
 	},
 
