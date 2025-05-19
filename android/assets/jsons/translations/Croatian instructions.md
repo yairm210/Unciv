@@ -112,11 +112,6 @@ TODO: Might need better translation!
 - Melee Water `Bliska Borba na Vodi`
 - WaterMelee `BliskaBorbaNaVodi`
 
-TODO: Might need better translation but unknown where in game it appears to check
-
-- upon gaining the [promotion] status
-- Gain control over [tileFilter] tiles in a [nonNegativeAmount]-tile radius
-
 ### Unresolved Translation
 
 Not yet translated words, mostly because no sane translation exits to Croatian language.
