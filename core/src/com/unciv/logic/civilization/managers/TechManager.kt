@@ -113,6 +113,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         
         if (techCost < 0) 
+            // no futher manipulation is to be done to the tech cost
+            // (-0.8).asInt() gives 0 therefore should always just return -1 instead
             return -1;
         
         if (civInfo.isHuman())
@@ -268,8 +270,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (techsInProgress[currentTechnology]!! < techCost)
             return
         
-        // New proposal: Set techCost to -1 for the last tech to ensure that program does not keep
-        //               recursing for high science values.
+        // For unresearchable tech. Placeholders for end of research tree, 
+        // to avoid high recursion depth and stackover when having high science e.g. 1B   
         if (techCost == -1) 
             return 
         
