@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.Value
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.city.*
@@ -17,9 +16,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
@@ -107,9 +104,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         lowerTable.pack()
         lowerPane.layout()
         lowerPane.updateVisualScroll()
+        expander.pack()  // update expander, to set header height correctly for next line
         lowerCell?.maxHeight(height - expander.header.height - 8f) // 2 on each side of each cell in expander
-
-        expander.pack()  // update expander
         pack()  // update self last
     }
 
