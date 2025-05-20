@@ -1,3 +1,19 @@
+## 4.16.10
+
+Disabled android-specific behaviour of text fields since it's broken currently :|
+
+Resolved  - Fixed city screen buildings panel not fully scrollable
+
+...
+
+chore: deprecate unique
+
+Only add mod search textboxes if there are at least 10 mods (cleaner UI for new players)
+
+chore: Fix IDEA compiler bug that doesn't like the nesting for some reason
+
+uniques: Add a "not constructed by anybody" conditional unique - By RobLoach
+
 ## 4.16.9
 
 AI: Don't choose one-time-action promotions
