@@ -104,8 +104,9 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         lowerTable.pack()
         lowerPane.layout()
         lowerPane.updateVisualScroll()
-        expander.pack()  // update expander, to set header height correctly for next line
+        expander.header.pack() //  set header height correctly for next line
         lowerCell?.maxHeight(height - expander.header.height - 8f) // 2 on each side of each cell in expander
+        expander.pack() // update expander so the scrollpane is scollable immediately without need for click
         pack()  // update self last
     }
 
