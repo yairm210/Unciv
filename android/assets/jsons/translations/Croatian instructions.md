@@ -176,6 +176,7 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Discovering `Otkriće`, `Otkrivanje`
 - Acquire `Stekni`, `Kupi`
 - Gain `Dobij` `Stekni`
+- Upon `Prilikom`, `Po`, `Na`, `Nad` (Pri, Nakon)
 
 ### Untranslated words
 
@@ -312,6 +313,7 @@ Correct vs incorrect
 - s `[` vs sa `[`
 - Unikat vs Unikatno/i (Depends on context)
 - Check for double spaces
+- Osnivati (nesvršeni glagol) vs Osnovati (svršeni glagol)
 
 [Table of Contents](#table-of-contents)
 
