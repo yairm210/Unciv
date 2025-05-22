@@ -132,7 +132,27 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             ConfirmPopup(diplomacyScreen, "Denounce [${otherCiv.civName}]?", "Denounce ([30] turns)") {
                 diplomacyManager.denounce()
                 diplomacyScreen.updateLeftSideTable(otherCiv)
-                diplomacyScreen.setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
+
+                // Display a random common reply if a "denounced" quote is not set.
+                var commonReplies = listOf(
+                    "We will remember this.",
+                    "You are playing a dangerous game.",
+                    "Very well. The next time I shall not be so polite!",
+                    "How disagreeable.",
+                    "How very disappointing.",
+                    "How disappointing.",
+                    "How very disappointing.",
+                    "Indeed? I trust that you will not live to regret your short-sightedness.",
+                    "How foolish of you."
+                )
+                diplomacyScreen.setRightSideFlavorText(
+                    otherCiv,
+                    if (otherCiv.nation.denounced.isNotEmpty()) otherCiv.nation.denounced else commonReplies.random(),
+                    "Very well."
+                )
+
+                val music = UncivGame.Current.musicController
+                music.playVoice("${otherCiv.nation.name}.denounced")
             }.open()
         }
         if (diplomacyScreen.isNotPlayersTurn()) denounceButton.disable()
