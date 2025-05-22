@@ -109,7 +109,10 @@ object CityLocationTileRanker {
         if (newCityTile.hasViewableResource(civ)) tileValue -= 4
         if (newCityTile.hasViewableResource(civ) && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
         // Settling on bonus resources tends to waste a food
-        // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
+        // Settling on luxuries generally speeds up our game, and settling on strategics as well
+        if ((civ.cities.isEmpty() || civ.getCapital() == null || civ.getCapital()!!.getCenterTile().getContinent() != newCityTile.getContinent()) && newCityTile.getTilesAtDistance(1).any { it.isLand }) tileValue += 30
+        // This here aims to let the AI settle on foreign continents for better user experience on water maps (and as a side effect guarantee settling their very first city),
+        // but exclude 1-tile islands (lots of them, but generally bad also on Archipelago)
 
         var tiles = 0
         for (i in 0..3) {
@@ -144,9 +147,18 @@ object CityLocationTileRanker {
                 distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
                 else -> 0f
             }
+            val distanceToForeignCityModifier = when {
+                distanceToCity < 4 -> -16f
+                distanceToCity < 5 -> -8f
+                distanceToCity < 6 -> -4f
+                distanceToCity < 7 -> -2f
+                else -> 0f
+            }
             // We want a defensive ring around our capital
-            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
-            modifier += distanceToCityModifier
+            if (city.civ == civ) {
+                distanceToCityModifier *= if (city.isCapital()) 2 else 1
+                modifier += distanceToCityModifier
+            } else modifier += distanceToForeignCityModifier
         }
         return modifier
     }
