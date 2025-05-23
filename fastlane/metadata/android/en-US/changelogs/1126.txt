@@ -1,0 +1,7 @@
+Disabled android-specific behaviour of text fields since it's broken currently :|
+
+Fixed city screen buildings panel not fully scrollable
+
+Only add mod search textboxes if there are at least 10 mods (cleaner UI)
+
+uniques: Add a "not constructed by anybody" conditional unique - By RobLoach

@@ -2124,6 +2124,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 	Applicable to: Unit
 
+??? example  "Cannot embark"
+	Applicable to: Unit
+
 ??? example  "Cannot enter ocean tiles"
 	Applicable to: Unit
 
@@ -2908,6 +2911,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] Happiness&gt;"
+	 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when between [3] and [3] Happiness&gt;"
 
 	Applicable to: Conditional
@@ -3020,6 +3024,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;if [buildingFilter] is not constructed by anybody&gt;"
+	Example: "&lt;if [Culture] is not constructed by anybody&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;with [resource]&gt;"
 	Example: "&lt;with [Iron]&gt;"
 
@@ -3045,7 +3054,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn
+	Stats refers to the accumulated stat, not stat-per-turn. 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -3102,6 +3111,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with between [amount] and [amount] [populationFilter]&gt;"
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;in cities with between [3] and [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3248,6 +3258,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
 
 	Applicable to: Conditional
@@ -3327,10 +3338,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon turn end&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon turn start&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
@@ -3352,6 +3363,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
 	Example: "&lt;upon building a [All Road] improvement&gt;"
 
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
+??? example  "&lt;upon turn end&gt;"
+	Applicable to: TriggerCondition, UnitTriggerCondition
+
+??? example  "&lt;upon turn start&gt;"
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
@@ -3528,7 +3545,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
-*[countable]: This indicates a number or a numeric variable.
+*[countable]: This indicates a number or a numeric variable.They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable "[Iron]+2"`.
 *[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
 *[event]: The name of any event.

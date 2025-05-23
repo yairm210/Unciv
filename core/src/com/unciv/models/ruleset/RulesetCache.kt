@@ -10,6 +10,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.validation.RulesetError
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.ruleset.validation.getRelativeTextDistance
 import com.unciv.utils.Log
 import com.unciv.utils.debug
@@ -59,8 +60,12 @@ object RulesetCache : HashMap<String, Ruleset>() {
                         // For extension mods which use references to base ruleset objects, the parameter type
                         // errors are irrelevant - the checker ran without a base ruleset
                         val logFilter: (RulesetError) -> Boolean =
-                            if (modRuleset.modOptions.isBaseRuleset) { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly } }
-                            else { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly && !it.text.contains("does not fit parameter type") } }
+                            if (modRuleset.modOptions.isBaseRuleset) {
+                                { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly }
+                            } else {
+                                { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly &&
+                                    !it.text.contains(UniqueValidator.whichDoesNotFitParameterType) }
+                            }
                         if (modLinksErrors.any(logFilter)) {
                             debug(
                                 "checkModLinks errors: %s",

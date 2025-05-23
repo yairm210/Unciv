@@ -716,8 +716,20 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "I guess you weren't here for the sprouts after all...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [153,255,51],
+		"innerColor": [127, 177, 236],
 		"cities": ["Brussels"]
+	},
+	{
+		"name": "Bucharest",
+		"adjective": ["Bucuresti"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "I guess you weren't here for the sprouts after all...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [113, 227, 114],
+		"cities": ["Bucharest"]
 	},
 	{
 		"name": "Florence",
@@ -728,32 +740,44 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "And so the flower of Florence falls to barbaric hands...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [62,197,252],
+		"innerColor": [18, 188, 221],
 		"cities": ["Florence"]
 	},
 	{
-		"name": "Hanoi",
-		"adjective": ["Hanoi"],
-		"cityStateType": "Cultured",
+		"name": "Geneva",
+		"adjective": ["Genevan", "Genevese"],
+		"cityStateType": "Cultured", // Changed from Cultured to Religious in GK
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "So this is how it feels to die...",
+		"defeated": "I guess you weren't here for the sprouts after all...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [51,51,255],
-		"cities": ["Hanoi"]
+		"innerColor": [51, 97, 242],
+		"cities": ["Geneva"]
 	},
 	{
 		"name": "Kabul",
-		"adjective": ["Kabul"],
+		"adjective": ["Kabuli"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Unacceptable!",
         "outerColor": [0, 0, 0],
-        "innerColor": [168,38,102],
+		"innerColor": [121, 226, 0],
 		"cities": ["Kabul"]
+	},
+	{
+		"name": "Kathmandu",
+		"adjective": ["Kathmanduites"],
+		"cityStateType": "Cultured", // Changed from Cultured to Religious in BNW
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We... defeated? No... we had so much work to do!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [186, 18, 202],
+		"cities": ["Kathmandu"]
 	},
 	{
 		"name": "Kuala Lumpur",
@@ -764,23 +788,23 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Today, the Malay people obey you, but do not think this is over...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,102,102],
+		"innerColor": [222, 237, 59],
 		"cities": ["Kuala Lumpur"]
 	},
 	{
 		"name": "Lhasa",
-		"adjective": ["tibetano"],
+		"adjective": ["Tibetano"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Perhaps now we will find peace in death...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [204,102,0],
+		"innerColor": [113, 227, 114],
 		"cities": ["Lhasa"]
 	},
 	{
-		"name": "Milan",
+		"name": "Milan", // Introduced in GK
 		"adjective": ["Milanese"],
 		"cityStateType": "Cultured",
 
@@ -788,37 +812,51 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "You fiend! History shall remember this!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [185,132,66],
-		"cities": ["Milan"]
+		"innerColor": [225, 194, 129],
+		"cities": ["Milan"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
-		"name": "Quebec City",
-		"adjective": ["Québécois"],
+		"name": "Monaco",
+		"adjective": ["Monegasque"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "We were too weak to protect ourselves...",
+		"defeated": "You fiend! History shall remember this!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [51,102,0],
-		"cities": ["Quebec City"]
+		"innerColor": [193, 84, 255],
+		"cities": ["Monaco"]
 	},
 
 	{
 		"name": "Cape Town",
-		"adjective": ["Cape Town"],
+		"adjective": ["Capetonian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "I have failed. May you, at least, know compassion towards our people.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,153],
+		"innerColor": [217, 158, 78],
 		"cities": ["Cape Town"]
 	},
 	{
+		"name": "Genoa",
+		"adjective": ["Genoese"],
+		"cityStateType": "Maritime", // Maritime in Vanilla
+		"startBias": ["Coast"],
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0, 163, 181],
+		"cities": ["Genoa"]
+	},
+	{
 		"name": "Helsinki",
-		"adjective": ["Helsinki"],
+		"adjective": ["Helsinkian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -829,7 +867,7 @@
 		"cities": ["Helsinki"]
 	},
 	{
-		"name": "Manila",
+		"name": "Manila", // Introduced in GK
 		"adjective": ["Manilan"],
 		"cityStateType": "Maritime",
 
@@ -837,20 +875,47 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Ah, Gods! Why have you forsaken us?",
 		"outerColor": [0, 0, 0],
-		"innerColor": [96,96,96],
-		"cities": ["Manila"]
+		"innerColor": [113, 227, 114],
+		"cities": ["Manila"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
-		"name": "Mogadishu",
-		"adjective": ["Mogadishu"],
+		"name": "Mogadishu", // Introduced in BNW
+		"adjective": ["Maqdishawi"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Congratulations, conqueror. This tribe serves you now.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [224,224,224],
-		"cities": ["Mogadishu"]
+		"innerColor": [127, 177, 236],
+		"cities": ["Mogadishu"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
+	},
+	{
+		"name": "Quebec City",
+		"adjective": ["Québécois"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We were too weak to protect ourselves...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [51, 97, 242],
+		"cities": ["Quebec City"]
+	},
+	{
+		"name": "Ragusa",
+		"adjective": ["Ragusan"],
+		"cityStateType": "Maritime",
+		"startBias": ["Coast"],
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We were too weak to protect ourselves...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0, 163, 181],
+		"cities": ["Ragusa"]
 	},
 	{
 		"name": "Rio de Janeiro",
@@ -866,20 +931,32 @@
 		"cities": ["Rio de Janeiro"]
 	},
 	{
+		"name": "Singapore",
+		"adjective": ["Singaporean"],
+		"cityStateType": "Maritime", // Changed from Maritime to Mercantile in GK
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Perhaps, in another world, we could have been friends...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [246, 253, 160],
+		"cities": ["Singapore"]
+	},
+	{
 		"name": "Sydney",
-		"adjective": ["Sydney"],
+		"adjective": ["Sydneysider"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
 		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
 		"defeated": "The principles for which we have fought will survive longer than any nation you could ever build.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,204,204],
+		"innerColor": [51, 97, 242],
 		"cities": ["Sydney"]
 	},
 	{
-		"name": "Ur",
-		"adjective": ["Ur"],
+		"name": "Ur", // Introduced in BNW
+		"adjective": ["Urian"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
@@ -887,11 +964,12 @@
 		"attacked": "Why do we fight? Because Inanna demands it. Now, witness the power of the Sumerians!",
 		"defeated": "What treachery has struck us? No, what evil?",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,69,0],
-		"cities": ["Ur"]
+		"innerColor": [167, 16, 216],
+		"cities": ["Ur"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
-		"name": "Vancouver",
+		"name": "Vancouver", // Introduced in BNW
 		"adjective": ["Vancouverite"],
 		"cityStateType": "Maritime",
 
@@ -899,8 +977,9 @@
 		"attacked": "As we can reach no peaceful resolution with you, Canada must turn, with reluctance, to war.",
 		"defeated": "I regret not defending my country to the last, although it was not of use.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,255,128],
-		"cities": ["Vancouver"]
+		"innerColor": [193, 84, 255],
+		"cities": ["Vancouver"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
 		"name": "Venice",
@@ -917,8 +996,8 @@
 	},
 
 	{
-		"name": "Antwerp",
-		"adjective": ["Antwerp"],
+		"name": "Antwerp", // Introduced in GK
+		"adjective": ["Antwerpenaar", "Antwerpian"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
@@ -926,98 +1005,62 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "They will write songs of this.... pray that they shall be in your favor.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [194,97,255],
-		"cities": ["Antwerp"]
+		"innerColor": [193, 84, 255],
+		"cities": ["Antwerp"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
-		"name": "Genoa",
-		"adjective": ["Genoese"],
-		"cityStateType": "Mercantile",
-		"startBias": ["Coast"],
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [45,255,86],
-		"cities": ["Genoa"]
-	},
-	{
-		"name": "Kathmandu",
-		"adjective": ["Kathmandu"],
-		"cityStateType": "Mercantile",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "We... defeated? No... we had so much work to do!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [151,125,0],
-		"cities": ["Kathmandu"]
-	},
-	{
-		"name": "Singapore",
-		"adjective": ["Singaporean"],
-		"cityStateType": "Mercantile",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Perhaps, in another world, we could have been friends...",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,255,0],
-		"cities": ["Singapore"]
-	},
-	{
-		"name": "Tyre",
-		"adjective": ["Tyrian"],
-		"cityStateType": "Mercantile",
-		"startBias": ["Coast"],
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "We never fully trusted you from the start.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,97,255],
-		"cities": ["Tyre"]
-	},
-	{
-		"name": "Zanzibar",
-		"adjective": ["Zanzibar"],
+		"name": "Zanzibar", // Introduced in GK
+		"adjective": ["Zanzibari"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "May the Heavens forgive you for inflicting this humiliation to our people.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,255],
-		"cities": ["Zanzibar"]
+		"innerColor": [127, 177, 236],
+		"cities": ["Zanzibar"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 
 	{
 		"name": "Almaty",
-		"adjective": ["Almaty"],
+		"adjective": ["Almatinian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "How could we fall to the likes of you?!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [152,0,241],
+		"innerColor": [217, 158, 78],
 		"cities": ["Almaty"]
 	},
 	{
 		"name": "Belgrade",
-		"adjective": ["Belgrade"],
+		"adjective": ["Belgradian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Let's have a nice little War, shall we?",
 		"attacked": "If you need your nose bloodied, we'll happily serve.",
 		"defeated": "The serbian guerilla will never stop haunting you!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [211,180,113],
+		"innerColor": [121, 226, 0],
 		"cities": ["Belgrade"]
 	},
 	{
-		"name": "Dublin",
+		"name": "Budapest",
+		"adjective": ["Budapester", "Budapesti"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "Let's have a nice little War, shall we?",
+		"attacked": "If you need your nose bloodied, we'll happily serve.",
+		"defeated": "The serbian guerilla will never stop haunting you!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [217, 158, 78],
+		"cities": ["Budapest"]
+	},
+	{
+		"name": "Dublin", // Dublin became a city in GK, but is available in Vanilla.
 		"adjective": ["Dubliner"],
 		"cityStateType": "Militaristic",
 
@@ -1026,11 +1069,10 @@
 		"defeated": "A lonely wind blows through the highlands today. A dirge for Ireland. Can you hear it?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [211,180,113],
-		"cities": ["Dublin"],
-		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
+		"cities": ["Dublin"]
 	},
 	{
-		"name": "Edinburgh",
+		"name": "Edinburgh", // Edinburgh became a city in GK, but is available in Vanilla.
 		"adjective": ["Edinburghensian"],
 		"cityStateType": "Militaristic",
 
@@ -1039,44 +1081,71 @@
 		"defeated": "Vile ruler, know that you 'won' this war in name only!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
-		"cities": ["Edinburgh"],
-		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
+		"cities": ["Edinburgh"]
 	},
 	{
-		"name": "M'Banza-Kongo",
-		"adjective": ["M'Banza-Kongo"],
+		"name": "Hanoi",
+		"adjective": ["Hanoian"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "So this is how it feels to die...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [167, 162, 216],
+		"cities": ["Hanoi"]
+	},
+	{
+		"name": "M'Banza-Kongo", // Introduced in BNW
+		"adjective": ["Angolan"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
 		"attacked": "We are no strangers to war. You have strayed from the right path, and now we will correct it.",
 		"defeated": "You are nothing but a glorified barbarian. Cruel, and ruthless.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,128,0],
-		"cities": ["M'Banza-Kongo"]
+		"innerColor": [18, 188, 221],
+		"cities": ["M'Banza-Kongo"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
 		"name": "Sidon",
-		"adjective": ["Sidon"],
+		"adjective": ["Sidonian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "What a fine battle! Sidon is willing to serve you!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [250,128,114],
+		"innerColor": [186, 18, 202],
 		"cities": ["Sidon"]
 	},
 	{
-		"name": "Valletta",
-		"adjective": ["maltese"],
+		"name": "Tyre",
+		"adjective": ["Tyrian"],
+		"cityStateType": "Militaristic", // Changed from Militaristic to Mercantile in GK
+		"startBias": ["Coast"],
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We never fully trusted you from the start.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [121, 226, 0],
+		"cities": ["Tyre"]
+	},
+	{
+		"name": "Valletta", // Introduced in GK
+		"adjective": ["Beltin"],
 		"cityStateType": "Militaristic",
+		"startBias": ["Coast"],
 
 		"declaringWar": "We don't like your face. To arms!",
 		"attacked": "You will see you have just bitten off more than you can chew.",
 		"defeated": "This ship may sink, but our spirits will linger.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,102,102],
-		"cities": ["Valletta"]
+		"innerColor": [222, 237, 59],
+		"cities": ["Valletta"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 
 

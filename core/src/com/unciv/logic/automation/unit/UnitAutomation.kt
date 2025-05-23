@@ -171,7 +171,7 @@ object UnitAutomation {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
-        if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
+        if (unit.getDamageFromTerrain() > 0 && tryHealUnit(unit)) return
 
 
         if (unit.isCivilian()) {
@@ -183,9 +183,10 @@ object UnitAutomation {
             // Restrict Human automated units from promotions via setting
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
             val availablePromotions = unit.promotions.getAvailablePromotions()
-            if (unit.health < 60 && !(unit.baseUnit.isAirUnit() || unit.baseUnit.hasUnique(UniqueType.CanMoveAfterAttacking)) && availablePromotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) })
-                availablePromotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) } //choose healing promotions only when beneficial
-            else availablePromotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+                // It can be assumed that "heal + skip promotion" is a bad choice - the cases where we WOULD want it are slim
+                .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+            
+            
             if (availablePromotions.none()) break
             val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
             val stateForConditionals = unit.cache.state
@@ -482,12 +483,11 @@ object UnitAutomation {
             unitDistanceToTiles,
             tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
-            // Ignore units that would 1-shot you if you attacked. Account for taking terrain damage after the fact.
+            // Ignore units that would 1-shot you if you attacked, as well as avoid parking your units next to enemy citadels
             BattleDamage.calculateDamageToAttacker(
                 MapUnitCombatant(unit),
                 Battle.getMapCombatantOfTile(it.tileToAttack)!!
-            )
-                    + unit.getDamageFromTerrain(it.tileToAttackFrom) < unit.health
+            ) < unit.health || unit.getDamageFromTerrain(it.tileToAttackFrom) > 0
         }
 
         if (unit.baseUnit.isRanged())

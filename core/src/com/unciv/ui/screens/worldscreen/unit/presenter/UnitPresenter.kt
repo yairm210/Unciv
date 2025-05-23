@@ -139,7 +139,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
 
             // Since Clear also clears the listeners, we need to re-add them every time
             promotionsTable.onClick {
-                if (selectedUnit == null || unit.promotions.promotions.isEmpty()) return@onClick
+                if (selectedUnit == null || promotionsTable.children.isEmpty) return@onClick
                 worldScreen.game.pushScreen(PromotionPickerScreen(unit))
             }
 

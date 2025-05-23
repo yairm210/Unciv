@@ -174,6 +174,9 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Select `Odaberi` (Izaberi)
 - Upon `Pri`, `Prilikom`, `Po`, `Nakon` OR `Na`, `Nad`
 - Discovering `Otkriće`, `Otkrivanje`
+- Acquire `Stekni`, `Kupi`
+- Gain `Dobij` `Stekni`
+- Upon `Prilikom`, `Po`, `Na`, `Nad` (Pri, Nakon)
 
 ### Untranslated words
 
@@ -241,9 +244,9 @@ Exceptions (use sparingly to retain consistency):
 
 - Use formal form where appropriate to avoid grammatical gender
 - Use formal form where appropriate to simplify grammar
-- Switch from formal or informal (mixture) where appropriate to make it sound more natural or consistent, e.g. UI prompt
+- Switch between formal or informal (mixture) where appropriate to make it sound more natural or consistent, e.g. UI prompt
 
-NOTE: Switching from formal and informal is used in diplomacy
+NOTE: Switching between formal and informal is used in diplomacy
 
 Examples (formal vs informal, to check for correct usage e.g. in combination with placeholders):
 
@@ -310,6 +313,7 @@ Correct vs incorrect
 - s `[` vs sa `[`
 - Unikat vs Unikatno/i (Depends on context)
 - Check for double spaces
+- Osnivati (nesvršeni glagol) vs Osnovati (svršeni glagol)
 
 [Table of Contents](#table-of-contents)
 

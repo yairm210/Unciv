@@ -563,8 +563,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civ
-                || (otherCiv.isCityState && otherCiv.getAllyCiv() == civ.civName)
-                || (civ.isCityState && civ.getAllyCiv() == otherCiv.civName)
+                || (otherCiv.isCityState && otherCiv.getAllyCivName() == civ.civName)
+                || (civ.isCityState && civ.getAllyCivName() == otherCiv.civName)
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
@@ -584,8 +584,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (civ.matchesFilter(filter, cache.state, false)) return true
                 if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
                 if (promotions.promotions.contains(filter)) return true
-                // Badly optimized, but it's rare that statuses is even non-empty
-                // Statuses really should be converted to a hashmap
                 if (hasStatus(filter)) return true 
                 return false
             }

@@ -261,8 +261,8 @@ object Github {
         private fun startTracking() {
             trackerThread = Concurrency.run("Downloading mod progress") {
                 while (this.isActive) {
-                    val percentage = bytesRead() * 100 / contentLength
-                    updateProgressPercent(percentage)
+                    val percentage = (bytesRead() * 100L / contentLength).toInt()
+                    updateProgressPercent(percentage.coerceIn(0, 100))
                     if (percentage >= 100) {
                         stopTracking()
                         break
