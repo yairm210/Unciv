@@ -98,6 +98,8 @@ class AlertPopup(
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addCitySettledNearOtherCivDespiteOurPromise()
             AlertType.DemandToStopSpreadingReligion -> shouldOpen = addDemandToStopSpreadingReligion()
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addReligionSpreadDespiteOurPromise()
+            AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemandToStopSpyingOnUs()
+            AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addSpyingOnUsDespiteOurPromise()
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
                 shouldOpen = addBulliedOrAttackedProtectedOrAlliedMinor()
@@ -294,6 +296,30 @@ class AlertPopup(
         addCloseButton("Very well.")
         return true
     }
+    private fun addDemandToStopSpyingOnUs(): Boolean {
+        val otherciv = getCiv(popupAlert.value)
+        if (otherciv.isDefeated()) return false
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
+        addLeaderName(otherciv)
+        addGoodSizedLabel("Please don't spy on us.").row()
+        addCloseButton("Very well, we shall stop spying on you.", KeyboardBinding.Confirm) {
+            playerDiploManager.agreeNotToSpreadReligionTo()
+        }.row()
+        addCloseButton("We didn't spy on you.", KeyboardBinding.Cancel) {
+            playerDiploManager.refuseNotToSpreadReligionTo()
+        }
+        return true
+    }
+    
+    private fun addSpyingOnUsDespiteOurPromise(): Boolean {
+        val otherciv = getCiv(popupAlert.value)
+        if (otherciv.isDefeated()) return false
+        addGoodSizedLabel("We noticed you have continued spying on us, despite your promise. This will have....consequences.").row()
+        addCloseButton("Very well.")
+        return true
+    }
+    
+
 
     private fun addDiplomaticMarriage() {
         val city = getCity(popupAlert.value)
