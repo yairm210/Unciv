@@ -98,7 +98,7 @@ class AlertPopup(
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addCitySettledNearOtherCivDespiteOurPromise()
             AlertType.DemandToStopSpreadingReligion -> shouldOpen = addDemandToStopSpreadingReligion()
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addReligionSpreadDespiteOurPromise()
-            AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemandToStopSpyingOnUs()
+            AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemandToStopSendingSpiesToUs()
             AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addSpyingOnUsDespiteOurPromise()
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
@@ -296,16 +296,16 @@ class AlertPopup(
         addCloseButton("Very well.")
         return true
     }
-    private fun addDemandToStopSpyingOnUs(): Boolean {
+    private fun addDemandToStopSendingSpiesToUs(): Boolean {
         val otherciv = getCiv(popupAlert.value)
         if (otherciv.isDefeated()) return false
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
-        addGoodSizedLabel("Please don't spy on us.").row()
-        addCloseButton("Very well, we shall stop spying on you.", KeyboardBinding.Confirm) {
+        addGoodSizedLabel("Please don't spies on us.").row()
+        addCloseButton("Very well, we will no longer spy on you.", KeyboardBinding.Confirm) {
             playerDiploManager.agreeNotToSpreadReligionTo()
         }.row()
-        addCloseButton("We didn't spy on you.", KeyboardBinding.Cancel) {
+        addCloseButton("I'll do what's necessary for my empire to survive.", KeyboardBinding.Cancel) {
             playerDiploManager.refuseNotToSpreadReligionTo()
         }
         return true
