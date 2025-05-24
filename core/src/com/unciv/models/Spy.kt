@@ -349,7 +349,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val otherCivDiplomacyManager = city.civ.getDiplomacyManager(civInfo)
         if (otherCivDiplomacyManager != null &&
             otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-            println("${city.civ.civName} agreed to not send spies in our civ")
+            println("we ${civInfo.civName} agreed to not send spies to ${city.civ.civName}")
             return false
         }
         if (getCityOrNull() == city) return true
