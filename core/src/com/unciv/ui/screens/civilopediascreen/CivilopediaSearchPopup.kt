@@ -6,8 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
@@ -111,6 +113,7 @@ class CivilopediaSearchPopup(
     }
 
     private fun CoroutineScope.searchLoop() {
+        val gameInfo = UncivGame.getGameInfoOrNull()
         for (category in CivilopediaCategories.values()) {
             if (!isActive) break
             if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial)
@@ -125,6 +128,7 @@ class CivilopediaSearchPopup(
                     if (category == CivilopediaCategories.Belief && sort == 0)
                         continue  // Search "Religions" from `getCivilopediaReligionEntry` only when the mod filter is a base ruleset
                 }
+                if (entry is IHasUniques && entry.isHiddenFromCivilopedia(gameInfo, ruleset)) continue
                 searchEntry(entry)
             }
         }

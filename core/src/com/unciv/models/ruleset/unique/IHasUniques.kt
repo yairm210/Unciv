@@ -47,7 +47,7 @@ interface IHasUniques : INamed {
 
     fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueTag, state)
-    
+
     fun hasUnique(uniqueType: UniqueType, state: StateForConditionals? = null) =
         uniqueMap.hasMatchingUnique(uniqueType, state ?: StateForConditionals.EmptyState)
 
@@ -56,7 +56,7 @@ interface IHasUniques : INamed {
 
     fun hasTagUnique(tagUnique: String) =
         uniqueMap.hasTagUnique(tagUnique)
-    
+
     fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals)
 
     fun techsRequiredByUniques(): Sequence<String> {
@@ -92,7 +92,7 @@ interface IHasUniques : INamed {
         // Currently this is only used in CityStateFunctions.kt.
         return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
     }
-    
+
     fun getWeightForAiDecision(stateForConditionals: StateForConditionals): Float {
         var weight = 1f
         for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, stateForConditionals))
@@ -126,14 +126,14 @@ interface IHasUniques : INamed {
                         it.type in gameBasedConditionals
                                 && Conditionals.conditionalApplies(null, it, stateForConditionals) } })
             return true
-        
+
         if (getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
                 .any { unique ->
                     unique.modifiers.any {
                         it.type in gameBasedConditionals
                                 && !Conditionals.conditionalApplies(null, it, stateForConditionals) } })
             return true
-        
+
         return false
     }
 
@@ -142,7 +142,7 @@ interface IHasUniques : INamed {
      *
      *  - Obviously, the [UniqueType.HiddenFromCivilopedia] test is done here (and nowhere else - exception TranslationFileWriter for Tutorials).
      *  - Includes the [isUnavailableBySettings] test if [gameInfo] is known, otherwise existence of Religion is guessed from [ruleset], and all victory types are assumed enabled.
-     *  - Note: RulesetObject-type specific overrides should not be necessary unless (TODO) we implement support for conditionals on the 'Hidden*' Uniques.
+     *  - Note: RulesetObject-type specific overrides should not be necessary.
      *  @param gameInfo Defaults to [UncivGame.getGameInfoOrNull]. Civilopedia must also be able to run from MainMenu without a game loaded. In that case only this parameter can be `null`. So if you know it - provide!
      *  @param ruleset required if [gameInfo] is null, otherwise optional.
      *  @throws NullPointerException if both parameters are null
@@ -153,9 +153,28 @@ interface IHasUniques : INamed {
     ): Boolean {
         if (hasUnique(UniqueType.HiddenFromCivilopedia)) return true
         if (gameInfo != null && isUnavailableBySettings(gameInfo)) return true
-        if (gameInfo == null && ruleset!!.beliefs.isEmpty()) return true
+        if (gameInfo == null && ruleset != null) {
+            if (!gameAgnosticVisibleForReligionOrEspionage(
+                    ruleset.beliefs.isNotEmpty(),
+                    UniqueType.ConditionalReligionEnabled,
+                    UniqueType.ConditionalReligionDisabled
+                )) return true
+            if (!gameAgnosticVisibleForReligionOrEspionage(
+                    ruleset.nations.values.any { it.spyNames.isNotEmpty() },
+                    UniqueType.ConditionalEspionageEnabled,
+                    UniqueType.ConditionalEspionageDisabled
+                )) return true
+        }
         return false
     }
     /** Overload of [isHiddenFromCivilopedia] for use in actually game-agnostic parts of Civilopedia */
     fun isHiddenFromCivilopedia(ruleset: Ruleset) = isHiddenFromCivilopedia(UncivGame.getGameInfoOrNull(), ruleset)
+
+    private fun gameAgnosticVisibleForReligionOrEspionage(hasFeature: Boolean, enabler: UniqueType, disabler: UniqueType): Boolean {
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)) {
+            if (unique.hasModifier(enabler)) return hasFeature
+            if (unique.hasModifier(disabler)) return !hasFeature
+        }
+        return true
+    }
 }
