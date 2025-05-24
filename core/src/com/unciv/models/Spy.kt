@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.EspionageAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.models.ruleset.unique.Unique
@@ -240,7 +241,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         } else startStealingTech()  // reset progress
 
         if (spyResult >= 100) {
-            otherCiv.getDiplomacyManager(civInfo)?.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+            val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
+            otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+            otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
         }
     }
 
@@ -342,6 +345,13 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     fun canMoveTo(city: City): Boolean {
+
+        val otherCivDiplomacyManager = city.civ.getDiplomacyManager(civInfo)
+        if (otherCivDiplomacyManager != null &&
+            otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
+            println("${city.civ.civName} agreed to not send spies in our civ")
+            return false
+        }
         if (getCityOrNull() == city) return true
         if (!city.getCenterTile().isExplored(civInfo)) return false
         return espionageManager.getSpyAssignedToCity(city) == null

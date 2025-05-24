@@ -301,8 +301,8 @@ class AlertPopup(
         if (otherciv.isDefeated()) return false
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
-        addGoodSizedLabel("Please don't spies on us.").row()
-        addCloseButton("Very well, we will no longer spy on you.", KeyboardBinding.Confirm) {
+        addGoodSizedLabel("Please don't spy on us.").row() // 
+        addCloseButton("Very well, we shall no longer spy on you.", KeyboardBinding.Confirm) {
             playerDiploManager.agreeNotToSpreadReligionTo()
         }.row()
         addCloseButton("I'll do what's necessary for my empire to survive.", KeyboardBinding.Cancel) {
