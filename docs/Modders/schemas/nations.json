@@ -37,6 +37,7 @@
           "declaringWar": { "type": "string" },
           "attacked": { "type": "string" },
           "defeated": { "type": "string" },
+          "denounced": { "type": "string" },
           "startIntroPart1": { "type": "string" },
           "startIntroPart2": { "type": "string" },
           "cities": {

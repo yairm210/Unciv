@@ -1585,6 +1585,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building
 
 ??? example  "Creates a [improvementName] improvement on a specific tile"
+	When choosing to construct this building, the player must select a tile where the improvement can be built. Upon building completion, the tile will gain this improvement.
 	Example: "Creates a [Trading Post] improvement on a specific tile"
 
 	Applicable to: Building

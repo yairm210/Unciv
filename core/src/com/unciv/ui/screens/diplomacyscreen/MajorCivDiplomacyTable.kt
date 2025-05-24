@@ -132,7 +132,14 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             ConfirmPopup(diplomacyScreen, "Denounce [${otherCiv.civName}]?", "Denounce ([30] turns)") {
                 diplomacyManager.denounce()
                 diplomacyScreen.updateLeftSideTable(otherCiv)
-                diplomacyScreen.setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
+                diplomacyScreen.setRightSideFlavorText(
+                    otherCiv,
+                    if (otherCiv.nation.denounced.isNotEmpty()) otherCiv.nation.denounced else "We will remember this.",
+                    "Very well."
+                )
+
+                val music = UncivGame.Current.musicController
+                music.playVoice("${otherCiv.nation.name}.denounced")
             }.open()
         }
         if (diplomacyScreen.isNotPlayersTurn()) denounceButton.disable()
