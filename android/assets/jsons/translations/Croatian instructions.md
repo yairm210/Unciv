@@ -112,6 +112,11 @@ TODO: Might need better translation!
 - Melee Water `Bliska Borba na Vodi`
 - WaterMelee `BliskaBorbaNaVodi`
 
+TODO: Possibly better translation
+
+- `... from ...` `od` instead of `iz`
+- `... per ...` `za` instead of `po`
+
 ### Unresolved Translation
 
 Not yet translated words, mostly because no sane translation exits to Croatian language.
@@ -294,7 +299,6 @@ Examples (to check for correct usage e.g. in combination with placeholders):
 
 TODO: Usage not fully checked:
 
-- `(a)`, `(la)`, `(ica)`, `(ice)`, `(kinjo)`, `(icom)`, `(jela)`, `(na)`, `(om)`, `(icom)` (All feminine)
 - `*io`, `*la`
 
 Exceptions:
