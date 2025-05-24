@@ -111,6 +111,12 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
+        
+        if (techCost < 0) 
+            // no futher manipulation is to be done to the tech cost
+            // (-0.8).asInt() gives 0 therefore should always just return -1 instead
+            return -1;
+        
         if (civInfo.isHuman())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
@@ -260,9 +266,15 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun addScience(scienceGet: Int) {
         val currentTechnology = currentTechnologyName() ?: return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
-        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
+        val techCost = costOfTech(currentTechnology)
+        if (techsInProgress[currentTechnology]!! < techCost)
             return
-
+        
+        // For unresearchable tech. Placeholders for end of research tree, 
+        // to avoid high recursion depth and stackover when having high science e.g. 1B   
+        if (techCost == -1) 
+            return 
+        
         // We finished it!
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         val extraScienceLeftOver = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
