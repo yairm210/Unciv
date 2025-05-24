@@ -609,8 +609,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
-??? example  "[relativeAmount]% maintenance cost for buildings [cityFilter]"
-	Example: "[+20]% maintenance cost for buildings [in all cities]"
+??? example  "[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]"
+	Example: "[+20]% maintenance cost for [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -1366,8 +1366,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% maintenance cost for buildings [cityFilter]"
-	Example: "[+20]% maintenance cost for buildings [in all cities]"
+??? example  "[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]"
+	Example: "[+20]% maintenance cost for [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 

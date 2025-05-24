@@ -16,6 +16,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.DebugUtils
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 
 class StatTreeNode {
@@ -335,7 +336,11 @@ class CityStats(val city: City) {
         }
 
         for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenance)) {
-            buildingsMaintenance *= unique.params[0].toPercent()
+            city.cityConstructions.getBuiltBuildings().filter { 
+                it.matchesFilter(unique.params[1])
+            }.forEach {
+                it.maintenance *= (unique.params[0].toPercent()).roundToInt()
+            }
         }
 
         return buildingsMaintenance
