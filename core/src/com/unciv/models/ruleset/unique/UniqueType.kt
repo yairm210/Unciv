@@ -347,7 +347,9 @@ enum class UniqueType(
     ConnectTradeRoutes("Connects trade routes over water", UniqueTarget.Building),
     GainBuildingWhereBuildable("Automatically built in all cities where it is buildable", UniqueTarget.Building),
 
-    CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
+    CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building,
+        docDescription = "When choosing to construct this building, the player must select a tile where the improvement can be built." +
+                " Upon building completion, the tile will gain this improvement."),
     //endregion
 
     ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
