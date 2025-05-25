@@ -1,3 +1,23 @@
+## 4.16.11
+
+Don't spawn prophet in holy city if it's been taken over
+
+City location ranking takes modded city work range into account
+
+typo: were rigged by -> was rigged by
+
+modding: Added doc to "creates improvement on specific tile"
+
+Resolved  - Modding: Avoid crashes from "free buildings that no longer apply once they're in the city" and "free buildings that change the free buildings for the entire civ"
+
+Resolved  - City stats table immediately scrollable again, AND scrollable all the way to the end
+
+By RobLoach:
+- Add unique `denounced` quotes 
+- Add a Voice Hook for 
+
+Fix showing negative mod download progress - By SomeTroglodyte
+
 ## 4.16.10
 
 Disabled android-specific behaviour of text fields since it's broken currently :|
