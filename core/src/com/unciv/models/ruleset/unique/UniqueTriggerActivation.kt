@@ -93,6 +93,9 @@ object UniqueTriggerActivation {
         val relevantCity by lazy {
             city?: tile?.getCity()
         }
+        fun getApplicableCities(cityFilter: String) = 
+            if (cityFilter == "in this city") sequenceOf(relevantCity).filterNotNull()
+            else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[0]) }
 
         val timingConditional = unique.getModifiers(UniqueType.ConditionalTimedUnique).firstOrNull()
         if (timingConditional != null) {
@@ -398,9 +401,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeGainPopulation -> {
-                val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(relevantCity).filterNotNull()
-                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
+                val applicableCities = getApplicableCities(unique.params[1])
                 if (applicableCities.none()) return null
                 return {
                     for (applicableCity in applicableCities) {
@@ -913,9 +914,7 @@ object UniqueTriggerActivation {
 
             UniqueType.GainFreeBuildings -> {
                 val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
-                val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
-                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
+                val applicableCities = getApplicableCities(unique.params[1])
                 if (applicableCities.none()) return null
 
                 return {
@@ -944,9 +943,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.RemoveBuilding -> {
-                val applicableCities =
-                    if (unique.params[1] == "in this city") if (relevantCity == null) emptySequence() else sequenceOf(relevantCity!!)
-                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
+                val applicableCities = getApplicableCities(unique.params[1])
                 if (applicableCities.none()) return null
 
                 return {
@@ -961,9 +958,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeSellBuilding -> {
-                val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
-                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
+                val applicableCities = getApplicableCities(unique.params[1])
                 if (applicableCities.none()) return null
 
                 return {
