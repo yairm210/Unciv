@@ -945,7 +945,7 @@ object UniqueTriggerActivation {
 
             UniqueType.RemoveBuilding -> {
                 val applicableCities =
-                    if (unique.params[1] == "in this city") sequenceOf(relevantCity!!)
+                    if (unique.params[1] == "in this city") if (relevantCity == null) emptySequence() else sequenceOf(relevantCity!!)
                     else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 if (applicableCities.none()) return null
 
