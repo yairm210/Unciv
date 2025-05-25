@@ -303,10 +303,10 @@ class AlertPopup(
         addLeaderName(otherciv)
         addGoodSizedLabel("Please don't spy on us.").row() // 
         addCloseButton("Very well, we shall no longer spy on you.", KeyboardBinding.Confirm) {
-            playerDiploManager.agreeNotToSpreadReligionTo()
+            playerDiploManager.agreeNotToSpreadSpiesTo()
         }.row()
         addCloseButton("I'll do what's necessary for my empire to survive.", KeyboardBinding.Cancel) {
-            playerDiploManager.refuseNotToSpreadReligionTo()
+            playerDiploManager.refuseNotToSpreadSpiesTo()
         }
         return true
     }

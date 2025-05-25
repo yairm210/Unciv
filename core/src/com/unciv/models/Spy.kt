@@ -237,17 +237,19 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!")
             defendingSpy?.levelUpSpy()
             killSpy()
-            // if they kill your spy they should know that you are spying on them.
-            val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
-            otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
-            otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
+            // if they kill your spy they should know that you are spying on them and able to demande to not be speid on.
+            demandeToNotBeSpiedOn(otherCiv)
         } else startStealingTech()  // reset progress
 
         if (spyResult >= 100) {
-            val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
-            otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
-            otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
+            demandeToNotBeSpiedOn(otherCiv)
         }
+    }
+    
+    private fun demandeToNotBeSpiedOn(otherCiv: Civilization) {
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
+        otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+        otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
     }
 
     fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
@@ -352,7 +354,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val otherCivDiplomacyManager = city.civ.getDiplomacyManager(civInfo)
         if (otherCivDiplomacyManager != null &&
             otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-            println("we ${civInfo.civName} agreed to not send spies to ${city.civ.civName}")
             return false
         }
         if (getCityOrNull() == city) return true
