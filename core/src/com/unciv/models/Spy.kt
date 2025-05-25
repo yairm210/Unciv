@@ -227,7 +227,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         if (detectionString != null)
             // Not using Spy.addNotification, shouldn't open the espionage screen
             otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-
         if (spyResult < 200 && stolenTech != null) {
             civInfo.tech.addTechnology(stolenTech)
             addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!")
@@ -238,6 +237,10 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!")
             defendingSpy?.levelUpSpy()
             killSpy()
+            // if they kill your spy they should know that you are spying on them.
+            val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
+            otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+            otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
         } else startStealingTech()  // reset progress
 
         if (spyResult >= 100) {
