@@ -1,3 +1,27 @@
+## 4.16.10
+
+Disabled android-specific behaviour of text fields since it's broken currently :|
+
+Fixed city screen buildings panel not fully scrollable
+
+Only add mod search textboxes if there are at least 10 mods (cleaner UI)
+
+uniques: Add a "not constructed by anybody" conditional unique - By RobLoach
+
+## 4.16.9
+
+AI: Don't choose one-time-action promotions
+
+Display city-state bonuses per relationship level
+
+Conditional city-state bonuses colored green only when conditional applies
+
+By RobLoach:
+- Add ability to remove entire policy branches 
+- Gods & Kings: Great Generals cannot enter a golden age 
+
+Netherlands trade bugfix - By EmperorPinguin
+
 ## 4.16.8
 
 Unit triggerables with triggers, no longer trigger on new units

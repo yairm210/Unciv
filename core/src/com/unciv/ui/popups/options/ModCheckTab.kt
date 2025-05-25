@@ -59,8 +59,9 @@ class ModCheckTab(
                     modCheckResultTable.add(expanderTab).row()
             }
         }
-        
-        fixedContent.add(searchModsTextField).fillX() .row()
+
+        if (RulesetCache.values.count() > 10)
+            fixedContent.add(searchModsTextField).fillX().row()
 
         val labeledBaseSelect = Table().apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)

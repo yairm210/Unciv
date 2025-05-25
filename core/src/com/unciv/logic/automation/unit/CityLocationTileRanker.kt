@@ -112,7 +112,8 @@ object CityLocationTileRanker {
         // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
         var tiles = 0
-        for (i in 0..3) {
+        val cityWorkRange = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange 
+        for (i in 0..cityWorkRange) {
             //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
             for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
                 tiles++

@@ -13,6 +13,7 @@ class ModOptions : IHasUniques {
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
+    var policyBranchesToRemove = HashSet<String>()
     val constants = ModConstants()
     var unitset: String? = null
     var tileset: String? = null

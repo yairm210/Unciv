@@ -194,6 +194,12 @@ class Ruleset {
                 nations.remove(it)
             }
         nations.putAll(ruleset.nations)
+        ruleset.modOptions.policyBranchesToRemove
+            .flatMap { policyBranchToRemove ->
+                policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.keys
+            }.toSet().forEach {
+                policyBranches.remove(it)
+            }
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
         quests.putAll(ruleset.quests)

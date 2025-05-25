@@ -186,8 +186,6 @@ enum class UniqueType(
     /// Unit Abilities
 
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] XP [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"))
-    UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -349,7 +347,9 @@ enum class UniqueType(
     ConnectTradeRoutes("Connects trade routes over water", UniqueTarget.Building),
     GainBuildingWhereBuildable("Automatically built in all cities where it is buildable", UniqueTarget.Building),
 
-    CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
+    CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building,
+        docDescription = "When choosing to construct this building, the player must select a tile where the improvement can be built." +
+                " Upon building completion, the tile will gain this improvement."),
     //endregion
 
     ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
@@ -733,6 +733,7 @@ enum class UniqueType(
     ConditionalBuildingBuiltAll("if [buildingFilter] is constructed in all [cityFilter] cities", UniqueTarget.Conditional),
     ConditionalBuildingBuiltAmount("if [buildingFilter] is constructed in at least [positiveAmount] of [cityFilter] cities", UniqueTarget.Conditional),
     ConditionalBuildingBuiltByAnybody("if [buildingFilter] is constructed by anybody", UniqueTarget.Conditional),
+    ConditionalBuildingNotBuiltByAnybody("if [buildingFilter] is not constructed by anybody", UniqueTarget.Conditional),
 
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
@@ -993,6 +994,8 @@ enum class UniqueType(
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
+    @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"), DeprecationLevel.ERROR)
+    UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 4.15.2", ReplaceWith("Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns"), DeprecationLevel.ERROR)
     CityStateCanBeBoughtForGoldOld("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
     @Deprecated("As of 4.14.6", ReplaceWith("[+100]% Strength <when defending> <when [Embarked]>"), DeprecationLevel.ERROR)
