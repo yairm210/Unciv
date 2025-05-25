@@ -184,7 +184,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
-                else civInfo.religionManager.getHolyCity()
+                else {
+                    val holyCity = civInfo.religionManager.getHolyCity()
+                    if (holyCity != null && holyCity.civ == civInfo) holyCity // If we have a holy city, use it
+                    else civInfo.getCapital() // default to capital
+                }
             val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()

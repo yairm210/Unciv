@@ -146,8 +146,10 @@ object CityLocationTileRanker {
                 else -> 0f
             }
             // We want a defensive ring around our capital
-            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
-            modifier += distanceToCityModifier
+             if (city.civ == civ) { 
+                distanceToCityModifier *= if (city.isCapital()) 2 else 1
+                modifier += distanceToCityModifier
+            }
         }
         return modifier
     }
