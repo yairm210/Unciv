@@ -4,17 +4,13 @@ Don't spawn prophet in holy city if it's been taken over
 
 City location ranking takes modded city work range into account
 
-typo: were rigged by -> was rigged by
+Modding: Avoid crashes from "free buildings that no longer apply once they're in the city / change which buildings are free"
 
-modding: Added doc to "creates improvement on specific tile"
-
-Resolved  - Modding: Avoid crashes from "free buildings that no longer apply once they're in the city" and "free buildings that change the free buildings for the entire civ"
-
-Resolved  - City stats table immediately scrollable again, AND scrollable all the way to the end
+City stats table immediately scrollable again, AND scrollable all the way to the end
 
 By RobLoach:
 - Add unique `denounced` quotes 
-- Add a Voice Hook for 
+- Mods can add voiceovers for start intros 
 
 Fix showing negative mod download progress - By SomeTroglodyte
 
