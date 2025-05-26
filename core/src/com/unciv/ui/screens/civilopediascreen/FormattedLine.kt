@@ -207,6 +207,11 @@ class FormattedLine (
         }
         private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
             //val startTime = System.nanoTime()
+            // These are because the IDEA compiler DOES NOT like them being directly in the yield
+            //  This is some kinf o compiler bug, looks like
+            fun wonderBuildings() = ruleSet.buildings.filter { it.value.isAnyWonder() }
+            fun nonWonderBuildings() = ruleSet.buildings.filter { !it.value.isAnyWonder() }
+            
             // order these with the categories that should take precedence in case of name conflicts (e.g. Railroad) _last_
             val allObjectMapsSequence = sequence {
                 yield(CivilopediaCategories.Belief to ruleSet.beliefs)
@@ -220,8 +225,8 @@ class FormattedLine (
                 yield(CivilopediaCategories.UnitType to ruleSet.unitTypes)
                 yield(CivilopediaCategories.Unit to ruleSet.units)
                 yield(CivilopediaCategories.Technology to ruleSet.technologies)
-                yield(CivilopediaCategories.Building to ruleSet.buildings.filter { !it.value.isAnyWonder() })
-                yield(CivilopediaCategories.Wonder to ruleSet.buildings.filter { it.value.isAnyWonder() })
+                yield(CivilopediaCategories.Building to nonWonderBuildings())
+                yield(CivilopediaCategories.Wonder to wonderBuildings())
             }
             val result = HashMap<String, CivilopediaCategories>()
             allObjectMapsSequence

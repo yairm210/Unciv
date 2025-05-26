@@ -5,9 +5,11 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.canUse
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 object CivilianUnitAutomation {
@@ -19,11 +21,16 @@ object CivilianUnitAutomation {
 
     fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         // To allow "found city" actions that can only trigger a limited number of times
-        val settlerUnique = 
-            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity).firstOrNull() ?: 
-            UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundPuppetCity).firstOrNull()
         
-        if (settlerUnique != null)
+        // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
+        fun hasSettlerAction(uniqueType: UniqueType) =
+            unit.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+                .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
+                .any { canUse(unit, it) }
+        
+        val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
+        
+        if (hasSettlerUnique)
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (tryRunAwayIfNeccessary(unit)) return
@@ -53,6 +60,13 @@ object CivilianUnitAutomation {
             && unit.civ.religionManager.mayFoundReligionAtAll()
         )
             return ReligiousUnitAutomation.foundReligion(unit)
+        
+        if (unit.hasUnique(UniqueType.MayFoundReligion) && unit.civ.isCityState){
+            // We have literally nothing to do with this unit, at least stop costing money
+            unit.disband()
+            return 
+        }
+            
 
         if (unit.hasUnique(UniqueType.MayEnhanceReligion)
             && unit.civ.religionManager.religionState < ReligionState.EnhancedReligion
@@ -123,10 +137,12 @@ object CivilianUnitAutomation {
             val cityToGainBuilding = unit.civ.cities.filter {
                 !it.cityConstructions.containsBuildingOrEquivalent(buildingName)
                     && (unit.movement.canMoveTo(it.getCenterTile()) || unit.currentTile == it.getCenterTile())
-            }.minByOrNull {
+            }.map {
                 val path = unit.movement.getShortestPath(it.getCenterTile())
-                path.size
-            }
+                // We want to calc path once, but still filter out unreachable cities
+                it to path.size
+            }.filter { it.second > 0 }.minByOrNull { it.second }?.first
+            
 
             if (cityToGainBuilding != null) {
                 if (unit.currentTile == cityToGainBuilding.getCenterTile()) {

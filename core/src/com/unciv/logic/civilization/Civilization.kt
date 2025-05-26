@@ -1040,7 +1040,9 @@ class Civilization : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital, oldCapital)
     }
 
-    fun getAllyCiv() = allyCivName
+    fun getAllyCiv(): Civilization? = if (allyCivName == null) null
+        else gameInfo.getCivilization(allyCivName!!)
+    fun getAllyCivName() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
     /** Determine if this civ (typically as human player) is allowed to know how many major civs there are

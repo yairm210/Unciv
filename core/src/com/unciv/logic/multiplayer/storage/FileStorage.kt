@@ -13,6 +13,13 @@ interface FileMetaData {
     fun getLastModified(): Date?
 }
 
+enum class AuthStatus {
+    UNAUTHORIZED,
+    UNREGISTERED,
+    VERIFIED,
+    UNKNOWN
+}
+
 interface FileStorage {
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
@@ -45,4 +52,6 @@ interface FileStorage {
      * @throws MultiplayerAuthException if the authentication failed
      */
     fun setPassword(newPassword: String): Boolean
+    
+    fun checkAuthStatus(userId: String, password: String): AuthStatus
 }

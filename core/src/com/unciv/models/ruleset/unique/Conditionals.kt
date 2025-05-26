@@ -190,6 +190,8 @@ object Conditionals {
                     && it.matchesFilter(conditional.params[2]) } >= conditional.params[1].toInt() }
             UniqueType.ConditionalBuildingBuiltByAnybody ->
                 checkOnGameInfo { getCities().any { it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }
+            UniqueType.ConditionalBuildingNotBuiltByAnybody ->
+                !checkOnGameInfo { getCities().any { it.cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) } }
 
             // Filtered via city.getMatchingUniques
             UniqueType.ConditionalInThisCity -> state.relevantCity != null

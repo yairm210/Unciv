@@ -2,7 +2,7 @@ package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -19,27 +19,22 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.ceil
 import kotlin.math.round
-import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 class CityStatsTable(private val cityScreen: CityScreen) : Table() {
-    private val innerTable = Table() // table within this Table. Slightly smaller creates border
-    private val upperTable = Table() // fixed position table
-    private val lowerTable = Table() // table that will be in the ScrollPane
-    private val lowerPane: ScrollPane
     private val city = cityScreen.city
-    private val headerIcon = ImageGetter.getImage("OtherIcons/BackArrow").apply {
-        setSize(18f, 18f)
-        setOrigin(Align.center)
-        rotation = 90f
-    }
-    private var headerIconClickArea = Table()
-    private var isOpen = !cityScreen.isCrampedPortrait()
-    
+    private val expander: ExpanderTab
+    // table within this Table. Slightly smaller creates border
+    private val miniStatsTable = MiniStatsTable(ExpanderTab.wasOpen("CityStatsTable"))
+    private val lowerTable = Table() // table that will be in the ScrollPane
+    private val lowerPane = AutoScrollPane(lowerTable)
+    private var lowerCell: Cell<AutoScrollPane>? = null
+
     private val detailedStatsButton = "Stats".toTextButton().apply {
         labelCell.pad(10f)
         onActivation(binding = KeyboardBinding.ShowStats) {
@@ -54,61 +49,43 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             tintColor = colorFromRGB(194, 180, 131)
         )
 
-        innerTable.pad(5f)
-        innerTable.background = BaseScreen.skinStrings.getUiBackground(
+        expander = ExpanderTab("",
+            startsOutOpened = !cityScreen.isCrampedPortrait(),
+            persistenceID = "CityStatsTable",
+            defaultPad = 7f,
+            headerPad = if (cityScreen.isCrampedPortrait()) 7f else 6f,
+            topPad = 0f, // remove space between miniStatsTable and detailedStatsButton
+            expanderWidth = miniStatsTable.width,
+            expanderHeight = miniStatsTable.height,
+            onChange = {
+                cityScreen.updateWithoutConstructionAndMap()
+            }
+        ) {
+            lowerCell = it.add(lowerPane).grow()
+        }
+        expander.headerContent.add(miniStatsTable).growX()
+        expander.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CityStatsTable/InnerTable",
             tintColor = ImageGetter.CHARCOAL.cpy().apply { a = 0.8f }
         )
+        expander.header.background = null // Make header transparent
+        /** Without this, the expander will keep initial header height, even when the
+         *  row count of miniStatsTable changes when opening/closing in portrait mode */
+        expander.setDynamicHeaderSize()
+        // Don't toggle expander when clicking the stats icons
+        expander.toggleOnIconOnly()
 
-        upperTable.defaults().pad(2f)
-        lowerTable.defaults().pad(2f)
-        lowerPane = ScrollPane(lowerTable)
         lowerPane.setOverscroll(false, false)
-        lowerPane.setScrollingDisabled(true, false)
+        lowerPane.setScrollingDisabled(x = true, y = false)
+        lowerTable.defaults().space(4f)
 
-        add(innerTable).growX()
-
-        // collapse icon with larger click area
-        headerIconClickArea.add(headerIcon).size(headerIcon.width).pad(6f+2f, 12f, 6f, 2f )
-        headerIconClickArea.touchable = Touchable.enabled
-        headerIconClickArea.onClick {
-            isOpen = !isOpen
-            cityScreen.updateWithoutConstructionAndMap()
-        }
+        add(expander).growX()
     }
 
     fun update(height: Float) {
-        upperTable.clear()
-        lowerTable.clear()
+        miniStatsTable.update()
 
-        val miniStatsTable = Table()
-        val selected = BaseScreen.skin.getColor("selection")
-        for ((stat, amount) in city.cityStats.currentCityStats) {
-            if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled()) continue
-            val icon = Table()
-            val focus = CityFocus.safeValueOf(stat)
-            val toggledFocus = if (focus == city.getCityFocus()) {
-                icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
-                CityFocus.NoFocus
-            } else {
-                icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
-                focus
-            }
-            if (cityScreen.canCityBeChanged()) {
-                icon.onActivation(binding = toggledFocus.binding) {
-                    city.setCityFocus(toggledFocus)
-                    city.reassignPopulation()
-                    cityScreen.update()
-                }
-            }
-            miniStatsTable.add(icon).size(27f).padRight(3f)
-            val valueToDisplay = if (stat == Stat.Happiness) city.cityStats.happinessList.values.sum() else amount
-            miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
-            if (cityScreen.isCrampedPortrait() && !isOpen && stat == Stat.Gold) {
-                miniStatsTable.row()
-            }
-        }
-        upperTable.add(miniStatsTable).expandX()
+        lowerTable.clear()
 
         lowerTable.add(detailedStatsButton).row()
         addText()
@@ -124,22 +101,12 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         addBuildingsInfo()
 
-        headerIcon.rotation = if(isOpen) 90f else 0f
-        
-        innerTable.clear()
-        innerTable.add(upperTable).expandX()
-        innerTable.add(headerIconClickArea).row()
-        val lowerCell = if (isOpen) {
-            innerTable.add(lowerPane).colspan(2)
-        } else null
-
-        upperTable.pack()
         lowerTable.pack()
         lowerPane.layout()
         lowerPane.updateVisualScroll()
-        lowerCell?.maxHeight(height - upperTable.height - 8f) // 2 on each side of each cell in innerTable
-
-        innerTable.pack()  // update innerTable
+        expander.header.pack() //  set header height correctly for next line
+        lowerCell?.maxHeight(height - expander.header.height - 8f) // 2 on each side of each cell in expander
+        expander.pack() // update expander so the scrollpane is scollable immediately without need for click
         pack()  // update self last
     }
 
@@ -417,4 +384,43 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         lowerTable.addCategory("Great People", greatPeopleTable, KeyboardBinding.GreatPeopleDetail)
     }
 
+    private inner class MiniStatsTable(wasOpen: Boolean?) : Table() {
+        // Challenge: we want this measured before instantating the ExpanderTab.
+        // Ergo: update() must not access expander until _after_ init
+        init {
+            update(wasOpen)
+            pack()
+        }
+
+        fun update() = update(expander.isOpen)
+        private fun update(expanderIsOpen: Boolean?) {
+            clear()
+            val selected = BaseScreen.skin.getColor("selection")
+            for ((stat, amount) in city.cityStats.currentCityStats) {
+                if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled()) continue
+                val icon = Table()
+                val focus = CityFocus.safeValueOf(stat)
+                val toggledFocus = if (focus == city.getCityFocus()) {
+                    icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
+                    CityFocus.NoFocus
+                } else {
+                    icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
+                    focus
+                }
+                if (cityScreen.canCityBeChanged()) {
+                    icon.onActivation(binding = toggledFocus.binding) {
+                        city.setCityFocus(toggledFocus)
+                        city.reassignPopulation()
+                        cityScreen.update()
+                    }
+                }
+                add(icon).size(27f).padRight(3f)
+                val valueToDisplay = if (stat == Stat.Happiness) city.cityStats.happinessList.values.sum() else amount
+                add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
+                if (cityScreen.isCrampedPortrait() && (expanderIsOpen == null || !expanderIsOpen) && stat == Stat.Gold) {
+                    row()
+                }
+            }
+        }
+    }
 }

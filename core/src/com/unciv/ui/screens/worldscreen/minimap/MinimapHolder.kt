@@ -51,6 +51,19 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         getter = { UncivGame.Current.settings.showResourcesAndImprovements },
         setter = { UncivGame.Current.settings.showResourcesAndImprovements = it }
     )
+    /** Button, next to the minimap, to toggle the pixel improvements map overlay. */
+    val improvementsImageButton = MapOverlayToggleButton(
+        "TileIcons/MapOverlayToggleImprovements",
+        getter = { UncivGame.Current.settings.showPixelImprovements },
+        setter = { UncivGame.Current.settings.showPixelImprovements = it }
+    )
+    val buttons = listOf(
+        movementsImageButton,
+        yieldImageButton,
+        populationImageButton,
+        resourceImageButton,
+        improvementsImageButton
+    )
 
     private fun rebuildIfSizeChanged(civInfo: Civilization) {
         // For Spectator should not restrict minimap
@@ -155,16 +168,14 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private fun getToggleIcons(minimapHeight: Float): Table {
         val toggleIconTable = Table()
         
-        val availableForPadding = minimapHeight - (movementsImageButton.height + yieldImageButton.height + 
-                populationImageButton.height + resourceImageButton.height)
+        val availableForPadding = minimapHeight - buttons.sumOf { it.height.toDouble() }.toFloat()
         val paddingBetweenElements = (availableForPadding/3).coerceIn(0f, 5f)
         
         toggleIconTable.defaults().padTop(paddingBetweenElements)
 
-        toggleIconTable.add(movementsImageButton).row()
-        toggleIconTable.add(yieldImageButton).row()
-        toggleIconTable.add(populationImageButton).row()
-        toggleIconTable.add(resourceImageButton).row()
+        for (button in buttons) {
+            toggleIconTable.add(button).row()
+        }
 
         return toggleIconTable
     }
@@ -174,10 +185,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)
-            movementsImageButton.update()
-            yieldImageButton.update()
-            populationImageButton.update()
-            resourceImageButton.update()
+            for (button in buttons) button.update()
         }
     }
 

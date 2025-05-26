@@ -275,7 +275,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         assignedQuests.removeAll { it.questNameInstance == questName }  // removing winners then losers would leave those with score 0
     }
 
-    private fun handleIndividualQuests() {
+    fun handleIndividualQuests() {
         assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
     }
 

@@ -69,7 +69,8 @@ enum class UniqueParameterType(
             parameterText.getInvariantSeverityUnless { toIntOrNull() != null }
     },
 
-    Countable("countable", "1000", "This indicates a number or a numeric variable") {
+    Countable("countable", "1000", "This indicates a number or a numeric variable." +
+            "They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable \"[Iron]+2\"`") {
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
             Countables.isKnownValue(parameterText, ruleset)
 

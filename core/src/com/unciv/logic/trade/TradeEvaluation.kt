@@ -215,7 +215,7 @@ class TradeEvaluation {
                     return 0 // we can't really afford to go into negative happiness because of buying a city
                 val sumOfPop = city.population.population
                 val sumOfBuildings = city.cityConstructions.getBuiltBuildings().count()
-                return (sumOfPop * 4 + sumOfBuildings * 1 + 4 + surrounded) * 100
+                return (sumOfPop * 4 + sumOfBuildings + 4 + surrounded) * 100
             }
             TradeOfferType.Agreement -> {
                 if (offer.name == Constants.openBorders) return 100
@@ -226,11 +226,8 @@ class TradeEvaluation {
 
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
         val borderingCivs: Set<String> = getNeighbouringCivs(city)
-        if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)) {
-            return 10 * civInfo.getEraNumber() // if the city is surrounded only by trading civ
-        }
         if (borderingCivs.contains(civInfo.civName))
-            return 2 * civInfo.getEraNumber() // if the city has a border with trading civ
+            return 3 // if the city has a border with trading civ
         return 0
     }
 
@@ -282,7 +279,7 @@ class TradeEvaluation {
                     civInfo.getResourceAmount(offer.name) > 1 -> 250 // fair price
                     civInfo.hasUnique(UniqueType.RetainHappinessFromLuxury) -> // If we retain 100% happiness, value it as a duplicate lux
                         600 - (civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury)
-                            .first().params[0].toPercent() * 350).toInt()
+                            .first().params[0].toFloat() * 3.5f).toInt()
                     else -> 600 // you want to take away our last lux of this type?!
                 }
             }

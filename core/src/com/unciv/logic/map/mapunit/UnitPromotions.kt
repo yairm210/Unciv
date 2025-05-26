@@ -49,16 +49,15 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    fun xpForNextPromotion() = Math.round(baseXpForPromotionNumber(numberOfPromotions+1) * promotionCostModifier())
+    fun xpForNextPromotion(): Int = Math.round(baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier())
     
     /** @return the XP points needed to "buy" the next [count] promotions. */
-    fun xpForNextNPromotions(count: Int) = Math.round((1..count).sumOf { 
-        baseXpForPromotionNumber(numberOfPromotions+count)} * promotionCostModifier() )
+    fun xpForNextNPromotions(count: Int) = (1..count).sumOf { 
+        baseXpForPromotionNumber(numberOfPromotions+it)} * promotionCostModifier() 
 
     private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions) * 10
     
     private fun promotionCostModifier(): Float {
-       
         var totalPromotionCostModifier = 1f
         for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
             totalPromotionCostModifier *= unique.params[0].toPercent()

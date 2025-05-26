@@ -63,10 +63,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
-    //Obsoleted by #11370, but maybe useful in the future: allowed buildings that have non-zero Stats (isEmpty is a Stats method)
-    //private val statBuildings = nonWonders.filter { !it.isEmpty() && Automation.allowAutomatedConstruction(civInfo, city, it) }
-    //Obsoleted by #11601
-    //private val wonders = buildings.filter { it.isAnyWonder() }
 
     private val units = city.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it
@@ -313,8 +309,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
         value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
-        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)
-                + building.getMatchingUniques(UniqueType.UnitStartingExperienceOld, cityState)) {
+        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
             var modifier = experienceUnique.params[1].toFloat() / 5
             modifier *= if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
             modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)

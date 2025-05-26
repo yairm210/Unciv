@@ -1,6 +1,5 @@
 package com.unciv.ui.components.widgets
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -44,7 +43,7 @@ class UncivTextField(
     preEnteredText: String = "",
     private val onFocusChange: (TextField.(Boolean) -> Unit)? = null
 ) : TextFieldWithFixes(preEnteredText, BaseScreen.skin) {
-    private val isAndroid = Gdx.app.type == Application.ApplicationType.Android
+    private val isAndroid = false // disabled for now since it's not actually working // Gdx.app.type == Application.ApplicationType.Android
     private val hideKeyboard = { Gdx.input.setOnscreenKeyboardVisible(false) }
 
     init {

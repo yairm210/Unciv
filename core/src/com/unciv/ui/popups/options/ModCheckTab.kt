@@ -19,6 +19,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.TranslatedSelectBox
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.UniqueBuilderScreen
@@ -38,7 +39,10 @@ class ModCheckTab(
     private var modCheckFirstRun = true
 
     private var modCheckBaseSelect: TranslatedSelectBox? = null
+    private val searchModsTextField: UncivTextField
     private val modCheckResultTable = Table()
+    /** Used to repolulate modCheckResultTable when searching */
+    private val modResultExpanderTabs = ArrayList<ExpanderTab>()
 
     init {
         defaults().pad(10f).align(Align.top)
@@ -46,6 +50,18 @@ class ModCheckTab(
         fixedContent.defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick(::runAction)
         fixedContent.add(reloadModsButton).row()
+        
+        searchModsTextField = UncivTextField("Search mods")
+        searchModsTextField.onChange {
+            modCheckResultTable.clear()
+            for (expanderTab in modResultExpanderTabs) {
+                if (expanderTab.title.lowercase().contains(searchModsTextField.text.lowercase()))
+                    modCheckResultTable.add(expanderTab).row()
+            }
+        }
+
+        if (RulesetCache.values.count() > 10)
+            fixedContent.add(searchModsTextField).fillX().row()
 
         val labeledBaseSelect = Table().apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)
@@ -81,6 +97,7 @@ class ModCheckTab(
             .filter { it.isOpen }.map { it.title }.toSet()
 
         modCheckResultTable.clear()
+        modResultExpanderTabs.clear()
 
         val rulesetErrors = RulesetCache.loadRulesets()
         if (rulesetErrors.isNotEmpty()) {
@@ -94,7 +111,9 @@ class ModCheckTab(
         modCheckBaseSelect!!.isDisabled = true
 
         Concurrency.run("ModChecker") {
-            for (mod in RulesetCache.values.sortedBy { it.name }.sortedByDescending { it.name in openedExpanderTitles }) {
+            for (mod in RulesetCache.values
+                .filter { it.name.lowercase().contains(searchModsTextField.text.lowercase()) }
+                .sortedBy { it.name }.sortedByDescending { it.name in openedExpanderTitles }) {
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
@@ -152,6 +171,7 @@ class ModCheckTab(
                             }).row()
                     }
                     expanderTab.header.left()
+                    modResultExpanderTabs.add(expanderTab)
 
                     val loadingLabel = modCheckResultTable.children.last()
                     modCheckResultTable.removeActor(loadingLabel)
