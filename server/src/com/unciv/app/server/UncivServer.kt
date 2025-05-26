@@ -50,7 +50,7 @@ private class UncivServerRunner : CliktCommand() {
         help = "Enable Authentication"
     ).flag("-no-auth", default = false)
 
-     private val identifyOperators by option(
+    private val identifyOperators by option(
         "-i", "-Identify",
         envvar = "UncivServerIdentify",
         help = "Display each operation archive request IP to assist management personnel"
@@ -122,9 +122,9 @@ private class UncivServerRunner : CliktCommand() {
     private fun serverRun(serverPort: Int, fileFolderName: String) {
         val portStr: String = if (serverPort == 80) "" else ":$serverPort"
 
-        val fileFolder = File(fileFolderName)
-        echo("Starting UncivServer for ${fileFolder.absolutePath} on http://localhost$portStr")
-        if (!fileFolder.exists()) fileFolder.mkdirs()
+        val file = File(fileFolderName)
+        echo("Starting UncivServer for ${file.absolutePath} on http://localhost$portStr")
+        if (!file.exists()) file.mkdirs()
         val server = embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
@@ -134,7 +134,7 @@ private class UncivServerRunner : CliktCommand() {
                 put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
 
-                    // If IdentifyOperators is enabled a Operator IP is displayed
+                    // If IdentifyOperators is enabled an Operator IP is displayed
                     if (identifyOperators) {
                         log.info("Receiving file: $fileName --Operation sourced from ${call.request.local.remoteHost}")
                     }else{
