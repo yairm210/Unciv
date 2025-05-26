@@ -105,7 +105,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                     civ.addNotification("Your spy lost the election in [${civInfo.civName}] to [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                 } else if (civ == allyCiv) {
                     // If the previous ally has no spy in the city then we should notify them
-                    allyCiv.addNotification("The election in [${civInfo.civName}] were rigged by [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+                    allyCiv.addNotification("The election in [${civInfo.civName}] was rigged by [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                 }
             }
 

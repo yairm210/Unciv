@@ -1585,6 +1585,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building
 
 ??? example  "Creates a [improvementName] improvement on a specific tile"
+	When choosing to construct this building, the player must select a tile where the improvement can be built. Upon building completion, the tile will gain this improvement.
 	Example: "Creates a [Trading Post] improvement on a specific tile"
 
 	Applicable to: Building
@@ -3021,6 +3022,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;if [buildingFilter] is constructed by anybody&gt;"
 	Example: "&lt;if [Culture] is constructed by anybody&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;if [buildingFilter] is not constructed by anybody&gt;"
+	Example: "&lt;if [Culture] is not constructed by anybody&gt;"
 
 	Applicable to: Conditional
 

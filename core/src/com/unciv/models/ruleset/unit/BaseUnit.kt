@@ -371,11 +371,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         @Suppress("LocalVariableName")
         var XP = 0
 
-        for (unique in
-        (cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience) + cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperienceOld))
-            .filter { cityConstructions.city.matchesFilter(it.params[2]) }
-        ) {
-            if (unit.matchesFilter(unique.params[0]))
+        for (unique in cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience)) {
+            if (unit.matchesFilter(unique.params[0]) && cityConstructions.city.matchesFilter(unique.params[2]))
                 XP += unique.params[1].toInt()
         }
         unit.promotions.XP = XP

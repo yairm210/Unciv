@@ -403,6 +403,11 @@ class AlertPopup(
         addGoodSizedLabel(civInfo.nation.startIntroPart1).row()
         addGoodSizedLabel(civInfo.nation.startIntroPart2).row()
         addCloseButton("Let's begin!")
+
+        // Since there's introduction text, play the startIntroPart1 voice hook with the nation's theme.
+        val music = UncivGame.Current.musicController
+        music.chooseTrack(civInfo.nation.name, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
+        music.playVoice("${civInfo.nation.name}.startIntroPart1")
     }
 
     private fun addTechResearched() {
