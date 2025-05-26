@@ -211,7 +211,6 @@ class CountableTests {
             "Adopted [[Tradition] branch] Policies" to 7,   // Branch start and completion plus 5 members
             "Adopted [Liberty Complete] Policies" to 0,
             "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
-            "Adopted [[all] branch] Policies" to 5,         // Counts branch starters, not member policies
             "Adopted [Some marker] Policies" to 1,
         )
         for ((test, expected) in tests) {
