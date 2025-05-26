@@ -1,7 +1,7 @@
 package com.unciv.ui.screens.worldscreen.status
 
 import com.unciv.UncivGame
-import com.unciv.logic.multiplayer.MultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGamePreview
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.multiplayerscreens.GameList
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
@@ -15,7 +15,7 @@ class MultiplayerStatusPopup(
 ) : Popup(screen) {
 
     val pickerPane = PickerPane()
-    var selectedGame: MultiplayerGame? = null
+    var selectedGame: MultiplayerGamePreview? = null
 
     init {
         val pickerCell = add()

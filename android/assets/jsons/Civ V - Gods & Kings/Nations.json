@@ -54,6 +54,7 @@
 		"declaringWar": "You are in my way, you must be destroyed.",
 		"attacked": "As a matter of fact I too grow weary of peace.",
 		"defeated": "You have somehow become my undoing! What kind of beast are you?",
+		"denounced": "You'll regret this decision, fool. I swear it!",
 		"introduction": "Hello stranger! I am Alexandros, son of kings and grandson of the gods!",
 
 		"neutralHello": "Greetings!",
@@ -151,6 +152,7 @@
         "declaringWar": "By the grace of God, your days are numbered.",
 		"attacked": "We shall never surrender.",
 		"defeated": "You have triumphed over us. The day is yours.",
+		"denounced": "Your reckless pride will destroy you if you're not careful.",
 		"introduction": "We are pleased to meet you.",
 		"neutralHello": "Hello, again.",
 		"hateHello": "Oh, it's you!",
@@ -211,6 +213,7 @@
         "declaringWar": "You've behaved yourself very badly, you know it. Now it's payback time.",
 		"attacked": "You've mistaken my passion for a weakness, you'll regret about this.",
 		"defeated": "We were defeated, so this makes me your prisoner. I suppose there are worse fates.",
+		"denounced": "So be it. You'll have only yourself to blame.",
 		"introduction": "I greet you, stranger! If you are as intelligent and tactful as you are attractive, we'll get along just fine.",
 		"neutralHello": "Hello!",
 		"hateHello": "What do you need?!",
@@ -242,6 +245,7 @@
         "declaringWar": "My treasury contains little and my soldiers are getting impatient... (sigh) ...therefore you must die.",
 		"attacked": "So brave, yet so stupid! If only you had a brain similar to your courage.",
 		"defeated": "The gods have deprived Rome of their favour. We have been defeated.",
+		"denounced": "I didn't believe you had this kind of backbone.",
 		"introduction": "I greet you. I am Augustus, Imperator and Pontifex Maximus of Rome. If you are a friend of Rome, you are welcome.",
 		"neutralHello": "Hail.",
 		"hateHello": "What do you want?",
@@ -271,6 +275,7 @@
         "declaringWar": "The world will be more beautiful without you. Prepare for war.",
 		"attacked": "Fool! You will soon regret dearly! I swear it!",
 		"defeated": "You have won, congratulations. My palace is now in your possession, and I beg that you care well for the peacock.",
+		"denounced": "Well done, my friend. Now I look forward to our next battle even more!",
 		"introduction": "Welcome foreigner, I am Harun Al-Rashid, Caliph of the Arabs. Come and tell me about your empire.",
 		"neutralHello": "Peace be upon you.",
 		"hateHello": "Oh, it's you.",
@@ -332,6 +337,7 @@
         "declaringWar": "I hereby inform you of our intention to wipe out your civilization from this world.",
 		"attacked": "Pitiful fool! Now we shall destroy you!",
 		"defeated": "You were much wiser than I thought.",
+		"denounced": "Alright then. I trust you've thought it through.",
 		"introduction": "We hope for a fair and just relationship with you, who are renowned for military bravery.",
 		"neutralHello": "Hello.",
 		"hateHello": "Oh, it's you...",
@@ -361,6 +367,7 @@
         "declaringWar": "I have just received a report that large numbers of my troops have crossed your borders.",
 		"attacked": "My attempts to avoid violence have failed. An eye for an eye only makes the world blind.",
 		"defeated": "You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind.",
+		"denounced": "Interesting choice.",
 		"introduction": "Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend.",
 		"neutralHello": "I wish you peace.",
 		"hateHello": "What do you want?",
@@ -390,6 +397,7 @@
         "declaringWar": "I cannot wait until ye grow even mightier. Therefore, prepare for war!",
 		"attacked": "Corrupted villain! We will bring you into the ground!",
 		"defeated": "Germany has been destroyed. I weep for the future generations.",
+		"denounced": "That boldness is risky, especially if you lack the strength to back it up.",
 		"introduction": "Guten Tag. In the name of the great German people, I bid you welcome.",
 		"neutralHello": "What now?",
 		"hateHello": "So, out with it!",
@@ -455,6 +463,7 @@
         "declaringWar": "Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!",
 		"attacked": "Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!",
 		"defeated": "Now the question is who will protect my people. A dark age has come.",
+		"denounced": "Such unpleasant conduct is typical of Yangpyeong, not someone like you.",
 		"introduction": "Welcome to the palace of Choson, stranger. I am the learned King Sejong, who looks after his great people.",
 
 		"neutralHello": "Hello.",
@@ -485,6 +494,7 @@
         "declaringWar": "You are a plague upon Mother Earth! Prepare for battle!",
 		"attacked": "You evil creature! My braves will slaughter you!",
 		"defeated": "You have defeated us... but our spirits will never be vanquished! We shall return!",
+		"denounced": "Go back to the shadows, you fool.",
 		"introduction": "Greetings, stranger. I am Hiawatha, speaker for the Iroquois. We seek peace with all, but we do not shrink from war.",
 		"neutralHello": "Good day.",
 		"hateHello": "Oh, it's you.",
@@ -549,6 +559,7 @@
         "declaringWar": "The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome.",
 		"attacked": "It is obvious now that I misjudged you and your true intentions.",
 		"defeated": "The hard-shelled crab yields, and the lion lies down to sleep. Kanaloa comes for me now.",
+		"denounced": "Friend, careful with your steps.",
 		"introduction": "Aloha! Greetings and blessings upon you, friend. I am Kamehameha, Great King of this strand of islands.",
 		"neutralHello": "Welcome, friend!",
 		"hateHello": "Oh, it's you.",
@@ -639,6 +650,7 @@
         "declaringWar": "You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!",
 		"attacked": "Fool! You have doomed your people to fire and destruction!",
 		"defeated": "We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!",
+		"denounced": "This insult shall cost you thousandfold.",
 		"introduction": "I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past.",
 		"neutralHello": "Greetings.",
 		"hateHello": "Oh, it's you.",
@@ -668,6 +680,7 @@
         "declaringWar": "You stand in the way of my armies. Let us solve this like warriors!",
 		"attacked": "No more words. Today, Mongolia charges toward your defeat.",
 		"defeated": "You have hobbled the Mongolian clans. My respect for you nearly matches the loathing. I am waiting for my execution.",
+		"denounced": "Your courage must be commended.",
 		"introduction": "I am Temuujin, conqueror of cities and countries. Before me lie future Mongolian lands. Behind me is the only cavalry that matters.",
 		"neutralHello": "Hello.",
 		"hateHello": "So what now?",
@@ -765,6 +778,7 @@
         "declaringWar": "If I am to be honest, I tire of those pointless charades. Why don't we settle our disputes on the field of battle, like true men? Perhaps the skalds will sing of your valor... or mine!",
 		"attacked": "Ahahah! You seem to show some skills of a true Viking! Too bad that I'll probably kill you!",
 		"defeated": "Loki must have stood by you, for a common man alone could not have defeated me... Oh well! I will join the einherjar in Valhalla and feast, while you toil away here.",
+		"denounced": "I'm excited for our upcoming battle, my friend.",
 		"introduction": "Harald Bluetooth bids you welcome to his lands, a Viking unlike any the seas and lands have ever known! Hah, are you afraid?",
 		"neutralHello": "Hail to you.",
 		"hateHello": "Oh, it's you.",
@@ -797,6 +811,7 @@
 
         "declaringWar": "I grow tired of this throne. I think I should like to have yours instead.",
 		"defeated": "My people will mourn me not with tears, but with human blood.",
+		"denounced": "Do you know who you're dealing with?",
 		"attacked": "Now what is this?! You ask me to add your riches to my great avails. The invitation is accepted.",
 		"introduction": "You are in the presence of Attila, scourge of Rome. Do not let hubris be your downfall as well.",
 		"neutralHello": "Good day to you.",
@@ -853,6 +868,7 @@
         "declaringWar": "The Hakkapeliittas will ride again and your men will fall just at the sight of my cavalry! God with us!",
 		"attacked": "Ha ha ha, captain Gars will be very glad to head out to war again.",
 		"defeated": "I am Sweden's king. You can take my lands, my people, my kingdom, but you will never reach the House of Vasa.",
+		"denounced": "You actually seem sharper than what I had originally thought.",
 		"introduction": "Stranger, welcome to the Snow King's kingdom! I am Gustavus Adolphus, member of the esteemed House of Vasa",
 
 		"neutralHello": "Oh, welcome!",
@@ -863,7 +879,7 @@
 		"favoredReligion": "Christianity",
 		"uniqueName": "Nobel Prize",
 		"uniques": ["Gain [90] Influence with a [Great Person] gift to a City-State", "When declaring friendship, both parties gain a [10]% boost to great person generation"],
-		"cities": ["Stockholm","Uppsala","Gothenburg","Malmö","Linköping","Kalmar","Skara","Västerås","Jönköping",
+		"cities": ["Stockholm","Sigtuna","Helsinki","Birka","Uppsala","Gothenburg","Turku","Malmö","Linköping","Kalmar","Skara","Västerås","Jönköping",
             "Visby","Falun","Norrköping","Gävle","Halmstad","Karlskrona","Hudiksvall","Örebro","Umeå","Karlstad",
             "Helsingborg","Härnösand","Vadstena","Lund","Västervik","Enköping","Skövde","Eskilstuna","Luleå","Lidköping",
             "Södertälje","Mariestad","Östersund","Borås","Sundsvall","Vimmerby","Köping","Mora","Arboga","Växjö","Gränna",
@@ -918,6 +934,7 @@
         "declaringWar": "Tell me, do you all know how numerous my armies, elephants and the gdadons are? No? Today, you shall find out!",
 		"attacked": "Fate is against you. You earned the animosity of Carthage in your exploration. Your days are numbered.",
 		"defeated": "The fates became to hate me. This is it? You wouldn't destroy us so without their help.",
+		"denounced": "You aren't meeting my expectations. You can do so much better.",
 		"introduction": "The Phoenicians welcome you to this most pleasant kingdom. I am Dido, the queen of Carthage and all that belongs to it.",
 		"neutralHello": "Greetings.",
 		"hateHello": "What is it now?",
@@ -976,6 +993,7 @@
         "declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen. We ride to war!",
 		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your balls!",
 		"defeated": "Vile ruler, know you have won this war in name alone. Your cities lie buried and your troops defeated. I have my own victory.",
+		"denounced": "Don't forget who you're dealing with. Arrogant moves can get you in danger.",
 		"introduction": "I am Boudicca, Queen of the Celts. Let no-one underestimate me!",
 		"tradeRequest": "Let us join our forces together and reap the rewards.",
 
@@ -1010,6 +1028,7 @@
         "declaringWar": "I have tried all other avenues, but yet you persist in this madness. I hope, for your sake, your end is swift.",
 		"attacked": "It is silence that allows evil to triumph. We will not stand mute and allow you to continue on this mad quest unchecked.",
 		"defeated": "God and history will remember your actions this day. I hope you are ready for your impending judgment.",
+		"denounced": "What a waste of time.",
 		"introduction": "A thousand welcomes to our fair nation. I am Selassie, the Ras Tafari Makonnen and Emperor of Ethiopia, your humble servant.",
 		"tradeRequest": "I request that you consider this offer between our two peoples. I believe it will do us both good.",
 
@@ -1072,8 +1091,20 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "I guess you weren't here for the sprouts after all...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [153,255,51],
+		"innerColor": [127, 177, 236],
 		"cities": ["Brussels"]
+	},
+	{
+		"name": "Bucharest",
+		"adjective": ["Bucuresti"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "I guess you weren't here for the sprouts after all...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [113, 227, 114],
+		"cities": ["Bucharest"]
 	},
 	{
 		"name": "Florence",
@@ -1084,32 +1115,32 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "And so the flower of Florence falls to barbaric hands...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [62,197,252],
+		"innerColor": [18, 188, 221],
 		"cities": ["Florence"]
 	},
 	{
-		"name": "Hanoi",
-		"adjective": ["Hanoi"],
-		"cityStateType": "Cultured",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "So this is how it feels to die...",
-		"outerColor": [0, 0, 0],
-        "innerColor": [51,51,255],
-		"cities": ["Hanoi"]
-	},
-	{
 		"name": "Kabul",
-		"adjective": ["Kabul"],
+		"adjective": ["Kabuli"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Unacceptable!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [168,38,102],
+		"innerColor": [121, 226, 0],
 		"cities": ["Kabul"]
+	},
+	{
+		"name": "Kathmandu",
+		"adjective": ["Kathmanduites"],
+		"cityStateType": "Cultured", // Changed from Cultured to Religious in BNW
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We... defeated? No... we had so much work to do!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [186, 18, 202],
+		"cities": ["Kathmandu"]
 	},
 	{
 		"name": "Kuala Lumpur",
@@ -1120,20 +1151,8 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Today, the Malay people obey you, but do not think this is over...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,102,102],
+		"innerColor": [222, 237, 59],
 		"cities": ["Kuala Lumpur"]
-	},
-	{
-		"name": "Lhasa",
-		"adjective": ["tibetano"],
-		"cityStateType": "Cultured",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Perhaps now we will find peace in death...",
-		"outerColor": [0, 0, 0],
-		"innerColor": [204,102,0],
-		"cities": ["Lhasa"]
 	},
 	{
 		"name": "Milan",
@@ -1144,37 +1163,61 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "You fiend! History shall remember this!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [185,132,66],
+		"innerColor": [225, 194, 129],
 		"cities": ["Milan"]
 	},
 	{
-		"name": "Quebec City",
-		"adjective": ["Québécois"],
+		"name": "Monaco",
+		"adjective": ["Monegasque"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "You fiend! History shall remember this!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [193, 84, 255],
+		"cities": ["Monaco"]
+	},
+	{
+		"name": "Prague",
+		"adjective": ["Praguer", "Pragueite"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "You fiend! History shall remember this!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [51, 97, 242],
+		"cities": ["Prague"]
+	},
+	{
+		"name": "Yerevan",
+		"adjective": ["Yerevantsi"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "We were too weak to protect ourselves...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [51,102,0],
-		"cities": ["Quebec City"]
+		"innerColor": [225, 194, 129],
+		"cities": ["Yerevan"]
 	},
 
 	{
 		"name": "Cape Town",
-		"adjective": ["Cape Town"],
+		"adjective": ["Capetonian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "I have failed. May you, at least, know compassion towards our people.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,153],
+		"innerColor": [217, 158, 78],
 		"cities": ["Cape Town"]
 	},
 	{
-		"name": "Helsinki",
-		"adjective": ["Helsinki"],
+		"name": "Helsinki", // In GK, Helsinki becomes a Swedish city.
+		"adjective": ["Helsinkian"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1182,7 +1225,8 @@
 		"defeated": "The day of judgement has come to us. But rest assured, the same will go for you!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,178,102],
-		"cities": ["Helsinki"]
+		"cities": ["Helsinki"],
+        "uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
 		"name": "Manila",
@@ -1193,20 +1237,58 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Ah, Gods! Why have you forsaken us?",
 		"outerColor": [0, 0, 0],
-		"innerColor": [96,96,96],
+		"innerColor": [113, 227, 114],
 		"cities": ["Manila"]
 	},
 	{
-		"name": "Mogadishu",
-		"adjective": ["Mogadishu"],
+		"name": "Mogadishu", // Introduced in BNW
+		"adjective": ["Maqdishawi"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Congratulations, conqueror. This tribe serves you now.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [224,224,224],
-		"cities": ["Mogadishu"]
+		"innerColor": [127, 177, 236],
+		"cities": ["Mogadishu"],
+        "uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
+	},
+	{
+		"name": "Mombasa",
+		"adjective": ["Mombasaan"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Congratulations, conqueror. This tribe serves you now.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [121, 226, 0],
+		"cities": ["Mombasa"]
+	},
+	{
+		"name": "Quebec City",
+		"adjective": ["Québécois"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We were too weak to protect ourselves...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [51, 97, 242],
+		"cities": ["Quebec City"]
+	},
+	{
+		"name": "Ragusa",
+		"adjective": ["Ragusan"],
+		"cityStateType": "Maritime",
+		"startBias": ["Coast"],
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We were too weak to protect ourselves...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0, 163, 181],
+		"cities": ["Ragusa"]
 	},
 	{
 		"name": "Rio de Janeiro",
@@ -1223,19 +1305,19 @@
 	},
 	{
 		"name": "Sydney",
-		"adjective": ["Sydney"],
+		"adjective": ["Sydneysider"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
 		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
 		"defeated": "The principles for which we have fought will survive longer than any nation you could ever build.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,204,204],
+		"innerColor": [51, 97, 242],
 		"cities": ["Sydney"]
 	},
 	{
-		"name": "Ur",
-		"adjective": ["Ur"],
+		"name": "Ur", // Introduced in BNW
+		"adjective": ["Urian"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
@@ -1243,11 +1325,12 @@
 		"attacked": "Why do we fight? Because Inanna demands it. Now, witness the power of the Sumerians!",
 		"defeated": "What treachery has struck us? No, what evil?",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,69,0],
-		"cities": ["Ur"]
+		"innerColor": [167, 16, 216],
+		"cities": ["Ur"],
+        "uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
-		"name": "Vancouver",
+		"name": "Vancouver", // Introduced in BNW
 		"adjective": ["Vancouverite"],
 		"cityStateType": "Maritime",
 
@@ -1255,8 +1338,9 @@
 		"attacked": "As we can reach no peaceful resolution with you, Canada must turn, with reluctance, to war.",
 		"defeated": "I regret not defending my country to the last, although it was not of use.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,255,128],
-		"cities": ["Vancouver"]
+		"innerColor": [193, 84, 255],
+		"cities": ["Vancouver"],
+        "uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
 		"name": "Venice",
@@ -1274,7 +1358,7 @@
 
 	{
 		"name": "Antwerp",
-		"adjective": ["Antwerp"],
+		"adjective": ["Antwerpenaar", "Antwerpian"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
@@ -1282,33 +1366,57 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "They will write songs of this.... pray that they shall be in your favor.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [194,97,255],
+		"innerColor": [193, 84, 255],
 		"cities": ["Antwerp"]
+	},
+	{
+		"name": "Cahokia",
+		"adjective": ["Cahokian"],
+		"cityStateType": "Mercantile",
+
+		"declaringWar": "We have wanted this for a LONG time. War it shall be.",
+		"attacked": "Very well, we will kick you back to the ancient era!",
+		"defeated": "This isn't how it is supposed to be!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255, 255, 255],
+		"cities": ["Cahokia"]
+	},
+	{
+		"name": "Colombo",
+		"adjective": ["Colomboan"],
+		"cityStateType": "Mercantile",
+
+		"declaringWar": "We have wanted this for a LONG time. War it shall be.",
+		"attacked": "Very well, we will kick you back to the ancient era!",
+		"defeated": "This isn't how it is supposed to be!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [167, 162, 216],
+		"cities": ["Colombo"]
 	},
 	{
 		"name": "Genoa",
 		"adjective": ["Genoese"],
-		"cityStateType": "Mercantile",
+		"cityStateType": "Mercantile", // Changed from Maritime to Mercantile in GK
 		"startBias": ["Coast"],
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [45,255,86],
+		"innerColor": [0, 163, 181],
 		"cities": ["Genoa"]
 	},
 	{
-		"name": "Kathmandu",
-		"adjective": ["Kathmandu"],
+		"name": "Hong Kong",
+		"adjective": ["Hongkonger", "Hongkongese"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "We... defeated? No... we had so much work to do!",
+		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [151,125,0],
-		"cities": ["Kathmandu"]
+		"innerColor": [52, 97, 242],
+		"cities": ["Hong Kong"]
 	},
 	{
 		"name": "Singapore",
@@ -1319,58 +1427,82 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Perhaps, in another world, we could have been friends...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,255,0],
+		"innerColor": [246, 253, 160],
 		"cities": ["Singapore"]
 	},
 	{
 		"name": "Tyre",
 		"adjective": ["Tyrian"],
-		"cityStateType": "Mercantile",
+		"cityStateType": "Mercantile", // Changed from Militaristic to Mercantile in GK
 		"startBias": ["Coast"],
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "We never fully trusted you from the start.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,97,255],
+		"innerColor": [121, 226, 0],
 		"cities": ["Tyre"]
 	},
 	{
 		"name": "Zanzibar",
-		"adjective": ["Zanzibar"],
+		"adjective": ["Zanzibari"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "May the Heavens forgive you for inflicting this humiliation to our people.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,255],
+		"innerColor": [127, 177, 236],
 		"cities": ["Zanzibar"]
+	},
+	{
+		"name": "Zurich",
+		"adjective": ["Zuricher"],
+		"cityStateType": "Mercantile",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "May the Heavens forgive you for inflicting this humiliation to our people.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [172, 172, 172],
+		"cities": ["Zurich"]
 	},
 
 	{
 		"name": "Almaty",
-		"adjective": ["Almaty"],
+		"adjective": ["Almatinian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "How could we fall to the likes of you?!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [152,0,241],
+		"innerColor": [217, 158, 78],
 		"cities": ["Almaty"]
 	},
 	{
 		"name": "Belgrade",
-		"adjective": ["Belgrade"],
+		"adjective": ["Belgradian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Let's have a nice little War, shall we?",
 		"attacked": "If you need your nose bloodied, we'll happily serve.",
 		"defeated": "The serbian guerilla will never stop haunting you!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [211,180,113],
+		"innerColor": [121, 226, 0],
 		"cities": ["Belgrade"]
+	},
+	{
+		"name": "Budapest",
+		"adjective": ["Budapester", "Budapesti"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "Let's have a nice little War, shall we?",
+		"attacked": "If you need your nose bloodied, we'll happily serve.",
+		"defeated": "The serbian guerilla will never stop haunting you!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [217, 158, 78],
+		"cities": ["Budapest"]
 	},
 	{
 		"name": "Dublin",
@@ -1399,77 +1531,139 @@
 		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
-		"name": "M'Banza-Kongo",
-		"adjective": ["M'Banza-Kongo"],
+		"name": "Hanoi",
+		"adjective": ["Hanoian"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "So this is how it feels to die...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [167, 162, 216],
+		"cities": ["Hanoi"]
+	},
+	{
+		"name": "M'Banza-Kongo", // Introduced in BNW
+		"adjective": ["Angolan"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
 		"attacked": "We are no strangers to war. You have strayed from the right path, and now we will correct it.",
 		"defeated": "You are nothing but a glorified barbarian. Cruel, and ruthless.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,128,0],
-		"cities": ["M'Banza-Kongo"]
+		"innerColor": [18, 188, 221],
+		"cities": ["M'Banza-Kongo"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games", "Excluded from map editor"]
 	},
 	{
 		"name": "Sidon",
-		"adjective": ["Sidon"],
+		"adjective": ["Sidonian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "What a fine battle! Sidon is willing to serve you!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [250,128,114],
+		"innerColor": [186, 18, 202],
 		"cities": ["Sidon"]
 	},
 	{
 		"name": "Valletta",
-		"adjective": ["maltese"],
+		"adjective": ["Beltin"],
 		"cityStateType": "Militaristic",
+		"startBias": ["Coast"],
 
 		"declaringWar": "We don't like your face. To arms!",
 		"attacked": "You will see you have just bitten off more than you can chew.",
 		"defeated": "This ship may sink, but our spirits will linger.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,102,102],
+		"innerColor": [222, 237, 59],
 		"cities": ["Valletta"]
 	},
 
 	{
 		"name": "Bratislava",
-		"adjective": ["Bratislava"],
+		"adjective": ["Bratislavan"],
 		"cityStateType": "Religious",
 
 		"declaringWar": "I didn't want to do this. We declare war.",
 		"attacked": "I will fear no evil. For god is with me!",
 		"defeated": "Why have you forsaken us my lord?",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,255,255],
+		"innerColor": [255, 255, 255],
 		"cities": ["Bratislava"]
 	},
 	{
-		"name": "Cahokia",
-		"adjective": ["Cahokia"],
-		"cityStateType": "Religious",
+		"name": "Geneva",
+		"adjective": ["Genevan", "Genevese"],
+		"cityStateType": "Religious", // Changed from Cultured to Religious in GK
 
-		"declaringWar": "We have wanted this for a LONG time. War it shall be.",
-		"attacked": "Very well, we will kick you back to the ancient era!",
-		"defeated": "This isn't how it is supposed to be!",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "I guess you weren't here for the sprouts after all...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [203, 253, 232],
-		"cities": ["Cahokia"]
+		"innerColor": [51, 97, 242],
+		"cities": ["Geneva"]
 	},
 	{
 		"name": "Jerusalem",
-		"adjective": ["Jerusalem"],
+		"adjective": ["Jerusalemite"],
 		"cityStateType": "Religious",
 
 		"declaringWar": "By god's grace we will not allow these atrocities to occur any longer. We declare war!",
 		"attacked": "May god have mercy on your evil soul.",
 		"defeated": "I for one welcome our new conquer overlord!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [198,255,192],
+		"innerColor": [255, 255, 255],
 		"cities": ["Jerusalem"]
+	},
+	{
+		"name": "La Venta",
+		"adjective": ["La Venta"],
+		"cityStateType": "Religious",
+
+		"declaringWar": "By god's grace we will not allow these atrocities to occur any longer. We declare war!",
+		"attacked": "May god have mercy on your evil soul.",
+		"defeated": "I for one welcome our new conquer overlord!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [18, 188, 221],
+		"cities": ["La Venta"]
+	},
+	{
+		"name": "Lhasa",
+		"adjective": ["Tibetano"],
+		"cityStateType": "Religious", // Changed from Cultured to Religious in GK
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Perhaps now we will find peace in death...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [113, 227, 114],
+		"cities": ["Lhasa"]
+	},
+	{
+		"name": "Vatican City",
+		"adjective": ["Vaticano"],
+		"cityStateType": "Religious",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Perhaps now we will find peace in death...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [246, 253, 160],
+		"cities": ["Vatican City"]
+	},
+	{
+		"name": "Wittenberg",
+		"adjective": ["Wittenberger"],
+		"cityStateType": "Religious",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Perhaps now we will find peace in death...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [167, 162, 216],
+		"cities": ["Wittenberg"]
 	},
 
 

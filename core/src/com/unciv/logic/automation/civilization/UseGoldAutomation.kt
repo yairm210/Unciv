@@ -51,7 +51,7 @@ object UseGoldAutomation {
 
         if (civ.gold < 500 || knownCityStates.none()) return // skip checks if tryGainInfluence will bail anyway
         val cityState = knownCityStates
-            .filter { it.getAllyCiv() != civ.civName }
+            .filter { it.getAllyCivName() != civ.civName }
             .associateWith { NextTurnAutomation.valueCityStateAlliance(civ, it, true) }
             .maxByOrNull { it.value }?.takeIf { it.value > 0 }?.key
         if (cityState != null) {

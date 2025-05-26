@@ -341,23 +341,43 @@ Allowed values:
 
 [//]: # (Countables automatically generated BEGIN)
 -   Integer constant - any positive or negative integer number
+    - Example: `Only available <when number of [123] is more than [0]>`
 -   `turns` - Number of turns played
-    (Always starts at zero irrespective of game speed or start era)
+    - Example: `Only available <when number of [turns] is more than [0]>`
+    - Always starts at zero irrespective of game speed or start era
 -   `year` - The current year
-    (Depends on game speed or start era, negative for years BC)
+    - Example: `Only available <when number of [year] is more than [0]>`
+    - Depends on game speed or start era, negative for years BC
 -   `Cities` - The number of cities the relevant Civilization owns
+    - Example: `Only available <when number of [Cities] is more than [0]>`
 -   `Units` - The number of units the relevant Civilization owns
+    - Example: `Only available <when number of [Units] is more than [0]>`
 -   Stat name (`Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` or `Faith`)
-    gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
+    - Example: `Only available <when number of [Science] is more than [0]>`
+    - Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
 -   `Completed Policy branches`
+    - Example: `Only available <when number of [Completed Policy branches] is more than [0]>`
 -   `[cityFilter] Cities`
+    - Example: `Only available <when number of [[in all cities] Cities] is more than [0]>`
 -   `[mapUnitFilter] Units`
+    - Example: `Only available <when number of [[Wounded] Units] is more than [0]>`
 -   `[buildingFilter] Buildings`
+    - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
 -   `Remaining [civFilter] Civilizations`
+    - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Owned [tileFilter] Tiles`
+    - Example: `Only available <when number of [Owned [Farm] Tiles] is more than [0]>`
 -   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
-    (can be city stats or civilization stats, depending on where the unique is used)
-    For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
-    This can make a difference for e.g. local resources, which are counted per city.
+    - Example: `Only available <when number of [Iron] is more than [0]>`
+    - Can be city stats or civilization stats, depending on where the unique is used
+    - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
+    - This can make a difference for e.g. local resources, which are counted per city.
+-   Evaluate expressions!
+    - Example: `Only available <when number of [[Iron] + 2] is more than [0]>`
+    - Expressions support arbitrary math operations, and can include other countables, when surrounded by square brackets.
+    - For example, since `Cities` is a countable, and `[Melee] units` is a countable, you can have something like: `([[Melee] units] + 1) / [Cities]` (the whitespace is optional but helps readability)
+    - Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`
+    - Supported operations between 2 values are: +, -, *, /, %, ^
+    - Supported operations on 1 value are: - (negation), √ (square root), abs (absolute value - turns negative into positive), sqrt (square root), floor (round down), ceil (round up)
 
 [//]: # (Countables automatically generated END)

@@ -68,7 +68,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (modifiers.none()) return false
         return modifiers.any { conditional ->
             conditional.type?.targetTypes?.any {
-                it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier)
+                it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition)
+                        || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier)
+                        || it.canAcceptUniqueTarget(UniqueTarget.UnitTriggerCondition)
             }
             ?: false
         }

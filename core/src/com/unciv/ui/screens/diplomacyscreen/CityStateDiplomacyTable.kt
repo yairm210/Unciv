@@ -20,6 +20,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -128,7 +129,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.row().padTop(15f)
 
         otherCiv.cityStateFunctions.updateAllyCivForCityState()
-        var ally = otherCiv.getAllyCiv()
+        var ally = otherCiv.getAllyCivName()
         if (ally != null) {
             val allyInfluence = otherCiv.getDiplomacyManager(ally)!!.getInfluence().toInt()
             if (!viewingCiv.knows(ally) && ally != viewingCiv.civName)
@@ -174,21 +175,26 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                     .row()
         }
 
-        fun getBonusText(header: String, level: RelationshipLevel): String {
+        fun addBonusLabels(header: String, bonusLevel: RelationshipLevel, currentRelationLevel: RelationshipLevel) {
+
             val bonuses = viewingCiv.cityStateFunctions
-                .getCityStateBonuses(otherCiv.cityStateType, level)
+                .getCityStateBonuses(otherCiv.cityStateType, bonusLevel)
                 .filterNot { it.isHiddenToUsers() }
-            if (bonuses.none()) return ""
-            return (sequenceOf(header) + bonuses.map { it.getDisplayText() }).joinToString(separator = "\n") { it.tr() }
+            if (bonuses.none()) return
+            
+            val headerColor = if (currentRelationLevel == bonusLevel) Color.GREEN else Color.WHITE
+            diplomacyTable.add(header.toLabel(fontColor = headerColor).apply { setAlignment(Align.center) }).row()
+            val stateForConditionals = StateForConditionals(viewingCiv)
+            for (bonus in bonuses) {
+                val bonusLabelColor = if (currentRelationLevel == bonusLevel && bonus.conditionalsApply(stateForConditionals))
+                    Color.GREEN else Color.GRAY
+                val bonusLabel = ColorMarkupLabel(bonus.getDisplayText(), bonusLabelColor)
+                    .apply { setAlignment(Align.center) }
+                diplomacyTable.add(bonusLabel).row()
+            }
         }
-        fun addBonusLabel(header: String, bonusLevel: RelationshipLevel, relationLevel: RelationshipLevel) {
-            val bonusLabelColor = if (relationLevel == bonusLevel) Color.GREEN else Color.GRAY
-            val bonusLabel = ColorMarkupLabel(getBonusText(header, bonusLevel), bonusLabelColor)
-                .apply { setAlignment(Align.center) }
-            diplomacyTable.add(bonusLabel).row()
-        }
-        addBonusLabel("When Friends:", RelationshipLevel.Friend, relationLevel)
-        addBonusLabel("When Allies:", RelationshipLevel.Ally, relationLevel)
+        addBonusLabels("When Friends:", RelationshipLevel.Friend, relationLevel)
+        addBonusLabels("When Allies:", RelationshipLevel.Ally, relationLevel)
 
         if (otherCiv.cityStateUniqueUnit != null) {
             val unitName = otherCiv.cityStateUniqueUnit
@@ -259,7 +265,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 diplomacyScreen.updateRightSide(otherCiv)
             }.open()
         }
-        val cityStatesAlly = otherCiv.getAllyCiv()
+        val cityStatesAlly = otherCiv.getAllyCivName()
         val atWarWithItsAlly = viewingCiv.getKnownCivs()
             .any { it.civName == cityStatesAlly && it.isAtWarWith(viewingCiv) }
         if (diplomacyScreen.isNotPlayersTurn() || atWarWithItsAlly) peaceButton.disable()
@@ -349,7 +355,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         return diplomacyTable
     }
 
-    private fun getImprovableResourceTiles(otherCiv:Civilization) = otherCiv.getCapital()!!.getTiles().filter {
+    private fun getImprovableResourceTiles(otherCiv:Civilization) = otherCiv.cities.flatMap { it.getTiles() }.filter {
         it.hasViewableResource(otherCiv)
             && it.tileResource.resourceType != ResourceType.Bonus
             && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))

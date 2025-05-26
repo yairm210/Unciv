@@ -128,7 +128,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     }
 
     private fun getMilestoneButton(text: String, achieved: Boolean): TextButton {
-        val textButton = text.toTextButton()
+        val textButton = text.toTextButton(hideIcons = true)
         if (achieved) textButton.color = Color.GREEN
         else textButton.color = Color.GRAY
         return textButton

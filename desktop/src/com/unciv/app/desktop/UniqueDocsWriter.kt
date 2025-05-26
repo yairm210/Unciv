@@ -155,8 +155,9 @@ class UniqueDocsWriter {
         for (countable in Countables.entries) {
             if (countable.getDeprecationAnnotation() != null) continue
             newContent.appendLine("-   ${countable.documentationHeader}")
+            newContent.appendLine("    - Example: `Only available <when number of [${countable.example}] is more than [0]>`") // Sublist
             for (extraLine in countable.documentationStrings) {
-                newContent.append("    ")
+                newContent.append("    - ") // Sublist
                 newContent.appendLine(extraLine)
             }
         }

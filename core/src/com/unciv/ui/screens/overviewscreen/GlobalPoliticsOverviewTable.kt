@@ -497,8 +497,8 @@ class GlobalPoliticsOverviewTable(
 
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
-                        || (diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
-                        || (otherCiv.isCityState && otherCiv.getAllyCiv() == diplomacy.civInfo.civName)
+                        || (diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCivName() == diplomacy.otherCivName)
+                        || (otherCiv.isCityState && otherCiv.getAllyCivName() == diplomacy.civInfo.civName)
                     ) Color.CYAN
                     else diplomacy.relationshipLevel().color
 
