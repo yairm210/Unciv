@@ -16,7 +16,7 @@ If you're developing your mod on an Android version of Unciv (not recommended!) 
 - Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there). This uses the packing methods [documented here](https://libgdx.com/wiki/tools/texture-packer).
 - You can ask someone in the Discord server to help you out.
 - You can use external tools, [e.g. gdx-texture-packer-gui](https://github.com/crashinvaders/gdx-texture-packer-gui). Utmost care needs to be taken that the files can be discovered by Unciv and internal relative paths are correct.
-- The Unciv repo itself has a feature that can pack images on github runners
+- You can add [a copy of this workflow](https://github.com/ravignir/RekMOD/blob/master/.github/workflows/autoupdate.yml) to your mod to automatically pack the atlas on every commit to your repository. It should be placed in the same place (`.github/workflows/autoupdate.yml`) as the example.
 
 ### Rendering performance
 
