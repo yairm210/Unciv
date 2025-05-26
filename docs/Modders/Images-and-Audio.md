@@ -33,6 +33,10 @@ A file `Atlases.json` (uppercase 'A') in the mod root (not in `Images` or in `js
 This file is automatically created by the built-in packer. Only the `game.atlas` file is read by default for backward compatibility.
 If you use external tools and multiple atlases, you will need to maintain this file yourself - it is a simple json array of strings, each a file name without the `.atlas` extension (saved as UTF-8 without byte order mark).
 
+#### Smaller icons
+
+A large number of atlases may be the result of having very large icons.
+We find that 100x100 pixels is good enough for most icons.
 
 #### Circle icons
 
