@@ -27,9 +27,7 @@ jobs:
 
     - name: Setup Detekt
       id: setup_detekt
-      uses: peter-murray/setup-detekt@v2
-      with:
-        detekt_version: '1.23.4'
+      uses: peter-murray/setup-detekt@v3
 
     - name: Detekt errors
       run: detekt-cli --parallel --config .github/workflows/detekt_config/detekt-errors.yml
