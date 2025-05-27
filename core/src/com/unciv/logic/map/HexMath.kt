@@ -23,7 +23,10 @@ object HexMath {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
 
-    /** returns the number of tiles in a hexagonal map of radius size*/
+    /**
+     * @param size Radius around origin tile
+     * @return The number of tiles in a hexagonal map including origin tile
+     */
     fun getNumberOfTilesInHexagon(size: Int): Int {
         if (size < 0) return 0
         return 1 + 6 * size * (size + 1) / 2
