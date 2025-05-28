@@ -308,7 +308,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-    private fun applyVictoryBuildingValue(building: Building): Float {
+   private fun applyVictoryBuildingValue(building: Building): Float {
         var value = 0f
         if (!cityIsOverAverageProduction) return value
         if (building.isWonder) value += 2f
@@ -329,8 +329,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
         value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
-        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)
-                + building.getMatchingUniques(UniqueType.UnitStartingExperienceOld, cityState)) {
+        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
             var modifier = experienceUnique.params[1].toFloat() / 5
             modifier *= if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
             modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)
@@ -351,13 +350,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
         } else buildingStats.food *= 3
 
-        buildingStats.production *= 3
-
-        buildingStats.happiness *= 2
-
         if (civInfo.stats.statsForNextTurn.gold < 10) {
             buildingStats.gold *= 2 // We have a gold problem and need to adjust build queue accordingly
         }
+
+        if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
+            buildingStats.happiness * 5
 
         if (city.cityStats.currentCityStats.culture < 2) {
             buildingStats.culture *= 2 // We need to start growing borders
