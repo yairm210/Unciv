@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -284,7 +285,26 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     @Suppress("UNUSED_PARAMETER") // stub for future use
     private fun applyOnetimeUniqueBonuses(building: Building): Float {
         var value = 0f
-        // TODO: Add specific Uniques here
+        if (building.isWonder) {
+            // Buildings generally don't have these uniques, and Wonders generally only one of these, so we can save some time by not checking every building for every unique
+            val techRank =  civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo)
+            // Wonders are a one-time occurence: value less if someone is going to build them before us anyways
+            value += -techRank + when {
+                building.hasUnique(UniqueType.OneTimeFreePolicy) || building.hasUnique(UniqueType.OneTimeAmountFreePolicies) -> civInfo.getPersonality().culture
+                building.hasUnique(UniqueType.OneTimeFreeTech) || building.hasUnique(UniqueType.OneTimeAmountFreeTechs) -> civInfo.getPersonality().science
+                building.hasUnique(UniqueType.OneTimeAmountFreeUnits) || building.hasUnique(UniqueType.OneTimeFreeUnit) -> civInfo.getPersonality().production //Pyramids, Louvre
+                building.hasUnique(UniqueType.OneTimeFreeGreatPerson) -> civInfo.getPersonality().science // Will pick scientist
+                building.hasUnique(UniqueType.OneTimeEnterGoldenAge) || building.hasUnique(UniqueType.GoldenAgeLength) || building.hasUnique(UniqueType.OneTimeEnterGoldenAgeTurns) -> civInfo.getPersonality().expansion // Relatively more important on many cities
+                building.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement) -> civInfo.getPersonality().declareWar
+                building.hasUnique(UniqueType.OneTimeGainPopulation) || building.hasUnique(UniqueType.OneTimeGainPopulationRandomCity) -> civInfo.getPersonality().food
+                building.hasUnique(UniqueType.StatPercentFromTradeRoutes) -> civInfo.getPersonality().gold
+                building.hasUnique(UniqueType.Strength) -> civInfo.getPersonality().military
+                building.hasUnique(UniqueType.StatPercentBonusCities) -> civInfo.getPersonality().culture // Sistine Chapel in base game, but players seem to "expect" culture civs to build more wonders in general
+                else -> 0f
+            }
+        } else { 
+            value += if (building.hasUnique(UniqueType.CreatesOneImprovement)) 5f else 0f //District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
+        }
         return value
     }
 
@@ -309,7 +329,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
         value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
-        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
+        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)
+                + building.getMatchingUniques(UniqueType.UnitStartingExperienceOld, cityState)) {
             var modifier = experienceUnique.params[1].toFloat() / 5
             modifier *= if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
             modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)
@@ -330,12 +351,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
         } else buildingStats.food *= 3
 
+        buildingStats.production *= 3
+
+        buildingStats.happiness *= 2
+
         if (civInfo.stats.statsForNextTurn.gold < 10) {
             buildingStats.gold *= 2 // We have a gold problem and need to adjust build queue accordingly
         }
-
-        if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
-            buildingStats.happiness * 5
 
         if (city.cityStats.currentCityStats.culture < 2) {
             buildingStats.culture *= 2 // We need to start growing borders
