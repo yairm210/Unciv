@@ -994,7 +994,7 @@ enum class UniqueType(
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
-    @Deprecated("As of 4.15.11", ReplaceWith("[relativeAmount]% maintenance cost for [All] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("As of 4.15.11", ReplaceWith("[relativeAmount]% maintenance cost for [All] buildings [cityFilter]"), DeprecationLevel.WARNING)
     BuildingMaintenanceOld("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"), DeprecationLevel.ERROR)
     UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
