@@ -65,7 +65,7 @@ Dear future me - the automation was extremely annoying guesswork to set up, so t
 
 ## Updating the wiki
 
-Pages for the [Unciv Github Wiki](https://github.com/yairm210/Unciv/wiki/) are kept in the main repository under [docs](https://github.com/yairm210/Unciv/tree/master/docs).
+Pages for the [Unciv Github Wiki](https://yairm210.github.io/Unciv/) are kept in the main repository under [docs](https://github.com/yairm210/Unciv/tree/master/docs).
 
 The process to edit the wiki is as follows:
 
