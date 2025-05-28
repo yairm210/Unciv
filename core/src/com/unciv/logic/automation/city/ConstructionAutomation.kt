@@ -308,7 +308,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-   private fun applyVictoryBuildingValue(building: Building): Float {
+    private fun applyVictoryBuildingValue(building: Building): Float {
         var value = 0f
         if (!cityIsOverAverageProduction) return value
         if (building.isWonder) value += 2f
