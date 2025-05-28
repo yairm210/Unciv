@@ -287,9 +287,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var value = 0f
         if (building.isWonder) {
             // Buildings generally don't have these uniques, and Wonders generally only one of these, so we can save some time by not checking every building for every unique
-            val techRank =  civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo)
+            if (!building.isNationalWonder) value -= civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo)
             // Wonders are a one-time occurence: value less if someone is going to build them before us anyways
-            value += -techRank + when {
+            value += when {
                 building.hasUnique(UniqueType.OneTimeFreePolicy) || building.hasUnique(UniqueType.OneTimeAmountFreePolicies) -> civInfo.getPersonality().culture
                 building.hasUnique(UniqueType.OneTimeFreeTech) || building.hasUnique(UniqueType.OneTimeAmountFreeTechs) -> civInfo.getPersonality().science
                 building.hasUnique(UniqueType.OneTimeAmountFreeUnits) || building.hasUnique(UniqueType.OneTimeFreeUnit) -> civInfo.getPersonality().production //Pyramids, Louvre
