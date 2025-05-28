@@ -647,7 +647,7 @@
                 "name": "Socialism",
                 "requires": ["Planned Economy"],
                 "uniques": [
-                    "[-15]% maintenance cost for buildings [in all cities]"
+                    "[-15]% maintenance cost for [All] buildings [in all cities]"
                 ],
                 "row": 2,
                 "column": 3
