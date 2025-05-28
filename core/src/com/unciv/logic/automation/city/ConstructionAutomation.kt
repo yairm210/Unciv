@@ -281,8 +281,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-
-    @Suppress("UNUSED_PARAMETER") // stub for future use
     private fun applyOnetimeUniqueBonuses(building: Building): Float {
         var value = 0f
         if (building.isWonder) {
