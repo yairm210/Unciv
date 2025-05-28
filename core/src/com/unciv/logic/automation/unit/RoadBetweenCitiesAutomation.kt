@@ -25,17 +25,17 @@ private object WorkerAutomationConst {
 /** Responsible for the "connect cities" automation as part of worker automation */
 class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int, cloningSource: RoadBetweenCitiesAutomation? = null) {
 
-    /** Caches BFS by city locations (cities needing connecting).
+    /**
+     * Caches BFS by city locations (cities needing connecting)
      *
-     *  key: The city to connect from as [hex position][Vector2].
+     * key: The city to connect from as [hex position][Vector2]
      *
-     *  value: The [BFS] searching from that city, whether successful or not.
+     * value: The [BFS] searching from that city, whether successful or not
      */
     //todo: If BFS were to deal in vectors instead of Tiles, we could copy this on cloning
     private val bfsCache = HashMap<Vector2, BFS>()
 
-
-    /** Caches road to build for connecting cities unless option is off or ruleset removed all roads */
+    /** Caches road type to build for connecting cities, unless option is off or ruleset removed all roads */
     internal val bestRoadAvailable: RoadStatus =
         cloningSource?.bestRoadAvailable ?:
         //Player can choose not to auto-build roads & railroads.
@@ -44,7 +44,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
             RoadStatus.None
         else civInfo.tech.getBestRoadAvailable()
 
-    /** Civ-wide list of _connected_ Cities, unsorted */
+    /** Civ-wide city center tile list of _connected_ Cities, unsorted */
     private val tilesOfConnectedCities: List<Tile> by lazy {
         val result = civInfo.cities.asSequence()
             .filter { it.isCapital() || it.cityStats.isConnectedToCapital(bestRoadAvailable) }
@@ -61,33 +61,46 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
         result
     }
 
-    /** Cache of roads to connect cities each turn. Call [getRoadsToBuildFromCity] instead of using this */
+    /**
+     * Cache of cities and their road plans to connect to the surounding cities each turn.
+     * Call [getRoadsToBuildFromCity] instead of using this.
+     */
     private val roadsToBuildByCitiesCache: HashMap<City, List<RoadPlan>> = HashMap()
 
-    /** Hashmap of all cached tiles in each list in [roadsToBuildByCitiesCache] */
+    /** Hashmap of all cached tiles in each [RoadPlan] list in [roadsToBuildByCitiesCache] */
     internal val tilesOfRoadsMap: HashMap<Tile, RoadPlan> = HashMap()
 
+    /**
+     * Road plan (path) between two cities taking into account best available existing roads and population counts.
+     * 
+     * @param tiles Tiles included in the road plan
+     * @param priority Road plan priority
+     * @param fromCity Starting city
+     * @param toCity Destination city
+     */
     inner class RoadPlan(val tiles: List<Tile>, val priority: Float, val fromCity: City, val toCity: City) {
         val numberOfRoadsToBuild: Int by lazy { tiles.count { it.getUnpillagedRoad() != bestRoadAvailable } }
     }
 
-
     /**
-     * Tries to return a list of road plans to connect this city to the surrounding cities.
-     * If there are no surrounding cities to connect to and this city is still unconnected to the capital it will try and build a special road to the capital.
+     * Tries to return a list of road plans to connect [city] to the surrounding cities.
+     * If there are no surrounding cities to connect to and [city] is still unconnected to the capital it will try and build a special road to the capital.
      *
-     * @return every road that we want to try and connect assosiated with this city.
+	 * @param city The [City] for which to obtain road plans 
+     * @return Every [RoadPlan] that we want to try and connect associated with [city].
      */
     fun getRoadsToBuildFromCity(city: City): List<RoadPlan> {
         if (roadsToBuildByCitiesCache.containsKey(city)) {
             return roadsToBuildByCitiesCache[city]!!
         }
+
         // TODO: some better worker representative needs to be used here
         val workerUnit = civInfo.gameInfo.ruleset.units.map { it.value }.firstOrNull { it.hasUnique(UniqueType.BuildImprovements) }
             // This is a temporary unit only for AI purposes so it doesn't get a unique ID
             ?.getMapUnit(civInfo, Constants.NO_ID) ?: return listOf()
         val roadToCapitalStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
 
+        /** @return Rank 0, 1 or 2 of how important it is to build best available road to capital */
         fun rankRoadCapitalPriority(roadStatus: RoadStatus): Float {
             return when(roadStatus) {
                 RoadStatus.None -> if (bestRoadAvailable != RoadStatus.None) 2f else 0f
@@ -159,6 +172,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
         return roadsToBuild
     }
 
+    /** @return Lowest road level (aka. road type) in road path */
     private fun getWorstRoadTypeInPath(path: List<Tile>): RoadStatus {
         var worstRoadTile = RoadStatus.Railroad
         for (tile in path) {
@@ -207,8 +221,10 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
     }
 
     /**
-     * Most importantly builds the cache so that [chooseImprovement] knows later what tiles a road should be built on
-     * Returns a list of all the cities close by that this worker may want to connect
+     * Most importantly builds the cache so that [chooseImprovement] knows later what tiles a road should be built on.
+     *
+     * @param unit Civilian unit which may want to connect cities
+     * @return A list of all cities the [unit] will try to connect if in its vicinity
      */
     internal fun getNearbyCitiesToConnect(unit: MapUnit): List<City> {
         if (bestRoadAvailable == RoadStatus.None) return listOf()
@@ -222,8 +238,10 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, cachedForTurn: Int,
     }
 
     /**
-     * Looks for work connecting cities. Used to search for far away roads to build.
-     * @return whether we actually did anything
+     * Looks for work to connect cities. Used to search for far away roads to build.
+     *
+     * @param unit Civilian unit which will try to connect cities
+     * @return Whether we actually did anything
      */
     internal fun tryConnectingCities(unit: MapUnit, candidateCities: List<City>): Boolean {
         if (bestRoadAvailable == RoadStatus.None) return false
