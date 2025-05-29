@@ -29,7 +29,8 @@ private object WorkerAutomationConst {
  * @param cachedForTurn The turn number the instance was created for, road plans are recalculated each turn
  * @param cloningSource ?
  */
-class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: Int, cloningSource: RoadBetweenCitiesAutomation? = null) {
+// TODO: Don't build railroads to coastal cities that benefit from harbor connection, maintain roads only for mobility
+class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedForTurn: Int, cloningSource: RoadBetweenCitiesAutomation? = null) {
 
     /**
      * Caches BFS by city locations (cities needing connecting)
@@ -112,7 +113,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: 
      */
     private fun isOldRoadPlan(roadPlan: RoadPlan): Boolean {
         for (tile in roadPlan.tiles)
-            // Consider pillaged road as part of existing road path
             if (tile.roadStatus > RoadStatus.None || tile.roadIsPillaged)
                 continue
             else return false
@@ -175,7 +175,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: 
             }
 
             // Try to build a plan for the road to the city
-            // TODO: Will may return inconsistent path accross turns due to worker position, this makes is impossible to plan an exact road resulting in excessive roads built
+            // TODO: May return inconsistent paths accross turns due to worker position, this makes is impossible to plan an exact road resulting in excessive roads built
             val roadPath = if (civInfo.cities.indexOf(city) < civInfo.cities.indexOf(closeCity)) MapPathing.getRoadPath(workerUnit, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
                 else MapPathing.getRoadPath(workerUnit, closeCity.getCenterTile(), city.getCenterTile()) ?: continue
             val worstRoadStatus = getWorstRoadTypeInPath(roadPath)
@@ -193,17 +193,14 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: 
 
             val newRoadPlan = RoadPlan(roadPath, roadPriority + (city.population.population + closeCity.population.population) / 4f, city, closeCity)
             roadsToBuild.add(newRoadPlan)
-            for (tile in newRoadPlan.tiles) {
-                if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < newRoadPlan.priority)
-                    tilesOfRoadsMap[tile] = newRoadPlan
-            }
         }
         
         // Keep only the shortest road plan for non capital cities and drop other plans
         // TODO: Capital city should not plan a road to city that is already connected to capital via some another city
         if (roadsToBuild.size > 1 && !city.isCapital()) {
             val existingRoadPlans: MutableList<RoadPlan> = mutableListOf()
-            // The best plan is that which reuses existing roads to upgrade, and that which is shortest distance
+            // The best road plan is that which reuses existing roads to upgrade them to railroad if they exist,
+            // followed by choosing a plan with shortest distance paying attention to already built road paths
             val theBestPlan: RoadPlan
 
             // If Civilization discovered Railroads then upgrade existing road networks instead of creating brand new ones
@@ -216,7 +213,8 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: 
 
                 theBestPlan = if (existingRoadPlans.isEmpty()) {
                     getShortestRoadPlan(roadsToBuild)
-                } else {
+                }
+                else {
                     getShortestRoadPlan(existingRoadPlans)
                 }
             }
@@ -227,16 +225,23 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: 
             roadsToBuild.clear()
             roadsToBuild.add(theBestPlan)
 
-            // Also regenerate tile cache of the new road plan
-            // TODO: See if regenerating can be delayed to this point to avoid duplicate work
-            tilesOfRoadsMap.clear()
-            for (tile in theBestPlan.tiles)
-                tilesOfRoadsMap[tile] = theBestPlan
+            for (tile in theBestPlan.tiles) {
+                if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < theBestPlan.priority)
+                    tilesOfRoadsMap[tile] = theBestPlan
+            }
+        }
+        else {
+            for (roadPlan in roadsToBuild) {
+                for (tile in roadPlan.tiles) {
+                    if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < roadPlan.priority)
+                        tilesOfRoadsMap[tile] = roadPlan
+                }
+            }
         }
 
         // If and only if we have no roads to build to close-by cities then we check for a road to build to the capital
         // TODO: The condition !city.isConnectedToCapital() is to avoid BFS for cities connected to capital with roads when railroads are unlocked
-        if (roadsToBuild.isEmpty() && roadToCapitalStatus < bestRoadAvailable && !city.isConnectedToCapital()) {
+        if (roadsToBuild.isEmpty() && (roadToCapitalStatus < bestRoadAvailable) && !city.isConnectedToCapital()) {
             val roadToCapital = getRoadToConnectCityToCapital(workerUnit, city)
 
             if (roadToCapital != null) {
@@ -255,7 +260,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: 
 
         roadsToBuildByCitiesCache[city] = roadsToBuild
         
-        // Will log duplicate entires
+        // Will log duplicate road plans (but plans themself are not duplicated in game)
         if(Log.shouldLog()) {
             if (roadsToBuildByCitiesCache[city]!!.isNotEmpty())
                 debug("Road plans on turn $cachedForTurn:")
@@ -316,7 +321,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, val cachedForTurn: 
     }
 
     /**
-     * Most importantly builds the cache so that [chooseImprovement] knows later what tiles a road should be built on.
+     * Most importantly builds the cache so that [WorkerAutomation.chooseImprovement] knows later what tiles a road should be built on.
      *
      * @param unit Civilian unit which may want to connect cities
      * @return A list of all cities the [unit] will try to connect if in its vicinity
