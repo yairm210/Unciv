@@ -348,15 +348,21 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         this.city = city
         setAction(SpyAction.Moving, 1)
     }
+    
+    private fun canDismissAgreementToNotSendSpies(city: City): Boolean {
+        val otherCiv = city.civ
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)
+        if (otherCivDiplomacyManager != null &&
+            otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
+            otherCiv.tech.techsResearched.size-civInfo.tech.techsResearched.size <= 5) {
+            return true
+        }
+        return false
+    }
 
     fun canMoveTo(city: City): Boolean {
-
-        val otherCivDiplomacyManager = city.civ.getDiplomacyManager(civInfo)
-        if (otherCivDiplomacyManager != null &&
-            otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-            return false
-        }
         if (getCityOrNull() == city) return true
+        if (canDismissAgreementToNotSendSpies(city)) return false
         if (!city.getCenterTile().isExplored(civInfo)) return false
         return espionageManager.getSpyAssignedToCity(city) == null
     }
