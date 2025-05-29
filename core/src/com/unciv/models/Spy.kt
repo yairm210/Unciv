@@ -350,19 +350,28 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
     
     private fun canDismissAgreementToNotSendSpies(city: City): Boolean {
-        val otherCiv = city.civ
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)
-        if (otherCivDiplomacyManager != null &&
-            otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
-            otherCiv.tech.techsResearched.size-civInfo.tech.techsResearched.size <= 5) {
+        val otherCivDiplomacyManager = city.civ.getDiplomacyManager(civInfo) ?: return false
+        val otherCiv = otherCivDiplomacyManager.civInfo
+        
+        val techSize = civInfo.gameInfo.ruleset.technologies.values.size.toFloat()
+        val ourResearchTechSize = civInfo.tech.techsResearched.size.toFloat()
+        val otherCivResearchTechSize =  otherCiv.tech.techsResearched.size.toFloat()
+        
+        val ourTechResachLevel = ((ourResearchTechSize/techSize)*100f)
+        val otherCivTechResachLevel = ((otherCivResearchTechSize/techSize)*100f)
+        
+        println(otherCivTechResachLevel-ourTechResachLevel)
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
+            // if there is more than 5% difference in tech compare to the civ in tech we bypass the agreement
+            otherCivTechResachLevel-ourTechResachLevel <= 10f) {   
             return true
         }
         return false
     }
 
     fun canMoveTo(city: City): Boolean {
-        if (getCityOrNull() == city) return true
         if (canDismissAgreementToNotSendSpies(city)) return false
+        if (getCityOrNull() == city) return true
         if (!city.getCenterTile().isExplored(civInfo)) return false
         return espionageManager.getSpyAssignedToCity(city) == null
     }
