@@ -90,36 +90,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         // TODO: This number is not consistent across turns because pathing depends on worker position
         val numberOfRoadsToBuild: Int by lazy { tiles.count { it.getUnpillagedRoad() != bestRoadAvailable } }
     }
-
-    /**
-     * @return Shortest distance [RoadPlan] from given list of road plans
-     */
-    private fun getShortestRoadPlan(roadsToBuild: MutableList<RoadPlan>): RoadPlan {
-        // TODO: If two plans are same size prioritirize the one closer to the frontier (empire borders) to improve mobility on frontier during combat 
-        var shortestPlan: RoadPlan = roadsToBuild.first()
-        var planSize = roadsToBuild.maxOf { it.numberOfRoadsToBuild }
-
-        for (roadPlan in roadsToBuild) {
-            if (roadPlan.numberOfRoadsToBuild < planSize) {
-                planSize = roadPlan.numberOfRoadsToBuild
-                shortestPlan = roadPlan
-            }
-        }
-
-        return shortestPlan
-    }
-    
-    /**
-     * @return true if this road plan is fully chained by existing roads or better (pillaged roads in path count as valid)
-     */
-    private fun isOldRoadPlan(roadPlan: RoadPlan): Boolean {
-        for (tile in roadPlan.tiles)
-            if (tile.roadStatus > RoadStatus.None || tile.roadIsPillaged)
-                continue
-            else return false
-        
-        return true
-    }
     
     /**
      * Tries to return a list of road plans to connect [city] to the surrounding cities.
@@ -196,34 +166,32 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             roadsToBuild.add(newRoadPlan)
         }
         
-        // Keep only the shortest road plan for non capital cities and drop other plans
+        // Keep only the shortest road plan and drop other plans
         if (roadsToBuild.size > 1) {
             val existingRoadPlans: MutableList<RoadPlan> = mutableListOf()
             // The best road plan is that which reuses existing roads to upgrade them to railroad if they exist,
             // followed by choosing a plan with shortest distance paying attention to already built road paths
-            val bestPlan: RoadPlan
-
-            // If Civilization discovered Railroads then upgrade existing road networks instead of creating brand new ones
-            // to avoid duplication of roads to newly settled cities that didn't exist during old road construction
-            if (bestRoadAvailable == RoadStatus.Railroad) {
+            val bestPlan = if (bestRoadAvailable == RoadStatus.Railroad) {
+                // If Civilization discovered Railroads then upgrade existing road networks instead of creating brand new ones
+                // to avoid duplication of roads to newly settled cities that didn't exist during old road construction
                 for (roadPlan in roadsToBuild) {
-                    if (isOldRoadPlan(roadPlan))
+                    if (roadPlan.tiles.all { (it.roadStatus > RoadStatus.None) || it.roadIsPillaged })
                         existingRoadPlans.add(roadPlan)
                 }
 
-                bestPlan = if (existingRoadPlans.isEmpty()) {
-                    getShortestRoadPlan(roadsToBuild)
+                if (existingRoadPlans.isEmpty()) {
+                    roadsToBuild.minByOrNull { it.numberOfRoadsToBuild }
                 }
                 else {
-                    getShortestRoadPlan(existingRoadPlans)
+                    existingRoadPlans.minByOrNull { it.numberOfRoadsToBuild }
                 }
             }
             else {
-                bestPlan = getShortestRoadPlan(roadsToBuild)
+                roadsToBuild.minByOrNull { it.numberOfRoadsToBuild }
             }
             
             roadsToBuild.clear()
-            roadsToBuild.add(bestPlan)
+            roadsToBuild.add(bestPlan!!)
 
             for (tile in bestPlan.tiles) {
                 if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < bestPlan.priority)
