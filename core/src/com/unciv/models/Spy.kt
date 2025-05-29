@@ -359,14 +359,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         
         val ourTechResachLevel = ((ourResearchTechSize/techSize)*100f)
         val otherCivTechResachLevel = ((otherCivResearchTechSize/techSize)*100f)
-        
-        println(otherCivTechResachLevel-ourTechResachLevel)
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
             // if there is more than 5% difference in tech compare to the civ in tech we bypass the agreement
-            otherCivTechResachLevel-ourTechResachLevel <= 10f) {   
-            return true
+            otherCivTechResachLevel-ourTechResachLevel <= 10f) {
+            return false
         }
-        return false
+        return true
     }
 
     fun canMoveTo(city: City): Boolean {
