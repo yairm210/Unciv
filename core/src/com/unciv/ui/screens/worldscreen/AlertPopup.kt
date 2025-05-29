@@ -301,8 +301,8 @@ class AlertPopup(
         if (otherciv.isDefeated()) return false
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
-        addGoodSizedLabel("Please don't spy on us.").row() // 
-        addCloseButton("We see our people are not welcome in your lands... we will take our attention elsewhere", KeyboardBinding.Confirm) {
+        addGoodSizedLabel("Please don't spy on us.").row()
+        addCloseButton("We see our people are not welcome in your lands... we will take our attention elsewhere.", KeyboardBinding.Confirm) {
             playerDiploManager.agreeNotToSpreadSpiesTo()
         }.row()
         addCloseButton("I'll do what's necessary for my empire to survive.", KeyboardBinding.Cancel) {
@@ -314,7 +314,7 @@ class AlertPopup(
     private fun addSpyingOnUsDespiteOurPromise(): Boolean {
         val otherciv = getCiv(popupAlert.value)
         if (otherciv.isDefeated()) return false
-        addGoodSizedLabel("We noticed you have continued spying on us, despite your promise. This will have....consequences.").row()
+        addGoodSizedLabel("Take back your spy and your broken promises.").row()
         addCloseButton("Very well.")
         return true
     }
