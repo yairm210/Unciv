@@ -61,7 +61,6 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         add(responseLabel).colspan(2).maxWidth(screen.stage.width * 0.8f)
 
         keyShortcuts.add(KeyCharAndCode.BACK) { close() }
-        clickBehindToClose = true
 
         textField.keyShortcuts.add(Input.Keys.ENTER, ::onEnter)
         textField.keyShortcuts.add(KeyCharAndCode.TAB, ::onAutocomplete)
@@ -72,6 +71,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         keyShortcuts.add(Input.Keys.UP) { navigateHistory(-1) }
         keyShortcuts.add(Input.Keys.DOWN) { navigateHistory(1) }
 
+        setFillParent(false) // ALLOW clicking the map while the console is open!
         open(true)
 
         screen.stage.keyboardFocus = textField

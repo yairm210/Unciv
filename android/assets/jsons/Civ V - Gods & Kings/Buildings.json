@@ -446,6 +446,7 @@
 	{
 		"name": "Hagia Sophia",
 		"faith": 3,
+		"greatPersonPoints": {"Great Artist": 1},
 		"isWonder": true,
 		"uniques": ["Gain a free [Temple] [in this city]", "Free [Great Prophet] appears", "Only available <when religion is enabled>"],
 		"requiredTech": "Theology",
@@ -495,8 +496,8 @@
 	{
 		"name": "Machu Picchu",
 		"gold": 5,
+		"faith": 2,
 		"greatPersonPoints": {"Great Merchant": 1},
-		"culture": 1,
 		"isWonder": true,
 		"uniques": ["[+25]% [Gold] from Trade Routes", "Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Guilds",
@@ -860,8 +861,8 @@
 	},
 	{
 		"name": "The Louvre",
-		"culture": 1,
-		"happiness": 4,
+		"culture": 4,
+		"greatPersonPoints": {"Great Artist": 2},
 		"isWonder": true,
 		"uniques": ["[2] free [Great Artist] units appear"],
 		"requiredTech": "Archaeology",
