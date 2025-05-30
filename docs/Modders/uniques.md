@@ -3312,6 +3312,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon conquering a city&gt;"
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
+??? example  "&lt;upon losing a city&gt;"
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition
 
