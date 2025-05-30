@@ -98,7 +98,7 @@ class WorkerAutomation(
         if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return
 
         // Priotirize connecting grown cities without connection to capital over undeveloped cities (for gold income)
-        val grownCities: List<City> = citiesToConnect.filter { it.population.getPopulationFilterAmount("Population") > 6 }
+        val grownCities: List<City> = citiesToConnect.filter { it.population.population > 6 }
         if (roadBetweenCitiesAutomation.tryConnectingCities(unit, grownCities)) return
         
         if (tryHeadTowardsUndevelopedCity(unit, localUniqueCache, currentTile)) return
