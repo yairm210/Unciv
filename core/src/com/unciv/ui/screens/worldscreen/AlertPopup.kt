@@ -238,7 +238,7 @@ class AlertPopup(
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
         addGoodSizedLabel(
-                if (otherciv.nation.friendship.isNotEmpty()) otherciv.nation.friendship else "My friend, shall we declare our friendship to the world?"
+                if (otherciv.nation.declaringFriendship.isNotEmpty()) otherciv.nation.declaringFriendship else "My friend, shall we declare our friendship to the world?"
         ).row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
@@ -247,7 +247,7 @@ class AlertPopup(
             playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
         }.row()
         val music = UncivGame.Current.musicController
-        music.playVoice("${otherciv.nation.name}.friendship")
+        music.playVoice("${otherciv.nation.name}.declaringFriendship")
         return true
     }
 
