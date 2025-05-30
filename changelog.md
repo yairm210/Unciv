@@ -1,3 +1,19 @@
+## 4.16.12
+
+Modding:
+- Warn of rendering performance problems for split atlases
+- Avoid crash from "in this city" uniques when not applied in the context of a city 
+
+New countable for adopted policies supports policyFilter - By SomeTroglodyte 
+
+Added UponLosingCity unique - By PLynx01
+
+By RobLoach:
+- Vanilla, Gods & Kings: Fix Hagia Sophia effects
+- Add Great Person group names 
+
+AI: updated wonder evaluation - By EmperorPinguin
+
 ## 4.16.11
 
 Don't spawn prophet in holy city if it's been taken over

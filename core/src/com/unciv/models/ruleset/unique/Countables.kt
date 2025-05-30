@@ -120,6 +120,18 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
+    FilteredPolicies("Adopted [policyFilter] Policies") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val policyManager = stateForConditionals.civInfo?.policies ?: return null
+            return policyManager.getAdoptedPoliciesMatching(filter, stateForConditionals).size
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.PolicyFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.PolicyFilter.getKnownValuesForAutocomplete(ruleset)
+    },
+
     RemainingCivs("Remaining [civFilter] Civilizations") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
