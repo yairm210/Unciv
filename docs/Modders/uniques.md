@@ -3510,16 +3510,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every [countable]&gt;"
+	Works for positive numbers only
 	Example: "&lt;for every [1000]&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every adjacent [tileFilter]&gt;"
+	Works for positive numbers only
 	Example: "&lt;for every adjacent [Farm]&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every [positiveAmount] [countable]&gt;"
+	Works for positive numbers only
 	Example: "&lt;for every [3] [1000]&gt;"
 
 	Applicable to: MetaModifier

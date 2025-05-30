@@ -1,37 +1,18 @@
 ## 4.16.12
 
-doc: all for-every uniques are positive only
+Modding:
+- Warn of rendering performance problems for split atlases
+- Avoid crash from "in this city" uniques when not applied in the context of a city 
 
-doc: Drop hard-to-parse sentence
-
-doc: Added 'for every [countable]' works onlyu with positive numbers
-
-Warn of rendering performance problems for split atlases
-
-Better documentation for adding texture packer autoupdate
-
-Unified doc for rendering performance
-
-Unified doc for rendering performance
-
-Fix 'in this city' for everyone
-
-Avoid crash from "remove building in this city" uniques when not applied in the context of a city - see 
-
-By SomeTroglodyte:
-- New countable for adopted policies supports policyFilter 
-- Bump detekt plugin version 
-- Upgrade remaining Gradle files to 8.11.1 
+New countable for adopted policies supports policyFilter - By SomeTroglodyte 
 
 Added UponLosingCity unique - By PLynx01
 
 By RobLoach:
-- Vanilla, Gods & Kings: Fix Hagia Sophia effects 
+- Vanilla, Gods & Kings: Fix Hagia Sophia effects
 - Add Great Person group names 
 
 AI: updated wonder evaluation - By EmperorPinguin
-
-Add comments to identifiers used in RoadBetweenCitiesAutomation.kt - By metablaster
 
 ## 4.16.11
 
