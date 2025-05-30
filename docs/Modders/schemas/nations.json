@@ -38,7 +38,7 @@
           "attacked": { "type": "string" },
           "defeated": { "type": "string" },
           "denounced": { "type": "string" },
-          "friendship": { "type": "string" },
+          "declaringFriendship": { "type": "string" },
           "startIntroPart1": { "type": "string" },
           "startIntroPart2": { "type": "string" },
           "cities": {
