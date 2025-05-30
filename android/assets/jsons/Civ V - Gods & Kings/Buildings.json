@@ -446,6 +446,7 @@
 	{
 		"name": "Hagia Sophia",
 		"faith": 3,
+		"greatPersonPoints": {"Great Artist": 1},
 		"isWonder": true,
 		"uniques": ["Gain a free [Temple] [in this city]", "Free [Great Prophet] appears", "Only available <when religion is enabled>"],
 		"requiredTech": "Theology",
