@@ -118,8 +118,8 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         }
 
         val basePriority = rankRoadCapitalPriority(roadToCapitalStatus)
-
         val roadPlans: MutableList<RoadPlan> = mutableListOf()
+
         for (closeCity in city.neighboringCities.filter { it.civ == civInfo && it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= 8 }) {
             // Try to find if the other city has planned to build a road to this city
             if (roadsToBuildByCitiesCache.containsKey(closeCity)) {
@@ -138,10 +138,11 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
             if (roadToCapitalStatus == bestRoadAvailable) {
                 if(Log.shouldLog()) {
+                    val message = "Turn $cachedForTurn - civ ${civInfo.civName}: city ${city.name} has the best connection to capital via"
                     if (city.cityConstructions.containsBuildingOrEquivalent("Harbor"))
-                        debug("Turn $cachedForTurn - civ ${civInfo.civName}: city ${city.name} has the best connection to capital via Harbor")
+                        debug("$message Harbor")
                     else
-                        debug("Turn $cachedForTurn - civ ${civInfo.civName}: city ${city.name} has the best connection to capital via ${bestRoadAvailable.name}")
+                        debug("$message ${bestRoadAvailable.name}")
                 }
 
                 // Avoid invoking [MapPathing.getRoadPath]
@@ -169,19 +170,14 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             roadPlans.add(newRoadPlan)
         }
 
-        val bestPlan = chooseBestPlan(roadPlans)
+        var bestPlan = chooseBestPlan(roadPlans)
         if (bestPlan != null) {
             roadPlans.clear()
             roadPlans.add(bestPlan)
-
-            for (tile in bestPlan.tiles)
-                if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < bestPlan.priority)
-                    tilesOfRoadsMap[tile] = bestPlan
         }
-
         // If and only if we have no roads to build to close-by cities then we check for a road to build to the capital
         // The condition !city.isConnectedToCapital() is to avoid BFS for cities connected to capital with roads when railroads are unlocked
-        if (roadPlans.isEmpty() && (roadToCapitalStatus < bestRoadAvailable) && !city.isConnectedToCapital()) {
+        else if (roadPlans.isEmpty() && (roadToCapitalStatus < bestRoadAvailable) && !city.isConnectedToCapital()) {
             val roadToCapital = getRoadToConnectCityToCapital(workerUnit, city)
 
             if (roadToCapital != null) {
@@ -189,24 +185,25 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
                 var roadPriority = basePriority
                 roadPriority += if (worstRoadStatus == RoadStatus.None) 2f else 1f
 
-                val newRoadPlan = RoadPlan(roadToCapital.second, roadPriority + (city.population.population) / 2f, city, roadToCapital.first)
-                roadPlans.add(newRoadPlan)
-
-                for (tile in newRoadPlan.tiles)
-                    if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < newRoadPlan.priority)
-                        tilesOfRoadsMap[tile] = newRoadPlan
+                bestPlan = RoadPlan(roadToCapital.second, roadPriority + (city.population.population) / 2f, city, roadToCapital.first)
+                roadPlans.add(bestPlan)
             }
+        }
+
+        if (bestPlan != null) {
+            for (tile in bestPlan.tiles)
+                if (tile !in tilesOfRoadsMap || tilesOfRoadsMap[tile]!!.priority < bestPlan.priority)
+                    tilesOfRoadsMap[tile] = bestPlan
         }
 
         roadsToBuildByCitiesCache[city] = roadPlans
 
         // Will log duplicate road plans (but plans them self are not duplicated in game)
-        if (Log.shouldLog()) {
-            if (roadsToBuildByCitiesCache[city]!!.isNotEmpty())
+        if (Log.shouldLog() && roadsToBuildByCitiesCache[city]!!.isNotEmpty()) {
                 debug("Turn $cachedForTurn - civ ${civInfo.civName}: road plans are:")
 
-            for (plan in roadsToBuildByCitiesCache[city]!!)
-                debug("\tFrom: ${plan.fromCity.name} to: ${plan.toCity.name}")
+                for (plan in roadsToBuildByCitiesCache[city]!!)
+                    debug("\tFrom: ${plan.fromCity.name} to: ${plan.toCity.name}")
         }
 
         return roadPlans
@@ -223,6 +220,10 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         if (planList.size > 1) {
             val existingRoadPlans: MutableList<RoadPlan> = mutableListOf()
             val shortestPlan: (MutableList<RoadPlan>) -> RoadPlan? = { roadPlans -> roadPlans.minByOrNull { it.numberOfRoadsToBuild } }
+
+            // If there are multiple shortest distance road plans make minByOrNull priotirize ones with closer cities
+            // helps to avoid road crossovers (but not completely) due to roadPreferredMovementCost function
+            planList.sortBy { it.fromCity.getCenterTile().aerialDistanceTo(it.toCity.getCenterTile()) }
 
             return if (bestRoadAvailable == RoadStatus.Railroad) {
                 for (roadPlan in planList)
