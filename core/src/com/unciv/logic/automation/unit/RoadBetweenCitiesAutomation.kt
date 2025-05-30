@@ -311,20 +311,20 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         if (bestRoadAvailable == RoadStatus.None) return false
 
         if (candidateCities.none()) return false // do nothing.
-        val currentTile = unit.getTile()
+        val unitStartingTile = unit.getTile()
 
         // Search through ALL candidate cities for the closest tile to build a road on
-        for (toConnectCity in candidateCities.sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }) {
+        for (toConnectCity in candidateCities.sortedByDescending { it.getCenterTile().aerialDistanceTo(unitStartingTile) }) {
             val tilesByPriority = getRoadsToBuildFromCity(toConnectCity).flatMap { roadPlan -> roadPlan.tiles.map { tile ->  Pair(tile, roadPlan.priority) } }
             val tilesSorted = tilesByPriority.filter { it.first.getUnpillagedRoad() < bestRoadAvailable }
-                    .sortedBy { it.first.aerialDistanceTo(currentTile) + (it.second / 10f) }
+                    .sortedBy { it.first.aerialDistanceTo(unitStartingTile) + (it.second / 10f) }
             val bestTile = tilesSorted.firstOrNull {
-                currentTile == it.first || (unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first))
+                unitStartingTile == it.first || (unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first))
             }?.first ?: continue // Apparently we can't reach any of these tiles at all
 
-            if (bestTile != currentTile && unit.hasMovement())
+            if (bestTile != unitStartingTile && unit.hasMovement())
                 unit.movement.headTowards(bestTile)
-            if (unit.hasMovement() && (bestTile == currentTile) && (currentTile.improvementInProgress != bestRoadAvailable.name)) {
+            if (unit.hasMovement() && (bestTile == unit.getTile()) && (bestTile.improvementInProgress != bestRoadAvailable.name)) {
                 val improvement = bestRoadAvailable.improvement(civInfo.gameInfo.ruleset)!!
                 bestTile.startWorkingOnImprovement(improvement, civInfo, unit)
             }
