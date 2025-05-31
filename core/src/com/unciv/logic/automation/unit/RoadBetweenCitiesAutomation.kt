@@ -119,32 +119,19 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
         val basePriority = rankRoadCapitalPriority(roadToCapitalStatus)
         val roadPlans: MutableList<RoadPlan> = mutableListOf()
-
         for (closeCity in city.neighboringCities.filter { it.civ == civInfo && it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= 8 }) {
             // Try to find if the other city has planned to build a road to this city
             if (roadsToBuildByCitiesCache.containsKey(closeCity)) {
                 // There should only ever be one or zero possible connections from their city to this city
                 val roadToBuild = roadsToBuildByCitiesCache[closeCity]!!.firstOrNull { it.fromCity == city || it.toCity == city }
-
                 if (roadToBuild != null) {
                     // We already did the hard work, there can't be any other possible roads to this city
                     roadPlans.add(roadToBuild)
                     continue
                 }
-
-                if(Log.shouldLog())
-                    debug("Turn $cachedForTurn - civ ${civInfo.civName}: neighboring city ${closeCity.name} does not have road plan to ${city.name}")
             }
 
             if (roadToCapitalStatus == bestRoadAvailable) {
-                if(Log.shouldLog()) {
-                    val message = "Turn $cachedForTurn - civ ${civInfo.civName}: city ${city.name} has the best connection to capital via"
-                    if (city.cityConstructions.containsBuildingOrEquivalent("Harbor"))
-                        debug("$message Harbor")
-                    else
-                        debug("$message ${bestRoadAvailable.name}")
-                }
-
                 // Avoid invoking [MapPathing.getRoadPath]
                 continue
             }
@@ -197,15 +184,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         }
 
         roadsToBuildByCitiesCache[city] = roadPlans
-
-        // Will log duplicate road plans (but plans them self are not duplicated in game)
-        if (Log.shouldLog() && roadsToBuildByCitiesCache[city]!!.isNotEmpty()) {
-                debug("Turn $cachedForTurn - civ ${civInfo.civName}: road plans are:")
-
-                for (plan in roadsToBuildByCitiesCache[city]!!)
-                    debug("\tFrom: ${plan.fromCity.name} to: ${plan.toCity.name}")
-        }
-
         return roadPlans
     }
 
@@ -217,28 +195,24 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      * @return The shortest road plan and drop other plans
      */
     private fun chooseBestPlan(planList: MutableList<RoadPlan>): RoadPlan? {
-        if (planList.size > 1) {
-            val existingRoadPlans: MutableList<RoadPlan> = mutableListOf()
-            val shortestPlan: (MutableList<RoadPlan>) -> RoadPlan? = { roadPlans -> roadPlans.minByOrNull { it.numberOfRoadsToBuild } }
+        if (planList.size < 2)
+            return planList.firstOrNull()
 
-            // If there are multiple shortest distance road plans make minByOrNull priotirize ones with closer cities
-            // helps to avoid road crossovers (but not completely) due to roadPreferredMovementCost function
-            planList.sortBy { it.fromCity.getCenterTile().aerialDistanceTo(it.toCity.getCenterTile()) }
+        val existingRoadPlans: MutableList<RoadPlan> = mutableListOf()
+        val shortestPlan: (MutableList<RoadPlan>) -> RoadPlan? = { roadPlans -> roadPlans.minByOrNull { it.numberOfRoadsToBuild } }
+        // If there are multiple shortest distance road plans make minByOrNull priotirize ones with closer cities
+        // helps to avoid road crossovers (but not completely) due to roadPreferredMovementCost function
+        planList.sortBy { it.fromCity.getCenterTile().aerialDistanceTo(it.toCity.getCenterTile()) }
 
-            return if (bestRoadAvailable == RoadStatus.Railroad) {
-                for (roadPlan in planList)
-                    if (roadPlan.tiles.all { (it.roadStatus > RoadStatus.None) || it.roadIsPillaged })
-                        existingRoadPlans.add(roadPlan)
+        if (bestRoadAvailable != RoadStatus.Railroad)
+            return shortestPlan(planList)
 
-                if (existingRoadPlans.isEmpty())
-                    shortestPlan(planList)
-                else
-                    shortestPlan(existingRoadPlans)
-            }
-            else shortestPlan(planList)
-        }
+        for (roadPlan in planList)
+            if (roadPlan.tiles.all { (it.roadStatus > RoadStatus.None) || it.roadIsPillaged })
+                existingRoadPlans.add(roadPlan)
 
-        return planList.firstOrNull()
+        return if (existingRoadPlans.isEmpty()) shortestPlan(planList)
+        else shortestPlan(existingRoadPlans)
     }
 
     /** @return Lowest road level (aka. road type) in road path */
