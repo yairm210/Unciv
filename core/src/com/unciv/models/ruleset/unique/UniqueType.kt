@@ -901,6 +901,7 @@ enum class UniqueType(
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
     /** Can be placed upon both units and as global */
     TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
+    TriggerUponLosingCity("upon losing a city", UniqueTarget.TriggerCondition),
     TriggerUponFoundingCity("upon founding a city", UniqueTarget.TriggerCondition),
     TriggerUponBuildingImprovement("upon building a [improvementFilter] improvement", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
     TriggerUponDiscoveringNaturalWonder("upon discovering a Natural Wonder", UniqueTarget.TriggerCondition),
@@ -951,9 +952,12 @@ enum class UniqueType(
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
     WillNotBeChosenForNewGames("Will not be chosen for new games", UniqueTarget.Nation),
     
-    ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier),
-    ForEveryAdjacentTile("for every adjacent [tileFilter]", UniqueTarget.MetaModifier),
-    ForEveryAmountCountable("for every [positiveAmount] [countable]", UniqueTarget.MetaModifier),
+    ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier,
+        docDescription = "Works for positive numbers only"),
+    ForEveryAdjacentTile("for every adjacent [tileFilter]", UniqueTarget.MetaModifier,
+        docDescription = "Works for positive numbers only"),
+    ForEveryAmountCountable("for every [positiveAmount] [countable]", UniqueTarget.MetaModifier,
+        docDescription = "Works for positive numbers only"),
     
     ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),

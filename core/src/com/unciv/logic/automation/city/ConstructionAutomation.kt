@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -280,11 +281,28 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-
-    @Suppress("UNUSED_PARAMETER") // stub for future use
     private fun applyOnetimeUniqueBonuses(building: Building): Float {
         var value = 0f
-        // TODO: Add specific Uniques here
+        if (building.isWonder) {
+            // Buildings generally don't have these uniques, and Wonders generally only one of these, so we can save some time by not checking every building for every unique
+            if (!building.isNationalWonder) value -= civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo)
+            // Wonders are a one-time occurence: value less if someone is going to build them before us anyways
+            value += when {
+                building.hasUnique(UniqueType.OneTimeFreePolicy) || building.hasUnique(UniqueType.OneTimeAmountFreePolicies) -> civInfo.getPersonality().culture
+                building.hasUnique(UniqueType.OneTimeFreeTech) || building.hasUnique(UniqueType.OneTimeAmountFreeTechs) -> civInfo.getPersonality().science
+                building.hasUnique(UniqueType.OneTimeAmountFreeUnits) || building.hasUnique(UniqueType.OneTimeFreeUnit) -> civInfo.getPersonality().production //Pyramids, Louvre
+                building.hasUnique(UniqueType.OneTimeFreeGreatPerson) -> civInfo.getPersonality().science // Will pick scientist
+                building.hasUnique(UniqueType.OneTimeEnterGoldenAge) || building.hasUnique(UniqueType.GoldenAgeLength) || building.hasUnique(UniqueType.OneTimeEnterGoldenAgeTurns) -> civInfo.getPersonality().expansion // Relatively more important on many cities
+                building.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement) -> civInfo.getPersonality().declareWar
+                building.hasUnique(UniqueType.OneTimeGainPopulation) || building.hasUnique(UniqueType.OneTimeGainPopulationRandomCity) -> civInfo.getPersonality().food
+                building.hasUnique(UniqueType.StatPercentFromTradeRoutes) -> civInfo.getPersonality().gold
+                building.hasUnique(UniqueType.Strength) -> civInfo.getPersonality().military
+                building.hasUnique(UniqueType.StatPercentBonusCities) -> civInfo.getPersonality().culture // Sistine Chapel in base game, but players seem to "expect" culture civs to build more wonders in general
+                else -> 0f
+            }
+        } else { 
+            value += if (building.hasUnique(UniqueType.CreatesOneImprovement)) 5f else 0f //District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
+        }
         return value
     }
 

@@ -1262,6 +1262,7 @@
 		"uniques": [
             "Empire enters a [8]-turn Golden Age <by consuming this unit>",
             "Can instantly construct a [Landmark] improvement <by consuming this unit>",
+            "Is part of Great Person group [Artist]",
             "Great Person - [Culture]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1270,6 +1271,7 @@
 		"unitType": "Civilian",
 		"uniques": ["Can hurry technology research",
             "Can instantly construct a [Academy] improvement <by consuming this unit>",
+            "Is part of Great Person group [Scientist]",
             "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1278,6 +1280,7 @@
 		"unitType": "Civilian",
 		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
             "Can instantly construct a [Customs house] improvement <by consuming this unit>",
+            "Is part of Great Person group [Merchant]",
 			"Great Person - [Gold]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1286,6 +1289,7 @@
 		"unitType": "Civilian",
 		"uniques": ["Can speed up construction of a building",
             "Can instantly construct a [Manufactory] improvement <by consuming this unit>",
+            "Is part of Great Person group [Engineer]",
             "Great Person - [Production]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1297,6 +1301,7 @@
             "[+15]% Strength bonus for [Military] units within [2] tiles",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat",
+            "Is part of Great Person group [General]",
 			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1311,6 +1316,7 @@
 			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat",
+            "Is part of Great Person group [General]",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},

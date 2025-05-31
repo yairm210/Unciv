@@ -96,7 +96,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var unitShouldUseSavedPromotion = HashMap<String, Boolean>()
     
     var unitToPromotions = HashMap<String, UnitPromotions>()
-    
+
+    /** Neighboring explored cities, in radius of 12 tiles */
     @delegate:Transient
     val neighboringCities: List<City> by lazy { 
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()

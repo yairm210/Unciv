@@ -129,6 +129,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         checkMisspelledFolders(folder, lines)
         checkImagesFolders(folder, lines)
         checkUnknownJsonFilenames(folder, lines)
+        warnSplitAtlasesPerformanceDegradation(folder, lines)
     }
 
     private fun checkMisspelledFolders(
@@ -193,15 +194,28 @@ class RulesetValidator(val ruleset: Ruleset) {
     ) {
         val jsonFolder = folder.child("jsons")
         if (!jsonFolder.exists()) return
-        
+
         for (file in jsonFolder.list("json")) {
             if (file.name() in RulesetFile.entries.map { it.filename }) continue
 
             var text = "File ${file.name()} is in the jsons folder but is not a recognized ruleset file"
             val possibleMisspellings = getPossibleMisspellings(file.name(), RulesetFile.entries.map { it.filename })
-            if (possibleMisspellings.isNotEmpty()) 
+            if (possibleMisspellings.isNotEmpty())
                 text += "\nPossible misspelling of: " + possibleMisspellings.joinToString("/")
             lines.add(text, RulesetErrorSeverity.OK)
+        }
+    }
+
+    private fun warnSplitAtlasesPerformanceDegradation(
+        folder: FileHandle,
+        lines: RulesetErrorList
+    ) {
+        if (folder.child("game2.png").exists()){
+            lines.add(
+                "Your images are being generated into multiple atlas files - this can cause lag for players. " +
+                        "Please consult https://yairm210.github.io/Unciv/Modders/Images-and-Audio/#rendering-performance on how to improve rendering performance.",
+                RulesetErrorSeverity.WarningOptionsOnly, sourceObject = null
+            )
         }
     }
 

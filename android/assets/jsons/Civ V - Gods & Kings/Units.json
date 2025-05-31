@@ -1585,6 +1585,7 @@
 		"uniques": [
             "Empire enters a [8]-turn Golden Age <by consuming this unit>",
             "Can instantly construct a [Landmark] improvement <by consuming this unit>",
+            "Is part of Great Person group [Great Person]",
             "Great Person - [Culture]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1594,6 +1595,7 @@
 		"uniques": [
             "Can hurry technology research",
             "Can instantly construct a [Academy] improvement <by consuming this unit>",
+            "Is part of Great Person group [Great Person]",
             "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1602,6 +1604,7 @@
 		"unitType": "Civilian",
 		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
             "Can instantly construct a [Customs house] improvement <by consuming this unit>",
+            "Is part of Great Person group [Great Person]",
 			"Great Person - [Gold]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1610,6 +1613,7 @@
 		"unitType": "Civilian",
 		"uniques": ["Can speed up construction of a building",
             "Can instantly construct a [Manufactory] improvement <by consuming this unit>",
+            "Is part of Great Person group [Great Person]",
             "Great Person - [Production]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1622,6 +1626,7 @@
 			"Removes other religions when spreading religion",
             "May found a religion <by consuming this unit> <if it hasn't used other actions yet>",
             "May enhance a religion <by consuming this unit>  <if it hasn't used other actions yet>",
+            "Is part of Great Person group [Prophet]",
 			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
 			"Unbuildable", "Religious Unit", "Only available <when religion is enabled>",
 			"Takes your religion over the one in their birth city"],
