@@ -142,6 +142,7 @@ enum class UniqueType(
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable,
         docDescription = "Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building"),
     BuildingMaintenance("[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    BuildingMaintenanceOld("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     RemoveBuilding("Remove [buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
     OneTimeSellBuilding("Sell [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
 
@@ -994,8 +995,6 @@ enum class UniqueType(
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
-    @Deprecated("As of 4.15.11", ReplaceWith("[relativeAmount]% maintenance cost for [All] buildings [cityFilter]"), DeprecationLevel.WARNING)
-    BuildingMaintenanceOld("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"), DeprecationLevel.ERROR)
     UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 4.15.2", ReplaceWith("Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns"), DeprecationLevel.ERROR)
