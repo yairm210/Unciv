@@ -15,6 +15,8 @@ To create a scenario:
 
 ## Console
 
+### Opening
+
 To open the console from the world screen, click the `` button on your keyboard.
 
 On mobile:
@@ -24,6 +26,8 @@ On mobile:
 
 To see available commands, click enter. This works for subcommands as well (e.g. when you entered `tile`).
 
+### Command formatting
+
 Object names (units buildings civs etc) are case-insensitive.
 
 Unit and building names with spaces in them, like "Great General", can be inputted in 2 ways:
@@ -31,14 +35,17 @@ Unit and building names with spaces in them, like "Great General", can be inputt
 - **"great general"** - with quotation marks around them
 - **great-general**  - with dashes instead of spaces
 
-The console has autocompletion:
+### Autocomplete
 
-* Enter a partial command, subcommand or argument and hit Tab...
-* When the entered part, compared from the start, matches exactly one of the possible options, that option is completed and a space added for the next subcommand or parameter.
-* When no option matches, nothing happens.
+The console has autocompletion - for commands and arguments with Tab.
+
 * When two or more options match, the possibilities are displayed, and the longest common substring is entered for you (e.g. you enter 'c', Tab: commands 'city' or 'civ' match, the console partially completes 'ci' for you).
 * When you haven't yet entered a partial text (console input is empty or ends in a space), autocompletion will display all options.
 
-Some commands operate on a tile or unit you need to select on the map before opening the console.
+### Other
 
-The console does intentionally not follow all rules defined by the ruleset - e.g. it allows Farms on hills without fresh water or the Mobility promotion on a Worker. Any unexpected consequences are your responsibility.
+Some commands operate on a tile or unit you need to select on the map. You can also do so while the console is open.
+
+The console intentionally does not follow all rules defined by the ruleset - e.g. it allows Farms on hills without fresh water or the Mobility promotion on a Worker. Any unexpected consequences are your responsibility.
+
+You can access command history with the up/down buttons
