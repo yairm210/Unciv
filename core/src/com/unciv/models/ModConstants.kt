@@ -98,6 +98,11 @@ class ModConstants {
     var pantheonBase = 10
     var pantheonGrowth = 5
 
+    // Factors in formula for policy costs
+    var policyBase = 25
+    var policyMultiplier = 6 //3 in BNW
+    var policyExponent = 1.7 //2.01 in BNW
+
     var workboatAutomationSearchMaxTiles = 20
 
     // Civilization
