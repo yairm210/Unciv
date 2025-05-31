@@ -23,7 +23,7 @@ object Log {
      */
     val disableLogsFrom = (
             System.getProperty("noLog")
-            ?: "Battle,Music,Sounds,Translations,WorkerAutomation,assignRegions"
+            ?: "Battle,Music,Sounds,Translations,WorkerAutomation,assignRegions,RoadBetweenCitiesAutomation"
         ).split(',').filterNot { it.isEmpty() }.toMutableSet()
 
     /**
