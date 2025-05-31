@@ -62,6 +62,10 @@ enum class DiplomacyFlags {
     AgreedToNotSpreadReligion,
     IgnoreThemSpreadingReligion,
 
+    DiscoveredSpiesInOurCities,
+    AgreedToNotSendSpies,
+    IgnoreThemSendingSpies,
+
     ProvideMilitaryUnit,
     MarriageCooldown,
     NotifiedAfraid,
@@ -94,8 +98,10 @@ enum class DiplomaticModifiers(val text: String) {
     DenouncedOurAllies("You have denounced our allies"),
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
     RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
+    RefusedToNotSendSpiesToUs("You refused to stop spying on us"),
     BetrayedPromiseToNotSettleCitiesNearUs("You betrayed your promise to not settle cities near us"),
     BetrayedPromiseToNotSpreadReligionToUs("You betrayed your promise to not spread your religion to us"),
+    
     UnacceptableDemands("Your arrogant demands are in bad taste"),
     UsedNuclearWeapons("Your use of nuclear weapons is disgusting!"),
     StealingTerritory("You have stolen our lands!"),
@@ -704,6 +710,21 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSpreadReligionToUs, -15f)
         otherCiv().addNotification("[${civInfo.civName}] refused to stop spreading religion to us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+    }
+    
+    fun agreeNotToSpreadSpiesTo() {
+        otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSendSpies, 100)
+        addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
+        otherCiv().addNotification("[${civInfo.civName}] agreed to stop spying on us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+    }
+    
+    fun refuseNotToSpreadSpiesTo() {
+        addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSendingSpies, 100)
+        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSendSpiesToUs, -15f)
+        otherCiv().addNotification("[${civInfo.civName}] refused to stop spying on us!",
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }
 
