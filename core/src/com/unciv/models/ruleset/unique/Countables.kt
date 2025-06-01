@@ -38,6 +38,7 @@ enum class Countables(
         override val documentationHeader = "Integer constant - any positive or negative integer number"
         override fun matches(parameterText: String) = parameterText.toIntOrNull() != null
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) = parameterText.toIntOrNull()
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String>  = setOf()
         override val example: String = "123"
     },
 
@@ -130,6 +131,7 @@ enum class Countables(
             UniqueParameterType.PolicyFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             UniqueParameterType.PolicyFilter.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
     },
 
     RemainingCivs("Remaining [civFilter] Civilizations") {

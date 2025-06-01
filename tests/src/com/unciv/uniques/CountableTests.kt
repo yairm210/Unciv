@@ -3,6 +3,7 @@ package com.unciv.uniques
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -72,6 +73,24 @@ class CountableTests {
                 assertNotEquals("Countable ${countable.name} parameter $parameter is not a UniqueParameterType",
                     UniqueParameterType.safeValueOf(parameter), UniqueParameterType.Unknown)
             }
+        }
+    }
+
+
+    @Test
+    fun testAllCountableAutocompleteValuesMatch() {
+        RulesetCache.loadRulesets(noMods = true)
+        val ruleset = RulesetCache.getVanillaRuleset()
+        for (countable in Countables.entries) {
+            val knownValues = countable.getKnownValuesForAutocomplete(ruleset)
+            for (value in knownValues) {
+                val matchedCountable = Countables.getMatching(value, ruleset)
+                assertEquals(
+                    "Countable ${countable.name} should match its own autocomplete value: $value",
+                    countable, matchedCountable
+                )
+            }
+                    
         }
     }
     
