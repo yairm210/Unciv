@@ -1459,7 +1459,7 @@ enum class UniqueType(
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
                 .split('/')
-                .map { UniqueParameterType.safeValueOf(it.replace(numberRegex, "")) }
+                .mapNotNull { UniqueParameterType.safeValueOf(it.replace(numberRegex, "")) }
             map.add(matchingParameterTypes)
         }
         return map
