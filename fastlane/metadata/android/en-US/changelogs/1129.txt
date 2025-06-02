@@ -1,19 +1,13 @@
-
-
-Resolved  - Only buildable improvements are viable comparisons for determining if a city can provide a resource
-
-Added countables test that autocomplete values actually return valid countables
-
-Added "era number", "speed modifier for stat" countables by @SomeTroglodyte - see 
-
-Set tryFixUnknownUniques on RulesetValidator, for simpler function calls throughout
-
-docs: Added history documentation for Console, console doc reorg
+Only buildable improvements are viable comparisons for determining if a city can provide a resource
 
 Fixed techs showing "0 turns" and yet not being researched
 
-Add buildingFilter to building maintenance unique (second attempt) - By PLynx01
+Fixed trigger uniques with broken city filters
 
-Add the option for civs to have unique dialogue when asking for a Declaration of Friendship - By ReallyBasicName
+Added "era number", "speed modifier for stat" countables - by SomeTroglodyte 
+
+Add buildingFilter to building maintenance unique - By PLynx01
+
+Add Civ unique dialogue when asking for Declaration of Friendship - By ReallyBasicName
 
 Improved AI road planning - By metablaster
