@@ -550,6 +550,7 @@ object NextTurnAutomation {
         }
 
         val bestCity = civInfo.cities.filterNot { it.isPuppet }
+            .filterNot { it.population.population < 3 } // Generally you'd want 3 population to produce settlers quickly
             // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
             // Otherwise, AI tries to produce settlers when it can hardly sustain itself
             .filter { city ->
