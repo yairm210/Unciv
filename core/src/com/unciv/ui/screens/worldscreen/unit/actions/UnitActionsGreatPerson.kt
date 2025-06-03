@@ -110,10 +110,11 @@ object UnitActionsGreatPerson {
                 UnitActionType.ConductTradeMission, 70f,
                 action = {
                     // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                    var goldEarned = unit.getMatchingUniques(UniqueType.CalculateGoldFromTradeMission)
+                    var goldEarned = if (unit.hasUnique(UniqueType.CalculateGoldFromTradeMission)) unit.getMatchingUniques(UniqueType.CalculateGoldFromTradeMission)
                         .map { it.params[0] }
                         .mapNotNull { Countables.getCountableAmount(it, StateForConditionals(unit)) }
                         .sum().toFloat()
+                        else (350 + 50 * unit.civ.getEraNumber() * unit.civ.gameInfo.speed.goldCostModifier) // Fallback
                     for (goldUnique in unit.civ.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                         goldEarned *= goldUnique.params[0].toPercent()
                     unit.civ.addGold(goldEarned.toInt())
