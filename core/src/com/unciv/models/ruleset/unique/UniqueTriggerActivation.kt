@@ -22,6 +22,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.UpgradeUnitAction
@@ -1075,6 +1076,10 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveResourcesFromTile -> {
                 if (tile == null) return null
+                if (tile.resource == null) return null
+                val resourceFilter = unique.params[0]
+                var tileResource = tile.tileResource
+                if (!tileResource.matchesFilter(resourceFilter)) return null
                 return {
                     tile.resource = null
                     tile.resourceAmount = 0
@@ -1082,11 +1087,24 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.OneTimeRemoveImprovementFromTile -> {
+            UniqueType.OneTimeRemoveImprovementsFromTile -> {
                 if (tile == null) return null
+                val improvementFilter = unique.params[0]
+                val tileImprovement = tile.getTileImprovement()
+                if (tileImprovement == null) return null
+                if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {
-                    tile.improvement = null
-                    tile.improvementIsPillaged = false
+                    // Don't remove the improvement if we're just removing the roads
+                    if (improvementFilter != "All Road") {
+                        tile.improvement = null
+                        tile.improvementIsPillaged = false
+                    }
+
+                    // Remove the roads if desired
+                    if (improvementFilter == "All" || improvementFilter == "All Road") {
+                        tile.roadStatus = RoadStatus.None
+                        tile.roadIsPillaged = false
+                    }
                     true
                 }
             }

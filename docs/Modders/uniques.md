@@ -176,10 +176,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Remove resources from this tile"
+??? example  "Remove [resourceFilter] resources from this tile"
+	Example: "Remove [Strategic] resources from this tile"
+
 	Applicable to: Triggerable
 
-??? example  "Remove improvement from this tile"
+??? example  "Remove [improvementFilter] improvements from this tile"
+	Example: "Remove [All Road] improvements from this tile"
+
 	Applicable to: Triggerable
 
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
