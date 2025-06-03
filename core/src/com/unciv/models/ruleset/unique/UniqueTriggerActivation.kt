@@ -24,6 +24,7 @@ import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
@@ -1069,6 +1070,24 @@ object UniqueTriggerActivation {
                     ?: return null
                 return {
                     unit.promotions.removePromotion(promotion)
+                    true
+                }
+            }
+
+            UniqueType.OneTimeRemoveResourcesFromTile -> {
+                if (tile == null) return null
+                return {
+                    tile.resource = null
+                    tile.resourceAmount = 0
+                    true
+                }
+            }
+
+            UniqueType.OneTimeRemoveImprovementFromTile -> {
+                if (tile == null) return null
+                return {
+                    tile.improvement = null
+                    tile.improvementIsPillaged = false
                     true
                 }
             }
