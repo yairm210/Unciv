@@ -36,7 +36,7 @@ import com.unciv.models.translations.TranslationFileWriter
 //region _Fields
 @Suppress("unused") // Some are used only via enumerating the enum matching on parameterName
 enum class UniqueParameterType(
-    var parameterName: String,
+    val parameterName: String,
     val docExample: String,
     val docDescription: String? = null,
     val displayName: String = parameterName,
@@ -720,7 +720,6 @@ enum class UniqueParameterType(
         }
 
         fun safeValueOf(param: String) = entries.firstOrNull { it.parameterName == param }
-            ?: Unknown.apply { this.parameterName = param }  //TODO Danger: There is only one instance of Unknown!
     }
 
     //endregion

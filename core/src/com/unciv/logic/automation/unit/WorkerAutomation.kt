@@ -6,6 +6,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -96,6 +97,10 @@ class WorkerAutomation(
         // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
         if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return
 
+        // Priotirize connecting grown cities without connection to capital over undeveloped cities (for gold income)
+        val grownCities: List<City> = citiesToConnect.filter { it.population.population > 6 }
+        if (roadBetweenCitiesAutomation.tryConnectingCities(unit, grownCities)) return
+        
         if (tryHeadTowardsUndevelopedCity(unit, localUniqueCache, currentTile)) return
 
         // Nothing to do, try again to connect cities
