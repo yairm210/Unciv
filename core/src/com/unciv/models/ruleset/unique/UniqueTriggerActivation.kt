@@ -1096,14 +1096,12 @@ object UniqueTriggerActivation {
                 return {
                     // Don't remove the improvement if we're just removing the roads
                     if (improvementFilter != "All Road") {
-                        tile.improvement = null
-                        tile.improvementIsPillaged = false
+                        tile.removeImprovement()
                     }
 
                     // Remove the roads if desired
                     if (improvementFilter == "All" || improvementFilter == "All Road") {
-                        tile.roadStatus = RoadStatus.None
-                        tile.roadIsPillaged = false
+                        tile.removeRoad()
                     }
                     true
                 }
