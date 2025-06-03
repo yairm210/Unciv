@@ -1078,8 +1078,7 @@ object UniqueTriggerActivation {
                 if (tile == null) return null
                 if (tile.resource == null) return null
                 val resourceFilter = unique.params[0]
-                var tileResource = tile.tileResource
-                if (!tileResource.matchesFilter(resourceFilter)) return null
+                if (!tile.tileResource.matchesFilter(resourceFilter)) return null
                 return {
                     tile.resource = null
                     tile.resourceAmount = 0
@@ -1089,9 +1088,9 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveImprovementsFromTile -> {
                 if (tile == null) return null
-                val improvementFilter = unique.params[0]
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement == null) return null
+                val improvementFilter = unique.params[0]
                 if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {
                     // Don't remove the improvement if we're just removing the roads
