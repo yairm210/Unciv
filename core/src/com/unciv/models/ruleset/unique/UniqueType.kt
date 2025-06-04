@@ -901,6 +901,7 @@ enum class UniqueType(
     TriggerUponDeclaringFriendship("upon declaring friendship", UniqueTarget.TriggerCondition),
     TriggerUponSigningDefensivePact("upon declaring a defensive pact", UniqueTarget.TriggerCondition),
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
+    TriggerUpponEndingGoldenAge("upon ending a Golden Age", UniqueTarget.TriggerCondition),
     /** Can be placed upon both units and as global */
     TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
     TriggerUponLosingCity("upon losing a city", UniqueTarget.TriggerCondition),
