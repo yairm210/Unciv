@@ -237,13 +237,17 @@ class AlertPopup(
         if (otherciv.isDefeated()) return false
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
-        addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
+        addGoodSizedLabel(
+                if (otherciv.nation.declaringFriendship.isNotEmpty()) otherciv.nation.declaringFriendship else "My friend, shall we declare our friendship to the world?"
+        ).row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
         }.row()
         addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
             playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
         }.row()
+        val music = UncivGame.Current.musicController
+        music.playVoice("${otherciv.nation.name}.declaringFriendship")
         return true
     }
 
@@ -403,6 +407,11 @@ class AlertPopup(
         addGoodSizedLabel(civInfo.nation.startIntroPart1).row()
         addGoodSizedLabel(civInfo.nation.startIntroPart2).row()
         addCloseButton("Let's begin!")
+
+        // Since there's introduction text, play the startIntroPart1 voice hook with the nation's theme.
+        val music = UncivGame.Current.musicController
+        music.chooseTrack(civInfo.nation.name, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
+        music.playVoice("${civInfo.nation.name}.startIntroPart1")
     }
 
     private fun addTechResearched() {

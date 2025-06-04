@@ -320,7 +320,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
     }
     fun getUnpillagedImprovement(): String? = if (improvementIsPillaged) null else improvement
+    
+    /** @return [RoadStatus] on this [Tile], pillaged road counts as [RoadStatus.None] */
     fun getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus
+
     fun getUnpillagedRoadImprovement(): TileImprovement? {
         return if (getUnpillagedRoad() == RoadStatus.None) null
         else ruleset.tileImprovements[getUnpillagedRoad().name]
@@ -450,7 +453,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             //  that is, there needs to be a tile improvement you have the tech for.
             // Does NOT take all GetImprovementBuildingProblems into account.
             return possibleImprovements.any { improvement ->
-                ruleset.tileImprovements[improvement]?.let { it.techRequired == null || civInfo.tech.isResearched(it.techRequired!!) } == true
+                ruleset.tileImprovements[improvement]?.let {
+                    it.turnsToBuild != -1 && // Buildable by workers (not just 'placeable')
+                        (it.techRequired == null || civInfo.tech.isResearched(it.techRequired!!))
+                } == true
             }
         }
         val improvement = getUnpillagedTileImprovement()
@@ -570,6 +576,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return bonus
     }
 
+    /**
+     * See [TileMap] secondary constructor's comment for visual illustration about coordinate system
+     * 
+     * @param otherTile Destination tile
+     * @return Shortest distance from this [Tile] to [otherTile] in count of tiles including impassable tiles but not including origin tile
+     */
     fun aerialDistanceTo(otherTile: Tile): Int {
         val xDelta = position.x - otherTile.position.x
         val yDelta = position.y - otherTile.position.y

@@ -39,6 +39,10 @@ class Nation : RulesetObject() {
     var attacked = ""
     /** Shown for AlertType.Defeated */
     var defeated = ""
+    /** Shown for MajorCivDiplomacyTable.getDenounceButton */
+    var denounced = ""
+    /** Shown for Declaration of Friendship */
+    var declaringFriendship = ""
     /** Shown for AlertType.FirstContact */
     var introduction = ""
     /** Shown in TradePopup when other Civs initiate trade with a player */

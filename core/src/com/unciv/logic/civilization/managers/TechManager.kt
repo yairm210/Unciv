@@ -280,8 +280,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         val scienceSpent = researchOfTech(currentTechnology) + realOverflow
         if (scienceSpent >= costOfTech(currentTechnology)) {
             overflowScience = 0
-            if (realOverflow != 0)
-                addScience(realOverflow)
+            addScience(realOverflow)
         }
     }
 

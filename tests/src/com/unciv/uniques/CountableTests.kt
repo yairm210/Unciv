@@ -3,6 +3,7 @@ package com.unciv.uniques
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -72,6 +73,24 @@ class CountableTests {
                 assertNotEquals("Countable ${countable.name} parameter $parameter is not a UniqueParameterType",
                     UniqueParameterType.safeValueOf(parameter), UniqueParameterType.Unknown)
             }
+        }
+    }
+
+
+    @Test
+    fun testAllCountableAutocompleteValuesMatch() {
+        RulesetCache.loadRulesets(noMods = true)
+        val ruleset = RulesetCache.getVanillaRuleset()
+        for (countable in Countables.entries) {
+            val knownValues = countable.getKnownValuesForAutocomplete(ruleset)
+            for (value in knownValues) {
+                val matchedCountable = Countables.getMatching(value, ruleset)
+                assertEquals(
+                    "Countable ${countable.name} should match its own autocomplete value: $value",
+                    countable, matchedCountable
+                )
+            }
+                    
         }
     }
     
@@ -189,6 +208,37 @@ class CountableTests {
     }
 
     @Test
+    fun testPoliciesCountables() {
+        setupModdedGame()
+        civ.policies.run {
+            for (name in listOf(
+                "Tradition", "Aristocracy", "Legalism", "Oligarchy", "Landed Elite", "Monarchy",
+                "Liberty", "Citizenship", "Honor", "Piety"
+            )) {
+                freePolicies++
+                val policy = getPolicyByName(name)
+                adopt(policy)
+            }
+            // Don't use a fake Policy without a branch, the policyFilter would stumble over a lateinit.
+            val taggedPolicyBranch = game.createPolicyBranch("Some marker")
+            freePolicies++
+            adopt(taggedPolicyBranch) // Will be completed as it has no member policies
+        }
+        val tests = listOf(
+            "Completed Policy branches" to 2,               // Tradition and taggedPolicyBranch
+            "Adopted [Tradition Complete] Policies" to 1,
+            "Adopted [[Tradition] branch] Policies" to 7,   // Branch start and completion plus 5 members
+            "Adopted [Liberty Complete] Policies" to 0,
+            "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
+            "Adopted [Some marker] Policies" to 1,
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
     fun testRulesetValidation() {
         /** These are `Pair<String, Int>` with the second being the expected number of parameters to fail UniqueParameterType validation */
         val testData = listOf(
@@ -205,6 +255,8 @@ class CountableTests {
             "[+1 Food] <when number of [[Barbarian] Units] is between [[Japanese] Units] and [[Embarked] Units]>" to 1,
             "[+1 Food] <when number of [[Science] Buildings] is between [[Wonder] Buildings] and [[All] Buildings]>" to 0,
             "[+1 Food] <when number of [[42] Buildings] is between [[Universe] Buildings] and [[Library] Buildings]>" to 2,
+            "[+1 Food] <when number of [Adopted [Tradition] Policies] is between [Adopted [[Tradition] branch] Policies] and [Adopted [all] Policies]>" to 0,
+            "[+1 Food] <when number of [Adopted [[Legalism] branch] Policies] is between [Adopted [Folklore] Policies] and [Completed Policy branches]>" to 2,
             "[+1 Food] <when number of [Remaining [Human player] Civilizations] is between [Remaining [City-State] Civilizations] and [Remaining [Major] Civilizations]>" to 0,
             "[+1 Food] <when number of [Remaining [city-state] Civilizations] is between [Remaining [la la la] Civilizations] and [Remaining [all] Civilizations]>" to 2,
             "[+1 Food] <when number of [Owned [Land] Tiles] is between [Owned [Desert] Tiles] and [Owned [All] Tiles]>" to 0,

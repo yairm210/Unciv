@@ -60,7 +60,7 @@ import java.util.UUID
  * to load the new saves from an older game version, increment [CURRENT_COMPATIBILITY_NUMBER]! And don't forget
  * to add backwards compatibility for the previous format.
  *
- * Reminder: In all subclasse, do use only actual Collection types, not abstractions like
+ * Reminder: In all subclasses, do use only actual Collection types, not abstractions like
  * `= mutableSetOf<Something>()`. That would make the reflection type of the field an interface, which
  * hides the actual implementation from Gdx Json, so it will not try to call a no-args constructor but
  * will instead deserialize a List in the jsonData.isArray() -> isAssignableFrom(Collection) branch of readValue:
@@ -239,6 +239,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      *  @throws NoSuchElementException in no-barbarians games! */
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
+    
+    /** @return Sequence of all cities in game, both major civilizations and city states */
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
