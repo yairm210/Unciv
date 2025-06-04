@@ -319,7 +319,8 @@ class UniqueValidator(val ruleset: Ruleset) {
                 && param in allNonTypedUniques)
                 continue // This is a filtering param, and the unique it's filtering for actually exists, no problem here!
             val leastSevereWarning =
-                errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
+                errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }
+            if (leastSevereWarning == null) throw Exception("Unique ${unique.text} from mod ${ruleset.name} is acting strangely - please open a bug report")
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
         }
         return errorList
