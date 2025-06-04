@@ -95,7 +95,7 @@ object UniqueTriggerActivation {
         }
         fun getApplicableCities(cityFilter: String) = 
             if (cityFilter == "in this city") sequenceOf(relevantCity).filterNotNull()
-            else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[0]) }
+            else civInfo.cities.asSequence().filter { it.matchesFilter(cityFilter) }
 
         val timingConditional = unique.getModifiers(UniqueType.ConditionalTimedUnique).firstOrNull()
         if (timingConditional != null) {

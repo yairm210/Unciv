@@ -49,7 +49,6 @@ open class Policy : RulesetObject() {
         return when(filter) {
             in Constants.all -> true
             name -> true
-            "[all] branch" -> branch == this
             "[${branch.name}] branch" -> true
             else -> false
         }

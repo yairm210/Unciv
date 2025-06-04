@@ -1,3 +1,35 @@
+## 4.16.13
+
+Fixed techs showing "0 turns" and yet not being researched
+
+Fixed trigger uniques with broken city filters
+
+Only buildable improvements are viable comparisons for determining if a City Center can provide a resource
+
+Added "era number", "speed modifier for stat" countables - by SomeTroglodyte 
+
+Add buildingFilter to building maintenance unique - By PLynx01
+
+Add Civ unique dialogue when asking for Declaration of Friendship - By ReallyBasicName
+
+Improved AI road planning - By metablaster
+
+## 4.16.12
+
+Modding:
+- Warn of rendering performance problems for split atlases
+- Avoid crash from "in this city" uniques when not applied in the context of a city 
+
+New countable for adopted policies supports policyFilter - By SomeTroglodyte 
+
+Added UponLosingCity unique - By PLynx01
+
+By RobLoach:
+- Vanilla, Gods & Kings: Fix Hagia Sophia effects
+- Add Great Person group names 
+
+AI: updated wonder evaluation - By EmperorPinguin
+
 ## 4.16.11
 
 Don't spawn prophet in holy city if it's been taken over

@@ -609,8 +609,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
-??? example  "[relativeAmount]% maintenance cost for buildings [cityFilter]"
-	Example: "[+20]% maintenance cost for buildings [in all cities]"
+??? example  "[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]"
+	Example: "[+20]% maintenance cost for [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -1366,8 +1366,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% maintenance cost for buildings [cityFilter]"
-	Example: "[+20]% maintenance cost for buildings [in all cities]"
+??? example  "[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]"
+	Example: "[+20]% maintenance cost for [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -3312,6 +3312,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon conquering a city&gt;"
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
+??? example  "&lt;upon losing a city&gt;"
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition
 
@@ -3507,16 +3510,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every [countable]&gt;"
+	Works for positive numbers only
 	Example: "&lt;for every [1000]&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every adjacent [tileFilter]&gt;"
+	Works for positive numbers only
 	Example: "&lt;for every adjacent [Farm]&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every [positiveAmount] [countable]&gt;"
+	Works for positive numbers only
 	Example: "&lt;for every [3] [1000]&gt;"
 
 	Applicable to: MetaModifier
@@ -3556,7 +3562,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[nonNegativeAmount]: This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional.
 *[policy]: The name of any policy.
-*[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), a policy branch as `[branchName] branch` (matching all policies in that branch), or `[all] branch` which matches all branch starter policies.
+*[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), or a policy branch as `[branchName] branch` (matching all policies in that branch).
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).

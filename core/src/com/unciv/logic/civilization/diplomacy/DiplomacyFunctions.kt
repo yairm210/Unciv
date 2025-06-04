@@ -58,7 +58,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             else
                 otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
 
-            if (otherCiv.isCityState && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)) {
+            if (civInfo.cityStateFunctions.canProvideStat(Stat.Faith)) {
                 otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
 
                 for ((key, value) in faithAmount)

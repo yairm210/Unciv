@@ -16,6 +16,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.max
 import kotlin.math.min
@@ -118,6 +119,10 @@ class CityConquestFunctions(val city: City) {
         } else {
             // reconquering or liberating city in resistance so eliminate it
             city.removeFlag(CityFlags.Resistance)
+        }
+        
+        for (unique in conqueredCiv.getTriggeredUniques(UniqueType.TriggerUponLosingCity, StateForConditionals(civInfo = conqueredCiv))) {
+            UniqueTriggerActivation.triggerUnique(unique, civInfo = conqueredCiv)
         }
     }
 
