@@ -516,7 +516,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
-        if (stat == Stat.Happiness && hasUnique(UniqueType.RemoveAnnexUnhappiness)) return true
+        if (stat == Stat.Happiness &&
+            (hasUnique(UniqueType.RemoveAnnexUnhappiness) || hasUnique(UniqueType.RemovesAnnexUnhappiness))
+            ) return true
         return false
     }
 

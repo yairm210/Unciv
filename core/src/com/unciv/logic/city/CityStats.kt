@@ -176,6 +176,7 @@ class CityStats(val city: City) {
     fun hasExtraAnnexUnhappiness(): Boolean {
         if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)
+                && !city.containsBuildingUnique(UniqueType.RemovesAnnexUnhappiness)
     }
 
     fun getStatsOfSpecialist(specialistName: String, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
