@@ -141,11 +141,12 @@ interface IHasUniques : INamed {
      *  Is this ruleset object hidden from Civilopedia?
      *
      *  - Obviously, the [UniqueType.HiddenFromCivilopedia] test is done here (and nowhere else - exception TranslationFileWriter for Tutorials).
-     *  - Includes the [isUnavailableBySettings] test if [gameInfo] is known, otherwise existence of Religion is guessed from [ruleset], and all victory types are assumed enabled.
+     *  - Includes the [isUnavailableBySettings] test if [gameInfo] is known, otherwise existence of Religion/Espionage is guessed from [ruleset],
+     *    and all victory types are assumed enabled.
      *  - Note: RulesetObject-type specific overrides should not be necessary.
-     *  @param gameInfo Defaults to [UncivGame.getGameInfoOrNull]. Civilopedia must also be able to run from MainMenu without a game loaded. In that case only this parameter can be `null`. So if you know it - provide!
-     *  @param ruleset required if [gameInfo] is null, otherwise optional.
-     *  @throws NullPointerException if both parameters are null
+     *  @param gameInfo Defaults to [UncivGame.getGameInfoOrNull]. Civilopedia must also be able to run from MainMenu without a game loaded.
+     *                  In that case only this parameter can be `null`. So if you know it - provide!
+     *  @param ruleset  Required if [gameInfo] is null, otherwise optional (but with both null this will simply return `false`).
      */
     fun isHiddenFromCivilopedia(
         gameInfo: GameInfo?,
@@ -154,12 +155,18 @@ interface IHasUniques : INamed {
         if (hasUnique(UniqueType.HiddenFromCivilopedia)) return true
         if (gameInfo != null && isUnavailableBySettings(gameInfo)) return true
         if (gameInfo == null && ruleset != null) {
-            if (!gameAgnosticVisibleForReligionOrEspionage(
+            /* No game is loaded, but we know the Ruleset. This happens when opening Civilopedia from MainMenuScreen right after launch.
+             * We can assume: If the Ruleset has Religion/Espionage, the user would enable it for a hypothetical game, so we shouldn't hide anything.
+             * But we can't assume how mods may use the possible combinations of positive/negative modifiers
+             *     e.g. a mod switches between two versions of the same object depending on user choice
+             *     better do a check based on the best guess for the availability of these features.
+             */
+            if (shouldBeHiddenIfNoGameLoaded(
                     ruleset.beliefs.isNotEmpty(),
                     UniqueType.ConditionalReligionEnabled,
                     UniqueType.ConditionalReligionDisabled
                 )) return true
-            if (!gameAgnosticVisibleForReligionOrEspionage(
+            if (shouldBeHiddenIfNoGameLoaded(
                     ruleset.nations.values.any { it.spyNames.isNotEmpty() },
                     UniqueType.ConditionalEspionageEnabled,
                     UniqueType.ConditionalEspionageDisabled
@@ -170,11 +177,16 @@ interface IHasUniques : INamed {
     /** Overload of [isHiddenFromCivilopedia] for use in actually game-agnostic parts of Civilopedia */
     fun isHiddenFromCivilopedia(ruleset: Ruleset) = isHiddenFromCivilopedia(UncivGame.getGameInfoOrNull(), ruleset)
 
-    private fun gameAgnosticVisibleForReligionOrEspionage(hasFeature: Boolean, enabler: UniqueType, disabler: UniqueType): Boolean {
+    /** Common for Religion/Espionage: Hidden check when no game is loaded
+     *  @param hasFeature Best guess from the Ruleset whether the feature is available
+     *  @param enabler The modifier testing feature is on: `ConditionalReligionEnabled` or `ConditionalEspionageEnabled`
+     *  @param disabler The modifier testing feature is off: `ConditionalReligionDisabled` or `ConditionalEspionageDisabled`
+     */
+    private fun shouldBeHiddenIfNoGameLoaded(hasFeature: Boolean, enabler: UniqueType, disabler: UniqueType): Boolean {
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)) {
-            if (unique.hasModifier(enabler)) return hasFeature
-            if (unique.hasModifier(disabler)) return !hasFeature
+            if (unique.hasModifier(enabler)) return !hasFeature
+            if (unique.hasModifier(disabler)) return hasFeature
         }
-        return true
+        return false
     }
 }
