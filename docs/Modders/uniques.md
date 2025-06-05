@@ -1575,7 +1575,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Doubles Gold given to enemy if city is captured"
 	Applicable to: Building
 
-??? example  "Remove extra unhappiness from annexed cities"
+??? example  "Removes extra unhappiness from annexed cities"
 	Applicable to: Building
 
 ??? example  "Connects trade routes over water"
