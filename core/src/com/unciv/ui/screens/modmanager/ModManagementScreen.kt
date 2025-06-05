@@ -119,6 +119,12 @@ class ModManagementScreen private constructor(
     // Therefore, finding `runningSearchJob?.isActive == false && !stopBackgroundTasks` means stopped by user
     private var stopBackgroundTasks = false
 
+    // List of mods that will be hidden from the mod search
+    private var modBlacklist: List<String> = listOf(
+        "Brave New World",
+        "Brave New World Updated"
+    )
+
     override fun dispose() {
         // make sure the worker threads will not continue trying their time-intensive job
         runningSearchJob?.cancel()
@@ -692,6 +698,7 @@ class ModManagementScreen private constructor(
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
             if (!mod.matchesFilter(filter)) continue
+            if (mod.name in modBlacklist) continue
             onlineModsTable.add(getCachedModButton(mod)).row()
         }
 
