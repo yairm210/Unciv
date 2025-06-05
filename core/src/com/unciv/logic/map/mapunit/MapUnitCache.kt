@@ -53,6 +53,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     val doubleMovementInTerrain = HashMap<String, DoubleMovement>()
 
     var canEnterIceTiles = false
+    var cannotEmbark = false
     var cannotEnterOceanTiles = false
     var canEnterForeignTerrain: Boolean = false
     var canEnterCityStates: Boolean = false
@@ -107,6 +108,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
         canEnterIceTiles = mapUnit.hasUnique(UniqueType.CanEnterIceTiles)
+        cannotEmbark = mapUnit.hasUnique(UniqueType.CannotEmbark)
         cannotEnterOceanTiles = mapUnit.hasUnique(UniqueType.CannotEnterOcean, state)
 
         hasUniqueToBuildImprovements = mapUnit.hasUnique(UniqueType.BuildImprovements)

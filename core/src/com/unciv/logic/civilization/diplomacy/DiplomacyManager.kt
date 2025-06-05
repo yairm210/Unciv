@@ -279,7 +279,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (civInfo.isCityState) return when {
             getInfluence() <= -30 -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
             getInfluence() < 0 -> RelationshipLevel.Enemy
-            getInfluence() >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
+            getInfluence() >= 60 && civInfo.getAllyCivName() == otherCivName -> RelationshipLevel.Ally
             getInfluence() >= 30 -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
@@ -465,7 +465,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders() {
         // City-states can enter ally's territory (the opposite is true anyway even without open borders)
-        val newHasOpenBorders = civInfo.getAllyCiv() == otherCivName
+        val newHasOpenBorders = civInfo.getAllyCivName() == otherCivName
                 || trades.flatMap { it.theirOffers }.any { it.name == Constants.openBorders && it.duration > 0 }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
@@ -489,7 +489,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             // Our ally city states make peace with us
-            if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv)) {
+            if (thirdCiv.getAllyCivName() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv)) {
                 val thirdCivDiplo = thirdCiv.getDiplomacyManager(otherCiv)!!
                 thirdCivDiplo.makePeace()
 
@@ -501,7 +501,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 thirdCivDiplo.otherCivDiplomacy().trades.add(tradeLogic.currentTrade.reverse())
             }
             // Other City-States that are not our ally don't like the fact that we made peace with their enemy
-            if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
+            if (thirdCiv.getAllyCivName() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo)!!.addInfluence(-10f)
         }
     }

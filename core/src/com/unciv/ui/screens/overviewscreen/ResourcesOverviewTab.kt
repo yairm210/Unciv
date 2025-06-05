@@ -57,13 +57,13 @@ class ResourcesOverviewTab(
 
     private val resourceDrilldown: ResourceSupplyList = viewingPlayer.detailedCivResources
     private val extraDrilldown: ResourceSupplyList = getExtraDrilldown()
-    private val allResources = ResourceSupplyList().apply { add(resourceDrilldown); add(extraDrilldown) }
+    private val allResources = resourceDrilldown.asSequence() + extraDrilldown  // Do not materialize into another ResourceSupplyList, we have intentional zero amounts
 
     // Order of source ResourceSupplyList: by tiles, enumerating the map in that spiral pattern
     // UI should not surprise player, thus we need a deterministic and guessable order
-    private val resources: List<TileResource> = allResources.asSequence()
+    private val resources: List<TileResource> = allResources
         .map { it.resource }
-        .filter { it.resourceType != ResourceType.Bonus && !it.hasUnique(UniqueType.NotShownOnWorldScreen) }
+        .filter { it.resourceType != ResourceType.Bonus && !it.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.state) }
         .distinct()
         .sortedWith(
             compareBy<TileResource> { it.resourceType }
@@ -78,7 +78,7 @@ class ResourcesOverviewTab(
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
         fun isAlliedAndUnimproved(tile: Tile): Boolean {
             val owner = tile.getOwner() ?: return false
-            if (owner != viewingPlayer && !(owner.isCityState && owner.getAllyCiv() == viewingPlayer.civName)) return false
+            if (owner != viewingPlayer && !(owner.isCityState && owner.getAllyCivName() == viewingPlayer.civName)) return false
             return tile.countAsUnimproved()
         }
         val amount = get(resource, origin)?.amount ?: return null
@@ -277,7 +277,7 @@ class ResourcesOverviewTab(
                     newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
 
             // Show resources your city-state allies have left unimproved
-            if (!otherCiv.isCityState || otherCiv.getAllyCiv() != viewingPlayer.civName) continue
+            if (!otherCiv.isCityState || otherCiv.getAllyCivName() != viewingPlayer.civName) continue
             for (city in otherCiv.cities)
                 city.addUnimproved()
         }

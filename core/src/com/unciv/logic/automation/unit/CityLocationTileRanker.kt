@@ -33,7 +33,7 @@ object CityLocationTileRanker {
         val nearbyCities = unit.civ.gameInfo.getCities()
             .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 7 + range }
 
-        val uniques = unit.getMatchingUniques(UniqueType.FoundCity)
+        val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             // Filter out tiles that we can't actually found on
             .filter { tile -> uniques.any { it.conditionalsApply(StateForConditionals(unit = unit, tile = tile)) } }
@@ -112,7 +112,8 @@ object CityLocationTileRanker {
         // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
         var tiles = 0
-        for (i in 0..3) {
+        val cityWorkRange = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange 
+        for (i in 0..cityWorkRange) {
             //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
             for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
                 tiles++
@@ -145,8 +146,10 @@ object CityLocationTileRanker {
                 else -> 0f
             }
             // We want a defensive ring around our capital
-            if (city.civ == civ) distanceToCityModifier *= if (city.isCapital()) 2 else 1
-            modifier += distanceToCityModifier
+             if (city.civ == civ) { 
+                distanceToCityModifier *= if (city.isCapital()) 2 else 1
+                modifier += distanceToCityModifier
+            }
         }
         return modifier
     }

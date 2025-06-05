@@ -25,7 +25,8 @@ private const val DROPBOX_THROTTLE_PERIOD = 8L
 /** @see getUpdateThrottleInterval */
 private const val CUSTOM_SERVER_THROTTLE_PERIOD = 1L
 
-class MultiplayerGame(
+/** Represents an in-memory + disk-backed preview of a game */
+class MultiplayerGamePreview(
     val fileHandle: FileHandle,
     var preview: GameInfoPreview? = null,
     lastOnlineUpdate: Instant? = null
@@ -53,10 +54,17 @@ class MultiplayerGame(
         }
     }
 
+    // These two functions should be the only ones to set the preview - to ensure disk-memory consistency
     private fun loadPreviewFromFile(): GameInfoPreview {
         val previewFromFile = UncivGame.Current.files.loadGamePreviewFromFile(fileHandle)
         preview = previewFromFile
         return previewFromFile
+    }
+
+    private fun setNewPreview(gamePreview: GameInfoPreview) {
+        UncivGame.Current.files.saveMultiplayerGamePreview(gamePreview, fileHandle)
+        preview = gamePreview
+        error = null
     }
 
     private fun needsUpdate(): Boolean = preview == null || error != null
@@ -109,16 +117,18 @@ class MultiplayerGame(
         val serverIdentifier = curPreview.gameParameters.multiplayerServerUrl
         val newPreview = MultiplayerServer(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
-        UncivGame.Current.files.saveGame(newPreview, fileHandle)
-        preview = newPreview
+        
+        setNewPreview(newPreview)
+        
         return GameUpdateResult(CHANGED, newPreview)
     }
 
-    suspend fun doManualUpdate(gameInfo: GameInfoPreview) {
+    suspend fun updatePreview(gameInfo: GameInfoPreview) {
         debug("Doing manual update of game %s", gameInfo.gameId)
+        
         lastOnlineUpdate.set(Instant.now())
-        error = null
-        preview = gameInfo
+        setNewPreview(gameInfo)
+        
         withGLContext {
             EventBus.send(MultiplayerGameUpdated(name, gameInfo))
             playMultiplayerTurnNotification(gameInfo)
@@ -138,7 +148,7 @@ class MultiplayerGame(
         SoundPlayer.play(sound)
     }
 
-    override fun equals(other: Any?): Boolean = other is MultiplayerGame && fileHandle == other.fileHandle
+    override fun equals(other: Any?): Boolean = other is MultiplayerGamePreview && fileHandle == other.fileHandle
     override fun hashCode(): Int = fileHandle.hashCode()
 }
 

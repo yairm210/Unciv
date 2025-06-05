@@ -1,3 +1,113 @@
+## 4.16.11
+
+Don't spawn prophet in holy city if it's been taken over
+
+City location ranking takes modded city work range into account
+
+Modding: Avoid crashes from "free buildings that no longer apply once they're in the city / change which buildings are free"
+
+City stats table immediately scrollable again, AND scrollable all the way to the end
+
+By RobLoach:
+- Add unique `denounced` quotes 
+- Mods can add voiceovers for start intros 
+
+Fix showing negative mod download progress - By SomeTroglodyte
+
+## 4.16.10
+
+Disabled android-specific behaviour of text fields since it's broken currently :|
+
+Fixed city screen buildings panel not fully scrollable
+
+Only add mod search textboxes if there are at least 10 mods (cleaner UI)
+
+uniques: Add a "not constructed by anybody" conditional unique - By RobLoach
+
+## 4.16.9
+
+AI: Don't choose one-time-action promotions
+
+Display city-state bonuses per relationship level
+
+Conditional city-state bonuses colored green only when conditional applies
+
+By RobLoach:
+- Add ability to remove entire policy branches 
+- Gods & Kings: Great Generals cannot enter a golden age 
+
+Netherlands trade bugfix - By EmperorPinguin
+
+## 4.16.8
+
+Unit triggerables with triggers, no longer trigger on new units
+
+Clicking on statuses opens promotion screen
+
+AI: 
+- City states disband great prophets
+- Don't offer peace when we're just about to take a city
+
+Multiplayer:
+- Better, less buggy resign/skip
+
+Modding:
+- Fix global unique validation
+- Validation catches 'global triggers attached to unit triggerables', which will have no effect
+
+By SomeTroglodyte:
+- Fix Resources Overview to work as intended 
+- Add an 'XP' column to Units Overview
+
+## 4.16.7
+
+Countable can accept arbitrary mathematical Expressions - Kudos AutumnPizazz for kicking this off, SomeTroglodyte for parser implementation!
+
+Added 'search mods' in new game screen and mod checker
+
+Fixed bugs in unique validation and in countable validation
+
+Allow automation for settlers with conditional settling uniques
+
+Add "Cannot embark" unit unique - By PLynx01
+
+## 4.16.6
+
+Demands/Requests from other civs do not stop other events registering
+
+Better 'Pay to improve CS resource'
+
+Seed pillage randomness to avoid save-scum
+
+Modding: 
+- Added misspelling tests for uniqueTo for buildings, units and improvements
+- Triggerable uniques on promotions only activate once when added on creation
+- Beliefs can have AI decision modifiers, and do in base rulesets
+
+Finish city-state quests upon acquiring great person
+
+Prevent AI placing units near citadels - by EmperorPinguin
+
+## 4.16.5
+
+Added improvement image toggle next to minimap
+
+Added indication when attacking, for which tile we will attack from
+
+Fix opening Civilopedia from main menu when easter eggs enabled
+
+Remove messages from defeated civilizations
+
+Don't automate naval units in cities that only lead to enemies via impassible water routes (e.g. ice)
+
+Uniques are never sorted alphabetically
+
+Modding: Added validation for global unit uniques
+
+By Ouaz:
+- Fix untranslated string 
+- Fix personality names 
+
 ## 4.16.4
 
 Tile swapping with transported units in the tile, checks *who* is transporting the units
