@@ -142,7 +142,7 @@ enum class UniqueType(
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable,
         docDescription = "Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building"),
     BuildingMaintenance("[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated(message = "as of 4.6.13", ReplaceWith("[relativeAmount]% maintenance cost for [all] buildings [cityFilter]"), level = DeprecationLevel.WARNING)
+    @Deprecated(message = "as of 4.16.13", ReplaceWith("[relativeAmount]% maintenance cost for [all] buildings [cityFilter]"), level = DeprecationLevel.WARNING)
     BuildingMaintenanceOld("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     RemoveBuilding("Remove [buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
     OneTimeSellBuilding("Sell [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
@@ -345,7 +345,10 @@ enum class UniqueType(
     NotDestroyedWhenCityCaptured("Never destroyed when the city is captured", UniqueTarget.Building),
     DoublesGoldFromCapturingCity("Doubles Gold given to enemy if city is captured", UniqueTarget.Building),
 
+
+    @Deprecated("As of 4.16.14", ReplaceWith("Removes extra unhappiness from annexed cities"))
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
+    RemovesAnnexUnhappiness("Removes extra unhappiness from annexed cities", UniqueTarget.Building),
     ConnectTradeRoutes("Connects trade routes over water", UniqueTarget.Building),
     GainBuildingWhereBuildable("Automatically built in all cities where it is buildable", UniqueTarget.Building),
 

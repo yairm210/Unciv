@@ -34,10 +34,16 @@ class RulesetValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: B
     private lateinit var textureNamesCache: AtlasPreview
 
     fun getErrorList(): RulesetErrorList {
-        // When no base ruleset is loaded - references cannot be checked
-        if (!ruleset.modOptions.isBaseRuleset) return getNonBaseRulesetErrorList()
+        try {
+            // When no base ruleset is loaded - references cannot be checked
+            if (!ruleset.modOptions.isBaseRuleset) return getNonBaseRulesetErrorList()
 
-        return getBaseRulesetErrorList()
+            return getBaseRulesetErrorList()
+        } catch (e: Exception) {
+            return RulesetErrorList(ruleset).apply { 
+                add("Error while validating ruleset ${ruleset.name}: ${e.message}")
+            }
+        }
     }
 
     private fun getNonBaseRulesetErrorList(): RulesetErrorList {
