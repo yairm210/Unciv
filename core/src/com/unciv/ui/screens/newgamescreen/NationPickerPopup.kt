@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings.NationPickerListMode
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -215,7 +216,6 @@ internal class NationPickerPopup(
 
         for (element in getSortedNations()) {
             val (nationActor, currentSelectInfo) = nationActorFactory(element)
-
             nationActor.onClick {
                 highlightNation(currentSelectInfo)
             }
