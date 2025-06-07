@@ -121,6 +121,20 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
+    FilteredGlobalBuildings("Global [buildingFilter] Buildings") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val cities = stateForConditionals.gameInfo?.civilizations
+                ?.flatMap { it.cities } ?: return null
+            return cities.sumOf { city ->
+                city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(filter) }
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.BuildingFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
     FilteredPolicies("Adopted [policyFilter] Policies") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
