@@ -246,6 +246,8 @@ object Conditionals {
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()
+            UniqueType.ConditionalStackedWithUnit -> state.relevantUnit != null && 
+                    state.relevantUnit!!.getTile().getUnits().any { it.matchesFilter(conditional.params[0]) }
 
             UniqueType.ConditionalInTiles ->
                 state.relevantTile?.matchesFilter(conditional.params[0], state.relevantCiv) == true

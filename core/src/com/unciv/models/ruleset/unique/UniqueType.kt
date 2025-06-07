@@ -787,6 +787,7 @@ enum class UniqueType(
     ConditionalAboveHP("when above [positiveAmount] HP", UniqueTarget.Conditional),
     ConditionalBelowHP("when below [positiveAmount] HP", UniqueTarget.Conditional),
     ConditionalHasNotUsedOtherActions("if it hasn't used other actions yet", UniqueTarget.Conditional),
+    ConditionalStackedWithUnit("when stacked with a [mapUnitFilter] unit", UniqueTarget.Conditional),
 
     /////// tile conditionals
     ConditionalNeighborTiles("with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),

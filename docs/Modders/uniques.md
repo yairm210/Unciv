@@ -3195,6 +3195,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;if it hasn't used other actions yet&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;when stacked with a [mapUnitFilter] unit&gt;"
+	Example: "&lt;when stacked with a [Wounded] unit&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles&gt;"
 	Example: "&lt;with [3] to [3] neighboring [Farm] tiles&gt;"
 
