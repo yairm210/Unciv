@@ -132,7 +132,7 @@ object HeadTowardsEnemyCityAutomation {
         val tileToMoveTo =
             unitDistanceToTiles.asSequence()
                 .filter {
-                    it.key.aerialDistanceTo(closestReachableEnemyCity) >= unitRange 
+                    it.key.aerialDistanceTo(closestReachableEnemyCity) > unitRange 
                         && it.key !in tilesInBombardRange
                         && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain
                         // Avoid mountains in path because unitDistanceToTiles parameter doesn't exclude them due to getMovementToTilesAtPosition
