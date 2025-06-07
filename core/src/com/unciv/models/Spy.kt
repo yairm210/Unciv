@@ -360,7 +360,10 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val ourTechResachLevel = ((ourResearchTechSize/techSize)*100f)
         val otherCivTechResachLevel = ((otherCivResearchTechSize/techSize)*100f)
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
-            // if there is more than 5% difference in tech compare to the civ in tech we bypass the agreement
+            /*
+            * if there is equal or more than 10% difference in tech, 
+            * compare to the other civ in tech we the Ai will bypass the agreement
+            * */ 
             otherCivTechResachLevel-ourTechResachLevel <= 10f) {
             return false
         }
