@@ -364,7 +364,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             * if there is equal or more than 10% difference in tech, 
             * compare to the other civ in tech we the Ai will bypass the agreement
             * */ 
-            otherCivTechResachLevel-ourTechResachLevel <= 10f) {
+            otherCivTechResachLevel <= ourTechResachLevel + 10f) {
             return false
         }
         return true
