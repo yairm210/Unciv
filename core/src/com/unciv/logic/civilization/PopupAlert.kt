@@ -18,6 +18,9 @@ enum class AlertType : IsPartOfGameInfoSerialization {
 
     DemandToStopSpreadingReligion,
     ReligionSpreadDespiteOurPromise,
+    
+    DemandToStopSpyingOnUs,
+    SpyingOnUsDespiteOurPromise,
 
     GoldenAge,
     DeclarationOfFriendship,
