@@ -365,9 +365,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             * compare to the other civ in tech we the Ai will bypass the agreement
             * */ 
             otherCivTechResachLevel <= ourTechResachLevel + 10f) {
-            return false
+            return true
         }
-        return true
+        return false
     }
 
     fun canMoveTo(city: City): Boolean {
