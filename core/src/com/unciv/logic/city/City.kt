@@ -413,8 +413,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
             civ.updateProximity(otherCiv,
                 otherCiv.updateProximity(civ))
         }
-
-        civ.gameInfo.cityDistances.setDirty()
     }
 
     fun annexCity() = CityConquestFunctions(this).annexCity()

@@ -82,7 +82,6 @@ class CityFounder {
         }
 
         triggerCitiesSettledNearOtherCiv(city)
-        civInfo.gameInfo.cityDistances.setDirty()
 
         addStartingBuildings(city, civInfo, startingEra)
 
