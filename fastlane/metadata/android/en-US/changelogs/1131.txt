@@ -1,18 +1,4 @@
-
-
-chore: Remove unused city distance
-
-modcheck: Handle case where a deprecated unique used a parameter type that no longer exists
-
-Fix base rulesets
-
-Rename unique "remove annex unhappiness" -> "removes annex unhappiness"
-
-4.16.13-patch1
-
-Catch unexpected validation exceptions 
-
-Add special exception for a strange bug encountered by a player
+Mod checking: Catch unexpected validation exceptions 
 
 Add uniques to remove tile resources and improvements - By RobLoach
 
