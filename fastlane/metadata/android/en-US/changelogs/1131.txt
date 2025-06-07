@@ -1,0 +1,7 @@
+Mod checking: Catch unexpected validation exceptions 
+
+Add uniques to remove tile resources and improvements - By RobLoach
+
+Upon Ending Golden Age unique - By PLynx01
+
+Fix Civilopedia when opened for a religion-free ruleset without a loaded game - By SomeTroglodyte

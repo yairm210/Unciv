@@ -364,6 +364,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     override fun getCivilopediaRuleset(): Ruleset {
+        if (easterEggRuleset != null) return easterEggRuleset!!
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
         if (rulesetParameters != null) return RulesetCache.getComplexRuleset(rulesetParameters)
         return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]

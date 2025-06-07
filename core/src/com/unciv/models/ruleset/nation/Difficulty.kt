@@ -72,7 +72,7 @@ class Difficulty: INamed, ICivilopediaText {
 
         lines += FormattedLine()
         lines += FormattedLine("AI settings", header = 3)
-        lines += FormattedLine("{AI difficulty level}: $aiDifficultyLevel", indent = 1)
+        lines += FormattedLine("{AI difficulty level}: {$aiDifficultyLevel}", indent = 1)
         lines += FormattedLine("{AI city growth modifier}: ${aiCityGrowthModifier.toPercent()}% ${Fonts.food}", indent = 1)
         lines += FormattedLine("{AI unit cost modifier}: ${aiUnitCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
         lines += FormattedLine("{AI building cost modifier}: ${aiBuildingCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
