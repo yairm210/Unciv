@@ -121,6 +121,28 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
+    FilteredGlobalBuildings("[civFilter] [buildingFilter] Buildings") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilter = params[0]
+            val buildingFilter = params[1]
+            val civilizations = stateForConditionals.gameInfo?.civilizations
+                ?.filter { it.matchesFilter(civFilter) } ?: return null
+            val cities = civilizations.flatMap { it.cities }
+            return cities.sumOf { city ->
+                city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(buildingFilter) }
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            if (params.size < 2) return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            val civSeverity = UniqueParameterType.CivFilter.getTranslatedErrorSeverity(params[0], ruleset)
+            val buildingSeverity = UniqueParameterType.BuildingFilter.getTranslatedErrorSeverity(params[1], ruleset)
+            return civSeverity ?: buildingSeverity
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
     FilteredPolicies("Adopted [policyFilter] Policies") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
