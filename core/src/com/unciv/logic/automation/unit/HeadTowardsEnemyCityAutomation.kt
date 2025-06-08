@@ -129,24 +129,16 @@ object HeadTowardsEnemyCityAutomation {
         unit: MapUnit
     ): Boolean {
         val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
-        var candidateTilesToMoveTo = unitDistanceToTiles.asSequence().filter {
+        val candidateTiles = unitDistanceToTiles.asSequence().filter {
             it.key.aerialDistanceTo(closestReachableEnemyCity) >= unitRange
                 && it.key !in tilesInBombardRange
                 && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain 
                 // Avoid mountains in path because unitDistanceToTiles parameter doesn't exclude them due to getMovementToTilesAtPosition
                 && unit.movement.canMoveTo(it.key)
         }
-
-        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 4)
-        val safeTiles = candidateTilesToMoveTo.filter {
-            it.key !in dangerousTiles
-        }
-
-        // Priotirize tiles without enemy unit retaliation
-        if (safeTiles.any()) candidateTilesToMoveTo = safeTiles
         
         val tilesInAttackRange = closestReachableEnemyCity.getTilesInDistance(unitRange)
-        val tileToMoveTo = candidateTilesToMoveTo.minByOrNull {
+        val tileToMoveTo = candidateTiles.minByOrNull {
             // Candidate destination tile is in attack range, take furthest position from city
             if (it.key in tilesInAttackRange) it.value.totalMovement
             // Candidate destination tile is not in attack range, take shortest route to city
