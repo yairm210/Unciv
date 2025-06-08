@@ -49,7 +49,7 @@ internal object DesktopLauncher {
                 ruleset.load(jsonsFolder)
             }
             UniqueAutoUpdater.autoupdateUniques(ruleset)
-            val errors = RulesetValidator(ruleset).getErrorList(true)
+            val errors = RulesetValidator(ruleset, true).getErrorList()
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
         }

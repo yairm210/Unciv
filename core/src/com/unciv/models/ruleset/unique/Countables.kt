@@ -38,6 +38,7 @@ enum class Countables(
         override val documentationHeader = "Integer constant - any positive or negative integer number"
         override fun matches(parameterText: String) = parameterText.toIntOrNull() != null
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) = parameterText.toIntOrNull()
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String>  = setOf()
         override val example: String = "123"
     },
 
@@ -130,6 +131,7 @@ enum class Countables(
             UniqueParameterType.PolicyFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             UniqueParameterType.PolicyFilter.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
     },
 
     RemainingCivs("Remaining [civFilter] Civilizations") {
@@ -180,6 +182,39 @@ enum class Countables(
     },
 
 
+    EraNumber("Era number", shortDocumentation = "Number of the era the current player is in") {
+        override val documentationStrings = listOf("Zero-based index of the Era in Eras.json.")
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
+            stateForConditionals.civInfo?.getEraNumber()
+    },
+
+    GameSpeedModifier("Speed modifier for [stat]", shortDocumentation = "A game speed modifier for a specific Stat, as percentage") {
+        override val documentationStrings = listOf(
+            "Chooses an appropriate field from the Speeds.json entry the player has chosen.",
+            "It is returned multiplied by 100.",
+            "Food and Happiness return the generic `modifier` field.",
+            "Other fields like `goldGiftModifier` or `barbarianModifier` are not accessible with this Countable."
+        )
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val stat = Stat.safeValueOf(parameterText.getPlaceholderParameters()[0]) ?: return null
+            val speed = stateForConditionals.gameInfo?.speed ?: return null
+            val modifier = when(stat) {
+                Stat.Gold -> speed.goldCostModifier
+                Stat.Production -> speed.productionCostModifier
+                Stat.Food -> speed.modifier
+                Stat.Science -> speed.scienceCostModifier
+                Stat.Culture -> speed.cultureCostModifier
+                Stat.Happiness -> speed.modifier
+                Stat.Faith -> speed.faithCostModifier
+            }
+            return modifier.times(100).toInt()
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            if (Stat.isStat(parameterText.getPlaceholderParameters()[0])) null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.entries.map { placeholderText.fillPlaceholders(it.name) }.toSet()
+    },
+
+
     Expression {
         override val noPlaceholders = false
 
@@ -218,6 +253,7 @@ enum class Countables(
     open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
         else parameterText.equalsPlaceholderText(placeholderText)
     
+    /** Needs to return the ENTIRE countable, not just parameters. */
     open fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
     
     /** This indicates whether a parameter *is of this countable type*, not *whether its parameters are correct*
@@ -233,7 +269,7 @@ enum class Countables(
         get() {
             if (noPlaceholders) return text
             val placeholderParams = text.getPlaceholderParameters()
-                .map { UniqueParameterType.safeValueOf(it).docExample }
+                .mapNotNull { UniqueParameterType.safeValueOf(it)?.docExample }
             return text.fillPlaceholders(*placeholderParams.toTypedArray())
         }
 

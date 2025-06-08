@@ -453,7 +453,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             //  that is, there needs to be a tile improvement you have the tech for.
             // Does NOT take all GetImprovementBuildingProblems into account.
             return possibleImprovements.any { improvement ->
-                ruleset.tileImprovements[improvement]?.let { it.techRequired == null || civInfo.tech.isResearched(it.techRequired!!) } == true
+                ruleset.tileImprovements[improvement]?.let {
+                    it.turnsToBuild != -1 && // Buildable by workers (not just 'placeable')
+                        (it.techRequired == null || civInfo.tech.isResearched(it.techRequired!!))
+                } == true
             }
         }
         val improvement = getUnpillagedTileImprovement()

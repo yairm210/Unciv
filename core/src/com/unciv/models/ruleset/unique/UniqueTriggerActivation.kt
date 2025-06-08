@@ -22,6 +22,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.UpgradeUnitAction
@@ -95,7 +96,7 @@ object UniqueTriggerActivation {
         }
         fun getApplicableCities(cityFilter: String) = 
             if (cityFilter == "in this city") sequenceOf(relevantCity).filterNotNull()
-            else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[0]) }
+            else civInfo.cities.asSequence().filter { it.matchesFilter(cityFilter) }
 
         val timingConditional = unique.getModifiers(UniqueType.ConditionalTimedUnique).firstOrNull()
         if (timingConditional != null) {
@@ -1069,6 +1070,38 @@ object UniqueTriggerActivation {
                     ?: return null
                 return {
                     unit.promotions.removePromotion(promotion)
+                    true
+                }
+            }
+
+            UniqueType.OneTimeRemoveResourcesFromTile -> {
+                if (tile == null) return null
+                if (tile.resource == null) return null
+                val resourceFilter = unique.params[0]
+                if (!tile.tileResource.matchesFilter(resourceFilter)) return null
+                return {
+                    tile.resource = null
+                    tile.resourceAmount = 0
+                    true
+                }
+            }
+
+            UniqueType.OneTimeRemoveImprovementsFromTile -> {
+                if (tile == null) return null
+                val tileImprovement = tile.getTileImprovement()
+                if (tileImprovement == null) return null
+                val improvementFilter = unique.params[0]
+                if (!tileImprovement.matchesFilter(improvementFilter)) return null
+                return {
+                    // Don't remove the improvement if we're just removing the roads
+                    if (improvementFilter != "All Road") {
+                        tile.removeImprovement()
+                    }
+
+                    // Remove the roads if desired
+                    if (improvementFilter == "All" || improvementFilter == "All Road") {
+                        tile.removeRoad()
+                    }
                     true
                 }
             }
