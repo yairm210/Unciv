@@ -312,6 +312,8 @@ class UniqueValidator(val ruleset: Ruleset) {
                         "but its type ${unique.type} only ${unique.type.parameterTypeMap.size} parameters?!")
             }
             val acceptableParamTypes = unique.type.parameterTypeMap[index]
+            if (acceptableParamTypes.size == 0) continue // This is a deprecated parameter type, don't bother checking it
+            
             val errorTypesForAcceptableParameters =
                 acceptableParamTypes.map { getParamTypeErrorSeverityCached(it, param) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
@@ -319,7 +321,9 @@ class UniqueValidator(val ruleset: Ruleset) {
                 && param in allNonTypedUniques)
                 continue // This is a filtering param, and the unique it's filtering for actually exists, no problem here!
             val leastSevereWarning =
-                errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
+                errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }
+            if (leastSevereWarning == null) 
+                throw Exception("Unique ${unique.text} from mod ${ruleset.name} is acting strangely - please open a bug report")
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
         }
         return errorList

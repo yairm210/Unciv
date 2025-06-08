@@ -40,7 +40,6 @@ We find that 100x100 pixels is good enough for most icons.
 
 #### Circle icons
 
-If most of the images in your mod are using images from the mod, we want to be able to wrap them from images *also* from your mod.
 To allow for faster rendering for icons, which has a major performance effect, you can copy the ["OtherIcons/circle.png"](https://github.com/yairm210/Unciv/blob/master/android/Images.Icons/OtherIcons/Circle.png) to:
 
 - "ImprovementIcons/Circle.png" for improvements

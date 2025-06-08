@@ -5,6 +5,9 @@ import kotlin.collections.ArrayDeque
 
 /**
  * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get connected tiles.
+ * 
+ * @param startingPoint Starting [Tile] from which to start the search
+ * @param predicate A condition for subsequent neighboring tiles to be considered in search
  */
 class BFS(
     val startingPoint: Tile,

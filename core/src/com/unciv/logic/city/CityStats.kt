@@ -16,6 +16,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.DebugUtils
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 
 class StatTreeNode {
@@ -175,6 +176,7 @@ class CityStats(val city: City) {
     fun hasExtraAnnexUnhappiness(): Boolean {
         if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)
+                && !city.containsBuildingUnique(UniqueType.RemovesAnnexUnhappiness)
     }
 
     fun getStatsOfSpecialist(specialistName: String, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
@@ -334,8 +336,16 @@ class CityStats(val city: City) {
             buildingsMaintenance *= city.civ.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
 
-        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenance)) {
+        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenanceOld)) {
             buildingsMaintenance *= unique.params[0].toPercent()
+        }
+        
+        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenance)) {
+            city.cityConstructions.getBuiltBuildings().filter { 
+                it.matchesFilter(unique.params[1])
+            }.forEach {
+                it.maintenance = (it.maintenance * unique.params[0].toPercent()).roundToInt()
+            }
         }
 
         return buildingsMaintenance

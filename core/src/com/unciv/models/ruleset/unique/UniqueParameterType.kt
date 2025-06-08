@@ -36,7 +36,7 @@ import com.unciv.models.translations.TranslationFileWriter
 //region _Fields
 @Suppress("unused") // Some are used only via enumerating the enum matching on parameterName
 enum class UniqueParameterType(
-    var parameterName: String,
+    val parameterName: String,
     val docExample: String,
     val docDescription: String? = null,
     val displayName: String = parameterName,
@@ -561,10 +561,9 @@ enum class UniqueParameterType(
     PolicyFilter("policyFilter", "Oligarchy",
         "The name of any policy, a filtering Unique, any branch (matching only the branch itself)," +
         " a branch name with \" Completed\" appended (matches if the branch is completed)," +
-        " a policy branch as `[branchName] branch` (matching all policies in that branch)," +
-        " or `[all] branch` which matches all branch starter policies."
+        " or a policy branch as `[branchName] branch` (matching all policies in that branch)."
     ) {
-        override val staticKnownValues = Constants.all + "[all] branch"
+        override val staticKnownValues = Constants.all
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
             parameterText in staticKnownValues -> true
             parameterText in ruleset.policies -> true
@@ -721,7 +720,6 @@ enum class UniqueParameterType(
         }
 
         fun safeValueOf(param: String) = entries.firstOrNull { it.parameterName == param }
-            ?: Unknown.apply { this.parameterName = param }  //TODO Danger: There is only one instance of Unknown!
     }
 
     //endregion
