@@ -18,7 +18,6 @@ import com.unciv.logic.trade.TradeRequest
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.abs
 import kotlin.random.Random
@@ -336,13 +335,13 @@ object DiplomacyAutomation {
                         moneyWeNeedToPay = civInfo.gold  // As much as possible
                     }
                     tradeLogic.currentTrade.ourOffers.add(
-                        TradeOffer("Gold".tr(), TradeOfferType.Gold, moneyWeNeedToPay, civInfo.gameInfo.speed)
+                        TradeOffer("Gold", TradeOfferType.Gold, moneyWeNeedToPay, civInfo.gameInfo.speed)
                     )
                 } else if (moneyWeNeedToPay < -100) {
                     val moneyTheyNeedToPay = abs(moneyWeNeedToPay).coerceAtMost(enemy.gold)
                     if (moneyTheyNeedToPay > 0) {
                         tradeLogic.currentTrade.theirOffers.add(
-                            TradeOffer("Gold".tr(), TradeOfferType.Gold, moneyTheyNeedToPay, civInfo.gameInfo.speed)
+                            TradeOffer("Gold", TradeOfferType.Gold, moneyTheyNeedToPay, civInfo.gameInfo.speed)
                         )
                     }
                 }
