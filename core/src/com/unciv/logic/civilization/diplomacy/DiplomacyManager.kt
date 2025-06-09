@@ -98,9 +98,10 @@ enum class DiplomaticModifiers(val text: String) {
     DenouncedOurAllies("You have denounced our allies"),
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
     RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
-    RefusedToNotSendSpiesToUs("You refused to stop spying on us"),
+    RefusedToNotSendingSpiesToUs("You refused to stop spying on us"),
     BetrayedPromiseToNotSettleCitiesNearUs("You betrayed your promise to not settle cities near us"),
     BetrayedPromiseToNotSpreadReligionToUs("You betrayed your promise to not spread your religion to us"),
+    BetrayedPromiseToNotSendingSpiesToUs("You betrayed your promise to stop spying on us"),
     
     UnacceptableDemands("Your arrogant demands are in bad taste"),
     UsedNuclearWeapons("Your use of nuclear weapons is disgusting!"),
@@ -723,7 +724,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun refuseNotToSpreadSpiesTo() {
         addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSendingSpies, 100)
-        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSendSpiesToUs, -15f)
+        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSendingSpiesToUs, -15f)
         otherCiv().addNotification("[${civInfo.civName}] refused to stop spying on us!",
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }

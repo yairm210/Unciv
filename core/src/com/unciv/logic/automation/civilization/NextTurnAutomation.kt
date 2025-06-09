@@ -655,7 +655,7 @@ object NextTurnAutomation {
             diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) -> {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.SpyingOnUsDespiteOurPromise, civInfo.civName))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSendingSpies, 100)
-                diplomacyManager.setModifier(DiplomaticModifiers.RefusedToNotSendSpiesToUs, -20f)
+                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSendingSpiesToUs, -20f)
                 diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSendSpies)
             }
             else -> {

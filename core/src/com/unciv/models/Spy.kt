@@ -357,14 +357,14 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val ourResearchTechSize = civInfo.tech.techsResearched.size.toFloat()
         val otherCivResearchTechSize =  otherCiv.tech.techsResearched.size.toFloat()
         
-        val ourTechResachLevel = ((ourResearchTechSize/techSize)*100f)
-        val otherCivTechResachLevel = ((otherCivResearchTechSize/techSize)*100f)
+        val ourTechResearchLevel = ((ourResearchTechSize/techSize)*100f)
+        val otherCivTechResearchLevel = ((otherCivResearchTechSize/techSize)*100f)
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
             /*
             * if there is equal or more than 10% difference in tech, 
             * compare to the other civ in tech we the Ai will bypass the agreement
-            * */ 
-            otherCivTechResachLevel <= ourTechResachLevel + 10f) {
+            * */
+            otherCivTechResearchLevel <= ourTechResearchLevel + 10f) {
             return true
         }
         return false

@@ -269,8 +269,10 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         demandsTable.add(dontSpreadReligionButton).row()
         
         if (viewingCiv.gameInfo.gameParameters.espionageEnabled) {
-            val dontSpyButton = "Please don't spy on us.".toTextButton()
-            if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSpyingOnUs && it.value == viewingCiv.civName })
+            val dontSpyButton = "Stop spying on us.".toTextButton()
+            val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
+            if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSpyingOnUs && it.value == viewingCiv.civName} ||
+                diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies))
                 dontSpyButton.disable()
             dontSpyButton.onClick {
                 otherCiv.popupAlerts.add(
@@ -283,7 +285,6 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             }
             demandsTable.add(dontSpyButton).row()
         }
-        
 
         demandsTable.add(Constants.close.toTextButton().onClick { diplomacyScreen.updateRightSide(otherCiv) })
         return demandsTable
