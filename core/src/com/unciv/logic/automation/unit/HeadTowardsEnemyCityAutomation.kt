@@ -136,16 +136,18 @@ object HeadTowardsEnemyCityAutomation {
                 // Avoid mountains in path because unitDistanceToTiles parameter doesn't exclude them due to getMovementToTilesAtPosition
                 && unit.movement.canMoveTo(it.key)
         }
-        
-        val tilesInAttackRange = closestReachableEnemyCity.getTilesInDistance(unitRange)
-        val tileToMoveTo = candidateTiles.minByOrNull {
-            // Candidate destination tile is in attack range, take furthest position from city
-            if (it.key in tilesInAttackRange) it.value.totalMovement
-            // Candidate destination tile is not in attack range, take shortest route to city
-            else it.key.aerialDistanceTo(closestReachableEnemyCity).toFloat()
-        }
+
+        // Sort by closest distance to target city, then by the least amount of moves needed to get there  
+        val tileToMoveTo = candidateTiles.sortedWith(compareBy(
+            { it.key.aerialDistanceTo(closestReachableEnemyCity) },
+            { it.value.totalMovement }
+        )).firstOrNull()
 
         if (tileToMoveTo != null) {
+            // We're in fire range but have no sight, hold position
+            if (closestReachableEnemyCity.getTilesInDistance(unitRange).contains(unit.getTile()))
+                return true
+
             // move into position far away enough so that city bombard or enemy units don't hurt
             unit.movement.headTowards(tileToMoveTo.key)
             return true
