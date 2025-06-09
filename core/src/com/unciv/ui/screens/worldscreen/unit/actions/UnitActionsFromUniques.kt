@@ -53,9 +53,6 @@ object UnitActionsFromUniques {
                 && tile.isAdjacentTo("Land") && unit.isEmbarked()
                 && tile.isWater
         }
-
-        println(tile.canSettledWaterTile())
-        println("tile os cosat ${tile.isAdjacentTo("Land")}")
         
         if (tile.isWater && canFoundCityOnCoastTile == null || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
