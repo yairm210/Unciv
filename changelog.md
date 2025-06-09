@@ -1,3 +1,13 @@
+## 4.16.14
+
+Mod checking: Catch unexpected validation exceptions 
+
+Add uniques to remove tile resources and improvements - By RobLoach
+
+Upon Ending Golden Age unique - By PLynx01
+
+Fix Civilopedia when opened for a religion-free ruleset without a loaded game - By SomeTroglodyte
+
 ## 4.16.13
 
 Fixed techs showing "0 turns" and yet not being researched

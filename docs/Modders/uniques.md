@@ -176,6 +176,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Remove [resourceFilter] resources from this tile"
+	Example: "Remove [Strategic] resources from this tile"
+
+	Applicable to: Triggerable
+
+??? example  "Remove [improvementFilter] improvements from this tile"
+	Example: "Remove [All Road] improvements from this tile"
+
+	Applicable to: Triggerable
+
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
 	Works only with promotions that are valid for the unit's type - or for promotions that do not specify any.
 	Example: "[Wounded] units gain the [Shock I] promotion"
@@ -1575,7 +1585,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Doubles Gold given to enemy if city is captured"
 	Applicable to: Building
 
-??? example  "Remove extra unhappiness from annexed cities"
+??? example  "Removes extra unhappiness from annexed cities"
 	Applicable to: Building
 
 ??? example  "Connects trade routes over water"
@@ -3307,6 +3317,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon entering a Golden Age&gt;"
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon ending a Golden Age&gt;"
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon conquering a city&gt;"
