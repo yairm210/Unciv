@@ -155,7 +155,7 @@ class GlobalPoliticsOverviewTable(
         val civInfoTable = Table(skin)
         val leaderName = civ.nation.leaderName
         civInfoTable.add(leaderName.toLabel(fontSize = 30)).row()
-        civInfoTable.add(civ.civName.toLabel(hideIcons = true)).row()
+        civInfoTable.add(civ.getDisplayCivName().toLabel(hideIcons = true)).row()
         civInfoTable.add(civ.tech.era.name.toLabel()).row()
         return civInfoTable
     }
@@ -196,7 +196,7 @@ class GlobalPoliticsOverviewTable(
 
     private fun getCivName(otherciv: Civilization): String {
         if (viewingPlayer.knows(otherciv) || otherciv.civName == viewingPlayer.civName) {
-            return otherciv.civName
+            return otherciv.getDisplayCivName()
         }
         return "an unknown civilization"
     }
@@ -353,7 +353,7 @@ class GlobalPoliticsOverviewTable(
     private fun getCivMiniTable(civInfo: Civilization): Table {
         val table = Table()
         table.add(ImageGetter.getNationPortrait(civInfo.nation, 25f)).pad(5f)
-        table.add(civInfo.civName.toLabel(hideIcons = true)).left().padRight(10f)
+        table.add(civInfo.getDisplayCivName().toLabel(hideIcons = true)).left().padRight(10f)
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
