@@ -23,15 +23,15 @@ import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
     // DiplomaticStatus.War is tested separately for the Diplomacy Screen. Colored RED.
-    // DiplomaticStatus.DefensivePact - similar. Colored CYAN.
-    Unforgivable(Color.FIREBRICK),
-    Enemy(Color.YELLOW),
-    Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
-    Competitor(Color(0x1f998fff)), // HSV(175,80,60)
-    Neutral(Color(0x1bb371ff)),    // HSV(154,85,70)
+    // DiplomaticStatus.DefensivePact - similar. Colored PURPLE.
+    Unforgivable(Color.BROWN),
+    Enemy(Color.ORANGE),
+    Afraid(Color.YELLOW),
+    Competitor(Color.GRAY),
+    Neutral(Color.WHITE),
     Favorable(Color(0x14cc3cff)),  // HSV(133,90,80)
-    Friend(Color(0x2ce60bff)),     // HSV(111,95,90)
-    Ally(Color.CHARTREUSE)           // HSV(90,100,100)
+    Friend(Color.ROYAL),
+    Ally(Color.CYAN)
     ;
     operator fun plus(delta: Int): RelationshipLevel {
         val newOrdinal = (ordinal + delta).coerceIn(0, entries.size - 1)
