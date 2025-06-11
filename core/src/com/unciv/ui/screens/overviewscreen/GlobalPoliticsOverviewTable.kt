@@ -499,7 +499,7 @@ class GlobalPoliticsOverviewTable(
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
                         || (diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCivName() == diplomacy.otherCivName)
                         || (otherCiv.isCityState && otherCiv.getAllyCivName() == diplomacy.civInfo.civName)
-                    ) Color.CYAN
+                    ) Color.PURPLE
                     else diplomacy.relationshipLevel().color
 
                     if (!civLines.containsKey(civ.civName)) civLines[civ.civName] = mutableSetOf()
@@ -536,7 +536,7 @@ class GlobalPoliticsOverviewTable(
                 val lineColor = if (level == RelationshipLevel.Ally) Color.CYAN else level.color
                 legend.addLegendRow(level.name, lineColor)
             }
-            legend.addLegendRow(Constants.defensivePact, Color.CYAN)
+            legend.addLegendRow(Constants.defensivePact, Color.PURPLE)
             return super.createContentTable()!!.apply {
                 add(legend).grow()
             }
