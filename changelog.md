@@ -4,10 +4,12 @@ Fixed Gold being translated in trade offer with peace treaty
 
 By metablaster:
 - Improved diagram colors in global politics 
-- Fix NullPointerException on WorldScreen 
-- Fix automated long range units not heading to enemy city 
+- Fix crash for automated Fighter units 
+- Fix automated long range units not heading to enemy city
 
-Add don't spy on us has a demand - By Emandac
+modding: Show status page for civilian units - By SomeTroglodyte
+
+Add "don't spy on us" has a demand - By Emandac
 
 ## 4.16.14
 
