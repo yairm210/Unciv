@@ -499,8 +499,6 @@ class GlobalPoliticsOverviewTable(
                     // Color defensive pact for major civs only
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
                         && !(diplomacy.civInfo.isCityState || diplomacy.otherCiv().isCityState)) Color.PURPLE
-                    // People make their own choices (as per DiplomacyManager.relationshipIgnoreAfraid() behavior)
-                    else if (diplomacy.civInfo.isHuman() && diplomacy.otherCiv().isHuman()) RelationshipLevel.Neutral.color
                     // Test for alliance with city state
                     else if ((diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCivName() == diplomacy.otherCivName)
                         || (otherCiv.isCityState && otherCiv.getAllyCivName() == diplomacy.civInfo.civName)) RelationshipLevel.Ally.color
