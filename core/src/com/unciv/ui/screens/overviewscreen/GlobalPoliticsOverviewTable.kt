@@ -504,7 +504,7 @@ class GlobalPoliticsOverviewTable(
                     // Test for alliance with city state
                     else if ((diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCivName() == diplomacy.otherCivName)
                         || (otherCiv.isCityState && otherCiv.getAllyCivName() == diplomacy.civInfo.civName)) RelationshipLevel.Ally.color
-                    // Else the color depends on opinion between civs, OR influence status between city state and major civ (when city state is selected)
+                    // Else the color depends on opinion between major civs, OR city state relationship with major civ
                     else diplomacy.relationshipLevel().color
 
                     if (!civLines.containsKey(civ.civName)) civLines[civ.civName] = mutableSetOf()
