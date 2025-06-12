@@ -196,6 +196,10 @@ object UnitAutomation {
             
             unit.promotions.addPromotion(chosenPromotion.name)
         }
+        
+        // AI upgrades units via UseGoldAutomation in NextTurnAutomation
+        if (unit.civ.isHuman())
+            if (tryUpgradeUnit(unit)) return
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
