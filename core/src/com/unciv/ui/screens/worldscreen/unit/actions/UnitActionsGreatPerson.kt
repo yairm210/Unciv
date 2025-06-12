@@ -114,12 +114,12 @@ object UnitActionsGreatPerson {
                     for (goldUnique in unit.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions, checkCivInfoUniques = true))
                         goldEarned *= goldUnique.params[0].toPercent()
 
-                    var goldEartedInt = goldEarned.toInt()
-                    unit.civ.addGold(goldEartedInt)
+                    var goldEarnedInt = goldEarned.toInt()
+                    unit.civ.addGold(goldEarnedInt)
                     val tileOwningCiv = tile.owningCity!!.civ
 
                     tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
-                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEartedInt] gold and [$influenceEarned] influence!",
+                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarnedInt] gold and [$influenceEarned] influence!",
                         NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                     unit.consume()
                 }.takeIf { unit.hasMovement() && canConductTradeMission }
