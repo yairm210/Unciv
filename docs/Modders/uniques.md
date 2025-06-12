@@ -682,7 +682,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% Gold from Great Merchant trade missions"
 	Example: "[+20]% Gold from Great Merchant trade missions"
 
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "Great General provides double combat bonus"
 	Applicable to: Global, Unit
@@ -1674,6 +1674,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Can build [improvementFilter] improvements at a [relativeAmount]% rate"
 	Example: "Can build [All Road] improvements at a [+20]% rate"
+
+	Applicable to: Global, Unit
+
+??? example  "[relativeAmount]% Gold from Great Merchant trade missions"
+	Example: "[+20]% Gold from Great Merchant trade missions"
 
 	Applicable to: Global, Unit
 
