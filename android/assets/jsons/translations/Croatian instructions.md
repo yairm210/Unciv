@@ -215,6 +215,9 @@ Deliberately shorter name for convenience
 Borrowed translation because no translation exists
 
 - Hakkapeliitta
+- Chu-Ko-Nu
+- Hwacha
+- Minuteman
 
 [Table of Contents](#table-of-contents)
 
