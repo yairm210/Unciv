@@ -144,7 +144,7 @@ abstract class LoadOrSaveScreen(
                 "$playerCivNames, ${game.difficulty.tr()}, ${Fonts.turn}${game.turns}\n" +
                 "{Base ruleset:} ${game.gameParameters.baseRuleset}$mods"
             } catch (_: Exception) {
-                "\n{Could not load game}!"
+                "Could not load game!"
             }
 
             launchOnGLThread {
