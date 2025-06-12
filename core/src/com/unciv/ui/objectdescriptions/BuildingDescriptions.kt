@@ -127,7 +127,7 @@ object BuildingDescriptions {
         val replacementStatBonus = replacementBuilding.getStatPercentageBonuses(null)
         for (stat in Stat.entries)
             if (replacementStatBonus[stat] != originalStatBonus[stat])
-                yield(FormattedLine("[${replacementStatBonus[stat].toInt()}]% ".tr() + stat.name.tr() + " vs [${originalStatBonus[stat].toInt()}]% ".tr() + stat.name.tr(), indent = 1))
+                yield(FormattedLine("[${replacementStatBonus[stat].toInt()}]% [${stat.name}] vs [${originalStatBonus[stat].toInt()}]% [${stat.name}]", indent=1))
 
         if (replacementBuilding.maintenance != originalBuilding.maintenance)
             yield(FormattedLine("{Maintenance} ".tr() + "[${replacementBuilding.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
