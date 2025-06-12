@@ -203,6 +203,16 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 "They promised not to spread religion to us ([${diplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSpreadReligion)}] turns remaining)"
             promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
         }
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
+            val text =
+                "We promised not to send spies to them ([${otherCivDiplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSendSpies)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
+        if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
+            val text =
+                "They promised not to send spies to us ([${diplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSendSpies)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
 
         return if (promisesTable.cells.isEmpty) null else promisesTable
     }
@@ -257,6 +267,24 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             dontSpreadReligionButton.disable()
         }
         demandsTable.add(dontSpreadReligionButton).row()
+        
+        if (viewingCiv.gameInfo.gameParameters.espionageEnabled) {
+            val dontSpyButton = "Stop spying on us.".toTextButton()
+            val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
+            if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSpyingOnUs && it.value == viewingCiv.civName} ||
+                diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies))
+                dontSpyButton.disable()
+            dontSpyButton.onClick {
+                otherCiv.popupAlerts.add(
+                    PopupAlert(
+                        AlertType.DemandToStopSpyingOnUs,
+                        viewingCiv.civName
+                    )
+                )
+                dontSpyButton.disable()
+            }
+            demandsTable.add(dontSpyButton).row()
+        }
 
         demandsTable.add(Constants.close.toTextButton().onClick { diplomacyScreen.updateRightSide(otherCiv) })
         return demandsTable

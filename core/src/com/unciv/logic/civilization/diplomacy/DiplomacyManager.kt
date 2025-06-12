@@ -23,15 +23,15 @@ import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
     // DiplomaticStatus.War is tested separately for the Diplomacy Screen. Colored RED.
-    // DiplomaticStatus.DefensivePact - similar. Colored CYAN.
-    Unforgivable(Color.FIREBRICK),
-    Enemy(Color.YELLOW),
-    Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
-    Competitor(Color(0x1f998fff)), // HSV(175,80,60)
-    Neutral(Color(0x1bb371ff)),    // HSV(154,85,70)
+    // DiplomaticStatus.DefensivePact - similar. Colored PURPLE.
+    Unforgivable(Color.BROWN),
+    Enemy(Color.ORANGE),
+    Afraid(Color.YELLOW),
+    Competitor(Color.GRAY),
+    Neutral(Color.WHITE),
     Favorable(Color(0x14cc3cff)),  // HSV(133,90,80)
-    Friend(Color(0x2ce60bff)),     // HSV(111,95,90)
-    Ally(Color.CHARTREUSE)           // HSV(90,100,100)
+    Friend(Color.ROYAL),
+    Ally(Color.CYAN)
     ;
     operator fun plus(delta: Int): RelationshipLevel {
         val newOrdinal = (ordinal + delta).coerceIn(0, entries.size - 1)
@@ -61,6 +61,10 @@ enum class DiplomacyFlags {
     SpreadReligionInOurCities,
     AgreedToNotSpreadReligion,
     IgnoreThemSpreadingReligion,
+
+    DiscoveredSpiesInOurCities,
+    AgreedToNotSendSpies,
+    IgnoreThemSendingSpies,
 
     ProvideMilitaryUnit,
     MarriageCooldown,
@@ -94,8 +98,11 @@ enum class DiplomaticModifiers(val text: String) {
     DenouncedOurAllies("You have denounced our allies"),
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
     RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
+    RefusedToNotSendingSpiesToUs("You refused to stop spying on us"),
     BetrayedPromiseToNotSettleCitiesNearUs("You betrayed your promise to not settle cities near us"),
     BetrayedPromiseToNotSpreadReligionToUs("You betrayed your promise to not spread your religion to us"),
+    BetrayedPromiseToNotSendingSpiesToUs("You betrayed your promise to stop spying on us"),
+    
     UnacceptableDemands("Your arrogant demands are in bad taste"),
     UsedNuclearWeapons("Your use of nuclear weapons is disgusting!"),
     StealingTerritory("You have stolen our lands!"),
@@ -704,6 +711,21 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSpreadReligionToUs, -15f)
         otherCiv().addNotification("[${civInfo.civName}] refused to stop spreading religion to us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+    }
+    
+    fun agreeNotToSpreadSpiesTo() {
+        otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSendSpies, 100)
+        addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
+        otherCiv().addNotification("[${civInfo.civName}] agreed to stop spying on us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+    }
+    
+    fun refuseNotToSpreadSpiesTo() {
+        addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSendingSpies, 100)
+        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSendingSpiesToUs, -15f)
+        otherCiv().addNotification("[${civInfo.civName}] refused to stop spying on us!",
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }
 
