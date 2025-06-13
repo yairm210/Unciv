@@ -5,10 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.Trade
@@ -139,7 +141,8 @@ class DiplomacyScreen(
 
             val civIndicator = ImageGetter.getNationPortrait(civ.nation, nationIconSize)
 
-            val relationLevel = civ.getDiplomacyManager(viewingCiv)!!.relationshipLevel()
+            val diplomacy = civ.getDiplomacyManager(viewingCiv)!!
+            val relationLevel = diplomacy.relationshipLevel()
             val relationshipIcon = if (civ.isCityState && relationLevel == RelationshipLevel.Ally)
                 ImageGetter.getImage("OtherIcons/Star")
                     .surroundWithCircle(size = 30f, color = relationLevel.color).apply {
@@ -147,7 +150,10 @@ class DiplomacyScreen(
                     }
             else
                 ImageGetter.getCircle(
-                    color = if (viewingCiv.isAtWarWith(civ)) Color.RED else relationLevel.color,
+                    color = if (civ.isHuman() && viewingCiv.isHuman()) getHumanRelationshipColor(diplomacy)
+                    else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact) Color.PURPLE
+                    else if (civ.isAtWarWith(viewingCiv)) Color.RED
+                    else relationLevel.color,
                     size = 30f
                 )
             civIndicator.addActor(relationshipIcon)
@@ -217,6 +223,51 @@ class DiplomacyScreen(
         val tradeTable = TradeTable(viewingCiv, otherCiv, this)
         rightSideTable.add(tradeTable)
         return tradeTable
+    }
+
+    /**
+     * Helper function for updateLeftSideTable for human vs human player only
+     * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
+     * @return Relationship color between two human players
+     */
+    private fun getHumanRelationshipColor(otherCivDiplomacyManager: DiplomacyManager): Color {
+        return if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact)
+            Color.PURPLE
+        else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship))
+            RelationshipLevel.Friend.color
+        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War) Color.RED
+        else RelationshipLevel.Neutral.color
+    }
+
+    /**
+     * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
+     * @return Relationship [Table] for human vs human player only
+     */
+    internal fun getHumanRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
+        val relationshipTable = Table()
+        val relationshipColor: Color
+        val relationshipText: String
+        
+        if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact) {
+            relationshipText = Constants.defensivePact
+            relationshipColor = Color.GREEN
+        }
+        else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship)) {
+            relationshipText = RelationshipLevel.Friend.name
+            relationshipColor = Color.GREEN
+        }
+        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War) {
+            relationshipText = RelationshipLevel.Enemy.name
+            relationshipColor = Color.RED
+        }
+        else {
+            relationshipText = RelationshipLevel.Neutral.name
+            relationshipColor = RelationshipLevel.Neutral.color
+        }
+
+        relationshipTable.add("{Our relationship}: ".toLabel())
+        relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
+        return relationshipTable
     }
 
     internal fun getRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
