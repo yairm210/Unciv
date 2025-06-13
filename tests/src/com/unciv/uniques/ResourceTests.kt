@@ -64,11 +64,12 @@ class ResourceTests {
         city.cityConstructions.addBuilding(doubleStrategic)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
 
+        // Uses additive percent
         city.cityConstructions.addBuilding(doubleStrategicProduction)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 8)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 5) // Uses additive percent
 
         city.cityConstructions.addBuilding(consumesCoal)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 7) // Produce 8 (1*2*2*2), consume 1
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4) // Produce 5 (1*2*2+1), consume 1
     }
 
     @Test
@@ -138,7 +139,7 @@ class ResourceTests {
 
         val doubleStrategicProduction = game.createBuilding("[+100]% [Strategic] resource production")
         city.cityConstructions.addBuilding(doubleStrategicProduction)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 8)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 5) // Uses additive percent
     }
 
 
