@@ -523,6 +523,12 @@ class Civilization : IsPartOfGameInfoSerialization {
                 .map { it.params[0].toFloat() / 100f }.sum()
 
         }
+        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction)) {
+            if (resource.matchesFilter(unique.params[1])) {
+                resourceModifier *= unique.params[0].toPercent()
+            }
+        }
+
         return resourceModifier
     }
 

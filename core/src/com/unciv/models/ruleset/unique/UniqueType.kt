@@ -208,8 +208,8 @@ enum class UniqueType(
         docDescription = "These resources are removed *when work begins* on the construction. " +
                 "Do not confuse with \"costs [amount] [stockpiledResource]\" (lowercase 'c'), the Unit Action Modifier.",
         flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
-    // Todo: Get rid of forced sign (+[relativeAmount]) and unify these two, e.g.: "[relativeAmount]% [resource/resourceType] production"
-    // Note that the parameter type 'resourceType' (strategic, luxury, bonus) currently doesn't exist and should then be added as well
+
+    PercentResourceProduction("[relativeAmount]% [resourceFilter] resource production", UniqueTarget.Global),
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used by Policies
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
