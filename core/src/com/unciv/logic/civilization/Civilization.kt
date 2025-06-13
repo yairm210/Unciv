@@ -518,17 +518,12 @@ class Civilization : IsPartOfGameInfoSerialization {
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
-        if (resource.resourceType == ResourceType.Strategic) {
+        if (resource.resourceType == ResourceType.Strategic)
             resourceModifier *= 1f + getMatchingUniques(UniqueType.StrategicResourcesIncrease)
                 .map { it.params[0].toFloat() / 100f }.sum()
-
-        }
-        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction)) {
-            if (resource.matchesFilter(unique.params[1])) {
+        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
+            if (resource.matchesFilter(unique.params[1]))
                 resourceModifier *= unique.params[0].toPercent()
-            }
-        }
-
         return resourceModifier
     }
 
