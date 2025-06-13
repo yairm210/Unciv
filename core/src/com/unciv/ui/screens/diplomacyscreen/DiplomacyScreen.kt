@@ -150,7 +150,7 @@ class DiplomacyScreen(
                     }
             else
                 ImageGetter.getCircle(
-                    color = if (civ.isHuman() && viewingCiv.isHuman()) getHumanRelationsipColor(diplomacy)
+                    color = if (civ.isHuman() && viewingCiv.isHuman()) getHumanRelationshipColor(diplomacy)
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact) Color.PURPLE
                     else if (civ.isAtWarWith(viewingCiv)) Color.RED
                     else relationLevel.color,
@@ -230,7 +230,7 @@ class DiplomacyScreen(
      * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
      * @return Relationship color between two human players
      */
-    private fun getHumanRelationsipColor(otherCivDiplomacyManager: DiplomacyManager): Color {
+    private fun getHumanRelationshipColor(otherCivDiplomacyManager: DiplomacyManager): Color {
         return if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact)
             Color.PURPLE
         else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship))
