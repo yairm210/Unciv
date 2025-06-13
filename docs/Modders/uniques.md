@@ -787,11 +787,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Enables Open Borders agreements"
 	Applicable to: Global
 
-??? example  "Enables Research agreements"
+??? example  "Enables Research Agreements"
 	Applicable to: Global
 
-??? example  "Science gained from research agreements [relativeAmount]%"
-	Example: "Science gained from research agreements [+20]%"
+??? example  "Science gained from Research Agreements [relativeAmount]%"
+	Example: "Science gained from Research Agreements [+20]%"
 
 	Applicable to: Global
 
