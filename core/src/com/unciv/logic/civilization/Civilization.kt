@@ -514,23 +514,22 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun getResourceModifier(resource: TileResource): Float {
-        val modifiers = mutableListOf<Float>()
-
+        var resourceModifier = 1f
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
-                modifiers.add(100f)
+                resourceModifier *= 2f
+        if (resource.resourceType == ResourceType.Strategic) {
+            resourceModifier *= 1f + getMatchingUniques(UniqueType.StrategicResourcesIncrease)
+                .map { it.params[0].toFloat() / 100f }.sum()
 
-        if (resource.resourceType == ResourceType.Strategic)
-            for (unique in getMatchingUniques(UniqueType.StrategicResourcesIncrease))
-                modifiers.add(unique.params[0].toFloat())
+        }
+        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction)) {
+            if (resource.matchesFilter(unique.params[1])) {
+                resourceModifier *= unique.params[0].toPercent()
+            }
+        }
 
-        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
-            if (resource.matchesFilter(unique.params[1]))
-                modifiers.add(unique.params[0].toFloat())
-
-        var finalModifier = 1f
-        for (modifier in modifiers) finalModifier += modifier / 100f
-        return finalModifier
+        return resourceModifier
     }
 
     fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
