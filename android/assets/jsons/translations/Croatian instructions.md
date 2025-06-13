@@ -112,10 +112,10 @@ TODO: Might need better translation!
 - Melee Water `Bliska Borba na Vodi`
 - WaterMelee `BliskaBorbaNaVodi`
 
-TODO: Possibly better translation
+TODO: Possibly better translation depnding on context
 
-- `... from ...` `od` instead of `iz`
-- `... per ...` `za` instead of `po`
+- `... from ...` `od` instead of `iz` and vice versa
+- `... per ...` `za` instead of `po` and vice versa
 
 ### Unresolved Translation
 
@@ -314,14 +314,18 @@ Correct vs incorrect
 - s vs sa (Depends on orthography)
 - s `[` vs sa `[`
 - Unikat vs Unikatno/i (Depends on context)
-- Check for double spaces
 - Osnivati (nesvršeni glagol) vs Osnovati (svršeni glagol)
+
+TODO: `... se ...` can be placed before or after verb/noun/adjective etc.
+TODO: Check for double spaces
+TODO: Check casing
+TODO: Check if translation ends with dot or not same as English version
 
 [Table of Contents](#table-of-contents)
 
 ## Placeholder genders
 
-When grammatical gender around a placeholder is needed we use majority gender of the placeholder.</br>
+When grammatical gender around a placeholder is needed we use majority gender of the placeholder across translation file.</br>
 "not applicable" subsection, means a placeholder has gender but is not needed or used in translation.
 
 ### Feminine
@@ -588,6 +592,7 @@ The following resources were helpful for translation of cities and person names:
   Note that some cases are orthographically correct.
 
 - Avoid anglicisms, germanisms and other borrowed words unless there is no actual Croatian equivalent
+
 - Avoid archaisms
 
 [Table of Contents](#table-of-contents)
