@@ -98,6 +98,8 @@ class AlertPopup(
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addCitySettledNearOtherCivDespiteOurPromise()
             AlertType.DemandToStopSpreadingReligion -> shouldOpen = addDemandToStopSpreadingReligion()
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addReligionSpreadDespiteOurPromise()
+            AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemandToStopSendingSpiesToUs()
+            AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addSpyingOnUsDespiteOurPromise()
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
                 shouldOpen = addBulliedOrAttackedProtectedOrAlliedMinor()
@@ -298,6 +300,30 @@ class AlertPopup(
         addCloseButton("Very well.")
         return true
     }
+    private fun addDemandToStopSendingSpiesToUs(): Boolean {
+        val otherciv = getCiv(popupAlert.value)
+        if (otherciv.isDefeated()) return false
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
+        addLeaderName(otherciv)
+        addGoodSizedLabel("Stop spying on us.").row()
+        addCloseButton("We see our people are not welcome in your lands... we will take our attention elsewhere.", KeyboardBinding.Confirm) {
+            playerDiploManager.agreeNotToSpreadSpiesTo()
+        }.row()
+        addCloseButton("I'll do what's necessary for my empire to survive.", KeyboardBinding.Cancel) {
+            playerDiploManager.refuseNotToSpreadSpiesTo()
+        }
+        return true
+    }
+    
+    private fun addSpyingOnUsDespiteOurPromise(): Boolean {
+        val otherciv = getCiv(popupAlert.value)
+        if (otherciv.isDefeated()) return false
+        addGoodSizedLabel("Take back your spy and your broken promises.").row()
+        addCloseButton("Very well.")
+        return true
+    }
+    
+
 
     private fun addDiplomaticMarriage() {
         val city = getCity(popupAlert.value)

@@ -177,11 +177,10 @@ Not yet translated words, mostly because no sane translation exits to Croatian l
 - Cancel `Poništi`, `Otkaži` (Ukini)
 - Choose `Odaberi`, `Izaberi`
 - Select `Odaberi` (Izaberi)
-- Upon `Pri`, `Prilikom`, `Po`, `Nakon` OR `Na`, `Nad`
 - Discovering `Otkriće`, `Otkrivanje`
 - Acquire `Stekni`, `Kupi`
 - Gain `Dobij` `Stekni`
-- Upon `Prilikom`, `Po`, `Na`, `Nad` (Pri, Nakon)
+- Upon `Prilikom`, `Po`, `Nakon`, `Na`, `Nad` (Pri)
 
 ### Untranslated words
 
@@ -296,10 +295,6 @@ Examples (to check for correct usage e.g. in combination with placeholders):
 - Njihov vs Njihova
 - Njihovim vs Njihovom
 - Njihovog vs Njihove
-
-TODO: Usage not fully checked:
-
-- `*io`, `*la`
 
 Exceptions:
 
