@@ -215,9 +215,8 @@ enum class UniqueType(
 
     /// Agreements
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
-    // Should the 'R' in 'Research agreements' be capitalized?
-    EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
-    ScienceFromResearchAgreements("Science gained from research agreements [relativeAmount]%", UniqueTarget.Global),
+    EnablesResearchAgreements("Enables Research Agreements", UniqueTarget.Global),
+    ScienceFromResearchAgreements("Science gained from Research Agreements [relativeAmount]%", UniqueTarget.Global),
     EnablesDefensivePacts("Enables Defensive Pacts", UniqueTarget.Global),
     GreatPersonBoostWithFriendship("When declaring friendship, both parties gain a [relativeAmount]% boost to great person generation", UniqueTarget.Global),
 
@@ -1443,8 +1442,8 @@ enum class UniqueType(
     @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+1] Happiness from each type of luxury resource"), DeprecationLevel.ERROR)
     BonusHappinessFromLuxuryDeprecated2("+1 happiness from each type of luxury resource", UniqueTarget.Global),
 
-    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("Science gained from research agreements [+50]%"), DeprecationLevel.ERROR)
-    ScienceGainedResearchAgreementsDeprecated("Science gained from research agreements +50%", UniqueTarget.Unit),
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("Science gained from Research Agreements [+50]%"), DeprecationLevel.ERROR)
+    ScienceGainedResearchAgreementsDeprecated("Science gained from Research Agreements +50%", UniqueTarget.Unit),
 
     @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[-33]% maintenance costs <for [All] units>"), DeprecationLevel.ERROR)
     DecreasedUnitMaintenanceCostsGlobally2("-33% unit upkeep costs", UniqueTarget.Global),
