@@ -236,7 +236,7 @@ class DiplomacyScreen(
         else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship))
             RelationshipLevel.Friend.color
         else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War) Color.RED
-        else Color.WHITE
+        else RelationshipLevel.Neutral.color
     }
 
     /**
@@ -250,11 +250,11 @@ class DiplomacyScreen(
         
         if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact) {
             relationshipText = Constants.defensivePact
-            relationshipColor = RelationshipLevel.Favorable.color
+            relationshipColor = Color.GREEN
         }
         else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship)) {
             relationshipText = RelationshipLevel.Friend.name
-            relationshipColor = RelationshipLevel.Favorable.color
+            relationshipColor = Color.GREEN
         }
         else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War) {
             relationshipText = RelationshipLevel.Enemy.name
@@ -262,11 +262,11 @@ class DiplomacyScreen(
         }
         else {
             relationshipText = RelationshipLevel.Neutral.name
-            relationshipColor = Color.WHITE
+            relationshipColor = RelationshipLevel.Neutral.color
         }
 
         relationshipTable.add("{Our relationship}: ".toLabel())
-        relationshipTable.add(relationshipText.tr().toLabel(relationshipColor)).row()
+        relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
         return relationshipTable
     }
 
