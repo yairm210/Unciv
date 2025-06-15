@@ -1,13 +1,13 @@
-
-
 By metablaster:
 - update missing world screen image annotation 
 - Table and colors for diplomatic relations between human players in diplomacy screen. 
-- Fix automated units not auto upgrading when enabled in options 
+- Fix automated units not auto upgrading when enabled
 - Fix broken translations 
 
 By RobLoach:
 - Allow using `[relativeAmount]% Gold from Great Merchant trade missions` on units 
-- Fix Civilopedia requiredBuilding links for Wonders 
+- Fix Civilopedia "required Building" links for Wonders 
 
-Stacked with unit conditional unique - By PLynx01
+"Stacked with unit" conditional unique - By PLynx01
+
+Hexarealm edge tiles restructuring - by hackedpassword

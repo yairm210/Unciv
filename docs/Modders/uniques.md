@@ -1828,11 +1828,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "[relativeAmount]% Strength when stacked with [mapUnitFilter]"
-	Example: "[+20]% Strength when stacked with [Wounded]"
-
-	Applicable to: Unit
-
 ??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles"
 	Example: "[+20]% Strength bonus for [Wounded] units within [3] tiles"
 
