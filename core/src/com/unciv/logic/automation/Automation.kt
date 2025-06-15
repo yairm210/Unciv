@@ -170,12 +170,13 @@ object Automation {
             yieldStats.production /= 6
         }
 
-        for (stat in Stat.entries) {
-            if (city.civ.wantsToFocusOn(stat))
-                yieldStats[stat] *= 2f
-
-            val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
-            if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
+        if (!city.civ.isHuman()) { // Don't mess things up with a single turn of Autoplay
+            for (stat in Stat.entries) {
+                if (city.civ.wantsToFocusOn(stat))
+                    yieldStats[stat] *= 2f
+                val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
+                if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
+            }
         }
 
         // Apply City focus
