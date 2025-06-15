@@ -241,7 +241,7 @@
 				"name": "Education",
 				"row": 3,
 				"prerequisites": ["Theology","Civil Service"],
-				"uniques": ["Enables conversion of city production to [Science]","Enables Research agreements","[+100]% weight to this choice for AI decisions"],
+				"uniques": ["Enables conversion of city production to [Science]","Enables Research Agreements","[+100]% weight to this choice for AI decisions"],
 				"quote": "'Education is the best provision for old age.' - Aristotle"
 			},
 			{

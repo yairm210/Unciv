@@ -466,7 +466,7 @@
             },
             {
                 "name": "Scientific Revolution",
-                "uniques": ["Science gained from research agreements [+50]%", "[-100]% weight to this choice for AI decisions"],
+                "uniques": ["Science gained from Research Agreements [+50]%", "[-100]% weight to this choice for AI decisions"],
                 "requires": ["Free Thought"],
                 "row": 3,
                 "column": 2
