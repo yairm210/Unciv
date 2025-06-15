@@ -20,7 +20,7 @@ class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(), IsPartOfGameInf
 
     fun recordRankingStats(civilization: Civilization) {
         this[civilization.gameInfo.turns] =
-                RankingType.entries.associateWith { civilization.getStatForRanking(it) }
+            RankingType.entries.associateWith { civilization.getStatForRanking(it) }
     }
 
     /** Implement Json.Serializable
