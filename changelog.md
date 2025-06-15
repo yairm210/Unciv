@@ -1,3 +1,17 @@
+## 4.16.16
+
+By metablaster:
+- update missing world screen image annotation 
+- Table and colors for diplomatic relations between human players in diplomacy screen. 
+- Fix automated units not auto upgrading when enabled in options 
+- Fix broken translations 
+
+By RobLoach:
+- Allow using `[relativeAmount]% Gold from Great Merchant trade missions` on units 
+- Fix Civilopedia requiredBuilding links for Wonders 
+
+Stacked with unit conditional unique - By PLynx01
+
 ## 4.16.15
 
 Fixed Gold being translated in trade offer with peace treaty
