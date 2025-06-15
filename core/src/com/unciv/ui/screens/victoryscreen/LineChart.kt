@@ -219,11 +219,11 @@ class LineChart(
         val linesMaxX = width - lastXAxisLabelWidth / 2
         val linesMinY = yAxisLowestYDataPosition + labelHeight + axisToLabelPadding + axisLineWidth
         val linesMaxY = height - labelHeight / 2
-        val scaleX = (linesMaxX - linesMinX) / (xLabels.max() - xLabels.min())
-        val scaleY = (linesMaxY - linesMinY) / (yLabels.max() - yLabels.min())
-        val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
         val minXLabel = xLabels.min()
         val minYLabel = yLabels.min()
+        val scaleX = (linesMaxX - linesMinX) / (xLabels.max() - minXLabel)
+        val scaleY = (linesMaxY - linesMinY) / (yLabels.max() - minYLabel)
+        val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
         val negativeScaleY = (negativeOrientationLineYPosition - zeroAxisYPosition) / if (minYLabel < 0) minYLabel else 1
         val sortedPoints = dataPoints.sortedBy { it.x }
         val pointsByCiv = sortedPoints.groupBy { it.civ }
