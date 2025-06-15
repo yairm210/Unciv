@@ -31,7 +31,7 @@ class LineChart(
     private val axisLabelColor = axisColor
     private val axisToLabelPadding = 5f
     private val chartLineWidth = 3f
-    private val orientationLineWidth = 0.5f
+    private val orientationLineWidth = 1f
     private val orientationLineColor = Color.LIGHT_GRAY
 
     /** This should not be changed lightly. There's code (e.g. for generating the labels) that
@@ -167,7 +167,8 @@ class LineChart(
 
         // We draw the y-axis labels first. They will take away some space on the left of the
         // widget which we need to consider when drawing the rest of the graph.
-        var yAxisYPosition = 0f
+        var yAxisLowestYDataPosition = 0f // Lowest data point among all civs in pixels
+        var zeroAxisYPosition = 0f // Pixel position of zero axis
         yLabels.forEachIndexed { index, value ->
             val label = yLabelsAsLabels[index] // we assume yLabels.size == yLabelsAsLabels.size
             val yPos = yAxisLabelMinY + index * (yAxisLabelYRange / (yLabels.size - 1))
@@ -176,16 +177,18 @@ class LineChart(
 
             // Draw y-axis orientation lines and x-axis
             val zeroIndex = value == 0
+            val labelAdjustedYPos = yPos + labelHeight / 2
             drawLine(
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth,
-                yPos + labelHeight / 2,
+                labelAdjustedYPos,
                 width,
-                yPos + labelHeight / 2,
+                labelAdjustedYPos,
                 if (zeroIndex) axisColor else orientationLineColor,
                 if (zeroIndex) axisLineWidth else orientationLineWidth
             )
-            if (zeroIndex) {
-                yAxisYPosition = yPos + labelHeight / 2
+            if (value <= 0) {
+                if (zeroIndex) zeroAxisYPosition = labelAdjustedYPos
+                yAxisLowestYDataPosition = min(yAxisLowestYDataPosition, labelAdjustedYPos)
             }
         }
 
@@ -214,14 +217,14 @@ class LineChart(
         // Draw line charts for each color
         val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
         val linesMaxX = width - lastXAxisLabelWidth / 2
-        val linesMinY = yAxisYPosition
+        val linesMinY = yAxisLowestYDataPosition + labelHeight + axisToLabelPadding + axisLineWidth
         val linesMaxY = height - labelHeight / 2
         val scaleX = (linesMaxX - linesMinX) / (xLabels.max() - xLabels.min())
         val scaleY = (linesMaxY - linesMinY) / (yLabels.max() - yLabels.min())
         val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
         val minXLabel = xLabels.min()
         val minYLabel = yLabels.min()
-        val negativeScaleY = (negativeOrientationLineYPosition - linesMinY) / if (minYLabel < 0) minYLabel else 1
+        val negativeScaleY = (negativeOrientationLineYPosition - zeroAxisYPosition) / if (minYLabel < 0) minYLabel else 1
         val sortedPoints = dataPoints.sortedBy { it.x }
         val pointsByCiv = sortedPoints.groupBy { it.civ }
         // We want the current player civ to be drawn last, so it is never overlapped by another player.
@@ -239,7 +242,7 @@ class LineChart(
             val points = pointsByCiv[civ]!!
             val scaledPoints : List<DataPoint<Float>> = points.map {
                 if (it.y < 0f)
-                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, linesMinY + it.y * negativeScaleY, it.civ)
+                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, zeroAxisYPosition + it.y * negativeScaleY, it.civ)
                 else
                     DataPoint(linesMinX + (it.x - minXLabel) * scaleX, linesMinY + (it.y - minYLabel) * scaleY, it.civ)
             }

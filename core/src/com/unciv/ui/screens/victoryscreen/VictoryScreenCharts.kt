@@ -97,7 +97,7 @@ class VictoryScreenCharts(
     }
 
     private fun getLineChartData(rankingType: RankingType): List<DataPoint<Int>> {
-        return gameInfo.civilizations.asSequence()
+        val dataPoints = gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
             .flatMap { civ ->
                 civ.statsHistory
@@ -109,7 +109,17 @@ class VictoryScreenCharts(
             .mapValues { group -> group.value.toMap() }
             .flatMap { turn ->
                 turn.value.map { (civ, value) -> DataPoint(turn.key, value, civ) }
-            }
+            }.toMutableList()
+
+        // Historical data does not include data for current turn except for civ that played turn 0 first,
+        // so we append missing stat for current turn to the data for each other civ
+        val pointsByCiv = dataPoints.sortedBy { it.x }.groupBy { it.civ }
+        val actualTurn = dataPoints.maxOf { it.x }
+        for (civ in pointsByCiv.keys.filterNot { it.isDefeated() })
+            if (pointsByCiv[civ]!!.last().x != actualTurn)
+                dataPoints += DataPoint(actualTurn, civ.getStatForRanking(rankingType), civ)
+        
+        return dataPoints
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
