@@ -381,8 +381,7 @@ object Automation {
             }
 
             // Make sure we have some for space
-            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits
-                < getReservedSpaceResourceAmount()) {
+            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits < 2) {
                 return false
             }
 
@@ -413,10 +412,6 @@ object Automation {
             }
         }
         return true
-    }
-
-    fun getReservedSpaceResourceAmount(): Int {
-        return 2
     }
 
     fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {

@@ -374,7 +374,7 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            if (civInfo.getResourceAmount(resource) >= Automation.getReservedSpaceResourceAmount())
+            if (civInfo.getResourceAmount(resource) >= 2)
                 continue
 
             val unitToDisband = civInfo.units.getCivUnits()
