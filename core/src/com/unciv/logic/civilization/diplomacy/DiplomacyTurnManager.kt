@@ -286,6 +286,7 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs, 1 / 8f)
+        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSendingSpiesToUs, 1 / 8f)
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
