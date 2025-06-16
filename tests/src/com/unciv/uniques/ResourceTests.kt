@@ -68,7 +68,7 @@ class ResourceTests {
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
 
         city.cityConstructions.addBuilding(consumesCoal)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3) // Produce 5 (1*2*2+1), consume 1
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3) // Produce 4 (1 + (1 x 100 / 100) + (1 x 100 / 100) + (1 x 100 / 100)), consume 1
     }
 
     @Test
