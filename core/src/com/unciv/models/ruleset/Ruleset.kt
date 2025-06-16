@@ -524,5 +524,5 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
-    fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this, tryFixUnknownUniques).getErrorList()
+    fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator.create(this, tryFixUnknownUniques).getErrorList()
 }
