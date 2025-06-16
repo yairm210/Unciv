@@ -174,7 +174,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
         // most buildings and civ units contribute the the civ's growth, military units are anti-growth
         var modifier = 1 + sqrt(unitsToCitiesRatio) / 2
-        if (civInfo.wantsToFocusOn(Victory.Focus.Military) || isAtWar) modifier *= 2
+        if (isAtWar) modifier *= 2
 
         if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
         if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
@@ -360,8 +360,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
 
         for (stat in Stat.entries) {
-            if (civInfo.wantsToFocusOn(stat))
-                buildingStats[stat] *= 2f
 
             buildingStats[stat] *= personality.modifierFocus(PersonalityValue[stat], .5f)
         }

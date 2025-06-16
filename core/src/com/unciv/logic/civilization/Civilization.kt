@@ -133,9 +133,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
 
     @Transient
-    var thingsToFocusOnForVictory = setOf<Victory.Focus>()
-
-    @Transient
     var neutralRoads = HashSet<Vector2>()
 
     val modConstants get() = gameInfo.ruleset.modOptions.constants
@@ -399,21 +396,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         val preferredVictoryTypes = getPreferredVictoryTypes()
         return if (preferredVictoryTypes.contains(Constants.neutralVictoryType)) emptyList()
                else preferredVictoryTypes.map { gameInfo.ruleset.victories[it]!! }
-    }
-
-    fun wantsToFocusOn(focus: Stat): Boolean {
-        return when(focus) {
-            Stat.Culture -> wantsToFocusOn(Victory.Focus.Culture)
-            Stat.Science -> wantsToFocusOn(Victory.Focus.Science)
-            Stat.Production -> wantsToFocusOn(Victory.Focus.Production)
-            Stat.Gold -> wantsToFocusOn(Victory.Focus.Gold)
-            Stat.Faith -> wantsToFocusOn(Victory.Focus.Faith)
-            else -> false
-        }
-    }
-
-    fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus) && isAIOrAutoPlaying()
     }
 
     fun getPersonality(): Personality {
