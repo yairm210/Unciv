@@ -513,18 +513,30 @@ class Civilization : IsPartOfGameInfoSerialization {
         return resourceModifers
     }
 
+    /**
+     * Returns the resource production modifier as a multiplier.
+     *
+     * For example: 1.0f results in no change, 2.0f results in  double production.
+     *
+     * @param resource The resource for which to calculate the modifier.
+     * @return The production modifier as an additive multiplier.
+     */
     fun getResourceModifier(resource: TileResource): Float {
-        var resourceModifier = 1f
+        val modifiers = mutableListOf<Float>()
+
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
-                resourceModifier *= 2f
+                modifiers.add(100f)
         if (resource.resourceType == ResourceType.Strategic)
-            resourceModifier *= 1f + getMatchingUniques(UniqueType.StrategicResourcesIncrease)
-                .map { it.params[0].toFloat() / 100f }.sum()
+            for (unique in getMatchingUniques(UniqueType.StrategicResourcesIncrease))
+                modifiers.add(unique.params[0].toFloat())
         for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
             if (resource.matchesFilter(unique.params[1]))
-                resourceModifier *= unique.params[0].toPercent()
-        return resourceModifier
+                modifiers.add(unique.params[0].toFloat())
+
+        var finalModifier = 1f
+        for (modifier in modifiers) finalModifier += modifier / 100f
+        return finalModifier
     }
 
     fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
