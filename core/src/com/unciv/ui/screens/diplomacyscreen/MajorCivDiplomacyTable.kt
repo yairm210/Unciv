@@ -8,10 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -242,50 +239,21 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val demandsTable = Table()
         demandsTable.defaults().pad(10f)
 
-        val dontSettleCitiesButton = "Please don't settle new cities near us.".toTextButton()
-        if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSettlingCitiesNear && it.value == viewingCiv.civName })
-            dontSettleCitiesButton.disable()
-        dontSettleCitiesButton.onClick {
-            otherCiv.popupAlerts.add(
-                PopupAlert(
-                    AlertType.DemandToStopSettlingCitiesNear,
-                    viewingCiv.civName
-                )
-            )
-            dontSettleCitiesButton.disable()
-        }
-        demandsTable.add(dontSettleCitiesButton).row()
-
-        val dontSpreadReligionButton = "Please don't spread your religion to us.".toTextButton()
-        if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSpreadingReligion && it.value == viewingCiv.civName })
-            dontSpreadReligionButton.disable()
-        dontSpreadReligionButton.onClick {
-            otherCiv.popupAlerts.add(
-                PopupAlert(
-                    AlertType.DemandToStopSpreadingReligion,
-                    viewingCiv.civName
-                )
-            )
-            dontSpreadReligionButton.disable()
-        }
-        demandsTable.add(dontSpreadReligionButton).row()
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
         
-        if (viewingCiv.gameInfo.gameParameters.espionageEnabled) {
-            val dontSpyButton = "Stop spying on us.".toTextButton()
-            val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
-            if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSpyingOnUs && it.value == viewingCiv.civName} ||
-                diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies))
-                dontSpyButton.disable()
-            dontSpyButton.onClick {
-                otherCiv.popupAlerts.add(
-                    PopupAlert(
-                        AlertType.DemandToStopSpyingOnUs,
-                        viewingCiv.civName
-                    )
-                )
-                dontSpyButton.disable()
+        for (demand in Demand.entries){
+            val button = demand.demandText.toTextButton()
+            
+            if (otherCiv.popupAlerts.any { it.type == demand.demandAlert && it.value == viewingCiv.civName } // Already demanded
+                || diplomacyManager.hasFlag(demand.agreedToDemand)) { // already agreed
+                button.disable()
+            } else {
+                button.onClick {
+                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, viewingCiv.civName))
+                    button.disable()
+                }
             }
-            demandsTable.add(dontSpyButton).row()
+            demandsTable.add(button).row()
         }
 
         demandsTable.add(Constants.close.toTextButton().onClick { diplomacyScreen.updateRightSide(otherCiv) })
