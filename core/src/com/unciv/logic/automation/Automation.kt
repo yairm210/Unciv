@@ -175,6 +175,7 @@ object Automation {
                 val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
                 if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
             }
+        }
 
         // Apply City focus
         cityAIFocus.applyWeightTo(yieldStats)
