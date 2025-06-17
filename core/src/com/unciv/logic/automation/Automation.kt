@@ -172,12 +172,9 @@ object Automation {
 
         if (!city.civ.isHuman()) { // Don't mess things up with a single turn of Autoplay
             for (stat in Stat.entries) {
-                if (city.civ.wantsToFocusOn(stat))
-                    yieldStats[stat] *= 2f
                 val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
                 if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
             }
-        }
 
         // Apply City focus
         cityAIFocus.applyWeightTo(yieldStats)
@@ -385,8 +382,7 @@ object Automation {
             }
 
             // Make sure we have some for space
-            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits
-                < getReservedSpaceResourceAmount(civInfo)) {
+            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits < 2) {
                 return false
             }
 
@@ -417,10 +413,6 @@ object Automation {
             }
         }
         return true
-    }
-
-    fun getReservedSpaceResourceAmount(civInfo: Civilization): Int {
-        return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 3 else 2
     }
 
     fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {
