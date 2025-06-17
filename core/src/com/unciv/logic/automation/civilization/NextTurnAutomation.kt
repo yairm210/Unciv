@@ -141,38 +141,17 @@ object NextTurnAutomation {
         val civPersonality = civInfo.getPersonality()
 
         if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Culture))
-                value += 10
             value += civPersonality[PersonalityValue.Culture].toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Faith))
-                value += 10
             value += civPersonality[PersonalityValue.Faith].toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Production))
-                value += 10
             value += civPersonality[PersonalityValue.Production].toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
             // In case someone mods this in
-            if (civInfo.wantsToFocusOn(Victory.Focus.Science))
-                value += 10
             value += civPersonality[PersonalityValue.Science].toInt() - 5
-        }
-        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
-            if (!cityState.isAlive())
-                value -= 5
-            else {
-                // Don't ally close city-states, conquer them instead
-                val distance = getMinDistanceBetweenCities(civInfo, cityState)
-                if (distance < 20)
-                    value -= (20 - distance) / 4
-            }
-        }
-        if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
-            value += 5  // Generally be friendly
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
             if (civInfo.getHappiness() < 10)
@@ -378,7 +357,7 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            if (civInfo.getResourceAmount(resource) >= Automation.getReservedSpaceResourceAmount(civInfo))
+            if (civInfo.getResourceAmount(resource) >= 2)
                 continue
 
             val unitToDisband = civInfo.units.getCivUnits()
