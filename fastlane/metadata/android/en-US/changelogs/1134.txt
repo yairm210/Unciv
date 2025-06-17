@@ -1,0 +1,23 @@
+
+
+Resolved  - 'connect road' works when railroads don't exist in the ruleset
+
+Bug 1/2 of  - 'connect road' acknowledges availability uniques on road/railroad
+
+chore: docstring what needs to be done to add a new demand
+
+Generic'd promises table
+
+Generic'd demands table for demands
+
+Generic'd "revert to zero" for demands
+
+Generic'd 'fulfilled demand promise' modifier
+
+More generic-ing for demands
+
+Added Demand enum, with initial use for deduplicating code
+
+By EmperorPinguin:
+- Autoplay: don't assign citizens according to AI Personality 
+- AI: remove thingsToFocusOnForVictory 
