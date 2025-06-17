@@ -892,6 +892,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             }
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
+            Stat.Happiness -> stats.happiness
             else -> 0
         }
     }
