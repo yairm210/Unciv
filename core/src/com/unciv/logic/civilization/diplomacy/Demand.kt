@@ -13,8 +13,14 @@ enum class Demand(
     val demandAlert: AlertType,
     val violationDiscoveredAlert: AlertType,
     val demandText: String,
+    /** Must contain 1 parameter, to be replaced with civ name */
     val agreedToDemandText: String,
-    val refusedDemandText: String) {
+    /** Must contain 1 parameter, to be replaced with civ name */
+    val refusedDemandText: String,
+    /** Must contain 1 parameter, to be replaced with turns left */
+    val wePromisedText: String,
+    /** Must contain 1 parameter, to be replaced with turns left */
+    val theyPromisedText: String) {
     DontSpyOnUs(
         agreedToDemand = DiplomacyFlags.AgreedToNotSendSpies,
         violationOccurred = DiplomacyFlags.DiscoveredSpiesInOurCities,
@@ -26,7 +32,9 @@ enum class Demand(
         violationDiscoveredAlert = AlertType.SpyingOnUsDespiteOurPromise,
         demandText = "Stop spying on us.",
         agreedToDemandText = "[civName] agreed to stop spying on us!",
-        refusedDemandText = "[civName] refused to stop spying on us!"
+        refusedDemandText = "[civName] refused to stop spying on us!",
+        wePromisedText = "We promised not to send spies to them ([turns] turns remaining)",
+        theyPromisedText = "They promised not to send spies to us ([turns] turns remaining)"
     ),
     DoNotSpreadReligion(
         agreedToDemand = DiplomacyFlags.AgreedToNotSpreadReligion,
@@ -40,6 +48,8 @@ enum class Demand(
         demandText = "Please don't spread your religion to us.",
         agreedToDemandText = "[civName] agreed to stop spreading religion to us!",
         refusedDemandText = "[civName] refused to stop spreading religion to us!",
+        wePromisedText = "We promised not to spread religion to them ([turns] turns remaining)",
+        theyPromisedText = "They promised not to spread religion to us ([turns] turns remaining)",
     ),
     DoNotSettleNearUs(
         agreedToDemand = DiplomacyFlags.AgreedToNotSettleNearUs,
@@ -52,7 +62,9 @@ enum class Demand(
         violationDiscoveredAlert = AlertType.CitySettledNearOtherCivDespiteOurPromise,
         demandText = "Please don't settle new cities near us.",
         agreedToDemandText = "[civName] agreed to stop settling cities near us!",
-        refusedDemandText = "[civName] refused to stop settling cities near us!"
+        refusedDemandText = "[civName] refused to stop settling cities near us!",
+        wePromisedText = "We promised not to settle near them ([turns] turns remaining)",
+        theyPromisedText = "They promised not to settle near us ([turns] turns remaining)"
     )
     ;
 }

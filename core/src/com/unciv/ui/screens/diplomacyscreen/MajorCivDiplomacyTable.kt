@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
@@ -181,38 +182,19 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     ): Table? {
         val promisesTable = Table()
 
-        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
-            val text =
-                "We promised not to settle near them ([${otherCivDiplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSettleNearUs)}] turns remaining)"
-            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        for (demand in Demand.entries){
+            if (otherCivDiplomacyManager.hasFlag(demand.agreedToDemand)) {
+                val turnsLeft = otherCivDiplomacyManager.getFlag(demand.agreedToDemand)
+                val text = demand.wePromisedText.fillPlaceholders(turnsLeft.toString())
+                promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+            }
+            if (diplomacyManager.hasFlag(demand.agreedToDemand)) {
+                val turnsLeft = diplomacyManager.getFlag(demand.agreedToDemand)
+                val text = demand.theyPromisedText.fillPlaceholders(turnsLeft.toString())
+                promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+            }
         }
-        if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
-            val text =
-                "They promised not to settle near us ([${diplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSettleNearUs)}] turns remaining)"
-            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
-        }
-
-        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion)) {
-            val text =
-                "We promised not to spread religion to them ([${otherCivDiplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSpreadReligion)}] turns remaining)"
-            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
-        }
-        if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion)) {
-            val text =
-                "They promised not to spread religion to us ([${diplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSpreadReligion)}] turns remaining)"
-            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
-        }
-        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-            val text =
-                "We promised not to send spies to them ([${otherCivDiplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSendSpies)}] turns remaining)"
-            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
-        }
-        if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-            val text =
-                "They promised not to send spies to us ([${diplomacyManager.getFlag(DiplomacyFlags.AgreedToNotSendSpies)}] turns remaining)"
-            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
-        }
-
+        
         return if (promisesTable.cells.isEmpty) null else promisesTable
     }
 
