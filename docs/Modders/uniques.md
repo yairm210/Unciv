@@ -682,7 +682,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% Gold from Great Merchant trade missions"
 	Example: "[+20]% Gold from Great Merchant trade missions"
 
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "Great General provides double combat bonus"
 	Applicable to: Global, Unit
@@ -1682,6 +1682,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount]% Gold from Great Merchant trade missions"
+	Example: "[+20]% Gold from Great Merchant trade missions"
+
+	Applicable to: Global, Unit
+
 ??? example  "Great General provides double combat bonus"
 	Applicable to: Global, Unit
 
@@ -1825,11 +1830,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles"
 	Example: "[+20]% Strength for enemy [Wounded] units in adjacent [Farm] tiles"
-
-	Applicable to: Unit
-
-??? example  "[relativeAmount]% Strength when stacked with [mapUnitFilter]"
-	Example: "[+20]% Strength when stacked with [Wounded]"
 
 	Applicable to: Unit
 
@@ -3208,6 +3208,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;if it hasn't used other actions yet&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when stacked with a [mapUnitFilter] unit&gt;"
+	Example: "&lt;when stacked with a [Wounded] unit&gt;"
+
 	Applicable to: Conditional
 
 ??? example  "&lt;with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles&gt;"

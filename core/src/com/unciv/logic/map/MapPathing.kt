@@ -24,8 +24,8 @@ object MapPathing {
     }
 
     fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
-        val roadImprovement = tile.ruleset.roadImprovement ?: return false
-        val railRoadImprovement = tile.ruleset.railroadImprovement ?: return false
+        val roadImprovement = tile.ruleset.roadImprovement
+        val railRoadImprovement = tile.ruleset.railroadImprovement
         
         if (tile.isWater) return false
         if (tile.isImpassible()) return false
@@ -34,8 +34,8 @@ object MapPathing {
         
         return tile.hasRoadConnection(unit.civ, false)
                 || tile.hasRailroadConnection(false)
-                || tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ)
-                || tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.civ)
+                || roadImprovement != null && tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ)
+                || railRoadImprovement != null && tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.civ)
     }
 
     /**
