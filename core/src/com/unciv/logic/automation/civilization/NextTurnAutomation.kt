@@ -107,32 +107,18 @@ object NextTurnAutomation {
     }
     private fun respondToPopupAlerts(civInfo: Civilization) {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
-            if (popupAlert.type == AlertType.DemandToStopSettlingCitiesNear) {  // we're called upon to make a decision
-                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High)
-                    diploManager.agreeNotToSettleNear()
-                else diploManager.refuseDemandNotToSettleNear()
-            }
-
-            if (popupAlert.type == AlertType.DemandToStopSpreadingReligion) {
-                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
-                    || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
-                    diploManager.agreeNotToSpreadReligionTo()
-                else diploManager.refuseNotToSpreadReligionTo()
+            
+            for (demand in Demand.entries){
+                if (popupAlert.type == demand.demandAlert) {
+                    val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                    val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
+                    if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
+                        || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
+                        diploManager.agreeToDemand(demand)
+                    else diploManager.refuseDemand(demand)
+                }
             }
             
-            if (popupAlert.type == AlertType.DemandToStopSpyingOnUs) {
-                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
-                    || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
-                    diploManager.agreeNotToSpreadSpiesTo()
-                else diploManager.refuseNotToSpreadSpiesTo()
-            }
-
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
