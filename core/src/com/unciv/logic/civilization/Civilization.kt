@@ -498,7 +498,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /**
      * Returns the resource production modifier as a multiplier.
      *
-     * For example: 1.0f results in no change, 2.0f results in  double production.
+     * For example: 1.0f means no change, 2.0f results in double production.
      *
      * @param resource The resource for which to calculate the modifier.
      * @return The production modifier as a multiplier.
