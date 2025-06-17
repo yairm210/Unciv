@@ -127,6 +127,7 @@ enum class DiplomaticModifiers(val text: String) {
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
     FulfilledPromiseToNotSpreadReligion("You fulfilled your promise to stop spreading religion to us!"),
+    FulfilledPromiseToNotSpy("You fulfilled your promise to stop spying on us!"),
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),

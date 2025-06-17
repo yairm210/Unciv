@@ -186,12 +186,7 @@ object DiplomacyTurnManager {
                         else
                             otherCiv().cityStateFunctions.giveMilitaryUnitToPatron(civInfo)
                     }
-                    DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
-                        addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
-                    }
-                    DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
-                        addModifier(DiplomaticModifiers.FulfilledPromiseToNotSpreadReligion, 10f)
-                    }
+                    
                     DiplomacyFlags.RecentlyAttacked.name -> {
                         civInfo.cityStateFunctions.askForUnitGifts(otherCiv())
                     }
@@ -207,6 +202,11 @@ object DiplomacyTurnManager {
                     }
                     DiplomacyFlags.RememberSidedWithProtectedMinor.name -> {      // 25
                         removeModifier(DiplomaticModifiers.SidedWithProtectedMinor)
+                    }
+                    else -> {
+                        for (demand in Demand.entries){
+                            if (demand.agreedToDemand.name == flag) addModifier(demand.fulfilledPromiseDiplomacyModifier, 10f)
+                        }
                     }
                 }
 
