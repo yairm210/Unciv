@@ -108,18 +108,18 @@ object UnitActionsGreatPerson {
                 UnitActionType.ConductTradeMission, 70f,
                 action = {
                     // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                    var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier
+                    var gold = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier
 
                     // Apply the gold trade mission modifier
                     for (goldUnique in unit.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions, checkCivInfoUniques = true))
-                        goldEarned *= goldUnique.params[0].toPercent()
+                        gold *= goldUnique.params[0].toPercent()
 
-                    var goldEarnedInt = goldEarned.toInt()
-                    unit.civ.addGold(goldEarnedInt)
+                    var goldEarned = gold.toInt()
+                    unit.civ.addGold(goldEarned)
                     val tileOwningCiv = tile.owningCity!!.civ
 
                     tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
-                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarnedInt] gold and [$influenceEarned] influence!",
+                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarned] gold and [$influenceEarned] influence!",
                         NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                     unit.consume()
                 }.takeIf { unit.hasMovement() && canConductTradeMission }
