@@ -210,7 +210,7 @@ enum class UniqueType(
         flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
 
     PercentResourceProduction("[relativeAmount]% [resourceFilter] resource production", UniqueTarget.Global),
-    @Deprecated("As of 4.16.17", ReplaceWith("[relativeAmount]% [Strategic] resource production"))
+    @Deprecated("As of 4.16.18", ReplaceWith("[relativeAmount]% [Strategic] resource production"))
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used by Policies
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
