@@ -2,11 +2,16 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.logic.civilization.AlertType
 
+/** After creating the required flags, modifiers, and alert type, the only remaining work should be
+ * - Adding the new alerts in AlertPopup.kt
+ * - Triggering the violation (adding the violationOccurred flag) from somewhere in the code
+ */
+
 enum class Demand(
     /** All these are set on the promisee, not the promiser */
     val agreedToDemand: DiplomacyFlags,
     val violationOccurred: DiplomacyFlags,
-    val willIgnoreViolation:DiplomacyFlags,
+    val willIgnoreViolation: DiplomacyFlags,
     val refusedDiplomaticModifier: DiplomaticModifiers,
     val betrayedPromiseDiplomacyMpodifier: DiplomaticModifiers,
     val fulfilledPromiseDiplomacyModifier: DiplomaticModifiers,

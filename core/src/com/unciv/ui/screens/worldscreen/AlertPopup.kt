@@ -94,12 +94,16 @@ class AlertPopup(
             AlertType.WarDeclaration -> shouldOpen = addWarDeclaration()
             AlertType.BorderConflict -> shouldOpen = addBorderConflict()
             AlertType.TilesStolen -> shouldOpen = addTilesStolen()
+            
+            // demands
             AlertType.DemandToStopSettlingCitiesNear -> shouldOpen = addDemandToStopSettlingCitiesNear()
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addCitySettledNearOtherCivDespiteOurPromise()
             AlertType.DemandToStopSpreadingReligion -> shouldOpen = addDemandToStopSpreadingReligion()
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addReligionSpreadDespiteOurPromise()
             AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemandToStopSendingSpiesToUs()
             AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addSpyingOnUsDespiteOurPromise()
+            
+            
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
                 shouldOpen = addBulliedOrAttackedProtectedOrAlliedMinor()
