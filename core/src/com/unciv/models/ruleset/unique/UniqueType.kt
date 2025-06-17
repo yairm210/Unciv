@@ -212,6 +212,7 @@ enum class UniqueType(
     PercentResourceProduction("[relativeAmount]% [resourceFilter] resource production", UniqueTarget.Global),
     @Deprecated("As of 4.16.18", ReplaceWith("[relativeAmount]% [Strategic] resource production"))
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used by Policies
+    @Deprecated("As of 4.16.18", ReplaceWith("[+100]% [resource] resource production"))
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
     /// Agreements

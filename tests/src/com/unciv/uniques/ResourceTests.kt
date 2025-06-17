@@ -62,13 +62,13 @@ class ResourceTests {
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 2)
 
         city.cityConstructions.addBuilding(doubleStrategic)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3)
 
         city.cityConstructions.addBuilding(doubleStrategicProduction)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 6)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
 
         city.cityConstructions.addBuilding(consumesCoal)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 5) // Produce 6 ((1 + (1 x 100 / 100) + (1 x 100 / 100)) * 2), consume 1
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3) // Produce 4 (1 + 1 + 1 + 1), consume 1
     }
 
     @Test
@@ -134,11 +134,11 @@ class ResourceTests {
 
         val doubleStrategic = game.createBuilding("Quantity of strategic resources produced by the empire +[100]%")
         city.cityConstructions.addBuilding(doubleStrategic)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3)
 
         val doubleStrategicProduction = game.createBuilding("[+100]% [Strategic] resource production")
         city.cityConstructions.addBuilding(doubleStrategicProduction)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 6)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
     }
 
 

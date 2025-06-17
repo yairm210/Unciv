@@ -504,21 +504,17 @@ class Civilization : IsPartOfGameInfoSerialization {
      * @return The production modifier as a multiplier.
      */
     fun getResourceModifier(resource: TileResource): Float {
-        // Apply the additive [relativeAmount] multipliers
-        val modifiers = mutableListOf<Float>()
+        var finalModifier = 1f
+
         if (resource.resourceType == ResourceType.Strategic)
             for (unique in getMatchingUniques(UniqueType.StrategicResourcesIncrease))
-                modifiers.add(unique.params[0].toFloat())
+                finalModifier += unique.params[0].toFloat() / 100f
         for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
             if (resource.matchesFilter(unique.params[1]))
-                modifiers.add(unique.params[0].toFloat())
-        var finalModifier = 1f
-        for (modifier in modifiers) finalModifier += modifier / 100f
-
-        // Finally, apply the Double multiplier
+                finalModifier += unique.params[0].toFloat() / 100f
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
-                finalModifier *= 2f
+                finalModifier += 1f
 
         return finalModifier
     }
