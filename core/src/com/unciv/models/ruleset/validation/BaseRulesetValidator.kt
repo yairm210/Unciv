@@ -2,7 +2,6 @@ package com.unciv.models.ruleset.validation
 
 import com.unciv.Constants
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
@@ -24,6 +23,7 @@ internal class BaseRulesetValidator(
     ruleset: Ruleset,
     tryFixUnknownUniques: Boolean
 ) : RulesetValidator(ruleset, tryFixUnknownUniques) {
+
     // for UnitTypes fallback, used only if a mod fails to provide
     // the UnitTypes entirely (ruleset.unitTypes.isEmpty() is true).
     private val vanillaRuleset by lazy { RulesetCache.getVanillaRuleset() }
@@ -32,52 +32,9 @@ internal class BaseRulesetValidator(
      *  value a Set of its prerequisites including indirect ones */
     private val prereqsHashMap = HashMap<String, HashSet<String>>()
 
-    override fun getErrorListInternal(): RulesetErrorList {
+    override fun addBeliefErrors(lines: RulesetErrorList) {
+        super.addBeliefErrors(lines)
 
-        uniqueValidator.populateFilteringUniqueHashsets()
-
-        val lines = RulesetErrorList(ruleset)
-        addModOptionsErrors(lines)
-        addGlobalUniqueErrors(lines, true)
-
-        addUnitErrors(lines)
-        addBuildingErrors(lines)
-        addSpecialistErrors(lines)
-        addResourceErrors(lines)
-        addImprovementErrors(lines)
-        addTerrainErrors(lines)
-        addTechErrors(lines)
-        addTechColumnErrorsRulesetInvariant(lines)
-        addEraErrors(lines)
-        addSpeedErrors(lines)
-        addPersonalityErrors(lines)
-        addBeliefErrors(lines)
-        addNationErrors(lines)
-        addPolicyErrors(lines)
-        addRuinsErrors(lines)
-        addPromotionErrors(lines)
-        addUnitTypeErrors(lines)
-        addVictoryTypeErrors(lines)
-        addDifficultyErrors(lines)
-        addEventErrors(lines, tryFixUnknownUniques)
-        addCityStateTypeErrors(tryFixUnknownUniques, lines)
-
-        initTextureNamesCache(lines)
-
-        // Tileset tests - e.g. json configs complete and parseable
-        // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
-        if (ruleset.folderLocation != null || ruleset.name == BaseRuleset.Civ_V_GnK.fullName) {
-            checkTilesetSanity(lines)
-        }
-
-        checkCivilopediaText(lines)
-        checkFileNames(lines)
-
-        return lines
-    }
-
-
-    private fun addBeliefErrors(lines: RulesetErrorList) {
         for (belief in ruleset.beliefs.values) {
             if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
                 lines.add("${belief.name} type is ${belief.type}, which is not allowed!", sourceObject = belief)
@@ -85,7 +42,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addBuildingErrors(lines: RulesetErrorList) {
+    override fun addBuildingErrors(lines: RulesetErrorList) {
+        // No super.addBuildingErrors(lines): included in the loop below
+
         for (building in ruleset.buildings.values) {
             addBuildingErrorRulesetInvariant(building, lines)
 
@@ -108,10 +67,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addCityStateTypeErrors(
-        tryFixUnknownUniques: Boolean,
-        lines: RulesetErrorList
-    ) {
+    override fun addCityStateTypeErrors(lines: RulesetErrorList) {
+        super.addCityStateTypeErrors(lines)
+
         for (cityStateType in ruleset.cityStateTypes.values) {
             for (unique in cityStateType.allyBonusUniqueMap.getAllUniques() + cityStateType.friendBonusUniqueMap.getAllUniques()) {
                 val errors = uniqueValidator.checkUnique(
@@ -125,7 +83,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addDifficultyErrors(lines: RulesetErrorList) {
+    override fun addDifficultyErrors(lines: RulesetErrorList) {
+        super.addDifficultyErrors(lines)
+
         // A Difficulty is not a IHasUniques, so not suitable as sourceObject
         for (difficulty in ruleset.difficulties.values) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
@@ -134,7 +94,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addEraErrors(lines: RulesetErrorList) {
+    override fun addEraErrors(lines: RulesetErrorList) {
+        super.addEraErrors(lines)
+
         if (ruleset.eras.isEmpty()) {
             lines.add("Eras file is empty! This will likely lead to crashes. Ask the mod maker to update this mod!", sourceObject = null)
         }
@@ -187,8 +149,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addEventErrors(lines: RulesetErrorList,
-                               tryFixUnknownUniques: Boolean) {
+    override fun addEventErrors(lines: RulesetErrorList) {
+        super.addEventErrors(lines)
+
         // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
@@ -198,7 +161,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addImprovementErrors(lines: RulesetErrorList) {
+    override fun addImprovementErrors(lines: RulesetErrorList) {
+        super.addImprovementErrors(lines)
+
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.techRequired != null && !ruleset.technologies.containsKey(improvement.techRequired!!))
                 lines.add("${improvement.name} requires tech ${improvement.techRequired} which does not exist!", sourceObject = improvement)
@@ -244,7 +209,16 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addNationErrors(lines: RulesetErrorList) {
+    override fun addModOptionsErrors(lines: RulesetErrorList) {
+        super.addModOptionsErrors(lines)
+
+        for (unique in ruleset.modOptions.getMatchingUniques(UniqueType.ModRequires)) {
+            lines.add("Mod option '${unique.text}' is invalid for a base ruleset.", sourceObject = null)
+        }
+    }
+
+    override fun addNationErrors(lines: RulesetErrorList) {
+        // No super.addNationErrors(lines), included in loop below
         for (nation in ruleset.nations.values) {
             addNationErrorRulesetInvariant(nation, lines)
 
@@ -259,7 +233,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addPersonalityErrors(lines: RulesetErrorList) {
+    override fun addPersonalityErrors(lines: RulesetErrorList) {
+        super.addPersonalityErrors(lines)
+
         for (personality in ruleset.personalities.values) {
             if (personality.preferredVictoryType != Constants.neutralVictoryType
                 && personality.preferredVictoryType !in ruleset.victories) {
@@ -269,7 +245,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addPolicyErrors(lines: RulesetErrorList) {
+    override fun addPolicyErrors(lines: RulesetErrorList) {
+        super.addPolicyErrors(lines)
+
         for (policy in ruleset.policies.values) {
             for (prereq in policy.requires ?: emptyList())
                 if (!ruleset.policies.containsKey(prereq))
@@ -300,7 +278,9 @@ internal class BaseRulesetValidator(
 
     }
 
-    private fun addPromotionErrors(lines: RulesetErrorList) {
+    override fun addPromotionErrors(lines: RulesetErrorList) {
+        // No super.addPromotionErrors(lines): included below
+        //TODO except the contrast check
         for (promotion in ruleset.unitPromotions.values) {
             addPromotionErrorRulesetInvariant(promotion, lines)
 
@@ -346,7 +326,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addResourceErrors(lines: RulesetErrorList) {
+    override fun addResourceErrors(lines: RulesetErrorList) {
+        // No super.addResourceErrors(lines), included below
+
         for (resource in ruleset.tileResources.values) {
             if (resource.revealedBy != null && !ruleset.technologies.containsKey(resource.revealedBy!!))
                 lines.add("${resource.name} revealed by tech ${resource.revealedBy} which does not exist!", sourceObject = resource)
@@ -362,7 +344,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addRuinsErrors(lines: RulesetErrorList) {
+    override fun addRuinsErrors(lines: RulesetErrorList) {
+        super.addRuinsErrors(lines)
+
         for (reward in ruleset.ruinRewards.values) {
             @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
             if (reward.weight < 0) lines.add("${reward.name} has a negative weight, which is not allowed!", sourceObject = reward)
@@ -373,7 +357,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addSpecialistErrors(lines: RulesetErrorList) {
+    override fun addSpecialistErrors(lines: RulesetErrorList) {
+        super.addSpecialistErrors(lines)
+
         // Specialist is not a IHasUniques and unsuitable as sourceObject
         for (specialist in ruleset.specialists.values) {
             for (gpp in specialist.greatPersonPoints)
@@ -385,7 +371,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addSpeedErrors(lines: RulesetErrorList) {
+    override fun addSpeedErrors(lines: RulesetErrorList) {
+        super.addSpeedErrors(lines)
+
         for (speed in ruleset.speeds.values) {
             if (speed.modifier < 0f)
                 lines.add("Negative speed modifier for game speed ${speed.name}", sourceObject = speed)
@@ -394,7 +382,10 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addTechErrors(lines: RulesetErrorList) {
+    override fun addTechErrors(lines: RulesetErrorList) {
+        // No super.addTechErrors(lines) or we would duplicate the checkUniques
+        //TODO missing `row < 1` check -> unify
+
         for (tech in ruleset.technologies.values) {
             for (prereq in tech.prerequisites) {
                 if (!ruleset.technologies.containsKey(prereq))
@@ -416,7 +407,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addTerrainErrors(lines: RulesetErrorList) {
+    override fun addTerrainErrors(lines: RulesetErrorList) {
+        super.addTerrainErrors(lines)
+
         if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable && !it.hasUnique(
                 UniqueType.NoNaturalGeneration) })
             lines.add("No passable land terrains exist!", sourceObject = null)
@@ -441,7 +434,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addUnitErrors(lines: RulesetErrorList) {
+    override fun addUnitErrors(lines: RulesetErrorList) {
+        // No super.addUnitErrors(lines), included below
+
         if (ruleset.units.values.none { it.isCityFounder() })
             lines.add("No city-founding units in ruleset!", sourceObject = null)
 
@@ -505,7 +500,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addUnitTypeErrors(lines: RulesetErrorList) {
+    override fun addUnitTypeErrors(lines: RulesetErrorList) {
+        super.addUnitTypeErrors(lines)
+
         val unitMovementTypes = UnitMovementType.entries.map { it.name }.toSet()
         for (unitType in ruleset.unitTypes.values) {
             if (unitType.movementType !in unitMovementTypes)
@@ -514,7 +511,9 @@ internal class BaseRulesetValidator(
         }
     }
 
-    private fun addVictoryTypeErrors(lines: RulesetErrorList) {
+    override fun addVictoryTypeErrors(lines: RulesetErrorList) {
+        super.addVictoryTypeErrors(lines)
+
         // Victory and Milestone aren't IHasUniques and are unsuitable as sourceObject
         for (victoryType in ruleset.victories.values) {
             for (requiredUnit in victoryType.requiredSpaceshipParts)
