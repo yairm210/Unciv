@@ -1,3 +1,17 @@
+## 4.16.17
+
+Increased font size so it looks less blurry on large screens
+
+'connect road' works when railroads don't exist in the ruleset
+
+'connect road' acknowledges availability uniques on road/railroad
+
+Simplified requirements for adding a new demand
+
+By EmperorPinguin:
+- Autoplay: don't assign citizens according to AI Personality 
+- AI: remove thingsToFocusOnForVictory 
+
 ## 4.16.16
 
 By metablaster:

@@ -78,6 +78,7 @@ class MapSize private constructor(
         val Tiny get() = MapSize(Predefined.Tiny)
         val Small get() = MapSize(Predefined.Small)
         val Medium get() = MapSize(Predefined.Medium)
+        val Large get() = MapSize(Predefined.Large)
         val Huge get() = MapSize(Predefined.Huge)
         fun names() = Predefined.values().map { it.name }
     }

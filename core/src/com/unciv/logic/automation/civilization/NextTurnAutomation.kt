@@ -11,10 +11,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.MilestoneType
@@ -110,32 +107,18 @@ object NextTurnAutomation {
     }
     private fun respondToPopupAlerts(civInfo: Civilization) {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
-            if (popupAlert.type == AlertType.DemandToStopSettlingCitiesNear) {  // we're called upon to make a decision
-                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High)
-                    diploManager.agreeNotToSettleNear()
-                else diploManager.refuseDemandNotToSettleNear()
-            }
-
-            if (popupAlert.type == AlertType.DemandToStopSpreadingReligion) {
-                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
-                    || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
-                    diploManager.agreeNotToSpreadReligionTo()
-                else diploManager.refuseNotToSpreadReligionTo()
+            
+            for (demand in Demand.entries){
+                if (popupAlert.type == demand.demandAlert) {
+                    val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                    val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
+                    if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
+                        || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
+                        diploManager.agreeToDemand(demand)
+                    else diploManager.refuseDemand(demand)
+                }
             }
             
-            if (popupAlert.type == AlertType.DemandToStopSpyingOnUs) {
-                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
-                    || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
-                    diploManager.agreeNotToSpreadSpiesTo()
-                else diploManager.refuseNotToSpreadSpiesTo()
-            }
-
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
@@ -158,38 +141,17 @@ object NextTurnAutomation {
         val civPersonality = civInfo.getPersonality()
 
         if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Culture))
-                value += 10
             value += civPersonality[PersonalityValue.Culture].toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Faith))
-                value += 10
             value += civPersonality[PersonalityValue.Faith].toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Production))
-                value += 10
             value += civPersonality[PersonalityValue.Production].toInt() - 5
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
             // In case someone mods this in
-            if (civInfo.wantsToFocusOn(Victory.Focus.Science))
-                value += 10
             value += civPersonality[PersonalityValue.Science].toInt() - 5
-        }
-        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
-            if (!cityState.isAlive())
-                value -= 5
-            else {
-                // Don't ally close city-states, conquer them instead
-                val distance = getMinDistanceBetweenCities(civInfo, cityState)
-                if (distance < 20)
-                    value -= (20 - distance) / 4
-            }
-        }
-        if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
-            value += 5  // Generally be friendly
         }
         if (cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
             if (civInfo.getHappiness() < 10)
@@ -395,7 +357,7 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            if (civInfo.getResourceAmount(resource) >= Automation.getReservedSpaceResourceAmount(civInfo))
+            if (civInfo.getResourceAmount(resource) >= 2)
                 continue
 
             val unitToDisband = civInfo.units.getCivUnits()
@@ -600,71 +562,31 @@ object NextTurnAutomation {
     private fun issueRequests(civInfo: Civilization) {
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
             val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
-            if (diploManager.hasFlag(DiplomacyFlags.SettledCitiesNearUs))
-                onCitySettledNearBorders(civInfo, otherCiv)
-            if (diploManager.hasFlag(DiplomacyFlags.SpreadReligionInOurCities))
-                onReligionSpreadInOurCity(civInfo, otherCiv)
-            if (diploManager.hasFlag(DiplomacyFlags.DiscoveredSpiesInOurCities))
-                onSpyDiscoveredInOurCity(civInfo, otherCiv)
+            for (demand in Demand.entries){
+                if (diploManager.hasFlag(demand.violationOccurred))
+                    onDemandViolation(demand, civInfo, otherCiv)
+            }
         }
     }
 
-    private fun onCitySettledNearBorders(civInfo: Civilization, otherCiv: Civilization) {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
-        when {
-            diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {
-            }
-            diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs) -> {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
-                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
-                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, -20f)
-                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
-            }
-            else -> {
-                val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
-                if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.civName))
-            }
-        }
-        diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
-    }
-
-    private fun onReligionSpreadInOurCity(civInfo: Civilization, otherCiv: Civilization){
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
-        when {
-            diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSpreadingReligion) -> {}
-            diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) -> {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.ReligionSpreadDespiteOurPromise, civInfo.civName))
-                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
-                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs, -20f)
-                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSpreadReligion)
-            }
-            else -> {
-                val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
-                if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSpreadingReligion, civInfo.civName))
-            }
-        }
-        diplomacyManager.removeFlag(DiplomacyFlags.SpreadReligionInOurCities)
-    }
     
-    private fun onSpyDiscoveredInOurCity(civInfo: Civilization, otherCiv: Civilization) {
+    private fun onDemandViolation(demand: Demand, civInfo: Civilization, otherCiv: Civilization) {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         when {
-            diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSendingSpies) -> {}
-            diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) -> {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.SpyingOnUsDespiteOurPromise, civInfo.civName))
-                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSendingSpies, 100)
-                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSendingSpiesToUs, -20f)
-                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSendSpies)
+            diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
+            diplomacyManager.hasFlag(demand.agreedToDemand) -> {
+                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civName))
+                diplomacyManager.setFlag(demand.willIgnoreViolation, 100)
+                diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyMpodifier, -20f)
+                diplomacyManager.removeFlag(demand.agreedToDemand)
             }
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSpyingOnUs, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civName))
             }
         }
-        diplomacyManager.removeFlag(DiplomacyFlags.DiscoveredSpiesInOurCities)
+        diplomacyManager.removeFlag(demand.violationOccurred)
     }
     
 

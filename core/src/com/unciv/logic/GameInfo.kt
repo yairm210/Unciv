@@ -681,8 +681,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         for (civInfo in civilizations) civInfo.setTransients()
         tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity
 
-        for (civInfo in civilizations) // Due to religion victory, has to happen after civInfo.religionManager is set for all civs
-            civInfo.thingsToFocusOnForVictory = civInfo.getPreferredVictoryTypeObjects().flatMap { it.getThingsToFocus(civInfo) }.toSet()
 
         convertFortify()
 
