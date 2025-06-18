@@ -141,8 +141,8 @@ class Ruleset {
         }.toSet()
     }
 
-    val roadImprovement by lazy { RoadStatus.Road.improvement(this) }
-    val railroadImprovement by lazy { RoadStatus.Railroad.improvement(this) }
+    val roadImprovement: TileImprovement? by lazy { RoadStatus.Road.improvement(this) }
+    val railroadImprovement: TileImprovement? by lazy { RoadStatus.Railroad.improvement(this) }
     //endregion
 
     fun clone(): Ruleset {

@@ -94,12 +94,16 @@ class AlertPopup(
             AlertType.WarDeclaration -> shouldOpen = addWarDeclaration()
             AlertType.BorderConflict -> shouldOpen = addBorderConflict()
             AlertType.TilesStolen -> shouldOpen = addTilesStolen()
+            
+            // demands
             AlertType.DemandToStopSettlingCitiesNear -> shouldOpen = addDemandToStopSettlingCitiesNear()
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addCitySettledNearOtherCivDespiteOurPromise()
             AlertType.DemandToStopSpreadingReligion -> shouldOpen = addDemandToStopSpreadingReligion()
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addReligionSpreadDespiteOurPromise()
             AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemandToStopSendingSpiesToUs()
             AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addSpyingOnUsDespiteOurPromise()
+            
+            
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
                 shouldOpen = addBulliedOrAttackedProtectedOrAlliedMinor()
@@ -269,10 +273,10 @@ class AlertPopup(
         addLeaderName(otherciv)
         addGoodSizedLabel("Please don't settle new cities near us.").row()
         addCloseButton("Very well, we shall look for new lands to settle.", KeyboardBinding.Confirm) {
-            playerDiploManager.agreeNotToSettleNear()
+            playerDiploManager.agreeToDemand(Demand.DoNotSettleNearUs)
         }.row()
         addCloseButton("We shall do as we please.", KeyboardBinding.Cancel) {
-            playerDiploManager.refuseDemandNotToSettleNear()
+            playerDiploManager.refuseDemand(Demand.DoNotSettleNearUs)
         }
         return true
     }
@@ -284,10 +288,10 @@ class AlertPopup(
         addLeaderName(otherciv)
         addGoodSizedLabel("Please don't spread religion to us.").row()
         addCloseButton("Very well, we shall spread our faith elsewhere.", KeyboardBinding.Confirm) {
-            playerDiploManager.agreeNotToSpreadReligionTo()
+            playerDiploManager.agreeToDemand(Demand.DoNotSpreadReligion)
         }.row()
         addCloseButton("We shall do as we please.", KeyboardBinding.Cancel) {
-            playerDiploManager.refuseNotToSpreadReligionTo()
+            playerDiploManager.refuseDemand(Demand.DoNotSpreadReligion)
         }
         return true
     }
@@ -307,10 +311,10 @@ class AlertPopup(
         addLeaderName(otherciv)
         addGoodSizedLabel("Stop spying on us.").row()
         addCloseButton("We see our people are not welcome in your lands... we will take our attention elsewhere.", KeyboardBinding.Confirm) {
-            playerDiploManager.agreeNotToSpreadSpiesTo()
+            playerDiploManager.agreeToDemand(Demand.DontSpyOnUs)
         }.row()
         addCloseButton("I'll do what's necessary for my empire to survive.", KeyboardBinding.Cancel) {
-            playerDiploManager.refuseNotToSpreadSpiesTo()
+            playerDiploManager.refuseDemand(Demand.DontSpyOnUs)
         }
         return true
     }
