@@ -601,7 +601,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         ) return false
         val buildImprovementUniques = getMatchingUniques(UniqueType.BuildImprovements)
         if (tile.improvementInProgress == Constants.repair) {
-            if (tile.isEnemyTerritory(civ)) return false
+            if (!tile.isFriendlyTerritory(civ)) return false
             return buildImprovementUniques.any()
         }
         return buildImprovementUniques
