@@ -591,6 +591,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
+        if (civ.isBarbarian) return false
+        
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
         if (improvement.turnsToBuild == -1
