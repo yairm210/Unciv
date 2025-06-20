@@ -1,6 +1,7 @@
 package com.unciv.ui.images
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.json.json
@@ -31,8 +32,10 @@ class AtlasPreview(ruleset: Ruleset, errorList: RulesetErrorList) : Iterable<Str
         val folder = ruleset.folder()
         val controlFile = folder.child("Atlases.json")
         val controlFileExists = controlFile.exists()
-        val fileNames = (if (controlFileExists) json().fromJson(Array<String>::class.java, controlFile)
-            else emptyArray()).toMutableSet()
+
+
+        val fileNames = getFileNames(controlFileExists, controlFile, errorList).toMutableSet()
+
         val backwardsCompatibility = ruleset.name.isNotEmpty() && "game" !in fileNames
         if (backwardsCompatibility)
             fileNames += "game"  // Backwards compatibility - when packed by 4.9.15+ this is already in the control file
@@ -51,6 +54,19 @@ class AtlasPreview(ruleset: Ruleset, errorList: RulesetErrorList) : Iterable<Str
             data.regions.mapTo(regionNames) { it.name }
         }
         Log.debug("Atlas preview for $ruleset: ${regionNames.size} entries.")
+    }
+
+    private fun getFileNames(
+        controlFileExists: Boolean,
+        controlFile: FileHandle?,
+        errorList: RulesetErrorList
+    ): Array<String> {
+        if (!controlFileExists) return emptyArray()
+        
+        // Type checker doesn't know that fromJson can return null if the file is empty, treat as an empty array
+        val fileNames = json().fromJson(Array<String>::class.java, controlFile) ?: emptyArray()
+        if (fileNames.isEmpty()) errorList.add("Atlases.json is empty", RulesetErrorSeverity.Warning)
+        return fileNames
     }
 
     fun imageExists(name: String) = name in regionNames

@@ -42,6 +42,7 @@ class RulesetValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: B
         } catch (e: Exception) {
             return RulesetErrorList(ruleset).apply { 
                 add("Error while validating ruleset ${ruleset.name}: ${e.message}")
+                add(e.stackTraceToString())
             }
         }
     }

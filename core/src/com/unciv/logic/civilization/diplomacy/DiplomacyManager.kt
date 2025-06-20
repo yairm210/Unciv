@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
@@ -23,15 +24,15 @@ import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
     // DiplomaticStatus.War is tested separately for the Diplomacy Screen. Colored RED.
-    // DiplomaticStatus.DefensivePact - similar. Colored CYAN.
-    Unforgivable(Color.FIREBRICK),
-    Enemy(Color.YELLOW),
-    Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
-    Competitor(Color(0x1f998fff)), // HSV(175,80,60)
-    Neutral(Color(0x1bb371ff)),    // HSV(154,85,70)
+    // DiplomaticStatus.DefensivePact - similar. Colored PURPLE.
+    Unforgivable(Color.BROWN),
+    Enemy(Color.ORANGE),
+    Afraid(Color.YELLOW),
+    Competitor(Color.GRAY),
+    Neutral(Color.WHITE),
     Favorable(Color(0x14cc3cff)),  // HSV(133,90,80)
-    Friend(Color(0x2ce60bff)),     // HSV(111,95,90)
-    Ally(Color.CHARTREUSE)           // HSV(90,100,100)
+    Friend(Color.ROYAL),
+    Ally(Color.CYAN)
     ;
     operator fun plus(delta: Int): RelationshipLevel {
         val newOrdinal = (ordinal + delta).coerceIn(0, entries.size - 1)
@@ -61,6 +62,10 @@ enum class DiplomacyFlags {
     SpreadReligionInOurCities,
     AgreedToNotSpreadReligion,
     IgnoreThemSpreadingReligion,
+
+    DiscoveredSpiesInOurCities,
+    AgreedToNotSendSpies,
+    IgnoreThemSendingSpies,
 
     ProvideMilitaryUnit,
     MarriageCooldown,
@@ -94,8 +99,11 @@ enum class DiplomaticModifiers(val text: String) {
     DenouncedOurAllies("You have denounced our allies"),
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
     RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
+    RefusedToNotSendingSpiesToUs("You refused to stop spying on us"),
     BetrayedPromiseToNotSettleCitiesNearUs("You betrayed your promise to not settle cities near us"),
     BetrayedPromiseToNotSpreadReligionToUs("You betrayed your promise to not spread your religion to us"),
+    BetrayedPromiseToNotSendingSpiesToUs("You betrayed your promise to stop spying on us"),
+    
     UnacceptableDemands("Your arrogant demands are in bad taste"),
     UsedNuclearWeapons("Your use of nuclear weapons is disgusting!"),
     StealingTerritory("You have stolen our lands!"),
@@ -119,6 +127,7 @@ enum class DiplomaticModifiers(val text: String) {
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
     FulfilledPromiseToNotSpreadReligion("You fulfilled your promise to stop spreading religion to us!"),
+    FulfilledPromiseToNotSpy("You fulfilled your promise to stop spying on us!"),
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
@@ -676,35 +685,20 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             }
         }
     }
-
-    fun agreeNotToSettleNear() {
-        otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSettleNearUs, 100)
+    
+    fun agreeToDemand(demand: Demand){
+        otherCivDiplomacy().setFlag(demand.agreedToDemand, 100)
         addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
-        otherCiv().addNotification("[${civInfo.civName}] agreed to stop settling cities near us!",
-            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        val text = demand.agreedToDemandText.fillPlaceholders(civInfo.civName)
+        otherCiv().addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }
-
-    fun refuseDemandNotToSettleNear() {
+    
+    fun refuseDemand(demand: Demand) {
         addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
-        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, -15f)
-        otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!",
-            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
-    }
-
-    fun agreeNotToSpreadReligionTo() {
-        otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSpreadReligion, 100)
-        addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
-        otherCiv().addNotification("[${civInfo.civName}] agreed to stop spreading religion to us!",
-            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
-    }
-
-    fun refuseNotToSpreadReligionTo() {
-        addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSpreadingReligion, 100)
-        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSpreadReligionToUs, -15f)
-        otherCiv().addNotification("[${civInfo.civName}] refused to stop spreading religion to us!",
-            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        otherCivDiplomacy().setFlag(demand.willIgnoreViolation, 100)
+        otherCivDiplomacy().addModifier(demand.refusedDiplomaticModifier, -15f)
+        val text = demand.refusedDemandText.fillPlaceholders(civInfo.civName)
+        otherCiv().addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }
 
     fun sideWithCityState() {
