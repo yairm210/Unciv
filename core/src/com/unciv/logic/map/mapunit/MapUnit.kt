@@ -601,7 +601,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         ) return false
         val buildImprovementUniques = getMatchingUniques(UniqueType.BuildImprovements)
         if (tile.improvementInProgress == Constants.repair) {
-            if (!tile.isFriendlyTerritory(civ)) return false
+            if (!tile.isFriendlyTerritory(civ)) {
+                return (tile.getImprovementToRepair()?.isRoad() == true ||
+                    tile.getImprovementToRepair()?.name == Constants.fort)
+            }
             return buildImprovementUniques.any()
         }
         return buildImprovementUniques

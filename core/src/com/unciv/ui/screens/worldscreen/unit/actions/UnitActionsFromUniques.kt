@@ -489,8 +489,8 @@ object UnitActionsFromUniques {
 
         val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
-            && !tile.isEnemyTerritory(unit.civ)
-
+            && (tile.isFriendlyTerritory(unit.civ) || unit.currentTile.getImprovementToRepair()?.isRoad()!! || unit.currentTile.getImprovementToRepair()?.name == Constants.fort)
+        
         val turnsToBuild = getRepairTurns(unit)
 
         return UnitAction(UnitActionType.Repair, 90f,
