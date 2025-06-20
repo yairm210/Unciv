@@ -13,6 +13,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.HexMath
@@ -496,10 +497,15 @@ class GlobalPoliticsOverviewTable(
                     )
 
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
+                    // Color defensive pact for major civs only
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
-                        || (diplomacy.civInfo.isCityState && diplomacy.civInfo.getAllyCivName() == diplomacy.otherCivName)
-                        || (otherCiv.isCityState && otherCiv.getAllyCivName() == diplomacy.civInfo.civName)
-                    ) Color.CYAN
+                        && !(civ.isCityState || otherCiv.isCityState)) Color.PURPLE
+                    else if (civ.isHuman() && otherCiv.isHuman() && diplomacy.hasModifier(DiplomaticModifiers.DeclarationOfFriendship))
+                        RelationshipLevel.Friend.color
+                    // Test for alliance with city state
+                    else if ((civ.isCityState && civ.getAllyCivName() == diplomacy.otherCivName)
+                        || (otherCiv.isCityState && otherCiv.getAllyCivName() == civ.civName)) RelationshipLevel.Ally.color
+                    // Else the color depends on opinion between major civs, OR city state relationship with major civ
                     else diplomacy.relationshipLevel().color
 
                     if (!civLines.containsKey(civ.civName)) civLines[civ.civName] = mutableSetOf()
@@ -508,7 +514,6 @@ class GlobalPoliticsOverviewTable(
                     addActorAt(0, statusLine)
                 }
             }
-
         }
     }
 
@@ -533,10 +538,9 @@ class GlobalPoliticsOverviewTable(
             //todo Rethink hardcoding together with the statusLine.color one in DiplomacyGroup
             legend.addLegendRow("War", Color.RED)
             for (level in RelationshipLevel.entries) {
-                val lineColor = if (level == RelationshipLevel.Ally) Color.CYAN else level.color
-                legend.addLegendRow(level.name, lineColor)
+                legend.addLegendRow(level.name, level.color)
             }
-            legend.addLegendRow(Constants.defensivePact, Color.CYAN)
+            legend.addLegendRow(Constants.defensivePact, Color.PURPLE)
             return super.createContentTable()!!.apply {
                 add(legend).grow()
             }

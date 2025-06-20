@@ -1,3 +1,46 @@
+## 4.16.17
+
+Increased font size so it looks less blurry on large screens
+
+'connect road' works when railroads don't exist in the ruleset
+
+'connect road' acknowledges availability uniques on road/railroad
+
+Simplified requirements for adding a new demand
+
+By EmperorPinguin:
+- Autoplay: don't assign citizens according to AI Personality 
+- AI: remove thingsToFocusOnForVictory 
+
+## 4.16.16
+
+By metablaster:
+- update missing world screen image annotation 
+- Table and colors for diplomatic relations between human players in diplomacy screen. 
+- Fix automated units not auto upgrading when enabled
+- Fix broken translations 
+
+By RobLoach:
+- Allow using `[relativeAmount]% Gold from Great Merchant trade missions` on units 
+- Fix Civilopedia "required Building" links for Wonders 
+
+"Stacked with unit" conditional unique - By PLynx01
+
+Hexarealm edge tiles restructuring - by hackedpassword
+
+## 4.16.15
+
+Fixed Gold being translated in trade offer with peace treaty
+
+By metablaster:
+- Improved diagram colors in global politics 
+- Fix crash for automated Fighter units 
+- Fix automated long range units not heading to enemy city
+
+modding: Show status page for civilian units - By SomeTroglodyte
+
+Add "don't spy on us" has a demand - By Emandac
+
 ## 4.16.14
 
 Mod checking: Catch unexpected validation exceptions 
