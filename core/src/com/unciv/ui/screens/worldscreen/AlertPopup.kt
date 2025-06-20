@@ -322,6 +322,8 @@ class AlertPopup(
     private fun addSpyingOnUsDespiteOurPromise(): Boolean {
         val otherciv = getCiv(popupAlert.value)
         if (otherciv.isDefeated()) return false
+        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
+        addLeaderName(otherciv)
         addGoodSizedLabel("Take back your spy and your broken promises.").row()
         addCloseButton("Very well.")
         return true
