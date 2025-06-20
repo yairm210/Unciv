@@ -364,7 +364,7 @@ enum class UniqueType(
 
     FoundCity("Founds a new city", UniqueTarget.UnitAction),
     FoundPuppetCity("Founds a new puppet city", UniqueTarget.UnitAction),
-    FoundCityOnCoastTile("Found a new city on coast tiles",UniqueTarget.UnitAction),
+    CanSettleInWaterTiles("Can settle in Water tiles <when adjacent to [terrainFilter] tile>",UniqueTarget.Unit,UniqueTarget.Global),
     ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.UnitAction),
     // TODO: Should be replaced by "Can instantly construct a [] improvement <by consuming this unit>"
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),

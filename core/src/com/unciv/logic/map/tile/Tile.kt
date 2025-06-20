@@ -609,20 +609,18 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             else -> true
         }
     }
-    // this function is to allow for the Settling water/Coast City with FoundCityOnWaterTile/FoundCityOnCoastTile
-    // and still not allow city to be too nearby.
-    fun canSettledWaterTile(): Boolean {
+    fun canBeSettled(unique: Unique): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
         return when {
-            isImpassible() -> false
-            getTilesInDistance(modConstants.minimalCityDistance)
-                .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
+            isWater || isImpassible() -> false
             getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
                 .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
-
+            getTilesInDistance(modConstants.minimalCityDistance)
+                .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
             else -> true
         }
     }
+
 
     /** The two tiles have a river between them */
     fun isConnectedByRiver(otherTile: Tile): Boolean {

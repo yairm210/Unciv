@@ -44,25 +44,24 @@ object UnitActionsFromUniques {
             UniqueType.FoundCity).firstOrNull() ?: 
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
+        // improvementFilter/terrainFilter
+        val canSettleInWaterTiles = unit.getMatchingUniques(UniqueType.CanSettleInWaterTiles).firstOrNull()
+        if (canSettleInWaterTiles != null) println(canSettleInWaterTiles)
         
-        val canFoundCityOnCoastTile = UnitActionModifiers.getUsableUnitActionUniques(unit,
-            UniqueType.FoundCityOnCoastTile).firstOrNull()
+//         fun canSettleOnCoastTile(): Boolean { // I put this in a function to be more readable :/
+//             return canFoundCityOnCoastTile != null && tile.canSettledWaterTile()
+//                 && tile.isAdjacentTo("Land") && unit.isEmbarked()
+//                 && tile.isWater
+//         }
         
-        fun canSettleOnCoastTile(): Boolean { // I put this in a function to be more readable :/
-            return canFoundCityOnCoastTile != null && tile.canSettledWaterTile()
-                && tile.isAdjacentTo("Land") && unit.isEmbarked()
-                && tile.isWater
-        }
-        
-        if (tile.isWater && canFoundCityOnCoastTile == null || tile.isImpassible()) return null
+        if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
 
         
-        if (!canSettleOnCoastTile()) {
-            if (!unit.hasMovement() || !tile.canBeSettled())
-                return UnitAction(UnitActionType.FoundCity, 80f, action = null)
-        }
+        if (!unit.hasMovement() || !tile.canBeSettled())
+            return UnitAction(UnitActionType.FoundCity, 80f, action = null)
+    
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
