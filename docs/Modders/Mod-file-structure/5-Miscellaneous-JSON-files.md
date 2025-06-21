@@ -98,12 +98,16 @@ Each speed can have the following attributes:
 
 ### Time interval per turn
 
-The "turns" attribute defines the number of years passed between turns. The attribute consists of a list of hashmaps, each hashmaps in turn having 2 required attributes: "yearsPerTurn" (Float) and "untilTurn" (Integer)
+The "turns" attribute defines the number of years passing between turns. The attribute consists of a list of objects, each having 2 required attributes: "yearsPerTurn" (Float) and "untilTurn" (Integer)
 
-| Attribute    | Type    | Default  | Notes                                                                                    |
-|--------------|---------|----------|------------------------------------------------------------------------------------------|
-| yearsPerTurn | Integer | Required | Number of years passed between turns                                                     |
-| untilTurn    | Integer | Required | Which turn that this "speed" is active until (if it is the last object, this is ignored) |
+| Attribute    | Type    | Default  | Notes                                                      |
+|--------------|---------|----------|------------------------------------------------------------|
+| yearsPerTurn | Integer | Required | Number of years passing between turns                      |
+| untilTurn    | Integer | Required | End of this interval (if it is the last object, see below) |
+
+For each row, "yearsPerTurn" is applied up to the "untilTurn"-1 to "untilTurn" step.
+The last "untilTurn" in the list is ignored for year calculation, that is, if a game passes that turn number, years continue to increment by the "yearsPerTurn" of the last entry.
+However, this is used when starting a game in a later Era: Era.startPercent is relative to the last "untilTurn".
 
 The code below is an example of a valid "turns" definition and it specifies that the first 50 turns of a game last for 60 years each, then the next 30 turns (and any played after the 80th) last for 40 years each.
 
