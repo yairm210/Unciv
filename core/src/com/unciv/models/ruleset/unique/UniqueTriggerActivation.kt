@@ -606,6 +606,36 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.GrantsPromotionToAdjacentUnits -> {
+                val promotionName = unique.params[0]
+                val mapUnitFilter = unique.params[2]
+                val promotion = ruleset.unitPromotions[promotionName] ?: return null
+                val currentTile = tile ?: return null
+
+                val unitsToPromote = currentTile.getTilesInDistance(1)
+                    .flatMap { it.getUnits() }
+                    .filter { it.civ == civInfo && it.matchesFilter(mapUnitFilter) }
+                    .filter { promotionName !in it.promotions.promotions }
+                    .toList()
+
+                if (unitsToPromote.isEmpty()) return null
+
+                return {
+                    for (adjacentUnit in unitsToPromote) {
+                        adjacentUnit.promotions.addPromotion(promotionName, isFree = true)
+                    }
+                    if (notification != null) {
+                        civInfo.addNotification(
+                            notification,
+                            MapUnitAction(unitsToPromote),
+                            NotificationCategory.Units,
+                            "unitPromotionIcons/$promotionName"
+                        )
+                    }
+                    true
+                }
+            }
+
             /**
              * The mechanics for granting great people are wonky, but basically the following happens:
              * Based on the game speed, a timer with some amount of turns is set, 40 on regular speed

@@ -1658,6 +1658,17 @@
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},
+    {
+        "name": "Great Admiral",
+        "unitType": "Civilian Water",
+        "uniques": [
+            "[+15]% Strength bonus for [Water] units within [2] tiles",
+            "Grants [[Great Admiral] ability] ([Heal Instantly]) to adjacent [Water] units for the rest of the game <by consuming this unit>",
+			"Can be earned through combat",
+            "Is part of Great Person group [Admiral]",
+			"Great Person - [War]", "Unbuildable", "Uncapturable"],
+        "movement": 4
+    },
 
 	/* Religious units */
 

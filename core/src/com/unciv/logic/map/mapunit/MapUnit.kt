@@ -891,7 +891,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val promotionUniques = tile.neighbors
                 .flatMap { it.allTerrains }
-                .flatMap { it.getMatchingUniques(UniqueType.TerrainGrantsPromotion) }
+                .flatMap { it.getMatchingUniques(UniqueType.GrantsPromotionToAdjacentUnits) }
         for (unique in promotionUniques) {
             if (!this.matchesFilter(unique.params[2])) continue
             val promotion = unique.params[0]

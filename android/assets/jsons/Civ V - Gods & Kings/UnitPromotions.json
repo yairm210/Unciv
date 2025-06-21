@@ -770,6 +770,13 @@
 		"name": "[Privateer] ability",
 		"uniques": ["May capture killed [Water] units"]
 	},
+	{
+		"name": "[Great Admiral] ability", // Repair Fleet
+		"uniques": [
+            "[This Unit] heals [100] HP",
+            "[This Unit] loses the [[Great Admiral] ability] promotion <hidden from users>"
+        ]
+	},
 	{	// For barbarian water units
 		"name": "Unable to pillage tiles",
 		"uniques": ["Unable to pillage tiles"]

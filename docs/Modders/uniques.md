@@ -24,6 +24,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable, Global
 
+??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
+	Example: "Grants [Shock I] ([comment]) to adjacent [Wounded] units for the rest of the game"
+
+	Applicable to: Triggerable, Terrain
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
@@ -2302,7 +2307,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
 	Example: "Grants [Shock I] ([comment]) to adjacent [Wounded] units for the rest of the game"
 
-	Applicable to: Terrain
+	Applicable to: Triggerable, Terrain
 
 ??? example  "[amount] Strength for cities built on this terrain"
 	Example: "[3] Strength for cities built on this terrain"
