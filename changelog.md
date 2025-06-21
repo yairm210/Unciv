@@ -1,3 +1,33 @@
+## 4.16.18
+
+chore: Generic'd demand alerts
+
+console: Can set game turn
+
+Resolved  - barbarian workers no longer construct improvements if they land on them
+
+modding(validation): Catch empty altases.json file
+
+Add stacktrace to ruleset validation exceptions
+
+4.16.17-patch1
+
+chore: research agreements -> Research Agreements, as per 
+
+Allow autoupdates for uniques with the same parameter appearing twice - e.g. 'from [amount] to [amount]'
+
+Allow autoupdates for uniques with the same parameter appearing twice - e.g. 'from [amount] to [amount]'
+
+Allowed stat reserve to get happiness
+
+Add `[relativeAmount]% [resourceFilter] resource production` Unique - By RobLoach
+
+Refactor RulesetValidator into two files - By SomeTroglodyte
+
+Fix broken chart in victory status - By metablaster
+
+Edge restructure update - By hackedpassword
+
 ## 4.16.17
 
 Increased font size so it looks less blurry on large screens
