@@ -294,6 +294,14 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
                 )
 
             for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
+                UniqueType.StatsFromEveryGlobalCitiesFollowingReligion, civInfo.state
+            ))
+                statMap.add(
+                    "Religion",
+                    unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion() / unique.params[1].toFloat()
+                )
+
+            for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
                 UniqueType.StatsFromGlobalFollowers, civInfo.state
             ))
                 statMap.add(

@@ -40,6 +40,7 @@ enum class UniqueType(
     StatsFromObject("[stats] from every [tileFilter/specialist/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTradeRoute("[stats] from each Trade Route", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromGlobalCitiesFollowingReligion("[stats] for each global city following this religion", UniqueTarget.FounderBelief),
+    StatsFromEveryGlobalCitiesFollowingReligion("[stats] for every [positiveAmount] global cities following this religion", UniqueTarget.FounderBelief),
     StatsFromGlobalFollowers("[stats] from every [positiveAmount] global followers [cityFilter]", UniqueTarget.FounderBelief),
 
     // Stat percentage boosts
