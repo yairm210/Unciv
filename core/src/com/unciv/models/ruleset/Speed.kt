@@ -29,11 +29,39 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
     var startYear: Float = -4000f
     var turns: ArrayList<HashMap<String, Float>> = ArrayList()
 
+    // These could be private but for RulesetValidator checking it
     data class YearsPerTurn(val yearInterval: Float, val untilTurn: Int)
     val yearsPerTurn: ArrayList<YearsPerTurn> by lazy {
         ArrayList<YearsPerTurn>().apply {
             turns.forEach { this.add(YearsPerTurn(it["yearsPerTurn"]!!, it["untilTurn"]!!.toInt())) }
         }
+    }
+
+    /** End of defined turn range, used for starting Era's `startPercent` calculation */
+    fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
+
+    /** Calculate a Year from a turn number.
+     *
+     *  Note that years can have fractional parts and the integer part of the year for two consecutive turns _can_ be equal,
+     *  but Unciv currently has no way to display that. This is left as Float to enable such display in the future,
+     *  maybe as months, or even the 18+1 'months' of the mayan Haab'.
+     *
+     *  @param turn The logical turn number, any offset from starting in an advanced Era already added in
+     */
+    fun turnToYear(turn: Int): Float {
+        var year = startYear
+        var currentTurn = 0
+        val numTotalTurns = numTotalTurns()
+        for ((interval, untilTurn) in yearsPerTurn) {
+            if (currentTurn >= turn) break // ensure year isn't projected backwards for negative `turn`
+            if (turn <= untilTurn || untilTurn == numTotalTurns) {
+                year += (turn - currentTurn) * interval
+                break
+            }
+            year += (untilTurn - currentTurn) * interval
+            currentTurn = untilTurn
+        }
+        return year
     }
 
     val statCostModifiers: EnumMap<Stat, Float> by lazy {
@@ -81,6 +109,4 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
         yield(FormattedLine("Start year: [" + ("{[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD") + "}]").tr()))
     }.toList()
     override fun getSortGroup(ruleset: Ruleset): Int = (modifier * 1000).toInt()
-
-    fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
 }

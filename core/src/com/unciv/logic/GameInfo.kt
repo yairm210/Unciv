@@ -304,21 +304,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return turns + (totalTurns * startPercent / 100)
     }
 
-    fun getYear(turnOffset: Int = 0): Int {
-        val turn = getEquivalentTurn() + turnOffset
-        val yearsToTurn = speed.yearsPerTurn
-        var year = speed.startYear
-        var i = 0
-        var yearsPerTurn: Float
-
-        while (i < turn) {
-            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.untilTurn }?.yearInterval ?: yearsToTurn.last().yearInterval)
-            year += yearsPerTurn
-            ++i
-        }
-
-        return year.toInt()
-    }
+    fun getYear(turnOffset: Int = 0) = speed.turnToYear(getEquivalentTurn() + turnOffset).toInt()
 
     fun calculateChecksum(): String {
         val oldChecksum = checksum
