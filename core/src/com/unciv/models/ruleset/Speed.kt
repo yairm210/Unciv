@@ -29,6 +29,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
     var startYear: Float = -4000f
     var turns: ArrayList<HashMap<String, Float>> = ArrayList()
 
+    data class YearsPerTurn(val yearInterval: Float, val untilTurn: Int)
     val yearsPerTurn: ArrayList<YearsPerTurn> by lazy {
         ArrayList<YearsPerTurn>().apply {
             turns.forEach { this.add(YearsPerTurn(it["yearsPerTurn"]!!, it["untilTurn"]!!.toInt())) }
@@ -82,9 +83,4 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
     override fun getSortGroup(ruleset: Ruleset): Int = (modifier * 1000).toInt()
 
     fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
-}
-
-class YearsPerTurn(yearsPerTurn: Float, turnsPerIncrement: Int) {
-    var yearInterval: Float = yearsPerTurn
-    var untilTurn: Int = turnsPerIncrement
 }
