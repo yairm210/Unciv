@@ -409,7 +409,7 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf("Undesirable", "Food", "Desirable", "Production")
     },
 
-    /** [UniqueType.UnitStartingPromotions], [UniqueType.TerrainGrantsPromotion], [UniqueType.ConditionalUnitWithPromotion] and others */
+    /** [UniqueType.UnitStartingPromotions], [UniqueType.GrantsPromotionToAdjacentUnits], [UniqueType.ConditionalUnitWithPromotion] and others */
     Promotion("promotion", "Shock I", "The name of any promotion") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.unitPromotions.keys
     },

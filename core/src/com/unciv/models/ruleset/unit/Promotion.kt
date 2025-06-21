@@ -133,7 +133,7 @@ class Promotion : RulesetObject() {
             building -> building.getMatchingUniques(UniqueType.UnitStartingPromotions)
             .any { it.params[2] == name }
         } + ruleset.terrains.values.filter {
-            terrain -> terrain.getMatchingUniques(UniqueType.TerrainGrantsPromotion).any {
+            terrain -> terrain.getMatchingUniques(UniqueType.GrantsPromotionToAdjacentUnits).any {
                 name == it.params[0]
             }
         }
