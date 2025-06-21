@@ -158,6 +158,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Beaker](https://thenounproject.com/icon/Beaker-621510) By Delwar Hossain for Great Scientist
 -   [Dove](https://thenounproject.com/icon/dove-1344088) by sandra for Great Prophet
 -   [General](https://thenounproject.com/icon/general-933566) By anbileru adaleru for Great General
+-   [Captain](https://thenounproject.com/icon/captain-7649814/) by Ponisih for Great Admiral
 -   [Religion](https://thenounproject.com/icon/preach-53064) by Bruno Gätjens González adapted for Missionary
 -   [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
 
