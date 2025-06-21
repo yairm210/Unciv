@@ -1,19 +1,18 @@
 package com.unciv.models.ruleset.validation
 
 import com.unciv.Constants
-import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
-import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.stats.Stats
 
 /**
@@ -32,55 +31,30 @@ internal class BaseRulesetValidator(
      *  value a Set of its prerequisites including indirect ones */
     private val prereqsHashMap = HashMap<String, HashSet<String>>()
 
-    override fun addBeliefErrors(lines: RulesetErrorList) {
-        super.addBeliefErrors(lines)
+    override fun checkBuilding(building: Building, lines: RulesetErrorList) {
+        super.checkBuilding(building, lines)
 
-        for (belief in ruleset.beliefs.values) {
-            if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
-                lines.add("${belief.name} type is ${belief.type}, which is not allowed!", sourceObject = belief)
-            uniqueValidator.checkUniques(belief, lines, true, tryFixUnknownUniques)
-        }
-    }
-
-    override fun addBuildingErrors(lines: RulesetErrorList) {
-        // No super.addBuildingErrors(lines): included in the loop below
-
-        for (building in ruleset.buildings.values) {
-            addBuildingErrorRulesetInvariant(building, lines)
-
-            for (requiredTech: String in building.requiredTechs())
-                if (!ruleset.technologies.containsKey(requiredTech))
-                    lines.add("${building.name} requires tech $requiredTech which does not exist!", sourceObject = building)
-            for (specialistName in building.specialistSlots.keys)
-                if (!ruleset.specialists.containsKey(specialistName))
-                    lines.add("${building.name} provides specialist $specialistName which does not exist!", sourceObject = building)
-            for (resource in building.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
-                if (!ruleset.tileResources.containsKey(resource))
-                    lines.add("${building.name} requires resource $resource which does not exist!", sourceObject = building)
-            if (building.replaces != null && !ruleset.buildings.containsKey(building.replaces!!))
-                lines.add("${building.name} replaces ${building.replaces} which does not exist!", sourceObject = building)
-            if (building.requiredBuilding != null && !ruleset.buildings.containsKey(building.requiredBuilding!!))
-                lines.add("${building.name} requires ${building.requiredBuilding} which does not exist!", sourceObject = building)
-
-            checkUniqueToMisspelling(building, building.uniqueTo, lines)
-            uniqueValidator.checkUniques(building, lines, true, tryFixUnknownUniques)
-        }
-    }
-
-    override fun addCityStateTypeErrors(lines: RulesetErrorList) {
-        super.addCityStateTypeErrors(lines)
-
-        for (cityStateType in ruleset.cityStateTypes.values) {
-            for (unique in cityStateType.allyBonusUniqueMap.getAllUniques() + cityStateType.friendBonusUniqueMap.getAllUniques()) {
-                val errors = uniqueValidator.checkUnique(
-                    unique,
-                    tryFixUnknownUniques,
-                    null,
-                    true
+        for ((gppName, _) in building.greatPersonPoints)
+            if (!ruleset.units.containsKey(gppName))
+                lines.add(
+                    "Building ${building.name} has greatPersonPoints for $gppName, which is not a unit in the ruleset!",
+                    RulesetErrorSeverity.Warning, building
                 )
-                lines.addAll(errors)
-            }
-        }
+        for (requiredTech: String in building.requiredTechs())
+            if (!ruleset.technologies.containsKey(requiredTech))
+                lines.add("${building.name} requires tech $requiredTech which does not exist!", sourceObject = building)
+        for (specialistName in building.specialistSlots.keys)
+            if (!ruleset.specialists.containsKey(specialistName))
+                lines.add("${building.name} provides specialist $specialistName which does not exist!", sourceObject = building)
+        for (resource in building.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
+            if (!ruleset.tileResources.containsKey(resource))
+                lines.add("${building.name} requires resource $resource which does not exist!", sourceObject = building)
+        if (building.replaces != null && !ruleset.buildings.containsKey(building.replaces!!))
+            lines.add("${building.name} replaces ${building.replaces} which does not exist!", sourceObject = building)
+        if (building.requiredBuilding != null && !ruleset.buildings.containsKey(building.requiredBuilding!!))
+            lines.add("${building.name} requires ${building.requiredBuilding} which does not exist!", sourceObject = building)
+
+        checkUniqueToMisspelling(building, building.uniqueTo, lines)
     }
 
     override fun addDifficultyErrors(lines: RulesetErrorList) {
@@ -91,6 +65,12 @@ internal class BaseRulesetValidator(
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
                 if (unitName != Constants.eraSpecificUnit && !ruleset.units.containsKey(unitName))
                     lines.add("Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!", sourceObject = null)
+            if (difficulty.aiDifficultyLevel != null && !ruleset.difficulties.containsKey(difficulty.aiDifficultyLevel))
+                lines.add("Difficulty ${difficulty.name} contains aiDifficultyLevel ${difficulty.aiDifficultyLevel} which does not exist!",
+                    RulesetErrorSeverity.Warning, sourceObject = null)
+            for (tech in difficulty.aiFreeTechs)
+                if (!ruleset.technologies.containsKey(tech))
+                    lines.add("Difficulty ${difficulty.name} contains AI free tech $tech which does not exist!", sourceObject = null)
         }
     }
 
@@ -116,9 +96,7 @@ internal class BaseRulesetValidator(
                 if (building !in ruleset.buildings)
                     lines.add("Nonexistent building $building built by settlers when starting in ${era.name}", sourceObject = era)
             // todo the whole 'starting unit' thing needs to be redone, there's no reason we can't have a single list containing all the starting units.
-            if (era.startingSettlerUnit !in ruleset.units
-                && ruleset.units.values.none { it.isCityFounder() }
-            )
+            if (era.startingSettlerUnit !in ruleset.units && ruleset.units.values.none { it.isCityFounder() })
                 lines.add("Nonexistent unit ${era.startingSettlerUnit} marked as starting unit when starting in ${era.name}", sourceObject = era)
             if (era.startingWorkerCount != 0 && era.startingWorkerUnit !in ruleset.units
                 && ruleset.units.values.none { it.hasUnique(UniqueType.BuildImprovements) }
@@ -129,35 +107,6 @@ internal class BaseRulesetValidator(
                 || allDifficultiesStartingUnits.contains(Constants.eraSpecificUnit)
             if (grantsStartingMilitaryUnit && era.startingMilitaryUnit !in ruleset.units)
                 lines.add("Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}", sourceObject = era)
-            if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
-                lines.add("Unexpected negative number found while parsing era ${era.name}", sourceObject = era)
-            if (era.settlerPopulation <= 0)
-                lines.add("Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}", sourceObject = era)
-
-            if (era.allyBonus.isNotEmpty())
-                lines.add(
-                    "Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
-                    RulesetErrorSeverity.WarningOptionsOnly, era
-                )
-            if (era.friendBonus.isNotEmpty())
-                lines.add(
-                    "Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
-                    RulesetErrorSeverity.WarningOptionsOnly, era
-                )
-
-            uniqueValidator.checkUniques(era, lines, true, tryFixUnknownUniques)
-        }
-    }
-
-    override fun addEventErrors(lines: RulesetErrorList) {
-        super.addEventErrors(lines)
-
-        // An Event is not a IHasUniques, so not suitable as sourceObject
-        for (event in ruleset.events.values) {
-            for (choice in event.choices) {
-                uniqueValidator.checkUniques(choice, lines, true, tryFixUnknownUniques)
-            }
-            uniqueValidator.checkUniques(event, lines, true, tryFixUnknownUniques)
         }
     }
 
@@ -169,43 +118,12 @@ internal class BaseRulesetValidator(
                 lines.add("${improvement.name} requires tech ${improvement.techRequired} which does not exist!", sourceObject = improvement)
             if (improvement.replaces != null && !ruleset.tileImprovements.containsKey(improvement.replaces))
                 lines.add("${improvement.name} replaces ${improvement.replaces} which does not exist!", sourceObject = improvement)
-            if (improvement.replaces != null && improvement.uniqueTo == null)
-                lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
+
             checkUniqueToMisspelling(improvement, improvement.uniqueTo, lines)
+
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!ruleset.terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines.add("${improvement.name} can be built on terrain $terrain which does not exist!", sourceObject = improvement)
-            if (improvement.terrainsCanBeBuiltOn.isEmpty()
-                && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
-                && !improvement.hasUnique(UniqueType.Unbuildable)
-                && !improvement.name.startsWith(Constants.remove)
-                && improvement.name !in RoadStatus.entries.map { it.removeAction }
-                && improvement.name != Constants.cancelImprovementOrder
-            ) {
-                lines.add(
-                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources. As such it isn't buildable! Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\", or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
-                    RulesetErrorSeverity.Warning, improvement
-                )
-            }
-            for (unique in improvement.uniqueObjects
-                .filter { it.type == UniqueType.PillageYieldRandom || it.type == UniqueType.PillageYieldFixed }) {
-                if (!Stats.isStats(unique.params[0])) continue
-                val params = Stats.parse(unique.params[0])
-                if (params.values.any { it < 0 }) lines.add(
-                    "${improvement.name} cannot have a negative value for a pillage yield!",
-                    RulesetErrorSeverity.Error, improvement
-                )
-            }
-
-            val hasPillageUnique = improvement.hasUnique(UniqueType.PillageYieldRandom, StateForConditionals.IgnoreConditionals)
-                || improvement.hasUnique(UniqueType.PillageYieldFixed, StateForConditionals.IgnoreConditionals)
-            if (hasPillageUnique && improvement.hasUnique(UniqueType.Unpillagable, StateForConditionals.IgnoreConditionals)) {
-                lines.add(
-                    "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
-                    RulesetErrorSeverity.Warning, improvement
-                )
-            }
-            uniqueValidator.checkUniques(improvement, lines, true, tryFixUnknownUniques)
         }
     }
 
@@ -217,20 +135,13 @@ internal class BaseRulesetValidator(
         }
     }
 
-    override fun addNationErrors(lines: RulesetErrorList) {
-        // No super.addNationErrors(lines), included in loop below
-        for (nation in ruleset.nations.values) {
-            addNationErrorRulesetInvariant(nation, lines)
-
-            uniqueValidator.checkUniques(nation, lines, true, tryFixUnknownUniques)
-
-            if (nation.preferredVictoryType != Constants.neutralVictoryType && nation.preferredVictoryType !in ruleset.victories)
-                lines.add("${nation.name}'s preferredVictoryType is ${nation.preferredVictoryType} which does not exist!", sourceObject = nation)
-            if (nation.cityStateType != null && nation.cityStateType !in ruleset.cityStateTypes)
-                lines.add("${nation.name} is of city-state type ${nation.cityStateType} which does not exist!", sourceObject = nation)
-            if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
-                lines.add("${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!", sourceObject = nation)
-        }
+    override fun checkNation(nation: Nation, lines: RulesetErrorList) {
+        if (nation.preferredVictoryType != Constants.neutralVictoryType && nation.preferredVictoryType !in ruleset.victories)
+            lines.add("${nation.name}'s preferredVictoryType is ${nation.preferredVictoryType} which does not exist!", sourceObject = nation)
+        if (nation.cityStateType != null && nation.cityStateType !in ruleset.cityStateTypes)
+            lines.add("${nation.name} is of city-state type ${nation.cityStateType} which does not exist!", sourceObject = nation)
+        if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
+            lines.add("${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!", sourceObject = nation)
     }
 
     override fun addPersonalityErrors(lines: RulesetErrorList) {
@@ -240,7 +151,7 @@ internal class BaseRulesetValidator(
             if (personality.preferredVictoryType != Constants.neutralVictoryType
                 && personality.preferredVictoryType !in ruleset.victories) {
                 lines.add("Preferred victory type ${personality.preferredVictoryType} does not exist in ruleset",
-                    RulesetErrorSeverity.Warning, sourceObject = personality,)
+                    RulesetErrorSeverity.Warning, sourceObject = personality)
             }
         }
     }
@@ -252,8 +163,6 @@ internal class BaseRulesetValidator(
             for (prereq in policy.requires ?: emptyList())
                 if (!ruleset.policies.containsKey(prereq))
                     lines.add("${policy.name} requires policy $prereq which does not exist!", sourceObject = policy)
-
-            uniqueValidator.checkUniques(policy, lines, true, tryFixUnknownUniques)
         }
 
         for (branch in ruleset.policyBranches.values) {
@@ -271,35 +180,31 @@ internal class BaseRulesetValidator(
             }
         }
 
-
         for (policy in ruleset.policyBranches.values.flatMap { it.policies + it })
             if (policy != ruleset.policies[policy.name])
                 lines.add("More than one policy with the name ${policy.name} exists!", sourceObject = policy)
-
     }
 
     override fun addPromotionErrors(lines: RulesetErrorList) {
-        // No super.addPromotionErrors(lines): included below
-        //TODO except the contrast check
-        for (promotion in ruleset.unitPromotions.values) {
-            addPromotionErrorRulesetInvariant(promotion, lines)
-
-            // These are warning as of 3.17.5 to not break existing mods and give them time to correct, should be upgraded to error in the future
-            for (prereq in promotion.prerequisites)
-                if (!ruleset.unitPromotions.containsKey(prereq))
-                    lines.add(
-                        "${promotion.name} requires promotion $prereq which does not exist!",
-                        RulesetErrorSeverity.Warning, promotion
-                    )
-            for (unitType in promotion.unitTypes) checkUnitType(unitType) {
-                lines.add(
-                    "${promotion.name} references unit type $unitType, which does not exist!",
-                    RulesetErrorSeverity.Warning, promotion
-                )
-            }
-            uniqueValidator.checkUniques(promotion, lines, true, tryFixUnknownUniques)
-        }
+        super.addPromotionErrors(lines)
         checkPromotionCircularReferences(lines)
+    }
+
+    override fun checkPromotion(promotion: Promotion, lines: RulesetErrorList) {
+        super.checkPromotion(promotion, lines)
+
+        for (prereq in promotion.prerequisites)
+            if (!ruleset.unitPromotions.containsKey(prereq))
+                lines.add(
+                    "${promotion.name} requires promotion $prereq which does not exist!",
+                    RulesetErrorSeverity.ErrorOptionsOnly, promotion
+                )
+        for (unitType in promotion.unitTypes) checkUnitType(unitType) {
+            lines.add(
+                "${promotion.name} references unit type $unitType, which does not exist!",
+                RulesetErrorSeverity.ErrorOptionsOnly, promotion
+            )
+        }
     }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
@@ -327,8 +232,6 @@ internal class BaseRulesetValidator(
     }
 
     override fun addResourceErrors(lines: RulesetErrorList) {
-        // No super.addResourceErrors(lines), included below
-
         for (resource in ruleset.tileResources.values) {
             if (resource.revealedBy != null && !ruleset.technologies.containsKey(resource.revealedBy!!))
                 lines.add("${resource.name} revealed by tech ${resource.revealedBy} which does not exist!", sourceObject = resource)
@@ -340,20 +243,17 @@ internal class BaseRulesetValidator(
             for (terrain in resource.terrainsCanBeFoundOn)
                 if (!ruleset.terrains.containsKey(terrain))
                     lines.add("${resource.name} can be found on terrain $terrain which does not exist!", sourceObject = resource)
-            uniqueValidator.checkUniques(resource, lines, true, tryFixUnknownUniques)
         }
+        super.addResourceErrors(lines)
     }
 
     override fun addRuinsErrors(lines: RulesetErrorList) {
         super.addRuinsErrors(lines)
 
         for (reward in ruleset.ruinRewards.values) {
-            @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
-            if (reward.weight < 0) lines.add("${reward.name} has a negative weight, which is not allowed!", sourceObject = reward)
             for (difficulty in reward.excludedDifficulties)
                 if (!ruleset.difficulties.containsKey(difficulty))
                     lines.add("${reward.name} references difficulty ${difficulty}, which does not exist!", sourceObject = reward)
-            uniqueValidator.checkUniques(reward, lines, true, tryFixUnknownUniques)
         }
     }
 
@@ -362,29 +262,17 @@ internal class BaseRulesetValidator(
 
         // Specialist is not a IHasUniques and unsuitable as sourceObject
         for (specialist in ruleset.specialists.values) {
-            for (gpp in specialist.greatPersonPoints)
-                if (gpp.key !in ruleset.units)
+            for ((gppName, _) in specialist.greatPersonPoints)
+                if (gppName !in ruleset.units)
                     lines.add(
-                        "Specialist ${specialist.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
+                        "Specialist ${specialist.name} has greatPersonPoints for $gppName, which is not a unit in the ruleset!",
                         RulesetErrorSeverity.Warning, sourceObject = null
                     )
         }
     }
 
-    override fun addSpeedErrors(lines: RulesetErrorList) {
-        super.addSpeedErrors(lines)
-
-        for (speed in ruleset.speeds.values) {
-            if (speed.modifier < 0f)
-                lines.add("Negative speed modifier for game speed ${speed.name}", sourceObject = speed)
-            if (speed.yearsPerTurn.isEmpty())
-                lines.add("Empty turn increment list for game speed ${speed.name}", sourceObject = speed)
-        }
-    }
-
     override fun addTechErrors(lines: RulesetErrorList) {
-        // No super.addTechErrors(lines) or we would duplicate the checkUniques
-        //TODO missing `row < 1` check -> unify
+        super.addTechErrors(lines)
 
         for (tech in ruleset.technologies.values) {
             for (prereq in tech.prerequisites) {
@@ -394,7 +282,7 @@ internal class BaseRulesetValidator(
                 if (tech.prerequisites.any { it != prereq && getPrereqTree(it).contains(prereq) }) {
                     lines.add(
                         "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!",
-                        RulesetErrorSeverity.Warning, tech
+                        RulesetErrorSeverity.WarningOptionsOnly, tech
                     )
                 }
 
@@ -403,13 +291,15 @@ internal class BaseRulesetValidator(
             }
             if (tech.era() !in ruleset.eras)
                 lines.add("Unknown era ${tech.era()} referenced in column of tech ${tech.name}", sourceObject = tech)
-            uniqueValidator.checkUniques(tech, lines, true, tryFixUnknownUniques)
+
+            for (otherTech in ruleset.technologies.values) {
+                if (tech.name > otherTech.name && otherTech.column?.columnNumber == tech.column?.columnNumber && otherTech.row == tech.row)
+                    lines.add("${tech.name} is in the same row and column as ${otherTech.name}!", sourceObject = tech)
+            }
         }
     }
 
     override fun addTerrainErrors(lines: RulesetErrorList) {
-        super.addTerrainErrors(lines)
-
         if (ruleset.terrains.values.none { it.type == TerrainType.Land && !it.impassable && !it.hasUnique(
                 UniqueType.NoNaturalGeneration) })
             lines.add("No passable land terrains exist!", sourceObject = null)
@@ -430,26 +320,21 @@ internal class BaseRulesetValidator(
                 // See https://github.com/hackedpassword/Z2/blob/main/HybridTileTech.md for a clever exploit
                     lines.add("${terrain.name} turns into terrain ${terrain.turnsInto} which is not a base terrain!", RulesetErrorSeverity.Warning, terrain)
             }
-            uniqueValidator.checkUniques(terrain, lines, true, tryFixUnknownUniques)
         }
+
+        super.addTerrainErrors(lines)
     }
 
     override fun addUnitErrors(lines: RulesetErrorList) {
-        // No super.addUnitErrors(lines), included below
-
         if (ruleset.units.values.none { it.isCityFounder() })
             lines.add("No city-founding units in ruleset!", sourceObject = null)
-
-        for (unit in ruleset.units.values) {
-            checkUnitRulesetInvariant(unit, lines)
-            checkUnit(unit, lines)
-            uniqueValidator.checkUniques(unit, lines, true, tryFixUnknownUniques)
-            checkUniqueToMisspelling(unit, unit.uniqueTo, lines)
-        }
+        super.addUnitErrors(lines)
     }
 
     /** Collects all RulesetSpecific checks for a BaseUnit */
-    private fun checkUnit(unit: BaseUnit, lines: RulesetErrorList) {
+    override fun checkUnit(unit: BaseUnit, lines: RulesetErrorList) {
+        super.checkUnit(unit, lines)
+
         for (requiredTech: String in unit.requiredTechs())
             if (!ruleset.technologies.containsKey(requiredTech))
                 lines.add("${unit.name} requires tech $requiredTech which does not exist!", sourceObject = unit)
@@ -498,17 +383,8 @@ internal class BaseRulesetValidator(
                     RulesetErrorSeverity.WarningOptionsOnly, unit)
             }
         }
-    }
 
-    override fun addUnitTypeErrors(lines: RulesetErrorList) {
-        super.addUnitTypeErrors(lines)
-
-        val unitMovementTypes = UnitMovementType.entries.map { it.name }.toSet()
-        for (unitType in ruleset.unitTypes.values) {
-            if (unitType.movementType !in unitMovementTypes)
-                lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
-            uniqueValidator.checkUniques(unitType, lines, true, tryFixUnknownUniques)
-        }
+        checkUniqueToMisspelling(unit, unit.uniqueTo, lines)
     }
 
     override fun addVictoryTypeErrors(lines: RulesetErrorList) {
@@ -524,11 +400,6 @@ internal class BaseRulesetValidator(
                     )
 
             for (milestone in victoryType.milestoneObjects) {
-                if (milestone.type == null)
-                    lines.add(
-                        "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that is of an unknown type!",
-                        RulesetErrorSeverity.Error, sourceObject = null
-                    )
                 if (milestone.type in listOf(MilestoneType.BuiltBuilding, MilestoneType.BuildingBuiltGlobally)
                     && milestone.params[0] !in ruleset.buildings)
                     lines.add(
@@ -536,13 +407,6 @@ internal class BaseRulesetValidator(
                         RulesetErrorSeverity.Error,
                     )
             }
-
-            for (victory in ruleset.victories.values)
-                if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
-                    lines.add(
-                        "Victory types ${victoryType.name} and ${victory.name} have the same requirements!",
-                        RulesetErrorSeverity.Warning, sourceObject = null
-                    )
         }
     }
 
