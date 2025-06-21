@@ -624,14 +624,6 @@ object UniqueTriggerActivation {
                     for (adjacentUnit in unitsToPromote) {
                         adjacentUnit.promotions.addPromotion(promotionName, isFree = true)
                     }
-                    if (notification != null) {
-                        civInfo.addNotification(
-                            notification,
-                            MapUnitAction(unitsToPromote),
-                            NotificationCategory.Units,
-                            "unitPromotionIcons/$promotionName"
-                        )
-                    }
                     true
                 }
             }
