@@ -1,24 +1,14 @@
 ## 4.16.18
 
-chore: Generic'd demand alerts
+Sprites do not change to base color when moving
+
+Barbarian workers no longer construct improvements
+
+modding: Allowed stat reserve to get happiness
 
 console: Can set game turn
 
-Resolved  - barbarian workers no longer construct improvements if they land on them
-
-modding(validation): Catch empty altases.json file
-
-Add stacktrace to ruleset validation exceptions
-
-4.16.17-patch1
-
-chore: research agreements -> Research Agreements, as per 
-
-Allow autoupdates for uniques with the same parameter appearing twice - e.g. 'from [amount] to [amount]'
-
-Allow autoupdates for uniques with the same parameter appearing twice - e.g. 'from [amount] to [amount]'
-
-Allowed stat reserve to get happiness
+modding validation: Catch empty altases.json file
 
 Add `[relativeAmount]% [resourceFilter] resource production` Unique - By RobLoach
 

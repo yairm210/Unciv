@@ -779,16 +779,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Quantity of strategic resources produced by the empire +[relativeAmount]%"
-	Example: "Quantity of strategic resources produced by the empire +[+20]%"
-
-	Applicable to: Global
-
-??? example  "Double quantity of [resource] produced"
-	Example: "Double quantity of [Iron] produced"
-
-	Applicable to: Global
-
 ??? example  "Enables Open Borders agreements"
 	Applicable to: Global
 
