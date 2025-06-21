@@ -1178,6 +1178,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
+??? example  "[stats] for every [positiveAmount] global cities following this religion"
+	Example: "[+1 Gold, +2 Production] for every [3] global cities following this religion"
+
+	Applicable to: FounderBelief
+
 ??? example  "[stats] from every [positiveAmount] global followers [cityFilter]"
 	Example: "[+1 Gold, +2 Production] from every [3] global followers [in all cities]"
 

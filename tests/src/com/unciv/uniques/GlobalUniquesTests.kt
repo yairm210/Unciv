@@ -247,6 +247,25 @@ class GlobalUniquesTests {
     }
 
     @Test
+    fun statsFromEveryGlobalCitiesFollowingReligion() {
+        val civ1 = game.addCiv()
+        val religion = game.addReligion(civ1)
+        val belief = game.createBelief(BeliefType.Founder, "[+30 Science] for every [2] global cities following this religion")
+        religion.addBeliefs(listOf(belief))
+        val civ2 = game.addCiv()
+        val tile = game.getTile(Vector2.Zero)
+        val cityOfCiv2 = game.addCity(civ2, tile, initialPopulation = 1) // Need someone to be converted
+        cityOfCiv2.religion.addPressure(religion.name, 1000)
+
+        Assert.assertTrue(cityOfCiv2.religion.getMajorityReligionName() == religion.name)
+
+        civ1.updateStatsForNextTurn()
+
+        Assert.assertTrue(civ1.stats.statsForNextTurn.science == 15f)
+    }
+
+
+    @Test
     fun happinessFromGlobalCitiesFollowingReligion() {
         val civ1 = game.addCiv()
         val religion = game.addReligion(civ1)
