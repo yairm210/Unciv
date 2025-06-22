@@ -375,9 +375,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val oldStats = newCity.cityStats.currentCityStats
         newCity.cityConstructions.builtBuildings.add(building)
         newCity.cityConstructions.setTransients()
-        newCity.cityStats.update(updateCivStats = false, localUniqueCache = LocalUniqueCache(), calculateGrowthModifiers = false) //Establish new localUniqueCache (for tile yield uniques)
+        newCity.cityStats.update(updateCivStats = false, localUniqueCache = LocalUniqueCache(), calculateGrowthModifiers = false) // Establish new localUniqueCache (for tile yield uniques)
         city.expansion.setTransients() // Revert owned tiles to original city
-        return  newCity.cityStats.currentCityStats - oldStats
+        return newCity.cityStats.currentCityStats - oldStats
     }
 
     private fun getBuildingStatsFromUniques(building: Building, buildingStats: Stats) {
