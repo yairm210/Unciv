@@ -148,6 +148,9 @@ class Ruleset {
     fun clone(): Ruleset {
         val newRuleset = Ruleset()
         newRuleset.add(this)
+        // Make sure the clone is recognizable - e.g. startNewGame fallback when a base mod was removed needs this
+        newRuleset.name = name
+        newRuleset.modOptions.isBaseRuleset = modOptions.isBaseRuleset
         return newRuleset
     }
 
