@@ -696,10 +696,7 @@ open class RulesetValidator protected constructor(
             .toSet()
 
     /* This is public because `FormattedLine` does its own checking and needs the textureNamesCache test */
-    fun uncachedImageExists(name: String): Boolean {
-        if (ruleset.folderLocation == null) return false // Can't check in this case
-        return textureNamesCache.imageExists(name)
-    }
+    fun uncachedImageExists(name: String) = textureNamesCache.imageExists(name)
 
     //endregion
 
