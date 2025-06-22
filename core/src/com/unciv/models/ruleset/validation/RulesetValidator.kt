@@ -65,7 +65,7 @@ open class RulesetValidator protected constructor(
     /** `true` for a [BaseRulesetValidator] instance, `false` for a [RulesetValidator] instance. */
     private val reportRulesetSpecificErrors = ruleset.modOptions.isBaseRuleset
 
-    private val uniqueValidator = UniqueValidator(ruleset)
+    protected val uniqueValidator = UniqueValidator(ruleset)
 
     private lateinit var textureNamesCache: AtlasPreview
 

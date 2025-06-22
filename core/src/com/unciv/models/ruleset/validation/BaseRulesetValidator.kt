@@ -31,6 +31,13 @@ internal class BaseRulesetValidator(
      *  value a Set of its prerequisites including indirect ones */
     private val prereqsHashMap = HashMap<String, HashSet<String>>()
 
+    init {
+        // The `UniqueValidator.checkUntypedUnique` filtering Unique test ("X not found in Unciv's unique types, and is not used as a filtering unique")
+        // should not complain when running the RulesetInvariant version, because an Extension Mod may e.g. define additional "Aircraft" and the _use_ of the
+        // filtering Unique only exists in the Base Ruleset. But here we *do* want the test, and it needs its cache filled, and that is not done automatically.
+        uniqueValidator.populateFilteringUniqueHashsets()
+    }
+
     override fun checkBuilding(building: Building, lines: RulesetErrorList) {
         super.checkBuilding(building, lines)
 
