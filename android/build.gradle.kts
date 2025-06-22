@@ -2,6 +2,7 @@
 import com.unciv.build.AndroidImagePacker
 import com.unciv.build.BuildConfig
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
