@@ -38,8 +38,10 @@ android {
     }
 
     // necessary for Android Work lib
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
+        }
     }
 
     // Had to add this crap for Travis to build, it wanted to sign the app
