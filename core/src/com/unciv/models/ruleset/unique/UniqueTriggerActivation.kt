@@ -913,6 +913,20 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeExpandBorder -> {
+                val applicableCities = getApplicableCities(unique.params[0])
+                if (applicableCities.none()) return null
+                if (applicableCities.none { it.expansion.chooseNewTileToOwn() != null }) return null
+
+                return {
+                    for (applicableCity in applicableCities) {
+                        val chosenTile = applicableCity.expansion.chooseNewTileToOwn() ?: continue
+                        applicableCity.expansion.takeOwnership(chosenTile)
+                    }
+                    true
+                }
+            }
+
             UniqueType.GainFreeBuildings -> {
                 val freeBuilding = civInfo.getEquivalentBuilding(unique.params[0])
                 val applicableCities = getApplicableCities(unique.params[1])
