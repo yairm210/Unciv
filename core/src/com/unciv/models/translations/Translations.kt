@@ -12,6 +12,7 @@ import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.text.ParseException
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
 
@@ -548,7 +549,23 @@ fun Number.tr(): String {
     return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
 }
 
+fun String.parseTranslatedNumber(): Number? {
+    return try {
+        UncivGame.Current.settings.getCurrentNumberFormat().parse(this)
+    } catch (_: ParseException) {
+        null
+    }
+}
+
 // formats number according to given language
 fun Number.tr(language: String): String {
     return LocaleCode.getNumberFormatFromLanguage(language).format(this)
+}
+
+fun String.parseTranslatedNumber(language: String): Number? {
+    return try {
+        LocaleCode.getNumberFormatFromLanguage(language).parse(this)
+    } catch (_: ParseException) {
+        null
+    }
 }

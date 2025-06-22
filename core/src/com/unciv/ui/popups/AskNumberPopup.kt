@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.models.translations.parseTranslatedNumber
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.onChange
@@ -66,13 +67,12 @@ class AskNumberPopup(
         val nameField = UncivTextField(label, defaultValue)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char.isDigit() || char == '-' }
 
-        fun isValidInt(input: String): Boolean {
-            return input.toIntOrNull() != null
-        }
+        fun isValidInt(input: String) = input.parseTranslatedNumber() != null
+        fun getInt(input: String): Int? = input.parseTranslatedNumber()?.toInt()
 
 
         fun clampInBounds(input: String): String {
-            val int = input.toIntOrNull() ?: return input
+            val int = getInt(input) ?: return input
 
             if (bounds.first > int) {
                 return bounds.first.tr()
@@ -97,7 +97,7 @@ class AskNumberPopup(
                 ).apply {
                     onClick {
                         if (isValidInt(nameField.text))
-                            nameField.text = clampInBounds((nameField.text.toInt() + value).tr())
+                            nameField.text = clampInBounds((getInt(nameField.text)!! + value).tr())
                     }
                 }
             ).pad(5f)
@@ -121,12 +121,12 @@ class AskNumberPopup(
         addCloseButton()
         addOKButton(
             validate = {
-                val errorFound = !isValidInt(nameField.text) || !validate(nameField.text.toInt())
+                val errorFound = getInt(nameField.text)?.let { validate(it) } != true
                 if (errorFound) add(errorLabel).colspan(2).center()
                 !errorFound
             }
         ) {
-            actionOnOk(nameField.text.toInt())
+            actionOnOk(getInt(nameField.text)!!)
         }
         equalizeLastTwoButtonWidths()
 
