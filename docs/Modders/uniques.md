@@ -171,6 +171,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Gain an extra spy"
 	Applicable to: Triggerable
 
+??? example  "Expand the border [cityFilter]"
+	Example: "Expand the border [in all cities]"
+
+	Applicable to: Triggerable
+
 ??? example  "Turn this tile into a [terrainName] tile"
 	Example: "Turn this tile into a [Forest] tile"
 
