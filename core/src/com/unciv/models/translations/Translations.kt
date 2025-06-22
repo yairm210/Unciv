@@ -549,11 +549,19 @@ fun Number.tr(): String {
     return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
 }
 
-fun String.parseTranslatedNumber(): Number? {
+/**
+ * Parses the string as an integer using the current number format.
+ *
+ * Empty strings result in 0.
+ *
+ * @return The integer value, or null if parsing fails.
+ */
+fun String.toIntOrNullTranslated(): Int? {
+    if (isEmpty()) return 0
     return try {
-        UncivGame.Current.settings.getCurrentNumberFormat().parse(this)
+        UncivGame.Current.settings.getCurrentNumberFormat().parse(this).toInt()
     } catch (_: ParseException) {
-        null
+        this.toIntOrNull()
     }
 }
 
@@ -562,10 +570,18 @@ fun Number.tr(language: String): String {
     return LocaleCode.getNumberFormatFromLanguage(language).format(this)
 }
 
-fun String.parseTranslatedNumber(language: String): Number? {
+/**
+ * Parses the string as an integer using the current number format.
+ *
+ * Empty strings result in 0.
+ *
+ * @return The integer value, or null if parsing fails.
+ */
+fun String.toIntOrNullTranslated(language: String): Int? {
+    if (isEmpty()) return 0
     return try {
-        LocaleCode.getNumberFormatFromLanguage(language).parse(this)
+        LocaleCode.getNumberFormatFromLanguage(language).parse(this).toInt()
     } catch (_: ParseException) {
-        null
+        this.toIntOrNull()
     }
 }

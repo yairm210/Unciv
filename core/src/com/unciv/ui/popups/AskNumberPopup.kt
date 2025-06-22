@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.models.translations.parseTranslatedNumber
+import com.unciv.models.translations.toIntOrNullTranslated
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.onChange
@@ -67,9 +67,8 @@ class AskNumberPopup(
         val nameField = UncivTextField(label, defaultValue)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char.isDigit() || char == '-' }
 
-        fun isValidInt(input: String) = input.parseTranslatedNumber() != null
-        fun getInt(input: String): Int? = input.parseTranslatedNumber()?.toInt()
-
+        fun isValidInt(input: String): Boolean = input.toIntOrNullTranslated() != null
+        fun getInt(input: String): Int? = input.toIntOrNullTranslated()
 
         fun clampInBounds(input: String): String {
             val int = getInt(input) ?: return input
