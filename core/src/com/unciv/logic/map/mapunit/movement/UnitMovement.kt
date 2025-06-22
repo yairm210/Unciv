@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
+import java.util.BitSet
 
 
 class UnitMovement(val unit: MapUnit) {
@@ -30,7 +31,7 @@ class UnitMovement(val unit: MapUnit) {
         position: Vector2,
         unitMovement: Float,
         considerZoneOfControl: Boolean = true,
-        tilesToIgnore: HashSet<Tile>? = null,
+        tilesToIgnoreBitset: BitSet? = null,
         passThroughCache: HashMap<Tile, Boolean> = HashMap(),
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
@@ -49,12 +50,13 @@ class UnitMovement(val unit: MapUnit) {
             && unit.getOtherEscortUnit()?.currentMovement == 0f) return distanceToTiles
 
         var tilesToCheck = listOf(unitTile)
-
+        
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<Tile>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
-                    if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
+                    // ignore this tile
+                    if (tilesToIgnoreBitset != null && tilesToIgnoreBitset.get(neighbor.zeroBasedIndex)) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !neighbor.isExplored(unit.civ) ->
                             distanceToTiles[tileToCheck]!!.totalMovement + 1f  // If we don't know then we just guess it to be 1.
@@ -131,7 +133,7 @@ class UnitMovement(val unit: MapUnit) {
         var distance = 1
         val unitMaxMovement = unit.getMaxMovement().toFloat()
         val newTilesToCheck = ArrayList<Tile>()
-        val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
+        val visitedTilesBitset = BitSet().apply { set(currentTile.zeroBasedIndex) }
         val civilization = unit.civ
 
         val passThroughCache = HashMap<Tile, Boolean>()
@@ -160,7 +162,7 @@ class UnitMovement(val unit: MapUnit) {
                         tileToCheck.position,
                         unitMaxMovement,
                         false,
-                        visitedTiles,
+                        visitedTilesBitset,
                         passThroughCache,
                         movementCostCache
                     )
@@ -203,11 +205,11 @@ class UnitMovement(val unit: MapUnit) {
             }
 
             // add newTilesToCheck to visitedTiles so we do not path over these tiles in a later iteration
-            visitedTiles.addAll(newTilesToCheck)
+            for (tile in newTilesToCheck) visitedTilesBitset.set(tile.zeroBasedIndex)
             // no need to check tiles that are surrounded by reachable tiles, only need to check the edgemost tiles.
             // Because anything we can reach from intermediate tiles, can be more easily reached by the edgemost tiles,
             // since we'll have to pass through an edgemost tile in order to reach the destination anyway
-            tilesToCheck = newTilesToCheck.filterNot { tile -> tile.neighbors.all { it in visitedTiles } }
+            tilesToCheck = newTilesToCheck.filterNot { tile -> tile.neighbors.all { visitedTilesBitset.get(it.zeroBasedIndex) } }
 
             distance++
         }
