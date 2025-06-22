@@ -774,13 +774,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief, Improvement
 
-??? example  "Quantity of strategic resources produced by the empire +[relativeAmount]%"
-	Example: "Quantity of strategic resources produced by the empire +[+20]%"
-
-	Applicable to: Global
-
-??? example  "Double quantity of [resource] produced"
-	Example: "Double quantity of [Iron] produced"
+??? example  "[relativeAmount]% [resourceFilter] resource production"
+	Example: "[+20]% [Strategic] resource production"
 
 	Applicable to: Global
 
