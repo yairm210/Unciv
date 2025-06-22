@@ -164,8 +164,11 @@ class TileImprovementFunctions(val tile: Tile) {
                 tile.improvementIsPillaged = false
                 tile.improvement = improvementName
                 improvementFieldHasChanged = true
-
-                removeCreatesOneImprovementMarker()
+                if (improvementName != null && (improvementObject!!.hasUnique(UniqueType.Irremovable) || tile.isMarkedForCreatesOneImprovement(improvementName))) {
+                    // I'm not sure what would happen if we try to replace an irremovable improvement
+                    // Let's not cancel our "Districts" in progress unless when finishing it (don't mess it up with accidental worker movements etc.)
+                    removeCreatesOneImprovementMarker()
+                }
             }
         }
 
