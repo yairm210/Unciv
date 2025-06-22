@@ -171,8 +171,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Gain an extra spy"
 	Applicable to: Triggerable
 
-??? example  "Expand the border [cityFilter]"
-	Example: "Expand the border [in all cities]"
+??? example  "Expand the border [cityFilter] by [positiveAmount]"
+	Example: "Expand the border [in all cities] by [3]"
 
 	Applicable to: Triggerable
 

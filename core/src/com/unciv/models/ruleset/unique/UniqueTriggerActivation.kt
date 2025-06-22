@@ -914,14 +914,18 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeExpandBorder -> {
+                val positiveAmount = unique.params[1].toInt()
+                if (positiveAmount <= 0) return null
                 val applicableCities = getApplicableCities(unique.params[0])
                 if (applicableCities.none()) return null
                 if (applicableCities.none { it.expansion.chooseNewTileToOwn() != null }) return null
 
                 return {
                     for (applicableCity in applicableCities) {
-                        val chosenTile = applicableCity.expansion.chooseNewTileToOwn() ?: continue
-                        applicableCity.expansion.takeOwnership(chosenTile)
+                        for (i in 1..positiveAmount) {
+                            val tile = applicableCity.expansion.chooseNewTileToOwn() ?: break
+                            applicableCity.expansion.takeOwnership(tile)
+                        }
                     }
                     true
                 }
