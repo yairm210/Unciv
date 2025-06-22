@@ -137,6 +137,10 @@ internal class BaseRulesetValidator(
     override fun addModOptionsErrors(lines: RulesetErrorList) {
         super.addModOptionsErrors(lines)
 
+        // `ruleset` can be a true base ruleset or a combined one when we're checking an extension mod together with a base.
+        // In the combined case, don't complain about ModRequires!
+        if (ruleset.name.isEmpty() && ruleset.mods.size > 1) return
+
         for (unique in ruleset.modOptions.getMatchingUniques(UniqueType.ModRequires)) {
             lines.add("Mod option '${unique.text}' is invalid for a base ruleset.", sourceObject = null)
         }
