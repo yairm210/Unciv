@@ -437,7 +437,7 @@ object Automation {
             (it.getTileImprovement() == null ||
                 (it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, stateForConditionals) == false 
                     && it.getTileImprovement()?.hasUnique(UniqueType.Irremovable, stateForConditionals) == false))
-                && it.improvementFunctions.canBuildImprovement(improvement, city.civ)
+                && it.improvementFunctions.canBuildImprovement(improvement, civ)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
             rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, localUniqueCache, it.stats.getTileStats(city, civ, localUniqueCache)), civ) + (
