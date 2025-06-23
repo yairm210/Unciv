@@ -56,7 +56,10 @@ class ModCheckTab(
     private val modResultExpanderTabs = ArrayList<ExpanderTab>()
 
     private var runningCheck: Job? = null
+
+    /** The search filter the check was started with*/
     private var checkedFilter = ""
+    /** The current search filter, kept up to date in the `TextField.onChange` event*/
     private var currentFilter = ""
 
     private val emptyRuleset = Ruleset()
@@ -138,7 +141,7 @@ class ModCheckTab(
             checkedFilter = searchModsTextField.text
             currentFilter = checkedFilter
             val modsToCheck = RulesetCache.values
-                .filter { it.name.contains(searchModsTextField.text, ignoreCase = true) }
+                .filter { it.name.filterApplies() }
                 .sortedWith(
                     compareByDescending<Ruleset> { it.name in openedExpanderTitles }
                         .thenBy { it.name }
@@ -177,13 +180,13 @@ class ModCheckTab(
     }
 
     private fun changeSearch() {
-        val searchFilter = searchModsTextField.text
-        if (searchFilter.contains(checkedFilter, ignoreCase = true)) {
+        currentFilter = searchModsTextField.text
+        if (currentFilter.contains(checkedFilter, ignoreCase = true)) {
             // The last check, whether finished or not, included all mods we want to filter
             synchronized(modCheckResultTable) {
                 modCheckResultTable.clear()
                 for (expanderTab in modResultExpanderTabs) {
-                    if (expanderTab.title.contains(searchFilter, ignoreCase = true))
+                    if (expanderTab.title.filterApplies())
                         modCheckResultTable.add(expanderTab).row()
                 }
             }
@@ -192,6 +195,8 @@ class ModCheckTab(
             runAction()
         }
     }
+
+    private fun String.filterApplies() = contains(currentFilter, ignoreCase = true)
 
     /** Use the declarative mod compatibility Uniques to omit meaningless check combos */
     private fun shouldCheckMod(mod: Ruleset, base: String): Boolean {
@@ -254,7 +259,8 @@ class ModCheckTab(
 
         synchronized(modCheckResultTable) {
             modResultExpanderTabs.add(expanderTab)
-            modCheckResultTable.add(expanderTab).row()
+            if (mod.name.filterApplies())
+                modCheckResultTable.add(expanderTab).row()
         }
     }
 
