@@ -5,14 +5,18 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueAutoUpdater
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -34,6 +38,7 @@ import kotlinx.coroutines.isActive
 
 
 private const val MOD_CHECK_WITHOUT_BASE = "-none-"
+private const val MOD_CHECK_DYNAMIC_BASE = "-declared requirements-"
 
 class ModCheckTab(
     val screen: BaseScreen
@@ -73,9 +78,9 @@ class ModCheckTab(
 
         val labeledBaseSelect = Table().apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)
-            val baseMods = listOf(MOD_CHECK_WITHOUT_BASE) + RulesetCache.getSortedBaseRulesets()
-            modCheckBaseSelect = TranslatedSelectBox(baseMods, MOD_CHECK_WITHOUT_BASE).apply {
-                selectedIndex = 0
+            val baseMods = listOf(MOD_CHECK_WITHOUT_BASE, MOD_CHECK_DYNAMIC_BASE) + RulesetCache.getSortedBaseRulesets()
+            modCheckBaseSelect = TranslatedSelectBox(baseMods, MOD_CHECK_DYNAMIC_BASE).apply {
+                selectedIndex = 1
                 onChange { runAction() }
             }
             add(modCheckBaseSelect)
@@ -107,7 +112,7 @@ class ModCheckTab(
         job.cancel()
     }
 
-    private fun runModChecker(base: String = MOD_CHECK_WITHOUT_BASE) {
+    private fun runModChecker(base: String = MOD_CHECK_DYNAMIC_BASE) {
         cancelJob()
 
         modCheckFirstRun = false
@@ -139,12 +144,20 @@ class ModCheckTab(
                         .thenBy { it.name }
                 )
             for (mod in modsToCheck) {
-                if (!shouldCheckMod(mod, base)) continue
+                val baseForThisMod = if (base != MOD_CHECK_DYNAMIC_BASE) base else getBaseForMod(mod)
+                if (baseForThisMod == null) {
+                    // Don't check, but since this is the default view, show greyed out, so people don't wonder where their mods are
+                    launchOnGLThread {
+                        addDisabledPlaceholder(mod)
+                    }
+                    continue
+                }
+                if (!shouldCheckMod(mod, baseForThisMod)) continue
                 if (!isActive) break
 
                 val modLinks =
-                    if (base == MOD_CHECK_WITHOUT_BASE) mod.getErrorList(tryFixUnknownUniques = true)
-                    else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, tryFixUnknownUniques = true)
+                    if (baseForThisMod == MOD_CHECK_WITHOUT_BASE) mod.getErrorList(tryFixUnknownUniques = true)
+                    else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), baseForThisMod, tryFixUnknownUniques = true)
                 if (!isActive) break
 
                 modLinks.sortByDescending { it.errorSeverityToReport }
@@ -152,7 +165,7 @@ class ModCheckTab(
                 if (!modLinks.isNotOK()) modLinks.add("No problems found.".tr(), RulesetErrorSeverity.OK, sourceObject = null)
 
                 launchOnGLThread {
-                    addNextModResult(mod, base, modLinks, mod.name in openedExpanderTitles)
+                    addModResult(mod, baseForThisMod, modLinks, mod.name in openedExpanderTitles)
                 }
             }
 
@@ -188,7 +201,17 @@ class ModCheckTab(
         return ModCompatibility.meetsBaseRequirements(mod, baseRuleset)  // yes this returns true for mods ignoring declarative compatibility
     }
 
-    private fun addNextModResult(mod: Ruleset, base: String, modLinks: RulesetErrorList, startsOutOpened: Boolean) {
+    private fun getBaseForMod(mod: Ruleset): String? {
+        if (mod.modOptions.isBaseRuleset || ModCompatibility.isAudioVisualMod(mod) || ModCompatibility.isConstantsOnly(mod))
+            return MOD_CHECK_WITHOUT_BASE
+        if (!mod.modOptions.hasUnique(UniqueType.ModRequires)) return null
+        return RulesetCache.values
+            .filter { it.modOptions.isBaseRuleset }
+            .firstOrNull { ModCompatibility.meetsBaseRequirements(mod, it) }
+            ?.name
+    }
+
+    private fun addModResult(mod: Ruleset, base: String, modLinks: RulesetErrorList, startsOutOpened: Boolean) {
         // When the options popup is already closed before this postRunnable is run,
         // Don't add the labels, as otherwise the game will crash
         if (stage == null) return
@@ -232,6 +255,20 @@ class ModCheckTab(
         synchronized(modCheckResultTable) {
             modResultExpanderTabs.add(expanderTab)
             modCheckResultTable.add(expanderTab).row()
+        }
+    }
+
+    private fun addDisabledPlaceholder(mod: Ruleset) {
+        if (stage == null) return
+        val table = Table(BaseScreen.skin).apply {
+            defaults().pad(8f)
+            background = BaseScreen.skinStrings.getUiBackground("General/DisabledBox", tintColor = Color.DARK_GRAY)
+            add(ImageGetter.getImage("OtherIcons/Question").apply { setSize(33f) }).padRight(10f).growY()
+            add(mod.name.toLabel(Color.LIGHT_GRAY, Constants.headingFontSize, alignment = Align.left)).left().grow()
+            addTooltip("Requirements could not be determined.\nChoose a base to check this Mod.", 16f, targetAlign = Align.top)
+        }
+        synchronized(modCheckResultTable) {
+            modCheckResultTable.add(table).growX().row()
         }
     }
 
