@@ -488,7 +488,8 @@ class CityStats(val city: City) {
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true,
                updateCivStats:Boolean = true,
-               localUniqueCache:LocalUniqueCache = LocalUniqueCache()) {
+               localUniqueCache:LocalUniqueCache = LocalUniqueCache(),
+               calculateGrowthModifiers:Boolean = true) {
 
         if (updateTileStats) updateTileStats(localUniqueCache)
 
@@ -499,7 +500,7 @@ class CityStats(val city: City) {
         updateCityHappiness(statsFromBuildings)
         updateStatPercentBonusList(currentConstruction)
 
-        updateFinalStatList(currentConstruction) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
+        updateFinalStatList(currentConstruction, calculateGrowthModifiers) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         val newCurrentCityStats = Stats()
         for (stat in finalStatList.values) newCurrentCityStats.add(stat)
@@ -508,7 +509,7 @@ class CityStats(val city: City) {
         if (updateCivStats) city.civ.updateStatsForNextTurn()
     }
 
-    private fun updateFinalStatList(currentConstruction: IConstruction) {
+    private fun updateFinalStatList(currentConstruction: IConstruction, calculateGrowthModifiers: Boolean = true) {
         val newFinalStatList = StatMap() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         for ((key, value) in baseStatTree.children)
@@ -572,7 +573,7 @@ class CityStats(val city: City) {
         var totalFood = newFinalStatList.values.map { it.food }.sum()
 
         // Apply growth modifier only when positive food
-        if (totalFood > 0) {
+        if (totalFood > 0 && calculateGrowthModifiers) {
             // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
             // All bonuses except We Love The King do apply even when unhappy
             val growthBonuses = getGrowthBonus(totalFood)
