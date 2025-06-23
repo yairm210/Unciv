@@ -7,6 +7,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
@@ -24,8 +26,10 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.ruleset.validation.RulesetValidator.Companion.create
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.AtlasPreview
@@ -56,7 +60,7 @@ import com.unciv.ui.images.PortraitPromotion
  */
 open class RulesetValidator protected constructor(
     protected val ruleset: Ruleset,
-    protected val tryFixUnknownUniques: Boolean
+    private val tryFixUnknownUniques: Boolean
 ) {
     /** `true` for a [BaseRulesetValidator] instance, `false` for a [RulesetValidator] instance. */
     private val reportRulesetSpecificErrors = ruleset.modOptions.isBaseRuleset
@@ -125,40 +129,82 @@ open class RulesetValidator protected constructor(
 
     //region RulesetObject-specific handlers
 
-    protected open fun addBeliefErrors(lines: RulesetErrorList) {}
-
-    protected open fun addBuildingErrors(lines: RulesetErrorList) {
-        for (building in ruleset.buildings.values) {
-            addBuildingErrorRulesetInvariant(building, lines)
-            uniqueValidator.checkUniques(building, lines, false, tryFixUnknownUniques)
+    protected open fun addBeliefErrors(lines: RulesetErrorList) {
+        for (belief in ruleset.beliefs.values) {
+            if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
+                lines.add("${belief.name} type is ${belief.type}, which is not allowed!", sourceObject = belief)
+            uniqueValidator.checkUniques(belief, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
-    protected fun addBuildingErrorRulesetInvariant(building: Building, lines: RulesetErrorList) {
-        if (building.requiredTechs().none() && building.cost == -1 && !building.hasUnique(
-                UniqueType.Unbuildable
-            )
-        )
+    protected open fun addBuildingErrors(lines: RulesetErrorList) {
+        for (building in ruleset.buildings.values) {
+            checkBuilding(building, lines)
+            uniqueValidator.checkUniques(building, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
+
+    protected open fun checkBuilding(building: Building, lines: RulesetErrorList) {
+        if (building.requiredTechs().none() && building.cost == -1 && !building.hasUnique(UniqueType.Unbuildable))
             lines.add(
                 "${building.name} is buildable and therefore should either have an explicit cost or reference an existing tech!",
                 RulesetErrorSeverity.Warning, building
             )
 
-        for (gpp in building.greatPersonPoints)
-            if (gpp.key !in ruleset.units)
-                lines.add(
-                    "Building ${building.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
-                    RulesetErrorSeverity.Warning, building
-                )
-
         if (building.replaces != null && building.uniqueTo == null)
             lines.add("${building.name} should replace ${building.replaces} but does not have uniqueTo assigned!")
     }
 
-    protected open fun addCityStateTypeErrors(lines: RulesetErrorList) {}
-    protected open fun addDifficultyErrors(lines: RulesetErrorList) {}
-    protected open fun addEraErrors(lines: RulesetErrorList) {}
-    protected open fun addEventErrors(lines: RulesetErrorList) {}
+    protected open fun addCityStateTypeErrors(lines: RulesetErrorList) {
+        for (cityStateType in ruleset.cityStateTypes.values) {
+            for (unique in cityStateType.allyBonusUniqueMap.getAllUniques() + cityStateType.friendBonusUniqueMap.getAllUniques()) {
+                val errors = uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, reportRulesetSpecificErrors)
+                lines.addAll(errors)
+            }
+        }
+    }
+
+    protected open fun addDifficultyErrors(lines: RulesetErrorList) {
+        for (difficulty in ruleset.difficulties.values) {
+            if (difficulty.aiBuildingCostModifier < 0 || difficulty.aiBuildingMaintenanceModifier < 0 || difficulty.aiCityGrowthModifier < 0 ||
+                difficulty.aiUnhappinessModifier < 0 || difficulty.aiUnitCostModifier < 0 || difficulty.aiUnitMaintenanceModifier < 0 ||
+                difficulty.aiUnitSupplyModifier < 0 || difficulty.aiWonderCostModifier < 0 ||
+                difficulty.buildingCostModifier < 0 || difficulty.policyCostModifier < 0 || difficulty.researchCostModifier < 0 ||
+                difficulty.unhappinessModifier < 0 || difficulty.unitCostModifier < 0)
+                lines.add("Difficulty ${difficulty.name} contains one or more negative modifier(s)!", sourceObject = null)
+            if (difficulty.turnBarbariansCanEnterPlayerTiles < 0)
+                lines.add("Difficulty ${difficulty.name} has a negative turnBarbariansCanEnterPlayerTiles!",
+                    RulesetErrorSeverity.Warning, sourceObject = null)
+        }
+    }
+
+    protected open fun addEraErrors(lines: RulesetErrorList) {
+        for (era in ruleset.eras.values) {
+            if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || 
+                era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
+                lines.add("Unexpected negative number found while parsing era ${era.name}", sourceObject = era)
+            if (era.settlerPopulation <= 0)
+                lines.add("Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}", sourceObject = era)
+
+            if (era.allyBonus.isNotEmpty() || era.friendBonus.isNotEmpty())
+                lines.add(
+                    "Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
+                    RulesetErrorSeverity.WarningOptionsOnly, era
+                )
+
+            uniqueValidator.checkUniques(era, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
+
+    protected open fun addEventErrors(lines: RulesetErrorList) {
+        // An Event is not a IHasUniques, so not suitable as sourceObject
+        for (event in ruleset.events.values) {
+            for (choice in event.choices) {
+                uniqueValidator.checkUniques(choice, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            }
+            uniqueValidator.checkUniques(event, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
 
     protected open fun addGlobalUniqueErrors(lines: RulesetErrorList) {
         uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
@@ -183,12 +229,63 @@ open class RulesetValidator protected constructor(
         }
     }
 
-    protected open fun addImprovementErrors(lines: RulesetErrorList) {}
+    protected open fun addImprovementErrors(lines: RulesetErrorList) {
+        for (improvement in ruleset.tileImprovements.values) {
+            if (improvement.replaces != null && improvement.uniqueTo == null)
+                lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
+            if (improvement.terrainsCanBeBuiltOn.isEmpty()
+                && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
+                && !improvement.hasUnique(UniqueType.Unbuildable)
+                && !improvement.name.startsWith(Constants.remove)
+                && improvement.name !in RoadStatus.entries.map { it.removeAction }
+                && improvement.name != Constants.cancelImprovementOrder
+            ) {
+                lines.add(
+                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources. As such it isn't buildable! Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\", or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
+                    RulesetErrorSeverity.Warning, improvement
+                )
+            }
+
+            for (unique in improvement.uniqueObjects
+                .filter { it.type == UniqueType.PillageYieldRandom || it.type == UniqueType.PillageYieldFixed }) {
+                if (!Stats.isStats(unique.params[0])) continue
+                val params = Stats.parse(unique.params[0])
+                if (params.values.any { it < 0 }) lines.add(
+                    "${improvement.name} cannot have a negative value for a pillage yield!",
+                    RulesetErrorSeverity.Error, improvement
+                )
+            }
+
+            val hasPillageUnique = improvement.hasUnique(UniqueType.PillageYieldRandom, StateForConditionals.IgnoreConditionals)
+                || improvement.hasUnique(UniqueType.PillageYieldFixed, StateForConditionals.IgnoreConditionals)
+            if (hasPillageUnique && improvement.hasUnique(UniqueType.Unpillagable, StateForConditionals.IgnoreConditionals)) {
+                lines.add(
+                    "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
+                    RulesetErrorSeverity.Warning, improvement
+                )
+            }
+
+            uniqueValidator.checkUniques(improvement, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
 
     protected open fun addModOptionsErrors(lines: RulesetErrorList) {
         // Basic Unique validation (type, target, parameters) should always run.
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
         uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
+
+        //TODO: More thorough checks. Here I picked just those where bad values might endanger stability.
+        val constants = ruleset.modOptions.constants
+        if (constants.cityExpandRange !in 1..100)
+            lines.add("Invalid ModConstant 'cityExpandRange'.", sourceObject = null)
+        if (constants.cityWorkRange !in 1..100)
+            lines.add("Invalid ModConstant 'cityWorkRange'.", sourceObject = null)
+        if (constants.minimalCityDistance < 1)
+            lines.add("Invalid ModConstant 'minimalCityDistance'.", sourceObject = null)
+        if (constants.minimalCityDistanceOnDifferentContinents < 1)
+            lines.add("Invalid ModConstant 'minimalCityDistanceOnDifferentContinents'.", sourceObject = null)
+        if (constants.baseCityBombardRange < 1)
+            lines.add("Invalid ModConstant 'baseCityBombardRange'.", sourceObject = null)
 
         if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
@@ -220,12 +317,12 @@ open class RulesetValidator protected constructor(
 
     protected open fun addNationErrors(lines: RulesetErrorList) {
         for (nation in ruleset.nations.values) {
-            addNationErrorRulesetInvariant(nation, lines)
-            uniqueValidator.checkUniques(nation, lines, false, tryFixUnknownUniques)
+            checkNation(nation, lines)
+            uniqueValidator.checkUniques(nation, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
-    protected fun addNationErrorRulesetInvariant(nation: Nation, lines: RulesetErrorList) {
+    protected open fun checkNation(nation: Nation, lines: RulesetErrorList) {
         if (nation.cities.isEmpty() && !nation.isSpectator && !nation.isBarbarian) {
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
@@ -233,19 +330,29 @@ open class RulesetValidator protected constructor(
         checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
     }
 
-    protected open fun addPersonalityErrors(lines: RulesetErrorList) {}
-    protected open fun addPolicyErrors(lines: RulesetErrorList) {}
-
-    protected open fun addPromotionErrors(lines: RulesetErrorList) {
-        for (promotion in ruleset.unitPromotions.values) {
-            uniqueValidator.checkUniques(promotion, lines, false, tryFixUnknownUniques)
-            checkContrasts(promotion.innerColorObject ?: PortraitPromotion.defaultInnerColor,
-                promotion.outerColorObject ?: PortraitPromotion.defaultOuterColor, promotion, lines)
-            addPromotionErrorRulesetInvariant(promotion, lines)
+    protected open fun addPersonalityErrors(lines: RulesetErrorList) {
+        for (personality in ruleset.personalities.values) {
+            if (personality.uniques.isNotEmpty())
+                lines.add("Personality Uniques are not supported", RulesetErrorSeverity.Warning, personality)
         }
     }
 
-    protected fun addPromotionErrorRulesetInvariant(promotion: Promotion, lines: RulesetErrorList) {
+    protected open fun addPolicyErrors(lines: RulesetErrorList) {
+        for (policy in ruleset.policies.values) {
+            uniqueValidator.checkUniques(policy, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
+
+    protected open fun addPromotionErrors(lines: RulesetErrorList) {
+        for (promotion in ruleset.unitPromotions.values) {
+            uniqueValidator.checkUniques(promotion, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            checkContrasts(promotion.innerColorObject ?: PortraitPromotion.defaultInnerColor,
+                promotion.outerColorObject ?: PortraitPromotion.defaultOuterColor, promotion, lines)
+            checkPromotion(promotion, lines)
+        }
+    }
+
+    protected open fun checkPromotion(promotion: Promotion, lines: RulesetErrorList) {
         if (promotion.row < -1) lines.add("Promotion ${promotion.name} has invalid row value: ${promotion.row}", sourceObject = promotion)
         if (promotion.column < 0) lines.add("Promotion ${promotion.name} has invalid column value: ${promotion.column}", sourceObject = promotion)
         if (promotion.row == -1) return
@@ -256,18 +363,49 @@ open class RulesetValidator protected constructor(
 
     protected open fun addResourceErrors(lines: RulesetErrorList) {
         for (resource in ruleset.tileResources.values) {
-            uniqueValidator.checkUniques(resource, lines, false, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(resource, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
-    protected open fun addRuinsErrors(lines: RulesetErrorList) {}
+    protected open fun addRuinsErrors(lines: RulesetErrorList) {
+        for (reward in ruleset.ruinRewards.values) {
+            @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
+            if (reward.weight < 0) lines.add("${reward.name} has a negative weight, which is not allowed!", sourceObject = reward)
+            uniqueValidator.checkUniques(reward, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
+
     protected open fun addSpecialistErrors(lines: RulesetErrorList) {}
-    protected open fun addSpeedErrors(lines: RulesetErrorList) {}
+
+    protected open fun addSpeedErrors(lines: RulesetErrorList) {
+        for (speed in ruleset.speeds.values) {
+            if (speed.modifier < 0f || speed.barbarianModifier < 0f || speed.cultureCostModifier < 0f || speed.faithCostModifier < 0f ||
+                speed.goldCostModifier < 0f || speed.goldGiftModifier < 0f || speed.goldenAgeLengthModifier < 0f ||
+                speed.improvementBuildLengthModifier < 0f || speed.productionCostModifier < 0f || speed.scienceCostModifier < 0f)
+                lines.add("One or more negative speed modifier(s) for game speed ${speed.name}", sourceObject = speed)
+            if (speed.dealDuration < 1 || speed.peaceDealDuration < 1)
+                lines.add("Deal durations must be positive", sourceObject = speed)
+            if (speed.religiousPressureAdjacentCity < 0)
+                lines.add("'religiousPressureAdjacentCity' must not be negative", sourceObject = speed)
+            if (speed.yearsPerTurn.isEmpty())
+                lines.add("Empty turn increment list for game speed ${speed.name}", sourceObject = speed)
+            var lastTurn = 0
+            for ((yearInterval, untilTurn) in speed.yearsPerTurn) {
+                if (yearInterval <= 0f)
+                    lines.add("Negative year interval $yearInterval in turn increment list", sourceObject = speed)
+                if (untilTurn <= lastTurn)
+                    lines.add("The 'untilTurn' field in the turn increment list must be monotonously increasing, but $untilTurn is <= $lastTurn", sourceObject = speed)
+                lastTurn = untilTurn
+            }
+            if (speed.uniques.isNotEmpty())
+                lines.add("Speed Uniques are not supported", RulesetErrorSeverity.Warning, speed)
+        }
+    }
 
     protected open fun addTechErrors(lines: RulesetErrorList) {
         for (tech in ruleset.technologies.values) {
             if (tech.row < 1) lines.add("Tech ${tech.name} has a row value below 1: ${tech.row}", sourceObject = tech)
-            uniqueValidator.checkUniques(tech, lines, false, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(tech, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
@@ -295,27 +433,24 @@ open class RulesetValidator protected constructor(
                     RulesetErrorSeverity.Warning, sourceObject = null
                 )
         }
-
-        for (tech in ruleset.technologies.values) {
-            for (otherTech in ruleset.technologies.values) {
-                if (tech != otherTech && otherTech.column?.columnNumber == tech.column?.columnNumber && otherTech.row == tech.row)
-                    lines.add("${tech.name} is in the same row and column as ${otherTech.name}!", sourceObject = tech)
-            }
-        }
     }
 
-    protected open fun addTerrainErrors(lines: RulesetErrorList) {}
+    protected open fun addTerrainErrors(lines: RulesetErrorList) {
+        for (terrain in ruleset.terrains.values) {
+            uniqueValidator.checkUniques(terrain, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
 
     protected open fun addUnitErrors(lines: RulesetErrorList) {
         for (unit in ruleset.units.values) {
-            checkUnitRulesetInvariant(unit, lines)
-            uniqueValidator.checkUniques(unit, lines, false, tryFixUnknownUniques)
+            checkUnit(unit, lines)
+            uniqueValidator.checkUniques(unit, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
-    protected fun checkUnitRulesetInvariant(unit: BaseUnit, lines: RulesetErrorList) {
+    protected open fun checkUnit(unit: BaseUnit, lines: RulesetErrorList) {
         for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
-            if (upgradesTo == unit.name || (upgradesTo == unit.replaces))
+            if (upgradesTo == unit.name || upgradesTo == unit.replaces)
                 lines.add("${unit.name} upgrades to itself!", sourceObject = unit)
         }
 
@@ -326,8 +461,34 @@ open class RulesetValidator protected constructor(
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
     }
 
-    protected open fun addUnitTypeErrors(lines: RulesetErrorList) {}
-    protected open fun addVictoryTypeErrors(lines: RulesetErrorList) {}
+    protected open fun addUnitTypeErrors(lines: RulesetErrorList) {
+        val unitMovementTypes = UnitMovementType.entries.map { it.name }.toSet()
+        for (unitType in ruleset.unitTypes.values) {
+            if (unitType.movementType !in unitMovementTypes)
+                lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
+            uniqueValidator.checkUniques(unitType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
+
+    protected open fun addVictoryTypeErrors(lines: RulesetErrorList) {
+        // Victory and Milestone aren't IHasUniques and are unsuitable as sourceObject
+        for (victoryType in ruleset.victories.values) {
+            for (milestone in victoryType.milestoneObjects) {
+                if (milestone.type == null)
+                    lines.add(
+                        "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that is of an unknown type!",
+                        RulesetErrorSeverity.Error, sourceObject = null
+                    )
+            }
+
+            for (otherVictory in ruleset.victories.values)
+                if (otherVictory.name > victoryType.name && otherVictory.milestones == victoryType.milestones)
+                    lines.add(
+                        "Victory types ${victoryType.name} and ${otherVictory.name} have the same requirements!",
+                        RulesetErrorSeverity.Warning, sourceObject = null
+                    )
+        }
+    }
 
     //endregion
     //region General helpers
@@ -548,10 +709,7 @@ open class RulesetValidator protected constructor(
             .toSet()
 
     /* This is public because `FormattedLine` does its own checking and needs the textureNamesCache test */
-    fun uncachedImageExists(name: String): Boolean {
-        if (ruleset.folderLocation == null) return false // Can't check in this case
-        return textureNamesCache.imageExists(name)
-    }
+    fun uncachedImageExists(name: String) = textureNamesCache.imageExists(name)
 
     //endregion
 
