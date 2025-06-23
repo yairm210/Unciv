@@ -110,9 +110,13 @@ class ModCheckTab(
 
     private fun cancelJob() {
         val job = runningCheck ?: return
+        endJob()
+        job.cancel()
+    }
+
+    private fun endJob() {
         runningCheck = null
         loadingImage.hide()
-        job.cancel()
     }
 
     private fun runModChecker(base: String = MOD_CHECK_DYNAMIC_BASE) {
@@ -174,7 +178,7 @@ class ModCheckTab(
 
             // done with all mods!
             launchOnGLThread {
-                loadingImage.hide()
+                endJob()
             }
         }
     }
