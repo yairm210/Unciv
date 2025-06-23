@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueAutoUpdater
@@ -52,6 +53,8 @@ class ModCheckTab(
     private var runningCheck: Job? = null
     private var checkedFilter = ""
     private var currentFilter = ""
+
+    private val emptyRuleset = Ruleset()
 
     init {
         defaults().pad(10f).align(Align.top)
@@ -136,7 +139,7 @@ class ModCheckTab(
                         .thenBy { it.name }
                 )
             for (mod in modsToCheck) {
-                if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
+                if (!shouldCheckMod(mod, base)) continue
                 if (!isActive) break
 
                 val modLinks =
@@ -175,6 +178,14 @@ class ModCheckTab(
             // the filter is wider than the last check - rerun
             runAction()
         }
+    }
+
+    /** Use the declarative mod compatibility Uniques to omit meaningless check combos */
+    private fun shouldCheckMod(mod: Ruleset, base: String): Boolean {
+        if (mod.modOptions.isBaseRuleset) return base == MOD_CHECK_WITHOUT_BASE
+        if (ModCompatibility.isAudioVisualMod(mod)) return true
+        val baseRuleset = RulesetCache[base] ?: emptyRuleset  // MOD_CHECK_WITHOUT_BASE compares compatibility against an empty Ruleset
+        return ModCompatibility.meetsBaseRequirements(mod, baseRuleset)  // yes this returns true for mods ignoring declarative compatibility
     }
 
     private fun addNextModResult(mod: Ruleset, base: String, modLinks: RulesetErrorList, startsOutOpened: Boolean) {
