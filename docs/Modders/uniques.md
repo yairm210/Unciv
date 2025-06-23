@@ -153,6 +153,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Gain control over [positiveAmount] tiles [cityFilter]"
+	Example: "Gain control over [3] tiles [in all cities]"
+
+	Applicable to: Triggerable
+
 ??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
