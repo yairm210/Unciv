@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueAutoUpdater
 import com.unciv.models.translations.tr
@@ -123,56 +124,11 @@ class ModCheckTab(
                     if (base == MOD_CHECK_WITHOUT_BASE) mod.getErrorList(tryFixUnknownUniques = true)
                     else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, tryFixUnknownUniques = true)
                 modLinks.sortByDescending { it.errorSeverityToReport }
-                val noProblem = !modLinks.isNotOK()
                 if (modLinks.isNotEmpty()) modLinks.add("", RulesetErrorSeverity.OK, sourceObject = null)
-                if (noProblem) modLinks.add("No problems found.".tr(), RulesetErrorSeverity.OK, sourceObject = null)
+                if (!modLinks.isNotOK()) modLinks.add("No problems found.".tr(), RulesetErrorSeverity.OK, sourceObject = null)
 
                 launchOnGLThread {
-                    // When the options popup is already closed before this postRunnable is run,
-                    // Don't add the labels, as otherwise the game will crash
-                    if (stage == null) return@launchOnGLThread
-                    // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
-                    // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
-                    // Instead, some manual work needs to be put in.
-
-                    val severity = modLinks.getFinalSeverity()
-                    val icon = ImageGetter.getImage(severity.iconName)
-                        .apply { color = ImageGetter.CHARCOAL }
-                        .surroundWithCircle(30f, color = severity.color)
-
-                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = mod.name in openedExpanderTitles) {
-                        it.defaults().align(Align.left)
-                        it.defaults().pad(10f)
-
-                        val openUniqueBuilderButton = "Open unique builder".toTextButton()
-                        openUniqueBuilderButton.onClick { openUniqueBuilder(mod, base) }
-                        it.add(openUniqueBuilderButton).row()
-
-                        if (!noProblem && mod.folderLocation != null) {
-                            val replaceableUniques = UniqueAutoUpdater.getDeprecatedReplaceableUniques(mod)
-                            if (replaceableUniques.isNotEmpty())
-                                it.add("Autoupdate mod uniques".toTextButton()
-                                    .onClick { autoUpdateUniques(screen, mod, replaceableUniques) }).row()
-                        }
-                        for (line in modLinks) {
-                            val label = Label(line.text, BaseScreen.skin)
-                                .apply { color = line.errorSeverityToReport.color }
-                            label.wrap = true
-                            it.add(label).width(stage.width / 2).row()
-                        }
-                        if (!noProblem)
-                            it.add("Copy to clipboard".toTextButton().onClick {
-                                Gdx.app.clipboard.contents = modLinks
-                                    .joinToString("\n") { line -> line.text }
-                            }).row()
-                    }
-                    expanderTab.header.left()
-                    modResultExpanderTabs.add(expanderTab)
-
-                    val loadingLabel = modCheckResultTable.children.last()
-                    modCheckResultTable.removeActor(loadingLabel)
-                    modCheckResultTable.add(expanderTab).row()
-                    modCheckResultTable.add(loadingLabel).row()
+                    addNextModResult(mod, base, modLinks, mod.name in openedExpanderTitles)
                 }
             }
 
@@ -182,6 +138,54 @@ class ModCheckTab(
                 modCheckBaseSelect!!.isDisabled = false
             }
         }
+    }
+
+    private fun addNextModResult(mod: Ruleset, base: String, modLinks: RulesetErrorList, startsOutOpened: Boolean) {
+        // When the options popup is already closed before this postRunnable is run,
+        // Don't add the labels, as otherwise the game will crash
+        if (stage == null) return
+        // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
+        // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
+        // Instead, some manual work needs to be put in.
+
+        val severity = modLinks.getFinalSeverity()
+        val icon = ImageGetter.getImage(severity.iconName)
+            .apply { color = ImageGetter.CHARCOAL }
+            .surroundWithCircle(30f, color = severity.color)
+
+        val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = startsOutOpened) {
+            it.defaults().align(Align.left)
+            it.defaults().pad(10f)
+
+            val openUniqueBuilderButton = "Open unique builder".toTextButton()
+            openUniqueBuilderButton.onClick { openUniqueBuilder(mod, base) }
+            it.add(openUniqueBuilderButton).row()
+
+            if (severity != RulesetErrorSeverity.OK && mod.folderLocation != null) {
+                val replaceableUniques = UniqueAutoUpdater.getDeprecatedReplaceableUniques(mod)
+                if (replaceableUniques.isNotEmpty())
+                    it.add("Autoupdate mod uniques".toTextButton()
+                        .onClick { autoUpdateUniques(screen, mod, replaceableUniques) }).row()
+            }
+            for (line in modLinks) {
+                val label = Label(line.text, BaseScreen.skin)
+                    .apply { color = line.errorSeverityToReport.color }
+                label.wrap = true
+                it.add(label).width(stage.width / 2).row()
+            }
+            if (severity != RulesetErrorSeverity.OK)
+                it.add("Copy to clipboard".toTextButton().onClick {
+                    Gdx.app.clipboard.contents = modLinks
+                        .joinToString("\n") { line -> line.text }
+                }).row()
+        }
+        expanderTab.header.left()
+        modResultExpanderTabs.add(expanderTab)
+
+        val loadingLabel = modCheckResultTable.children.last()
+        modCheckResultTable.removeActor(loadingLabel)
+        modCheckResultTable.add(expanderTab).row()
+        modCheckResultTable.add(loadingLabel).row()
     }
 
     private fun openUniqueBuilder(mod: Ruleset, base: String) {
