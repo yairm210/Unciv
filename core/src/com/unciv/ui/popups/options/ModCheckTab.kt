@@ -26,6 +26,8 @@ import com.unciv.ui.screens.UniqueBuilderScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 
 
 private const val MOD_CHECK_WITHOUT_BASE = "-none-"
@@ -44,6 +46,8 @@ class ModCheckTab(
     /** Used to repopulate modCheckResultTable when searching */
     private val modResultExpanderTabs = ArrayList<ExpanderTab>()
 
+    private var runningCheck: Job? = null
+
     init {
         defaults().pad(10f).align(Align.top)
 
@@ -53,10 +57,12 @@ class ModCheckTab(
 
         searchModsTextField = UncivTextField("Search mods")
         searchModsTextField.onChange {
-            modCheckResultTable.clear()
-            for (expanderTab in modResultExpanderTabs) {
-                if (expanderTab.title.contains(searchModsTextField.text, ignoreCase = true))
-                    modCheckResultTable.add(expanderTab).row()
+            synchronized(modCheckResultTable) {
+                modCheckResultTable.clear()
+                for (expanderTab in modResultExpanderTabs) {
+                    if (expanderTab.title.contains(searchModsTextField.text, ignoreCase = true))
+                        modCheckResultTable.add(expanderTab).row()
+                }
             }
         }
 
@@ -88,7 +94,18 @@ class ModCheckTab(
         runAction()
     }
 
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        cancelJob()
+    }
+
+    private fun cancelJob() {
+        val job = runningCheck ?: return
+        runningCheck = null
+        job.cancel()
+    }
+
     private fun runModChecker(base: String = MOD_CHECK_WITHOUT_BASE) {
+        cancelJob()
 
         modCheckFirstRun = false
         if (modCheckBaseSelect == null) return
@@ -108,9 +125,8 @@ class ModCheckTab(
         }
 
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
-        modCheckBaseSelect!!.isDisabled = true
 
-        Concurrency.run("ModChecker") {
+        runningCheck = Concurrency.run("ModChecker") {
             val modsToCheck = RulesetCache.values
                 .filter { it.name.contains(searchModsTextField.text, ignoreCase = true) }
                 .sortedWith(
@@ -119,10 +135,13 @@ class ModCheckTab(
                 )
             for (mod in modsToCheck) {
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
+                if (!isActive) break
 
                 val modLinks =
                     if (base == MOD_CHECK_WITHOUT_BASE) mod.getErrorList(tryFixUnknownUniques = true)
                     else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, tryFixUnknownUniques = true)
+                if (!isActive) break
+
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 if (modLinks.isNotEmpty()) modLinks.add("", RulesetErrorSeverity.OK, sourceObject = null)
                 if (!modLinks.isNotOK()) modLinks.add("No problems found.".tr(), RulesetErrorSeverity.OK, sourceObject = null)
@@ -135,7 +154,6 @@ class ModCheckTab(
             // done with all mods!
             launchOnGLThread {
                 modCheckResultTable.removeActor(modCheckResultTable.children.last())
-                modCheckBaseSelect!!.isDisabled = false
             }
         }
     }
@@ -180,12 +198,14 @@ class ModCheckTab(
                 }).row()
         }
         expanderTab.header.left()
-        modResultExpanderTabs.add(expanderTab)
 
         val loadingLabel = modCheckResultTable.children.last()
-        modCheckResultTable.removeActor(loadingLabel)
-        modCheckResultTable.add(expanderTab).row()
-        modCheckResultTable.add(loadingLabel).row()
+        synchronized(modCheckResultTable) {
+            modResultExpanderTabs.add(expanderTab)
+            modCheckResultTable.removeActor(loadingLabel)
+            modCheckResultTable.add(expanderTab).row()
+            modCheckResultTable.add(loadingLabel).row()
+        }
     }
 
     private fun openUniqueBuilder(mod: Ruleset, base: String) {
