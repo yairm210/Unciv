@@ -1,3 +1,17 @@
+## 4.16.19
+
+Optimized getMovementToTilesAtPosition tilesToIgnore to a bitset instead of a hashset, saving 7.4% of next turn calculation time!
+
+chore: Updated kotlin compiler JVM target 
+
+By RobLoach:
+- Fix number popup with commas in the number 
+- Add `Gain control over [positiveAmount] tiles [cityFilter]` Triggerable 
+
+AI: update getStatDifferenceFromBuilding - By EmperorPinguin
+
+Improve ruleset validator - By SomeTroglodyte
+
 ## 4.16.18
 
 Sprites do not change to base color when moving
