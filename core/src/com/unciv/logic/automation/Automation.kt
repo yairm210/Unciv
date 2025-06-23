@@ -433,10 +433,10 @@ object Automation {
         val localUniqueCache = LocalUniqueCache()
         val civ = city.civ
         return city.getTiles().filter {
+            val stateForConditionals = StateForConditionals(civ, city, tile = it)
             (it.getTileImprovement() == null ||
-                (it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace,
-                    StateForConditionals(civ, city, tile = it)) == false && it.getTileImprovement()?.hasUnique(UniqueType.Irremovable,
-                    StateForConditionals(civ, city, tile = it)) == false))
+                (it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, stateForConditionals) == false 
+                    && it.getTileImprovement()?.hasUnique(UniqueType.Irremovable, stateForConditionals) == false))
                 && it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
