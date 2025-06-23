@@ -1,6 +1,7 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -17,6 +18,7 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivTextField
@@ -43,6 +45,7 @@ class ModCheckTab(
     private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val searchModsTextField: UncivTextField
     private val modCheckResultTable = Table()
+    private val loadingImage = LoadingImage(48f, LoadingImage.Style(loadingColor = Color.SCARLET))
     /** Used to repopulate modCheckResultTable when searching */
     private val modResultExpanderTabs = ArrayList<ExpanderTab>()
 
@@ -55,13 +58,15 @@ class ModCheckTab(
 
         fixedContent.defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick(::runAction)
-        fixedContent.add(reloadModsButton).row()
+        fixedContent.add().width(48f) // placeholder to balance out loadingImage
+        fixedContent.add(reloadModsButton).center().expandX()
+        fixedContent.add(loadingImage).row()
 
         searchModsTextField = UncivTextField("Search mods")
         searchModsTextField.onChange { changeSearch() }
 
         if (RulesetCache.size > 10)
-            fixedContent.add(searchModsTextField).fillX().row()
+            fixedContent.add(searchModsTextField).colspan(3).fillX().row()
 
         val labeledBaseSelect = Table().apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)
@@ -72,7 +77,7 @@ class ModCheckTab(
             }
             add(modCheckBaseSelect)
         }
-        fixedContent.add(labeledBaseSelect).row()
+        fixedContent.add(labeledBaseSelect).colspan(3).row()
 
         add(modCheckResultTable)
     }
@@ -95,6 +100,7 @@ class ModCheckTab(
     private fun cancelJob() {
         val job = runningCheck ?: return
         runningCheck = null
+        loadingImage.hide()
         job.cancel()
     }
 
@@ -103,6 +109,8 @@ class ModCheckTab(
 
         modCheckFirstRun = false
         if (modCheckBaseSelect == null) return
+
+        loadingImage.show()
 
         val openedExpanderTitles = modResultExpanderTabs
             .filter { it.isOpen }.map { it.title }.toSet()
@@ -117,8 +125,6 @@ class ModCheckTab(
                 errorTable.add(loadingError.toLabel()).width(stage.width / 2).row()
             modCheckResultTable.add(errorTable)
         }
-
-        modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
 
         runningCheck = Concurrency.run("ModChecker") {
             checkedFilter = searchModsTextField.text
@@ -149,7 +155,7 @@ class ModCheckTab(
 
             // done with all mods!
             launchOnGLThread {
-                modCheckResultTable.removeActor(modCheckResultTable.children.last())
+                loadingImage.hide()
             }
         }
     }
@@ -212,12 +218,9 @@ class ModCheckTab(
         }
         expanderTab.header.left()
 
-        val loadingLabel = modCheckResultTable.children.last()
         synchronized(modCheckResultTable) {
             modResultExpanderTabs.add(expanderTab)
-            modCheckResultTable.removeActor(loadingLabel)
             modCheckResultTable.add(expanderTab).row()
-            modCheckResultTable.add(loadingLabel).row()
         }
     }
 
