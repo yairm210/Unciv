@@ -91,7 +91,7 @@
 		"food": 1,
 		"techRequired": "Sailing",
 		"uniques": ["[+1 Gold] <after discovering [Compass]>", "Can only be built to improve a resource", "Pillaging this improvement yields approximately [+10 Gold]"],
-		"shortcutKey": "F"
+		"shortcutKey": "B"
 	},
 
 	// Military improvement
