@@ -145,9 +145,7 @@ class ModCheckTab(
                         it.defaults().pad(10f)
 
                         val openUniqueBuilderButton = "Open unique builder".toTextButton()
-                        val ruleset = if (base == MOD_CHECK_WITHOUT_BASE) mod
-                        else RulesetCache.getComplexRuleset(linkedSetOf(mod.name), base)
-                        openUniqueBuilderButton.onClick { UncivGame.Current.pushScreen(UniqueBuilderScreen(ruleset)) }
+                        openUniqueBuilderButton.onClick { openUniqueBuilder(mod, base) }
                         it.add(openUniqueBuilderButton).row()
 
                         if (!noProblem && mod.folderLocation != null) {
@@ -186,6 +184,11 @@ class ModCheckTab(
         }
     }
 
+    private fun openUniqueBuilder(mod: Ruleset, base: String) {
+        val ruleset = if (base == MOD_CHECK_WITHOUT_BASE) mod
+            else RulesetCache.getComplexRuleset(linkedSetOf(mod.name), base)
+        UncivGame.Current.pushScreen(UniqueBuilderScreen(ruleset))
+    }
 
     private fun autoUpdateUniques(screen: BaseScreen, mod: Ruleset, replaceableUniques: HashMap<String, String>) {
         UniqueAutoUpdater.autoupdateUniques(mod, replaceableUniques)
