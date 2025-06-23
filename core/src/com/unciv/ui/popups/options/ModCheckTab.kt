@@ -218,7 +218,7 @@ class ModCheckTab(
         UniqueAutoUpdater.autoupdateUniques(mod, replaceableUniques)
         val toastText = "Uniques updated!"
         ToastPopup(toastText, screen)
-        runModChecker()
+        runAction()
     }
 
 }
