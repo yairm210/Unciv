@@ -41,7 +41,7 @@ class ModCheckTab(
     private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val searchModsTextField: UncivTextField
     private val modCheckResultTable = Table()
-    /** Used to repolulate modCheckResultTable when searching */
+    /** Used to repopulate modCheckResultTable when searching */
     private val modResultExpanderTabs = ArrayList<ExpanderTab>()
 
     init {
@@ -50,17 +50,17 @@ class ModCheckTab(
         fixedContent.defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick(::runAction)
         fixedContent.add(reloadModsButton).row()
-        
+
         searchModsTextField = UncivTextField("Search mods")
         searchModsTextField.onChange {
             modCheckResultTable.clear()
             for (expanderTab in modResultExpanderTabs) {
-                if (expanderTab.title.lowercase().contains(searchModsTextField.text.lowercase()))
+                if (expanderTab.title.contains(searchModsTextField.text, ignoreCase = true))
                     modCheckResultTable.add(expanderTab).row()
             }
         }
 
-        if (RulesetCache.values.count() > 10)
+        if (RulesetCache.size > 10)
             fixedContent.add(searchModsTextField).fillX().row()
 
         val labeledBaseSelect = Table().apply {
@@ -93,17 +93,17 @@ class ModCheckTab(
         modCheckFirstRun = false
         if (modCheckBaseSelect == null) return
 
-        val openedExpanderTitles = modCheckResultTable.children.filterIsInstance<ExpanderTab>()
+        val openedExpanderTitles = modResultExpanderTabs
             .filter { it.isOpen }.map { it.title }.toSet()
 
         modCheckResultTable.clear()
         modResultExpanderTabs.clear()
 
-        val rulesetErrors = RulesetCache.loadRulesets()
-        if (rulesetErrors.isNotEmpty()) {
+        val loadingErrors = RulesetCache.loadRulesets()
+        if (loadingErrors.isNotEmpty()) {
             val errorTable = Table().apply { defaults().pad(2f) }
-            for (rulesetError in rulesetErrors)
-                errorTable.add(rulesetError.toLabel()).width(stage.width / 2).row()
+            for (loadingError in loadingErrors)
+                errorTable.add(loadingError.toLabel()).width(stage.width / 2).row()
             modCheckResultTable.add(errorTable)
         }
 
@@ -111,9 +111,13 @@ class ModCheckTab(
         modCheckBaseSelect!!.isDisabled = true
 
         Concurrency.run("ModChecker") {
-            for (mod in RulesetCache.values
-                .filter { it.name.lowercase().contains(searchModsTextField.text.lowercase()) }
-                .sortedBy { it.name }.sortedByDescending { it.name in openedExpanderTitles }) {
+            val modsToCheck = RulesetCache.values
+                .filter { it.name.contains(searchModsTextField.text, ignoreCase = true) }
+                .sortedWith(
+                    compareByDescending<Ruleset> { it.name in openedExpanderTitles }
+                        .thenBy { it.name }
+                )
+            for (mod in modsToCheck) {
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
@@ -197,4 +201,3 @@ class ModCheckTab(
     }
 
 }
-
