@@ -47,6 +47,8 @@ class ModCheckTab(
     private val modResultExpanderTabs = ArrayList<ExpanderTab>()
 
     private var runningCheck: Job? = null
+    private var checkedFilter = ""
+    private var currentFilter = ""
 
     init {
         defaults().pad(10f).align(Align.top)
@@ -56,15 +58,7 @@ class ModCheckTab(
         fixedContent.add(reloadModsButton).row()
 
         searchModsTextField = UncivTextField("Search mods")
-        searchModsTextField.onChange {
-            synchronized(modCheckResultTable) {
-                modCheckResultTable.clear()
-                for (expanderTab in modResultExpanderTabs) {
-                    if (expanderTab.title.contains(searchModsTextField.text, ignoreCase = true))
-                        modCheckResultTable.add(expanderTab).row()
-                }
-            }
-        }
+        searchModsTextField.onChange { changeSearch() }
 
         if (RulesetCache.size > 10)
             fixedContent.add(searchModsTextField).fillX().row()
@@ -127,6 +121,8 @@ class ModCheckTab(
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
 
         runningCheck = Concurrency.run("ModChecker") {
+            checkedFilter = searchModsTextField.text
+            currentFilter = checkedFilter
             val modsToCheck = RulesetCache.values
                 .filter { it.name.contains(searchModsTextField.text, ignoreCase = true) }
                 .sortedWith(
@@ -155,6 +151,23 @@ class ModCheckTab(
             launchOnGLThread {
                 modCheckResultTable.removeActor(modCheckResultTable.children.last())
             }
+        }
+    }
+
+    private fun changeSearch() {
+        val searchFilter = searchModsTextField.text
+        if (searchFilter.contains(checkedFilter, ignoreCase = true)) {
+            // The last check, whether finished or not, included all mods we want to filter
+            synchronized(modCheckResultTable) {
+                modCheckResultTable.clear()
+                for (expanderTab in modResultExpanderTabs) {
+                    if (expanderTab.title.contains(searchFilter, ignoreCase = true))
+                        modCheckResultTable.add(expanderTab).row()
+                }
+            }
+        } else {
+            // the filter is wider than the last check - rerun
+            runAction()
         }
     }
 
