@@ -1,7 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -136,15 +135,10 @@ class ModCheckTab(
                     // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
                     // Instead, some manual work needs to be put in.
 
-                    val iconColor = modLinks.getFinalSeverity().color
-                    val iconName = when (iconColor) {
-                        Color.RED -> "OtherIcons/Stop"
-                        Color.YELLOW -> "OtherIcons/ExclamationMark"
-                        else -> "OtherIcons/Checkmark"
-                    }
-                    val icon = ImageGetter.getImage(iconName)
+                    val severity = modLinks.getFinalSeverity()
+                    val icon = ImageGetter.getImage(severity.iconName)
                         .apply { color = ImageGetter.CHARCOAL }
-                        .surroundWithCircle(30f, color = iconColor)
+                        .surroundWithCircle(30f, color = severity.color)
 
                     val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = mod.name in openedExpanderTitles) {
                         it.defaults().align(Align.left)
