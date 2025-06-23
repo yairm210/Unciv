@@ -1,8 +1,6 @@
 ## 4.16.19
 
-Optimized getMovementToTilesAtPosition tilesToIgnore to a bitset instead of a hashset, saving 7.4% of next turn calculation time!
-
-chore: Updated kotlin compiler JVM target 
+AI performance optimization
 
 By RobLoach:
 - Fix number popup with commas in the number 
