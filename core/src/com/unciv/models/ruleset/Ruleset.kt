@@ -33,6 +33,7 @@ import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
+import org.jetbrains.annotations.VisibleForTesting
 import kotlin.collections.set
 
 enum class RulesetFile(
@@ -510,6 +511,12 @@ class Ruleset {
     internal fun updateResourceTransients() {
         for (resource in tileResources.values)
             resource.setTransients(this)
+    }
+
+    @VisibleForTesting
+    /** For use by class TestGame. Use only before triggering the globalUniques.uniqueObjects lazy. */
+    fun addGlobalUniques(vararg uniques: String) {
+        globalUniques.uniques.addAll(uniques)
     }
 
     /** Used for displaying a RuleSet's name */

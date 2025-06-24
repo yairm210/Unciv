@@ -665,12 +665,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
         }
 
-        difficultyObject = ruleset.difficulties[difficulty]!!
-
-        speed = ruleset.speeds[gameParameters.speed]!!
-
-        // Needs to be set before tileMap.setTransients!
-        combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
+        // combinedGlobalUniques needs to be set before tileMap.setTransients!
+        setGlobalTransients()
 
         tileMap.setTransients(ruleset)
 
@@ -708,6 +704,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         migrateToTileHistory()
         migrateGreatGeneralPools()
         ensureUnitIds()
+    }
+
+    fun setGlobalTransients() {
+        difficultyObject = ruleset.difficulties[difficulty]!!
+
+        speed = ruleset.speeds[gameParameters.speed]!!
+
+        combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
 
     private fun updateCivilizationState() {
