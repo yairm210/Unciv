@@ -301,11 +301,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (isCapital() && !justCaptured && !allowRazeCapital) return false
 
         val cannotRazeCitiesUniques = civ.gameInfo.ruleset.modOptions.getMatchingUniques(UniqueType.CannotRazeCities)
-        // for (unique in cannotRazeCitiesUniques) {
-        //     if (this.matchesFilter(unique.params[0])) {
-        //         return false
-        //     }
-        // }
         if (cannotRazeCitiesUniques.any { matchesFilter(it.params[0]) }) return false
 
         return true
