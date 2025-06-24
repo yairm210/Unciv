@@ -208,9 +208,11 @@ enum class UniqueType(
         docDescription = "These resources are removed *when work begins* on the construction. " +
                 "Do not confuse with \"costs [amount] [stockpiledResource]\" (lowercase 'c'), the Unit Action Modifier.",
         flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
-    // Todo: Get rid of forced sign (+[relativeAmount]) and unify these two, e.g.: "[relativeAmount]% [resource/resourceType] production"
-    // Note that the parameter type 'resourceType' (strategic, luxury, bonus) currently doesn't exist and should then be added as well
+
+    PercentResourceProduction("[relativeAmount]% [resourceFilter] resource production", UniqueTarget.Global),
+    @Deprecated("As of 4.16.18", ReplaceWith("[relativeAmount]% [Strategic] resource production"))
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used by Policies
+    @Deprecated("As of 4.16.18", ReplaceWith("[+100]% [resource] resource production"))
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
     /// Agreements
@@ -855,6 +857,7 @@ enum class UniqueType(
     OneTimeGainTechPercent("Research [relativeAmount]% of [tech]", UniqueTarget.Triggerable),
 
     OneTimeTakeOverTilesInRadius("Gain control over [tileFilter] tiles in a [nonNegativeAmount]-tile radius", UniqueTarget.Triggerable),
+    OneTimeTakeOverTilesInCity("Gain control over [positiveAmount] tiles [cityFilter]", UniqueTarget.Triggerable),
 
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
@@ -864,7 +867,6 @@ enum class UniqueType(
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
     OneTimeSpiesLevelUp("Promotes all spies [positiveAmount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainSpy("Gain an extra spy", UniqueTarget.Triggerable),  // used in Wonders
-
 
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
     FreePromotion("This Promotion is free", UniqueTarget.Promotion),

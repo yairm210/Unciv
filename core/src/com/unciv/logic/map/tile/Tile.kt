@@ -98,6 +98,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     //region Transient fields
     @Transient
     lateinit var tileMap: TileMap
+    
+    @Transient
+    var zeroBasedIndex: Int = 0
 
     @Transient
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.

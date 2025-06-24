@@ -516,6 +516,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             // looks at tileMatrix. Thus filling Tiles into tileMatrix and setting their
             // transients in the same loop will leave incomplete cached `neighbors`.
             tileInfo.tileMap = this
+            tileInfo.zeroBasedIndex = HexMath.getZeroBasedIndex(tileInfo.position.x.toInt(), tileInfo.position.y.toInt())
             tileInfo.ruleset = this.ruleset!!
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)

@@ -1,3 +1,35 @@
+## 4.16.19
+
+AI performance optimization
+
+By RobLoach:
+- Fix number popup with commas in the number 
+- Add `Gain control over [positiveAmount] tiles [cityFilter]` Triggerable 
+
+AI: update getStatDifferenceFromBuilding - By EmperorPinguin
+
+Improve ruleset validator - By SomeTroglodyte
+
+## 4.16.18
+
+Sprites do not change to base color when moving
+
+Barbarian workers no longer construct improvements
+
+modding: Allowed stat reserve to get happiness
+
+console: Can set game turn
+
+modding validation: Catch empty altases.json file
+
+Add `[relativeAmount]% [resourceFilter] resource production` Unique - By RobLoach
+
+Refactor RulesetValidator into two files - By SomeTroglodyte
+
+Fix broken chart in victory status - By metablaster
+
+Edge restructure update - By hackedpassword
+
 ## 4.16.17
 
 Increased font size so it looks less blurry on large screens

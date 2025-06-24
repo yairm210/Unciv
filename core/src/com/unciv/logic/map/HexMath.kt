@@ -232,12 +232,16 @@ object HexMath {
 
     /** Get number of hexes from [origin] to [destination] _without respecting world-wrap_ */
     fun getDistance(origin: Vector2, destination: Vector2): Int {
-        val relativeX = origin.x - destination.x
-        val relativeY = origin.y - destination.y
+        return getDistance(origin.x.toInt(), origin.y.toInt(), destination.x.toInt(), destination.y.toInt())
+    }
+    
+    fun getDistance(originX: Int, originY: Int, destinationX: Int, destinationY: Int): Int {
+        val relativeX = originX - destinationX
+        val relativeY = originY - destinationY
         return if (relativeX * relativeY >= 0)
-            max(abs(relativeX), abs(relativeY)).toInt()
+            max(abs(relativeX), abs(relativeY))
         else
-            (abs(relativeX) + abs(relativeY)).toInt()
+            (abs(relativeX) + abs(relativeY))
     }
 
     private val clockPositionToHexVectorMap: Map<Int, Vector2> = mapOf(
@@ -296,4 +300,40 @@ object HexMath {
             return min(getDistance(vector, Vector2(1f, radius.toFloat())), getDistance(vector, Vector2(-radius.toFloat(), -1f)))
         }
     }
+
+    /**
+     * The goal here is to map from hexagonal positions (centered on 0,0) to positive integers (starting from 0) so we can replace hashmap/hashset with arrays/bitsets
+     * Places 1-6 are ring 1, 7-18 are ring 2, etc.
+     */
+    fun getZeroBasedIndex(x: Int, y: Int): Int {
+        if (x == 0 && y == 0) return 0
+        val ring = getDistance(0,0, x, y)
+        val ringStart = 1 + 6 * ring * (ring - 1) / 2 // 1 for the center tile, then 6 for each ring
+        
+        // total number of elements in the ring is 6 * ring
+        
+        // We divide the ring into its 6 edges, each of which can be determined by an equality comparison
+        // Each edge has a start index, a variable from 0 to the number of elements in that edge
+        val positionInRing = when (ring) {
+            y -> 0 /* start index*/ + x /*variable*/    // contains `ring+1` elements
+            x -> ring + 1 /* start index */ + y /*variable*/ // contains `ring` elements - 1 already taken by x=y=ring above
+            -x -> 2 * ring + 1 /* start index */ -y /*variable*/ // contains `ring+1` elements
+            -y -> 3 * ring + 2 /*start index*/ -x /*variable*/ // contains `ring` elements - 1 already taken by -x=-y=ring above
+            x-y -> 4 * ring + 2 /* start index */ +x-1 /*variable*/ // contains `ring-1` elements. -1 because x=0 is already taken by ring=-y above
+            y-x -> 5 * ring + 1 /* start index */ +y-1 /*variable*/ // contains `ring-1` elements. -1 because y=0 is already taken by ring=-x above
+            else -> throw Exception("How???")
+        }
+        return ringStart + positionInRing
+    }
+    
+    // Much simpler to understand, passes same tests, but ~5x slower than the above
+    fun mapRelativePositionToPositiveIntRedblob(x: Int, y: Int): Int {
+        if (x == 0 && y == 0) return 0
+        val ring = getDistance(0,0, x, y)
+        val ringStart = 1 + 6 * ring * (ring - 1) / 2 // 1 for the center tile, then 6 for each ring
+        val vectorsInRing = getVectorsAtDistance(Vector2.Zero, ring, ring, false)
+        val positionInRing = vectorsInRing.indexOf(Vector2(x.toFloat(), y.toFloat()))
+        return ringStart + positionInRing
+    }
+
 }

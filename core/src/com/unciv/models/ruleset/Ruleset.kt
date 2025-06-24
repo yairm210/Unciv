@@ -148,6 +148,9 @@ class Ruleset {
     fun clone(): Ruleset {
         val newRuleset = Ruleset()
         newRuleset.add(this)
+        // Make sure the clone is recognizable - e.g. startNewGame fallback when a base mod was removed needs this
+        newRuleset.name = name
+        newRuleset.modOptions.isBaseRuleset = modOptions.isBaseRuleset
         return newRuleset
     }
 
@@ -439,25 +442,26 @@ class Ruleset {
 
         // Add objects that might not be present in base ruleset mods, but are required
         if (modOptions.isBaseRuleset) {
+            val fallbackRuleset by lazy { RulesetCache.getVanillaRuleset() } // clone at most once
             // This one should be temporary
             if (unitTypes.isEmpty()) {
-                unitTypes.putAll(RulesetCache.getVanillaRuleset().unitTypes)
+                unitTypes.putAll(fallbackRuleset.unitTypes)
             }
 
             // These should be permanent
             if (ruinRewards.isEmpty())
-                ruinRewards.putAll(RulesetCache.getVanillaRuleset().ruinRewards)
+                ruinRewards.putAll(fallbackRuleset.ruinRewards)
 
             if (globalUniques.uniques.isEmpty()) {
-                globalUniques = RulesetCache.getVanillaRuleset().globalUniques
+                globalUniques = fallbackRuleset.globalUniques
             }
             // If we have no victories, add all the default victories
-            if (victories.isEmpty()) victories.putAll(RulesetCache.getVanillaRuleset().victories)
+            if (victories.isEmpty()) victories.putAll(fallbackRuleset.victories)
 
-            if (speeds.isEmpty()) speeds.putAll(RulesetCache.getVanillaRuleset().speeds)
+            if (speeds.isEmpty()) speeds.putAll(fallbackRuleset.speeds)
 
             if (cityStateTypes.isEmpty())
-                for (cityStateType in RulesetCache.getVanillaRuleset().cityStateTypes.values)
+                for (cityStateType in fallbackRuleset.cityStateTypes.values)
                     cityStateTypes[cityStateType.name] = CityStateType().apply {
                         name = cityStateType.name
                         color = cityStateType.color
@@ -524,5 +528,5 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
-    fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator(this, tryFixUnknownUniques).getErrorList()
+    fun getErrorList(tryFixUnknownUniques: Boolean = false) = RulesetValidator.create(this, tryFixUnknownUniques).getErrorList()
 }
