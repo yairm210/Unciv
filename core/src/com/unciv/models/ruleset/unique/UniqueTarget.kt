@@ -54,8 +54,9 @@ enum class UniqueTarget(
     Ruins(inheritsFrom = UnitTriggerable),
 
     // Other
-    Speed,
-    Difficulty(inheritsFrom = GlobalUniques),
+    GlobalUniques(inheritsFrom = Global),
+    Speed("Speed uniques will be treated as part of GlobalUniques for the Speed selected in a game", inheritsFrom = GlobalUniques),
+    Difficulty("Difficulty uniques will be treated as part of GlobalUniques for the Difficulty selected in a game", inheritsFrom = GlobalUniques),
     Tutorial,
     CityState(inheritsFrom = Global),
     ModOptions,

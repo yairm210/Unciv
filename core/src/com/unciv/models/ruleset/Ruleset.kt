@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.logic.GameInfo
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.CityStateType
@@ -96,7 +97,9 @@ class Ruleset {
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
     val speeds = LinkedHashMap<String, Speed>()
-    var globalUniques = GlobalUniques()
+    /** Only [Ruleset.load], [GameInfo], [BaseUnit] and [RulesetValidator] should access this directly.
+     *  All other uses should call [GameInfo.getGlobalUniques] instead. */
+    internal var globalUniques = GlobalUniques()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()

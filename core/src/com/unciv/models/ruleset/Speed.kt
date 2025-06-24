@@ -58,7 +58,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
         const val DEFAULTFORSIMULATION: String = "Standard"
     }
 
-    // Note: Speed is IHasUniques, but no implementation reads them, thus no UniqueType accepts this target
+    // Note: Speed uniques will be treated as part of GlobalUniques
     override fun getUniqueTarget(): UniqueTarget = UniqueTarget.Speed
 
     override fun makeLink(): String = "Speed/$name"

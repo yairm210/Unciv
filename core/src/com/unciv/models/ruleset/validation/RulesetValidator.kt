@@ -175,6 +175,7 @@ open class RulesetValidator protected constructor(
             if (difficulty.turnBarbariansCanEnterPlayerTiles < 0)
                 lines.add("Difficulty ${difficulty.name} has a negative turnBarbariansCanEnterPlayerTiles!",
                     RulesetErrorSeverity.Warning, sourceObject = null)
+            uniqueValidator.checkUniques(difficulty, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
@@ -397,8 +398,7 @@ open class RulesetValidator protected constructor(
                     lines.add("The 'untilTurn' field in the turn increment list must be monotonously increasing, but $untilTurn is <= $lastTurn", sourceObject = speed)
                 lastTurn = untilTurn
             }
-            if (speed.uniques.isNotEmpty())
-                lines.add("Speed Uniques are not supported", RulesetErrorSeverity.Warning, speed)
+            uniqueValidator.checkUniques(speed, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 

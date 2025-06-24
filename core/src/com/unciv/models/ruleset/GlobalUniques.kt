@@ -8,8 +8,8 @@ class GlobalUniques: RulesetObject() {
     override var name = "GlobalUniques"
 
     var unitUniques: ArrayList<String> = ArrayList()
-    override fun getUniqueTarget() = UniqueTarget.Global
     override fun makeLink() = "" // No own category on Civilopedia screen
+    override fun getUniqueTarget() = UniqueTarget.GlobalUniques
 
     companion object {
         fun getUniqueSourceDescription(unique: Unique): String {
@@ -22,6 +22,15 @@ class GlobalUniques: RulesetObject() {
                 UniqueType.ConditionalBetweenHappiness, UniqueType.ConditionalBelowHappiness -> "Unhappiness"
                 UniqueType.ConditionalWLTKD -> "We Love The King Day"
                 else -> "Global Effect"
+            }
+        }
+
+        fun combine(globalUniques: GlobalUniques, vararg otherSources: IHasUniques) = GlobalUniques().apply {
+            /** This must happen before [uniqueMap] and [uniqueObjects] are triggered */
+            uniques.addAll(globalUniques.uniques)
+            unitUniques = globalUniques.unitUniques
+            for (source in otherSources) {
+                uniques.addAll(source.uniques)
             }
         }
     }
