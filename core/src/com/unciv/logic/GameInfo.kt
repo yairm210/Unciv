@@ -148,10 +148,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region Fields - Transient
 
     @Transient
-    lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+    private lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
 
     @Transient
     lateinit var speed: Speed
+        private set
 
     @Transient
     lateinit var currentPlayerCiv: Civilization // this is called thousands of times, no reason to search for it with a find{} every time

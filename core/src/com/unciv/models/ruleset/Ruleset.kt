@@ -34,11 +34,13 @@ import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
 import kotlin.collections.set
 
-enum class RulesetFile(val filename: String,
-                       val getRulesetObjects:Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
-                       val getUniques: Ruleset.() -> Sequence<Unique> = {getRulesetObjects().flatMap { it.uniqueObjects }}){
-    Beliefs("Beliefs.json", {beliefs.values.asSequence()}),
-    Buildings("Buildings.json", { buildings.values.asSequence()}),
+enum class RulesetFile(
+    val filename: String,
+    val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
+    val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } }
+){
+    Beliefs("Beliefs.json", { beliefs.values.asSequence() }),
+    Buildings("Buildings.json", { buildings.values.asSequence() }),
     Eras("Eras.json", { eras.values.asSequence() }),
     Religions("Religions.json"),
     Nations("Nations.json", { nations.values.asSequence() }),
@@ -51,14 +53,14 @@ enum class RulesetFile(val filename: String,
     TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
     TileResources("TileResources.json", { tileResources.values.asSequence() }),
     Specialists("Specialists.json"),
-    Units("Units.json", { units.values.asSequence()}),
+    Units("Units.json", { units.values.asSequence() }),
     UnitPromotions("UnitPromotions.json", { unitPromotions.values.asSequence() }),
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
     VictoryTypes("VictoryTypes.json"),
     CityStateTypes("CityStateTypes.json", getUniques =
         { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } }),
     Personalities("Personalities.json", { personalities.values.asSequence() }),
-    Events("Events.json", {events.values.asSequence() + events.values.flatMap { it.choices }}),
+    Events("Events.json", { events.values.asSequence() + events.values.flatMap { it.choices } }),
     GlobalUniques("GlobalUniques.json", { sequenceOf(globalUniques) }),
     ModOptions("ModOptions.json", getUniques = { modOptions.uniqueObjects.asSequence() }),
     Speeds("Speeds.json", { speeds.values.asSequence() }),
