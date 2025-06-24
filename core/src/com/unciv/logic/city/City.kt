@@ -300,7 +300,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (isHolyCity() && !allowRazeHolyCity) return false
         if (isCapital() && !justCaptured && !allowRazeCapital) return false
 
-        val cannotRazeCitiesUniques = civ.gameInfo.ruleset.modOptions.getMatchingUniques(UniqueType.CannotRazeCities, state)
+        val cannotRazeCitiesUniques = civ.gameInfo.ruleset.modOptions.getMatchingUniques(UniqueType.CannotRazeCities)
         if (cannotRazeCitiesUniques.any { matchesFilter(it.params[0], conqueringCiv) }) return false
 
         return true
