@@ -88,7 +88,8 @@ enum class UniqueTarget(
         // As Array so it can used in a vararg parameter list.
         val Displayable = arrayOf(
             Building, Unit, UnitType, Improvement, Tech, FollowerBelief, FounderBelief,
-            Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed, EventChoice
+            Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed, EventChoice,
+            Difficulty
         )
         val CanIncludeSuppression = arrayOf(
             Triggerable,    // Includes Global and covers most IHasUnique's

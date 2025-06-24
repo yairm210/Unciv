@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import java.util.*
 import kotlin.collections.ArrayList
@@ -79,6 +80,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
         yield(FormattedLine("Adjacent city religious pressure: [$religiousPressureAdjacentCity]${Fonts.faith}"))
         yield(FormattedLine("Peace deal duration: [$peaceDealDuration] turns${Fonts.turn}"))
         yield(FormattedLine("Start year: [" + ("{[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD") + "}]").tr()))
+        yieldAll(uniquesToCivilopediaTextLines())
     }.toList()
     override fun getSortGroup(ruleset: Ruleset): Int = (modifier * 1000).toInt()
 

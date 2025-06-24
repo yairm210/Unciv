@@ -111,6 +111,8 @@ class Difficulty: RulesetObject() {
         lines += FormattedLine()
         lines += FormattedLine("{Turns until barbarians enter player tiles}: $turnBarbariansCanEnterPlayerTiles ${Fonts.turn}")
         lines += FormattedLine("{Gold reward for clearing barbarian camps}: $clearBarbarianCampReward ${Fonts.gold}")
+
+        uniquesToCivilopediaTextLines(lines)
         return lines
     }
 
