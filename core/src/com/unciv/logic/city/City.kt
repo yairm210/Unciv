@@ -300,6 +300,14 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (isHolyCity() && !allowRazeHolyCity) return false
         if (isCapital() && !justCaptured && !allowRazeCapital) return false
 
+        val cannotRazeCitiesUniques = civ.gameInfo.ruleset.modOptions.getMatchingUniques(UniqueType.CannotRazeCities)
+        // for (unique in cannotRazeCitiesUniques) {
+        //     if (this.matchesFilter(unique.params[0])) {
+        //         return false
+        //     }
+        // }
+        if (cannotRazeCitiesUniques.any { matchesFilter(it.params[0]) }) return false
+
         return true
     }
 
@@ -497,6 +505,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
             "in resisting cities", "Resisting" -> isInResistance()
+            "in founded cities", "Founded" -> foundingCiv == civ.civName
             "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState

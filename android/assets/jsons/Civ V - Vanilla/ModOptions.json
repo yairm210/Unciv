@@ -1,4 +1,7 @@
 {
     "isBaseRuleset": true,
-    "uniques": ["Disable religion"],
+    "uniques": [
+        "Disable religion",
+        "Cannot raze [Founded] cities" // As a demonstration
+    ]
 }

@@ -2770,6 +2770,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Allow raze holy city"
 	Applicable to: ModOptions
 
+??? example  "Cannot raze [cityFilter] cities"
+	Example: "Cannot raze [in all cities] cities"
+
+	Applicable to: ModOptions
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
