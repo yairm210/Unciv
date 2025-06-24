@@ -55,6 +55,7 @@ enum class UniqueTarget(
 
     // Other
     Speed,
+    Difficulty(inheritsFrom = GlobalUniques),
     Tutorial,
     CityState(inheritsFrom = Global),
     ModOptions,
