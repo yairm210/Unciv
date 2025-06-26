@@ -452,7 +452,7 @@ class Ruleset {
             if (ruinRewards.isEmpty())
                 ruinRewards.putAll(fallbackRuleset.ruinRewards)
 
-            if (globalUniques.uniques.isEmpty()) {
+            if (!globalUniquesFile.exists()) {
                 globalUniques = fallbackRuleset.globalUniques
             }
             // If we have no victories, add all the default victories
