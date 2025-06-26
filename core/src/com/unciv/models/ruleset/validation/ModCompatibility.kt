@@ -56,6 +56,14 @@ object ModCompatibility {
             && mod.name.isNotBlank()
             && !mod.modOptions.hasUnique(UniqueType.ModIsAudioVisualOnly)
 
+    fun isConstantsOnly(mod: Ruleset): Boolean {
+        val folder = mod.folderLocation ?: return false
+        if (folder.list("atlas").isNotEmpty()) return false
+        val jsonFolder = folder.child("jsons")
+        if (!jsonFolder.exists() || !jsonFolder.isDirectory) return false
+        return jsonFolder.list().map { it.name() } == listOf("ModOptions.json")
+    }
+
     fun modNameFilter(modName: String, filter: String): Boolean {
         if (modName == filter) return true
         if (filter.length < 3 || !filter.startsWith('*') || !filter.endsWith('*')) return false
