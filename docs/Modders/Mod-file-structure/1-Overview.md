@@ -101,18 +101,18 @@ Base ruleset mods must be "complete" by themselves, but that does not mean they 
 | [GlobalUniques](5-Miscellaneous-JSON-files.md#globaluniquesjson)          | yes            | vanilla                  |
 | [ModOptions](5-Miscellaneous-JSON-files.md#modoptionsjson)                | yes            | generated on download    |
 | [Nations](2-Civilization-related-JSON-files.md#nationsjson)               | no             | none                     |
-| [Policies](2-Civilization-related-JSON-files.md#policiesjson)             | ?              | none                     |
-| [Quests](2-Civilization-related-JSON-files.md#questsjson)                 | ?              | none                     |
+| [Policies](2-Civilization-related-JSON-files.md#policiesjson)             | yes            | none                     |
+| [Quests](2-Civilization-related-JSON-files.md#questsjson)                 | yes            | none                     |
 | [Religions](2-Civilization-related-JSON-files.md#religionsjson)           | yes            | none                     |
 | [Ruins](3-Map-related-JSON-files.md#ruinsjson)                            | yes            | vanilla                  |
-| [Specialists](2-Civilization-related-JSON-files.md#specialistsjson)       | ?              | none                     |
+| [Specialists](2-Civilization-related-JSON-files.md#specialistsjson)       | yes            | none                     |
 | [Speeds](5-Miscellaneous-JSON-files.md#speedsjson)                        | no             | vanilla                  |
 | [Techs](2-Civilization-related-JSON-files.md#techsjson)                   | yes            | none                     |
 | [Terrains](3-Map-related-JSON-files.md#terrainsjson)                      | no             | none                     |
-| [TileImprovements](3-Map-related-JSON-files.md#tileimprovementsjson)      | ?              | none                     |
-| [TileResources](3-Map-related-JSON-files.md#tileresourcesjson)            | ?              | none                     |
+| [TileImprovements](3-Map-related-JSON-files.md#tileimprovementsjson)      | yes            | none                     |
+| [TileResources](3-Map-related-JSON-files.md#tileresourcesjson)            | yes            | none                     |
 | [Tutorials](5-Miscellaneous-JSON-files.md#tutorialsjson)                  | yes            | builtin always displayed |
-| [UnitPromotions](4-Unit-related-JSON-files.md#unitpromotionsjson)         | ?              | none                     |
+| [UnitPromotions](4-Unit-related-JSON-files.md#unitpromotionsjson)         | yes            | none                     |
 | [Units](4-Unit-related-JSON-files.md#unitsjson)                           | no             | none                     |
 | [UnitTypes](4-Unit-related-JSON-files.md#unittypesjson)                   | no             | vanilla                  |
 | [VictoryTypes](5-Miscellaneous-JSON-files.md#victorytypesjson)            | no             | vanilla                  |
