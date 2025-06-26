@@ -30,6 +30,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -118,13 +119,26 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /**
      * @return Maintenance cost of all built buildings
      */
-    fun getMaintenanceCosts(): Int {
-        var maintenanceCost = 0
+    fun getMaintenanceCosts(): Float {
+        var maintenanceCost = 0f
         val freeBuildings = city.civ.civConstructions.getFreeBuildingNames(city)
+        
+        val buildingMaintenanceUniques = city.getMatchingUniques(UniqueType.BuildingMaintenance)
+            .filter { city.matchesFilter(it.params[2]) }.toList()
+        
+        for (building in getBuiltBuildings().filterNot { it.name in freeBuildings }) {
+            var maintenanceForThisBuilding = building.maintenance.toFloat()
+            for (unique in buildingMaintenanceUniques)
+                if (building.matchesFilter(unique.params[1]))
+                    maintenanceForThisBuilding *= unique.params[0].toPercent()
+            
+            maintenanceCost += maintenanceForThisBuilding
+        }
 
-        for (building in getBuiltBuildings())
-            if (building.name !in freeBuildings)
-                maintenanceCost += building.maintenance
+        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenanceOld)) {
+            maintenanceCost = (maintenanceCost * unique.params[0].toPercent())
+        }
+
 
         return maintenanceCost
     }

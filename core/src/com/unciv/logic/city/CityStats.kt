@@ -16,7 +16,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.DebugUtils
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 
 class StatTreeNode {
@@ -331,21 +330,9 @@ class CityStats(val city: City) {
 
     private fun getBuildingMaintenanceCosts(): Float {
         // Same here - will have a different UI display.
-        var buildingsMaintenance = city.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
+        var buildingsMaintenance = city.cityConstructions.getMaintenanceCosts() // this is AFTER the bonus calculation!
         if (!city.civ.isHuman()) {
             buildingsMaintenance *= city.civ.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
-        }
-
-        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenanceOld)) {
-            buildingsMaintenance *= unique.params[0].toPercent()
-        }
-        
-        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenance)) {
-            city.cityConstructions.getBuiltBuildings().filter { 
-                it.matchesFilter(unique.params[1])
-            }.forEach {
-                it.maintenance = (it.maintenance * unique.params[0].toPercent()).roundToInt()
-            }
         }
 
         return buildingsMaintenance
