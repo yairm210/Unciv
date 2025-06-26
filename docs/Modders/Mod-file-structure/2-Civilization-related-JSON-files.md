@@ -99,9 +99,12 @@ only has minor weight when choosing between regions that are not of a type to av
 These notes are __only__ valid when playing on generated maps, loaded maps from map editor get no "
 regions" and startBias is processed differently (but you can expect single-entry startBias to work
 best).
-[^V]: See [Supply Leader Voices](../../Images-and-Audio.md#supply-leader-voices)
+
+[^V]: See [Supply Leader Voices](../Images-and-Audio.md#supply-leader-voices)
 
 ## Personalities.json
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Personalities.json)
 
 This file contains all Personalities for computer players.
 
@@ -136,33 +139,26 @@ The code below is an example of a valid "priorities" definition.
 
 ### Personality Behaviours
 
-Personality Behaviours are not implemented yet and their names may change. Using them before they
-are ready might make the mod unplayable.
-[//]: # (There are 6 defining behaviours that influnce an AI Civilization's behaviour. A higher
-value means they will behave more like the attribute.)
+Personality Behaviours **are not fully implemented yet** and their names may change. Using them before they
+are ready might make the mod unplayable. ***The following is WIP - read on at you own peril!***
 
+There are 7 defining behaviours that influence an AI Civilization's behaviour. A higher value means they will behave more like the attribute.
 
-# (- Military: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.)
+- Military: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.
+- Agressive: Determines how the civilization uses its units while at war and which buildings they prioritise. A higher value means the civilization is more aggressive, a lower value means it is more defensive.
+- War: Determines how likely the civilization is to declare war. A 0 means the civ won't declare war at all.
+- Commerce: Determines how open the civilization is to trade, value open borders, and liberate city-states. A higher value means more trading frequency even with civilizations they don't like.
+- Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.
+- Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.
+- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.
 
-# (- Agressive: Determines how the civilization uses it's units while at war and which buildings they prioritise. A higher value means the civilization is more aggressive, a lower value means it is more defensive.)
-
-# (- War: Determines how likely the civilization is to declare war. A 0 means the civ won't declare war at all)
-
-# (- Commerce: Determines how open the civilization is to trade, value open borders, and liberate city-states. A higher value means more trading frequency even with civilizations they don't like.)
-
-# (- Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.)
-
-# (- Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.)
-
-# (- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.)
 
 ## CityStateTypes.json
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/CityStateTypes.json)
 
-This optional file is used for defining new types of city states. These types determine the benefits
-major civilizations gets when they befriend or ally the city state with influence. If the file is
-ommitted, the following are automatically added:
+This optional file is used for defining the types of city states. These types determine the benefits major civilizations get when they befriend or ally the city state with influence.
+For base ruleset Mods, if the file is ommitted or contains an empty list, [all types from the Vanilla ruleset](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/CityStateTypes.json) are automatically added:
 Cultured, Maritime, Mercantile, Militaristic, Religious.
 
 Each city state type has the following structure:

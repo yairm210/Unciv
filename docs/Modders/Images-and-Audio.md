@@ -321,22 +321,13 @@ Also note that voices for City-State leaders work only for those messages a City
 ## Modding Easter eggs
 
 Here's a list of special dates (or date ranges) Unciv will recognize:
-|-----|
-| AprilFoolsDay |
-| DiaDeLosMuertos |
-| Diwali |
-| Easter |
-| Friday13th |
-| LunarNewYear |
-| Passover |
-| PrideDay |
-| Qingming |
-| Samhain |
-| StarWarsDay |
-| TowelDay |
-| UncivBirthday |
-| Xmas |
-| YuleGoat |
+
+| name            |              |             |               |
+|-----------------|--------------|-------------|---------------|
+| AprilFoolsDay   | Friday13th   | Qingming    | UncivBirthday |
+| DiaDeLosMuertos | LunarNewYear | Samhain     | Xmas          |
+| Diwali          | Passover     | StarWarsDay | YuleGoat      |
+| Easter          | PrideDay     | TowelDay    |               |
 
 ... When these are or what they mean - look it up, if in doubt in our sources (😈).
 

@@ -10,6 +10,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 -   [Civilization-related JSON files](2-Civilization-related-JSON-files.md)
     -   [Beliefs.json](2-Civilization-related-JSON-files.md#beliefsjson)
     -   [Buildings.json](2-Civilization-related-JSON-files.md#buildingsjson)
+    -   [CityStateTypes.json](2-Civilization-related-JSON-files.md#citystatetypesjson)
     -   [Nations.json](2-Civilization-related-JSON-files.md#nationsjson)
     -   [Policies.json](2-Civilization-related-JSON-files.md#policiesjson)
     -   [Quests.json](2-Civilization-related-JSON-files.md#questsjson)
@@ -31,14 +32,16 @@ The JSON files that make up mods can have many different fields, and as not all 
     - [Eras.json](5-Miscellaneous-JSON-files.md#erasjson)
     - [ModOptions.json](5-Miscellaneous-JSON-files.md#modoptionsjson)
     - [GlobalUniques.json](5-Miscellaneous-JSON-files.md#globaluniquesjson)
+    - [Speeds.json](5-Miscellaneous-JSON-files.md#speedsjson)
     - [Tutorials.json](5-Miscellaneous-JSON-files.md#tutorialsjson)
+    - [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)
 -   [Stats](3-Map-related-JSON-files.md#stats)
 -   [Sounds](../Images-and-Audio.md#sounds)
 -   [Civilopedia text](5-Miscellaneous-JSON-files.md#civilopedia-text)
 
 ## General Overview of JSON files
 
-Resources: [json.org](https://www.json.org/), [ISO standard](https://standards.iso.org/ittf/PubliclyAvailableStandards/c071616_ISO_IEC_21778_2017.zip)
+**Recommended reading**: [json.org](https://www.json.org/), [ISO standard](https://standards.iso.org/ittf/PubliclyAvailableStandards/c071616_ISO_IEC_21778_2017.zip)
 
 Almost all Unciv JSON files start with a "[" and end with a "]". In between these are different objects of the type you are describing, each of which is contained between a "{" and a "}". For example, a very simple units.json may look like:
 
@@ -62,8 +65,9 @@ There are different types of attributes:
 
 | type           | notes                                                                                                                                                                                                                                                                          |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| String         | A word or sentence. Should be between double quotes (")                                                                                                                                                                                                                        |
+| String         | A word or sentence. Should be between double quotes (") and escape double quotes meant to be part of the text: `\"`                                                                                                                                                            |
 | Integer        | A number. Can be both positive or negative. Should **not** be between quotes                                                                                                                                                                                                   |
+| Float          | A number that can have decimal places. Remember to use `.` as the Json standard needs, not your local culture's decimal symbol. Scientific notation would work, though                                                                                                         |
 | Boolean        | A value that can either be 'true' or 'false'. Should **not** be between quotes                                                                                                                                                                                                 |
 | List of [type] | If multiple values could apply (such as with the promotions above), they should be put inside a list. Each element of the list should be written like a normal attribute, separated by commas, and enclosed between square braces. E.g.: ["Shock I", "Shock II"] or [1, 2, 3]. |
 | Object         | The most complicated type of attribute. An object is comprised of multiple attributes, each of which again has a type. These attributes have a key (the part before the ":") and a value (the part behind it). For an example, see below.                                      |
@@ -82,6 +86,40 @@ Example of a Buildings.json adding a new "Cultural Library" building which gives
 The keys in this example are "science" and "culture", and both have the value "50".
 
 In some sense you can see from these types that JSON files themselves are actually a list of objects, each describing a single building, unit or something else.
+
+## Requirements for Base Rulesets
+
+Base ruleset mods must be "complete" by themselves, but that does not mean they must include all possible json files nor define content in all of them. Here's a breakdown (WIP, possibly inaccurate):
+
+| File                                                                      | Empty allowed? | Default/fallback         |
+|---------------------------------------------------------------------------|----------------|--------------------------|
+| [Beliefs](2-Civilization-related-JSON-files.md#beliefsjson)               | yes            | none                     |
+| [Buildings](2-Civilization-related-JSON-files.md#buildingsjson)           | no             | none                     |
+| [CityStateTypes](2-Civilization-related-JSON-files.md#citystatetypesjson) | no             | vanilla                  |
+| [Difficulties](5-Miscellaneous-JSON-files.md#difficultiesjson)            | no             | vanilla                  |
+| [Eras](5-Miscellaneous-JSON-files.md#erasjson)                            | no             | none                     |
+| [GlobalUniques](5-Miscellaneous-JSON-files.md#globaluniquesjson)          | yes            | vanilla                  |
+| [ModOptions](5-Miscellaneous-JSON-files.md#modoptionsjson)                | yes            | generated on download    |
+| [Nations](2-Civilization-related-JSON-files.md#nationsjson)               | no             | none                     |
+| [Policies](2-Civilization-related-JSON-files.md#policiesjson)             | yes            | none                     |
+| [Quests](2-Civilization-related-JSON-files.md#questsjson)                 | yes            | none                     |
+| [Religions](2-Civilization-related-JSON-files.md#religionsjson)           | yes            | none                     |
+| [Ruins](3-Map-related-JSON-files.md#ruinsjson)                            | yes            | vanilla                  |
+| [Specialists](2-Civilization-related-JSON-files.md#specialistsjson)       | yes            | none                     |
+| [Speeds](5-Miscellaneous-JSON-files.md#speedsjson)                        | no             | vanilla                  |
+| [Techs](2-Civilization-related-JSON-files.md#techsjson)                   | yes            | none                     |
+| [Terrains](3-Map-related-JSON-files.md#terrainsjson)                      | no             | none                     |
+| [TileImprovements](3-Map-related-JSON-files.md#tileimprovementsjson)      | yes            | none                     |
+| [TileResources](3-Map-related-JSON-files.md#tileresourcesjson)            | yes            | none                     |
+| [Tutorials](5-Miscellaneous-JSON-files.md#tutorialsjson)                  | yes            | builtin always displayed |
+| [UnitPromotions](4-Unit-related-JSON-files.md#unitpromotionsjson)         | yes            | none                     |
+| [Units](4-Unit-related-JSON-files.md#unitsjson)                           | no             | none                     |
+| [UnitTypes](4-Unit-related-JSON-files.md#unittypesjson)                   | no             | vanilla                  |
+| [VictoryTypes](5-Miscellaneous-JSON-files.md#victorytypesjson)            | no             | vanilla                  |
+
+* Mod loading never fails due to missing files, they default to empty at first. Then the fallbacks mentioned above are applied for base rulesets only. Inconsistencies after that step would be reported by the Mod checker.
+* GlobalUniques has a fallback used when the file is missing. Therefore, a mod can intentionally define there are none by including one with empty content (`{}`).
+* Ruins has a fallback used when the file is missing. Therefore, a mod can intentionally define there are none by including one with empty content (`[]`).
 
 ## Uniques
 
