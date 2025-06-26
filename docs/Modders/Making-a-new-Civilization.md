@@ -37,7 +37,7 @@ Congrats, your Civ is now fully playable!
 
 !!! note
 
-    You currently won't see any images from this mod, since it has no texture atlas - see [here](1-Mods.md#more-on-images-and-the-texture-atlas) for more details
+    You currently won't see any images from this mod, since it has no texture atlas - see [here](./Images-and-Audio#images-and-the-texture-atlas) for more details
     If you're on Desktop, you can restart Unciv to generate this atlas and see the images
 
 But this nation's abilities are exactly those of the base mod. To make it truly unique, we'll need to change some Uniques ;)
@@ -87,7 +87,7 @@ Credits for icons should go in a `Credits.md` page.
 
 You have a working mod, now it's time to go wild!
 
-- Add the [atlas files](Mods.md#more-on-images-and-the-texture-atlas) to your repo so your users get images
+- Add the [atlas files](Images-and-Audio.md#images-and-the-texture-atlas) to your repo so your users get images
 - Install Git locally, so you can change your files on your device and have those changes reflected in your repository
 - Expand the abilities of your civ by adding new [uniques](uniques.md)
 - Add new civs, buildings or units

@@ -17,7 +17,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
     -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Languages & Frameworks > Android SDK
         - Click "SDK Platforms"
         - Click "Android 14 ("UpsideDownCake")"
-        ![image](/Unciv/assets/Android_SDK_Platforms.png)
+        ![image](../assets/Android_SDK_Platforms.png)
           (Optionally, you can save some space by selecting 'Show Package Details' and choosing the Platform SDK only, without Sources or system Images)
         - Click "SDK Tools"
         - Select "Show Package Details" in the bottom right
@@ -31,7 +31,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
     -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `$ProjectFileDir$/android/assets` as the Working directory, OK to close the window
         - It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
         - If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
-        ![image](/Unciv/assets/Desktop_Build.png)
+        ![image](../assets/Desktop_Build.png)
 -   Select the Desktop configuration (or however you chose to name it) and click the green arrow button to run! Or you can use the next button -the green critter with six legs and two feelers - to start debugging.
 -   A few Android Studio settings that are recommended:
     - Going to Settings > Version Control > Commit and turning off 'Before Commit - Analyze code'
@@ -141,4 +141,4 @@ The simple multiplayer host included in the sources can be set up to debug or ru
     -   Set the module to `Unciv.server.main` (`Unciv.server` for Studio versions Bumblebee or below), main class to `com.unciv.app.server.UncivServer` and `<repo_folder>/android/assets/` as the Working directory, OK to close the window.
 -   Select the UncivServer configuration and click the green arrow button to run! Or start a debug session as above.
 
-To build a jar file, refer to [Without Android Studio](#Without-Android-Studio) and replace 'desktop' with 'server'. That is, run `./gradlew server:dist` and when it's done look for /server/build/libs/UncivServer.jar
+To build a jar file, refer to [Without Android Studio](#without-android-studio) and replace 'desktop' with 'server'. That is, run `./gradlew server:dist` and when it's done look for /server/build/libs/UncivServer.jar

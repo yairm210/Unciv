@@ -22,11 +22,11 @@ Each terrain entry has the following structure:
 | movementCost               | Integer                                                             | 1        | Base movement cost                                                                            |
 | defenceBonus               | Float                                                               | 0        | Combat bonus for units being attacked here                                                    |
 | RGB                        | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | Gold     | RGB color for 'Default' tileset display                                                       |
-| uniques                    | List of Strings                                                     | empty    | List of [unique abilities](../../uniques) this terrain has                                    |
+| uniques                    | List of Strings                                                     | empty    | List of [unique abilities](../uniques.md) this terrain has                                    |
 | civilopediaText            | List                                                                | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                 |
 
 [^A]: Some names have special meanings. `Grassland` is used as fallback in some cases - e.g. Civilopedia prefers to displays a TerrainFeature on top of it, unless `occursOn` is not empty and does not contain it.
-      `River` is hardcoded to be used to look up a [Stats](../../uniques.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
+      `River` is hardcoded to be used to look up a [Stats](../uniques.md.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
       River should always be a TerrainFeature and have the same uniques the one in the vanilla rulesets has - if you change that, expect surprises.
 [^B]: A base ruleset mod is always expected to provide at least one Land and at least one Water terrain. We do not support Land-only or Water-only mods, even if they might be possible to pull off.
 [^C]: If set, the base terrain is changed to this after placing the Natural Wonder, and terrain features cleared. Otherwise, terrain features are reduced to only those present in occursOn.
@@ -50,7 +50,7 @@ Each improvement has the following structure:
 | uniqueTo             | String          | none     | The name of the nation this improvement is unique for                                                                                                                                  |
 | [`<stats>`](#stats)  | Integer         | 0        | Per-turn bonus yield for the tile                                                                                                                                                      |
 | turnsToBuild         | Integer         | -1       | Number of turns a worker spends building this. If -1, the improvement is unbuildable [^D]. If 0, the improvement is always built in one turn                                           |
-| uniques              | List of Strings | empty    | List of [unique abilities](../../uniques) this improvement has                                                                                                                         |
+| uniques              | List of Strings | empty    | List of [unique abilities](../uniques.md) this improvement has                                                                                                                         |
 | shortcutKey          | String          | none     | Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations)                                                                                |
 | civilopediaText      | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                          |
 
@@ -81,7 +81,7 @@ Each resource has the following structure:
 | revealedBy           | String          | none     | The technology name required to see, work and improve this resource                                                                         |
 | improvedBy           | List of strings | empty    | The improvements required for obtaining this resource. Must be in [TileImprovements.json](#tileimprovementsjson)                            |
 | improvement          | String          | none     | The improvement required to obtain this resource. Must be in [TileImprovements.json](#tileimprovementsjson) (redundant due to `improvedBy`) |
-| unique               | List of Strings | empty    | List of [unique abilities](../../uniques) this resource has                                                                                 |
+| unique               | List of Strings | empty    | List of [unique abilities](../uniques.md) this resource has                                                                                 |
 | civilopediaText      | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                               |
 
 ## Ruins.json
@@ -99,7 +99,7 @@ Each of the objects in the file represents a single reward you can get from ruin
 | name                 | String          | Required | Name of the ruins. Never shown to the user, but they have to be distinct                                                                                                                          |
 | notification         | String          | Required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below.                          |
 | weight               | Integer (≥0)    | 1        | _Relative_ weight this reward is chosen next [^E]                                                                                                                                                 |
-| uniques              | List of Strings | empty    | List of [unique abilities](../../uniques) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
+| uniques              | List of Strings | empty    | List of [unique abilities](../uniques.md) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
 | excludedDifficulties | List of Strings | empty    | A list of all difficulties on which this reward may _not_ be awarded                                                                                                                              |
 
 [^E]: The exact algorithm for choosing a reward is the following:
@@ -130,7 +130,7 @@ A few uniques can be added to ancient ruin effects to modify when they can be ea
 - "Only available <when religion is enabled>"
 - "Hidden after a great prophet has been earned"
 
-## [Tileset-specific json](../../Creating-a-custom-tileset.md)
+## [Tileset-specific json](../Creating-a-custom-tileset.md)
 
 [Link to original FantasyHex](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/TileSets/FantasyHex.json)
 
@@ -138,14 +138,14 @@ A mod can define new Tilesets or add to existing ones, namely FantasyHex. There 
 
 | Attribute                                                                         | Type    | Default      | Notes                                                                                                                                |
 |-----------------------------------------------------------------------------------|---------|--------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| [useColorAsBaseTerrain](../../Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false        |                                                                                                                                      |
-| [useSummaryImages](../../Creating-a-custom-tileset.md#useSummaryImages)           | Boolean | false        |                                                                                                                                      |
-| [unexploredTileColor](../../Creating-a-custom-tileset.md#unexploredTileColor)     | Color   | Dark Gray    | `{"r":0.25,"g":0.25,"b":0.25,"a":1}`                                                                                                 |
-| [fogOfWarColor](../../Creating-a-custom-tileset.md#fogOfWarColor)                 | Color   | Black        | `{"r":0,"g":0,"b":0,"a":1}`                                                                                                          |
-| [fallbackTileSet](../../Creating-a-custom-tileset.md#fallbackTileSet)             | String  | "FantasyHex" | null to disable                                                                                                                      |
-| [tileScale](../../Creating-a-custom-tileset.md#tileScale)                         | Float   | 1.0          | The scale of all tiles. Can be used to increase or decrease the size of every tile                                                   |
-| [tileScales](../../Creating-a-custom-tileset.md#tileScales)                       | Object  | empty        | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
-| [ruleVariants](../../Creating-a-custom-tileset.md#ruleVariants)                   | Object  | empty        | [See here](#layering-images)                                                                                                         |
+| [useColorAsBaseTerrain](../Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false        |                                                                                                                                      |
+| [useSummaryImages](../Creating-a-custom-tileset.md#useSummaryImages)           | Boolean | false        |                                                                                                                                      |
+| [unexploredTileColor](../Creating-a-custom-tileset.md#unexploredTileColor)     | Color   | Dark Gray    | `{"r":0.25,"g":0.25,"b":0.25,"a":1}`                                                                                                 |
+| [fogOfWarColor](../Creating-a-custom-tileset.md#fogOfWarColor)                 | Color   | Black        | `{"r":0,"g":0,"b":0,"a":1}`                                                                                                          |
+| [fallbackTileSet](../Creating-a-custom-tileset.md#fallbackTileSet)             | String  | "FantasyHex" | null to disable                                                                                                                      |
+| [tileScale](../Creating-a-custom-tileset.md#tileScale)                         | Float   | 1.0          | The scale of all tiles. Can be used to increase or decrease the size of every tile                                                   |
+| [tileScales](../Creating-a-custom-tileset.md#tileScales)                       | Object  | empty        | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
+| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants)                   | Object  | empty        | [See here](#layering-images)                                                                                                         |
 
 ### Layering images
 
