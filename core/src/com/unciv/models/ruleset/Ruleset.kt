@@ -449,16 +449,17 @@ class Ruleset {
             }
 
             // These should be permanent
-            if (ruinRewards.isEmpty())
+            if (!ruinRewardsFile.exists())
                 ruinRewards.putAll(fallbackRuleset.ruinRewards)
 
-            if (globalUniques.uniques.isEmpty()) {
+            if (!globalUniquesFile.exists()) {
                 globalUniques = fallbackRuleset.globalUniques
             }
             // If we have no victories, add all the default victories
             if (victories.isEmpty()) victories.putAll(fallbackRuleset.victories)
 
             if (speeds.isEmpty()) speeds.putAll(fallbackRuleset.speeds)
+            if (difficulties.isEmpty()) difficulties.putAll(fallbackRuleset.difficulties)
 
             if (cityStateTypes.isEmpty())
                 for (cityStateType in fallbackRuleset.cityStateTypes.values)
