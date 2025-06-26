@@ -1,13 +1,14 @@
-## 4.16.20
+## 4.17.0
+
+AI considers tile damage when deciding on which tile to heal on
 
 Fixed building maintenance unique
 
 By SomeTroglodyte:
 - Improve ModChecker UI 
-- Allow mods with no global uniques, no ruins or no difficulties file 
-- Under-the-hood improvements around Speed and Years 
+- Allow mods with no global uniques, no ruins or no difficulties file
 
-AI: update CreatesOneImprovement handling - By EmperorPinguin
+AI: better handling of improvement-buildings - By EmperorPinguin
 
 ## 4.16.19
 

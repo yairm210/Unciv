@@ -60,6 +60,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | DiplomacyScreen/ | SelectedCiv | null | |
 | General/ | AnimatedMenu | roundedEdgeRectangle | |
 | General/ | Border | null | |
+| General/ | DisabledBox | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
 | General/ | KeyCapturingButton | roundedEdgeRectangleSmall | |
