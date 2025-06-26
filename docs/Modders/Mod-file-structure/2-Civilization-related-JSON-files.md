@@ -99,7 +99,8 @@ only has minor weight when choosing between regions that are not of a type to av
 These notes are __only__ valid when playing on generated maps, loaded maps from map editor get no "
 regions" and startBias is processed differently (but you can expect single-entry startBias to work
 best).
-[^V]: See [Supply Leader Voices](../../Images-and-Audio.md#supply-leader-voices)
+
+[^V]: See [Supply Leader Voices](../Images-and-Audio.md#supply-leader-voices)
 
 ## Personalities.json
 

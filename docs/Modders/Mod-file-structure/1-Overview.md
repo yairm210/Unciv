@@ -117,7 +117,7 @@ Base ruleset mods must be "complete" by themselves, but that does not mean they 
 | [UnitTypes](4-Unit-related-JSON-files.md#unittypesjson)                   | no             | vanilla                  |
 | [VictoryTypes](5-Miscellaneous-JSON-files.md#victorytypesjson)            | no             | vanilla                  |
 
-* Mod loading never fails due to missing files, they default to empty at first. Then the fallbacks mentioned above are applied for base rulesets only. Inconsistencies after that step would be reported by the Mod cheker.
+* Mod loading never fails due to missing files, they default to empty at first. Then the fallbacks mentioned above are applied for base rulesets only. Inconsistencies after that step would be reported by the Mod checker.
 * GlobalUniques has a fallback used when the file is missing. Therefore, a mod can intentionally define there are none by including one with empty content (`{}`).
 * Ruins has a fallback used when the file is missing. Therefore, a mod can intentionally define there are none by including one with empty content (`[]`).
 
