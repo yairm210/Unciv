@@ -103,6 +103,8 @@ best).
 
 ## Personalities.json
 
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Personalities.json)
+
 This file contains all Personalities for computer players.
 
 Each personality has the following structure:
@@ -134,9 +136,7 @@ The code below is an example of a valid "priorities" definition.
 }
 ```
 
-### Personalities.json
-
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Personalities.json)
+### Personality Behaviours
 
 Personality Behaviours **are not fully implemented yet** and their names may change. Using them before they
 are ready might make the mod unplayable. ***The following is WIP - read on at you own peril!***
@@ -151,7 +151,6 @@ There are 7 defining behaviours that influence an AI Civilization's behaviour. A
 - Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.
 - Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.
 
-You might want to compare the "template" at the beginning of the original linked above. But - you were warned. There's no guaranteee any of these values have any effect - yet.
 
 ## CityStateTypes.json
 
