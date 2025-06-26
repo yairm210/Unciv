@@ -459,6 +459,7 @@ class Ruleset {
             if (victories.isEmpty()) victories.putAll(fallbackRuleset.victories)
 
             if (speeds.isEmpty()) speeds.putAll(fallbackRuleset.speeds)
+            if (difficulties.isEmpty()) difficulties.putAll(fallbackRuleset.difficulties)
 
             if (cityStateTypes.isEmpty())
                 for (cityStateType in fallbackRuleset.cityStateTypes.values)
