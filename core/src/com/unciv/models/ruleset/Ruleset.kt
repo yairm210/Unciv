@@ -449,7 +449,7 @@ class Ruleset {
             }
 
             // These should be permanent
-            if (ruinRewards.isEmpty())
+            if (!ruinRewardsFile.exists())
                 ruinRewards.putAll(fallbackRuleset.ruinRewards)
 
             if (!globalUniquesFile.exists()) {

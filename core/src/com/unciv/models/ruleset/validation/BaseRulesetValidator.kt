@@ -31,6 +31,12 @@ internal class BaseRulesetValidator(
      *  value a Set of its prerequisites including indirect ones */
     private val prereqsHashMap = HashMap<String, HashSet<String>>()
 
+    private val anyAncientRuins: Boolean by lazy {
+        ruleset.tileImprovements.values.asSequence()
+            .flatMap { it.uniqueObjects }
+            .any { it.type == UniqueType.IsAncientRuinsEquivalent }
+    }
+
     init {
         // The `UniqueValidator.checkUntypedUnique` filtering Unique test ("X not found in Unciv's unique types, and is not used as a filtering unique")
         // should not complain when running the RulesetInvariant version, because an Extension Mod may e.g. define additional "Aircraft" and the _use_ of the
@@ -266,6 +272,15 @@ internal class BaseRulesetValidator(
                 if (!ruleset.difficulties.containsKey(difficulty))
                     lines.add("${reward.name} references difficulty ${difficulty}, which does not exist!", sourceObject = reward)
         }
+
+        // brainstorm: What additional constraints apply for rulesets without any ruins?
+        // * Any UniqueType.RuinsUpgrade is not OK -> See UniqueValidator.addUniqueTypeSpecificErrors
+        // * Any RuinRewards is not OK
+        // * Conversely, No ruinRewards is only OK for such rulesets
+        if (anyAncientRuins && ruleset.ruinRewards.isEmpty())
+            lines.add("There are Ancient Ruins or equivalents, but not RuinRewards", sourceObject = null)
+        if (!anyAncientRuins && ruleset.ruinRewards.isNotEmpty())
+            lines.add("There are RuinRewards, but no Ancient Ruins or equivalents", RulesetErrorSeverity.Warning, sourceObject = null)
     }
 
     override fun addSpecialistErrors(lines: RulesetErrorList) {
