@@ -103,8 +103,6 @@ best).
 
 ## Personalities.json
 
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Personalities.json)
-
 This file contains all Personalities for computer players.
 
 Each personality has the following structure:
@@ -135,6 +133,25 @@ The code below is an example of a valid "priorities" definition.
     "Honor": 10
 }
 ```
+
+### Personalities.json
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Personalities.json)
+
+Personality Behaviours **are not fully implemented yet** and their names may change. Using them before they
+are ready might make the mod unplayable. ***The following is WIP - read on at you own peril!***
+
+There are 7 defining behaviours that influence an AI Civilization's behaviour. A higher value means they will behave more like the attribute.
+
+- Military: Determines how much does the civilization prioritizes building a military, but not necessarily using it. A higher value means more focus on military, a lower value means it is likely more peaceful.
+- Agressive: Determines how the civilization uses its units while at war and which buildings they prioritise. A higher value means the civilization is more aggressive, a lower value means it is more defensive.
+- War: Determines how likely the civilization is to declare war. A 0 means the civ won't declare war at all.
+- Commerce: Determines how open the civilization is to trade, value open borders, and liberate city-states. A higher value means more trading frequency even with civilizations they don't like.
+- Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.
+- Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.
+- Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.
+
+You might want to compare the "template" at the beginning of the original linked above. But - you were warned. There's no guaranteee any of these values have any effect - yet.
 
 ## CityStateTypes.json
 
