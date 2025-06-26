@@ -36,6 +36,7 @@ Each difficulty level has the following structure:
 | aiUnhappinessModifier             | Float           | 1        |                                                                                                                                                                                                    |
 | turnBarbariansCanEnterPlayerTiles | Integer         | 0        |                                                                                                                                                                                                    |
 | clearBarbarianCampReward          | Integer         | 25       |                                                                                                                                                                                                    |
+| uniques | List of Strings | empty | Will be treated as part of GlobalUniques when this difficulty is chosen |
 
 ## Eras.json
 
@@ -76,25 +77,27 @@ This file should contain all the speeds you want to use in your mod.
 
 Each speed can have the following attributes:
 
-| Attribute                       | Type         | Default          | Notes                                                                                                       |
-|---------------------------------|--------------|------------------|-------------------------------------------------------------------------------------------------------------|
-| name                            | String       | Required         | Name of the speed                                                                                           |
-| modifier                        | Float (≥0)   | 1.0              | Overall game speed modifier                                                                                 |
-| productionCostModifier          | Float (≥0)   | `modifier` value | Scales production cost of units and buildings                                                               |
-| goldCostModifier                | Float (≥0)   | `modifier` value | Scales gold costs                                                                                           |
-| scienceCostModifier             | Float (≥0)   | `modifier` value | Scales science costs                                                                                        |
-| cultureCostModifier             | Float (≥0)   | `modifier` value | Scales culture costs                                                                                        |
-| faithCostModifier               | Float (≥0)   | `modifier` value | Scales faith costs                                                                                          |
-| improvementBuildLengthModifier  | Float (≥0)   | `modifier` value | Scales the time it takes for a worker to build tile improvements                                            |
-| barbarianModifier               | Float (≥0)   | `modifier` value | Scales the time between barbarian spawns                                                                    |
-| goldGiftModifier                | Float (≥0)   | `modifier` value | Scales the influence gained from gifting gold to city-states                                                |
-| cityStateTributeScalingInterval | Float (≥0)   | 6.5              | The number of turns it takes for the amount of gold a player demands from city-states to increase by 5 gold |
-| goldenAgeLengthModifier         | Float (≥0)   | `modifier` value | Scales the length of golden ages                                                                            |
-| religiousPressureAdjacentCity   | Integer (≥0) | 6                | Defines how much religious pressure a city exerts on nearby cities                                          |
-| peaceDealDuration               | Integer (≥0) | 10               | The number of turns a peace deal lasts                                                                      |
-| dealDuration                    | Integer (≥0) | 30               | The number of turns a non-peace deal (research agreement, open borders, etc.) lasts                         |
-| startYear                       | Float        | -4000            | The start year of the game (negative is BC/BCE)                                                             |
-| turns                           | List         | Required         | List of time interval per turn, [see below](#time-interval-per-turn)                                        |
+| Attribute                       | Type            | Default          | Notes                                                                                                       |
+|---------------------------------|-----------------|------------------|-------------------------------------------------------------------------------------------------------------|
+| name                            | String          | Required         | Name of the speed                                                                                           |
+| modifier                        | Float (≥0)      | 1.0              | Overall game speed modifier                                                                                 |
+| productionCostModifier          | Float (≥0)      | `modifier` value | Scales production cost of units and buildings                                                               |
+| goldCostModifier                | Float (≥0)      | `modifier` value | Scales gold costs                                                                                           |
+| scienceCostModifier             | Float (≥0)      | `modifier` value | Scales science costs                                                                                        |
+| cultureCostModifier             | Float (≥0)      | `modifier` value | Scales culture costs                                                                                        |
+| faithCostModifier               | Float (≥0)      | `modifier` value | Scales faith costs                                                                                          |
+| improvementBuildLengthModifier  | Float (≥0)      | `modifier` value | Scales the time it takes for a worker to build tile improvements                                            |
+| barbarianModifier               | Float (≥0)      | `modifier` value | Scales the time between barbarian spawns                                                                    |
+| goldGiftModifier                | Float (≥0)      | `modifier` value | Scales the influence gained from gifting gold to city-states                                                |
+| cityStateTributeScalingInterval | Float (≥0)      | 6.5              | The number of turns it takes for the amount of gold a player demands from city-states to increase by 5 gold |
+| goldenAgeLengthModifier         | Float (≥0)      | `modifier` value | Scales the length of golden ages                                                                            |
+| religiousPressureAdjacentCity   | Integer (≥0)    | 6                | Defines how much religious pressure a city exerts on nearby cities                                          |
+| peaceDealDuration               | Integer (≥0)    | 10               | The number of turns a peace deal lasts                                                                      |
+| dealDuration                    | Integer (≥0)    | 30               | The number of turns a non-peace deal (research agreement, open borders, etc.) lasts                         |
+| startYear                       | Float           | -4000            | The start year of the game (negative is BC/BCE)                                                             |
+| turns                           | List            | Required         | List of time interval per turn, [see below](#time-interval-per-turn)                                        |
+| uniques                         | List of Strings | empty            | Will be treated as part of GlobalUniques when this speed is chosen                                          |
+
 
 ### Time interval per turn
 
