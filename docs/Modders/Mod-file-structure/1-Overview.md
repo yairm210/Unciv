@@ -87,6 +87,40 @@ The keys in this example are "science" and "culture", and both have the value "5
 
 In some sense you can see from these types that JSON files themselves are actually a list of objects, each describing a single building, unit or something else.
 
+## Requirements for Base Rulesets
+
+Base ruleset mods must be "complete" by themselves, but that does not mean they must include all possible json files nor define content in all of them. Here's a breakdown (WIP, possibly inaccurate):
+
+| File                                                                      | Empty allowed? | Default/fallback         |
+|---------------------------------------------------------------------------|----------------|--------------------------|
+| [Beliefs](2-Civilization-related-JSON-files.md#beliefsjson)               | yes            | none                     |
+| [Buildings](2-Civilization-related-JSON-files.md#buildingsjson)           | no             | none                     |
+| [CityStateTypes](2-Civilization-related-JSON-files.md#citystatetypesjson) | no             | vanilla                  |
+| [Difficulties](5-Miscellaneous-JSON-files.md#difficultiesjson)            | no             | vanilla                  |
+| [Eras](5-Miscellaneous-JSON-files.md#erasjson)                            | no             | none                     |
+| [GlobalUniques](5-Miscellaneous-JSON-files.md#globaluniquesjson)          | yes            | vanilla                  |
+| [ModOptions](5-Miscellaneous-JSON-files.md#modoptionsjson)                | yes            | generated on download    |
+| [Nations](2-Civilization-related-JSON-files.md#nationsjson)               | no             | none                     |
+| [Policies](2-Civilization-related-JSON-files.md#policiesjson)             | ?              | none                     |
+| [Quests](2-Civilization-related-JSON-files.md#questsjson)                 | ?              | none                     |
+| [Religions](2-Civilization-related-JSON-files.md#religionsjson)           | yes            | none                     |
+| [Ruins](3-Map-related-JSON-files.md#ruinsjson)                            | yes            | vanilla                  |
+| [Specialists](2-Civilization-related-JSON-files.md#specialistsjson)       | ?              | none                     |
+| [Speeds](5-Miscellaneous-JSON-files.md#speedsjson)                        | no             | vanilla                  |
+| [Techs](2-Civilization-related-JSON-files.md#techsjson)                   | yes            | none                     |
+| [Terrains](3-Map-related-JSON-files.md#terrainsjson)                      | no             | none                     |
+| [TileImprovements](3-Map-related-JSON-files.md#tileimprovementsjson)      | ?              | none                     |
+| [TileResources](3-Map-related-JSON-files.md#tileresourcesjson)            | ?              | none                     |
+| [Tutorials](5-Miscellaneous-JSON-files.md#tutorialsjson)                  | yes            | builtin always displayed |
+| [UnitPromotions](4-Unit-related-JSON-files.md#unitpromotionsjson)         | ?              | none                     |
+| [Units](4-Unit-related-JSON-files.md#unitsjson)                           | no             | none                     |
+| [UnitTypes](4-Unit-related-JSON-files.md#unittypesjson)                   | no             | vanilla                  |
+| [VictoryTypes](5-Miscellaneous-JSON-files.md#victorytypesjson)            | no             | vanilla                  |
+
+* Mod loading never fails due to missing files, they default to empty at first. Then the fallbacks mentioned above are applied for base rulesets only. Inconsistencies after that step would be reported by the Mod cheker.
+* GlobalUniques has a fallback used when the file is missing. Therefore, a mod can intentionally define there are none by including one with empty content (`{}`).
+* Ruins has a fallback used when the file is missing. Therefore, a mod can intentionally define there are none by including one with empty content (`[]`).
+
 ## Uniques
 
 "Uniques" are a label used by Unciv for extensible and customizable effects. Nearly every "ruleset object" allows a set of them, as a List with the name "uniques".
