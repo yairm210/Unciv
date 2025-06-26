@@ -428,15 +428,24 @@ object Automation {
         }
     }
 
+    private fun improvementIsRemovable(city: City, tile: Tile): Boolean {
+        val stateForConditionals = StateForConditionals(city.civ, city, tile = tile)
+        return (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, stateForConditionals) == false  && tile.getTileImprovement()?.hasUnique(UniqueType.Irremovable, stateForConditionals) == false)
+    }
+
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
         val localUniqueCache = LocalUniqueCache()
+        val civ = city.civ
         return city.getTiles().filter {
-            it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace,
-                    StateForConditionals(city.civ, city, tile = it)) == false
-                && it.improvementFunctions.canBuildImprovement(improvement, city.civ)
-        }.maxByOrNull {
-            rankTileForCityWork(it, city, localUniqueCache)
+            (it.getTileImprovement() == null || improvementIsRemovable(city, it))
+                && it.improvementFunctions.canBuildImprovement(improvement, civ)
+        }.maxByOrNull { 
+            // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
+            rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, localUniqueCache, it.stats.getTileStats(city, civ, localUniqueCache)), civ) + (
+                if (improvement.hasUnique(UniqueType.DefensiveBonus)) { 
+                    it.aerialDistanceTo(city.getCenterTile()) + it.getDefensiveBonus(false) } 
+                else 0).toFloat()
         }
     }
 
