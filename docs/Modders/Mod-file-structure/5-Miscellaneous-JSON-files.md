@@ -4,7 +4,9 @@
 
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Difficulties.json)
 
-This file defines the difficulty levels a player can choose when starting a new game.
+This optional file defines the difficulty levels a player can choose when starting a new game.
+
+Base ruleset Mods can omit the file or supply an empty list, even though at least one difficulty is mandatory, in which case they inherit [the ones from the Vanilla ruleset](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Difficulties.json).
 
 Each difficulty level has the following structure:
 
@@ -73,7 +75,9 @@ Each era can have the following attributes:
 
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Speeds.json)
 
-This file should contain all the speeds you want to use in your mod.
+This optional file should contain all the speeds you want to use in your mod.
+
+Base ruleset Mods can omit the file or supply an empty list, even though at least one game speed is mandatory, in which case they inherit [the ones from the Vanilla ruleset](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Speeds.json).
 
 Each speed can have the following attributes:
 
@@ -296,6 +300,9 @@ With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% G
 
 GlobalUniques defines uniques that apply globally. e.g. Vanilla rulesets define the effects of Unhappiness here.
 
+Base ruleset Mods can omit the file, in which case they inherit [the ones from the Vanilla ruleset](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/GlobalUniques.json).
+Alternatively, they can supply a file with an empty object (`{}`), meaning that no global Uniques exist for that Mod.
+
 It has the following structure:
 
 | Attribute   | Type            | Default         | Notes                                                                                       |
@@ -332,6 +339,8 @@ This is searched for, meaning the mod defining the Tutorial is irrelevant, mods 
 
 These files contain which victories this mod provides, and what milestones must be reached for someone to win a victory.
 Most of the file contains of strings that are shown to the user in the victory screen, with the rest being the requirements for winning.
+
+Base ruleset Mods can omit the file or supply an empty list, even though at least one victory type is mandatory, in which case they inherit [the ones from the Vanilla ruleset](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/VictoryTypes.json).
 
 Each victory have the following structure:
 

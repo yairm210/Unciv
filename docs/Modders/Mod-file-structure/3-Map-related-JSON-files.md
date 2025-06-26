@@ -88,7 +88,9 @@ Each resource has the following structure:
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
 
-This optional file contains the possible rewards ancient ruins give. If omitted, the default file for the game is used, even in baseRuleSet mods.
+This optional file contains the possible rewards ancient ruins give.
+
+Base ruleset Mods can omit the file, in which case they inherit the ones from the Vanilla ruleset. They can, however, provide a file with an empty list (`[]`) to avoid that. In this case there should be no improvements with the ["Provides a random bonus when entered" Unique](../uniques.md#improvement-uniques). Conversely, if there are such improvements, the Mod checker will flag an empty Ruins file as error.
 
 Each of the objects in the file represents a single reward you can get from ruins. It has the following structure:
 

@@ -157,9 +157,8 @@ You might want to compare the "template" at the beginning of the original linked
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/CityStateTypes.json)
 
-This optional file is used for defining new types of city states. These types determine the benefits
-major civilizations gets when they befriend or ally the city state with influence. If the file is
-ommitted, the following are automatically added:
+This optional file is used for defining the types of city states. These types determine the benefits major civilizations get when they befriend or ally the city state with influence.
+For base ruleset Mods, if the file is ommitted or contains an empty list, [all types from the Vanilla ruleset](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/CityStateTypes.json) are automatically added:
 Cultured, Maritime, Mercantile, Militaristic, Religious.
 
 Each city state type has the following structure:
