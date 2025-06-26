@@ -41,7 +41,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 
 ## General Overview of JSON files
 
-Resources: [json.org](https://www.json.org/), [ISO standard](https://standards.iso.org/ittf/PubliclyAvailableStandards/c071616_ISO_IEC_21778_2017.zip)
+**Recommended reading**: [json.org](https://www.json.org/), [ISO standard](https://standards.iso.org/ittf/PubliclyAvailableStandards/c071616_ISO_IEC_21778_2017.zip)
 
 Almost all Unciv JSON files start with a "[" and end with a "]". In between these are different objects of the type you are describing, each of which is contained between a "{" and a "}". For example, a very simple units.json may look like:
 
@@ -65,8 +65,9 @@ There are different types of attributes:
 
 | type           | notes                                                                                                                                                                                                                                                                          |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| String         | A word or sentence. Should be between double quotes (")                                                                                                                                                                                                                        |
+| String         | A word or sentence. Should be between double quotes (") and escape double quotes meant to be part of the text: `\"`                                                                                                                                                            |
 | Integer        | A number. Can be both positive or negative. Should **not** be between quotes                                                                                                                                                                                                   |
+| Float          | A number that can have decimal places. Remember to use `.` as the Json standard needs, not your local culture's decimal symbol. Scientific notation would work, though                                                                                                         |
 | Boolean        | A value that can either be 'true' or 'false'. Should **not** be between quotes                                                                                                                                                                                                 |
 | List of [type] | If multiple values could apply (such as with the promotions above), they should be put inside a list. Each element of the list should be written like a normal attribute, separated by commas, and enclosed between square braces. E.g.: ["Shock I", "Shock II"] or [1, 2, 3]. |
 | Object         | The most complicated type of attribute. An object is comprised of multiple attributes, each of which again has a type. These attributes have a key (the part before the ":") and a value (the part behind it). For an example, see below.                                      |
