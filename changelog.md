@@ -1,3 +1,14 @@
+## 4.16.20
+
+Fixed building maintenance unique
+
+By SomeTroglodyte:
+- Improve ModChecker UI 
+- Allow mods with no global uniques, no ruins or no difficulties file 
+- Under-the-hood improvements around Speed and Years 
+
+AI: update CreatesOneImprovement handling - By EmperorPinguin
+
 ## 4.16.19
 
 AI performance optimization
