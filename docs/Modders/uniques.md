@@ -1,7 +1,7 @@
 # Uniques
 An overview of uniques can be found [here](../Developers/Uniques.md)
 
-Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
+Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](Unique-parameters.md)
 
 ## Triggerable uniques
 !!! note ""
@@ -2762,6 +2762,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ??? example  "Can only start games from the starting era"
+	In this case, 'starting era' means the first defined Era in the entire ruleset.
 	Applicable to: ModOptions
 
 ??? example  "Allow raze capital"
@@ -2784,6 +2785,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Mod requires [modFilter]"
 	Specifies that your Extension Mod is only available if any other Mod matching the filter is active.
+	Multiple copies of this Unique cannot be used to specify alternatives, they work as 'and' logic. If you need alternates and wildcards can't filter them well enough, please open an issue.
 	Example: "Mod requires [DeCiv Redux]"
 
 	Applicable to: ModOptions
@@ -3562,6 +3564,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement excluding 'Cancel improvement order'
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
+Note that this must use the Mod name as Unciv displays it, not the Repository name.
+There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.
 *[nonNegativeAmount]: This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional.
 *[policy]: The name of any policy.
 *[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), or a policy branch as `[branchName] branch` (matching all policies in that branch).

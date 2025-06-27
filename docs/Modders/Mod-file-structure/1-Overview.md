@@ -143,4 +143,4 @@ Note: Currently some mods use untyped Uniques not for filtering purposes, but as
 
 Many parts of Unciv are moddable, and for each there is a separate json file. There is a json file for buildings, for units, for promotions units can have, for technologies, etc. The different new buildings or units you define can also have lots of different attributes, though not all are required. Below are tables documenting all the different attributes everything can have. Only the attributes which are noted to be 'required' must be provided. All others have a default value that will be used when it is omitted.
 
-The individual files are described on [separate pages](#Table-of-Contents).
+The individual files are described on [separate pages](#table-of-contents).

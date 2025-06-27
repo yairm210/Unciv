@@ -600,7 +600,13 @@ enum class UniqueParameterType(
 
     /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter",
-        "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter",
+        docExample = "DeCiv Redux",
+        docDescription = """
+            |A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
+            |Note that this must use the Mod name as Unciv displays it, not the Repository name.
+            |There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.
+        """.trimMargin(),
+        displayName = "Mod name filter",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
