@@ -85,8 +85,6 @@ class Ruleset {
      */
     var name = ""
 
-    fun cleanName(): String = name.replace("   ", " - ")
-
     /** The list of mods that made up this Ruleset, including the base ruleset. */
     val mods = LinkedHashSet<String>()
 
