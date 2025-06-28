@@ -2822,6 +2822,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Can only start games from the starting era"
 	In this case, 'starting era' means the first defined Era in the entire ruleset.
+
 	Applicable to: ModOptions
 
 ??? example  "Allow raze capital"
