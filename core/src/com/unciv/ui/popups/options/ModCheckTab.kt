@@ -55,7 +55,7 @@ class ModCheckTab(
     }
     private val loadingImage = LoadingImage(48f, LoadingImage.Style(loadingColor = Color.SCARLET))
     /** Used to repopulate modCheckResultTable when searching */
-    private val modResultExpanderTabs = ArrayList<ExpanderTab>()
+    private val modResultTables = ArrayList<Table>()
 
     private var runningCheck: Job? = null
 
@@ -130,11 +130,12 @@ class ModCheckTab(
 
         loadingImage.show()
 
-        val openedExpanderTitles = modResultExpanderTabs
+        val openedExpanderTitles = modResultTables
+            .filterIsInstance<ExpanderTab>()
             .filter { it.isOpen }.map { it.title }.toSet()
 
         modCheckResultTable.clear()
-        modResultExpanderTabs.clear()
+        modResultTables.clear()
 
         val loadingErrors = RulesetCache.loadRulesets()
         if (loadingErrors.isNotEmpty()) {
@@ -197,8 +198,8 @@ class ModCheckTab(
             // The last check, whether finished or not, included all mods we want to filter
             synchronized(modCheckResultTable) {
                 modCheckResultTable.clear()
-                for (expanderTab in modResultExpanderTabs) {
-                    if (expanderTab.title.filterApplies())
+                for (expanderTab in modResultTables) {
+                    if (expanderTab.name.filterApplies())
                         modCheckResultTable.add(expanderTab).row()
                 }
             }
@@ -226,6 +227,16 @@ class ModCheckTab(
             .filter { it.modOptions.isBaseRuleset }
             .firstOrNull { ModCompatibility.meetsBaseRequirements(mod, it) }
             ?.name
+    }
+
+    private fun addResultCommon(mod: Ruleset, table: Table) {
+        table.name = mod.name // used when searching
+
+        synchronized(modCheckResultTable) {
+            modResultTables.add(table)
+            if (mod.name.filterApplies())
+                modCheckResultTable.add(table).row()
+        }
     }
 
     private fun addModResult(mod: Ruleset, combinedRuleset: Ruleset, modLinks: RulesetErrorList, startsOutOpened: Boolean) {
@@ -268,12 +279,7 @@ class ModCheckTab(
                 }).row()
         }
         expanderTab.header.left()
-
-        synchronized(modCheckResultTable) {
-            modResultExpanderTabs.add(expanderTab)
-            if (mod.name.filterApplies())
-                modCheckResultTable.add(expanderTab).row()
-        }
+        addResultCommon(mod, expanderTab)
     }
 
     private fun addDisabledPlaceholder(mod: Ruleset) {
@@ -285,9 +291,7 @@ class ModCheckTab(
             add(mod.name.toLabel(Color.LIGHT_GRAY, Constants.headingFontSize, alignment = Align.left)).left().grow()
             addTooltip("Requirements could not be determined.\nChoose a base to check this Mod.", 16f, targetAlign = Align.top)
         }
-        synchronized(modCheckResultTable) {
-            modCheckResultTable.add(table).row()
-        }
+        addResultCommon(mod, table)
     }
 
     private fun openUniqueBuilder(combinedRuleset: Ruleset) {
