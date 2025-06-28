@@ -24,7 +24,7 @@ Each difficulty level has the following structure:
 | unhappinessModifier               | Float           | 1        |                                                                                                                                                                                                    |
 | barbarianBonus                    | Float           | 0        |                                                                                                                                                                                                    |
 | barbarianSpawnDelay               | Integer         | 0        |                                                                                                                                                                                                    |
-| playerBonusStartingUnits          | List of Strings | empty    | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](4-Unit-related-JSON-files#Units.json). Applies only to human player civs |
+| playerBonusStartingUnits          | List of Strings | empty    | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](4-Unit-related-JSON-files.md#Units.json). Applies only to human player civs |
 | aiCityGrowthModifier              | Float           | 1        |                                                                                                                                                                                                    |
 | aiUnitCostModifier                | Float           | 1        |                                                                                                                                                                                                    |
 | aiBuildingCostModifier            | Float           | 1        |                                                                                                                                                                                                    |
@@ -32,7 +32,7 @@ Each difficulty level has the following structure:
 | aiBuildingMaintenanceModifier     | Float           | 1        |                                                                                                                                                                                                    |
 | aiUnitMaintenanceModifier         | Float           | 1        |                                                                                                                                                                                                    |
 | aiUnitSupplyModifier              | Integer         | 5        |                                                                                                                                                                                                    |
-| aiFreeTechs                       | List of Strings | empty    | Must be in [Techs.json](2-Civilization-related-JSON-files#techsjson)                                                                                                                               |
+| aiFreeTechs                       | List of Strings | empty    | Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson)                                                                                                                               |
 | aiMajorCivBonusStartingUnits      | List of Strings | empty    | Same rules as playerBonusStartingUnits, See above. Applies only to AI major civs                                                                                                                   |
 | aiCityStateBonusStartingUnits     | List of Strings | empty    | Same rules as playerBonusStartingUnits, See above. Applies only to city-state civs                                                                                                                 |
 | aiUnhappinessModifier             | Float           | 1        |                                                                                                                                                                                                    |
@@ -54,11 +54,11 @@ Each era can have the following attributes:
 | researchAgreementCost     | Integer (≥0)                           | 300             | Cost of research agreements when the most technologically advanced civ is in this era                                                                                                                                                           |
 | iconRGB                   | [List of 3× Integer](#rgb-colors-list) | white           | RGB color that icons for technologies of this era should have in the Tech screen                                                                                                                                                                |
 | startingSettlerCount      | Integer (≥0)                           | 1               | Amount of settler units that should be spawned when starting a game in this era (setting this to zero is discouraged [^1])                                                                                                                      |
-| startingSettlerUnit       | String                                 | "Settler"       | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files#unitsjson), or a unit with the "Founds a new city" unique must exist                                                             |
+| startingSettlerUnit       | String                                 | "Settler"       | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson), or a unit with the "Founds a new city" unique must exist                                                             |
 | startingWorkerCount       | Integer (≥0)                           | 0               | Amount of worker units that should be spawned when starting a game in this era                                                                                                                                                                  |
-| startingWorkerUnit        | String                                 | "Worker"        | Name of the unit that should be used for the previous field. If startingWorkerCount>0, then it must exist in [Units.json](4-Unit-related-JSON-files#unitsjson), or a unit with the "Can build [filter] improvements on tiles" unique must exist |
+| startingWorkerUnit        | String                                 | "Worker"        | Name of the unit that should be used for the previous field. If startingWorkerCount>0, then it must exist in [Units.json](4-Unit-related-JSON-files.md#unitsjson), or a unit with the "Can build [filter] improvements on tiles" unique must exist |
 | startingMilitaryUnitCount | Integer (≥0)                           | 1               | Amount of military units that should be spawned when starting a game in this era                                                                                                                                                                |
-| startingMilitaryUnit      | String                                 | "Warrior"       | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files#unitsjson)                                                                                                                       |
+| startingMilitaryUnit      | String                                 | "Warrior"       | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson)                                                                                                                       |
 | startingGold              | Integer (≥0)                           | 0               | Amount of gold each civ should receive when starting a game in this era                                                                                                                                                                         |
 | startingCulture           | Integer (≥0)                           | 0               | Amount of culture each civ should receive when starting a game in this era                                                                                                                                                                      |
 | settlerPopulation         | Integer (>0)                           | 1               | Amount of population each city should have when settled when starting a game in this era                                                                                                                                                        |
@@ -134,7 +134,7 @@ Events allow users to choose between options of triggers to activate.
 | name            | String                              | Required | Used for triggering via "Triggers a [event] event" unique                                                                |
 | text            | String                              | None     | Flavor text displayed to user                                                                                            |
 | presentation    | One of: "None", "Alert", "Floating" | Alert    | "Alert" indicates a regular popup, "None" means the choice is made randomly, "Floating" is for tutorial-style indicators |
-| civilopediaText | List                                | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files#civilopedia-text)                                            |
+| civilopediaText | List                                | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                            |
 | choices         | List of EventChoices                |          | User can choose to trigger one of the viable choices                                                                     |
 
 
@@ -147,7 +147,7 @@ Event choices are comprised of:
 | text            | String                                         | Required   | Displayed to user as button. Should be an action name - "Do X"                                                      |
 | uniques         | List of uniques to trigger or limit conditions | Required   | The triggers that this choice activates upon being chosen, and "Unavailable" / "Only available" uniques             |
 | keyShortcut     | key to select (name)                           | none       | Key names see [Gdx.Input.Keys](https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/Input.java#L69) |
-| civilopediaText | List                                           | Optional   | See [civilopediaText chapter](5-Miscellaneous-JSON-files#civilopedia-text)                                          |
+| civilopediaText | List                                           | Optional   | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                          |
 
 Here, civilopediaText is shown outside the active Button, before the triggeredUniques.
 
@@ -160,7 +160,7 @@ This file is a little different:
 - Does not exist in Vanilla ruleset
 - Is entirely optional but will be created after downloading a mod
 
-Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../../uniques#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
+Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../uniques.md#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
 Incompatibility filtering works so far between extension and base mods, but feel free to document known extension-to-extension incompatibilities using the same Unique now. Stay tuned!
 
 The file can have the following attributes, not including the values Unciv sets automatically:
@@ -168,12 +168,12 @@ The file can have the following attributes, not including the values Unciv sets 
 | Attribute         | Type    | default | Notes                                                                                                                                                                                  |
 |-------------------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | isBaseRuleset     | Boolean | false   | Replaces vanilla ruleset if true                                                                                                                                                       |
-| uniques           | List    | empty   | Mod-wide specials, [see here](../../uniques#modoptions-uniques)                                                                                                                     |
-| techsToRemove     | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files#techsjson) or [technologyFilter](../../Unique-parameters#technologyfilter) to remove (isBaseRuleset=false only)         |
-| buildingsToRemove | List    | empty   | List of [Buildings or Wonders](2-Civilization-related-JSON-files#buildingsjson) or [buildingFilter](../../Unique-parameters#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove     | List    | empty   | List of [Units](4-Unit-related-JSON-files#unitsjson) or [unitFilter](../../Unique-parameters#baseunitfilter) to remove (isBaseRuleset=false only)                                |
-| nationsToRemove   | List    | empty   | List of [Nations](2-Civilization-related-JSON-files#nationsjson) or [nationFilter](../../Unique-parameters#nationfilter) to remove (isBaseRuleset=false only)                    |
-| policyBranchesToRemove | List | empty | List of [Policy Branches](2-Civilization-related-JSON-files#policyjson) to remove (isBaseRuleset=false only)                             |
+| uniques           | List    | empty   | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                                     |
+| techsToRemove     | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../../Unique-parameters#technologyfilter) to remove (isBaseRuleset=false only)         |
+| buildingsToRemove | List    | empty   | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../../Unique-parameters#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove     | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters#baseunitfilter) to remove (isBaseRuleset=false only)                                |
+| nationsToRemove   | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters#nationfilter) to remove (isBaseRuleset=false only)                    |
+| policyBranchesToRemove | List | empty | List of [Policy Branches](2-Civilization-related-JSON-files.md#policyjson) to remove (isBaseRuleset=false only)                             |
 | constants         | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                      |
 | tileset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
 | unitset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
@@ -296,7 +296,7 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
             max((`base` + `perProduction` \* (new_unit_cost - old_unit_cost)), 0)
             \* (1 + eraNumber \* `eraMultiplier`) \* `civModifier`
         ) ^ `exponent`
-With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../../uniques#global-uniques) uniques that apply.
+With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global-uniques) uniques that apply.
 
 ## GlobalUniques.json
 
@@ -312,8 +312,8 @@ It has the following structure:
 | Attribute   | Type            | Default         | Notes                                                                                       |
 |-------------|-----------------|-----------------|---------------------------------------------------------------------------------------------|
 | name        | String          | "GlobalUniques" | The name field is not used, but still must be set (the Ruleset validator might display it). |
-| uniques     | List of Strings | empty           | List of [unique abilities](../../uniques) that apply globally                               |
-| unitUniques | List of Strings | empty           | List of [unique abilities](../../uniques) that applies to each unit                         |
+| uniques     | List of Strings | empty           | List of [unique abilities](../uniques.md) that apply globally                               |
+| unitUniques | List of Strings | empty           | List of [unique abilities](../uniques.md) that applies to each unit                         |
 
 When extension rulesets define GlobalUniques, all uniques are merged. At the moment there is no way to change/remove uniques set by a base mod.
 
@@ -327,11 +327,11 @@ Also, place it under `<mod>/jsons/` normally even if the original is found one l
 
 Each tutorial has the following structure:
 
-| Attribute       | Type            | Default  | Notes                                                                         |
-|-----------------|-----------------|----------|-------------------------------------------------------------------------------|
-| name            | String          | Required | Entry name                                                                    |
-| civilopediaText | List            | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files#civilopedia-text) |
-| steps           | List of Strings | Optional | Plain text                                                                    |
+| Attribute       | Type            | Default  | Notes                                            |
+|-----------------|-----------------|----------|--------------------------------------------------|
+| name            | String          | Required | Entry name                                       |
+| civilopediaText | List            | Optional | See [civilopediaText chapter](#civilopedia-text) |
+| steps           | List of Strings | Optional | Plain text                                       |
 
 If an entry contains both `steps` and `civilopediaText` attributes, the `civilopediaText` is shown first.
 Tutorials shown as Popup can show an show an external image (not part of the texture atlases) if there is an image unter ExtraImages (directly under assets or the Mod folder) having the same name.

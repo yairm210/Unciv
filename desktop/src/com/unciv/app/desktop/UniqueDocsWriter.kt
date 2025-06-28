@@ -95,7 +95,7 @@ class UniqueDocsWriter {
         val lines = ArrayList<String>(capacity)
         lines += "# Uniques"
         lines += "An overview of uniques can be found [here](../Developers/Uniques.md)"
-        lines += "\nSimple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
+        lines += "\nSimple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](Unique-parameters.md)"
         lines += ""
 
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
