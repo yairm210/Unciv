@@ -141,7 +141,7 @@ class ModCheckboxTable(
     /** Runs in parallel thread */ 
     private fun complexModCheckReturnsErrors(): Boolean {
         // Check over complete combination of selected mods
-        val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRulesetName)
+        val (_, complexModLinkCheck) = RulesetCache.checkCombinedModLinks(mods, baseRulesetName)
         if (!complexModLinkCheck.isWarnUser()){
             savedModcheckResult = null
             return false

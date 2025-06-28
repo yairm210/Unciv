@@ -50,7 +50,9 @@ class ModCheckTab(
 
     private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val searchModsTextField: UncivTextField
-    private val modCheckResultTable = Table()
+    private val modCheckResultTable = Table().apply {
+        defaults().uniformX().fillX().top()
+    }
     private val loadingImage = LoadingImage(48f, LoadingImage.Style(loadingColor = Color.SCARLET))
     /** Used to repopulate modCheckResultTable when searching */
     private val modResultExpanderTabs = ArrayList<ExpanderTab>()
@@ -65,7 +67,8 @@ class ModCheckTab(
     private val emptyRuleset = Ruleset()
 
     init {
-        defaults().pad(10f).align(Align.top)
+        top()
+        defaults().pad(10f).top()
 
         fixedContent.defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick(::runAction)
@@ -138,7 +141,7 @@ class ModCheckTab(
             val errorTable = Table().apply { defaults().pad(2f) }
             for (loadingError in loadingErrors)
                 errorTable.add(loadingError.toLabel()).width(stage.width / 2).row()
-            modCheckResultTable.add(errorTable)
+            modCheckResultTable.add(errorTable).row()
         }
 
         runningCheck = Concurrency.run("ModChecker") {
@@ -162,9 +165,14 @@ class ModCheckTab(
                 if (!shouldCheckMod(mod, baseForThisMod)) continue
                 if (!isActive) break
 
-                val modLinks =
-                    if (baseForThisMod == MOD_CHECK_WITHOUT_BASE) mod.getErrorList(tryFixUnknownUniques = true)
-                    else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), baseForThisMod, tryFixUnknownUniques = true)
+                val (combinedRuleset, modLinks) =
+                    if (baseForThisMod == MOD_CHECK_WITHOUT_BASE) {
+                        mod to mod.getErrorList(tryFixUnknownUniques = true)
+                    } else {
+                        val (ruleset, errors) = RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), baseForThisMod)
+                        (ruleset ?: mod) to errors
+                    }
+
                 if (!isActive) break
 
                 modLinks.sortByDescending { it.errorSeverityToReport }
@@ -172,7 +180,7 @@ class ModCheckTab(
                 if (!modLinks.isNotOK()) modLinks.add("No problems found.".tr(), RulesetErrorSeverity.OK, sourceObject = null)
 
                 launchOnGLThread {
-                    addModResult(mod, baseForThisMod, modLinks, mod.name in openedExpanderTitles)
+                    addModResult(mod, combinedRuleset, modLinks, mod.name in openedExpanderTitles)
                 }
             }
 
@@ -220,7 +228,7 @@ class ModCheckTab(
             ?.name
     }
 
-    private fun addModResult(mod: Ruleset, base: String, modLinks: RulesetErrorList, startsOutOpened: Boolean) {
+    private fun addModResult(mod: Ruleset, combinedRuleset: Ruleset, modLinks: RulesetErrorList, startsOutOpened: Boolean) {
         // When the options popup is already closed before this postRunnable is run,
         // Don't add the labels, as otherwise the game will crash
         if (stage == null) return
@@ -238,11 +246,11 @@ class ModCheckTab(
             it.defaults().pad(10f)
 
             val openUniqueBuilderButton = "Open unique builder".toTextButton()
-            openUniqueBuilderButton.onClick { openUniqueBuilder(mod, base) }
+            openUniqueBuilderButton.onClick { openUniqueBuilder(combinedRuleset) }
             it.add(openUniqueBuilderButton).row()
 
             if (severity != RulesetErrorSeverity.OK && mod.folderLocation != null) {
-                val replaceableUniques = UniqueAutoUpdater.getDeprecatedReplaceableUniques(mod)
+                val replaceableUniques = UniqueAutoUpdater.getDeprecatedReplaceableUniques(mod, combinedRuleset)
                 if (replaceableUniques.isNotEmpty())
                     it.add("Autoupdate mod uniques".toTextButton()
                         .onClick { autoUpdateUniques(screen, mod, replaceableUniques) }).row()
@@ -278,14 +286,12 @@ class ModCheckTab(
             addTooltip("Requirements could not be determined.\nChoose a base to check this Mod.", 16f, targetAlign = Align.top)
         }
         synchronized(modCheckResultTable) {
-            modCheckResultTable.add(table).growX().row()
+            modCheckResultTable.add(table).row()
         }
     }
 
-    private fun openUniqueBuilder(mod: Ruleset, base: String) {
-        val ruleset = if (base == MOD_CHECK_WITHOUT_BASE) mod
-            else RulesetCache.getComplexRuleset(linkedSetOf(mod.name), base)
-        UncivGame.Current.pushScreen(UniqueBuilderScreen(ruleset))
+    private fun openUniqueBuilder(combinedRuleset: Ruleset) {
+        UncivGame.Current.pushScreen(UniqueBuilderScreen(combinedRuleset))
     }
 
     private fun autoUpdateUniques(screen: BaseScreen, mod: Ruleset, replaceableUniques: HashMap<String, String>) {
