@@ -167,3 +167,6 @@ package.json
 # Unsorted additions
 # Detekt
 detekt/reports.html
+
+# When you test the wiki by running mkdocs locally:
+/site/

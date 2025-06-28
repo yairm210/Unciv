@@ -44,8 +44,26 @@ class UniqueDocsWriter {
                 this in it.targetTypes
             }
     }
+
+    @Suppress("unused")  // was used in the past? 
+    /** Create the anchor-navigation part to append to a link for a given header */
     fun toLink(string: String): String {
         return "#" + string.split(' ').joinToString("-") { it.lowercase() }
+    }
+
+    // Thanks https://github.com/ktorio/ktor/blob/d89d41ef6dc91479e6c13c25eb306abc15040b8e/ktor-utils/common/src/io/ktor/util/Text.kt#L7-L28
+    private fun String.escapeHtml(indent: Int = 0) = buildString(capacity = length + indent + 6) {
+        for (char in this@escapeHtml) {
+            when(char) {
+                //'\'' -> append("&#x27;") // not necessary for this case
+                //'\"' -> append("&quot;") // not necessary for this case
+                '&' -> append("&amp;")
+                '<' -> append("&lt;")
+                '>' -> append("&gt;")
+                '\n' -> append("\n" + "\t".repeat(indent))
+                else -> append(char)
+            }
+        }
     }
 
     fun write() {
@@ -96,13 +114,13 @@ class UniqueDocsWriter {
                 else uniqueType.text
                 lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
                 if (uniqueType.docDescription != null)
-                    lines += "\t${uniqueType.docDescription!!.replace("\n","\n\t")}"
+                    lines += "\t${uniqueType.docDescription!!.escapeHtml(1)}\n"
                 if (uniqueType.parameterTypeMap.isNotEmpty()) {
                     // This one will give examples for _each_ filter in a "tileFilter/specialist/buildingFilter" kind of parameter e.g. "Farm/Merchant/Library":
                     // `val paramExamples = uniqueType.parameterTypeMap.map { it.joinToString("/") { pt -> pt.docExample } }.toTypedArray()`
                     // Might confuse modders to think "/" can go into the _actual_ unique and mean "or", so better show just one ("Farm" in the example above):
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
-                    lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
+                    lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples).escapeHtml()}\"\n"
                 }
                 if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier))
                     lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;"
