@@ -12,6 +12,7 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.screens.modmanager.ModManagementScreen
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
@@ -57,6 +58,7 @@ class ModCheckboxTable(
 
         for (mod in modRulesets.sortedBy { it.name }) {
             val checkBox = mod.name.toCheckBox(mod.name in mods)
+            checkBox.setText(ModManagementScreen.cleanModName(mod.name))
             checkBox.onChange { 
                 // Checks are run in parallel thread to avoid ANRs
                 Concurrency.run { checkBoxChanged(checkBox, mod) }
