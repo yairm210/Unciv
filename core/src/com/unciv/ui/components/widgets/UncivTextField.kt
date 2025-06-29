@@ -191,6 +191,23 @@ open class UncivTextField(
         }
     }
 
+    /**
+     *  Specialization of [UncivTextField] for numbers. See its documentation for improvements over [TextField].
+     *  - Note: It uses the generic [Number] class and thus supports both floating-point and integer as input.
+     *          You might need a conversion when retrieving the result.
+     *  - Note: [maxLength] is set to 26, but you can change it later.
+     *  - Limitation: Depending on Java's decisions for your locale, the displayed string will likely contain thousands separators.
+     *                These are ignored when parsing!
+     *                However, user input will not update them, fix misplaced ones, or add them to pasted numbers.
+     *
+     *  @property value Gets/sets the [text], using localized formatting according to the language chosen in the settings, in both directions.
+     *                  Note null is allowed and represents an empty text field.
+     *  @property setText Forbidden, use [value] instead.
+     *  @param hint See [UncivTextField].
+     *  @param initialValue Sets the initial [value] without triggering a `ChangeEvent.`
+     *  @param integerOnly Limits allowed characters and tells the parser to look for integers only.
+     *  @param onFocusChange See [UncivTextField].
+     */
     open class Numeric(
         hint: String,
         initialValue: Number?,
@@ -212,10 +229,17 @@ open class UncivTextField(
             }
             set(value) { super.text = value?.tr() ?: "" }
 
-        @Deprecated("Don't use `text` on a numeric UncivTextField", ReplaceWith("value"), DeprecationLevel.ERROR)
-        override fun setText(str: String?) = super.setText(str)  // Gdx is leaking `this` and calls this override from its constructor, therefore don't throw.
+        // Enlist compiler to make sure no-one calls this *from our project*
+        @Deprecated("Don't assign `text` on a numeric UncivTextField!", ReplaceWith("value"), DeprecationLevel.ERROR)
+        // But: Gdx is leaking `this` and calls this override from its constructor, therefore don't throw.
+        override fun setText(str: String?) = super.setText(str)
     }
 
+    /**
+     *  Specialization of [UncivTextField.Numeric] for 32-bit integers. Do read its Kdoc.
+     *  - maxLength is reduced to 14 accommodating the largest negative 32-bit integer with thousands separators.
+     *  @property intValue please prefer this over [value], it's easier!
+     */
     class Integer (
         hint: String,
         initialValue: Int?,
