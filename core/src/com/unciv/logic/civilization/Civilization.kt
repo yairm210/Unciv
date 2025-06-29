@@ -543,7 +543,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
 
         yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(gameInfo.ruleset.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun getTriggeredUniques(
@@ -560,7 +560,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
         yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
         yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals, triggerFilter))
-        yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */

@@ -33,6 +33,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
@@ -148,10 +149,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region Fields - Transient
 
     @Transient
-    lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+    private lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
 
     @Transient
     lateinit var speed: Speed
+        private set
+
+    @Transient
+    private lateinit var combinedGlobalUniques: GlobalUniques
 
     @Transient
     lateinit var currentPlayerCiv: Civilization // this is called thousands of times, no reason to search for it with a find{} every time
@@ -235,7 +240,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      *  @throws NoSuchElementException in no-barbarians games! */
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
-    
+    /** Access a cached `GlobalUniques` that combines the [ruleset]'s [globalUniques][Ruleset.globalUniques]
+     *  with the Uniques of the chosen [speed] and [difficulty][getDifficulty] */
+    fun getGlobalUniques() = combinedGlobalUniques
+
     /** @return Sequence of all cities in game, both major civilizations and city states */
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
@@ -643,6 +651,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
         }
 
+        // combinedGlobalUniques needs to be set before tileMap.setTransients!
+        setGlobalTransients()
+
         tileMap.setTransients(ruleset)
 
         // Temporary - All games saved in 4.12.15 turned into 'hexagonal non world wrapped'
@@ -656,10 +667,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() }.civName // For MP, spectator doesn't get a 'turn'
             else civilizations.first { it.isHuman()  }.civName // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
         currentPlayerCiv = getCivilization(currentPlayer)
-
-        difficultyObject = ruleset.difficulties[difficulty]!!
-
-        speed = ruleset.speeds[gameParameters.speed]!!
 
         for (religion in religions.values) religion.setTransients(this)
 
@@ -683,6 +690,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         migrateToTileHistory()
         migrateGreatGeneralPools()
         ensureUnitIds()
+    }
+
+    fun setGlobalTransients() {
+        difficultyObject = ruleset.difficulties[difficulty]!!
+
+        speed = ruleset.speeds[gameParameters.speed]!!
+
+        combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
 
     private fun updateCivilizationState() {
