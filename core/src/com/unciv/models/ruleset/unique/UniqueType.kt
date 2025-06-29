@@ -363,10 +363,10 @@ enum class UniqueType(
 
     // Unit action uniques
     // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
-
+    // con
     FoundCity("Founds a new city", UniqueTarget.UnitAction),
     FoundPuppetCity("Founds a new puppet city", UniqueTarget.UnitAction),
-    CanSettleInWaterTiles("Can settle in Water tiles <when adjacent to [terrainFilter] tile>",UniqueTarget.Unit,UniqueTarget.Global),
+    CanSettleInWaterTiles("Can settle in water tiles",UniqueTarget.UnitAction,UniqueTarget.Global),
     ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.UnitAction),
     // TODO: Should be replaced by "Can instantly construct a [] improvement <by consuming this unit>"
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
@@ -680,6 +680,7 @@ enum class UniqueType(
 
     ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
 
+    // con
 
     /////// game conditionals
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
@@ -694,6 +695,7 @@ enum class UniqueType(
     ConditionalEspionageEnabled("when espionage is enabled", UniqueTarget.Conditional),
     ConditionalEspionageDisabled("when espionage is disabled", UniqueTarget.Conditional),
     ConditionalNuclearWeaponsEnabled("when nuclear weapons are enabled", UniqueTarget.Conditional),
+    ConditionalAbjacentToTile("when adjacent to [terrainFilter] tile", UniqueTarget.Conditional),
 
     /////// general conditionals
     ConditionalChance("with [nonNegativeAmount]% chance", UniqueTarget.Conditional),

@@ -46,7 +46,7 @@ object UnitActionsFromUniques {
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
         // improvementFilter/terrainFilter
         val canSettleInWaterTiles = unit.getMatchingUniques(UniqueType.CanSettleInWaterTiles).firstOrNull()
-        if (canSettleInWaterTiles != null) println(canSettleInWaterTiles)
+        println(canSettleInWaterTiles)
         
 //         fun canSettleOnCoastTile(): Boolean { // I put this in a function to be more readable :/
 //             return canFoundCityOnCoastTile != null && tile.canSettledWaterTile()

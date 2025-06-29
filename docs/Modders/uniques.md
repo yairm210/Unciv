@@ -930,8 +930,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rebel units may spawn"
 	Applicable to: Global
 
-??? example  "Can settle in Water tiles <when adjacent to [terrainFilter] tile>"
-	Applicable to: Global, Unit
+??? example  "Can settle in water tiles"
+	Applicable to: Global, UnitAction
 
 ??? example  "[relativeAmount]% Strength"
 	Example: "[+20]% Strength"
@@ -1657,6 +1657,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Founds a new puppet city"
 	Applicable to: UnitAction
 
+??? example  "Can settle in water tiles"
+	Applicable to: Global, UnitAction
+
 ??? example  "Can instantly construct a [improvementFilter] improvement"
 	Example: "Can instantly construct a [All Road] improvement"
 
@@ -1795,9 +1798,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Meant to be used together with conditionals, like "Can only be built &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
 
 	Applicable to: Building, Unit
-
-??? example  "Can settle in Water tiles <when adjacent to [terrainFilter] tile>"
-	Applicable to: Global, Unit
 
 ??? example  "May create improvements on water resources"
 	Applicable to: Unit
@@ -2979,6 +2979,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when nuclear weapons are enabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when adjacent to [terrainFilter] tile&gt;"
+	Example: "&amp;lt;when adjacent to [Fresh Water] tile&amp;gt;"
+
 	Applicable to: Conditional
 
 ??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
