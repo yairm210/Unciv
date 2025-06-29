@@ -174,15 +174,15 @@ object RulesetCache : HashMap<String, Ruleset>() {
         mods: LinkedHashSet<String>,
         baseRuleset: String? = null,
         tryFixUnknownUniques: Boolean = false
-    ): RulesetErrorList {
+    ): Pair<Ruleset?, RulesetErrorList> {
         return try {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-            newRuleset.getErrorList(tryFixUnknownUniques)
+            newRuleset to newRuleset.getErrorList(tryFixUnknownUniques)
         } catch (ex: UncivShowableException) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
-            RulesetErrorList.of(ex.message, RulesetErrorSeverity.Error)
+            null to RulesetErrorList.of(ex.message, RulesetErrorSeverity.Error)
         }
     }
 }
