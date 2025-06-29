@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getAscendant
@@ -22,6 +23,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
+import java.text.ParseException
 import kotlinx.coroutines.delay
 
 /**
@@ -38,7 +40,7 @@ import kotlinx.coroutines.delay
  * @param onFocusChange a callback that will be notified when this TextField loses or gains the [keyboardFocus][com.badlogic.gdx.scenes.scene2d.Stage.keyboardFocus].
  *        Receiver is the field, so you can simply use its elements. Parameter `it` is a Boolean indicating focus was received.
  */
-class UncivTextField(
+open class UncivTextField(
     hint: String,
     preEnteredText: String = "",
     private val onFocusChange: (TextField.(Boolean) -> Unit)? = null
@@ -49,9 +51,9 @@ class UncivTextField(
     init {
         messageText = hint.tr()
 
-        addListener(UncivTextFieldFocusListener())
+        this.addListener(UncivTextFieldFocusListener())
 
-        if (isAndroid) addListener(VisibleAreaChangedListener())
+        if (isAndroid) this.addListener(VisibleAreaChangedListener())
     }
 
     private inner class UncivTextFieldFocusListener : FocusListener() {
@@ -187,5 +189,43 @@ class UncivTextField(
                 Gdx.input.setOnscreenKeyboardVisible(false)
             }
         }
+    }
+
+    open class Numeric(
+        hint: String,
+        initialValue: Number?,
+        integerOnly: Boolean = false,
+        onFocusChange: (TextField.(Boolean) -> Unit)? = null
+    ) : UncivTextField(hint, initialValue?.tr() ?: "", onFocusChange) {
+        private val formatter = UncivGame.Current.settings.getCurrentNumberFormat()
+        private val symbols = formatter.format(if (integerOnly) -9999 else -9999.9).filter { !it.isDigit() }
+        init {
+            textFieldFilter = TextFieldFilter { _, c -> c.isDigit() || c in symbols }
+            formatter.isParseIntegerOnly = integerOnly
+            maxLength = 26 // enough for signed int64 including thousands separators - floating point shouldn't need more.
+        }
+        open var value: Number?
+            get() = try {
+                formatter.parse(text)
+            } catch (_: ParseException) {
+                null
+            }
+            set(value) { super.text = value?.tr() ?: "" }
+
+        @Deprecated("Don't use `text` on a numeric UncivTextField", ReplaceWith("value"), DeprecationLevel.ERROR)
+        override fun setText(str: String?) = super.setText(str)  // Gdx is leaking `this` and calls this override from its constructor, therefore don't throw.
+    }
+
+    class Integer (
+        hint: String,
+        initialValue: Int?,
+        onFocusChange: (TextField.(Boolean) -> Unit)? = null
+    ) : Numeric(hint, initialValue, integerOnly = true, onFocusChange) {
+        init {
+            maxLength = 14
+        }
+        var intValue: Int?
+            get() = value?.toInt()
+            set(value) { this.value = value }
     }
 }
