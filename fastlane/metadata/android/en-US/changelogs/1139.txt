@@ -1,0 +1,23 @@
+
+
+Fix linting
+
+chore: ArrayList.getOrPut is now an extension
+
+Perf(cpu): Convert passThroughCache from a hashmap to an arraylist, using the zero-based index for tiles
+
+doc: updates
+
+Fixed dev console requiring scrolling on small UI settings
+
+By SomeTroglodyte:
+- Fix ModCheckTab to match the intention of the last update 
+- Fix console `tile find` for quoted input or filters requiring correct uppercase, expand notification 
+- Fix mod check not offering to auto-update Uniques for extension mods 
+- Speed and Difficulty uniques treated as part of GlobalUniques 
+- UniqueDocsWriter escapes examples that include conditionals 
+- Improve wiki - Clarify "modName" parameter and check links 
+
+Make Machu Picchu and Neuschwanstein need a non-Natural Wonder mountain - By SpacedOutChicken
+
+Fix mod names with dashes in them - By RobLoach
