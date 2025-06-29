@@ -9,6 +9,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.ruleset.validation.RulesetErrorList
@@ -155,15 +156,17 @@ class ModCheckTab(
                         .thenBy { it.name }
                 )
             for (mod in modsToCheck) {
-                val baseForThisMod = if (base != MOD_CHECK_DYNAMIC_BASE) base else getBaseForMod(mod)
-                if (baseForThisMod == null) {
+                val dynamicBase = base == MOD_CHECK_DYNAMIC_BASE
+                val baseForThisMod = if (dynamicBase) getBaseForMod(mod) else base
+                val shouldCheck = if (baseForThisMod == null) false else shouldCheckMod(mod, baseForThisMod)
+                if (baseForThisMod == null || dynamicBase && !shouldCheck) {
                     // Don't check, but since this is the default view, show greyed out, so people don't wonder where their mods are
                     launchOnGLThread {
                         addDisabledPlaceholder(mod)
                     }
                     continue
                 }
-                if (!shouldCheckMod(mod, baseForThisMod)) continue
+                if (!shouldCheck) continue
                 if (!isActive) break
 
                 val (combinedRuleset, modLinks) =
@@ -215,6 +218,11 @@ class ModCheckTab(
     private fun shouldCheckMod(mod: Ruleset, base: String): Boolean {
         if (mod.modOptions.isBaseRuleset) return base == MOD_CHECK_WITHOUT_BASE
         if (ModCompatibility.isAudioVisualMod(mod)) return true
+        // Very borderline case: DO check mods with invalid requirements. This duplicates a tiny part of RulesetValidator,
+        // but ends up simpler than calling the full validator and filtering for a specific message.
+        if (mod.modOptions.getMatchingUniques(UniqueType.ModRequires).any {
+                UniqueParameterType.ModName.getErrorSeverity(it.params[0], mod) != null
+            }) return true
         val baseRuleset = RulesetCache[base] ?: emptyRuleset  // MOD_CHECK_WITHOUT_BASE compares compatibility against an empty Ruleset
         return ModCompatibility.meetsBaseRequirements(mod, baseRuleset)  // yes this returns true for mods ignoring declarative compatibility
     }
