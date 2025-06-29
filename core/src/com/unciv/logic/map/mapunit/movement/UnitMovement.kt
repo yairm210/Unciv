@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.utils.getOrPut
 import java.util.BitSet
 
 
@@ -22,20 +23,6 @@ class UnitMovement(val unit: MapUnit) {
 
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
     
-    // The arraylist contains nulls where we don't know the answer yet
-    fun ArrayList<Boolean?>.getOrPut(index: Int, getValue: () -> Boolean): Boolean {
-        val currentValue = getOrNull(index)
-        if (currentValue != null) return currentValue
-        
-        val value = getValue()
-        
-        // grow the arraylist if required - if not, these are no-ops
-        ensureCapacity(index + 1) // So we don't need to copy the array multiple times if adding a lot
-        while (size <= index) add(null) // Fill with nulls until we reach the index
-        
-        this[index] = value // Now we can safely set the value
-        return value
-    }
     
     /**
      * Gets the tiles the unit could move to at [position] with [unitMovement].
