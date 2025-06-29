@@ -153,7 +153,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     @Transient
     lateinit var speed: Speed
-        private set
 
     @Transient
     private lateinit var combinedGlobalUniques: GlobalUniques
