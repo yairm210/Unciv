@@ -120,11 +120,11 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
         "find" to ConsoleAction("tile find <tileFilter>") { console, params ->
             val filter = params[0]
             val locations = console.gameInfo.tileMap.tileList
-                .filter { it.matchesFilter(filter.toString()) }
+                .filter { it.matchesFilter(filter.originalUnquoted()) }  // filters are case sensitive
                 .map { it.position }
             if (locations.isEmpty()) DevConsoleResponse.hint("None found")
             else {
-                val notification = Notification("tile find [$filter]", arrayOf(NotificationIcon.Spy),
+                val notification = Notification("tile find ${filter.toStringAsPlaceholder()}: ${locations.size} matches", arrayOf(NotificationIcon.Spy),
                     LocationAction(locations).asIterable(), NotificationCategory.General)
                 console.screen.notificationsScroll.oneTimeNotification = notification
                 notification.execute(console.screen)

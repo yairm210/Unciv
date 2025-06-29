@@ -101,7 +101,7 @@ object Suppression {
     fun autoSuppressAllWarnings(ruleset: Ruleset, toModOptions: ModOptions) {
         if (ruleset.folderLocation == null)
             throw UncivShowableException("autoSuppressAllWarnings needs Ruleset.folderLocation")
-        for (error in RulesetValidator(ruleset).getErrorList()) {
+        for (error in RulesetValidator.create(ruleset).getErrorList()) {
             if (error.errorSeverityToReport >= RulesetErrorSeverity.Error) continue
             toModOptions.uniques += UniqueType.SuppressWarnings.text.fillPlaceholders(error.text)
         }

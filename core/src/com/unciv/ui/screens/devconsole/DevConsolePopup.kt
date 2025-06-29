@@ -104,6 +104,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         fun String.removeFromEnd(n: Int) = substring(0, (length - n).coerceAtLeast(0))
         textField.text = textField.text.removeFromEnd(toRemove) + toAdd
         textField.cursorPosition = Int.MAX_VALUE // because the setText implementation actively resets it after the paste it uses (auto capped at length)
+        pack()
     }
     
     private fun onAltDelete() {

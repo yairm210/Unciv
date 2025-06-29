@@ -74,6 +74,8 @@ class ModManagementScreen private constructor(
         const val maxAllowedPreviewImageSize = 200f
         /** Github queries use this limit */
         const val amountPerPage = 100
+
+        fun cleanModName(modName: String): String = modName.replace("   ", " - ")
     }
 
     // Since we're `RecreateOnResize`, preserve the portrait/landscape mode for our lifetime
@@ -466,8 +468,8 @@ class ModManagementScreen private constructor(
 
         rightSideButton.isVisible = true
         rightSideButton.enable()
-        val label = if (installedModInfo[repo.name]?.hasUpdate == true) "Update [${repo.name}]"
-            else "Download [${repo.name}]"
+        val label = if (installedModInfo[repo.name]?.hasUpdate == true) "Update [${cleanModName(repo.name)}]"
+            else "Download [${cleanModName(repo.name)}]"
         rightSideButton.setText(label.tr())
         rightSideButton.clearActivationActions(ActivationTypes.Tap)
         rightSideButton.onClick {
@@ -556,7 +558,7 @@ class ModManagementScreen private constructor(
         }
         onlineModInfo[name]?.run {
             hasUpdate = false
-            modButtons[this]?.setText(name)
+            modButtons[this]?.setText(cleanModName(name))
         }
         if (optionsManager.sortInstalled == SortType.Status)
             refreshInstalledModTable()
@@ -636,7 +638,7 @@ class ModManagementScreen private constructor(
 
         syncInstalledSelected(mod.name, button)
         refreshInstalledModActions(mod.ruleset!!)
-        val deleteText = "Delete [${mod.name}]"
+        val deleteText = "Delete [${cleanModName(mod.name)}]"
         rightSideButton.setText(deleteText.tr())
         // Don't let the player think he can delete Vanilla and G&K rulesets
         rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
@@ -652,7 +654,7 @@ class ModManagementScreen private constructor(
             ) {
                 deleteMod(mod.ruleset)
                 modActionTable.clear()
-                rightSideButton.setText("[${mod.name}] was deleted.".tr())
+                rightSideButton.setText("[${cleanModName(mod.name)}] was deleted.".tr())
             }.open()
         }
     }

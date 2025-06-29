@@ -482,6 +482,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
+        
+        healing -= getDamageFromTerrain(tile)
 
         return healing
     }

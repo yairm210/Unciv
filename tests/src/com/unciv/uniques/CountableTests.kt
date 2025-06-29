@@ -276,7 +276,7 @@ class CountableTests {
         )
         ruleset.modOptions.isBaseRuleset = true  // To get ruleset-specific validation
 
-        val errors = RulesetValidator(ruleset).getErrorList()
+        val errors = RulesetValidator.create(ruleset).getErrorList()
         var fails = 0
 
         println("Countables validation over synthetic test input:")

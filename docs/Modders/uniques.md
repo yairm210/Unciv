@@ -1,7 +1,7 @@
 # Uniques
 An overview of uniques can be found [here](../Developers/Uniques.md)
 
-Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
+Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](Unique-parameters.md)
 
 ## Triggerable uniques
 !!! note ""
@@ -10,6 +10,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Gain a free [buildingName] [cityFilter]"
 	Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building
+
 	Example: "Gain a free [Library] [in all cities]"
 
 	Applicable to: Triggerable, Global
@@ -153,6 +154,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Gain control over [positiveAmount] tiles [cityFilter]"
+	Example: "Gain control over [3] tiles [in all cities]"
+
+	Applicable to: Triggerable
+
 ??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
@@ -188,6 +194,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
 	Works only with promotions that are valid for the unit's type - or for promotions that do not specify any.
+
 	Example: "[Wounded] units gain the [Shock I] promotion"
 
 	Applicable to: Triggerable
@@ -214,6 +221,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
+
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
@@ -270,6 +278,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[unitTriggerTarget] gains the [promotion] status for [positiveAmount] turn(s)"
 	Statuses are temporary promotions. They do not stack, and reapplying a specific status take the highest number - so reapplying a 3-turn on a 1-turn makes it 3, but doing the opposite will have no effect. Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns.
+
 	Example: "[This Unit] gains the [Shock I] status for [3] turn(s)"
 
 	Applicable to: UnitTriggerable
@@ -311,6 +320,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] per [positiveAmount] social policies adopted"
 	Only works for civ-wide stats
+
 	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
 
 	Applicable to: Global
@@ -594,7 +604,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% maintenance on road & railroads"
-	Example: "[+20]% maintenance on road & railroads"
+	Example: "[+20]% maintenance on road &amp; railroads"
 
 	Applicable to: Global
 
@@ -615,6 +625,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Gain a free [buildingName] [cityFilter]"
 	Free buildings CANNOT be self-removing - this leads to an endless loop of trying to add the building
+
 	Example: "Gain a free [Library] [in all cities]"
 
 	Applicable to: Triggerable, Global
@@ -774,13 +785,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief, Improvement
 
-??? example  "Quantity of strategic resources produced by the empire +[relativeAmount]%"
-	Example: "Quantity of strategic resources produced by the empire +[+20]%"
-
-	Applicable to: Global
-
-??? example  "Double quantity of [resource] produced"
-	Example: "Double quantity of [Iron] produced"
+??? example  "[relativeAmount]% [resourceFilter] resource production"
+	Example: "[+20]% [Strategic] resource production"
 
 	Applicable to: Global
 
@@ -1092,16 +1098,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Will not be chosen for new games"
 	Applicable to: Nation
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Personality uniques
 ??? example  "Will not build [baseUnitFilter/buildingFilter]"
@@ -1124,11 +1131,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech
 
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Cannot be hurried"
@@ -1140,21 +1149,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Policy uniques
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
@@ -1163,13 +1175,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## FounderBelief uniques
 !!! note ""
@@ -1192,7 +1205,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FounderBelief, FollowerBelief
 
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
@@ -1201,13 +1215,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## FollowerBelief uniques
 !!! note ""
@@ -1435,7 +1450,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion"
@@ -1449,13 +1465,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Building uniques
 ??? example  "Consumes [amount] [resource]"
@@ -1465,6 +1482,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Costs [amount] [stockpiledResource]"
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
+
 	Example: "Costs [3] [Mana]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -1472,6 +1490,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Unbuildable"
 	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Cannot be purchased"
@@ -1493,11 +1512,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Excess Food converted to Production when under construction"
@@ -1526,12 +1547,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[amount]% production cost"
 	Intended to be used with conditionals to dynamically alter construction costs
+
 	Example: "[3]% production cost"
 
 	Applicable to: Building, Unit
 
 ??? example  "Can only be built"
-	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
+	Meant to be used together with conditionals, like "Can only be built &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
+
 	Applicable to: Building, Unit
 
 ??? example  "Must have an owned [tileFilter] within [amount] tiles"
@@ -1599,6 +1622,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Creates a [improvementName] improvement on a specific tile"
 	When choosing to construct this building, the player must select a tile where the improvement can be built. Upon building completion, the tile will gain this improvement.
+
 	Example: "Creates a [Trading Post] improvement on a specific tile"
 
 	Applicable to: Building
@@ -1610,16 +1634,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Building
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Shown while unbuilable"
 	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## UnitAction uniques
 !!! note ""
@@ -1651,6 +1676,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Can transform to [unit]"
 	By default consumes all movement
+
 	Example: "Can transform to [Musketman]"
 
 	Applicable to: UnitAction
@@ -1695,6 +1721,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Costs [amount] [stockpiledResource]"
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
+
 	Example: "Costs [3] [Mana]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -1702,6 +1729,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Unbuildable"
 	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Cannot be purchased"
@@ -1723,11 +1751,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Excess Food converted to Production when under construction"
@@ -1756,12 +1786,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[amount]% production cost"
 	Intended to be used with conditionals to dynamically alter construction costs
+
 	Example: "[3]% production cost"
 
 	Applicable to: Building, Unit
 
 ??? example  "Can only be built"
-	Meant to be used together with conditionals, like "Can only be built <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
+	Meant to be used together with conditionals, like "Can only be built &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.
+
 	Applicable to: Building, Unit
 
 ??? example  "Can settle in Water tiles <when adjacent to [terrainFilter] tile>"
@@ -2188,39 +2220,44 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Is part of Great Person group [comment]"
 	Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP.
+
 	Example: "Is part of Great Person group [comment]"
 
 	Applicable to: Unit
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Shown while unbuilable"
 	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## UnitType uniques
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Promotion uniques
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Not shown on world screen"
@@ -2238,13 +2275,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Terrain uniques
 ??? example  "[stats]"
@@ -2288,8 +2326,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Neighboring tiles will convert to [baseTerrain/terrainFeature]"
-	Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.
+	Supports conditionals that need only a Tile as context and nothing else, like `&lt;with [n]% chance&gt;`, and applies them per neighbor.
 	If your mod renames Coast or Lakes, do not use this with one of these as parameter, as the code preventing artifacts won't work.
+
 	Example: "Neighboring tiles will convert to [Grassland]"
 
 	Applicable to: Terrain
@@ -2427,16 +2466,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
+
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
@@ -2459,6 +2500,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Costs [amount] [stockpiledResource]"
 	These resources are removed *when work begins* on the construction. Do not confuse with "costs [amount] [stockpiledResource]" (lowercase 'c'), the Unit Action Modifier.
+
 	Example: "Costs [3] [Mana]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -2466,14 +2508,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Unbuildable"
 	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Must be next to [tileFilter]"
@@ -2542,6 +2587,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Gives a defensive bonus of [relativeAmount]%"
 	Does not accept unit-based conditionals
+
 	Example: "Gives a defensive bonus of [+20]%"
 
 	Applicable to: Improvement
@@ -2595,18 +2641,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Improves [resourceFilter] resource in this tile"
 	This is offered as an alternative to the improvedBy field of a resource. The result will be cached within the resource definition when loading a game, without knowledge about terrain, cities, civs, units or time. Therefore, most conditionals will not work, only those **not** dependent on game state.
+
 	Example: "Improves [Strategic] resource in this tile"
 
 	Applicable to: Improvement
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Resource uniques
 ??? example  "Obsolete with [tech]"
@@ -2635,10 +2683,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Stockpiled"
 	This resource is accumulated each turn, rather than having a set of producers and consumers at a given moment.The current stockpiled amount can be affected with trigger uniques.
+
 	Applicable to: Resource
 
 ??? example  "City-level resource"
 	This resource is calculated on a per-city level rather than a per-civ level
+
 	Applicable to: Resource
 
 ??? example  "Cannot be traded"
@@ -2649,18 +2699,21 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Generated with weight [amount]"
 	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are given weight `1`
+
 	Example: "Generated with weight [3]"
 
 	Applicable to: Resource
 
 ??? example  "Minor deposits generated with weight [amount]"
 	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are not generated as minor deposits.
+
 	Example: "Minor deposits generated with weight [3]"
 
 	Applicable to: Resource
 
 ??? example  "Generated near City States with weight [amount]"
 	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Only assignable to luxuries, resources without a unique are given weight `1`
+
 	Example: "Generated near City States with weight [3]"
 
 	Applicable to: Resource
@@ -2687,21 +2740,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Ruins uniques
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Free [unit] found in the ruins"
@@ -2715,29 +2771,51 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Speed uniques
+!!! note ""
+
+    Speed uniques will be treated as part of GlobalUniques for the Speed selected in a game
+
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
+
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
+
+## Difficulty uniques
+!!! note ""
+
+    Difficulty uniques will be treated as part of GlobalUniques for the Difficulty selected in a game
+
+??? example  "Will not be displayed in Civilopedia"
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
+
+??? example  "Comment [comment]"
+	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
+	Example: "Comment [comment]"
+
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Tutorial uniques
 ## CityState uniques
@@ -2768,6 +2846,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ??? example  "Can only start games from the starting era"
+	In this case, 'starting era' means the first defined Era in the entire ruleset.
+
 	Applicable to: ModOptions
 
 ??? example  "Allow raze capital"
@@ -2778,18 +2858,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
+
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
 ??? example  "Mod is incompatible with [modFilter]"
 	Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible.
+
 	Example: "Mod is incompatible with [DeCiv Redux]"
 
 	Applicable to: ModOptions
 
 ??? example  "Mod requires [modFilter]"
 	Specifies that your Extension Mod is only available if any other Mod matching the filter is active.
+	Multiple copies of this Unique cannot be used to specify alternatives, they work as 'and' logic. If you need alternates and wildcards can't filter them well enough, please open an issue.
+
 	Example: "Mod requires [DeCiv Redux]"
 
 	Applicable to: ModOptions
@@ -2805,36 +2889,42 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Mod preselects map [comment]"
 	Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive.
+
 	Example: "Mod preselects map [comment]"
 
 	Applicable to: ModOptions
 
 ## Event uniques
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ## EventChoice uniques
 ??? example  "Only available"
-	Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Unavailable"
-	Meant to be used together with conditionals, like "Unavailable <after generating a Great Prophet>".
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
+
 	Example: "Comment [comment]"
 
-	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, EventChoice
+	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Conditional uniques
 !!! note ""
@@ -2842,37 +2932,37 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Modifiers that can be added to other uniques to limit when they will be active
 
 ??? example  "&lt;every [positiveAmount] turns&gt;"
-	Example: "&lt;every [3] turns&gt;"
+	Example: "&amp;lt;every [3] turns&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before turn number [nonNegativeAmount]&gt;"
-	Example: "&lt;before turn number [3]&gt;"
+	Example: "&amp;lt;before turn number [3]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;after turn number [nonNegativeAmount]&gt;"
-	Example: "&lt;after turn number [3]&gt;"
+	Example: "&amp;lt;after turn number [3]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;on [speed] game speed&gt;"
-	Example: "&lt;on [Quick] game speed&gt;"
+	Example: "&amp;lt;on [Quick] game speed&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;on [difficulty] difficulty&gt;"
-	Example: "&lt;on [Prince] difficulty&gt;"
+	Example: "&amp;lt;on [Prince] difficulty&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when [victoryType] Victory is enabled&gt;"
-	Example: "&lt;when [Domination] Victory is enabled&gt;"
+	Example: "&amp;lt;when [Domination] Victory is enabled&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when [victoryType] Victory is disabled&gt;"
-	Example: "&lt;when [Domination] Victory is disabled&gt;"
+	Example: "&amp;lt;when [Domination] Victory is disabled&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -2892,7 +2982,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
-	Example: "&lt;with [3]% chance&gt;"
+	Example: "&amp;lt;with [3]% chance&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -2900,12 +2990,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;if tutorial [comment] is completed&gt;"
-	Example: "&lt;if tutorial [comment] is completed&gt;"
+	Example: "&amp;lt;if tutorial [comment] is completed&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for [civFilter] Civilizations&gt;"
-	Example: "&lt;for [City-States] Civilizations&gt;"
+	Example: "&amp;lt;for [City-States] Civilizations&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -2928,22 +3018,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;during the [era]&gt;"
-	Example: "&lt;during the [Ancient era]&gt;"
+	Example: "&amp;lt;during the [Ancient era]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before the [era]&gt;"
-	Example: "&lt;before the [Ancient era]&gt;"
+	Example: "&amp;lt;before the [Ancient era]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;starting from the [era]&gt;"
-	Example: "&lt;starting from the [Ancient era]&gt;"
+	Example: "&amp;lt;starting from the [Ancient era]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if starting in the [era]&gt;"
-	Example: "&lt;if starting in the [Ancient era]&gt;"
+	Example: "&amp;lt;if starting in the [Ancient era]&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -2951,18 +3041,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;after discovering [techFilter]&gt;"
-	Example: "&lt;after discovering [Agriculture]&gt;"
+	Example: "&amp;lt;after discovering [Agriculture]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before discovering [techFilter]&gt;"
-	Example: "&lt;before discovering [Agriculture]&gt;"
+	Example: "&amp;lt;before discovering [Agriculture]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;while researching [techFilter]&gt;"
 	This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)
-	Example: "&lt;while researching [Agriculture]&gt;"
+
+	Example: "&amp;lt;while researching [Agriculture]&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -2970,12 +3061,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;after adopting [policy/belief]&gt;"
-	Example: "&lt;after adopting [Oligarchy]&gt;"
+	Example: "&amp;lt;after adopting [Oligarchy]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before adopting [policy/belief]&gt;"
-	Example: "&lt;before adopting [Oligarchy]&gt;"
+	Example: "&amp;lt;before adopting [Oligarchy]&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3001,62 +3092,65 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
-	Example: "&lt;if [Culture] is constructed&gt;"
+	Example: "&amp;lt;if [Culture] is constructed&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is not constructed&gt;"
-	Example: "&lt;if [Culture] is not constructed&gt;"
+	Example: "&amp;lt;if [Culture] is not constructed&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed in all [cityFilter] cities&gt;"
-	Example: "&lt;if [Culture] is constructed in all [in all cities] cities&gt;"
+	Example: "&amp;lt;if [Culture] is constructed in all [in all cities] cities&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed in at least [positiveAmount] of [cityFilter] cities&gt;"
-	Example: "&lt;if [Culture] is constructed in at least [3] of [in all cities] cities&gt;"
+	Example: "&amp;lt;if [Culture] is constructed in at least [3] of [in all cities] cities&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed by anybody&gt;"
-	Example: "&lt;if [Culture] is constructed by anybody&gt;"
+	Example: "&amp;lt;if [Culture] is constructed by anybody&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is not constructed by anybody&gt;"
-	Example: "&lt;if [Culture] is not constructed by anybody&gt;"
+	Example: "&amp;lt;if [Culture] is not constructed by anybody&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;with [resource]&gt;"
-	Example: "&lt;with [Iron]&gt;"
+	Example: "&amp;lt;with [Iron]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;without [resource]&gt;"
-	Example: "&lt;without [Iron]&gt;"
+	Example: "&amp;lt;without [Iron]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [amount] [stat/resource]&gt;"
 	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when above [amount] Happiness'
-	Example: "&lt;when above [3] [Culture]&gt;"
+
+	Example: "&amp;lt;when above [3] [Culture]&amp;gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] [stat/resource]&gt;"
 	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when below [amount] Happiness'
-	Example: "&lt;when below [3] [Culture]&gt;"
+
+	Example: "&amp;lt;when below [3] [Culture]&amp;gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
 	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness. 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
-	Example: "&lt;when between [3] and [3] [Culture]&gt;"
+
+	Example: "&amp;lt;when between [3] and [3] [Culture]&amp;gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
@@ -3065,7 +3159,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in [cityFilter] cities&gt;"
-	Example: "&lt;in [in all cities] cities&gt;"
+	Example: "&amp;lt;in [in all cities] cities&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3073,12 +3167,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a [religionFilter] religion&gt;"
-	Example: "&lt;in cities with a [major] religion&gt;"
+	Example: "&amp;lt;in cities with a [major] religion&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities not following a [religionFilter] religion&gt;"
-	Example: "&lt;in cities not following a [major] religion&gt;"
+	Example: "&amp;lt;in cities not following a [major] religion&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3092,33 +3186,34 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
-	Example: "&lt;in cities with a [Culture]&gt;"
+	Example: "&amp;lt;in cities with a [Culture]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities without a [buildingFilter]&gt;"
-	Example: "&lt;in cities without a [Culture]&gt;"
+	Example: "&amp;lt;in cities without a [Culture]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with at least [positiveAmount] [populationFilter]&gt;"
-	Example: "&lt;in cities with at least [3] [Followers of this Religion]&gt;"
+	Example: "&amp;lt;in cities with at least [3] [Followers of this Religion]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with [positiveAmount] [populationFilter]&gt;"
-	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
+	Example: "&amp;lt;in cities with [3] [Followers of this Religion]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with between [amount] and [amount] [populationFilter]&gt;"
 	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
-	Example: "&lt;in cities with between [3] and [3] [Followers of this Religion]&gt;"
+
+	Example: "&amp;lt;in cities with between [3] and [3] [Followers of this Religion]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with less than [amount] [populationFilter]&gt;"
-	Example: "&lt;in cities with less than [3] [Followers of this Religion]&gt;"
+	Example: "&amp;lt;in cities with less than [3] [Followers of this Religion]&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3126,24 +3221,26 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;for [mapUnitFilter] units&gt;"
-	Example: "&lt;for [Wounded] units&gt;"
+	Example: "&amp;lt;for [Wounded] units&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when [mapUnitFilter]&gt;"
-	Example: "&lt;when [Wounded]&gt;"
+	Example: "&amp;lt;when [Wounded]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for units with [promotion]&gt;"
 	Also applies to units with temporary status
-	Example: "&lt;for units with [Shock I]&gt;"
+
+	Example: "&amp;lt;for units with [Shock I]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for units without [promotion]&gt;"
 	Also applies to units with temporary status
-	Example: "&lt;for units without [Shock I]&gt;"
+
+	Example: "&amp;lt;for units without [Shock I]&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3151,12 +3248,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;vs [mapUnitFilter] units&gt;"
-	Example: "&lt;vs [Wounded] units&gt;"
+	Example: "&amp;lt;vs [Wounded] units&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;vs [combatantFilter]&gt;"
-	Example: "&lt;vs [City]&gt;"
+	Example: "&amp;lt;vs [City]&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3170,7 +3267,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when fighting in [tileFilter] tiles&gt;"
-	Example: "&lt;when fighting in [Farm] tiles&gt;"
+	Example: "&amp;lt;when fighting in [Farm] tiles&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3178,17 +3275,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when adjacent to a [mapUnitFilter] unit&gt;"
-	Example: "&lt;when adjacent to a [Wounded] unit&gt;"
+	Example: "&amp;lt;when adjacent to a [Wounded] unit&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [positiveAmount] HP&gt;"
-	Example: "&lt;when above [3] HP&gt;"
+	Example: "&amp;lt;when above [3] HP&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [positiveAmount] HP&gt;"
-	Example: "&lt;when below [3] HP&gt;"
+	Example: "&amp;lt;when below [3] HP&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3196,37 +3293,37 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when stacked with a [mapUnitFilter] unit&gt;"
-	Example: "&lt;when stacked with a [Wounded] unit&gt;"
+	Example: "&amp;lt;when stacked with a [Wounded] unit&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles&gt;"
-	Example: "&lt;with [3] to [3] neighboring [Farm] tiles&gt;"
+	Example: "&amp;lt;with [3] to [3] neighboring [Farm] tiles&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in [tileFilter] tiles&gt;"
-	Example: "&lt;in [Farm] tiles&gt;"
+	Example: "&amp;lt;in [Farm] tiles&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in tiles without [tileFilter]&gt;"
-	Example: "&lt;in tiles without [Farm]&gt;"
+	Example: "&amp;lt;in tiles without [Farm]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;within [positiveAmount] tiles of a [tileFilter]&gt;"
-	Example: "&lt;within [3] tiles of a [Farm]&gt;"
+	Example: "&amp;lt;within [3] tiles of a [Farm]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in tiles adjacent to [tileFilter] tiles&gt;"
-	Example: "&lt;in tiles adjacent to [Farm] tiles&gt;"
+	Example: "&amp;lt;in tiles adjacent to [Farm] tiles&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in tiles not adjacent to [tileFilter] tiles&gt;"
-	Example: "&lt;in tiles not adjacent to [Farm] tiles&gt;"
+	Example: "&amp;lt;in tiles not adjacent to [Farm] tiles&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3234,48 +3331,49 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in [regionType] Regions&gt;"
-	Example: "&lt;in [Hybrid] Regions&gt;"
+	Example: "&amp;lt;in [Hybrid] Regions&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in all except [regionType] Regions&gt;"
-	Example: "&lt;in all except [Hybrid] Regions&gt;"
+	Example: "&amp;lt;in all except [Hybrid] Regions&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is equal to [countable]&gt;"
-	Example: "&lt;when number of [1000] is equal to [1000]&gt;"
+	Example: "&amp;lt;when number of [1000] is equal to [1000]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is different than [countable]&gt;"
-	Example: "&lt;when number of [1000] is different than [1000]&gt;"
+	Example: "&amp;lt;when number of [1000] is different than [1000]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is more than [countable]&gt;"
-	Example: "&lt;when number of [1000] is more than [1000]&gt;"
+	Example: "&amp;lt;when number of [1000] is more than [1000]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is less than [countable]&gt;"
-	Example: "&lt;when number of [1000] is less than [1000]&gt;"
+	Example: "&amp;lt;when number of [1000] is less than [1000]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
 	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
-	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Example: "&amp;lt;when number of [1000] is between [1000] and [1000]&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [modFilter] is enabled&gt;"
-	Example: "&lt;if [DeCiv Redux] is enabled&gt;"
+	Example: "&amp;lt;if [DeCiv Redux] is enabled&amp;gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [modFilter] is not enabled&gt;"
-	Example: "&lt;if [DeCiv Redux] is not enabled&gt;"
+	Example: "&amp;lt;if [DeCiv Redux] is not enabled&amp;gt;"
 
 	Applicable to: Conditional
 
@@ -3285,12 +3383,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.
 
 ??? example  "&lt;upon discovering [techFilter] technology&gt;"
-	Example: "&lt;upon discovering [Agriculture] technology&gt;"
+	Example: "&amp;lt;upon discovering [Agriculture] technology&amp;gt;"
 
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon entering the [era]&gt;"
-	Example: "&lt;upon entering the [Ancient era]&gt;"
+	Example: "&amp;lt;upon entering the [Ancient era]&amp;gt;"
 
 	Applicable to: TriggerCondition
 
@@ -3298,7 +3396,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon adopting [policy/belief]&gt;"
-	Example: "&lt;upon adopting [Oligarchy]&gt;"
+	Example: "&amp;lt;upon adopting [Oligarchy]&amp;gt;"
 
 	Applicable to: TriggerCondition
 
@@ -3327,7 +3425,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
-	Example: "&lt;upon building a [All Road] improvement&gt;"
+	Example: "&amp;lt;upon building a [All Road] improvement&amp;gt;"
 
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
@@ -3335,17 +3433,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon constructing [buildingFilter]&gt;"
-	Example: "&lt;upon constructing [Culture]&gt;"
+	Example: "&amp;lt;upon constructing [Culture]&amp;gt;"
 
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon constructing [buildingFilter] [cityFilter]&gt;"
-	Example: "&lt;upon constructing [Culture] [in all cities]&gt;"
+	Example: "&amp;lt;upon constructing [Culture] [in all cities]&amp;gt;"
 
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon gaining a [baseUnitFilter] unit&gt;"
-	Example: "&lt;upon gaining a [Melee] unit&gt;"
+	Example: "&amp;lt;upon gaining a [Melee] unit&amp;gt;"
 
 	Applicable to: TriggerCondition
 
@@ -3373,7 +3471,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
-	Example: "&lt;upon building a [All Road] improvement&gt;"
+	Example: "&amp;lt;upon building a [All Road] improvement&amp;gt;"
 
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
@@ -3385,17 +3483,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
 	Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'
-	Example: "&lt;upon damaging a [Wounded] unit&gt;"
+
+	Example: "&amp;lt;upon damaging a [Wounded] unit&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
-	Example: "&lt;upon defeating a [Wounded] unit&gt;"
+	Example: "&amp;lt;upon defeating a [Wounded] unit&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon expending a [mapUnitFilter] unit&gt;"
-	Example: "&lt;upon expending a [Wounded] unit&gt;"
+	Example: "&amp;lt;upon expending a [Wounded] unit&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
@@ -3406,42 +3505,42 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon gaining the [promotion] promotion&gt;"
-	Example: "&lt;upon gaining the [Shock I] promotion&gt;"
+	Example: "&amp;lt;upon gaining the [Shock I] promotion&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon losing the [promotion] promotion&gt;"
-	Example: "&lt;upon losing the [Shock I] promotion&gt;"
+	Example: "&amp;lt;upon losing the [Shock I] promotion&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon gaining the [promotion] status&gt;"
-	Example: "&lt;upon gaining the [Shock I] status&gt;"
+	Example: "&amp;lt;upon gaining the [Shock I] status&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon losing the [promotion] status&gt;"
-	Example: "&lt;upon losing the [Shock I] status&gt;"
+	Example: "&amp;lt;upon losing the [Shock I] status&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon losing at least [positiveAmount] HP in a single attack&gt;"
-	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
+	Example: "&amp;lt;upon losing at least [3] HP in a single attack&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon ending a turn in a [tileFilter] tile&gt;"
-	Example: "&lt;upon ending a turn in a [Farm] tile&gt;"
+	Example: "&amp;lt;upon ending a turn in a [Farm] tile&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
-	Example: "&lt;upon discovering a [Farm] tile&gt;"
+	Example: "&amp;lt;upon discovering a [Farm] tile&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon entering a [tileFilter] tile&gt;"
-	Example: "&lt;upon entering a [Farm] tile&gt;"
+	Example: "&amp;lt;upon entering a [Farm] tile&amp;gt;"
 
 	Applicable to: UnitTriggerCondition
 
@@ -3455,35 +3554,41 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;for [amount] movement&gt;"
 	Will consume up to [amount] of Movement to execute
-	Example: "&lt;for [3] movement&gt;"
+
+	Example: "&amp;lt;for [3] movement&amp;gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;for all movement&gt;"
 	Will consume all Movement to execute
+
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;requires [nonNegativeAmount] movement&gt;"
 	Requires [nonNegativeAmount] of Movement to execute. Unit's Movement is rounded up
-	Example: "&lt;requires [3] movement&gt;"
+
+	Example: "&amp;lt;requires [3] movement&amp;gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;costs [stats] stats&gt;"
 	A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock
-	Example: "&lt;costs [+1 Gold, +2 Production] stats&gt;"
+
+	Example: "&amp;lt;costs [+1 Gold, +2 Production] stats&amp;gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
 	A positive Integer value will be subtracted from your stock. Do not confuse with "Costs [amount] [stockpiledResource]" (uppercase 'C') for Improvements, Buildings, and Units.
-	Example: "&lt;costs [3] [Mana]&gt;"
+
+	Example: "&amp;lt;costs [3] [Mana]&amp;gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;removing the [promotion] promotion/status&gt;"
-	Removes the promotion/status from the unit - this is not a cost, units will be able to activate the action even without the promotion/status. To limit, use <with the [promotion] promotion> conditional
-	Example: "&lt;removing the [Shock I] promotion/status&gt;"
+	Removes the promotion/status from the unit - this is not a cost, units will be able to activate the action even without the promotion/status. To limit, use &lt;with the [promotion] promotion&gt; conditional
+
+	Example: "&amp;lt;removing the [Shock I] promotion/status&amp;gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -3491,12 +3596,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;[positiveAmount] times&gt;"
-	Example: "&lt;[3] times&gt;"
+	Example: "&amp;lt;[3] times&amp;gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;[nonNegativeAmount] additional time(s)&gt;"
-	Example: "&lt;[3] additional time(s)&gt;"
+	Example: "&amp;lt;[3] additional time(s)&amp;gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -3510,7 +3615,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;for [nonNegativeAmount] turns&gt;"
 	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
-	Example: "&lt;for [3] turns&gt;"
+
+	Example: "&amp;lt;for [3] turns&amp;gt;"
 
 	Applicable to: MetaModifier
 
@@ -3519,35 +3625,41 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;for every [countable]&gt;"
 	Works for positive numbers only
-	Example: "&lt;for every [1000]&gt;"
+
+	Example: "&amp;lt;for every [1000]&amp;gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every adjacent [tileFilter]&gt;"
 	Works for positive numbers only
-	Example: "&lt;for every adjacent [Farm]&gt;"
+
+	Example: "&amp;lt;for every adjacent [Farm]&amp;gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every [positiveAmount] [countable]&gt;"
 	Works for positive numbers only
-	Example: "&lt;for every [3] [1000]&gt;"
+
+	Example: "&amp;lt;for every [3] [1000]&amp;gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;(modified by game speed)&gt;"
 	Can only be applied to certain uniques, see details of each unique for specifics
+
 	Applicable to: MetaModifier
 
 ??? example  "&lt;(modified by game progress up to [relativeAmount]%)&gt;"
 	Can only be applied to certain uniques, see details of each unique for specifics
-	Example: "&lt;(modified by game progress up to [+20]%)&gt;"
+
+	Example: "&amp;lt;(modified by game progress up to [+20]%)&amp;gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;Suppress warning [validationWarning]&gt;"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
-	Example: "&lt;Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]&gt;"
+
+	Example: "&amp;lt;Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]&amp;gt;"
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
@@ -3568,6 +3680,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement excluding 'Cancel improvement order'
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
+Note that this must use the Mod name as Unciv displays it, not the Repository name.
+There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.
 *[nonNegativeAmount]: This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional.
 *[policy]: The name of any policy.
 *[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), or a policy branch as `[branchName] branch` (matching all policies in that branch).

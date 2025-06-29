@@ -1,3 +1,62 @@
+## 4.17.1
+
+CPU performance improvements
+
+Fixed dev console requiring scrolling on small UI settings
+
+By SomeTroglodyte: 
+- Fix console `tile find` for quoted input or filters, requiring correct uppercase 
+- Fix mod checker not offering to auto-update Uniques for extension mods 
+- Speed and Difficulty uniques treated as part of GlobalUniques
+
+Make Machu Picchu and Neuschwanstein need a non-Natural Wonder mountain - By SpacedOutChicken
+
+Fix display for mod names with dashes in them - By RobLoach
+
+## 4.17.0
+
+AI considers tile damage when deciding on which tile to heal on
+
+Fixed building maintenance unique
+
+By SomeTroglodyte:
+- Improve ModChecker UI 
+- Allow mods with no global uniques, no ruins or no difficulties file
+
+AI: better handling of improvement-buildings - By EmperorPinguin
+
+## 4.16.19
+
+AI performance optimization
+
+By RobLoach:
+- Fix number popup with commas in the number 
+- Add `Gain control over [positiveAmount] tiles [cityFilter]` Triggerable 
+
+AI: update getStatDifferenceFromBuilding - By EmperorPinguin
+
+Improve ruleset validator - By SomeTroglodyte
+
+## 4.16.18
+
+Sprites do not change to base color when moving
+
+Barbarian workers no longer construct improvements
+
+modding: Allowed stat reserve to get happiness
+
+console: Can set game turn
+
+modding validation: Catch empty altases.json file
+
+Add `[relativeAmount]% [resourceFilter] resource production` Unique - By RobLoach
+
+Refactor RulesetValidator into two files - By SomeTroglodyte
+
+Fix broken chart in victory status - By metablaster
+
+Edge restructure update - By hackedpassword
+
 ## 4.16.17
 
 Increased font size so it looks less blurry on large screens

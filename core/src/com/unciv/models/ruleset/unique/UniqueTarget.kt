@@ -54,7 +54,9 @@ enum class UniqueTarget(
     Ruins(inheritsFrom = UnitTriggerable),
 
     // Other
-    Speed,
+    GlobalUniques(inheritsFrom = Global),
+    Speed("Speed uniques will be treated as part of GlobalUniques for the Speed selected in a game", inheritsFrom = GlobalUniques),
+    Difficulty("Difficulty uniques will be treated as part of GlobalUniques for the Difficulty selected in a game", inheritsFrom = GlobalUniques),
     Tutorial,
     CityState(inheritsFrom = Global),
     ModOptions,
@@ -86,7 +88,8 @@ enum class UniqueTarget(
         // As Array so it can used in a vararg parameter list.
         val Displayable = arrayOf(
             Building, Unit, UnitType, Improvement, Tech, FollowerBelief, FounderBelief,
-            Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed, EventChoice
+            Terrain, Resource, Policy, Promotion, Nation, Ruins, Speed, EventChoice,
+            Difficulty
         )
         val CanIncludeSuppression = arrayOf(
             Triggerable,    // Includes Global and covers most IHasUnique's
