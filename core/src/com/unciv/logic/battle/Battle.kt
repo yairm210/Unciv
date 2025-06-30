@@ -641,7 +641,7 @@ object Battle {
 
         city.puppetCity(civInfo)
         if ((city.population.population < 4 || civInfo.isCityState)
-            && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
+            && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true, civInfo)) {
             // raze if attacker is a city state
             if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) city.annexCity()
             city.isBeingRazed = true
