@@ -27,6 +27,7 @@ import com.unciv.utils.withGLContext
 import java.nio.ByteBuffer
 import java.text.ParseException
 import kotlinx.coroutines.delay
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  * Creates a text field that has nicer platform-specific input added compared to the default Gdx [TextField].
@@ -288,6 +289,11 @@ open class UncivTextField(
                 contains('-') -> parse()
                 else -> toLong()    // In case someone pastes a plain long into the field
             }
+
+            @VisibleForTesting
+            fun unitTestFormat(input: Long) = input.format()
+            @VisibleForTesting
+            fun unitTestParse(input: String) = input.parseBase64OrPlain()
         }
         init {
             textFieldFilter = TextFieldFilter { _, c -> c.isLetterOrDigit() || c in "+/=-" }
