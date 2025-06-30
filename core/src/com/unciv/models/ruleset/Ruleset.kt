@@ -211,12 +211,22 @@ class Ruleset {
             }
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
+
+        // Remove policies from both the policies list
         ruleset.modOptions.policiesToRemove
             .flatMap { policyToRemove ->
                 policies.filter { it.value.matchesFilter(policyToRemove) }.keys
             }.toSet().forEach {
                 policies.remove(it)
             }
+
+        // Remove the associated policies if they exist in the branches too
+        for (policyToRemove in ruleset.modOptions.policiesToRemove) {
+            for (branch in policyBranches.values) {
+                branch.policies.removeAll { it.matchesFilter(policyToRemove) }
+            }
+        }
+
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
         ruinRewards.putAll(ruleset.ruinRewards)
