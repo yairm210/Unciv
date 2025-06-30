@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
+import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
@@ -23,6 +24,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
+import java.nio.ByteBuffer
 import java.text.ParseException
 import kotlinx.coroutines.delay
 
@@ -251,5 +253,71 @@ open class UncivTextField(
         var intValue: Int?
             get() = value?.toInt()
             set(value) { this.value = value }
+    }
+
+    /**
+     *  Specialization of [UncivTextField] for RNG seeds as used for map generation.
+     *  Those are 64-bit integers with no human-readable meaning, so this displays them in a more mnemonic format.
+     *  This format could be improved in the future, for now it's base64 grouped by dashes.
+     *  The field also accepts a plain number (maybe pasted) - digits-only as Long.toString() would produce.
+     *  Empty text is allowed and will be parsed to 0.
+     *
+     *  @property value Gets/sets the [text], using formatting as prettified base64, in both directions.
+     *  @property setText Forbidden, use [value] instead.
+     *  @param initialValue Sets the initial [value] without triggering a `ChangeEvent.`
+     *  @param onFocusChange See [UncivTextField].
+     */
+    class RNGSeed(
+        initialValue: Long,
+        onFocusChange: (TextField.(Boolean) -> Unit)? = null
+    ) : UncivTextField("RNG Seed", initialValue.format(), onFocusChange) {
+        companion object {
+            private fun Long.toBase64String(): String {
+                val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
+                buffer.putLong(this)
+                return String(Base64Coder.encode(buffer.array()))
+            }
+            private fun String.decorate() =
+                trimEnd('=').withIndex()
+                    .groupBy({ it.index / 3 }) { it.value } // Gives Map<Int, List<Char>>
+                    .map { it.value.joinToString("") } // Join chars per group
+                    .joinToString("-")
+            private fun Long.format() = toBase64String().decorate()
+
+            private fun String.undecorate() =
+                filterNot { it == '-' } // Uses `String.filterNot(..): String` - not a fallback to `Iterable<Char>`
+                .run { padEnd(((length + 3) / 4) * 4, '=') } // ensure length is a multiple of 4
+            private fun String.base64toLong(): Long {
+                val bytes = Base64Coder.decode(this)
+                val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
+                buffer.put(bytes)
+                buffer.rewind()
+                return buffer.getLong()
+            }
+            private fun String.parse() = undecorate().base64toLong()
+            private fun String.parseBase64OrPlain() = when {
+                isEmpty() -> 0L
+                drop(1).contains('-') -> parse() // detect our format but not a negative plain number
+                else -> toLong()  // In case someone pastes a plain long into the field
+            }
+        }
+        init {
+            textFieldFilter = TextFieldFilter { _, c -> c.isLetterOrDigit() || c in "+/=-" }
+            maxLength = 14 // Long.MIN_VALUE.format() is "gAA-AAA-AAA-AA".
+        }
+        var value: Long
+            get() = try {
+                text.parseBase64OrPlain()
+            } catch (_: IllegalArgumentException) {
+                // If the field is empty or invalid, fallback seed value to 0
+                0L
+            }
+            set(value) {
+                text = value.format()
+            }
+
+        // Could also do parse (letting it throw when invalid) - super.setText, but YAGNI
+        @Deprecated("Don't assign `text` on a UncivTextField.RNGSeed!", ReplaceWith("value"), DeprecationLevel.ERROR)
+        override fun setText(str: String?) = super.setText(str)
     }
 }
