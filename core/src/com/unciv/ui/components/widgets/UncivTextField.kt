@@ -259,28 +259,31 @@ open class UncivTextField(
         initialValue: Long,
         onFocusChange: (TextField.(Boolean) -> Unit)? = null
     ) : UncivTextField("RNG Seed", initialValue.format(), onFocusChange) {
-        private companion object {
-            fun Long.toBase64String(): String {
+        companion object {
+            private fun Long.toBase64String(): String {
                 val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
                 buffer.putLong(this)
                 return String(Base64Coder.encode(buffer.array()))
             }
-            fun String.decorate() =
+            private fun String.decorate() =
                 trimEnd('=').withIndex()
                     .groupBy({ it.index / 3 }) { it.value } // Gives Map<Int, List<Char>>
                     .map { it.value.joinToString("") } // Join chars per group
                     .joinToString("-")
-            fun Long.format() = toBase64String().decorate()
-            fun String.parse() = undecorate().base64toLong()
-            fun String.undecorate() = filterNot { it == '-' }.run { padEnd(((length + 3) / 4) * 4, '=') }
-            fun String.base64toLong(): Long {
+            private fun Long.format() = toBase64String().decorate()
+
+            private fun String.undecorate() =
+                filterNot { it == '-' } // Uses `String.filterNot(..): String` - not a fallback to `Iterable<Char>`
+                .run { padEnd(((length + 3) / 4) * 4, '=') } // ensure length is a multiple of 4
+            private fun String.base64toLong(): Long {
                 val bytes = Base64Coder.decode(this)
                 val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
                 buffer.put(bytes)
                 buffer.rewind()
                 return buffer.getLong()
             }
-            fun String.parseBase64OrPlain() = when {
+            private fun String.parse() = undecorate().base64toLong()
+            private fun String.parseBase64OrPlain() = when {
                 isEmpty() -> 0L
                 contains('-') -> parse()
                 else -> toLong()    // In case someone pastes a plain long into the field
@@ -288,7 +291,7 @@ open class UncivTextField(
         }
         init {
             textFieldFilter = TextFieldFilter { _, c -> c.isLetterOrDigit() || c in "+/=-" }
-            maxLength = 14 // 0xFFFFFFFFL.format() is "AAA-AAP-///-/8"
+            maxLength = 14 // Long.MIN_VALUE.format() is "gAA-AAA-AAA-AA", see unit test.
         }
         var value: Long
             get() = try {
