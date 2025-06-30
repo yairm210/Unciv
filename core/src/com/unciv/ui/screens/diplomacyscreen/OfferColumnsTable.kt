@@ -120,7 +120,7 @@ class OfferColumnsTable(
             screen,
             label = "Enter the amount of gold",
             icon = ImageGetter.getStatIcon("Gold").surroundWithCircle(80f),
-            defaultValue = offer.amount.tr(),
+            defaultValue = offer.amount,
             amountButtons =
             if (offer.type == TradeOfferType.Gold) listOf(50, 500)
             else listOf(5, 15),

@@ -12,7 +12,6 @@ import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import java.text.ParseException
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
 
@@ -544,44 +543,22 @@ fun String.removeConditionals(): String {
         .trim()
 }
 
-// formats number according to current language
+/** Formats number according to current language
+ *
+ *  Note: The inverse operation is UncivGame.Current.settings.getCurrentNumberFormat().parse(string), handled in the [UncivTextField.Numeric][com.unciv.ui.components.widgets.UncivTextField.Numeric] widget.
+ *
+ *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
+ */
 fun Number.tr(): String {
     return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
 }
 
-/**
- * Parses the string as an integer using the current number format.
+/** Formats number according to a specific [language]
  *
- * Empty strings result in 0.
+ *  Note: The inverse operation is `LocaleCode.getNumberFormatFromLanguage(language).parse(string)`.
  *
- * @return The integer value, or null if parsing fails.
+ *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
  */
-fun String.toIntOrNullTranslated(): Int? {
-    if (isEmpty()) return 0
-    return try {
-        UncivGame.Current.settings.getCurrentNumberFormat().parse(this).toInt()
-    } catch (_: ParseException) {
-        this.toIntOrNull()
-    }
-}
-
-// formats number according to given language
 fun Number.tr(language: String): String {
     return LocaleCode.getNumberFormatFromLanguage(language).format(this)
-}
-
-/**
- * Parses the string as an integer using the current number format.
- *
- * Empty strings result in 0.
- *
- * @return The integer value, or null if parsing fails.
- */
-fun String.toIntOrNullTranslated(language: String): Int? {
-    if (isEmpty()) return 0
-    return try {
-        LocaleCode.getNumberFormatFromLanguage(language).parse(this).toInt()
-    } catch (_: ParseException) {
-        this.toIntOrNull()
-    }
 }

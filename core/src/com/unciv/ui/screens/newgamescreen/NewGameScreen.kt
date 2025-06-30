@@ -193,9 +193,9 @@ class NewGameScreen(
             val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
             if (message != null) {
                 with (mapOptionsTable.generatedMapOptionsTable) {
-                    customMapSizeRadius.text = mapSize.radius.tr()
-                    customMapWidth.text = mapSize.width.tr()
-                    customMapHeight.text = mapSize.height.tr()
+                    customMapSizeRadius.intValue = mapSize.radius
+                    customMapWidth.intValue = mapSize.width
+                    customMapHeight.intValue = mapSize.height
                 }
                 return message
             }
