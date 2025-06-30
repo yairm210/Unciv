@@ -174,6 +174,7 @@ The file can have the following attributes, not including the values Unciv sets 
 | unitsToRemove     | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters#baseunitfilter) to remove (isBaseRuleset=false only)                                |
 | nationsToRemove   | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters#nationfilter) to remove (isBaseRuleset=false only)                    |
 | policyBranchesToRemove | List | empty | List of [Policy Branches](2-Civilization-related-JSON-files.md#policyjson) to remove (isBaseRuleset=false only)                             |
+| policiesToRemove  | List    | empty   | List of [Policies](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only) |
 | constants         | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                      |
 | tileset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
 | unitset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |

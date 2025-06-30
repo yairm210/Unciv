@@ -211,6 +211,12 @@ class Ruleset {
             }
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
+        ruleset.modOptions.policiesToRemove
+            .flatMap { policyToRemove ->
+                policies.filter { it.value.matchesFilter(policyToRemove) }.keys
+            }.toSet().forEach {
+                policies.remove(it)
+            }
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
         ruinRewards.putAll(ruleset.ruinRewards)
