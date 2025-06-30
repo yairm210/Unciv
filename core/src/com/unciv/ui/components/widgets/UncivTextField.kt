@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
+import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
@@ -23,6 +24,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
+import java.nio.ByteBuffer
 import java.text.ParseException
 import kotlinx.coroutines.delay
 
@@ -251,5 +253,52 @@ open class UncivTextField(
         var intValue: Int?
             get() = value?.toInt()
             set(value) { this.value = value }
+    }
+
+    class RNGSeed(
+        initialValue: Long,
+        onFocusChange: (TextField.(Boolean) -> Unit)? = null
+    ) : UncivTextField("RNG Seed", initialValue.format(), onFocusChange) {
+        private companion object {
+            fun Long.toBase64String(): String {
+                val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
+                buffer.putLong(this)
+                return String(Base64Coder.encode(buffer.array()))
+            }
+            fun String.decorate() =
+                trimEnd('=').withIndex()
+                    .groupBy({ it.index / 3 }) { it.value } // Gives Map<Int, List<Char>>
+                    .map { it.value.joinToString("") } // Join chars per group
+                    .joinToString("-")
+            fun Long.format() = toBase64String().decorate()
+            fun String.parse() = undecorate().base64toLong()
+            fun String.undecorate() = filterNot { it == '-' }.run { padEnd(((length + 3) / 4) * 4, '=') }
+            fun String.base64toLong(): Long {
+                val bytes = Base64Coder.decode(this)
+                val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
+                buffer.put(bytes)
+                buffer.rewind()
+                return buffer.getLong()
+            }
+            fun String.parseBase64OrPlain() = when {
+                isEmpty() -> 0L
+                contains('-') -> parse()
+                else -> toLong()    // In case someone pastes a plain long into the field
+            }
+        }
+        init {
+            textFieldFilter = TextFieldFilter { _, c -> c.isLetterOrDigit() || c in "+/=-" }
+            maxLength = 14 // 0xFFFFFFFFL.format() is "AAA-AAP-///-/8"
+        }
+        var value: Long
+            get() = try {
+                text.parseBase64OrPlain()
+            } catch (_: IllegalArgumentException) {
+                // If the field is empty or invalid, fallback seed value to 0
+                0L
+            }
+            set(value) {
+                text = value.format()
+            }
     }
 }
