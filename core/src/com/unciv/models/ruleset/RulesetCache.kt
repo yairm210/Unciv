@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.ruleset.validation.getRelativeTextDistance
 import com.unciv.utils.Log
-import com.unciv.utils.debug
+import com.unciv.utils.Tag
 
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
@@ -40,6 +40,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
         }
         this.putAll(newRulesets)
 
+        val detailedConsoleModCheck = consoleMode && Log.shouldLog(Tag("ConsoleModCheck"))
         val errorLines = ArrayList<String>()
         if (!noMods) {
             val modsHandles = if (consoleMode) FileHandle("mods").list()
@@ -54,8 +55,8 @@ object RulesetCache : HashMap<String, Ruleset>() {
                     modRuleset.load(modFolder.child("jsons"))
                     modRuleset.folderLocation = modFolder
                     newRulesets[modRuleset.name] = modRuleset
-                    debug("Mod loaded successfully: %s", modRuleset.name)
-                    if (Log.shouldLog()) {
+                    Log.debug("Mod loaded successfully: %s", modRuleset.name)
+                    if (detailedConsoleModCheck) {
                         val modLinksErrors = modRuleset.getErrorList()
                         // For extension mods which use references to base ruleset objects, the parameter type
                         // errors are irrelevant - the checker ran without a base ruleset
@@ -67,7 +68,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
                                     !it.text.contains(UniqueValidator.whichDoesNotFitParameterType) }
                             }
                         if (modLinksErrors.any(logFilter)) {
-                            debug(
+                            Log.debug(
                                 "checkModLinks errors: %s",
                                 modLinksErrors.getErrorText(logFilter)
                             )
@@ -79,7 +80,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
                     errorLines += "  ${ex.cause?.localizedMessage}"
                 }
             }
-            if (Log.shouldLog()) for (line in errorLines) debug(line)
+            if (Log.shouldLog()) for (line in errorLines) Log.debug(line)
         }
 
         // We save the 'old' cache values until we're ready to replace everything, so that the cache isn't empty while we try to load ruleset files
