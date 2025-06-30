@@ -612,6 +612,18 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             else -> true
         }
     }
+    fun canBeSettled(unique: Unique): Boolean {
+        val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
+        return when {
+            isWater || isImpassible() -> false
+            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+                .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
+            getTilesInDistance(modConstants.minimalCityDistance)
+                .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
+            else -> true
+        }
+    }
+
 
     /** The two tiles have a river between them */
     fun isConnectedByRiver(otherTile: Tile): Boolean {
