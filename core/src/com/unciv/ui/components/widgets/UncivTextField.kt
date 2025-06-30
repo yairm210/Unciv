@@ -286,7 +286,7 @@ open class UncivTextField(
             private fun String.parse() = undecorate().base64toLong()
             private fun String.parseBase64OrPlain() = when {
                 isEmpty() -> 0L
-                contains('-') -> parse()
+                drop(1).contains('-') -> parse() // '-' is indicator for our pretty base64 format, exept minus
                 else -> toLong()    // In case someone pastes a plain long into the field
             }
 
