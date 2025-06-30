@@ -604,7 +604,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% maintenance on road & railroads"
-	Example: "[+20]% maintenance on road &amp; railroads"
+	Example: "[+20]% maintenance on road & railroads"
 
 	Applicable to: Global
 
@@ -2320,7 +2320,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Neighboring tiles will convert to [baseTerrain/terrainFeature]"
-	Supports conditionals that need only a Tile as context and nothing else, like `&lt;with [n]% chance&gt;`, and applies them per neighbor.
+	Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.
+
 	If your mod renames Coast or Lakes, do not use this with one of these as parameter, as the code preventing artifacts won't work.
 
 	Example: "Neighboring tiles will convert to [Grassland]"
@@ -2866,6 +2867,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Mod requires [modFilter]"
 	Specifies that your Extension Mod is only available if any other Mod matching the filter is active.
+
 	Multiple copies of this Unique cannot be used to specify alternatives, they work as 'and' logic. If you need alternates and wildcards can't filter them well enough, please open an issue.
 
 	Example: "Mod requires [DeCiv Redux]"
@@ -2926,37 +2928,37 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Modifiers that can be added to other uniques to limit when they will be active
 
 ??? example  "&lt;every [positiveAmount] turns&gt;"
-	Example: "&amp;lt;every [3] turns&amp;gt;"
+	Example: "&lt;every [3] turns&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before turn number [nonNegativeAmount]&gt;"
-	Example: "&amp;lt;before turn number [3]&amp;gt;"
+	Example: "&lt;before turn number [3]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;after turn number [nonNegativeAmount]&gt;"
-	Example: "&amp;lt;after turn number [3]&amp;gt;"
+	Example: "&lt;after turn number [3]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;on [speed] game speed&gt;"
-	Example: "&amp;lt;on [Quick] game speed&amp;gt;"
+	Example: "&lt;on [Quick] game speed&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;on [difficulty] difficulty&gt;"
-	Example: "&amp;lt;on [Prince] difficulty&amp;gt;"
+	Example: "&lt;on [Prince] difficulty&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when [victoryType] Victory is enabled&gt;"
-	Example: "&amp;lt;when [Domination] Victory is enabled&amp;gt;"
+	Example: "&lt;when [Domination] Victory is enabled&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when [victoryType] Victory is disabled&gt;"
-	Example: "&amp;lt;when [Domination] Victory is disabled&amp;gt;"
+	Example: "&lt;when [Domination] Victory is disabled&gt;"
 
 	Applicable to: Conditional
 
@@ -2976,7 +2978,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
-	Example: "&amp;lt;with [3]% chance&amp;gt;"
+	Example: "&lt;with [3]% chance&gt;"
 
 	Applicable to: Conditional
 
@@ -2984,12 +2986,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;if tutorial [comment] is completed&gt;"
-	Example: "&amp;lt;if tutorial [comment] is completed&amp;gt;"
+	Example: "&lt;if tutorial [comment] is completed&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for [civFilter] Civilizations&gt;"
-	Example: "&amp;lt;for [City-States] Civilizations&amp;gt;"
+	Example: "&lt;for [City-States] Civilizations&gt;"
 
 	Applicable to: Conditional
 
@@ -3012,22 +3014,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;during the [era]&gt;"
-	Example: "&amp;lt;during the [Ancient era]&amp;gt;"
+	Example: "&lt;during the [Ancient era]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before the [era]&gt;"
-	Example: "&amp;lt;before the [Ancient era]&amp;gt;"
+	Example: "&lt;before the [Ancient era]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;starting from the [era]&gt;"
-	Example: "&amp;lt;starting from the [Ancient era]&amp;gt;"
+	Example: "&lt;starting from the [Ancient era]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if starting in the [era]&gt;"
-	Example: "&amp;lt;if starting in the [Ancient era]&amp;gt;"
+	Example: "&lt;if starting in the [Ancient era]&gt;"
 
 	Applicable to: Conditional
 
@@ -3035,19 +3037,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;after discovering [techFilter]&gt;"
-	Example: "&amp;lt;after discovering [Agriculture]&amp;gt;"
+	Example: "&lt;after discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before discovering [techFilter]&gt;"
-	Example: "&amp;lt;before discovering [Agriculture]&amp;gt;"
+	Example: "&lt;before discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;while researching [techFilter]&gt;"
 	This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)
 
-	Example: "&amp;lt;while researching [Agriculture]&amp;gt;"
+	Example: "&lt;while researching [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
@@ -3055,12 +3057,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;after adopting [policy/belief]&gt;"
-	Example: "&amp;lt;after adopting [Oligarchy]&amp;gt;"
+	Example: "&lt;after adopting [Oligarchy]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;before adopting [policy/belief]&gt;"
-	Example: "&amp;lt;before adopting [Oligarchy]&amp;gt;"
+	Example: "&lt;before adopting [Oligarchy]&gt;"
 
 	Applicable to: Conditional
 
@@ -3086,49 +3088,49 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
-	Example: "&amp;lt;if [Culture] is constructed&amp;gt;"
+	Example: "&lt;if [Culture] is constructed&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is not constructed&gt;"
-	Example: "&amp;lt;if [Culture] is not constructed&amp;gt;"
+	Example: "&lt;if [Culture] is not constructed&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed in all [cityFilter] cities&gt;"
-	Example: "&amp;lt;if [Culture] is constructed in all [in all cities] cities&amp;gt;"
+	Example: "&lt;if [Culture] is constructed in all [in all cities] cities&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed in at least [positiveAmount] of [cityFilter] cities&gt;"
-	Example: "&amp;lt;if [Culture] is constructed in at least [3] of [in all cities] cities&amp;gt;"
+	Example: "&lt;if [Culture] is constructed in at least [3] of [in all cities] cities&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed by anybody&gt;"
-	Example: "&amp;lt;if [Culture] is constructed by anybody&amp;gt;"
+	Example: "&lt;if [Culture] is constructed by anybody&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is not constructed by anybody&gt;"
-	Example: "&amp;lt;if [Culture] is not constructed by anybody&amp;gt;"
+	Example: "&lt;if [Culture] is not constructed by anybody&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;with [resource]&gt;"
-	Example: "&amp;lt;with [Iron]&amp;gt;"
+	Example: "&lt;with [Iron]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;without [resource]&gt;"
-	Example: "&amp;lt;without [Iron]&amp;gt;"
+	Example: "&lt;without [Iron]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [amount] [stat/resource]&gt;"
 	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when above [amount] Happiness'
 
-	Example: "&amp;lt;when above [3] [Culture]&amp;gt;"
+	Example: "&lt;when above [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
@@ -3136,7 +3138,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when below [amount] [stat/resource]&gt;"
 	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when below [amount] Happiness'
 
-	Example: "&amp;lt;when below [3] [Culture]&amp;gt;"
+	Example: "&lt;when below [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
@@ -3144,7 +3146,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
 	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness. 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 
-	Example: "&amp;lt;when between [3] and [3] [Culture]&amp;gt;"
+	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 	Applicable to: Conditional
@@ -3153,7 +3155,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in [cityFilter] cities&gt;"
-	Example: "&amp;lt;in [in all cities] cities&amp;gt;"
+	Example: "&lt;in [in all cities] cities&gt;"
 
 	Applicable to: Conditional
 
@@ -3161,12 +3163,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a [religionFilter] religion&gt;"
-	Example: "&amp;lt;in cities with a [major] religion&amp;gt;"
+	Example: "&lt;in cities with a [major] religion&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities not following a [religionFilter] religion&gt;"
-	Example: "&amp;lt;in cities not following a [major] religion&amp;gt;"
+	Example: "&lt;in cities not following a [major] religion&gt;"
 
 	Applicable to: Conditional
 
@@ -3180,34 +3182,34 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
-	Example: "&amp;lt;in cities with a [Culture]&amp;gt;"
+	Example: "&lt;in cities with a [Culture]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities without a [buildingFilter]&gt;"
-	Example: "&amp;lt;in cities without a [Culture]&amp;gt;"
+	Example: "&lt;in cities without a [Culture]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with at least [positiveAmount] [populationFilter]&gt;"
-	Example: "&amp;lt;in cities with at least [3] [Followers of this Religion]&amp;gt;"
+	Example: "&lt;in cities with at least [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with [positiveAmount] [populationFilter]&gt;"
-	Example: "&amp;lt;in cities with [3] [Followers of this Religion]&amp;gt;"
+	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with between [amount] and [amount] [populationFilter]&gt;"
 	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 
-	Example: "&amp;lt;in cities with between [3] and [3] [Followers of this Religion]&amp;gt;"
+	Example: "&lt;in cities with between [3] and [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with less than [amount] [populationFilter]&gt;"
-	Example: "&amp;lt;in cities with less than [3] [Followers of this Religion]&amp;gt;"
+	Example: "&lt;in cities with less than [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
@@ -3215,26 +3217,26 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;for [mapUnitFilter] units&gt;"
-	Example: "&amp;lt;for [Wounded] units&amp;gt;"
+	Example: "&lt;for [Wounded] units&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when [mapUnitFilter]&gt;"
-	Example: "&amp;lt;when [Wounded]&amp;gt;"
+	Example: "&lt;when [Wounded]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for units with [promotion]&gt;"
 	Also applies to units with temporary status
 
-	Example: "&amp;lt;for units with [Shock I]&amp;gt;"
+	Example: "&lt;for units with [Shock I]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;for units without [promotion]&gt;"
 	Also applies to units with temporary status
 
-	Example: "&amp;lt;for units without [Shock I]&amp;gt;"
+	Example: "&lt;for units without [Shock I]&gt;"
 
 	Applicable to: Conditional
 
@@ -3242,12 +3244,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;vs [mapUnitFilter] units&gt;"
-	Example: "&amp;lt;vs [Wounded] units&amp;gt;"
+	Example: "&lt;vs [Wounded] units&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;vs [combatantFilter]&gt;"
-	Example: "&amp;lt;vs [City]&amp;gt;"
+	Example: "&lt;vs [City]&gt;"
 
 	Applicable to: Conditional
 
@@ -3261,7 +3263,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when fighting in [tileFilter] tiles&gt;"
-	Example: "&amp;lt;when fighting in [Farm] tiles&amp;gt;"
+	Example: "&lt;when fighting in [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
@@ -3269,17 +3271,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when adjacent to a [mapUnitFilter] unit&gt;"
-	Example: "&amp;lt;when adjacent to a [Wounded] unit&amp;gt;"
+	Example: "&lt;when adjacent to a [Wounded] unit&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [positiveAmount] HP&gt;"
-	Example: "&amp;lt;when above [3] HP&amp;gt;"
+	Example: "&lt;when above [3] HP&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [positiveAmount] HP&gt;"
-	Example: "&amp;lt;when below [3] HP&amp;gt;"
+	Example: "&lt;when below [3] HP&gt;"
 
 	Applicable to: Conditional
 
@@ -3287,37 +3289,37 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when stacked with a [mapUnitFilter] unit&gt;"
-	Example: "&amp;lt;when stacked with a [Wounded] unit&amp;gt;"
+	Example: "&lt;when stacked with a [Wounded] unit&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles&gt;"
-	Example: "&amp;lt;with [3] to [3] neighboring [Farm] tiles&amp;gt;"
+	Example: "&lt;with [3] to [3] neighboring [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in [tileFilter] tiles&gt;"
-	Example: "&amp;lt;in [Farm] tiles&amp;gt;"
+	Example: "&lt;in [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in tiles without [tileFilter]&gt;"
-	Example: "&amp;lt;in tiles without [Farm]&amp;gt;"
+	Example: "&lt;in tiles without [Farm]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;within [positiveAmount] tiles of a [tileFilter]&gt;"
-	Example: "&amp;lt;within [3] tiles of a [Farm]&amp;gt;"
+	Example: "&lt;within [3] tiles of a [Farm]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in tiles adjacent to [tileFilter] tiles&gt;"
-	Example: "&amp;lt;in tiles adjacent to [Farm] tiles&amp;gt;"
+	Example: "&lt;in tiles adjacent to [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in tiles not adjacent to [tileFilter] tiles&gt;"
-	Example: "&amp;lt;in tiles not adjacent to [Farm] tiles&amp;gt;"
+	Example: "&lt;in tiles not adjacent to [Farm] tiles&gt;"
 
 	Applicable to: Conditional
 
@@ -3325,49 +3327,49 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in [regionType] Regions&gt;"
-	Example: "&amp;lt;in [Hybrid] Regions&amp;gt;"
+	Example: "&lt;in [Hybrid] Regions&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;in all except [regionType] Regions&gt;"
-	Example: "&amp;lt;in all except [Hybrid] Regions&amp;gt;"
+	Example: "&lt;in all except [Hybrid] Regions&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is equal to [countable]&gt;"
-	Example: "&amp;lt;when number of [1000] is equal to [1000]&amp;gt;"
+	Example: "&lt;when number of [1000] is equal to [1000]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is different than [countable]&gt;"
-	Example: "&amp;lt;when number of [1000] is different than [1000]&amp;gt;"
+	Example: "&lt;when number of [1000] is different than [1000]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is more than [countable]&gt;"
-	Example: "&amp;lt;when number of [1000] is more than [1000]&amp;gt;"
+	Example: "&lt;when number of [1000] is more than [1000]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is less than [countable]&gt;"
-	Example: "&amp;lt;when number of [1000] is less than [1000]&amp;gt;"
+	Example: "&lt;when number of [1000] is less than [1000]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;when number of [countable] is between [countable] and [countable]&gt;"
 	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 
-	Example: "&amp;lt;when number of [1000] is between [1000] and [1000]&amp;gt;"
+	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [modFilter] is enabled&gt;"
-	Example: "&amp;lt;if [DeCiv Redux] is enabled&amp;gt;"
+	Example: "&lt;if [DeCiv Redux] is enabled&gt;"
 
 	Applicable to: Conditional
 
 ??? example  "&lt;if [modFilter] is not enabled&gt;"
-	Example: "&amp;lt;if [DeCiv Redux] is not enabled&amp;gt;"
+	Example: "&lt;if [DeCiv Redux] is not enabled&gt;"
 
 	Applicable to: Conditional
 
@@ -3377,12 +3379,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.
 
 ??? example  "&lt;upon discovering [techFilter] technology&gt;"
-	Example: "&amp;lt;upon discovering [Agriculture] technology&amp;gt;"
+	Example: "&lt;upon discovering [Agriculture] technology&gt;"
 
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon entering the [era]&gt;"
-	Example: "&amp;lt;upon entering the [Ancient era]&amp;gt;"
+	Example: "&lt;upon entering the [Ancient era]&gt;"
 
 	Applicable to: TriggerCondition
 
@@ -3390,7 +3392,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon adopting [policy/belief]&gt;"
-	Example: "&amp;lt;upon adopting [Oligarchy]&amp;gt;"
+	Example: "&lt;upon adopting [Oligarchy]&gt;"
 
 	Applicable to: TriggerCondition
 
@@ -3419,7 +3421,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
-	Example: "&amp;lt;upon building a [All Road] improvement&amp;gt;"
+	Example: "&lt;upon building a [All Road] improvement&gt;"
 
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
@@ -3427,17 +3429,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon constructing [buildingFilter]&gt;"
-	Example: "&amp;lt;upon constructing [Culture]&amp;gt;"
+	Example: "&lt;upon constructing [Culture]&gt;"
 
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon constructing [buildingFilter] [cityFilter]&gt;"
-	Example: "&amp;lt;upon constructing [Culture] [in all cities]&amp;gt;"
+	Example: "&lt;upon constructing [Culture] [in all cities]&gt;"
 
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon gaining a [baseUnitFilter] unit&gt;"
-	Example: "&amp;lt;upon gaining a [Melee] unit&amp;gt;"
+	Example: "&lt;upon gaining a [Melee] unit&gt;"
 
 	Applicable to: TriggerCondition
 
@@ -3465,7 +3467,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon building a [improvementFilter] improvement&gt;"
-	Example: "&amp;lt;upon building a [All Road] improvement&amp;gt;"
+	Example: "&lt;upon building a [All Road] improvement&gt;"
 
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
@@ -3478,17 +3480,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
 	Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'
 
-	Example: "&amp;lt;upon damaging a [Wounded] unit&amp;gt;"
+	Example: "&lt;upon damaging a [Wounded] unit&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
-	Example: "&amp;lt;upon defeating a [Wounded] unit&amp;gt;"
+	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon expending a [mapUnitFilter] unit&gt;"
-	Example: "&amp;lt;upon expending a [Wounded] unit&amp;gt;"
+	Example: "&lt;upon expending a [Wounded] unit&gt;"
 
 	Applicable to: UnitTriggerCondition
 
@@ -3499,42 +3501,42 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon gaining the [promotion] promotion&gt;"
-	Example: "&amp;lt;upon gaining the [Shock I] promotion&amp;gt;"
+	Example: "&lt;upon gaining the [Shock I] promotion&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon losing the [promotion] promotion&gt;"
-	Example: "&amp;lt;upon losing the [Shock I] promotion&amp;gt;"
+	Example: "&lt;upon losing the [Shock I] promotion&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon gaining the [promotion] status&gt;"
-	Example: "&amp;lt;upon gaining the [Shock I] status&amp;gt;"
+	Example: "&lt;upon gaining the [Shock I] status&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon losing the [promotion] status&gt;"
-	Example: "&amp;lt;upon losing the [Shock I] status&amp;gt;"
+	Example: "&lt;upon losing the [Shock I] status&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon losing at least [positiveAmount] HP in a single attack&gt;"
-	Example: "&amp;lt;upon losing at least [3] HP in a single attack&amp;gt;"
+	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon ending a turn in a [tileFilter] tile&gt;"
-	Example: "&amp;lt;upon ending a turn in a [Farm] tile&amp;gt;"
+	Example: "&lt;upon ending a turn in a [Farm] tile&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon discovering a [tileFilter] tile&gt;"
-	Example: "&amp;lt;upon discovering a [Farm] tile&amp;gt;"
+	Example: "&lt;upon discovering a [Farm] tile&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon entering a [tileFilter] tile&gt;"
-	Example: "&amp;lt;upon entering a [Farm] tile&amp;gt;"
+	Example: "&lt;upon entering a [Farm] tile&gt;"
 
 	Applicable to: UnitTriggerCondition
 
@@ -3549,7 +3551,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;for [amount] movement&gt;"
 	Will consume up to [amount] of Movement to execute
 
-	Example: "&amp;lt;for [3] movement&amp;gt;"
+	Example: "&lt;for [3] movement&gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -3561,28 +3563,28 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;requires [nonNegativeAmount] movement&gt;"
 	Requires [nonNegativeAmount] of Movement to execute. Unit's Movement is rounded up
 
-	Example: "&amp;lt;requires [3] movement&amp;gt;"
+	Example: "&lt;requires [3] movement&gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;costs [stats] stats&gt;"
 	A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City's current stock
 
-	Example: "&amp;lt;costs [+1 Gold, +2 Production] stats&amp;gt;"
+	Example: "&lt;costs [+1 Gold, +2 Production] stats&gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;costs [amount] [stockpiledResource]&gt;"
 	A positive Integer value will be subtracted from your stock. Do not confuse with "Costs [amount] [stockpiledResource]" (uppercase 'C') for Improvements, Buildings, and Units.
 
-	Example: "&amp;lt;costs [3] [Mana]&amp;gt;"
+	Example: "&lt;costs [3] [Mana]&gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;removing the [promotion] promotion/status&gt;"
 	Removes the promotion/status from the unit - this is not a cost, units will be able to activate the action even without the promotion/status. To limit, use &lt;with the [promotion] promotion&gt; conditional
 
-	Example: "&amp;lt;removing the [Shock I] promotion/status&amp;gt;"
+	Example: "&lt;removing the [Shock I] promotion/status&gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -3590,12 +3592,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;[positiveAmount] times&gt;"
-	Example: "&amp;lt;[3] times&amp;gt;"
+	Example: "&lt;[3] times&gt;"
 
 	Applicable to: UnitActionModifier
 
 ??? example  "&lt;[nonNegativeAmount] additional time(s)&gt;"
-	Example: "&amp;lt;[3] additional time(s)&amp;gt;"
+	Example: "&lt;[3] additional time(s)&gt;"
 
 	Applicable to: UnitActionModifier
 
@@ -3610,7 +3612,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;for [nonNegativeAmount] turns&gt;"
 	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
 
-	Example: "&amp;lt;for [3] turns&amp;gt;"
+	Example: "&lt;for [3] turns&gt;"
 
 	Applicable to: MetaModifier
 
@@ -3620,21 +3622,21 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;for every [countable]&gt;"
 	Works for positive numbers only
 
-	Example: "&amp;lt;for every [1000]&amp;gt;"
+	Example: "&lt;for every [1000]&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every adjacent [tileFilter]&gt;"
 	Works for positive numbers only
 
-	Example: "&amp;lt;for every adjacent [Farm]&amp;gt;"
+	Example: "&lt;for every adjacent [Farm]&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;for every [positiveAmount] [countable]&gt;"
 	Works for positive numbers only
 
-	Example: "&amp;lt;for every [3] [1000]&amp;gt;"
+	Example: "&lt;for every [3] [1000]&gt;"
 
 	Applicable to: MetaModifier
 
@@ -3646,14 +3648,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;(modified by game progress up to [relativeAmount]%)&gt;"
 	Can only be applied to certain uniques, see details of each unique for specifics
 
-	Example: "&amp;lt;(modified by game progress up to [+20]%)&amp;gt;"
+	Example: "&lt;(modified by game progress up to [+20]%)&gt;"
 
 	Applicable to: MetaModifier
 
 ??? example  "&lt;Suppress warning [validationWarning]&gt;"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
-	Example: "&amp;lt;Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]&amp;gt;"
+	Example: "&lt;Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]&gt;"
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
