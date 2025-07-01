@@ -315,7 +315,7 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf(
             "Terrain",
             Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
-            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your", "unowned",
+            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your", "Unowned",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"
         ) + ResourceType.entries.map { it.name + " resource" } + Constants.all
