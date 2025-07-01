@@ -612,12 +612,13 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             else -> true
         }
     }
-    fun canBeSettled(unique: Unique): Boolean {
+    fun canBeSettled(uniqueModifier: Unique): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
+        println("got to here ")
+        val modifierCondition = uniqueModifier.params[0]
+        
         return when {
             isWater || isImpassible() -> false
-            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
-                .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
             else -> true

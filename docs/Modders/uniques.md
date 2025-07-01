@@ -930,9 +930,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rebel units may spawn"
 	Applicable to: Global
 
-??? example  "Can settle in water tiles"
-	Applicable to: Global, UnitAction
-
 ??? example  "[relativeAmount]% Strength"
 	Example: "[+20]% Strength"
 
@@ -1656,9 +1653,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Founds a new puppet city"
 	Applicable to: UnitAction
-
-??? example  "Can settle in water tiles"
-	Applicable to: Global, UnitAction
 
 ??? example  "Can instantly construct a [improvementFilter] improvement"
 	Example: "Can instantly construct a [All Road] improvement"

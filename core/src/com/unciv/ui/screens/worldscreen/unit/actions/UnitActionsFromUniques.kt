@@ -14,6 +14,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -44,22 +45,20 @@ object UnitActionsFromUniques {
             UniqueType.FoundCity).firstOrNull() ?: 
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
-        // improvementFilter/terrainFilter
-        val canSettleInWaterTiles = unit.getMatchingUniques(UniqueType.CanSettleInWaterTiles).firstOrNull()
-        println(canSettleInWaterTiles)
+        println(unique)
+        var uniqueConditionalAbjacentToTileModifier: Unique? = null
+        for (uniques in unique.getModifiers(UniqueType.ConditionalAbjacentToTile)) {
+            uniqueConditionalAbjacentToTileModifier = uniques
+        }
+        println((tile.isWater || tile.isImpassible()) && uniqueConditionalAbjacentToTileModifier == null)
         
-//         fun canSettleOnCoastTile(): Boolean { // I put this in a function to be more readable :/
-//             return canFoundCityOnCoastTile != null && tile.canSettledWaterTile()
-//                 && tile.isAdjacentTo("Land") && unit.isEmbarked()
-//                 && tile.isWater
-//         }
-        
-        if (tile.isWater || tile.isImpassible()) return null
+        if ((tile.isWater  || tile.isImpassible()) && uniqueConditionalAbjacentToTileModifier == null) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
-
         
-        if (!unit.hasMovement() || !tile.canBeSettled())
+        if (uniqueConditionalAbjacentToTileModifier == null && (!unit.hasMovement() || !tile.canBeSettled()))
+            return UnitAction(UnitActionType.FoundCity, 80f, action = null)
+        else if (!unit.hasMovement() && ! tile.canBeSettled(uniqueConditionalAbjacentToTileModifier!!))
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
     
 
