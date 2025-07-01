@@ -144,7 +144,6 @@ enum class Countables(
             UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
-
     OwnedTiles("Owned [tileFilter] Tiles") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -154,6 +153,44 @@ enum class Countables(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+    AllTiles("All [tileFilter] Tiles") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val tileMap = stateForConditionals.gameInfo?.tileMap ?: return null
+            return tileMap.tileList.count { it.matchesFilter(filter) }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+        override val example: String = "All [Desert] Tiles"
+    },
+    UnownedTiles("Unowned [tileFilter] Tiles") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val tileMap = stateForConditionals.gameInfo?.tileMap ?: return null
+            val civName = stateForConditionals.civInfo?.civName
+            return tileMap.tileList.count { 
+                it.matchesFilter(filter) && it.getOwner()?.civName != civName
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+        override val example: String = "Unowned [Desert] Tiles"
+    },
+    UnclaimedTiles("Unclaimed [tileFilter] Tiles") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val tileMap = stateForConditionals.gameInfo?.tileMap ?: return null
+            return tileMap.tileList.count { 
+                it.matchesFilter(filter) && it.getOwner() == null
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+        override val example: String = "Unclaimed [Desert] Tiles"
     },
 
     TileResources {
@@ -213,8 +250,6 @@ enum class Countables(
             if (Stat.isStat(parameterText.getPlaceholderParameters()[0])) null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.entries.map { placeholderText.fillPlaceholders(it.name) }.toSet()
     },
-
-
     Expression {
         override val noPlaceholders = false
 
