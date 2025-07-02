@@ -1201,6 +1201,14 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeGlobalAlert -> {
+                if (triggerNotificationText == null) return null
+                val alertText = unique.params[0]
+                return {
+                    UniqueTriggerExecutors.triggerGlobalAlerts(civInfo, alertText, triggerNotificationText)
+                }
+            }
+
             else -> return null
         }
     }
