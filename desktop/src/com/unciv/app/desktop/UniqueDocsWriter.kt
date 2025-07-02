@@ -137,6 +137,10 @@ class UniqueDocsWriter {
                 if (uniqueType in MapUnitCache.UnitMovementUniques) {
                     lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work."
                 }
+                if (uniqueType.flags.contains(UniqueFlag.NoConditionals))
+                    lines += "\tThis unique does not support conditionals.\n"
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers))
+                    lines += "\tThis unique is automatically hidden from users.\n"
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""
             }
