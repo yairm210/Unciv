@@ -131,12 +131,16 @@ class UniqueDocsWriter {
                     lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
                 }
                 if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier))
-                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;"
+                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;\n"
                 if (uniqueType.flags.contains(UniqueFlag.AcceptsGameProgressModifier))
-                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameProgress.text}&gt;"
+                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameProgress.text}&gt;\n"
                 if (uniqueType in MapUnitCache.UnitMovementUniques) {
-                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work."
+                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.\n"
                 }
+                if (uniqueType.flags.contains(UniqueFlag.NoConditionals))
+                    lines += "\tThis unique does not support conditionals.\n"
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers))
+                    lines += "\tThis unique is automatically hidden from users.\n"
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""
             }
