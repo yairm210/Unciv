@@ -91,24 +91,22 @@ project(":server") {
 
 }
 
-if (System.getenv("ANDROID_HOME") != null) {
-    project(":android") {
-        apply(plugin = "com.android.application")
-        apply(plugin = "kotlin-android")
+project(":android") {
+    apply(plugin = "com.android.application")
+    apply(plugin = "kotlin-android")
 
-        val natives by configurations.creating
+    val natives by configurations.creating
 
-        dependencies {
-            "implementation"(project(":core"))
-            // Not sure why I had to add this in for the upgrade to 1.12.1 to work, we can probably remove this later since it's contained in core
-            "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-            "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
-            "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
-            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
-            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
-            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
-            natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
-        }
+    dependencies {
+        "implementation"(project(":core"))
+        // Not sure why I had to add this in for the upgrade to 1.12.1 to work, we can probably remove this later since it's contained in core
+        "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
+        "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
+        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
+        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
+        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
     }
 }
 
