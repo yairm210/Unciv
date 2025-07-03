@@ -45,7 +45,7 @@ class ThreatManager(val civInfo: Civilization) {
                     else enemyTile.second.coerceAtMost(maxDist)
                 } else {
                     // This tile is no longer valid
-                    tilesWithEnemies.removeFirst()
+                    tilesWithEnemies.removeAt(0)
                 }
             }
 
@@ -184,4 +184,3 @@ class ThreatManager(val civInfo: Civilization) {
         distanceToClosestEnemyTiles.clear()
     }
 }
-

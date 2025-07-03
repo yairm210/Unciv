@@ -1,3 +1,23 @@
+## 4.17.2
+
+Fixed ancient ruins spawning
+
+Possilby fixed Android dev console - requires testing
+
+Fixed Happiness being found as a global stat
+
+Unique builder - trigger conditionals are not a superset of global uniques
+
+Added "Unowned" terrainFilter
+
+By SomeTroglodyte:
+- Parse localized numbers correctly 
+- Better Validation of Nation colors 
+
+By RobLoach:
+- When capturing settlers, fix finding the Worker units with conditionals 
+- Add ability to remove policies with ModOptions 
+
 ## 4.17.1
 
 CPU performance improvements

@@ -247,7 +247,7 @@ object UniqueTriggerActivation {
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger()) {
                      val replacementUnit = ruleset.units.values
                          .firstOrNull {
-                             it.getMatchingUniques(UniqueType.BuildImprovements)
+                             it.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
                                 .any { unique -> unique.params[0] == "Land" }
                          } ?: return null
                     civUnit = civInfo.getEquivalentUnit(replacementUnit.name)

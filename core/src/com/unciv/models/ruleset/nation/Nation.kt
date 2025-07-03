@@ -97,10 +97,12 @@ class Nation : RulesetObject() {
     var ignoreHillMovementCost = false
 
     fun setTransients() {
-        outerColorObject = colorFromRGB(outerColor)
+        fun safeColorFromRGB(rgb: List<Int>) = if (rgb.size >= 3) colorFromRGB(rgb) else Color.PURPLE
+
+        outerColorObject = safeColorFromRGB(outerColor)
 
         innerColorObject = if (innerColor == null) ImageGetter.CHARCOAL
-                           else colorFromRGB(innerColor!!)
+                           else safeColorFromRGB(innerColor!!)
 
         forestsAndJunglesAreRoads = uniqueMap.hasUnique(UniqueType.ForestsAndJunglesAreRoads)
         ignoreHillMovementCost = uniqueMap.hasUnique(UniqueType.IgnoreHillMovementCost)

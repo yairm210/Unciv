@@ -52,15 +52,21 @@ class UniqueDocsWriter {
     }
 
     // Thanks https://github.com/ktorio/ktor/blob/d89d41ef6dc91479e6c13c25eb306abc15040b8e/ktor-utils/common/src/io/ktor/util/Text.kt#L7-L28
+    /** An escaping routine specifically for mkdocs input: `<>` are escaped **unless** within backticks, and newlines are doubled */
     private fun String.escapeHtml(indent: Int = 0) = buildString(capacity = length + indent + 6) {
+        var inCodeBlock = false
         for (char in this@escapeHtml) {
             when(char) {
                 //'\'' -> append("&#x27;") // not necessary for this case
                 //'\"' -> append("&quot;") // not necessary for this case
+                '`' -> {
+                    inCodeBlock = !inCodeBlock
+                    append('`')
+                }
                 '&' -> append("&amp;")
-                '<' -> append("&lt;")
-                '>' -> append("&gt;")
-                '\n' -> append("\n" + "\t".repeat(indent))
+                '<' -> append(if (inCodeBlock) "<" else "&lt;")
+                '>' -> append(if (inCodeBlock) ">" else "&gt;")
+                '\n' -> append("\n\n" + "\t".repeat(indent))
                 else -> append(char)
             }
         }
@@ -113,6 +119,8 @@ class UniqueDocsWriter {
                     "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
                 lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
+                // These blocks will join all indented lines that follow, they need an empty line followed by more indented lines to render one break.
+                // Thus, all optional lines up to "Applicable" get an extra `\n`, and the `escapeHtml` helper doubles newlines found in docDescription:
                 if (uniqueType.docDescription != null)
                     lines += "\t${uniqueType.docDescription!!.escapeHtml(1)}\n"
                 if (uniqueType.parameterTypeMap.isNotEmpty()) {
@@ -120,15 +128,19 @@ class UniqueDocsWriter {
                     // `val paramExamples = uniqueType.parameterTypeMap.map { it.joinToString("/") { pt -> pt.docExample } }.toTypedArray()`
                     // Might confuse modders to think "/" can go into the _actual_ unique and mean "or", so better show just one ("Farm" in the example above):
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
-                    lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples).escapeHtml()}\"\n"
+                    lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
                 }
                 if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier))
-                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;"
+                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;\n"
                 if (uniqueType.flags.contains(UniqueFlag.AcceptsGameProgressModifier))
-                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameProgress.text}&gt;"
+                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameProgress.text}&gt;\n"
                 if (uniqueType in MapUnitCache.UnitMovementUniques) {
-                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work."
+                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.\n"
                 }
+                if (uniqueType.flags.contains(UniqueFlag.NoConditionals))
+                    lines += "\tThis unique does not support conditionals.\n"
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers))
+                    lines += "\tThis unique is automatically hidden from users.\n"
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""
             }

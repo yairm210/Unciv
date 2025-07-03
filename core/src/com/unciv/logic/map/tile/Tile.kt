@@ -512,6 +512,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             "Land" -> return isLand
             Constants.coastal -> return isCoastalTile()
             Constants.river -> return isAdjacentToRiver()
+            "Unowned" -> return getOwner() == null
             "your" -> return observingCiv != null && getOwner() == observingCiv
             "Foreign Land", "Foreign" -> return observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> return observingCiv != null && isFriendlyTerritory(observingCiv)
