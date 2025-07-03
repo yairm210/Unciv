@@ -242,7 +242,7 @@ class TurnManager(val civInfo: Civilization) {
         notificationsThisTurn.notifications.addAll(civInfo.notifications)
 
         while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
-            notificationsLog.removeFirst()
+            notificationsLog.removeAt(0)
         }
 
         if (notificationsThisTurn.notifications.isNotEmpty())

@@ -317,13 +317,13 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
             while (waterTiles.isNotEmpty()) {
-                val initialWaterTile = waterTiles.removeFirst()
+                val initialWaterTile = waterTiles.removeAt(0)
                 tilesInArea += initialWaterTile
                 tilesToCheck += initialWaterTile
 
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
-                    val tileWeAreChecking = tilesToCheck.removeFirst()
+                    val tileWeAreChecking = tilesToCheck.removeAt(0)
                     for (vector in tileWeAreChecking.neighbors){
                         if (tilesInArea.contains(vector)) continue
                         if (!waterTiles.contains(vector)) continue
