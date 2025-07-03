@@ -1,24 +1,17 @@
+Fixed ancient ruins spawning
 
-
-Resolves  - Fix ancient ruins not spawning as much as they should
-
-Maybe fix Android dev console - will require testing
+Possilby fixed Android dev console - requires testing
 
 Fixed Happiness being found as a global stat
 
-Resolves  - trigger conditionals are a superset not global uniques
+Unique builder - trigger conditionals are not a superset of global uniques
 
-"Unowned" capitalized for consistency, whoops
-
-Added "unowned" tileFilter for 
+Added "Unowned" terrainFilter
 
 By SomeTroglodyte:
-- Move parsing of localized numbers to UncivTextField 
+- Parse localized numbers correctly 
 - Better Validation of Nation colors 
-- Avoid List.removeFirst() not being available on Android API 21..34 levels 
-- Minor Unique documentation improvements 
-- Fix doc writer escaping 
 
 By RobLoach:
 - When capturing settlers, fix finding the Worker units with conditionals 
-- Add ability to remove policies with ModOptions 
+- Add ability to remove policies with ModOptions

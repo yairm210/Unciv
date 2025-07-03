@@ -300,6 +300,7 @@ Allowed values:
     - `Foreign Land` - any land that isn't friendly land
     - `Enemy Land` - any land belonging to a civ you are at war with
     - `your` - land belonging to you
+    - `unowned` - land that is not owned by any civ
     - `Water resource`, `Strategic resource`, `Luxury resource`, `Bonus resource`, `resource`
     - `Natural Wonder` (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)
 

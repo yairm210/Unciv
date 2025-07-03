@@ -1,4 +1,4 @@
-Eine Neuimplementierung vom berühmtesten Zivilisations-Aufbau-Spiel aller Zeiten. Schnell, klein, ohne Spam und für immer frei!
+Eine Neuimplementierung vom berühmtesten Zivilisations-Aufbau-Spiel aller Zeiten. Schnell, klein, ohne Spam und für immer kostenlos!
 
 Baue Deine Zivilisation auf, erforsche Technologien, entwickle Deine Städte und besiege Deine Kontrahenten!
 
@@ -16,4 +16,4 @@ Die App-Berechtigung 'Auf alle Netzwerke zugreifen' wird für die folgenden Funk
 - Abfrage und Herunterladen der verfügbaren Mods
 - Herunterladen von Musik
 - Hoch- und Herunterladen der Speicherstände im Online Mehrspieler-Modus
-Durch die Implementierung der Zug-Benachrichtigung für den Mehrspieler-Modus werden alle anderen aufgeführten Berechtigungen vom API automatisch hinzugefügt.
+Durch die Implementierung der Zug-Benachrichtigung für den Mehrspieler-Modus werden alle anderen aufgeführten Berechtigungen von der API automatisch hinzugefügt.
