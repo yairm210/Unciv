@@ -7,13 +7,10 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.validation.RulesetError
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
-import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.ruleset.validation.getRelativeTextDistance
 import com.unciv.utils.Log
-import com.unciv.utils.Tag
 
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
