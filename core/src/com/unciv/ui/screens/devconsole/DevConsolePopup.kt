@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.devconsole
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -71,7 +72,8 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         keyShortcuts.add(Input.Keys.UP) { navigateHistory(-1) }
         keyShortcuts.add(Input.Keys.DOWN) { navigateHistory(1) }
 
-        setFillParent(false) // ALLOW clicking the map while the console is open!
+        if (Gdx.app.type != Application.ApplicationType.Android) // I think this might be what's causing Android to fail, not sure
+            setFillParent(false) // ALLOW clicking the map while the console is open!
         open(true)
 
         screen.stage.keyboardFocus = textField
