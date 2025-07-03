@@ -40,7 +40,6 @@ object RulesetCache : HashMap<String, Ruleset>() {
         }
         this.putAll(newRulesets)
 
-        val detailedConsoleModCheck = consoleMode && Log.shouldLog(Tag("ConsoleModCheck"))
         val errorLines = ArrayList<String>()
         if (!noMods) {
             val modsHandles = if (consoleMode) FileHandle("mods").list()
@@ -56,24 +55,6 @@ object RulesetCache : HashMap<String, Ruleset>() {
                     modRuleset.folderLocation = modFolder
                     newRulesets[modRuleset.name] = modRuleset
                     Log.debug("Mod loaded successfully: %s", modRuleset.name)
-                    if (detailedConsoleModCheck) {
-                        val modLinksErrors = modRuleset.getErrorList()
-                        // For extension mods which use references to base ruleset objects, the parameter type
-                        // errors are irrelevant - the checker ran without a base ruleset
-                        val logFilter: (RulesetError) -> Boolean =
-                            if (modRuleset.modOptions.isBaseRuleset) {
-                                { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly }
-                            } else {
-                                { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly &&
-                                    !it.text.contains(UniqueValidator.whichDoesNotFitParameterType) }
-                            }
-                        if (modLinksErrors.any(logFilter)) {
-                            Log.debug(
-                                "checkModLinks errors: %s",
-                                modLinksErrors.getErrorText(logFilter)
-                            )
-                        }
-                    }
                 } catch (ex: Exception) {
                     errorLines += "Exception loading mod '${modFolder.name()}':"
                     errorLines += "  ${ex.localizedMessage}"
