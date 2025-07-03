@@ -45,22 +45,22 @@ object UnitActionsFromUniques {
             UniqueType.FoundCity).firstOrNull() ?: 
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
-        println(unique)
-        var uniqueConditionalAbjacentToTileModifier: Unique? = null
-        for (uniques in unique.getModifiers(UniqueType.ConditionalAbjacentToTile)) {
-            uniqueConditionalAbjacentToTileModifier = uniques
-        }
-        println((tile.isWater || tile.isImpassible()) && uniqueConditionalAbjacentToTileModifier == null)
         
-        if ((tile.isWater  || tile.isImpassible()) && uniqueConditionalAbjacentToTileModifier == null) return null
+        /*
+        Sadly mountain will not work with this unique because it's not in terrainFilter.
+         */
+        val inTilesModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
+        
+        if ((tile.isWater && inTilesModifier == null || tile.isImpassible() && inTilesModifier == null)) return null
+        
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
         
-        if (uniqueConditionalAbjacentToTileModifier == null && (!unit.hasMovement() || !tile.canBeSettled()))
+        if  (!unit.hasMovement() || inTilesModifier == null && !tile.canBeSettled()) 
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
-        else if (!unit.hasMovement() && ! tile.canBeSettled(uniqueConditionalAbjacentToTileModifier!!))
+
+        if (!unit.hasMovement() || inTilesModifier != null && !tile.canBeSettled(inTilesModifier))
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
-    
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier

@@ -690,7 +690,6 @@ enum class UniqueType(
     ConditionalEspionageEnabled("when espionage is enabled", UniqueTarget.Conditional),
     ConditionalEspionageDisabled("when espionage is disabled", UniqueTarget.Conditional),
     ConditionalNuclearWeaponsEnabled("when nuclear weapons are enabled", UniqueTarget.Conditional),
-    ConditionalAbjacentToTile("when adjacent to [terrainFilter/improvementFilter] tile", UniqueTarget.Conditional),
 
     /////// general conditionals
     ConditionalChance("with [nonNegativeAmount]% chance", UniqueTarget.Conditional),

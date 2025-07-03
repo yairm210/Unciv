@@ -3193,11 +3193,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when nuclear weapons are enabled&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;when adjacent to [terrainFilter] tile&gt;"
-	Example: "&amp;lt;when adjacent to [Fresh Water] tile&amp;gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
 

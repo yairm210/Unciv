@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
@@ -615,11 +616,24 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
     fun canBeSettled(uniqueModifier: Unique): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
-        println("got to here ")
         val modifierCondition = uniqueModifier.params[0]
+        /*
+            Did it like this because if keep getting " " from tileMap.gameInfo.ruleset.name
+            and you always get the ruleset first.
+         */
+        val rulesetName = tileMap.gameInfo.ruleset.mods.first() 
+        val terrainsSet = RulesetCache[rulesetName]?.terrains!! // if this is null we have some bigger problems
+        val tiles =  terrainsSet.values.filter { it.matchesFilter(modifierCondition) }
+        val waterTiles = terrainsSet.values.filter { it.matchesFilter("Water") }
+        val isOnWaterTile = tiles.any { it in waterTiles }
+        println(isOnWaterTile)
         
-        return when {
-            isWater || isImpassible() -> false
+        val addedDistanceOnDifferentContinents = if (isOnWaterTile) 1 else 0
+        
+        return when {                     
+            isWater && !isOnWaterTile || isImpassible() -> false
+            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents+addedDistanceOnDifferentContinents)
+                .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
             else -> true

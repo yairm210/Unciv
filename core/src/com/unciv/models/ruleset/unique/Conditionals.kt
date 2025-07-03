@@ -290,13 +290,6 @@ object Conditionals {
                     it.matchesFilter(conditional.params[2], state.relevantCiv)
                 } in conditional.params[0].toInt()..conditional.params[1].toInt()
 
-            UniqueType.ConditionalAbjacentToTile ->
-                state.relevantTile != null
-                    && state.relevantTile!!.neighbors.count {
-                    it.matchesFilter(conditional.params[0], state.relevantCiv)
-                } >= 1
-            
-
             UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1
             UniqueType.ConditionalInRegionOfType -> state.region?.type == conditional.params[0]
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != conditional.params[0]
