@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getAscendant
@@ -22,6 +23,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
+import java.text.ParseException
 import kotlinx.coroutines.delay
 
 /**
@@ -38,7 +40,7 @@ import kotlinx.coroutines.delay
  * @param onFocusChange a callback that will be notified when this TextField loses or gains the [keyboardFocus][com.badlogic.gdx.scenes.scene2d.Stage.keyboardFocus].
  *        Receiver is the field, so you can simply use its elements. Parameter `it` is a Boolean indicating focus was received.
  */
-class UncivTextField(
+open class UncivTextField(
     hint: String,
     preEnteredText: String = "",
     private val onFocusChange: (TextField.(Boolean) -> Unit)? = null
@@ -49,9 +51,9 @@ class UncivTextField(
     init {
         messageText = hint.tr()
 
-        addListener(UncivTextFieldFocusListener())
+        this.addListener(UncivTextFieldFocusListener())
 
-        if (isAndroid) addListener(VisibleAreaChangedListener())
+        if (isAndroid) this.addListener(VisibleAreaChangedListener())
     }
 
     private inner class UncivTextFieldFocusListener : FocusListener() {
@@ -187,5 +189,67 @@ class UncivTextField(
                 Gdx.input.setOnscreenKeyboardVisible(false)
             }
         }
+    }
+
+    /**
+     *  Specialization of [UncivTextField] for numbers. See its documentation for improvements over [TextField].
+     *  - Note: It uses the generic [Number] class and thus supports both floating-point and integer as input.
+     *          You might need a conversion when retrieving the result.
+     *  - Note: [maxLength] is set to 26, but you can change it later.
+     *  - Limitation: Depending on Java's decisions for your locale, the displayed string will likely contain thousands separators.
+     *                These are ignored when parsing!
+     *                However, user input will not update them, fix misplaced ones, or add them to pasted numbers.
+     *
+     *  @property value Gets/sets the [text], using localized formatting according to the language chosen in the settings, in both directions.
+     *                  Note null is allowed and represents an empty text field.
+     *  @property setText Forbidden, use [value] instead.
+     *  @param hint See [UncivTextField].
+     *  @param initialValue Sets the initial [value] without triggering a `ChangeEvent.`
+     *  @param integerOnly Limits allowed characters and tells the parser to look for integers only.
+     *  @param onFocusChange See [UncivTextField].
+     */
+    open class Numeric(
+        hint: String,
+        initialValue: Number?,
+        integerOnly: Boolean = false,
+        onFocusChange: (TextField.(Boolean) -> Unit)? = null
+    ) : UncivTextField(hint, initialValue?.tr() ?: "", onFocusChange) {
+        private val formatter = UncivGame.Current.settings.getCurrentNumberFormat()
+        private val symbols = formatter.format(if (integerOnly) -9999 else -9999.9).filter { !it.isDigit() }
+        init {
+            textFieldFilter = TextFieldFilter { _, c -> c.isDigit() || c in symbols }
+            formatter.isParseIntegerOnly = integerOnly
+            maxLength = 26 // enough for signed int64 including thousands separators - floating point shouldn't need more.
+        }
+        open var value: Number?
+            get() = try {
+                formatter.parse(text)
+            } catch (_: ParseException) {
+                null
+            }
+            set(value) { super.text = value?.tr() ?: "" }
+
+        // Enlist compiler to make sure no-one calls this *from our project*
+        @Deprecated("Don't assign `text` on a numeric UncivTextField!", ReplaceWith("value"), DeprecationLevel.ERROR)
+        // But: Gdx is leaking `this` and calls this override from its constructor, therefore don't throw.
+        override fun setText(str: String?) = super.setText(str)
+    }
+
+    /**
+     *  Specialization of [UncivTextField.Numeric] for 32-bit integers. Do read its Kdoc.
+     *  - maxLength is reduced to 14 accommodating the largest negative 32-bit integer with thousands separators.
+     *  @property intValue please prefer this over [value], it's easier!
+     */
+    class Integer (
+        hint: String,
+        initialValue: Int?,
+        onFocusChange: (TextField.(Boolean) -> Unit)? = null
+    ) : Numeric(hint, initialValue, integerOnly = true, onFocusChange) {
+        init {
+            maxLength = 14
+        }
+        var intValue: Int?
+            get() = value?.toInt()
+            set(value) { this.value = value }
     }
 }

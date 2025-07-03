@@ -3,8 +3,6 @@ package com.unciv.ui.screens.newgamescreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.*
@@ -12,7 +10,6 @@ import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
@@ -34,12 +31,12 @@ class MapParametersTable(
     private val forMapEditor: Boolean = false,
     private val sizeChangedCallback: (()->Unit)? = null
 ) : Table() {
-    // These are accessed fom outside the class to read _and_ write values,
+    // These are accessed from outside the class to read _and_ write values,
     // namely from MapOptionsTable, NewMapScreen and NewGameScreen
     lateinit var mapTypeSelectBox: TranslatedSelectBox
-    lateinit var customMapSizeRadius: TextField
-    lateinit var customMapWidth: TextField
-    lateinit var customMapHeight: TextField
+    lateinit var customMapSizeRadius: UncivTextField.Integer
+    lateinit var customMapWidth: UncivTextField.Integer
+    lateinit var customMapHeight: UncivTextField.Integer
 
     private lateinit var worldSizeSelectBox: TranslatedSelectBox
     private var customWorldSizeTable = Table()
@@ -51,13 +48,13 @@ class MapParametersTable(
     private lateinit var worldWrapCheckbox: CheckBox
     private lateinit var legendaryStartCheckbox: CheckBox
     private lateinit var strategicBalanceCheckbox: CheckBox
-    private lateinit var seedTextField: TextField
+    private lateinit var seedTextField: UncivTextField.Numeric
 
     private lateinit var mapShapesOptionsValues: HashSet<String>
     private lateinit var mapTypesOptionsValues: HashSet<String>
     private lateinit var mapSizesOptionsValues: HashSet<String>
     private lateinit var mapResourcesOptionsValues: HashSet<String>
-    
+
     private val maxMapSize = ((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f // There is 5px padding each side
     private val mapTypeExample = Table()
 
@@ -98,7 +95,7 @@ class MapParametersTable(
 
     fun reseed() {
         mapParameters.reseed()
-        seedTextField.text = mapParameters.seed.tr()
+        seedTextField.value = mapParameters.seed
     }
 
     private fun addMapShapeSelectBox() {
@@ -131,7 +128,7 @@ class MapParametersTable(
             add(mapShapeSelectBox).fillX().row()
         }
     }
-    
+
     private fun generateExampleMap(){
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
         Concurrency.run("Generate example map") {
@@ -181,7 +178,7 @@ class MapParametersTable(
             add(optionsTable).colspan(2).grow().row()
         } else {
             mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type)
-            
+
 
             mapTypeSelectBox.onChange {
                 mapParameters.type = mapTypeSelectBox.selected.value
@@ -189,7 +186,7 @@ class MapParametersTable(
                 // If the map won't be generated, these options are irrelevant and are hidden
                 noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
                 noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
-                
+
                 generateExampleMap()
             }
 
@@ -228,12 +225,10 @@ class MapParametersTable(
     }
 
     private fun addHexagonalSizeTable() {
-        val defaultRadius = mapParameters.mapSize.radius.tr()
-        customMapSizeRadius = UncivTextField("Radius", defaultRadius).apply {
-            textFieldFilter = DigitsOnlyFilter()
-        }
+        val defaultRadius = mapParameters.mapSize.radius
+        customMapSizeRadius = UncivTextField.Integer("Radius", defaultRadius)
         customMapSizeRadius.onChange {
-            mapParameters.mapSize = MapSize(customMapSizeRadius.text.toIntOrNull() ?: 0 )
+            mapParameters.mapSize = MapSize(customMapSizeRadius.intValue ?: 0 )
         }
         hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
         hexagonalSizeTable.add(customMapSizeRadius).right().row()
@@ -242,21 +237,16 @@ class MapParametersTable(
     }
 
     private fun addRectangularSizeTable() {
-        val defaultWidth = mapParameters.mapSize.width.tr()
-        customMapWidth = UncivTextField("Width", defaultWidth).apply {
-            textFieldFilter = DigitsOnlyFilter()
-        }
-
-        val defaultHeight = mapParameters.mapSize.height.tr()
-        customMapHeight = UncivTextField("Height", defaultHeight).apply {
-            textFieldFilter = DigitsOnlyFilter()
-        }
+        val defaultWidth = mapParameters.mapSize.width
+        customMapWidth = UncivTextField.Integer("Width", defaultWidth)
+        val defaultHeight = mapParameters.mapSize.height
+        customMapHeight = UncivTextField.Integer("Height", defaultHeight)
 
         customMapWidth.onChange {
-            mapParameters.mapSize = MapSize(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+            mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
         }
         customMapHeight.onChange {
-            mapParameters.mapSize = MapSize(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+            mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
         }
 
         rectangularSizeTable.defaults().pad(5f)
@@ -384,16 +374,10 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(2f).padTop(10f)
 
-        seedTextField = UncivTextField("RNG Seed", mapParameters.seed.tr())
-        seedTextField.textFieldFilter = DigitsOnlyFilter()
+        seedTextField = UncivTextField.Numeric("RNG Seed", mapParameters.seed, integerOnly = true)
 
-        // If the field is empty, fallback seed value to 0
         seedTextField.onChange {
-            mapParameters.seed = try {
-                seedTextField.text.toLong()
-            } catch (_: Exception) {
-                0L
-            }
+            mapParameters.seed = seedTextField.value?.toLong() ?: 0L
         }
 
         table.add("RNG Seed".toLabel()).left()
@@ -464,7 +448,7 @@ class MapParametersTable(
 
         addTextButton("Reset to defaults", true) {
             mapParameters.resetAdvancedSettings()
-            seedTextField.text = mapParameters.seed.tr()
+            seedTextField.value = mapParameters.seed
             for (entry in advancedSliders)
                 entry.key.value = entry.value()
         }
