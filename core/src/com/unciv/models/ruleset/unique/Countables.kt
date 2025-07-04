@@ -144,6 +144,16 @@ enum class Countables(
             UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
+    OwnedTiles("Owned [tileFilter] Tiles") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val cities = stateForConditionals.civInfo?.cities ?: return null
+            return cities.sumOf { city -> city.getTiles().count { it.matchesFilter(filter) } }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
     TileFilterTiles("[tileFilter] Tiles") {
     override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
         val filter = parameterText.getPlaceholderParameters()[0]
