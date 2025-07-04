@@ -142,7 +142,7 @@ class ImprovementPickerScreen(
                 // *other* improvements with same shortcutKey
                 .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                 // civ can build it (checks tech researched)
-                .filter { tile.improvementFunctions.canBuildImprovement(it, currentPlayerCiv.state) }
+                .filter { tile.improvementFunctions.canBuildImprovement(it, unit.cache.state) }
                 // is technologically more advanced
                 .filter { getRequiredTechColumn(it) > techLevel }
                 .any()

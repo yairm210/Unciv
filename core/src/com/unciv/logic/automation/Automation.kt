@@ -342,7 +342,7 @@ object Automation {
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
         val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
         return city.getTiles().any {
-            it.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
+            it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }
     }
 
