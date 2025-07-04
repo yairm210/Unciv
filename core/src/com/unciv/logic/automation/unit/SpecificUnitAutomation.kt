@@ -227,7 +227,7 @@ object SpecificUnitAutomation {
                 it.isLand && it.resource == null && !it.isCityCenter()
                         && (unit.currentTile == it || unit.movement.canMoveTo(it))
                         && it.improvement == null
-                        && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                        && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
                         && Automation.rankTile(it, unit.civ, localUniqueCache) > averageTerrainStatsValue
             }
 

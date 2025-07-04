@@ -287,9 +287,9 @@ object UnitActionsFromUniques {
     private fun getWaterImprovementAction(unit: MapUnit, tile: Tile): UnitAction? {
         if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
 
-        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civ) ?: return null
+        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.cache.state) ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
-        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)) return null
+        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)) return null
 
         return UnitAction(UnitActionType.CreateImprovement, 82f, "Create [$improvementName]",
             action = {
@@ -303,15 +303,16 @@ object UnitActionsFromUniques {
         val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.ConstructImprovementInstantly)
 
         val civResources = unit.civ.getCivResourcesByName()
+        val stateForConditionals = StateForConditionals(civInfo = unit.civ, unit = unit, tile = tile)
 
         for (unique in uniquesToCheck) {
             val improvementFilter = unique.params[0]
-            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, StateForConditionals(unit = unit, tile = tile)) }
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, stateForConditionals) }
 
             for (improvement in improvements) {
                 // Try to skip Improvements we can never build
                 // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
-                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
+                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, stateForConditionals).any { it.permanent })
                     continue
 
                 val resourcesAvailable = improvement.getMatchingUniques(UniqueType.ConsumesResources).none { improvementUnique ->
@@ -335,7 +336,7 @@ object UnitActionsFromUniques {
                     }.takeIf {
                         resourcesAvailable
                             && unit.hasMovement()
-                            && tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                            && tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
@@ -447,7 +448,7 @@ object UnitActionsFromUniques {
             ImprovementPickerScreen.canReport(
                 tile.improvementFunctions.getImprovementBuildingProblems(
                     it,
-                    unit.civ
+                    unit.cache.state
                 ).toSet()
             )
                 && unit.canBuildImprovement(it)

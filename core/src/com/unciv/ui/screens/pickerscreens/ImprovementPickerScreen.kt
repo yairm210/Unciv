@@ -142,7 +142,7 @@ class ImprovementPickerScreen(
                 // *other* improvements with same shortcutKey
                 .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                 // civ can build it (checks tech researched)
-                .filter { tile.improvementFunctions.canBuildImprovement(it, currentPlayerCiv) }
+                .filter { tile.improvementFunctions.canBuildImprovement(it, currentPlayerCiv.state) }
                 // is technologically more advanced
                 .filter { getRequiredTechColumn(it) > techLevel }
                 .any()
@@ -283,10 +283,10 @@ class ImprovementPickerScreen(
     private fun getProblemReport(improvement: TileImprovement) = getProblemReport(tile, tileWithoutLastTerrain, improvement)
     private fun getProblemReport(tile: Tile, tileWithoutLastTerrain: Tile?, improvement: TileImprovement): ProblemReport? {
         val report = ProblemReport()
-        var unbuildableBecause = tile.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+        var unbuildableBecause = tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.cache.state).toSet()
         if (!canReport(unbuildableBecause) && tileWithoutLastTerrain != null) {
             // Try after pretending to have removed the top terrain layer.
-            unbuildableBecause = tileWithoutLastTerrain.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+            unbuildableBecause = tileWithoutLastTerrain.improvementFunctions.getImprovementBuildingProblems(improvement, unit.cache.state).toSet()
             if (!canReport(unbuildableBecause)) return null
             report.suggestRemoval = true
         }
