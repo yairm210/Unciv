@@ -160,6 +160,6 @@ class HardenGdxAudio(
         }
     }
     fun registerCodecs(audio: OpenALLwjgl3Audio) {
-        audio.registerMusic("m4a") { a, f -> AacMusic(a, f) }
+        audio.registerMusic("m4a", ::AacMusic)
     }
 */
