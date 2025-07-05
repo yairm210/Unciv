@@ -141,7 +141,29 @@ object UnitActionsFromUniques {
         )
     }
 
+    /** Handles the deprecated MayParadropOld unique */
+    internal fun getParadropActionsOld(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        val paradropUniques =
+            unit.getMatchingUniques(UniqueType.MayParadropOld)
+        if (!paradropUniques.any() || unit.isEmbarked()) return emptySequence()
+        unit.cache.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
+        return sequenceOf(UnitAction(UnitActionType.Paradrop,
+            isCurrentAction = unit.isPreparingParadrop(),
+            useFrequency = 60f, // While it is important to see, it isn't nessesary used a lot
+            action = {
+                if (unit.isPreparingParadrop()) unit.action = null
+                else unit.action = UnitActionType.Paradrop.value
+            }.takeIf {
+                !unit.hasUnitMovedThisTurn() &&
+                        tile.isFriendlyTerritory(unit.civ) &&
+                        !tile.isWater
+            })
+        )
+    }
+
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        val paradropActionsOld = getParadropActionsOld(unit, tile)
+        if (paradropActionsOld.any()) return paradropActionsOld
         val paradropUniques =
             unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
         if (!paradropUniques.any()) return emptySequence()
