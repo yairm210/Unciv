@@ -361,7 +361,6 @@ enum class UniqueType(
 
     // Unit action uniques
     // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
-
     FoundCity("Founds a new city", UniqueTarget.UnitAction),
     FoundPuppetCity("Founds a new puppet city", UniqueTarget.UnitAction),
     ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.UnitAction),
@@ -678,7 +677,7 @@ enum class UniqueType(
     ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
 
 
-    /////// game conditionals
+    /////// game conditionals 
     ConditionalEveryTurns("every [positiveAmount] turns", UniqueTarget.Conditional),
     ConditionalBeforeTurns("before turn number [nonNegativeAmount]", UniqueTarget.Conditional),
     ConditionalAfterTurns("after turn number [nonNegativeAmount]", UniqueTarget.Conditional),

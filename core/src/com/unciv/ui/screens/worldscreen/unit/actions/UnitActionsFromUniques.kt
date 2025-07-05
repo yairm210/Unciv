@@ -14,6 +14,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -44,12 +45,21 @@ object UnitActionsFromUniques {
             UniqueType.FoundCity).firstOrNull() ?: 
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
-
-        if (tile.isWater || tile.isImpassible()) return null
+        
+        /*
+        Sadly mountain will not work with this unique because it's not in terrainFilter.
+         */
+        val inTilesModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
+        
+        if ((tile.isWater && inTilesModifier == null || tile.isImpassible() && inTilesModifier == null)) return null
+        
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
+        
+        if  (!unit.hasMovement() || inTilesModifier == null && !tile.canBeSettled()) 
+            return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
-        if (!unit.hasMovement() || !tile.canBeSettled())
+        if (!unit.hasMovement() || inTilesModifier != null && !tile.canBeSettled(inTilesModifier))
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
