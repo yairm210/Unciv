@@ -1,7 +1,3 @@
-
-
-Added "UI Scale" translation item for 
-
 Added global tiles countable  - By PhiRite
 
 By RobLoach:
@@ -9,5 +5,4 @@ By RobLoach:
 - Add unit state for tile improvement conditionals 
 
 By SomeTroglodyte:
-- That was an invalid use of "property access syntax" for setXX/getXX pairs 
-- Remove Mod Checks from running during startup 
+- Changing gold trade amounts using buttons reflected in popup UI
