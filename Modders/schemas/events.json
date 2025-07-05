@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "text": { "type": "string" },
+          "presentation": { "enum": ["None", "Alert", "Floating"] },
+          
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
+          
+          "choices": {
+              "type": "array",
+              "items": {
+                  "properties": {
+                      "text": { "type": "string" },
+                      "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+                      "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+                  },
+                  "required": ["text", "uniques"],
+                  "additionalProperties": false
+              }
+          }
+      },
+      "required": [
+          "name"
+      ],
+      "additionalProperties": false
+  }
+}
