@@ -4,10 +4,9 @@ This is a work in progress - feel free to contribute. Much of this information i
 
 ## Run configuration
 
-- First, enable the android project in Gradle
-    -   In .\settings.gradle.kts, replace `if (System.getenv("ANDROID_HOME") != null)` with `if (true)`.
-    -   In .\build.gradle.kts, change `if (System.getenv("ANDROID_HOME") != null)` to `if (true)`.
-    -   Run "Sync Project with Gradle Files" to populate the available projects and add the android project.
+A successful Gradle sync should automatically create a Run configuration for "android".
+If not, you might try creating one yourself (however, if the config is missing due to an incomplete Gradle sync, then you likely won't be able to choose the module):
+
 - In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
     -   Click "+" to add a new configuration
     -   Choose "Android App"
@@ -24,11 +23,27 @@ With Studio running, you will have adb running, and any newly connected device t
 Once adb sees the device and your desktop is authorized from the device, it will be available and preselected on the device select-box to the right of your "android" run configuration and you can start debugging just like the desktop version.
 **Note** A debug session does not end after selecting Exit from Unciv's menus - swipe it out of the recents list to end the debug session. Hitting the stop button in Studio is less recommended. That's an Android feature.
 
+### `adb` on Linux
+
+For the above (using USB) to succeed on Linux, you may need to prepare permissions. The exact requirements depend on the distribution - if in doubt, search online resources.
+For a Mint 22.1 distro it's as follows, but the steps should be mappable to other distros easily:
+- Ensure you're a member of group `plugdev` (bash: `groups`). It's default on Mint, but if not, add yourself (`sudo usermod -a -G plugdev $USER`).
+- Ensure a matching udev rule exists. This can depend on the maker of the device you wish to connect. To find the maker ID, while the device is connected: `lsusb`.
+  Find your device and jot down the first 4-digit hex code after "ID". In many cases that will be `18d1` - e.g. LineageOS installs will mostly pretend to be 18d1, even if it's different hardware.
+- Look for existing rules in `/etc/udev/rules.d/`. A typical name would be `51-android.rules`. Those are text files, and all are processed, so guess from their names and if in doubt check them all.
+- Edit or create the rules file. On Mint 22+, using xed under sudo is fine, otherwise you might prefer to use another editor like nano. `sudo xed /etc/udev/rules.d/51-android.rules`
+- In the typical case, the file would have one line: `SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666", GROUP="plugdev"`. Yes, replace that `18d1` with your maker ID. If the file and any lines for different maker IDs already exist, add another line.
+- Save the file ~and reboot.~ Just joking - we're on Linux, so a `sudo udevadm control --reload-rules && sudo udevadm trigger` will do.
+- Try `adb kill-server && adb devices`: Your device should be in the list, and Studio will be able to talk to it.
+- You will likely have to re-authorize your computer from the device. Make sure no notification drawer or other system UI is covering and hiding the prompt.
+- If you still have problems, make sure no gradle daemons are still running under the old permissions: `./gradlew --status`. If there are, kill them: `./gradlew --stop` (or skip the status right away).
+
 ## Building an APK
 
 Android Studio has a menu entry "Build -> Build Bundle(s) / APK(s) -> Build APK(s)."
 This will build a ready-to-install APK, and when it is finished, pop a message that offers to show you the file in your local file manager.
 ***Important*** such locally built APK's are debug-signed and not interchangeable with Unciv downloaded from stores. You cannot update one with the other or switch without uninstalling first - losing all data.
+The command line equivalent is: `./gradlew android:assembleDebug`. Then find the apk yourself under `android/build/outputs/apk/debug`.
 
 ## Virtual devices (AVD)
 
