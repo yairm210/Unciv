@@ -143,8 +143,8 @@ object UnitActionsFromUniques {
 
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val paradropUniques =
-            unit.getMatchingUniques(UniqueType.MayParadrop)
-        if (!paradropUniques.any() || unit.isEmbarked()) return emptySequence()
+            unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
+        if (!paradropUniques.any()) return emptySequence()
         unit.cache.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
             isCurrentAction = unit.isPreparingParadrop(),
@@ -153,9 +153,7 @@ object UnitActionsFromUniques {
                 if (unit.isPreparingParadrop()) unit.action = null
                 else unit.action = UnitActionType.Paradrop.value
             }.takeIf {
-                !unit.hasUnitMovedThisTurn() &&
-                        tile.isFriendlyTerritory(unit.civ) &&
-                        !tile.isWater
+                !unit.hasUnitMovedThisTurn()
             })
         )
     }

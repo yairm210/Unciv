@@ -1861,8 +1861,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Removes other religions when spreading religion"
 	Applicable to: Unit
 
-??? example  "May Paradrop up to [amount] tiles from inside friendly territory"
-	Example: "May Paradrop up to [3] tiles from inside friendly territory"
+??? example  "May Paradrop up to [positiveAmount] tiles"
+	Example: "May Paradrop up to [3] tiles"
 
 	Applicable to: Unit
 
