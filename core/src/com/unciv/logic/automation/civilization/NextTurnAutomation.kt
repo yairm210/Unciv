@@ -506,20 +506,24 @@ object NextTurnAutomation {
                 val currentConstruction = it.cityConstructions.getCurrentConstruction()
                 currentConstruction is BaseUnit && currentConstruction.isCityFounder()
             }) return
-        val settlerUnits = civInfo.gameInfo.ruleset.units.values
+        val settlerUnit = civInfo.gameInfo.ruleset.units.values
                 .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
                     personality.getMatchingUniques(UniqueType.WillNotBuild, civInfo.state)
-                        .none { unique -> it.matchesFilter(unique.params[0], civInfo.state) } }
-        if (settlerUnits.isEmpty()) return
+                        .none { unique -> it.matchesFilter(unique.params[0], civInfo.state) } }.minByOrNull { it.cost }
+        if (settlerUnit == null) return
 
         if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first
+
+        var populationRequirement = 1
+        for (unique in settlerUnit.getMatchingUniques(UniqueType.RequiresPopulation))
+            populationRequirement = unique.params[0].toInt()
 
         val workersBuildableForThisCiv = civInfo.gameInfo.ruleset.units.values.any {
             it.hasUnique(UniqueType.BuildImprovements)
                 && it.isBuildable(civInfo)
         }
 
-        val bestCity = civInfo.cities.filterNot { it.isPuppet || it.population.population < 2 }
+        val bestCity = civInfo.cities.filterNot { it.isPuppet || it.population.population < populationRequirement}
             // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
             // Otherwise, AI tries to produce settlers when it can hardly sustain itself
             .filter { city ->
@@ -529,7 +533,7 @@ object NextTurnAutomation {
             }.maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
         if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
-            bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
+            bestCity.cityConstructions.currentConstructionFromQueue = settlerUnit.name
     }
 
     // Technically, this function should also check for civs that have liberated one or more cities
