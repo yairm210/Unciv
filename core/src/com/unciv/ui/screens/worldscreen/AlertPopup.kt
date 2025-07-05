@@ -528,7 +528,7 @@ class AlertPopup(
     }
 
     private fun addRazeOption(city: City, mayAnnex: Boolean, conqueringCiv: Civilization) {
-        val canRaze = city.canBeDestroyed(justCaptured = true)
+        val canRaze = city.canBeDestroyed(justCaptured = true, conqueringCiv)
         val button = "Raze".toTextButton()
         button.apply {
             if (!canRaze) disable()
