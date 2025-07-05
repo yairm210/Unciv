@@ -603,8 +603,8 @@
 		"obsoleteTech": "Gunpowder",
 		"requiredResource": "Iron",
 		"promotions": ["Shock I", "Great Generals II"],
+		"uniques": ["Can build [Fishing Boats] improvements on tiles"],
 		"attackSound": "metalhit"
-		//Samurai should also create Fishing Boats (not now, surely)
 	},
 	{
 		"name": "Berserker",
