@@ -1,3 +1,17 @@
+## 4.17.3
+
+Added "UI Scale" translation item for 
+
+Added global tiles countable  - By PhiRite
+
+By RobLoach:
+- Vanilla, G&K: Fix Samurai ability to build Fishing Boats 
+- Add unit state for tile improvement conditionals 
+
+By SomeTroglodyte:
+- That was an invalid use of "property access syntax" for setXX/getXX pairs 
+- Remove Mod Checks from running during startup 
+
 ## 4.17.2
 
 Fixed ancient ruins spawning
