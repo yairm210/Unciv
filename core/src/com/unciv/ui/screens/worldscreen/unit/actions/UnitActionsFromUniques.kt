@@ -141,7 +141,11 @@ object UnitActionsFromUniques {
         )
     }
 
-    /** Handles the deprecated MayParadropOld unique */
+    /**
+     * Handles the deprecated MayParadropOld unique.
+     *
+     * @see getParadropActions()
+     */
     internal fun getParadropActionsOld(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val paradropUniques =
             unit.getMatchingUniques(UniqueType.MayParadropOld)
@@ -162,8 +166,11 @@ object UnitActionsFromUniques {
     }
 
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        // Support the old paradrop unique
         val paradropActionsOld = getParadropActionsOld(unit, tile)
         if (paradropActionsOld.any()) return paradropActionsOld
+
+        // Retrieve all parardrop uniques, considering the state of the unit
         val paradropUniques =
             unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
         if (!paradropUniques.any()) return emptySequence()
