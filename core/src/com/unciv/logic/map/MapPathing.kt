@@ -34,8 +34,8 @@ object MapPathing {
         
         return tile.hasRoadConnection(unit.civ, false)
                 || tile.hasRailroadConnection(false)
-                || roadImprovement != null && tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.civ)
-                || railRoadImprovement != null && tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.civ)
+                || roadImprovement != null && tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.cache.state)
+                || railRoadImprovement != null && tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.cache.state)
     }
 
     /**

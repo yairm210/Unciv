@@ -37,13 +37,13 @@ enum class ImprovementBuildingProblem(
 class TileImprovementFunctions(val tile: Tile) {
 
     /** Returns true if the [improvement] can be built on this [Tile] */
-    fun canBuildImprovement(improvement: TileImprovement, civInfo: Civilization): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
+    fun canBuildImprovement(improvement: TileImprovement, stateForConditionals: StateForConditionals): Boolean = getImprovementBuildingProblems(improvement, stateForConditionals).none()
 
     /** Generates a sequence of reasons that prevent building given [improvement].
      *  If the sequence is empty, improvement can be built immediately.
      */
-    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: Civilization): Sequence<ImprovementBuildingProblem> = 
-        ImprovementFunctions.getImprovementBuildingProblems(improvement, civInfo, tile)
+    fun getImprovementBuildingProblems(improvement: TileImprovement, stateForConditionals: StateForConditionals): Sequence<ImprovementBuildingProblem> =
+        ImprovementFunctions.getImprovementBuildingProblems(improvement, stateForConditionals, tile)
 
     /** Without regards to what CivInfo it is (so no tech requirement check), a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
