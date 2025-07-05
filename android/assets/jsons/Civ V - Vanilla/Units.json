@@ -603,7 +603,7 @@
 		"obsoleteTech": "Gunpowder",
 		"requiredResource": "Iron",
 		"promotions": ["Shock I", "Great Generals II"],
-		"uniques": ["Can build [Fishing Boats] improvements on tiles"],
+		"uniques": ["Can instantly construct a [Fishing Boats] improvement"],
 		"attackSound": "metalhit"
 	},
 	{
