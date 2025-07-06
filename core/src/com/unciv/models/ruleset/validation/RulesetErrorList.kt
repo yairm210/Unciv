@@ -9,15 +9,15 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
 
-enum class RulesetErrorSeverity(val color: Color) {
+enum class RulesetErrorSeverity(val color: Color, val iconName: String) {
     /** Only appears in mod checker - used for possible misspellings, etc */
-    OK(Color.GREEN),
+    OK(Color.GREEN, "OtherIcons/Checkmark"),
     /** Only appears in mod checker */
-    WarningOptionsOnly(Color.YELLOW),
-    Warning(Color.YELLOW),
+    WarningOptionsOnly(Color.YELLOW, "OtherIcons/ExclamationMark"),
+    Warning(Color.YELLOW, "OtherIcons/ExclamationMark"),
     /** Only appears in mod checker */
-    ErrorOptionsOnly(Color.ORANGE),
-    Error(Color.RED),
+    ErrorOptionsOnly(Color.ORANGE, "OtherIcons/ExclamationMark"),
+    Error(Color.RED, "OtherIcons/Stop"),
 }
 
 /**

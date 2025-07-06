@@ -133,9 +133,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
 
     @Transient
-    var thingsToFocusOnForVictory = setOf<Victory.Focus>()
-
-    @Transient
     var neutralRoads = HashSet<Vector2>()
 
     val modConstants get() = gameInfo.ruleset.modOptions.constants
@@ -401,21 +398,6 @@ class Civilization : IsPartOfGameInfoSerialization {
                else preferredVictoryTypes.map { gameInfo.ruleset.victories[it]!! }
     }
 
-    fun wantsToFocusOn(focus: Stat): Boolean {
-        return when(focus) {
-            Stat.Culture -> wantsToFocusOn(Victory.Focus.Culture)
-            Stat.Science -> wantsToFocusOn(Victory.Focus.Science)
-            Stat.Production -> wantsToFocusOn(Victory.Focus.Production)
-            Stat.Gold -> wantsToFocusOn(Victory.Focus.Gold)
-            Stat.Faith -> wantsToFocusOn(Victory.Focus.Faith)
-            else -> false
-        }
-    }
-
-    fun wantsToFocusOn(focus: Victory.Focus): Boolean {
-        return thingsToFocusOnForVictory.contains(focus) && isAIOrAutoPlaying()
-    }
-
     fun getPersonality(): Personality {
         return if (isAIOrAutoPlaying()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
         else Personality.neutralPersonality
@@ -513,17 +495,28 @@ class Civilization : IsPartOfGameInfoSerialization {
         return resourceModifers
     }
 
+    /**
+     * Returns the resource production modifier as a multiplier.
+     *
+     * For example: 1.0f means no change, 2.0f results in double production.
+     *
+     * @param resource The resource for which to calculate the modifier.
+     * @return The production modifier as a multiplier.
+     */
     fun getResourceModifier(resource: TileResource): Float {
-        var resourceModifier = 1f
+        var finalModifier = 1f
+
+        if (resource.resourceType == ResourceType.Strategic)
+            for (unique in getMatchingUniques(UniqueType.StrategicResourcesIncrease))
+                finalModifier += unique.params[0].toFloat() / 100f
+        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
+            if (resource.matchesFilter(unique.params[1]))
+                finalModifier += unique.params[0].toFloat() / 100f
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
-                resourceModifier *= 2f
-        if (resource.resourceType == ResourceType.Strategic) {
-            resourceModifier *= 1f + getMatchingUniques(UniqueType.StrategicResourcesIncrease)
-                .map { it.params[0].toFloat() / 100f }.sum()
+                finalModifier += 1f
 
-        }
-        return resourceModifier
+        return finalModifier
     }
 
     fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
@@ -550,7 +543,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
 
         yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(gameInfo.ruleset.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun getTriggeredUniques(
@@ -567,7 +560,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
         yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
         yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals, triggerFilter))
-        yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
@@ -910,6 +903,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             }
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
+            Stat.Happiness -> stats.happiness
             else -> 0
         }
     }

@@ -543,12 +543,22 @@ fun String.removeConditionals(): String {
         .trim()
 }
 
-// formats number according to current language
+/** Formats number according to current language
+ *
+ *  Note: The inverse operation is UncivGame.Current.settings.getCurrentNumberFormat().parse(string), handled in the [UncivTextField.Numeric][com.unciv.ui.components.widgets.UncivTextField.Numeric] widget.
+ *
+ *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
+ */
 fun Number.tr(): String {
     return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
 }
 
-// formats number according to given language
+/** Formats number according to a specific [language]
+ *
+ *  Note: The inverse operation is `LocaleCode.getNumberFormatFromLanguage(language).parse(string)`.
+ *
+ *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
+ */
 fun Number.tr(language: String): String {
     return LocaleCode.getNumberFormatFromLanguage(language).format(this)
 }

@@ -98,6 +98,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     //region Transient fields
     @Transient
     lateinit var tileMap: TileMap
+    
+    @Transient
+    var zeroBasedIndex: Int = 0
 
     @Transient
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
@@ -509,6 +512,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             "Land" -> return isLand
             Constants.coastal -> return isCoastalTile()
             Constants.river -> return isAdjacentToRiver()
+            "Unowned" -> return getOwner() == null
             "your" -> return observingCiv != null && getOwner() == observingCiv
             "Foreign Land", "Foreign" -> return observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> return observingCiv != null && isFriendlyTerritory(observingCiv)

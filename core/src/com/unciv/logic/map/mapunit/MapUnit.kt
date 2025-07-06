@@ -482,6 +482,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
+        
+        healing -= getDamageFromTerrain(tile)
 
         return healing
     }
@@ -591,6 +593,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
+        if (civ.isBarbarian) return false
+        
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
         if (improvement.turnsToBuild == -1
@@ -1035,7 +1039,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
             // When not in the unit's turn— I.E. For a foreign unit— The segment from the end of .movementMemories to the unit's current position will have zero length, while the last two entries here will be from .startTurn() followed by .endTurn(), so the segment here will be what gets shown.
             // The exception is when a unit changes position when not in its turn, such as by melee withdrawal or foreign territory expulsion. Then the segment here and the segment from the end of here to the current position can both be shown.
-            movementMemories.removeFirst()
+            movementMemories.removeAt(0)
         }
     }
     

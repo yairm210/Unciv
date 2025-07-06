@@ -626,6 +626,22 @@ class GlobalUniquesTests {
     }
     // endregion
 
+    // region Gain control over tiles
+
+    @Test
+    fun takeOverTilesInCity() {
+        game.makeHexagonalMap(5)
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2.Zero)
+        val city = game.addCity(civInfo, tile, true)
+        Assert.assertEquals(7, city.getTiles().count())
+        val building = game.createBuilding("Gain control over [8] tiles [in this city]")
+        city.cityConstructions.addBuilding(building)
+        Assert.assertEquals(15, city.getTiles().count())
+    }
+
+    // endregion
+
     // endregion
 
 }

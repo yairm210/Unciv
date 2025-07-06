@@ -366,7 +366,7 @@ object UnitAutomation {
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
         // If the unit can heal on this tile in two turns, just heal here
-        if (canUnitHealInTurnsOnCurrentTile(unit,3,)) return true
+        if (canUnitHealInTurnsOnCurrentTile(unit,3)) return true
 
         val currentUnitTile = unit.getTile()
 

@@ -36,7 +36,7 @@ internal object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
 
-        // The uniques checker requires the file system to be seet up, which happens after lwjgw initializes it
+        // The uniques checker requires the file system to be set up, which happens after lwjgl initializes it
         if (arg.isNotEmpty() && arg[0] == "mod-ci") {
             ImagePacker.packImagesPerMod(".", ".")
             val ruleset = Ruleset()
@@ -49,7 +49,7 @@ internal object DesktopLauncher {
                 ruleset.load(jsonsFolder)
             }
             UniqueAutoUpdater.autoupdateUniques(ruleset)
-            val errors = RulesetValidator(ruleset, true).getErrorList()
+            val errors = RulesetValidator.create(ruleset, true).getErrorList()
             println(errors.getErrorText(true))
             exitProcess(if (errors.any { it.errorSeverityToReport == RulesetErrorSeverity.Error }) 1 else 0)
         }

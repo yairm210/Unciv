@@ -342,7 +342,8 @@ class WorldMapHolder(
         val unitSpriteAndIcon = Group().apply { setPosition(tileGroup.x, tileGroup.y) }
         val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit) ?: return
         
-        for (spriteImage in unitSpriteSlot.spriteGroup.children) unitSpriteAndIcon.addActor(spriteImage)
+        for (spriteImage in unitSpriteSlot.spriteGroup.children.toList()) // toList because actors added remove themselves from previous parent  
+            unitSpriteAndIcon.addActor(spriteImage)
         tileGroup.parent.addActor(unitSpriteAndIcon)
 
         

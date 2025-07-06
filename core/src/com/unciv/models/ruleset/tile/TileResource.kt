@@ -179,10 +179,14 @@ class TileResource : RulesetStatsObject(), GameResource {
     }
 
     /** @return Of all the potential improvements in [getImprovements], the first this [civ] can actually build, if any. */
-    fun getImprovingImprovement(tile: Tile, civ: Civilization): String? {
-        return getImprovements().firstOrNull {
-            tile.improvementFunctions.canBuildImprovement(civ.gameInfo.ruleset.tileImprovements[it]!!, civ)
+    fun getImprovingImprovement(tile: Tile, stateForConditionals: StateForConditionals): String? {
+        if (stateForConditionals.civInfo != null) {
+            val civ: Civilization = stateForConditionals.civInfo
+            return getImprovements().firstOrNull {
+                tile.improvementFunctions.canBuildImprovement(civ.gameInfo.ruleset.tileImprovements[it]!!, stateForConditionals)
+            }
         }
+        return null
     }
 
     fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =

@@ -292,7 +292,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
                 if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
-                    && improvableTile.improvementFunctions.canBuildImprovement(tileImprovement, otherCiv)
+                    && improvableTile.improvementFunctions.canBuildImprovement(tileImprovement, otherCiv.state)
                 )
                     needsImprovements = true
 
@@ -372,7 +372,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
                 if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
-                    && improvableTile.improvementFunctions.canBuildImprovement(tileImprovement, otherCiv)
+                    && improvableTile.improvementFunctions.canBuildImprovement(tileImprovement, otherCiv.state)
                 ) {
                     val improveTileButton =
                         "Build [${tileImprovement}] on [${improvableTile.tileResource}] (200 Gold)".toTextButton()

@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.devconsole
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -71,7 +72,8 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         keyShortcuts.add(Input.Keys.UP) { navigateHistory(-1) }
         keyShortcuts.add(Input.Keys.DOWN) { navigateHistory(1) }
 
-        setFillParent(false) // ALLOW clicking the map while the console is open!
+        if (Gdx.app.type != Application.ApplicationType.Android) // I think this might be what's causing Android to fail, not sure
+            setFillParent(false) // ALLOW clicking the map while the console is open!
         open(true)
 
         screen.stage.keyboardFocus = textField
@@ -104,6 +106,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen) {
         fun String.removeFromEnd(n: Int) = substring(0, (length - n).coerceAtLeast(0))
         textField.text = textField.text.removeFromEnd(toRemove) + toAdd
         textField.cursorPosition = Int.MAX_VALUE // because the setText implementation actively resets it after the paste it uses (auto capped at length)
+        pack()
     }
     
     private fun onAltDelete() {

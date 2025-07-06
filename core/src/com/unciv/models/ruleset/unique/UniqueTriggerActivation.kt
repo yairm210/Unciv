@@ -247,7 +247,7 @@ object UniqueTriggerActivation {
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger()) {
                      val replacementUnit = ruleset.units.values
                          .firstOrNull {
-                             it.getMatchingUniques(UniqueType.BuildImprovements)
+                             it.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
                                 .any { unique -> unique.params[0] == "Land" }
                          } ?: return null
                     civUnit = civInfo.getEquivalentUnit(replacementUnit.name)
@@ -909,6 +909,23 @@ object UniqueTriggerActivation {
                 return {
                     val spy = civInfo.espionageManager.addSpy()
                     spy.addNotification("We have recruited [${spy.name}] as a spy!")
+                    true
+                }
+            }
+
+            UniqueType.OneTimeTakeOverTilesInCity -> {
+                val applicableCities = getApplicableCities(unique.params[1])
+                if (applicableCities.none()) return null
+                if (applicableCities.none { it.expansion.chooseNewTileToOwn() != null }) return null
+
+                return {
+                    val positiveAmount = unique.params[0].toInt()
+                    for (applicableCity in applicableCities) {
+                        for (i in 1..positiveAmount) {
+                            val tileToOwn = applicableCity.expansion.chooseNewTileToOwn() ?: break
+                            applicableCity.expansion.takeOwnership(tileToOwn)
+                        }
+                    }
                     true
                 }
             }

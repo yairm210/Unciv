@@ -537,11 +537,13 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun getBestRoadAvailable(): RoadStatus {
         val railroadImprovement = getRuleset().railroadImprovement  // May not exist in mods
-        if (railroadImprovement != null && (railroadImprovement.techRequired == null || isResearched(railroadImprovement.techRequired!!)))
+        if (railroadImprovement != null && (railroadImprovement.techRequired == null || isResearched(railroadImprovement.techRequired!!))
+            && ImprovementFunctions.getImprovementBuildingProblems(railroadImprovement, civInfo.state).none())
             return RoadStatus.Railroad
 
         val roadImprovement = getRuleset().roadImprovement
-        if (roadImprovement != null && (roadImprovement.techRequired == null || isResearched(roadImprovement.techRequired!!)))
+        if (roadImprovement != null && (roadImprovement.techRequired == null || isResearched(roadImprovement.techRequired!!))
+            && ImprovementFunctions.getImprovementBuildingProblems(roadImprovement, civInfo.state).none())
             return RoadStatus.Road
 
         return RoadStatus.None
