@@ -1,3 +1,14 @@
+## 4.17.3
+
+Added global tiles countable  - By PhiRite
+
+By RobLoach:
+- Vanilla, G&K: Fix Samurai ability to build Fishing Boats 
+- Add unit state for tile improvement conditionals 
+
+By SomeTroglodyte:
+- Changing gold trade amounts using buttons reflected in popup UI 
+
 ## 4.17.2
 
 Fixed ancient ruins spawning

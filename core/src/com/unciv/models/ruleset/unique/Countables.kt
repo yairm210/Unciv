@@ -144,7 +144,6 @@ enum class Countables(
             UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
-
     OwnedTiles("Owned [tileFilter] Tiles") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -155,7 +154,17 @@ enum class Countables(
             UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
-
+    TileFilterTiles("[tileFilter] Tiles") {
+    override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        val filter = parameterText.getPlaceholderParameters()[0]
+        val tileMap = stateForConditionals.gameInfo?.tileMap ?: return null
+        return tileMap.tileList.count { it.matchesFilter(filter, stateForConditionals.civInfo) }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+        override val example: String = "[Desert] Tiles"
+    },
     TileResources {
         override val documentationHeader = "Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)"
         override val documentationStrings = listOf(
@@ -213,8 +222,6 @@ enum class Countables(
             if (Stat.isStat(parameterText.getPlaceholderParameters()[0])) null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.entries.map { placeholderText.fillPlaceholders(it.name) }.toSet()
     },
-
-
     Expression {
         override val noPlaceholders = false
 

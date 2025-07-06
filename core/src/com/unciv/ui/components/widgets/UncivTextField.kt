@@ -227,7 +227,7 @@ open class UncivTextField(
             } catch (_: ParseException) {
                 null
             }
-            set(value) { super.text = value?.tr() ?: "" }
+            set(value) { super.setText(value?.tr()) }
 
         // Enlist compiler to make sure no-one calls this *from our project*
         @Deprecated("Don't assign `text` on a numeric UncivTextField!", ReplaceWith("value"), DeprecationLevel.ERROR)

@@ -342,7 +342,7 @@ object Automation {
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
         val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
         return city.getTiles().any {
-            it.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }
     }
 
@@ -439,7 +439,7 @@ object Automation {
         val civ = city.civ
         return city.getTiles().filter {
             (it.getTileImprovement() == null || improvementIsRemovable(city, it))
-                && it.improvementFunctions.canBuildImprovement(improvement, civ)
+                && it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
             rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, localUniqueCache, it.stats.getTileStats(city, civ, localUniqueCache)), civ) + (

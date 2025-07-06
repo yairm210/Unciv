@@ -370,6 +370,8 @@ Allowed values:
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Owned [tileFilter] Tiles`
     - Example: `Only available <when number of [Owned [Farm] Tiles] is more than [0]>`
+-   `[tileFilter] Tiles`
+    - Example: `Only available <when number of [[Desert] Tiles] is more than [0]>`
 -   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
     - Example: `Only available <when number of [Iron] is more than [0]>`
     - Can be city stats or civilization stats, depending on where the unique is used
