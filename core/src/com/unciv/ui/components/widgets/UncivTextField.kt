@@ -18,6 +18,7 @@ import com.unciv.ui.components.extensions.getOverlap
 import com.unciv.ui.components.extensions.right
 import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
+import com.unciv.ui.components.formatting.RNGSeedFormat
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -271,58 +272,22 @@ open class UncivTextField(
     class RNGSeed(
         initialValue: Long,
         onFocusChange: (TextField.(Boolean) -> Unit)? = null
-    ) : UncivTextField("RNG Seed", initialValue.format(), onFocusChange) {
-        companion object {
-            private fun Long.toBase64String(): String {
-                val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
-                buffer.putLong(this)
-                return String(Base64Coder.encode(buffer.array()))
-            }
-            private fun String.decorate() =
-                trimEnd('=').withIndex()
-                    .groupBy({ it.index / 3 }) { it.value } // Gives Map<Int, List<Char>>
-                    .map { it.value.joinToString("") } // Join chars per group
-                    .joinToString("-")
-            private fun Long.format() = toBase64String().decorate()
-
-            private fun String.undecorate() =
-                filterNot { it == '-' } // Uses `String.filterNot(..): String` - not a fallback to `Iterable<Char>`
-                .run { padEnd(((length + 3) / 4) * 4, '=') } // ensure length is a multiple of 4
-            private fun String.base64toLong(): Long {
-                val bytes = Base64Coder.decode(this)
-                val buffer = ByteBuffer.allocate(Long.SIZE_BYTES)
-                buffer.put(bytes)
-                buffer.rewind()
-                return buffer.getLong()
-            }
-            private fun String.parse() = undecorate().base64toLong()
-            private fun String.parseBase64OrPlain() = when {
-                isEmpty() -> 0L
-                drop(1).contains('-') -> parse() // detect our format but not a negative plain number
-                else -> toLong()  // In case someone pastes a plain long into the field
-            }
-
-            @VisibleForTesting
-            fun unitTestFormat(input: Long) = input.format()
-            @VisibleForTesting
-            fun unitTestParse(input: String) = input.parseBase64OrPlain()
-        }
+    ) : UncivTextField("RNG Seed", RNGSeedFormat.format(initialValue), onFocusChange) {
         init {
-            textFieldFilter = TextFieldFilter { _, c -> c.isLetterOrDigit() || c in "+/=-" }
-            maxLength = 14 // Long.MIN_VALUE.format() is "gAA-AAA-AAA-AA".
+            maxLength = 1000 // Since we're allowing users to imput "phrases", this could be unlimited? - No better some arbitrary limit.
         }
         var value: Long
             get() = try {
-                text.parseBase64OrPlain()
+                RNGSeedFormat.parse(text)
             } catch (_: IllegalArgumentException) {
                 // If the field is empty or invalid, fallback seed value to 0
                 0L
             }
             set(value) {
-                text = value.format()
+                text = RNGSeedFormat.format(value)
             }
 
-        // Could also do parse (letting it throw when invalid) - super.setText, but YAGNI
+        // Could also do parse (letting it throw when invalid) then super.setText, but YAGNI
         @Deprecated("Don't assign `text` on a UncivTextField.RNGSeed!", ReplaceWith("value"), DeprecationLevel.ERROR)
         override fun setText(str: String?) = super.setText(str)
     }
