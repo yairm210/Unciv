@@ -83,6 +83,14 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             }
         }
 
+        if (!civInfo.isCityState && !otherCivilization.isCityState) {
+            val thirdCivsAtWarWeKnow = otherCivilization.getKnownCivs()
+                .filter { it.civName != otherCivilization.civName && !it.isDefeated() && it.isAtWarWith(civInfo) }            
+            for (thirdCiv in thirdCivsAtWarWeKnow) {
+                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, speed = civInfo.gameInfo.speed))
+            }
+        }
+        
         return offers
     }
 
@@ -156,6 +164,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
                 }
+                TradeOfferType.PeaceProposal -> to.getDiplomacyManager(offer.name)!!.makePeace()
                 else -> {}
             }
         }

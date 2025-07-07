@@ -63,6 +63,7 @@ class OffersListScroll(
                 Stockpiled_Resource -> "Stockpiled resources"
                 Technology -> "Technologies"
                 WarDeclaration -> "Declarations of war"
+                PeaceProposal -> "Peace Proposals"
                 City -> "Cities"
             }
             val offersOfType = offersToDisplay.filter { it.type == offerType }
@@ -91,6 +92,8 @@ class OffersListScroll(
                     Luxury_Resource, Strategic_Resource ->
                         ImageGetter.getResourcePortrait(offer.name, 30f)
                     WarDeclaration ->
+                        ImageGetter.getNationPortrait(ourCiv.gameInfo.ruleset.nations[offer.name]!!, 30f)
+                    PeaceProposal ->
                         ImageGetter.getNationPortrait(ourCiv.gameInfo.ruleset.nations[offer.name]!!, 30f)
                     else -> null
                 }

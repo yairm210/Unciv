@@ -19,6 +19,7 @@ data class TradeOffer(val name: String, val type: TradeOfferType, var amount: In
         duration = when {
             type.isImmediate -> -1 // -1 for offers that are immediate (e.g. gold transfer)
             name == Constants.peaceTreaty -> speed.peaceDealDuration
+            type == TradeOfferType.PeaceProposal -> speed.peaceDealDuration
             else -> speed.dealDuration
         }
     }
@@ -37,6 +38,7 @@ data class TradeOffer(val name: String, val type: TradeOfferType, var amount: In
     fun getOfferText(untradable: Int = 0): String {
         var offerText = when(type) {
             TradeOfferType.WarDeclaration -> "Declare war on [$name]"
+            TradeOfferType.PeaceProposal -> "Make peace with [$name]"
             TradeOfferType.Introduction -> "Introduction to [$name]"
             TradeOfferType.City -> {
                 val city =

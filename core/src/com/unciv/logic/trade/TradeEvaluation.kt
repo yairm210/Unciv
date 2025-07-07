@@ -25,7 +25,7 @@ class TradeEvaluation {
 
         // Edge case time! Guess what happens if you offer a peace agreement to the AI for all their cities except for the capital,
         //  and then capture their capital THAT SAME TURN? It can agree, leading to the civilization getting instantly destroyed!
-        // If a civ doen't has ever owned an original capital, which means it has not settle the first city yet, 
+        // If a civ doesn't has ever owned an original capital, which means it has not settle the first city yet, 
         // it shouldn't be forbidden to trade with other civs owing to cities.size == 0.
         if ((offerer.hasEverOwnedOriginalCapital && trade.ourOffers.count { it.type == TradeOfferType.City } == offerer.cities.size)
             || (tradePartner.hasEverOwnedOriginalCapital && trade.theirOffers.count { it.type == TradeOfferType.City } == tradePartner.cities.size)) {
@@ -72,6 +72,8 @@ class TradeEvaluation {
             TradeOfferType.Technology -> true
             TradeOfferType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeOfferType.WarDeclaration -> offerer.getDiplomacyManager(tradeOffer.name)!!.canDeclareWar()
+            // TODO: Implement trade offer validation for TurnManager -> startTurn  -> line 91
+            TradeOfferType.PeaceProposal -> true
             TradeOfferType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
@@ -207,6 +209,12 @@ class TradeEvaluation {
                     return 0
                 }
             }
+            TradeOfferType.PeaceProposal -> {
+                // How much their offer is worth to us in gold
+                // We are pretending offerred civ is us
+                val eval = evaluatePeaceCostForThem(tradePartner.getDiplomacyManager(offer.name)!!.civInfo, tradePartner)
+                return eval
+            }
             TradeOfferType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer for city id "+offer.name+" which does't seem to exist for this civ!")
@@ -253,6 +261,9 @@ class TradeEvaluation {
         return evaluateSellCost(offer, civInfo, tradePartner, trade)
     }
 
+    /**
+     * How much our offer is worth to us in gold
+     */
     private fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
             TradeOfferType.Gold -> return offer.amount
@@ -345,7 +356,12 @@ class TradeEvaluation {
                     return (-25 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).toInt().coerceAtLeast(0)
                 }
             }
-
+            TradeOfferType.PeaceProposal -> {
+                // How much our offer is worth to us in gold
+                // We are pretending offerred civ is them
+                val eval = evaluatePeaceCostForThem(civInfo, civInfo.getDiplomacyManager(offer.name)!!.civInfo)
+                return eval
+            }
             TradeOfferType.City -> {
                 val city = civInfo.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer to sell city id " + offer.name + " which does't seem to exist for this civ!")
