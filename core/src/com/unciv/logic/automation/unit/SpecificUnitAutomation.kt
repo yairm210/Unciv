@@ -359,10 +359,8 @@ object SpecificUnitAutomation {
         val capitalTile = unit.civ.getCapital()!!.getCenterTile()
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
-        if (unit.movement.canUnitSwapTo(capitalTile)) {
-            unit.movement.headTowards(capitalTile) // we need to move through the intermediate tiles
+        if (unit.movement.canUnitSwapTo(capitalTile))
             unit.movement.swapMoveToTile(capitalTile)
-        }
         if (unit.getTile() == capitalTile) {
             UnitActions.invokeUnitAction(unit, UnitActionType.AddInCapital)
         }
