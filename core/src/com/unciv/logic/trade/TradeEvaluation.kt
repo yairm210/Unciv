@@ -210,10 +210,10 @@ class TradeEvaluation {
                 }
             }
             TradeOfferType.PeaceProposal -> {
-                // How much their offer is worth to us in gold
-                // We are pretending offerred civ is us
-                val eval = evaluatePeaceCostForThem(tradePartner.getDiplomacyManager(offer.name)!!.civInfo, tradePartner)
-                return eval
+                // We're evaluating peace cost for third civ to be paid by tradePartner to us (civInfo)
+                // TODO: trade partner should ask something in return if trade partner doesn't like third civ, e.g. it benefits from war
+                val thirdCiv = civInfo.gameInfo.getCivilization(offer.name)
+                return evaluatePeaceCostForThem(civInfo, thirdCiv)
             }
             TradeOfferType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
@@ -357,10 +357,9 @@ class TradeEvaluation {
                 }
             }
             TradeOfferType.PeaceProposal -> {
-                // How much our offer is worth to us in gold
-                // We are pretending offerred civ is them
-                val eval = evaluatePeaceCostForThem(civInfo, civInfo.getDiplomacyManager(offer.name)!!.civInfo)
-                return eval
+                // We're evaluating peace cost for third civ to be paid by requesting civ (tradePartner) to us (civInfo)
+                val thirdCiv = civInfo.gameInfo.getCivilization(offer.name)
+                return evaluatePeaceCostForThem(civInfo, thirdCiv)
             }
             TradeOfferType.City -> {
                 val city = civInfo.cities.firstOrNull { it.id == offer.name }

@@ -6,13 +6,18 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.logic.trade.TradeOfferType.*
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.setEnabled
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.IconTextButton
@@ -102,6 +107,91 @@ class OffersListScroll(
                         iconCell.size(30f)
                     label.setAlignment(Align.center)
                     labelCell.pad(5f).grow()
+                }
+                
+                // Disable peace proposal trade item when:
+                // 1. Third civ is stronger, need to trade with them instead
+                // 2. Third civ is city state allied to civ we are war with
+                // 3. War count down hasn't expired yet
+                if (offer.type == PeaceProposal) {
+                    val thirdCiv = ourCiv.gameInfo.getCivilization(offer.name)
+                    
+                    val trade = Trade()
+                    val peaceOffer = TradeOffer(Constants.peaceTreaty, Treaty, offer.amount, offer.duration)
+                    trade.ourOffers.add(peaceOffer)
+                    trade.theirOffers.add(peaceOffer)
+
+                    val tradeEval = TradeEvaluation()
+                    var offerEnabled = true
+                    var tooltipText = ""
+                    var warCountDown = 0
+
+                    if (persistenceID == "TheirAvail") {
+                        val diploManager = theirCiv.getDiplomacyManager(thirdCiv)!!
+                        warCountDown = if (diploManager.hasFlag(DiplomacyFlags.DeclaredWar))
+                            diploManager.getFlag(DiplomacyFlags.DeclaredWar) else 0
+
+                        if (warCountDown < 1) {
+                            if (thirdCiv.isCityState) {
+                                val allyCiv = thirdCiv.getAllyCiv()
+                                if (allyCiv != null && theirCiv.isAtWarWith(allyCiv)) {
+                                    // City state is allied to civ with whom they're at war with, need to trade peace with that civ instead
+                                    offerEnabled = false
+                                    tooltipText = thirdCiv.civName + " is allied to " + allyCiv.civName
+                                }
+                            }
+                            else {
+                                val thirdCivOK = tradeEval.isTradeAcceptable(trade, thirdCiv, theirCiv)
+                                val theirCivOK = tradeEval.isTradeAcceptable(trade, theirCiv, thirdCiv)
+
+                                if (!theirCivOK && thirdCivOK) tooltipText = theirCiv.civName + " doesn't want peace"
+                                else if (theirCivOK && !thirdCivOK) tooltipText = thirdCiv.civName + " doesn't want peace"
+                                else if (!theirCivOK) tooltipText = "None of the sides want peace"
+
+                                // thirdCiv will agree to peace trade if it's weaker,
+                                // otherwise we need to trade with them instead of this civ
+                                offerEnabled = thirdCivOK
+                            }
+                        }
+                    }
+                    else if (persistenceID == "OurAvail") {
+                        val diploManager = ourCiv.getDiplomacyManager(thirdCiv)!!
+                        warCountDown = if (diploManager.hasFlag(DiplomacyFlags.DeclaredWar))
+                            diploManager.getFlag(DiplomacyFlags.DeclaredWar) else 0
+
+                        if (warCountDown < 1) {
+                            if (thirdCiv.isCityState) {
+                                val allyCiv = thirdCiv.getAllyCiv()
+                                if (allyCiv != null && ourCiv.isAtWarWith(allyCiv)) {
+                                    // City state is allied to civ we're at war with, need to trade peace with that civ instead
+                                    offerEnabled = false
+                                    tooltipText = thirdCiv.civName + " is allied to " + allyCiv.civName
+                                }
+                            }
+                            else {
+                                val thirdCivOK = tradeEval.isTradeAcceptable(trade, thirdCiv, ourCiv)
+                                val ourCivOK = tradeEval.isTradeAcceptable(trade, ourCiv, thirdCiv)
+
+                                if (!ourCivOK && thirdCivOK) tooltipText = ourCiv.civName + " doesn't want peace"
+                                else if (ourCivOK && !thirdCivOK) tooltipText = thirdCiv.civName + " doesn't want peace"
+                                else if (!ourCivOK) tooltipText = "None of the sides want peace"
+
+                                // thirdCiv will agree to peace trade if it's weaker,
+                                // otherwise we can't trade peace, trade partner needs to trade peace with tird civ
+                                offerEnabled = thirdCivOK
+                            }
+                        }
+                    }
+
+                    if (warCountDown > 0) {
+                        offerEnabled = false
+                        tooltipText = "War countdown didn't expire"
+                    }
+                    
+                    // TODO: Tooltip translation not handled
+                    if (!offerEnabled) tradeButton.addTooltip(tooltipText)
+                    // TODO: Tooltip won't be show if button is disabled
+                    tradeButton.setEnabled(offerEnabled)
                 }
 
                 val amountPerClick =
