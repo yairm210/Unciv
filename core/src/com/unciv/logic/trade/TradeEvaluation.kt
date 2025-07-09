@@ -208,11 +208,26 @@ class TradeEvaluation {
                 }
             }
             TradeOfferType.PeaceProposal -> {
-                // We're evaluating peace cost for third civ to be paid by us (civInfo) to tradePartner
-                // TODO: We should ask something in return if we don't like third civ, e.g. we benefit from war
-                // TODO: We should consider paying if third civ is city state that is our ally
                 val thirdCiv = civInfo.gameInfo.getCivilization(offer.name)
-                return evaluatePeaceCostForThem(tradePartner, thirdCiv)
+                
+                // We're buying peace if it's city state that is our ally
+                if (thirdCiv.isCityState) {
+                    val allyCiv = thirdCiv.getAllyCiv()
+                    if (allyCiv != null && allyCiv == civInfo) {
+                        // TODO: More sophisticated formula needed, a reverse of [CityStateFunctions.influenceGainedByGift]
+                        val surplusInfluence = (thirdCiv.getDiplomacyManager(civInfo)!!.getInfluence() - 60).coerceAtLeast(0f)
+                        return (surplusInfluence * 10).toInt()
+                    }
+                }
+
+                // If we don't like third civ why should we pay, they should pay us to agree instead
+                val relationshipLevel = civInfo.getDiplomacyManager(thirdCiv)!!.relationshipIgnoreAfraid()
+                return when (relationshipLevel) {
+                    RelationshipLevel.Unforgivable -> -2000
+                    RelationshipLevel.Enemy -> -1000
+                    RelationshipLevel.Competitor -> -500
+                    else -> 0 // Accepts peace trade as long as trade acceptability remains 0 or greater
+                }
             }
             TradeOfferType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
