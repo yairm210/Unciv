@@ -24,7 +24,7 @@ class TradeEvaluation {
 
         // Edge case time! Guess what happens if you offer a peace agreement to the AI for all their cities except for the capital,
         // and then capture their capital THAT SAME TURN? It can agree, leading to the civilization getting instantly destroyed!
-        // If a civ didn't ever owned an original capital, which means it has not settle the first city yet, 
+        // If a civ has never owned an original capital, which means it has not settled the first city yet, 
         // it shouldn't be forbidden to trade with other civs owing to cities.size == 0.
         if ((offerer.hasEverOwnedOriginalCapital && trade.ourOffers.count { it.type == TradeOfferType.City } == offerer.cities.size)
             || (tradePartner.hasEverOwnedOriginalCapital && trade.theirOffers.count { it.type == TradeOfferType.City } == tradePartner.cities.size)) {
