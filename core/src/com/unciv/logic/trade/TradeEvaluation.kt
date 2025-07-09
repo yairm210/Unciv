@@ -12,7 +12,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.ceil
 import kotlin.math.min
@@ -24,8 +23,8 @@ class TradeEvaluation {
     fun isTradeValid(trade: Trade, offerer: Civilization, tradePartner: Civilization): Boolean {
 
         // Edge case time! Guess what happens if you offer a peace agreement to the AI for all their cities except for the capital,
-        //  and then capture their capital THAT SAME TURN? It can agree, leading to the civilization getting instantly destroyed!
-        // If a civ doesn't has ever owned an original capital, which means it has not settle the first city yet, 
+        // and then capture their capital THAT SAME TURN? It can agree, leading to the civilization getting instantly destroyed!
+        // If a civ didn't ever owned an original capital, which means it has not settle the first city yet, 
         // it shouldn't be forbidden to trade with other civs owing to cities.size == 0.
         if ((offerer.hasEverOwnedOriginalCapital && trade.ourOffers.count { it.type == TradeOfferType.City } == offerer.cities.size)
             || (tradePartner.hasEverOwnedOriginalCapital && trade.theirOffers.count { it.type == TradeOfferType.City } == tradePartner.cities.size)) {
@@ -72,8 +71,7 @@ class TradeEvaluation {
             TradeOfferType.Technology -> true
             TradeOfferType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeOfferType.WarDeclaration -> offerer.getDiplomacyManager(tradeOffer.name)!!.canDeclareWar()
-            // TODO: Implement trade offer validation for TurnManager -> startTurn  -> line 91
-            TradeOfferType.PeaceProposal -> true
+            TradeOfferType.PeaceProposal -> offerer.isAtWarWith(offerer.gameInfo.getCivilization(tradeOffer.name))
             TradeOfferType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
@@ -210,10 +208,11 @@ class TradeEvaluation {
                 }
             }
             TradeOfferType.PeaceProposal -> {
-                // We're evaluating peace cost for third civ to be paid by tradePartner to us (civInfo)
-                // TODO: trade partner should ask something in return if trade partner doesn't like third civ, e.g. it benefits from war
+                // We're evaluating peace cost for third civ to be paid by us (civInfo) to tradePartner
+                // TODO: We should ask something in return if we don't like third civ, e.g. we benefit from war
+                // TODO: We should consider paying if third civ is city state that is our ally
                 val thirdCiv = civInfo.gameInfo.getCivilization(offer.name)
-                return evaluatePeaceCostForThem(civInfo, thirdCiv)
+                return evaluatePeaceCostForThem(tradePartner, thirdCiv)
             }
             TradeOfferType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
@@ -232,6 +231,46 @@ class TradeEvaluation {
         }
     }
 
+    /**
+     * Determine if peace proposal button in trade window should be enabled or disabled
+     * Note that enabled peace proposal can still result in denied trade,
+     * e.g. if no counter offer that is worth it can be made
+     * 
+     * Certain peace proposal buttons in trade window are disabled when:
+     * 1. Third civ is stronger, need to trade with them instead
+     * 2. Third civ is city state allied to civ we or trade partner is at war with
+     * 3. War count down hasn't expired yet, countdown depends on game speed
+     * 
+     * @param thirdCiv Civilization for which peace can be traded (mediated)
+     * @param civInfo Civilization which trades peace with thirdCiv
+     */
+    fun isPeaceProposalEnabled(thirdCiv: Civilization, civInfo: Civilization): Boolean {
+        val diploManager = civInfo.getDiplomacyManager(thirdCiv)!!
+        val warCountDown = if (diploManager.hasFlag(DiplomacyFlags.DeclaredWar))
+            diploManager.getFlag(DiplomacyFlags.DeclaredWar) else 0
+
+        // On standard speed 10 turns must pass before peace can be proposed
+        if (warCountDown > 0) return false
+
+        if (thirdCiv.isCityState) {
+            val allyCiv = thirdCiv.getAllyCiv()
+            if (allyCiv != null && civInfo.isAtWarWith(allyCiv)) {
+                // City state is allied to civ with whom trade partner is at war with,
+                // need to trade peace with that civ instead
+                return false
+            }
+        }
+
+        val trade = Trade()
+        val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = civInfo.gameInfo.speed.peaceDealDuration)
+        trade.ourOffers.add(peaceOffer)
+        trade.theirOffers.add(peaceOffer)
+
+        // thirdCiv is willing to make peace trade if it's weaker,
+        // otherwise we need to trade peace with them directly instead of trade partner
+        return TradeEvaluation().isTradeAcceptable(trade, thirdCiv, civInfo)
+    }
+    
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
         val borderingCivs: Set<String> = getNeighbouringCivs(city)
         if (borderingCivs.contains(civInfo.civName))

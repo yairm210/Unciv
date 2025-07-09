@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DeclareWarReason
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.WarType
-import com.unciv.logic.trade.TradeOfferType.Treaty
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -87,8 +86,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         if (!civInfo.isCityState && !otherCivilization.isCityState) {
             val thirdCivsAtWarWeKnow = otherCivilization.getKnownCivs()
                 .filter { it.civName != otherCivilization.civName && !it.isDefeated() && it.isAtWarWith(civInfo) }
+
             for (thirdCiv in thirdCivsAtWarWeKnow) {
-                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, speed = civInfo.gameInfo.speed))
+                // Setting amount to 0 makes TradeOffer.isTradable() return false and also disables the button in trade window
+                val amount = if (TradeEvaluation().isPeaceProposalEnabled(thirdCiv, civInfo)) 1 else 0
+                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))
             }
         }
         
@@ -166,26 +168,25 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
                 }
                 TradeOfferType.PeaceProposal -> {
-                    // Convert PeaceProposal to peace treaty and apply to warring civs
+                    // Convert PeaceProposal to peaceTreaty and apply to warring civs
                     val trade = Trade()
-                    val peaceOffer = TradeOffer(Constants.peaceTreaty, Treaty, offer.amount, offer.duration)
+                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = offer.duration)
                     trade.ourOffers.add(peaceOffer)
                     trade.theirOffers.add(peaceOffer)
                     
                     val thirdCiv = from.gameInfo.getCivilization(offer.name)
-                    val tradePartnerDiplo = otherCivilization.getDiplomacyManager(thirdCiv)!!
+                    val tradePartnerDiplo = from.getDiplomacyManager(thirdCiv)!!
                     tradePartnerDiplo.apply {
                         trades.add(trade)
                         updateHasOpenBorders()
                     }
 
-                    val thirdCivDiplo = thirdCiv.getDiplomacyManager(otherCivilization)!!
-                    thirdCivDiplo.apply {
+                    thirdCiv.getDiplomacyManager(from)!!.apply {
                         trades.add(trade)
                         updateHasOpenBorders()
                     }
-                    
-                    from.getDiplomacyManager(thirdCiv)!!.makePeace()
+
+                    tradePartnerDiplo.makePeace()
                 }
                 else -> {}
             }
