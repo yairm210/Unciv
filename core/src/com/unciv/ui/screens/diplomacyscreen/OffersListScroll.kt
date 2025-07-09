@@ -105,19 +105,6 @@ class OffersListScroll(
                     labelCell.pad(5f).grow()
                 }
                 
-                if (offer.type == PeaceProposal) {
-                    val thirdCiv = ourCiv.gameInfo.getCivilization(offer.name)
-                    val tradeEval = TradeEvaluation()
-
-                    val offerEnabled = when (persistenceID) {
-                        "TheirAvail" -> tradeEval.isPeaceProposalEnabled(thirdCiv, theirCiv)
-                        "OurAvail" ->  tradeEval.isPeaceProposalEnabled(thirdCiv, ourCiv)
-                        else -> true
-                    }
-
-                    if (!offerEnabled) offer.amount = 0
-                }
-
                 val amountPerClick =
                     when (offer.type) {
                         Gold -> 50
