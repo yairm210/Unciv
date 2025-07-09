@@ -73,6 +73,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import java.util.Timer
 import kotlin.concurrent.timer
+import com.unciv.ui.screens.worldscreen.chat.ChatPopup
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.ui.screens.worldscreen.chat.ChatButton
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -112,6 +115,7 @@ class WorldScreen(
     // Floating Widgets going counter-clockwise
     internal val topBar = WorldScreenTopBar(this)
     internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
+    internal val chatButton = ChatButton(this)
     private val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
     internal val bottomUnitTable = UnitTable(this)
@@ -157,6 +161,7 @@ class WorldScreen(
         stage.addActor(topBar)
         stage.addActor(statusButtons)
         stage.addActor(techPolicyAndDiplomacy)
+        stage.addActor(chatButton)
 
         stage.addActor(zoomController)
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
@@ -683,6 +688,11 @@ class WorldScreen(
             statusButtons.update(true)
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
+
+        // Update chat button position to always be below techPolicyAndDiplomacy
+        chatButton.setSize(techPolicyAndDiplomacy.width, 50f)
+        chatButton.x = techPolicyAndDiplomacy.x
+        chatButton.y = techPolicyAndDiplomacy.y - chatButton.height - 10f
     }
 
     private fun updateAutoPlayStatusButton() {
