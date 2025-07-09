@@ -256,8 +256,8 @@ class TradeEvaluation {
      * 2. Third civ is city state allied to civ we or trade partner is at war with
      * 3. War count down hasn't expired yet, countdown depends on game speed
      * 
-     * @param thirdCiv Civilization for which peace can be traded (mediated)
-     * @param civInfo Civilization which trades peace with thirdCiv
+     * @param thirdCiv Civilization for which peace proposal can be traded (mediated)
+     * @param civInfo Civilization at war with thirdCiv which trades peace proposal
      */
     fun isPeaceProposalEnabled(thirdCiv: Civilization, civInfo: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(thirdCiv)!!
