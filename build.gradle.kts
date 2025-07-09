@@ -1,9 +1,10 @@
 
+import com.unciv.build.BuildConfig.appVersion
 import com.unciv.build.BuildConfig.coroutinesVersion
 import com.unciv.build.BuildConfig.gdxVersion
+import com.unciv.build.BuildConfig.jnaVersion
 import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
-import com.unciv.build.BuildConfig.appVersion
 
 
 buildscript {
@@ -72,21 +73,28 @@ project(":desktop") {
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
 
         // Needed for Windows turn notifiers
-        "implementation"("net.java.dev.jna:jna:5.11.0")
-        "implementation"("net.java.dev.jna:jna-platform:5.11.0")
+        "implementation"("net.java.dev.jna:jna:$jnaVersion")
+        "implementation"("net.java.dev.jna:jna-platform:$jnaVersion")
     }
 }
 
 // For server-side
 project(":server") {
     apply(plugin = "kotlin")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     dependencies {
         // For server-side
-        "implementation"("io.ktor:ktor-server-core:1.6.8")
-        "implementation"("io.ktor:ktor-server-netty:1.6.8")
-        "implementation"("ch.qos.logback:logback-classic:1.2.5")
-        "implementation"("com.github.ajalt.clikt:clikt:3.4.0")
+        "implementation"("io.ktor:ktor-server-core:$ktorVersion")
+        "implementation"("io.ktor:ktor-server-netty:$ktorVersion")
+        "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+        "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+        "implementation"("ch.qos.logback:logback-classic:1.5.18")
+        "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
+
+        // clikt somehow needs this
+        "implementation"("net.java.dev.jna:jna:$jnaVersion")
+        "implementation"("net.java.dev.jna:jna-platform:$jnaVersion")
     }
 
 }

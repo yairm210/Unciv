@@ -8,8 +8,10 @@ object BuildConfig {
     const val appVersion = "4.17.3"
 
     const val gdxVersion = "1.13.1"
-    const val ktorVersion = "2.3.12"
-    const val coroutinesVersion = "1.8.1"
+    const val ktorVersion = "2.3.13"
+    const val coroutinesVersion = "1.10.2"
+    
+    const val jnaVersion = "5.17.0"
 
     const val identifier = "com.unciv.app"
 }
