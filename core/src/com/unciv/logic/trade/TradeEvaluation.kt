@@ -385,14 +385,12 @@ class TradeEvaluation {
                 }
                 return totalCost
             }
-
             TradeOfferType.Stockpiled_Resource -> {
                 val resource = civInfo.gameInfo.ruleset.tileResources[offer.name] ?: return 0
                 val lowestSellCost = resource.getMatchingUniques(UniqueType.AiWillSellAt, StateForConditionals(civInfo))
                     .minOfOrNull { it.params[0].toInt() }
                 return lowestSellCost ?: Int.MAX_VALUE
             }
-            
             TradeOfferType.Technology -> return sqrt(civInfo.gameInfo.ruleset.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
             TradeOfferType.Introduction -> return introductionValue(civInfo.gameInfo.ruleset)
             TradeOfferType.WarDeclaration -> {

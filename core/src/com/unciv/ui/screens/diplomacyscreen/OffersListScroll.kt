@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.logic.trade.TradeOfferType.*
@@ -104,7 +103,7 @@ class OffersListScroll(
                     label.setAlignment(Align.center)
                     labelCell.pad(5f).grow()
                 }
-                
+
                 val amountPerClick =
                     when (offer.type) {
                         Gold -> 50
