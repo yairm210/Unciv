@@ -141,40 +141,30 @@ object UnitActionsFromUniques {
         )
     }
 
-    /**
-     * Handles the deprecated MayParadropOld unique.
-     *
-     * @see getParadropActions()
-     */
-    internal fun getParadropActionsOld(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        val paradropUniques =
-            unit.getMatchingUniques(UniqueType.MayParadropOld)
-        if (!paradropUniques.any() || unit.isEmbarked()) return emptySequence()
-        unit.cache.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
-        return sequenceOf(UnitAction(UnitActionType.Paradrop,
-            isCurrentAction = unit.isPreparingParadrop(),
-            useFrequency = 60f, // While it is important to see, it isn't nessesary used a lot
-            action = {
-                if (unit.isPreparingParadrop()) unit.action = null
-                else unit.action = UnitActionType.Paradrop.value
-            }.takeIf {
-                !unit.hasUnitMovedThisTurn() &&
-                        tile.isFriendlyTerritory(unit.civ) &&
-                        !tile.isWater
-            })
-        )
-    }
-
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        // Support the old paradrop unique
-        val paradropActionsOld = getParadropActionsOld(unit, tile)
-        if (paradropActionsOld.any()) return paradropActionsOld
+        unit.cache.paradropDestinationTileFilters.clear()
+
+        // Support the old paradrop unique, going from Friendly Land to any Land tile
+        val paradropOldUniques = unit.getMatchingUniques(UniqueType.MayParadropOld)
+        if (paradropOldUniques.any() && !unit.isEmbarked() && !unit.getTile().isWater && unit.getTile().isFriendlyTerritory(unit.civ)) {
+            unit.cache.paradropDestinationTileFilters["Land"] = paradropOldUniques.maxOf { it.params[0] }.toInt()
+        }
 
         // Retrieve all parardrop uniques, considering the state of the unit
-        val paradropUniques =
-            unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
-        if (!paradropUniques.any()) return emptySequence()
-        unit.cache.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
+        val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
+
+        // Construct the list of possible destination tile filters, keeping the largest distance
+        for (unique in paradropUniques) {
+            val tileFilter = unique.params[0]
+            val distance = unique.params[1].toInt()
+            val existingDistance = unit.cache.paradropDestinationTileFilters[tileFilter]
+            if (existingDistance == null || distance > existingDistance) {
+                unit.cache.paradropDestinationTileFilters[tileFilter] = distance
+            }
+        }
+
+        if (unit.cache.paradropDestinationTileFilters.isEmpty()) return emptySequence()
+
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
             isCurrentAction = unit.isPreparingParadrop(),
             useFrequency = 60f, // While it is important to see, it isn't nessesary used a lot
