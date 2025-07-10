@@ -257,7 +257,8 @@ class TradeEvaluation {
      * Certain peace proposal buttons in trade window are disabled when:
      * 1. Third civ is stronger, need to trade with them instead
      * 2. Third civ is city state allied to civ we or trade partner is at war with
-     * 3. War count down hasn't expired yet, countdown depends on game speed
+     * 3. Third civ is human player, we don't know if they would agree to peace
+     * 4. War count down hasn't expired yet, countdown depends on game speed
      * 
      * @param thirdCiv Civilization for which peace proposal can be traded (mediated)
      * @param civInfo Civilization at war with thirdCiv which trades peace proposal
@@ -270,8 +271,8 @@ class TradeEvaluation {
         // On standard speed 10 turns must pass before peace can be proposed
         if (warCountDown > 0) return false
 
-        // TODO: How to handle this with human players?
-        if (civInfo.isHuman() || thirdCiv.isHuman()) return false
+        // TODO: We don't know if other human player would agree to peace
+        if (thirdCiv.isHuman()) return false
 
         if (thirdCiv.isCityState) {
             val allyCiv = thirdCiv.getAllyCiv()
