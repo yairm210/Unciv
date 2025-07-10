@@ -84,10 +84,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         }
 
         if (!civInfo.isCityState && !otherCivilization.isCityState) {
-            val thirdCivsAtWarWeKnow = otherCivilization.getKnownCivs()
-                .filter { it.civName != otherCivilization.civName && !it.isDefeated() && it.isAtWarWith(civInfo) }
+            val thirdCivsAtWarTheyKnow = otherCivilization.getKnownCivs()
+                .filter { it.isAtWarWith(civInfo) && !it.isDefeated()
+                    && !it.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange) }
 
-            for (thirdCiv in thirdCivsAtWarWeKnow) {
+            for (thirdCiv in thirdCivsAtWarTheyKnow) {
                 // Setting amount to 0 makes TradeOffer.isTradable() return false and also disables the button in trade window
                 val amount = if (TradeEvaluation().isPeaceProposalEnabled(thirdCiv, civInfo)) 1 else 0
                 offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))

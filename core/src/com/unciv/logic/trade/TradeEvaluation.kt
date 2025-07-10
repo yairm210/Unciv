@@ -7,6 +7,7 @@ import com.unciv.logic.automation.civilization.DeclareWarPlanEvaluator
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -220,14 +221,16 @@ class TradeEvaluation {
                     }
                 }
 
-                // If we don't like third civ why should we pay, you should pay us to agree instead
-                val relationshipLevel = civInfo.getDiplomacyManager(thirdCiv)!!.relationshipIgnoreAfraid()
-                return when (relationshipLevel) {
-                    RelationshipLevel.Unforgivable -> -2000
-                    RelationshipLevel.Enemy -> -1000
-                    RelationshipLevel.Competitor -> -500
-                    else -> 0 // Accepts peace proposal with no value
+                // If we don't like third civ why should we pay
+                val thirdCivDiplo = civInfo.getDiplomacyManager(thirdCiv)!!
+                val relationshipLevel = thirdCivDiplo.relationshipIgnoreAfraid()
+                return if (thirdCivDiplo.diplomaticStatus == DiplomaticStatus.War ||
+                    relationshipLevel == RelationshipLevel.Unforgivable ||
+                    relationshipLevel == RelationshipLevel.Enemy ||
+                    relationshipLevel == RelationshipLevel.Competitor) {
+                    Int.MIN_VALUE // Maximum negative for deal to be rejected
                 }
+                else 0 // Accepts peace proposal with no value
             }
             TradeOfferType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
@@ -281,11 +284,12 @@ class TradeEvaluation {
         trade.ourOffers.add(peaceOffer)
         trade.theirOffers.add(peaceOffer)
 
-        // thirdCiv is willing to make peace trade if it's weaker,
-        // otherwise we need to trade peace with them directly instead of trade partner
+        // If trade is acceptable to thirdCiv it's either loosing the war (result > 0) or it's equal to trade partner (result == 0),
+        // so opinion of thirdCiv doesn't matter because it would agree to peace due to logic in evaluatePeaceCostForThem()
+        // Otherwise we need to trade peace with thirdCiv, instead of trade partner who is loosing the war and would always agree to peace
         return TradeEvaluation().isTradeAcceptable(trade, thirdCiv, civInfo)
     }
-    
+
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
         val borderingCivs: Set<String> = getNeighbouringCivs(city)
         if (borderingCivs.contains(civInfo.civName))
