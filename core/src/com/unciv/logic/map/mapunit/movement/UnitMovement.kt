@@ -644,7 +644,7 @@ class UnitMovement(val unit: MapUnit) {
         // Based on some testing done in the base game
         if (destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false
 
-        // Check if the tile is in range, and matches against the tile filter
+        // The destination is valid if any of the `tileFilters` match, and is within range
         for ((tileFilter, distanceAllowed) in unit.cache.paradropDestinationTileFilters) {
             if (distance <= distanceAllowed && destination.matchesFilter(tileFilter, unit.civ)) return true
         }
