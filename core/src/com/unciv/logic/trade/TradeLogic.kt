@@ -209,13 +209,13 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         }
 
         // Transfer of cities needs to happen before peace treaty, to avoid our units teleporting out of areas that soon will be ours
-        for (offer in currentTrade.theirOffers.filterNot { it.type == TradeOfferType.Treaty || it.type == TradeOfferType.PeaceProposal })
+        for (offer in currentTrade.theirOffers.filterNot { it.type == TradeOfferType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
-        for (offer in currentTrade.ourOffers.filterNot { it.type == TradeOfferType.Treaty || it.type == TradeOfferType.PeaceProposal })
+        for (offer in currentTrade.ourOffers.filterNot { it.type == TradeOfferType.Treaty })
             transferTrade(ourCivilization, otherCivilization, offer)
 
         // Transfter of treaties should only be done from one side to avoid double signing and notifying
-        for (offer in currentTrade.theirOffers.filter { it.type == TradeOfferType.Treaty || it.type == TradeOfferType.PeaceProposal })
+        for (offer in currentTrade.theirOffers.filter { it.type == TradeOfferType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
 
         ourCivilization.cache.updateCivResources()

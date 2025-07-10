@@ -270,6 +270,9 @@ class TradeEvaluation {
         // On standard speed 10 turns must pass before peace can be proposed
         if (warCountDown > 0) return false
 
+        // TODO: How to handle this with human players?
+        if (civInfo.isHuman() || thirdCiv.isHuman()) return false
+
         if (thirdCiv.isCityState) {
             val allyCiv = thirdCiv.getAllyCiv()
             if (allyCiv != null && civInfo.isAtWarWith(allyCiv)) {
