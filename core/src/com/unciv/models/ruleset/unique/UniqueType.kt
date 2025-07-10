@@ -377,9 +377,9 @@ enum class UniqueType(
     PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
     RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
 
-    @Deprecated("As of 4.17.4", ReplaceWith("May Paradrop to [Land] up to [positiveAmount] tiles away <in [{Friendly} {Land}] tiles>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 4.17.4", ReplaceWith("May Paradrop to [Land] tiles up to [positiveAmount] tiles away <in [{Friendly} {Land}] tiles>"), DeprecationLevel.WARNING)
     MayParadropOld("May Paradrop up to [positiveAmount] tiles from inside friendly territory", UniqueTarget.Unit),
-    MayParadrop("May Paradrop to [tileFilter] up to [positiveAmount] tiles away", UniqueTarget.Unit),
+    MayParadrop("May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", UniqueTarget.Unit),
     CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
 
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
