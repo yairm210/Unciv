@@ -7,7 +7,6 @@ import com.unciv.logic.automation.civilization.DeclareWarPlanEvaluator
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -222,12 +221,7 @@ class TradeEvaluation {
                 }
 
                 // If we don't like third civ why should we pay
-                val thirdCivDiplo = civInfo.getDiplomacyManager(thirdCiv)!!
-                val relationshipLevel = thirdCivDiplo.relationshipIgnoreAfraid()
-                return if (thirdCivDiplo.diplomaticStatus == DiplomaticStatus.War ||
-                    relationshipLevel == RelationshipLevel.Unforgivable ||
-                    relationshipLevel == RelationshipLevel.Enemy ||
-                    relationshipLevel == RelationshipLevel.Competitor) {
+                return if (civInfo.getDiplomacyManager(thirdCiv)!!.isRelationshipLevelLT(RelationshipLevel.Neutral)) {
                     Int.MIN_VALUE // Maximum negative for deal to be rejected
                 }
                 else 0 // Accepts peace proposal with no value
