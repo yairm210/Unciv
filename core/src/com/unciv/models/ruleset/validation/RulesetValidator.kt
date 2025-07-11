@@ -328,7 +328,21 @@ open class RulesetValidator protected constructor(
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
 
-        checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
+        fun isColorFaulty(rgb: List<Int>?) = when {
+            rgb == null -> false
+            rgb.size != 3 -> true
+            rgb.any { it !in 0..255 } -> true
+            else -> false
+        }
+        val badInner = isColorFaulty(nation.innerColor)
+        val badOuter = isColorFaulty(nation.outerColor)
+        if (badInner)
+            lines.add("${nation.name}'s innerColor is not an array of three integers in the 0..255 range", sourceObject = nation)
+        if (badOuter)
+            lines.add("${nation.name}'s outerColor is not an array of three integers in the 0..255 range", sourceObject = nation)
+
+        if (!badInner && !badOuter)
+            checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
     }
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {

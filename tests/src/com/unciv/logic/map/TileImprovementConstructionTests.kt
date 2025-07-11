@@ -62,7 +62,7 @@ class TileImprovementConstructionTests {
                 city.civ = civInfo
             }
 
-            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertTrue(improvement.name, canBeBuilt)
         }
     }
@@ -80,7 +80,7 @@ class TileImprovementConstructionTests {
             if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, StateForConditionals.IgnoreConditionals)) continue
 
             tile.setTransients()
-            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertTrue(improvement.name, canBeBuilt)
         }
     }
@@ -101,7 +101,7 @@ class TileImprovementConstructionTests {
                     civInfo.tech.addTechnology(tech.name)
                 city.civ = civInfo
             }
-            val canBeBuilt = coastalTile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            val canBeBuilt = coastalTile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertTrue(improvement.name, canBeBuilt)
         }
     }
@@ -113,7 +113,7 @@ class TileImprovementConstructionTests {
         for (improvement in testGame.ruleset.tileImprovements.values) {
             if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
             civInfo.setNameForUnitTests(improvement.uniqueTo ?: "OtherCiv")
-            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
     }
@@ -124,7 +124,7 @@ class TileImprovementConstructionTests {
             if (improvement.uniqueTo == null) continue
             civInfo.setNameForUnitTests("OtherCiv")
             val tile = tileMap[1,1]
-            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
     }
@@ -142,7 +142,7 @@ class TileImprovementConstructionTests {
             tile.baseTerrain = "Plains"
             tile.resource = wrongResource.name
             tile.setTransients()
-            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
     }
@@ -177,7 +177,7 @@ class TileImprovementConstructionTests {
 
         for (improvement in testGame.ruleset.tileImprovements.values) {
             if (!improvement.uniques.contains("Cannot be built on [Bonus resource] tiles")) continue
-            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
     }
@@ -229,13 +229,13 @@ class TileImprovementConstructionTests {
 
         val improvement = testGame.createTileImprovement()
         Assert.assertFalse("Forest doesn't allow building unless allowed",
-            tile.improvementFunctions.canBuildImprovement(improvement, civInfo))
+            tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state))
 
 
         val allowedImprovement = testGame.createTileImprovement()
         allowedImprovement.terrainsCanBeBuiltOn += "Forest"
         Assert.assertTrue("Forest should allow building when allowed",
-            tile.improvementFunctions.canBuildImprovement(allowedImprovement, civInfo))
+            tile.improvementFunctions.canBuildImprovement(allowedImprovement, civInfo.state))
         tile.setImprovement(allowedImprovement.name)
         Assert.assertTrue(tile.improvement == allowedImprovement.name)
         Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
@@ -248,7 +248,7 @@ class TileImprovementConstructionTests {
         tile.addTerrainFeature("Forest")
 
         val improvement = testGame.createTileImprovement("Does not need removal of [Forest]")
-        Assert.assertTrue(tile.improvementFunctions.canBuildImprovement(improvement, civInfo))
+        Assert.assertTrue(tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state))
         tile.setImprovement(improvement.name)
         Assert.assertTrue(tile.improvement == improvement.name)
         Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))

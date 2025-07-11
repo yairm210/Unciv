@@ -1,3 +1,44 @@
+## 4.17.4
+
+AI: swap spaceship parts into capital - By EmperorPinguin
+
+Allow proposing peace between warring civs in trade window - By metablaster
+
+Unique: `May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away` - By RobLoach
+
+Added missing demand translations
+
+## 4.17.3
+
+Added global tiles countable  - By PhiRite
+
+By RobLoach:
+- Vanilla, G&K: Fix Samurai ability to build Fishing Boats 
+- Add unit state for tile improvement conditionals 
+
+By SomeTroglodyte:
+- Changing gold trade amounts using buttons reflected in popup UI 
+
+## 4.17.2
+
+Fixed ancient ruins spawning
+
+Possilby fixed Android dev console - requires testing
+
+Fixed Happiness being found as a global stat
+
+Unique builder - trigger conditionals are not a superset of global uniques
+
+Added "Unowned" terrainFilter
+
+By SomeTroglodyte:
+- Parse localized numbers correctly 
+- Better Validation of Nation colors 
+
+By RobLoach:
+- When capturing settlers, fix finding the Worker units with conditionals 
+- Add ability to remove policies with ModOptions 
+
 ## 4.17.1
 
 CPU performance improvements

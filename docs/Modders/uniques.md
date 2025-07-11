@@ -122,18 +122,21 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Instantly gain [3] [Mana]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Triggerable
 
 ??? example  "Gain [amount] [stat]"
 	Example: "Gain [3] [Culture]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Triggerable
 
 ??? example  "Gain [amount]-[amount] [stat]"
 	Example: "Gain [3]-[3] [Culture]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Triggerable
 
 ??? example  "Gain enough Faith for a Pantheon"
@@ -165,7 +168,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Triggers the following global alert: [comment]"
+	Only works on Policies at the moment.
+
 	Example: "Triggers the following global alert: [comment]"
+
+	This unique does not support conditionals.
 
 	Applicable to: Triggerable
 
@@ -217,12 +224,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Mark tutorial [comment] complete"
 	Example: "Mark tutorial [comment] complete"
 
+	This unique does not support conditionals.
+
+	This unique is automatically hidden from users.
+
 	Applicable to: Triggerable
 
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
+
+	This unique does not support conditionals.
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
@@ -731,6 +746,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Enables embarkation for land units"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Global
 
 ??? example  "Enables [mapUnitFilter] units to enter ocean tiles"
@@ -742,12 +758,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Land units may cross [Forest] tiles after the first [Melee] is earned"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Global
 
 ??? example  "Enemy [mapUnitFilter] units must spend [positiveAmount] extra movement points when inside your territory"
 	Example: "Enemy [Wounded] units must spend [3] extra movement points when inside your territory"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Global
 
 ??? example  "New [baseUnitFilter] units start with [amount] XP [cityFilter]"
@@ -854,6 +872,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Natural religion spread [cityFilter]"
@@ -1064,12 +1083,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[3] Movement point cost to disembark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Global, Unit
 
 ??? example  "[nonNegativeAmount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Global, Unit
 
 ## Nation uniques
@@ -1085,16 +1106,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Nation
 
 ??? example  "Units ignore terrain costs when moving into any tile with Hills"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Nation
 
 ??? example  "Excluded from map editor"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Will not be chosen for new games"
@@ -1143,9 +1170,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -1169,9 +1200,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -1209,9 +1244,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -1459,9 +1498,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -1483,6 +1526,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Costs [3] [Mana]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -1631,9 +1675,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Building
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Shown while unbuilable"
+	This unique is automatically hidden from users.
+
 	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
@@ -1722,6 +1770,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Costs [3] [Mana]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -1812,8 +1861,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Removes other religions when spreading religion"
 	Applicable to: Unit
 
-??? example  "May Paradrop up to [amount] tiles from inside friendly territory"
-	Example: "May Paradrop up to [3] tiles from inside friendly territory"
+??? example  "May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away"
+	Example: "May Paradrop to [Farm] tiles up to [3] tiles away"
 
 	Applicable to: Unit
 
@@ -1838,6 +1887,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Automation is a primary action"
+	This unique is automatically hidden from users.
+
 	Applicable to: Unit
 
 ??? example  "[relativeAmount]% Strength"
@@ -2131,40 +2182,49 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Cannot move"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
 	Example: "Double movement in [Fresh Water]"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "All tiles cost 1 movement"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "May travel on Water tiles without embarking"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "Can pass through impassable tiles"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "Ignores terrain cost"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "Ignores Zone of Control"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "Rough terrain penalty"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "Can enter ice tiles"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "Cannot embark"
@@ -2175,27 +2235,33 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "May enter foreign tiles without open borders"
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there"
 	Example: "May enter foreign tiles without open borders, but loses [3] religious strength each turn it ends there"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Unit
 
 ??? example  "[nonNegativeAmount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Global, Unit
 
 ??? example  "[nonNegativeAmount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Global, Unit
 
 ??? example  "Never appears as a Barbarian unit"
+	This unique is automatically hidden from users.
+
 	Applicable to: Unit
 
 ??? example  "Religious Unit"
@@ -2220,9 +2286,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Shown while unbuilable"
+	This unique is automatically hidden from users.
+
 	Applicable to: Building, Unit
 
 ??? example  "Comment [comment]"
@@ -2234,6 +2304,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## UnitType uniques
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2255,6 +2327,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Not shown on world screen"
+	This unique is automatically hidden from users.
+
 	Applicable to: Promotion, Resource
 
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
@@ -2266,9 +2340,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2292,30 +2370,42 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Must be adjacent to [amount] [simpleTerrain] tiles"
 	Example: "Must be adjacent to [3] [Elevated] tiles"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Must be adjacent to [amount] to [amount] [simpleTerrain] tiles"
 	Example: "Must be adjacent to [3] to [3] [Elevated] tiles"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
 ??? example  "Must not be on [amount] largest landmasses"
 	Example: "Must not be on [3] largest landmasses"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Must be on [amount] largest landmasses"
 	Example: "Must be on [3] largest landmasses"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
 ??? example  "Occurs on latitudes from [amount] to [amount] percent of distance equator to pole"
 	Example: "Occurs on latitudes from [3] to [3] percent of distance equator to pole"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Occurs in groups of [amount] to [amount] tiles"
 	Example: "Occurs in groups of [3] to [3] tiles"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
@@ -2325,6 +2415,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	If your mod renames Coast or Lakes, do not use this with one of these as parameter, as the code preventing artifacts won't work.
 
 	Example: "Neighboring tiles will convert to [Grassland]"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
@@ -2337,6 +2429,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Units ending their turn on this terrain take [3] damage"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
 	Applicable to: Terrain
 
 ??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
@@ -2353,10 +2446,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Provides a one-time bonus of [+1 Gold, +2 Production] to the closest city when cut down"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
+
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2381,65 +2478,95 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Always Fertility [amount] for Map Generation"
 	Example: "Always Fertility [3] for Map Generation"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "[amount] to Fertility for Map Generation"
 	Example: "[3] to Fertility for Map Generation"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
 ??? example  "A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]"
 	Example: "A Region is formed with at least [3]% [Elevated] tiles, with priority [3]"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]"
 	Example: "A Region is formed with at least [3]% [Elevated] tiles and [Elevated] tiles, with priority [3]"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
 ??? example  "A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles"
 	Example: "A Region can not contain more [Elevated] tiles than [Elevated] tiles"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Base Terrain on this tile is not counted for Region determination"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Starts in regions of this type receive an extra [resource]"
 	Example: "Starts in regions of this type receive an extra [Iron]"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Never receives any resources"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Becomes [terrainName] when adjacent to [terrainFilter]"
 	Example: "Becomes [Forest] when adjacent to [Fresh Water]"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
 ??? example  "Considered [terrainQuality] when determining start locations"
 	Example: "Considered [Undesirable] when determining start locations"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Doesn't generate naturally"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain, Resource
 
 ??? example  "Occurs at temperature between [fraction] and [fraction] and humidity between [fraction] and [fraction]"
 	Example: "Occurs at temperature between [0.5] and [0.5] and humidity between [0.5] and [0.5]"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain, Resource
 
 ??? example  "Occurs in chains at high elevations"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Occurs in groups around high elevations"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain
 
 ??? example  "Every [amount] tiles with this terrain will receive a major deposit of a strategic resource."
 	Example: "Every [3] tiles with this terrain will receive a major deposit of a strategic resource."
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Terrain
 
@@ -2458,9 +2585,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Excluded from map editor"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2474,6 +2605,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
+
+	This unique does not support conditionals.
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
@@ -2499,6 +2634,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Costs [3] [Mana]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
@@ -2527,12 +2663,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Improvement, Resource
 
 ??? example  "Vegetation"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
 	Applicable to: Terrain, Improvement
 
 ??? example  "Excluded from map editor"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Can also be built on tiles adjacent to fresh water"
@@ -2615,14 +2755,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Pillaging this improvement yields approximately [+1 Gold, +2 Production]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
+
 	Applicable to: Improvement
 
 ??? example  "Pillaging this improvement yields [stats]"
 	Example: "Pillaging this improvement yields [+1 Gold, +2 Production]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	This unique's effect can be modified with &lt;(modified by game progress up to [relativeAmount]%)&gt;
+
 	Applicable to: Improvement
 
 ??? example  "Destroyed when pillaged"
@@ -2639,9 +2783,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Improves [Strategic] resource in this tile"
 
+	This unique does not support conditionals.
+
 	Applicable to: Improvement
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2658,14 +2806,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Improvement, Resource
 
 ??? example  "Doesn't generate naturally"
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain, Resource
 
 ??? example  "Occurs at temperature between [fraction] and [fraction] and humidity between [fraction] and [fraction]"
 	Example: "Occurs at temperature between [0.5] and [0.5] and humidity between [0.5] and [0.5]"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Terrain, Resource
 
 ??? example  "Excluded from map editor"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
@@ -2690,12 +2844,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Not shown on world screen"
+	This unique is automatically hidden from users.
+
 	Applicable to: Promotion, Resource
 
 ??? example  "Generated with weight [amount]"
 	The probability for this resource to be chosen is (this resource weight) / (sum weight of all eligible resources). Resources without a unique are given weight `1`
 
 	Example: "Generated with weight [3]"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Resource
 
@@ -2704,6 +2862,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Minor deposits generated with weight [3]"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Resource
 
 ??? example  "Generated near City States with weight [amount]"
@@ -2711,13 +2871,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Generated near City States with weight [3]"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Resource
 
 ??? example  "Special placement during map generation"
+	This unique is automatically hidden from users.
+
 	Applicable to: Resource
 
 ??? example  "Generated on every [amount] tiles"
 	Example: "Generated on every [3] tiles"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Resource
 
@@ -2727,14 +2893,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "AI will sell at [amount] Gold"
 	Example: "AI will sell at [3] Gold"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Resource
 
 ??? example  "AI will buy at [amount] Gold"
 	Example: "AI will buy at [3] Gold"
 
+	This unique is automatically hidden from users.
+
 	Applicable to: Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2766,6 +2938,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2781,6 +2955,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Speed uniques will be treated as part of GlobalUniques for the Speed selected in a game
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2795,6 +2971,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
 
+	This unique does not support conditionals.
+
+	This unique is automatically hidden from users.
+
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
 ## Difficulty uniques
@@ -2803,6 +2983,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Difficulty uniques will be treated as part of GlobalUniques for the Difficulty selected in a game
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2824,31 +3006,47 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## ModOptions uniques
 ??? example  "Diplomatic relationships cannot change"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Can convert gold to science with sliders"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Allow City States to spawn with additional units"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Can trade civilization introductions for [positiveAmount] Gold"
 	Example: "Can trade civilization introductions for [3] Gold"
 
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Disable religion"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Can only start games from the starting era"
 	In this case, 'starting era' means the first defined Era in the entire ruleset.
 
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Allow raze capital"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Allow raze holy city"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Suppress warning [validationWarning]"
@@ -2856,12 +3054,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]"
 
+	This unique does not support conditionals.
+
+	This unique is automatically hidden from users.
+
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 
 ??? example  "Mod is incompatible with [modFilter]"
 	Specifies that your Mod is incompatible with another. Always treated symmetrically, and cannot be overridden by the Mod you are declaring as incompatible.
 
 	Example: "Mod is incompatible with [DeCiv Redux]"
+
+	This unique does not support conditionals.
 
 	Applicable to: ModOptions
 
@@ -2872,21 +3076,31 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Mod requires [DeCiv Redux]"
 
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Should only be used as permanent audiovisual mod"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Can be used as permanent audiovisual mod"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Cannot be used as permanent audiovisual mod"
+	This unique does not support conditionals.
+
 	Applicable to: ModOptions
 
 ??? example  "Mod preselects map [comment]"
 	Only meaningful for Mods containing several maps. When this mod is selected on the new game screen's custom maps mod dropdown, the named map will be selected on the map dropdown. Also disables selection by recently modified. Case insensitive.
 
 	Example: "Mod preselects map [comment]"
+
+	This unique does not support conditionals.
 
 	Applicable to: ModOptions
 
@@ -2913,6 +3127,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	This unique is automatically hidden from users.
+
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Comment [comment]"
@@ -2983,10 +3199,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;if tutorials are enabled&gt;"
+	This unique is automatically hidden from users.
+
 	Applicable to: Conditional
 
 ??? example  "&lt;if tutorial [comment] is completed&gt;"
 	Example: "&lt;if tutorial [comment] is completed&gt;"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Conditional
 
@@ -3133,6 +3353,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "&lt;when above [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] [stat/resource]&gt;"
@@ -3141,6 +3362,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "&lt;when below [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
@@ -3149,6 +3371,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
+
 	Applicable to: Conditional
 
 ??? example  "&lt;in this city&gt;"
@@ -3656,6 +3879,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
 	Example: "&lt;Suppress warning [Tinman is supposed to automatically upgrade at tech Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- *is supposed to automatically upgrade*]&gt;"
+
+	This unique does not support conditionals.
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Triggerable, Terrain, Speed, ModOptions, MetaModifier
 

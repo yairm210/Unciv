@@ -12,7 +12,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.ceil
 import kotlin.math.min
@@ -24,8 +23,8 @@ class TradeEvaluation {
     fun isTradeValid(trade: Trade, offerer: Civilization, tradePartner: Civilization): Boolean {
 
         // Edge case time! Guess what happens if you offer a peace agreement to the AI for all their cities except for the capital,
-        //  and then capture their capital THAT SAME TURN? It can agree, leading to the civilization getting instantly destroyed!
-        // If a civ doen't has ever owned an original capital, which means it has not settle the first city yet, 
+        // and then capture their capital THAT SAME TURN? It can agree, leading to the civilization getting instantly destroyed!
+        // If a civ has never owned an original capital, which means it has not settled the first city yet, 
         // it shouldn't be forbidden to trade with other civs owing to cities.size == 0.
         if ((offerer.hasEverOwnedOriginalCapital && trade.ourOffers.count { it.type == TradeOfferType.City } == offerer.cities.size)
             || (tradePartner.hasEverOwnedOriginalCapital && trade.theirOffers.count { it.type == TradeOfferType.City } == tradePartner.cities.size)) {
@@ -72,6 +71,7 @@ class TradeEvaluation {
             TradeOfferType.Technology -> true
             TradeOfferType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeOfferType.WarDeclaration -> offerer.getDiplomacyManager(tradeOffer.name)!!.canDeclareWar()
+            TradeOfferType.PeaceProposal -> offerer.isAtWarWith(offerer.gameInfo.getCivilization(tradeOffer.name))
             TradeOfferType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
@@ -207,6 +207,25 @@ class TradeEvaluation {
                     return 0
                 }
             }
+            TradeOfferType.PeaceProposal -> {
+                val thirdCiv = civInfo.gameInfo.getCivilization(offer.name)
+                
+                // We're buying peace if it's city state that is our ally
+                if (thirdCiv.isCityState) {
+                    val allyCiv = thirdCiv.getAllyCiv()
+                    if (allyCiv != null && allyCiv == civInfo) {
+                        // TODO: More sophisticated formula needed, a reverse of [CityStateFunctions.influenceGainedByGift]
+                        val surplusInfluence = (thirdCiv.getDiplomacyManager(civInfo)!!.getInfluence() - 60).coerceAtLeast(0f)
+                        return (surplusInfluence * 15).toInt()
+                    }
+                }
+
+                // If we don't like third civ why should we pay
+                return if (civInfo.getDiplomacyManager(thirdCiv)!!.isRelationshipLevelLT(RelationshipLevel.Neutral)) {
+                    Int.MIN_VALUE // Maximum negative for deal to be rejected
+                }
+                else 0 // Accepts peace proposal with no value
+            }
             TradeOfferType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer for city id "+offer.name+" which does't seem to exist for this civ!")
@@ -222,6 +241,51 @@ class TradeEvaluation {
                 throw Exception("Invalid agreement type!")
             }
         }
+    }
+
+    /**
+     * Determine if peace proposal button in trade window should be enabled or disabled
+     * Note that enabled peace proposal can still result in denied trade,
+     * e.g. if no counter offer that is worth it can be made
+     * 
+     * Certain peace proposal buttons in trade window are disabled when:
+     * 1. Third civ is stronger, need to trade with them instead
+     * 2. Third civ is city state allied to civ we or trade partner is at war with
+     * 3. Third civ is human player, we don't know if they would agree to peace
+     * 4. War count down hasn't expired yet, countdown depends on game speed
+     * 
+     * @param thirdCiv Civilization for which peace proposal can be traded (mediated)
+     * @param civInfo Civilization at war with thirdCiv which trades peace proposal
+     */
+    fun isPeaceProposalEnabled(thirdCiv: Civilization, civInfo: Civilization): Boolean {
+        val diploManager = civInfo.getDiplomacyManager(thirdCiv)!!
+        val warCountDown = if (diploManager.hasFlag(DiplomacyFlags.DeclaredWar))
+            diploManager.getFlag(DiplomacyFlags.DeclaredWar) else 0
+
+        // On standard speed 10 turns must pass before peace can be proposed
+        if (warCountDown > 0) return false
+
+        // TODO: We don't know if other human player would agree to peace
+        if (thirdCiv.isHuman()) return false
+
+        if (thirdCiv.isCityState) {
+            val allyCiv = thirdCiv.getAllyCiv()
+            if (allyCiv != null && civInfo.isAtWarWith(allyCiv)) {
+                // City state is allied to civ with whom trade partner is at war with,
+                // need to trade peace with that civ instead
+                return false
+            }
+        }
+
+        val trade = Trade()
+        val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = civInfo.gameInfo.speed.peaceDealDuration)
+        trade.ourOffers.add(peaceOffer)
+        trade.theirOffers.add(peaceOffer)
+
+        // If trade is acceptable to thirdCiv it's either loosing the war (result > 0) or it's equal to trade partner (result == 0),
+        // so opinion of thirdCiv doesn't matter because it would agree to peace due to logic in evaluatePeaceCostForThem()
+        // Otherwise we need to trade peace with thirdCiv, instead of trade partner who is loosing the war and would always agree to peace
+        return TradeEvaluation().isTradeAcceptable(trade, thirdCiv, civInfo)
     }
 
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
@@ -253,6 +317,9 @@ class TradeEvaluation {
         return evaluateSellCost(offer, civInfo, tradePartner, trade)
     }
 
+    /**
+     * How much our offer is worth to us in gold
+     */
     private fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
             TradeOfferType.Gold -> return offer.amount
@@ -320,14 +387,12 @@ class TradeEvaluation {
                 }
                 return totalCost
             }
-
             TradeOfferType.Stockpiled_Resource -> {
                 val resource = civInfo.gameInfo.ruleset.tileResources[offer.name] ?: return 0
                 val lowestSellCost = resource.getMatchingUniques(UniqueType.AiWillSellAt, StateForConditionals(civInfo))
                     .minOfOrNull { it.params[0].toInt() }
                 return lowestSellCost ?: Int.MAX_VALUE
             }
-            
             TradeOfferType.Technology -> return sqrt(civInfo.gameInfo.ruleset.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
             TradeOfferType.Introduction -> return introductionValue(civInfo.gameInfo.ruleset)
             TradeOfferType.WarDeclaration -> {
@@ -345,7 +410,11 @@ class TradeEvaluation {
                     return (-25 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).toInt().coerceAtLeast(0)
                 }
             }
-
+            TradeOfferType.PeaceProposal -> {
+                // We're evaluating peace cost for third civ to be paid by requesting civ (tradePartner) to us (civInfo)
+                val thirdCiv = civInfo.gameInfo.getCivilization(offer.name)
+                return evaluatePeaceCostForThem(civInfo, thirdCiv)
+            }
             TradeOfferType.City -> {
                 val city = civInfo.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer to sell city id " + offer.name + " which does't seem to exist for this civ!")

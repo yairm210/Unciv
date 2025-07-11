@@ -12,6 +12,7 @@ import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
+import org.jetbrains.annotations.Contract
 import kotlin.math.max
 
 
@@ -47,7 +48,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
     fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
 
+    @Contract("readonly")
     fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
+    @Contract("readonly")
     fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
     fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
     fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
@@ -81,6 +84,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
 
+    @Contract("readonly")
     fun conditionalsApply(state: StateForConditionals): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
@@ -92,6 +96,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
+    @Contract("readonly")
     private fun getUniqueMultiplier(stateForConditionals: StateForConditionals): Int {
         if (stateForConditionals == StateForConditionals.IgnoreMultiplicationForCaching)
             return 1
@@ -126,6 +131,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     /** Multiplies the unique according to the multiplication conditionals */
+    @Contract("readonly")
     fun getMultiplied(stateForConditionals: StateForConditionals): Sequence<Unique> {
         val multiplier = getUniqueMultiplier(stateForConditionals)
         return EndlessSequenceOf(this).take(multiplier)
