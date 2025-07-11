@@ -14,11 +14,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 
 class YieldGroup : HorizontalGroup() {
-    init {
-        isTransform = false // performance helper - nothing here is rotated or scaled
-    }
-
-    var currentStats = Stats()
+    private var currentStats = Stats()
 
     fun setStats(stats: Stats) {
         if (currentStats.equals(stats)) return // don't need to update - this is a memory and time saver!
@@ -31,7 +27,7 @@ class YieldGroup : HorizontalGroup() {
         pack()
     }
 
-    fun getIcon(statName: String) =
+    private fun getIcon(statName: String) =
             ImageGetter.getStatIcon(statName).surroundWithCircle(12f, circleImageLocation = "StatIcons/Circle")
                     .apply { circle.color = ImageGetter.CHARCOAL; circle.color.a = 0.5f }
 
