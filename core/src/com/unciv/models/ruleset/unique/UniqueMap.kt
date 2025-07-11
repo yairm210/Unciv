@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import org.jetbrains.annotations.Contract
 import java.util.*
 
 open class UniqueMap() {
@@ -13,8 +14,6 @@ open class UniqueMap() {
     constructor(uniques: Sequence<Unique>) : this() {
         addUniques(uniques.asIterable())
     }
-
-    fun isEmpty(): Boolean = innerUniqueMap.isEmpty()
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     open fun addUnique(unique: Unique) {
@@ -42,26 +41,33 @@ open class UniqueMap() {
         typedUniqueMap.clear()
     }
     
-    // Pure functions
+    @Contract("readonly")
+    fun isEmpty(): Boolean = innerUniqueMap.isEmpty()
     
+    @Contract("readonly")
     fun hasUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueType).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
 
+    @Contract("readonly")
     fun hasUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueTag).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
-    
+
+    @Contract("readonly")
     fun hasTagUnique(tagUnique: String) =
         innerUniqueMap.containsKey(tagUnique)
 
     // 160ms vs 1000-1250ms/30s
+    @Contract("readonly")
     fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
         ?.asSequence()
         ?: emptySequence()
 
+    @Contract("readonly")
     fun getUniques(uniqueTag: String) = innerUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
+    @Contract("readonly")
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
         getUniques(uniqueType)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -73,6 +79,7 @@ open class UniqueMap() {
                 }
             }
 
+    @Contract("readonly")
     fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueTag)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -83,16 +90,20 @@ open class UniqueMap() {
                     else -> it.getMultiplied(state)
                 }
             }
-    
+
+    @Contract("readonly")
     fun hasMatchingUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
+    @Contract("readonly")
     fun hasMatchingUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueTag)
             .any { it.conditionalsApply(state) }
 
+    @Contract("readonly")
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 
+    @Contract("readonly")
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals,
                             triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
         return getAllUniques().filter { unique ->
