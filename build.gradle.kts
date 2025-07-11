@@ -35,9 +35,23 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
+    id("io.github.yairm210.purity-plugin") version "0.0.15" apply(false)
 }
 
 allprojects {
+//    repositories{ // for local purity
+//        mavenLocal()
+//    }
+    
+    apply(plugin = "io.github.yairm210.purity-plugin")
+    configure<yairm210.purity.PurityConfiguration>{
+        wellKnownPureFunctions = setOf("kotlin.internal.ir.CHECK_NOT_NULL")
+        wellKnownReadonlyFunctions = setOf(
+            "kotlin.collections.any",
+            "kotlin.collections.Iterator.hasNext"
+        )
+    }
+    
     apply(plugin = "eclipse")
     apply(plugin = "idea")
     
