@@ -45,10 +45,13 @@ allprojects {
     
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
-        wellKnownPureFunctions = setOf("kotlin.internal.ir.CHECK_NOT_NULL")
+        wellKnownPureFunctions = setOf()
         wellKnownReadonlyFunctions = setOf(
             "kotlin.collections.any",
-            "kotlin.collections.Iterator.hasNext"
+            "kotlin.collections.all",
+            "kotlin.ranges.coerceAtLeast",
+            // Looks like the Collection.contains is not considered overridden :thunk:
+            "java.util.AbstractCollection.contains",
         )
     }
     

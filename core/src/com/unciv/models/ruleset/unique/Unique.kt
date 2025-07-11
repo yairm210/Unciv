@@ -96,7 +96,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
-    @Contract("readonly") @Suppress("purity")
+    @Contract("readonly")
     private fun getUniqueMultiplier(stateForConditionals: StateForConditionals): Int {
         if (stateForConditionals == StateForConditionals.IgnoreMultiplicationForCaching)
             return 1
