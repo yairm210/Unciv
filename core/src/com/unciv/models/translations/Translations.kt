@@ -12,6 +12,7 @@ import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import org.jetbrains.annotations.Contract
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
 
@@ -472,6 +473,7 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
  */
+@Contract("readonly")
 fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
 
@@ -492,6 +494,7 @@ fun String.getPlaceholderParameters(): List<String> {
     return parameters
 }
 
+@Contract("readonly")
 fun String.getPlaceholderText(): String {
     var stringToReturn = this.removeConditionals()
     val placeholderParameters = stringToReturn.getPlaceholderParameters()
@@ -500,6 +503,7 @@ fun String.getPlaceholderText(): String {
     return stringToReturn
 }
 
+@Contract("readonly")
 fun String.equalsPlaceholderText(str: String): Boolean {
     if (isEmpty()) return str.isEmpty()
     if (str.isEmpty()) return false // Empty strings have no .first()
@@ -529,6 +533,7 @@ fun String.getModifiers(): List<Unique> {
     return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
 }
 
+@Contract("readonly")
 fun String.removeConditionals(): String {
     if (!this.contains('<')) return this // no need to regex search
     return this
@@ -543,12 +548,22 @@ fun String.removeConditionals(): String {
         .trim()
 }
 
-// formats number according to current language
+/** Formats number according to current language
+ *
+ *  Note: The inverse operation is UncivGame.Current.settings.getCurrentNumberFormat().parse(string), handled in the [UncivTextField.Numeric][com.unciv.ui.components.widgets.UncivTextField.Numeric] widget.
+ *
+ *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
+ */
 fun Number.tr(): String {
     return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
 }
 
-// formats number according to given language
+/** Formats number according to a specific [language]
+ *
+ *  Note: The inverse operation is `LocaleCode.getNumberFormatFromLanguage(language).parse(string)`.
+ *
+ *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
+ */
 fun Number.tr(language: String): String {
     return LocaleCode.getNumberFormatFromLanguage(language).format(this)
 }

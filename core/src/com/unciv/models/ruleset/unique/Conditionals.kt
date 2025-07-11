@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
+import org.jetbrains.annotations.Contract
 import kotlin.random.Random
 
 object Conditionals {
@@ -18,7 +19,8 @@ object Conditionals {
         seed = seed * 31 + state.hashCode()
         return Random(seed).nextFloat()
     }
-    
+
+    @Contract("readonly") @Suppress("purity")
     fun conditionalApplies(
         unique: Unique?,
         conditional: Unique,
@@ -246,6 +248,8 @@ object Conditionals {
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()
+            UniqueType.ConditionalStackedWithUnit -> state.relevantUnit != null && 
+                    state.relevantUnit!!.getTile().getUnits().any { it != state.relevantUnit && it.matchesFilter(conditional.params[0]) }
 
             UniqueType.ConditionalInTiles ->
                 state.relevantTile?.matchesFilter(conditional.params[0], state.relevantCiv) == true

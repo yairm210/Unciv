@@ -196,6 +196,9 @@ object UnitAutomation {
             
             unit.promotions.addPromotion(chosenPromotion.name)
         }
+        
+        // AI upgrades units via UseGoldAutomation in NextTurnAutomation
+        if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
@@ -363,7 +366,7 @@ object UnitAutomation {
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
         // If the unit can heal on this tile in two turns, just heal here
-        if (canUnitHealInTurnsOnCurrentTile(unit,3,)) return true
+        if (canUnitHealInTurnsOnCurrentTile(unit,3)) return true
 
         val currentUnitTile = unit.getTile()
 

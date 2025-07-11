@@ -142,10 +142,29 @@ object UnitActionsFromUniques {
     }
 
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        val paradropUniques =
-            unit.getMatchingUniques(UniqueType.MayParadrop)
-        if (!paradropUniques.any() || unit.isEmbarked()) return emptySequence()
-        unit.cache.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
+        unit.cache.paradropDestinationTileFilters.clear()
+
+        // Support the old paradrop unique, going from Friendly Land to any Land tile
+        val paradropOldUniques = unit.getMatchingUniques(UniqueType.MayParadropOld)
+        if (paradropOldUniques.any() && !unit.isEmbarked() && !unit.getTile().isWater && unit.getTile().isFriendlyTerritory(unit.civ)) {
+            unit.cache.paradropDestinationTileFilters["Land"] = paradropOldUniques.maxOf { it.params[0] }.toInt()
+        }
+
+        // Retrieve all parardrop uniques, considering the state of the unit
+        val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
+
+        // Construct the list of possible destination tile filters, keeping the largest distance
+        for (unique in paradropUniques) {
+            val tileFilter = unique.params[0]
+            val distance = unique.params[1].toInt()
+            val existingDistance = unit.cache.paradropDestinationTileFilters[tileFilter]
+            if (existingDistance == null || distance > existingDistance) {
+                unit.cache.paradropDestinationTileFilters[tileFilter] = distance
+            }
+        }
+
+        if (unit.cache.paradropDestinationTileFilters.isEmpty()) return emptySequence()
+
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
             isCurrentAction = unit.isPreparingParadrop(),
             useFrequency = 60f, // While it is important to see, it isn't nessesary used a lot
@@ -153,9 +172,7 @@ object UnitActionsFromUniques {
                 if (unit.isPreparingParadrop()) unit.action = null
                 else unit.action = UnitActionType.Paradrop.value
             }.takeIf {
-                !unit.hasUnitMovedThisTurn() &&
-                        tile.isFriendlyTerritory(unit.civ) &&
-                        !tile.isWater
+                !unit.hasUnitMovedThisTurn()
             })
         )
     }
@@ -287,9 +304,9 @@ object UnitActionsFromUniques {
     private fun getWaterImprovementAction(unit: MapUnit, tile: Tile): UnitAction? {
         if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
 
-        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civ) ?: return null
+        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.cache.state) ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
-        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)) return null
+        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)) return null
 
         return UnitAction(UnitActionType.CreateImprovement, 82f, "Create [$improvementName]",
             action = {
@@ -303,15 +320,16 @@ object UnitActionsFromUniques {
         val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.ConstructImprovementInstantly)
 
         val civResources = unit.civ.getCivResourcesByName()
+        val stateForConditionals = StateForConditionals(civInfo = unit.civ, unit = unit, tile = tile)
 
         for (unique in uniquesToCheck) {
             val improvementFilter = unique.params[0]
-            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, StateForConditionals(unit = unit, tile = tile)) }
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, stateForConditionals) }
 
             for (improvement in improvements) {
                 // Try to skip Improvements we can never build
                 // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
-                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.civ).any { it.permanent })
+                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, stateForConditionals).any { it.permanent })
                     continue
 
                 val resourcesAvailable = improvement.getMatchingUniques(UniqueType.ConsumesResources).none { improvementUnique ->
@@ -335,7 +353,7 @@ object UnitActionsFromUniques {
                     }.takeIf {
                         resourcesAvailable
                             && unit.hasMovement()
-                            && tile.improvementFunctions.canBuildImprovement(improvement, unit.civ)
+                            && tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
                             // not pretty, but users *can* remove the building from the city queue an thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
@@ -447,7 +465,7 @@ object UnitActionsFromUniques {
             ImprovementPickerScreen.canReport(
                 tile.improvementFunctions.getImprovementBuildingProblems(
                     it,
-                    unit.civ
+                    unit.cache.state
                 ).toSet()
             )
                 && unit.canBuildImprovement(it)

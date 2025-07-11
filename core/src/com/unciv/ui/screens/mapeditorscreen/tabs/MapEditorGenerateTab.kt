@@ -73,9 +73,9 @@ class MapEditorGenerateTab(
             Concurrency.runOnGLThread {
                 ToastPopup( message, editorScreen, 4000 )
                 newTab.mapParametersTable.run { mapParameters.mapSize.also {
-                    customMapSizeRadius.text = it.radius.tr()
-                    customMapWidth.text = it.width.tr()
-                    customMapHeight.text = it.height.tr()
+                    customMapSizeRadius.intValue = it.radius
+                    customMapWidth.intValue = it.width
+                    customMapHeight.intValue = it.height
                 } }
             }
             return
@@ -196,7 +196,7 @@ class MapEditorGenerateTab(
             defaults().pad(2.5f)
             add("Generator steps".toLabel(fontSize = 24)).row()
             optionGroup.setMinCheckCount(0)
-            for (option in MapGeneratorSteps.values()) {
+            for (option in MapGeneratorSteps.entries) {
                 if (option <= MapGeneratorSteps.All) continue
                 val checkBox = option.label.toCheckBox {
                         choice = option

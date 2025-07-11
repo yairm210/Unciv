@@ -182,9 +182,13 @@ object BuildingDescriptions {
         if (requiredTech != null)
             textList += FormattedLine("Required tech: [$requiredTech]",
                 link="Technology/$requiredTech")
-        if (requiredBuilding != null)
-            textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
-                link="Building/$requiredBuilding")
+        if (requiredBuilding != null) {
+            val linkType = if (ruleset.buildings[requiredBuilding]?.isWonder == true) "Wonder" else "Building"
+            textList += FormattedLine(
+                "Requires [$requiredBuilding] to be built in the city",
+                link="$linkType/$requiredBuilding"
+            )
+        }
 
         if (requiredResource != null) {
             textList += FormattedLine()

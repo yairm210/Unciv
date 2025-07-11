@@ -57,15 +57,13 @@ class TestGame(vararg addGlobalUniques: String) {
         if (RulesetCache.isEmpty())
             RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone()
-        ruleset.globalUniques.uniques.run {
-            for (unique in addGlobalUniques)
-                add(unique)
-        }
+        ruleset.addGlobalUniques(*addGlobalUniques)
 
         gameInfo.ruleset = ruleset
         gameInfo.difficulty = "Prince"
-        gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
-        gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
+        gameInfo.gameParameters.speed = Speed.DEFAULTFORSIMULATION
+        gameInfo.setGlobalTransients()
+
         gameInfo.currentPlayerCiv = Civilization()  // Will be uninitialized, do not build on for tests
 
         // Create a tilemap, needed for city centers
@@ -76,6 +74,16 @@ class TestGame(vararg addGlobalUniques: String) {
 
         for (baseUnit in ruleset.units.values)
             baseUnit.setRuleset(ruleset)
+    }
+
+    fun setSpeed(speed: String) {
+        gameInfo.gameParameters.speed = speed
+        gameInfo.setGlobalTransients()
+    }
+
+    fun setDifficulty(difficulty: String) {
+        gameInfo.difficulty = difficulty
+        gameInfo.setGlobalTransients()
     }
 
     /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */

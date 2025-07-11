@@ -4,13 +4,17 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetFile
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.utils.Log
-import com.unciv.utils.debug
 
 object UniqueAutoUpdater {
 
+    /** Apply Unique replacements.
+     *  @param mod The Ruleset to process. It must have a `folderLocation`.
+     *  @param replaceableUniques A map old to new. The default is only for use with the 'mod-ci' command line argument from `DeskTopLauncher`.
+     *                            The ModCheck UI will have produced this map using a combined Ruleset for replacement validation when appropriate.
+     */
     fun autoupdateUniques(
         mod: Ruleset,
-        replaceableUniques: HashMap<String, String> = getDeprecatedReplaceableUniques(mod)
+        replaceableUniques: HashMap<String, String> = getDeprecatedReplaceableUniques(mod, mod)
     ) {
         val filesToReplace = RulesetFile.entries.map { it.filename }
         val jsonFolder = mod.folderLocation!!.child("jsons")
@@ -26,12 +30,18 @@ object UniqueAutoUpdater {
         }
     }
 
-
-
-    fun getDeprecatedReplaceableUniques(mod: Ruleset): HashMap<String, String> {
+    /** Determine possible auto-corrections from Deprecation annotations.
+     *  @param mod The Ruleset to scan
+     *  @param rulesetForValidation The Ruleset to test potential fixed Uniques against. Can be same as [mod],
+     *                              otherwise it should be a complex Ruleset combining [mod] with an appropriate base ruleset.
+     *  @return A map of old to new. Will not include 'new' values that don't pass Unique validation against [rulesetForValidation].
+     */
+    fun getDeprecatedReplaceableUniques(mod: Ruleset, rulesetForValidation: Ruleset): HashMap<String, String> {
         val allUniques = mod.allUniques()
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
+        val validator = UniqueValidator(rulesetForValidation)
+        val reportRulesetSpecificErrors = rulesetForValidation.modOptions.isBaseRuleset
 
         val deprecatedUniques = allUniques
             .filter { it.getDeprecationAnnotation() != null }
@@ -52,30 +62,13 @@ object UniqueAutoUpdater {
                 uniqueReplacementText += " <${conditional.text}>"
             val replacementUnique = Unique(uniqueReplacementText)
 
-            val modInvariantErrors = UniqueValidator(mod).checkUnique(
-                replacementUnique,
-                false,
-                null,
-                true
-            )
-            for (error in modInvariantErrors)
-                Log.error("ModInvariantError: %s - %s", error.text, error.errorSeverityToReport)
-            if (modInvariantErrors.isNotEmpty()) continue // errors means no autoreplace
-
-            if (mod.modOptions.isBaseRuleset) {
-                val modSpecificErrors = UniqueValidator(mod).checkUnique(
-                    replacementUnique,
-                    false,
-                    null,
-                    true
-                )
-                for (error in modSpecificErrors)
-                    Log.error("ModSpecificError: %s - %s", error.text, error.errorSeverityToReport)
-                if (modSpecificErrors.isNotEmpty()) continue
-            }
+            val modErrors = validator.checkUnique(replacementUnique, false, null, reportRulesetSpecificErrors)
+            for (error in modErrors)
+                Log.error("ModError: %s - %s", error.text, error.errorSeverityToReport)
+            if (modErrors.isNotEmpty()) continue // errors means no autoreplace
 
             deprecatedUniquesToReplacementText[deprecatedUnique.text] = uniqueReplacementText
-            debug("Replace \"%s\" with \"%s\"", deprecatedUnique.text, uniqueReplacementText)
+            Log.debug("Replace \"%s\" with \"%s\"", deprecatedUnique.text, uniqueReplacementText)
         }
 
         return deprecatedUniquesToReplacementText

@@ -23,6 +23,12 @@ class UniqueValidator(val ruleset: Ruleset) {
     /** Used to determine if certain uniques are used for filtering */
     private val allUniqueParameters = HashSet<String>()
 
+    private val anyAncientRuins: Boolean by lazy {
+        ruleset.tileImprovements.values.asSequence()
+            .flatMap { it.uniqueObjects }
+            .any { it.type == UniqueType.IsAncientRuinsEquivalent }
+    }
+
     private fun addToHashsets(uniqueHolder: IHasUniques) {
         for (unique in uniqueHolder.uniqueObjects) {
             if (unique.type == null) allNonTypedUniques.add(unique.text)
@@ -52,7 +58,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             lines.addAll(errors)
         }
     }
-    
+
     private val performanceHeavyConditionals = setOf(UniqueType.ConditionalNeighborTiles, UniqueType.ConditionalAdjacentTo,
         UniqueType.ConditionalNotAdjacentTo
     )
@@ -64,10 +70,10 @@ class UniqueValidator(val ruleset: Ruleset) {
         reportRulesetSpecificErrors: Boolean
     ): RulesetErrorList {
         val prefix by lazy { getUniqueContainerPrefix(uniqueContainer) + "\"${unique.text}\"" }
-        if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix)
+        if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix, reportRulesetSpecificErrors)
 
         val rulesetErrors = RulesetErrorList(ruleset)
-        
+
         if (uniqueContainer != null &&
             !(unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()) ||
                     // "for X turns" effectively turns a global unique into a trigger
@@ -86,14 +92,16 @@ class UniqueValidator(val ruleset: Ruleset) {
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
-            
+
             addExpressionParseErrors(complianceError, rulesetErrors, uniqueContainer, unique)
         }
 
         for (conditional in unique.modifiers) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
         }
-        
+
+        addUniqueTypeSpecificErrors(rulesetErrors, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
+
         val conditionals = unique.modifiers.filter { it.type?.canAcceptUniqueTarget(UniqueTarget.Conditional) == true }
         if (conditionals.size > 1){
             val lastCheapConditional = conditionals.lastOrNull { it.type !in performanceHeavyConditionals }
@@ -105,7 +113,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                             "For performance, consider switching their locations.", RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
             }
         }
-        
+
 
         if (unique.type in MapUnitCache.UnitMovementUniques
                 && unique.modifiers.any { it.type != UniqueType.ConditionalOurUnit || it.params[0] !in Constants.all }
@@ -134,7 +142,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique
     ) {
         if (!complianceError.acceptableParameterTypes.contains(UniqueParameterType.Countable)) return
-        
+
         val parseError = Expressions.getParsingError(complianceError.parameterName)
         if (parseError != null) {
             val marker = "HERE➡"
@@ -147,7 +155,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             rulesetErrors.add(text, RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
             return
         }
-        
+
         val countableErrors = Expressions.getCountableErrors(complianceError.parameterName, ruleset)
         if (countableErrors.isNotEmpty()) {
             val text = "\"${complianceError.parameterName}\" was parsed as an expression, but has the following errors with this ruleset:" +
@@ -157,7 +165,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     private val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
-        UniqueType.DoubleResourceProduced, UniqueType.StrategicResourcesIncrease)
+        UniqueType.DoubleResourceProduced, UniqueType.StrategicResourcesIncrease, UniqueType.PercentResourceProduction)
     private val resourceConditionals = setOf(
         UniqueType.ConditionalWithResource,
         UniqueType.ConditionalWithoutResource,
@@ -225,14 +233,14 @@ class UniqueValidator(val ruleset: Ruleset) {
                     " which references a citywide resource. This is not a valid conditional for a resource uniques, " +
                     "as it causes a recursive evaluation loop.",
                 RulesetErrorSeverity.Error, uniqueContainer, unique)
-        
+
         // Find resource uniques with countable parameters in conditionals, that depend on citywide resources
         // This too leads to an endless loop
         if (unique.type in resourceUniques)
             for ((index, param) in conditional.params.withIndex()){
                 if (ruleset.tileResources[param]?.isCityWide != true) continue
                 if (unique.type!!.parameterTypeMap.getOrNull(index)?.contains(UniqueParameterType.Countable) != true) continue
-                
+
                 rulesetErrors.add(
                     "$prefix contains the modifier \"${conditional.text}\"," +
                         " which references a citywide resource as a countable." +
@@ -253,11 +261,23 @@ class UniqueValidator(val ruleset: Ruleset) {
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
-            
+
             addExpressionParseErrors(complianceError, rulesetErrors, uniqueContainer, unique)
         }
 
         addDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
+    }
+
+    private fun addUniqueTypeSpecificErrors(
+        rulesetErrors: RulesetErrorList, prefix: String, unique: Unique, uniqueContainer: IHasUniques?, reportRulesetSpecificErrors: Boolean
+    ) {
+        when(unique.type) {
+            UniqueType.RuinsUpgrade -> {
+                if (reportRulesetSpecificErrors && !anyAncientRuins)
+                    rulesetErrors.add("$prefix is pointless - there are no ancient ruins", RulesetErrorSeverity.Warning, uniqueContainer, unique)
+            }
+            else -> return
+        }
     }
 
     private fun addDeprecationAnnotationErrors(
@@ -313,7 +333,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             }
             val acceptableParamTypes = unique.type.parameterTypeMap[index]
             if (acceptableParamTypes.size == 0) continue // This is a deprecated parameter type, don't bother checking it
-            
+
             val errorTypesForAcceptableParameters =
                 acceptableParamTypes.map { getParamTypeErrorSeverityCached(it, param) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
@@ -322,7 +342,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                 continue // This is a filtering param, and the unique it's filtering for actually exists, no problem here!
             val leastSevereWarning =
                 errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }
-            if (leastSevereWarning == null) 
+            if (leastSevereWarning == null)
                 throw Exception("Unique ${unique.text} from mod ${ruleset.name} is acting strangely - please open a bug report")
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
         }
@@ -342,7 +362,13 @@ class UniqueValidator(val ruleset: Ruleset) {
         return severity
     }
 
-    private fun checkUntypedUnique(unique: Unique, tryFixUnknownUniques: Boolean, uniqueContainer: IHasUniques?, prefix: String): RulesetErrorList {
+    private fun checkUntypedUnique(
+        unique: Unique,
+        tryFixUnknownUniques: Boolean,
+        uniqueContainer: IHasUniques?,
+        prefix: String,
+        reportRulesetSpecificErrors: Boolean
+    ): RulesetErrorList {
         // Malformed conditional is always bad
         if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
             return RulesetErrorList.of(
@@ -351,7 +377,8 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
 
         // Support purely filtering Uniques without actual implementation
-        if (isFilteringUniqueAllowed(unique)) return RulesetErrorList()
+        if (isFilteringUniqueAllowed(unique, reportRulesetSpecificErrors)) return RulesetErrorList()
+
         if (tryFixUnknownUniques) {
             val fixes = tryFixUnknownUnique(unique, uniqueContainer, prefix)
             if (fixes.isNotEmpty()) return fixes
@@ -364,10 +391,11 @@ class UniqueValidator(val ruleset: Ruleset) {
         )
     }
 
-    private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
+    private fun isFilteringUniqueAllowed(unique: Unique, reportRulesetSpecificErrors: Boolean): Boolean {
         // Isolate this decision, to allow easy change of approach
         // This says: Must have no conditionals or parameters, and is used in any "filtering" parameter of another Unique
         if (unique.modifiers.isNotEmpty() || unique.params.isNotEmpty()) return false
+        if (!reportRulesetSpecificErrors) return true // Don't report unless checking a complete Ruleset
         return unique.text in allUniqueParameters // referenced at least once from elsewhere
     }
 

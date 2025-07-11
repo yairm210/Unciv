@@ -499,7 +499,7 @@
 		"faith": 2,
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,
-		"uniques": ["[+25]% [Gold] from Trade Routes", "Must have an owned [Mountain] within [2] tiles"],
+		"uniques": ["[+25]% [Gold] from Trade Routes", "Must have an owned [{non-[Natural Wonder]} {Mountain}] within [2] tiles"],
 		"requiredTech": "Guilds",
 		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.' - Hiram Bingham"
 	},
@@ -1022,7 +1022,7 @@
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,
 		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
-			"Must have an owned [Mountain] within [2] tiles"],
+			"Must have an owned [{non-[Natural Wonder]} {Mountain}] within [2] tiles"],
 		"requiredTech": "Railroads",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.' - King Ludwig II of Bavaria"
 	},

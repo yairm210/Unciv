@@ -20,7 +20,7 @@ There are 6 basic shapes which can be placed inside the `Images/Skins/MyCoolSkin
  - select-box
  - select-box-pressed
 
-These shapes are used all over Unciv and can be replaced to make a lot of UI elements change appearance at once. To change just one specific element use the [table](Creating-a-UI-skin.md#Available-UI-elements) below to create an image at the specified directory using the specified name inside `Images/Skins/MyCoolSkinExample`. See the image below for an example file structure. ![skinExample](https://user-images.githubusercontent.com/24532072/198904598-0d298035-5b02-431b-bfb4-7da4b9c821c9.png)
+These shapes are used all over Unciv and can be replaced to make a lot of UI elements change appearance at once. To change just one specific element use the [table](#available-ui-elements) below to create an image at the specified directory using the specified name inside `Images/Skins/MyCoolSkinExample`. See the image below for an example file structure. ![skinExample](https://user-images.githubusercontent.com/24532072/198904598-0d298035-5b02-431b-bfb4-7da4b9c821c9.png)
 
 ## Limitations
 
@@ -60,6 +60,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | DiplomacyScreen/ | SelectedCiv | null | |
 | General/ | AnimatedMenu | roundedEdgeRectangle | |
 | General/ | Border | null | |
+| General/ | DisabledBox | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
 | General/ | KeyCapturingButton | roundedEdgeRectangleSmall | |

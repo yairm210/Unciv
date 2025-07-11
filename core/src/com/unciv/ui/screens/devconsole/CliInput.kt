@@ -137,7 +137,7 @@ internal class CliInput(
     /** Parses `this` parameter as a Float number.
      *  @throws ConsoleErrorException if the string is not a valid representation of a number. */
     fun toFloat(): Float = content.toFloatOrNull() ?: throw ConsoleErrorException("'$this' is not a valid number.")
-    
+
     /** Parses `this` parameter as a Boolean.
      *  @throws ConsoleErrorException if the string is not 'true' or 'false'. */
     fun toBoolean(): Boolean = content.toBooleanStrictOrNull() ?: throw ConsoleErrorException("'$this' is not a valid boolean value.")
@@ -181,6 +181,15 @@ internal class CliInput(
     /** Finds the first entry whose [name][INamed.name] [equals] `this` parameter.
      *  @throws ConsoleErrorException if not found. */
     inline fun <reified T: INamed> find(options: Sequence<T>): T = find(options.asIterable())
+
+    /** Representation to include in strings that will pass through tr(), e.g. for notifications repeating a filter:
+     *  - Dashed input is returned as [content] wrapped in square brackets
+     *  - Quoted input is returned as [originalUnquoted] wrapped in square brackets plus quotes **outside** those.
+     */
+    fun toStringAsPlaceholder() = when(method) {
+        Method.Dashed -> "[$content]"
+        Method.Quoted -> "\"[${originalUnquoted()}]\""
+    }
 
     //endregion
 

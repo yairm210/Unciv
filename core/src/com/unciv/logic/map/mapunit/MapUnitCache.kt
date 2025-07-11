@@ -59,7 +59,9 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var canEnterCityStates: Boolean = false
     var costToDisembark: Float? = null
     var costToEmbark: Float? = null
-    var paradropRange = 0
+
+    /** A hashmap where the key represents the tileFilter, and the value is how far away the tile could be */
+    val paradropDestinationTileFilters = mutableMapOf<String, Int>()
 
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
     var hasUniqueToCreateWaterImprovements = false

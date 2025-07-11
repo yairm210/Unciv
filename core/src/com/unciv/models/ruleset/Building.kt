@@ -338,11 +338,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
                 }
 
-                UniqueType.HiddenBeforeAmountPolicies -> {
-                    if (cityConstructions.city.civ.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
-                        yield(RejectionReasonType.MorePolicyBranches.toInstance(unique.text))
-                }
-
                 else -> {}
             }
         }

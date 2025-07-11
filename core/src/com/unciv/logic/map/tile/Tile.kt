@@ -34,6 +34,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import org.jetbrains.annotations.Contract
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.abs
@@ -98,6 +99,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     //region Transient fields
     @Transient
     lateinit var tileMap: TileMap
+    
+    @Transient
+    var zeroBasedIndex: Int = 0
 
     @Transient
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
@@ -254,6 +258,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return null
     }
 
+    @Contract("readonly")
     fun getCity(): City? = owningCity
 
     internal fun getNaturalWonder(): Terrain =
@@ -348,6 +353,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
+    @Contract("readonly")
     fun getOwner(): Civilization? = getCity()?.civ
 
     fun getRoadOwner(): Civilization? {
@@ -398,6 +404,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return uniques
     }
 
+    @Contract("readonly")
     fun getWorkingCity(): City? {
         val civInfo = getOwner() ?: return null
         if (owningCity?.isWorked(this) == true) return owningCity // common case
@@ -430,6 +437,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return false
     }
 
+    @Contract("readonly")
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield(): Boolean {
         if (getCity() == null) return false
@@ -478,10 +486,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
+    @Contract("readonly")
     fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo) })
     }
 
+    @Contract("readonly") @Suppress("purity")
     private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
@@ -509,6 +519,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             "Land" -> return isLand
             Constants.coastal -> return isCoastalTile()
             Constants.river -> return isAdjacentToRiver()
+            "Unowned" -> return getOwner() == null
             "your" -> return observingCiv != null && getOwner() == observingCiv
             "Foreign Land", "Foreign" -> return observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> return observingCiv != null && isFriendlyTerritory(observingCiv)
