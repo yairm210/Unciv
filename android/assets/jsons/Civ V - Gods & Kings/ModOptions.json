@@ -1,3 +1,6 @@
 {
     "isBaseRuleset": true,
+    "uniques": [
+        "Cannot raze [Original Founder] cities"
+    ]
 }

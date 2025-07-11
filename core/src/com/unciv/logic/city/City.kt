@@ -500,7 +500,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
             "in resisting cities", "Resisting" -> isInResistance()
-            "in founded cities", "Founded" -> foundingCiv == (viewingCiv ?: civ).civName
+            "in cities owned by original founder", "Original Founder" -> foundingCiv == (viewingCiv ?: civ).civName
             "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState
