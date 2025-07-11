@@ -61,7 +61,7 @@ enum class Demand(
         refuseDemandText = "We shall do as we please.",
         agreedToDemandText = "[civName] agreed to stop spreading religion to us!",
         refusedDemandText = "[civName] refused to stop spreading religion to us!",
-        violationNoticedText = "We noticed you have continued spreading your faith, despite your promise. This will have....consequences.",
+        violationNoticedText = "We noticed you have continued spreading your religion to us, despite your promise. This will have....consequences.",
         wePromisedText = "We promised not to spread religion to them ([turns] turns remaining)",
         theyPromisedText = "They promised not to spread religion to us ([turns] turns remaining)",
     ),
