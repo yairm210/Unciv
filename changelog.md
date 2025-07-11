@@ -1,3 +1,17 @@
+## 4.17.4
+
+Readonly round 2
+
+Added Purity for readonly validation  
+
+Autogenerate demand texts from Demand enum - 
+
+AI: swap spaceship parts into capital - By EmperorPinguin
+
+Allow proposing peace between warring civs in trade window - By metablaster
+
+Unique: `May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away` - By RobLoach
+
 ## 4.17.3
 
 Added global tiles countable  - By PhiRite
