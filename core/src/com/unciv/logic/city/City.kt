@@ -292,7 +292,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null && !religion.isBlockedHolyCity
     fun isHolyCityOf(religionName: String?) = isHolyCity() && religion.religionThisIsTheHolyCityOf == religionName
 
-    fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
+    fun canBeDestroyed(justCaptured: Boolean = false, conqueringCiv: Civilization? = null): Boolean {
         if (civ.gameInfo.gameParameters.noCityRazing) return false
 
         val allowRazeCapital = civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowRazeCapital)
@@ -301,6 +301,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (isOriginalCapital && !allowRazeCapital) return false
         if (isHolyCity() && !allowRazeHolyCity) return false
         if (isCapital() && !justCaptured && !allowRazeCapital) return false
+
+        val cannotRazeCitiesUniques = civ.gameInfo.ruleset.modOptions.getMatchingUniques(UniqueType.CannotRazeCities)
+        if (cannotRazeCitiesUniques.any { matchesFilter(it.params[0], conqueringCiv) }) return false
 
         return true
     }
@@ -499,6 +502,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
             "in resisting cities", "Resisting" -> isInResistance()
+            "in cities owned by original founder", "Original Founder" -> foundingCiv == (viewingCiv ?: civ).civName
             "in cities being razed", "Razing" -> isBeingRazed
             "in holy cities", "Holy" -> isHolyCity()
             "in City-State cities" -> civ.isCityState
