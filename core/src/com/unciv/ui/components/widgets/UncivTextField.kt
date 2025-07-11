@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
+import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
@@ -17,14 +18,17 @@ import com.unciv.ui.components.extensions.getOverlap
 import com.unciv.ui.components.extensions.right
 import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
+import com.unciv.ui.components.formatting.RNGSeedFormat
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
+import java.nio.ByteBuffer
 import java.text.ParseException
 import kotlinx.coroutines.delay
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  * Creates a text field that has nicer platform-specific input added compared to the default Gdx [TextField].
@@ -251,5 +255,40 @@ open class UncivTextField(
         var intValue: Int?
             get() = value?.toInt()
             set(value) { this.value = value }
+    }
+
+    /**
+     *  Specialization of [UncivTextField] for RNG seeds as used for map generation.
+     *  Those are 64-bit integers with no human-readable meaning, so this displays them in a more mnemonic format.
+     *  This format could be improved in the future, for now it's base64 grouped by dashes.
+     *  The field also accepts a plain number (maybe pasted) - digits-only as Long.toString() would produce.
+     *  Empty text is allowed and will be parsed to 0.
+     *
+     *  @property value Gets/sets the [text], using formatting as prettified base64, in both directions.
+     *  @property setText Forbidden, use [value] instead.
+     *  @param initialValue Sets the initial [value] without triggering a `ChangeEvent.`
+     *  @param onFocusChange See [UncivTextField].
+     */
+    class RNGSeed(
+        initialValue: Long,
+        onFocusChange: (TextField.(Boolean) -> Unit)? = null
+    ) : UncivTextField("RNG Seed", RNGSeedFormat.format(initialValue), onFocusChange) {
+        init {
+            maxLength = 1000 // Since we're allowing users to imput "phrases", this could be unlimited? - No better some arbitrary limit.
+        }
+        var value: Long
+            get() = try {
+                RNGSeedFormat.parse(text)
+            } catch (_: IllegalArgumentException) {
+                // If the field is empty or invalid, fallback seed value to 0
+                0L
+            }
+            set(value) {
+                text = RNGSeedFormat.format(value)
+            }
+
+        // Could also do parse (letting it throw when invalid) then super.setText, but YAGNI
+        @Deprecated("Don't assign `text` on a UncivTextField.RNGSeed!", ReplaceWith("value"), DeprecationLevel.ERROR)
+        override fun setText(str: String?) = super.setText(str)
     }
 }
