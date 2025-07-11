@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
@@ -21,7 +22,8 @@ private val civChatColorsMap = mapOf<String, Color>(
 class ChatPopup(
     val worldScreen: WorldScreen,
 ) : Popup(worldScreen) {
-    private val messages = ChatStore.getMessagesByGameId(worldScreen.gameInfo.gameId)
+    private val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
+    private val chatEvents = EventBus.EventReceiver()
 
     private val chatTable = Table(BaseScreen.skin)
     private val scrollPane = ScrollPane(chatTable, BaseScreen.skin)
@@ -49,24 +51,28 @@ class ChatPopup(
         inputTable.add(sendButton).width(60f)
         add(inputTable).padTop(8f).row()
 
-        // Populate initial messages
-        updateChat(messages)
+        // populate previous chats
+        populateChat()
 
         // Send button logic (for demo, just adds to UI)
         sendButton.onClick {
             val message = messageField.text.trim()
             if (message.isNotEmpty()) {
                 val civName = worldScreen.gameInfo.currentPlayer
-                messages.add(Pair(civName, message))
-                addMessage(civName, message)
+                chat.addMessage(civName, message)
                 messageField.setText("")
             }
         }
+
+        chatEvents.receive(
+            NewChatMessageEvent::class, { it.gameId == chat.gameId }) { it ->
+            addMessage(it.civName, it.message, true)
+        }
     }
 
-    fun updateChat(messages: List<Pair<String, String>>) {
+    fun populateChat() {
         chatTable.clearChildren()
-        for ((civName, message) in messages) {
+        chat.forEachMessage { civName, message ->
             addMessage(civName, message)
         }
         scrollToBottom()
