@@ -675,7 +675,9 @@
             {},
             {"text":"Tile improvements\nIn Civilzation V, workers start working on an improvement-under-construction at the beginning of movement. Unciv changes this, to allow players to assign workers to tiles, and then reconsider and change improvement or move them elsewhere."},
             {},
-            {"text":"Forest and Jungle Visibility\nIn Unciv, forests and jungles are visible 1 tile outside visibility range. In Civilization V, this is the behaviour of hills and mountains, but not of forests and jungles, yet jungle and forest can block hills, and hill + forest can block mountain, indicating they're on the same elevation. This is considered to be a bug in the otherwise well-structured visibility logic in Civilization V."}
+            {"text":"Forest and Jungle Visibility\nIn Unciv, forests and jungles are visible 1 tile outside visibility range. In Civilization V, this is the behaviour of hills and mountains, but not of forests and jungles, yet jungle and forest can block hills, and hill + forest can block mountain, indicating they're on the same elevation. This is considered to be a bug in the otherwise well-structured visibility logic in Civilization V."},
+            {},
+            {"text":"City razing\nIn Civilization V, the player can never raze any of the cities he/she founded. Not applicable to Unciv."}
         ]
     },
     {

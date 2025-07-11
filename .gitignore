@@ -170,3 +170,6 @@ detekt/reports.html
 
 # When you test the wiki by running mkdocs locally:
 /site/
+
+# When running the desktop app locally using "gradlew desktop:run"
+GameSettings.json

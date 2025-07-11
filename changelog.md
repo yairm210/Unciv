@@ -1,3 +1,13 @@
+## 4.17.4
+
+AI: swap spaceship parts into capital - By EmperorPinguin
+
+Allow proposing peace between warring civs in trade window - By metablaster
+
+Unique: `May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away` - By RobLoach
+
+Added missing demand translations
+
 ## 4.17.3
 
 Added global tiles countable  - By PhiRite
