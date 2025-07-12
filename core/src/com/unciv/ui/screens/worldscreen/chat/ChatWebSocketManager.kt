@@ -119,14 +119,7 @@ internal object ChatWebSocketManager {
             session = client.webSocketSession { url(chatUrl) }
 
             session!!.runCatching {
-                val gameIds = mutableListOf<String>()
-                UncivGame.Current.onlineMultiplayer.games.forEach { it ->
-                    if (it.preview !== null) {
-                        gameIds.add(it.preview!!.gameId)
-                    } else {
-                        // TODO: should try to load the game to get gameId but don't know how to
-                    }
-                }
+                val gameIds = UncivGame.Current.onlineMultiplayer.games.mapNotNull { it.preview?.gameId }
                 this.sendSerialized(Message.Join(gameIds))
 
                 while (this.isActive) {
