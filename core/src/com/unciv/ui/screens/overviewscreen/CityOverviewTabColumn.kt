@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.models.stats.Stat
@@ -172,7 +173,17 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             return unitIcon
         }
     },
-    ;
+    
+    CityDefense {
+        override val headerTip = "City defense"
+        override val defaultSort get() = SortableGrid.SortDirection.Ascending
+        override fun getComparator() = compareBy<City>() { CityCombatant(it).getDefendingStrength() }.thenBy { it.getMaxHealth() }
+        override fun getHeaderActor(iconSize: Float) = getCircledIcon("BuildingIcons/Walls", iconSize)
+        override fun getEntryValue(item: City) = 0
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
+            (CityCombatant(item).getDefendingStrength().toString() + "/" + item.getMaxHealth().toString()).toLabel()
+        override fun getTotalsActor(items: Iterable<City>) = "${items.sumOf { CityCombatant(it).getDefendingStrength() }}".toLabel()
+    };
 
     //endregion
 
