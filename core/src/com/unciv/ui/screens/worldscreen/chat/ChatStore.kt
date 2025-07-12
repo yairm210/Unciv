@@ -65,8 +65,9 @@ object ChatStore {
     var chatPopupAvailable = false
     private val gameIdToChat = mutableMapOf<String, Chat>()
 
-    // when no ChatPopup is open to receive these oddities, we keep them here
-    // certainly better than not knowing why sockets closed
+    /** When no [ChatPopup] is open to receive these oddities, we keep them here.
+     * Certainly better than not knowing why the socket closed.
+     */
     private val globalMessagesQueue = ArrayDeque<Pair<String, String>>()
 
     fun getChatByGameId(gameId: String) = gameIdToChat.getOrPut(gameId) { Chat(gameId) }

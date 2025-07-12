@@ -21,6 +21,20 @@ private val civChatColorsMap = mapOf<String, Color>(
     "Server" to Color.DARK_GRAY,
 )
 
+/** Given that the lightness value of a color ranges between `0` and `1`
+ * where `0` is `pure black` and `1` is `pure white`,
+ * this extension function returns the color after increasing its lightness value to
+ * a maximum of `minLightness` if required.
+ */
+fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
+    val colorHsv = toHsv(FloatArray(3))
+    val lightness = colorHsv[2]
+    return if (lightness < minLightness) {
+        colorHsv[2] = minLightness
+        fromHsv(colorHsv)
+    } else this
+}
+
 class ChatPopup(
     val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
@@ -40,11 +54,11 @@ class ChatPopup(
         ChatStore.chatPopupAvailable = true
         chatTable.defaults().growX().pad(5f).left()
 
-        /*
-          * Layout:
-          * |  ChatLabel | CloseButton  |
-          * |  ChatTable (colSpan = 2)  |
-          * | MessageField | SendButton |
+        /**
+         * Layout:
+         * |  ChatLabel | CloseButton  |
+         * |  ChatTable (colSpan = 2)  |
+         * | MessageField | SendButton |
          */
 
         // Header: |  ChatLabel | CloseButton  |
@@ -112,15 +126,11 @@ class ChatPopup(
         val line = "$senderCivName: $message".toLabel(alignment = Align.left).apply {
             wrap = true
 
-            color = civChatColorsMap[senderCivName]
-                ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor() ?: Color.BLACK
+            val civNameColor = civChatColorsMap[senderCivName] ?: worldScreen.gameInfo.getCivilizationOrNull(
+                senderCivName
+            )?.nation?.getOuterColor() ?: Color.BLACK
 
-            val colorHsv = color.toHsv(FloatArray(3))
-            val lightness = colorHsv[2]
-            if (lightness < CIVNAME_COLOR_LIGHTNESS_THRESHOLD) {
-                colorHsv[2] = CIVNAME_COLOR_LIGHTNESS_THRESHOLD
-                color = color.fromHsv(colorHsv)
-            }
+            color = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_LIGHTNESS_THRESHOLD)
         }
 
         chatTable.add(line).row()

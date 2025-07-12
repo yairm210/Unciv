@@ -6,6 +6,7 @@ import com.unciv.logic.multiplayer.storage.PasswordChangeEvent
 import com.unciv.ui.popups.options.MultiplayerServerUrlChangeEvent
 import com.unciv.ui.popups.options.UserIdChangeEvent
 import com.unciv.ui.screens.worldscreen.chat.Chat.Companion.relayGlobalMessage
+import com.unciv.ui.screens.worldscreen.chat.ChatWebSocketManager.job
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -180,10 +181,10 @@ object ChatWebSocketManager {
         job = Concurrency.run("MultiplayerChat") { startSession() }
     }
 
-    /*
-     * By default, this gets autocancelled if the job is still running
-     * Force mode will cancel the previous job and reassign a new one
-     * This is helpfull when we need to reset job due to events
+    /**
+     * By default, this gets autocancelled if the [job] is still running.
+     * Force mode will cancel the previous [job] and reassign a new one.
+     * This is helpfull when we need to reset [job] due to events.
      */
     @OptIn(DelicateCoroutinesApi::class)
     private fun restartSocket(dueToError: Boolean = false, force: Boolean = false) {
