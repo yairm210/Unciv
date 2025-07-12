@@ -36,7 +36,7 @@ internal object UncivServer {
 }
 
 @Serializable
-data class IsAliveInfo(val authVersion: Int)
+data class IsAliveInfo(val authVersion: Int, val chatVersion: Int)
 
 private class UncivServerRunner : CliktCommand() {
     private val port by option(
@@ -62,9 +62,14 @@ private class UncivServerRunner : CliktCommand() {
         envvar = "UncivServerIdentify",
         help = "Display each operation archive request IP to assist management personnel"
     ).flag("-no-Identify", default = false)
-
+    
+    lateinit var isAliveInfo: IsAliveInfo
 
     override fun run() {
+        isAliveInfo = IsAliveInfo(
+            chatVersion = 0,
+            authVersion = if (authV1Enabled) 1 else 0,
+        )
         serverRun(port, folder)
     }
 
@@ -129,7 +134,6 @@ private class UncivServerRunner : CliktCommand() {
 
     private fun serverRun(serverPort: Int, fileFolderName: String) {
         val portStr: String = if (serverPort == 80) "" else ":$serverPort"
-        val isAliveInfo = IsAliveInfo(authVersion = if (authV1Enabled) 1 else 0)
 
         val file = File(fileFolderName)
         echo("Starting UncivServer for ${file.absolutePath} on http://localhost$portStr")

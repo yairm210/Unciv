@@ -5,6 +5,8 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.event.Event
+import com.unciv.logic.event.EventBus
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
 
@@ -88,7 +90,13 @@ class MultiplayerServer(
     fun setPassword(password: String): Boolean {
         if (featureSet.authVersion > 0 && fileStorage().setPassword(newPassword = password)) {
             val settings = UncivGame.Current.settings.multiplayer
+            val oldPassword = settings.passwords[settings.server]
             settings.passwords[settings.server] = password
+            EventBus.send(
+                PasswordChangeEvent(
+                    serverUrl = settings.server, oldPassword = oldPassword, newPassword = password
+                )
+            )
             return true
         }
 
@@ -162,3 +170,7 @@ class MultiplayerServer(
         return UncivFiles.gameInfoPreviewFromString(zippedGameInfo)
     }
 }
+
+data class PasswordChangeEvent(
+    val serverUrl: String, val oldPassword: String?, val newPassword: String
+) : Event

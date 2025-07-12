@@ -12,4 +12,5 @@ package com.unciv.logic.multiplayer
  */
 data class ServerFeatureSet(
     val authVersion: Int = 0,
+    val chatVersion: Int = 0,
 )

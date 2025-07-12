@@ -233,6 +233,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civMap[civName]
         ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
+    fun getCivilizationOrNull(civName: String) = civMap[civName]
+        ?: civilizations.firstOrNull() { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
