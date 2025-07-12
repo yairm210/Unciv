@@ -5,6 +5,7 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.PasswordChangeEvent
 import com.unciv.ui.popups.options.MultiplayerServerUrlChangeEvent
 import com.unciv.ui.popups.options.UserIdChangeEvent
+import com.unciv.ui.screens.worldscreen.chat.Chat.Companion.relayGlobalMessage
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -22,7 +23,6 @@ import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import java.util.Timer
 import kotlin.concurrent.timerTask
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 // used when sending a message
 @Serializable
@@ -70,13 +70,26 @@ internal sealed class Response {
 
 
 internal object ChatWebSocketManager {
-    private var reconnect = true
+    private var errorReconnectionAttempts = 0
+    private const val MAX_ERROR_RECONNECTION_ATTEMPTS = 100
     private const val RECONNECT_TIME_MS: Long = 5_000
 
-    private lateinit var job: Job
-    private lateinit var client: HttpClient
+    private var job: Job? = null
     private val eventReceiver = EventBus.EventReceiver()
     private var session: DefaultClientWebSocketSession? = null
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private val client = HttpClient(CIO) {
+        install(WebSockets) {
+            pingInterval = 30_000
+            contentConverter = KotlinxWebsocketSerializationConverter(Json {
+                classDiscriminator = "type"
+                // DO NOT OMIT
+                // if omitted the "type" field will be missing from all outgoing messages
+                classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
+            })
+        }
+    }
 
     private val chatUrl
         get() = URLBuilder(
@@ -85,23 +98,6 @@ internal object ChatWebSocketManager {
             appendPathSegments("chat")
             protocol = if (protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
         }.build()
-
-    @OptIn(ExperimentalEncodingApi::class, ExperimentalSerializationApi::class)
-    private fun initializeClient() {
-        // client only needs to be initialized once
-        if (::client.isInitialized) return
-
-        client = HttpClient(CIO) {
-            install(WebSockets) {
-                contentConverter = KotlinxWebsocketSerializationConverter(Json {
-                    classDiscriminator = "type"
-                    // DO NOT OMIT
-                    // if omitted the "type" field will be missing from all outgoing messages
-                    classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
-                })
-            }
-        }
-    }
 
     /*
      * Delivery not guaranted & failures are mosly ignored.
@@ -116,6 +112,23 @@ internal object ChatWebSocketManager {
         }
     }
 
+    fun handleWebSocketThrowables(t: Throwable) {
+        println("ChatError: ${t.message}")
+
+        if (errorReconnectionAttempts == 0)
+            relayGlobalMessage("${t.cause}: WebSocket connection closed!")
+
+        if (
+            t.cause is WebSocketException &&
+            errorReconnectionAttempts == 0 &&
+            t.message != null && t.message!!.contains("401")
+        ) {
+            relayGlobalMessage("WebSocket connection due to authentication issue. You have to set a password to use Chat.")
+        }
+
+        restartSocket(true)
+    }
+
     suspend fun startSession() {
         try {
             session = client.webSocketSession {
@@ -124,6 +137,14 @@ internal object ChatWebSocketManager {
             }
 
             session!!.runCatching {
+                if (isActive) {
+                    if (errorReconnectionAttempts == 0) {
+                        relayGlobalMessage("Successfully connected to WebSocket server!")
+                    } else if (errorReconnectionAttempts > 0) {
+                        relayGlobalMessage("Successfully re-established websocket connection!")
+                    }
+                }
+
                 val gameIds = ChatStore.getGameIds()
                     .union(UncivGame.Current.onlineMultiplayer.games.mapNotNull { it.preview?.gameId })
                 this.sendSerialized(Message.Join(gameIds.toList()))
@@ -137,34 +158,39 @@ internal object ChatWebSocketManager {
                             )
                         )
 
-                        is Response.Error -> Unit
+                        is Response.Error -> relayGlobalMessage("Error: ${response.message}", "Server")
                         is Response.JoinSuccess -> Unit
                     }
                 }
             }
                 .onSuccess { restartSocket() }
-                .onFailure { restartSocket() }
+                .onFailure { handleWebSocketThrowables(it) }
         } catch (e: Exception) {
-            println("${e.cause} - ${e.message}")
-            restartSocket()
+            handleWebSocketThrowables(e)
         }
     }
 
     private fun startSocket() {
-        if (session !== null) return
+        if (session != null) return
 
-        initializeClient()
+        job?.cancel()
         job = Concurrency.run("MultiplayerChat") { startSession() }
     }
 
-    private fun restartSocket() {
-        if (::job.isInitialized) job.cancel()
+    private fun restartSocket(dueToError: Boolean = false) {
+        if (dueToError) {
+            if (errorReconnectionAttempts++ > MAX_ERROR_RECONNECTION_ATTEMPTS) {
+                return
+            }
+        } else errorReconnectionAttempts = 0
+
         Timer().schedule(timerTask {
+            job?.cancel()
             job = Concurrency.run("MultiplayerChat") {
                 session?.close()
                 startSession()
             }
-        }, 2000)
+        }, RECONNECT_TIME_MS)
     }
 
     init {
@@ -177,16 +203,23 @@ internal object ChatWebSocketManager {
             )
         }
 
+        eventReceiver.receive(ChatMessageReceivedEvent::class) {
+            if (it.gameId.isEmpty())
+                ChatStore.addGlobalMessage(it.civName, it.message)
+            else
+                ChatStore.getChatByGameId(it.gameId).addMessage(it.civName, it.message)
+        }
+
         eventReceiver.receive(PasswordChangeEvent::class) {
-            if (session !== null) restartSocket()
+            if (job != null) restartSocket()
         }
 
         eventReceiver.receive(UserIdChangeEvent::class) {
-            if (session !== null) restartSocket()
+            if (job != null) restartSocket()
         }
 
         eventReceiver.receive(MultiplayerServerUrlChangeEvent::class) {
-            if (session !== null) restartSocket()
+            if (job != null) restartSocket()
         }
     }
 }

@@ -3,19 +3,19 @@ package com.unciv.ui.screens.worldscreen.chat
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 
-internal data class ChatMessageSendRequestEvent(
+data class ChatMessageSendRequestEvent(
     val gameId: String,
     val civName: String,
     val message: String,
 ) : Event
 
-internal data class ChatMessageReceivedEvent(
+data class ChatMessageReceivedEvent(
     val gameId: String,
     val civName: String,
     val message: String,
 ) : Event
 
-internal data class Chat(
+data class Chat(
     val gameId: String,
 ) {
     // <civName, message> pairs
@@ -47,22 +47,38 @@ internal data class Chat(
 
     companion object {
         val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
+
+        fun relayGlobalMessage(message: String, sender: String = "System") {
+            EventBus.send(
+                ChatMessageReceivedEvent(
+                    String(), sender, message
+                )
+            )
+        }
     }
 }
 
-internal object ChatStore {
-    private var eventReceiver = EventBus.EventReceiver()
-
+object ChatStore {
+    var chatPopupAvailable = false
     private val gameIdToChat = mutableMapOf<String, Chat>()
+
+    // when no ChatPopup is open to receive these oddities, we keep them here
+    // certainly better than not knowing why sockets closed
+    private val globalMessagesQueue = ArrayDeque<Pair<String, String>>()
 
     fun getChatByGameId(gameId: String) = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
 
     fun getGameIds() = gameIdToChat.keys.toSet()
 
-    init {
-        // empty Ids are used to display server & system messages unspecific to any Chat
-        eventReceiver.receive(ChatMessageReceivedEvent::class, { it.gameId.isNotEmpty() }) {
-            getChatByGameId(it.gameId).addMessage(it.civName, it.message)
+    fun pollGlobalMessages(action: (String, String) -> Unit) {
+        while (globalMessagesQueue.isNotEmpty()) {
+            val item = globalMessagesQueue.removeFirst()
+            action(item.first, item.second)
         }
+    }
+
+    fun addGlobalMessage(civName: String, message: String) {
+        if (chatPopupAvailable) return
+        globalMessagesQueue.addLast(Pair(civName, message))
     }
 }

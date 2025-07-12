@@ -37,6 +37,8 @@ class ChatPopup(
     private val messageField = TextField("", skin)
 
     init {
+        ChatStore.chatPopupAvailable = true
+
         /*
           * Layout:
           * |  ChatLabel | CloseButton  |
@@ -48,7 +50,10 @@ class ChatPopup(
         add("Chat".toLabel(fontSize = 20)).center().expandX()
         add(
             ImageButton(ImageGetter.getImage("OtherIcons/Close").drawable)
-                .onClick { close() }
+                .onClick {
+                    ChatStore.chatPopupAvailable = false
+                    close()
+                }
         ).size(20f).row()
 
         // Chat: |  ChatTable (colSpan = 2)  |
@@ -85,7 +90,8 @@ class ChatPopup(
 
         // empty Ids are used to display server & system messages unspecific to any Chat
         eventReceiver.receive(
-            ChatMessageReceivedEvent::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }) {
+            ChatMessageReceivedEvent::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }
+        ) {
             addMessage(it.civName, it.message, true)
         }
     }
@@ -93,6 +99,9 @@ class ChatPopup(
     fun populateChat() {
         chatTable.clearChildren()
         chat.forEachMessage { civName, message ->
+            addMessage(civName, message)
+        }
+        ChatStore.pollGlobalMessages { civName, message ->
             addMessage(civName, message)
         }
         scrollToBottom()
