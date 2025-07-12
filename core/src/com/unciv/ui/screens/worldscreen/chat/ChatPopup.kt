@@ -79,15 +79,8 @@ class ChatPopup(
     }
 
     private fun addMessage(senderCivName: String, message: String, scroll: Boolean = true) {
-        val civColor: Color = when {
-            civChatColorsMap.containsKey(senderCivName) ->
-                civChatColorsMap.getOrDefault(senderCivName, Color.BLACK)
-
-            worldScreen.gameInfo.getCivilizationOrNull(senderCivName) != null ->
-                worldScreen.gameInfo.getCivilizationOrNull(senderCivName)!!.nation.getOuterColor()
-
-            else -> Color.BLACK
-        }
+        val civColor = civChatColorsMap[senderCivName]
+            ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor() ?: Color.BLACK
 
         val line = "$senderCivName: $message".toLabel().apply {
             color = civColor
