@@ -1,0 +1,179 @@
+package com.unciv.ui.screens.worldscreen.chat
+
+import com.unciv.UncivGame
+import com.unciv.logic.event.EventBus
+import com.unciv.utils.Concurrency
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.ClassDiscriminatorMode
+import kotlinx.serialization.json.Json
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
+
+// used when sending a message
+@Serializable
+internal sealed class Message {
+    @Serializable
+    @SerialName("chat")
+    data class Chat(
+        val civName: String, val gameId: String, val message: String
+    ) : Message()
+
+    @Serializable
+    @SerialName("join")
+    data class Join(
+        val gameIds: List<String>
+    ) : Message()
+
+    @Serializable
+    @SerialName("leave")
+    data class Leave(
+        val gameIds: List<String>
+    ) : Message()
+}
+
+// used when receiving a message
+@Serializable
+internal sealed class Response {
+    @Serializable
+    @SerialName("chat")
+    data class Chat(
+        val civName: String, val gameId: String, val message: String
+    ) : Response()
+
+    @Serializable
+    @SerialName("joinSuccess")
+    data class JoinSuccess(
+        val gameIds: List<String>
+    ) : Response()
+
+    @Serializable
+    @SerialName("error")
+    data class Error(
+        val message: String
+    ) : Response()
+}
+
+
+internal object ChatWebSocketManager {
+    private var reconnect = true
+    private const val reconnectTimeMS = 5_000L
+
+    private lateinit var client: HttpClient
+    private val eventReceiver = EventBus.EventReceiver()
+    private var session: DefaultClientWebSocketSession? = null
+
+    @OptIn(ExperimentalEncodingApi::class, ExperimentalSerializationApi::class)
+    private fun initializeClient() {
+        // client only needs to be initialized once
+        if (::client.isInitialized) return
+
+        client = HttpClient(CIO) {
+            install(WebSockets) {
+                contentConverter = KotlinxWebsocketSerializationConverter(Json {
+                    classDiscriminator = "type"
+                    // DO NOT OMIT
+                    // if omitted the "type" field will be missing from all outgoing messages
+                    classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
+                })
+            }
+            defaultRequest {
+                val userId = UncivGame.Current.settings.multiplayer.userId
+                // cant there be a better way to access passwords?
+                val password = UncivGame.Current.settings.multiplayer.passwords.getOrDefault(
+                    UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl(), ""
+                )
+                val authString = "Basic ${Base64.Default.encode("$userId:$password".toByteArray())}"
+                header(HttpHeaders.Authorization, authString)
+            }
+        }
+    }
+
+    /*
+     * Delivery not guaranted & failures are mosly ignored.
+     */
+    fun requestMessageSend(message: Message) {
+        init()
+        if (session == null) return
+        Concurrency.run("MultiplayerChatSendMessage") {
+            session!!.runCatching {
+                this.sendSerialized(message)
+            }
+        }
+    }
+
+    suspend fun startSocket(chatUrl: Url, isReconnecting: Boolean = false) {
+        if (isReconnecting && !reconnect) return
+
+        try {
+            session = client.webSocketSession { url(chatUrl) }
+
+            session!!.runCatching {
+                val gameIds = mutableListOf<String>()
+                UncivGame.Current.onlineMultiplayer.games.forEach { it ->
+                    if (it.preview != null) {
+                        gameIds.add(it.preview!!.gameId)
+                    } else {
+                        TODO("should try to load the game to get gameId but don't know how to")
+                    }
+                }
+                this.sendSerialized(Message.Join(gameIds))
+
+                while (this.isActive) {
+                    val response = receiveDeserialized<Response>()
+                    when (response) {
+                        is Response.Chat -> EventBus.send(
+                            ChatMessageReceivedEvent(
+                                response.gameId, response.civName, response.message
+                            )
+                        )
+
+                        is Response.Error -> TODO()
+                        is Response.JoinSuccess -> TODO()
+                    }
+                }
+            }.onSuccess { startSocket(chatUrl, true) }.onFailure { startSocket(chatUrl, true) }
+        } catch (e: Exception) {
+            delay(reconnectTimeMS)
+            startSocket(chatUrl, true)
+        }
+    }
+
+    private fun runSocket() {
+        if (session != null) return
+
+        val chatUrl = URLBuilder(
+            UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()
+        ).apply {
+            appendPathSegments("chat")
+            protocol = if (protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
+        }.build()
+
+        Concurrency.run("MultiplayerChat") { startSocket(chatUrl) }
+    }
+
+    fun init() {
+        initializeClient()
+        runSocket()
+    }
+
+    init {
+        eventReceiver.receive(ChatMessageSendRequestEvent::class) { event ->
+            requestMessageSend(
+                Message.Chat(
+                    event.civName, event.gameId, event.message
+                )
+            )
+        }
+    }
+}

@@ -12,6 +12,10 @@ class ChatButton(worldScreen: WorldScreen) : TextButton("Chat", BaseScreen.skin)
             worldScreen.gameInfo.gameParameters.isOnlineMultiplayer &&
             UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.chatVersion > 0
         ) {
+            ChatWebSocketManager.requestMessageSend(
+                Message.Join(listOf(worldScreen.gameInfo.gameId)),
+            )
+
             setSize(worldScreen.techPolicyAndDiplomacy.width, 50f)
             onClick {
                 ChatPopup(worldScreen).open()

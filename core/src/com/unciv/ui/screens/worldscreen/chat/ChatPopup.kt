@@ -59,13 +59,13 @@ class ChatPopup(
             val message = messageField.text.trim()
             if (message.isNotEmpty()) {
                 val civName = worldScreen.gameInfo.currentPlayer
-                chat.addMessage(civName, message)
+                chat.requestMessageSend(civName, message)
                 messageField.setText("")
             }
         }
 
         chatEvents.receive(
-            NewChatMessageEvent::class, { it.gameId == chat.gameId }) { it ->
+            ChatMessageReceivedEvent::class, { it.gameId == chat.gameId }) {
             addMessage(it.civName, it.message, true)
         }
     }
