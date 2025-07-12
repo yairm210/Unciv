@@ -32,8 +32,7 @@ class ChatPopup(
     init {
         // Header row: Chat label and close button
         val headerTable = Table(BaseScreen.skin)
-        val chatLabel = "Chat".toLabel()
-        chatLabel.setAlignment(Align.left)
+        val chatLabel = "Chat".toLabel(alignment = Align.left)
         headerTable.add(chatLabel).expandX().left().pad(8f)
         headerTable.add(addCloseButton().actor).right().pad(8f)
         add(headerTable).fillX().row()
