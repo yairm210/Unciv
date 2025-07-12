@@ -5,7 +5,6 @@ import com.unciv.logic.event.EventBus
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -18,7 +17,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
-import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 // used when sending a message
@@ -88,15 +86,6 @@ internal object ChatWebSocketManager {
                     classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
                 })
             }
-            defaultRequest {
-                val userId = UncivGame.Current.settings.multiplayer.userId
-                // cant there be a better way to access passwords?
-                val password = UncivGame.Current.settings.multiplayer.passwords.getOrDefault(
-                    UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl(), ""
-                )
-                val authString = "Basic ${Base64.Default.encode("$userId:$password".toByteArray())}"
-                header(HttpHeaders.Authorization, authString)
-            }
         }
     }
 
@@ -120,7 +109,10 @@ internal object ChatWebSocketManager {
         session?.close()
 
         try {
-            session = client.webSocketSession { url(chatUrl) }
+            session = client.webSocketSession {
+                url(chatUrl)
+                header(HttpHeaders.Authorization, UncivGame.Current.settings.multiplayer.getAuthHeader())
+            }
 
             session!!.runCatching {
                 val gameIds = ChatStore.getGameIds()
@@ -169,7 +161,8 @@ internal object ChatWebSocketManager {
     }
 
     init {
-        eventReceiver.receive(ChatMessageSendRequestEvent::class) { event ->
+        // empty Ids are used to display server & system messages unspecific to any Chat
+        eventReceiver.receive(ChatMessageSendRequestEvent::class, { it.gameId.isNotEmpty() }) { event ->
             requestMessageSend(
                 Message.Chat(
                     event.civName, event.gameId, event.message
