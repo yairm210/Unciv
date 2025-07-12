@@ -77,7 +77,11 @@ class MultiplayerServer(
             password=password ?: settings.passwords[settings.server] ?: ""
         )
         if (password != null && success) {
+            val oldPassword = settings.passwords[settings.server]
             settings.passwords[settings.server] = password
+            EventBus.send(
+                PasswordChangeEvent(settings.server, oldPassword, password)
+            )
         }
         return success
     }

@@ -14,19 +14,22 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
-import java.util.Timer
-import kotlin.concurrent.timerTask
 
 // used when sending a message
 @Serializable
-internal sealed class Message {
+sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
@@ -48,7 +51,7 @@ internal sealed class Message {
 
 // used when receiving a message
 @Serializable
-internal sealed class Response {
+sealed class Response {
     @Serializable
     @SerialName("chat")
     data class Chat(
@@ -69,7 +72,7 @@ internal sealed class Response {
 }
 
 
-internal object ChatWebSocketManager {
+object ChatWebSocketManager {
     private var errorReconnectionAttempts = 0
     private const val MAX_ERROR_RECONNECTION_ATTEMPTS = 100
     private const val RECONNECT_TIME_MS: Long = 5_000
@@ -104,9 +107,8 @@ internal object ChatWebSocketManager {
      */
     fun requestMessageSend(message: Message) {
         startSocket()
-        if (session === null) return
         Concurrency.run("MultiplayerChatSendMessage") {
-            session!!.runCatching {
+            session?.runCatching {
                 this.sendSerialized(message)
             }
         }
@@ -116,14 +118,13 @@ internal object ChatWebSocketManager {
         println("ChatError: ${t.message}")
 
         if (errorReconnectionAttempts == 0)
-            relayGlobalMessage("${t.cause}: WebSocket connection closed!")
+            relayGlobalMessage("WebSocket connection closed. Cause: ${t.cause}!")
 
         if (
-            t.cause is WebSocketException &&
             errorReconnectionAttempts == 0 &&
-            t.message != null && t.message!!.contains("401")
+            t.message?.contains("401") == true
         ) {
-            relayGlobalMessage("WebSocket connection due to authentication issue. You have to set a password to use Chat.")
+            relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
         }
 
         restartSocket(true)
@@ -131,6 +132,7 @@ internal object ChatWebSocketManager {
 
     suspend fun startSession() {
         try {
+            session?.close()
             session = client.webSocketSession {
                 url(chatUrl)
                 header(HttpHeaders.Authorization, UncivGame.Current.settings.multiplayer.getAuthHeader())
@@ -139,9 +141,11 @@ internal object ChatWebSocketManager {
             session!!.runCatching {
                 if (isActive) {
                     if (errorReconnectionAttempts == 0) {
+                        println("ChatLog: Connected to WebSocket.")
                         relayGlobalMessage("Successfully connected to WebSocket server!")
                     } else if (errorReconnectionAttempts > 0) {
-                        relayGlobalMessage("Successfully re-established websocket connection!")
+                        println("ChatLog: Re-established webSocket connection.")
+                        relayGlobalMessage("Successfully re-established WebSocket connection!")
                     }
                 }
 
@@ -171,26 +175,36 @@ internal object ChatWebSocketManager {
     }
 
     private fun startSocket() {
-        if (session != null) return
-
+        if (job?.isActive == true) return
         job?.cancel()
         job = Concurrency.run("MultiplayerChat") { startSession() }
     }
 
-    private fun restartSocket(dueToError: Boolean = false) {
+    /*
+     * By default, this gets autocancelled if the job is still running
+     * Force mode will cancel the previous job and reassign a new one
+     * This is helpfull when we need to reset job due to events
+     */
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun restartSocket(dueToError: Boolean = false, force: Boolean = false) {
         if (dueToError) {
             if (errorReconnectionAttempts++ > MAX_ERROR_RECONNECTION_ATTEMPTS) {
                 return
             }
         } else errorReconnectionAttempts = 0
 
-        Timer().schedule(timerTask {
-            job?.cancel()
-            job = Concurrency.run("MultiplayerChat") {
-                session?.close()
-                startSession()
+        GlobalScope.launch {
+            flow {
+                delay(RECONNECT_TIME_MS)
+                emit(Unit)
+            }.collect {
+                if (job?.isActive == true && !force)
+                    return@collect
+
+                job?.cancel()
+                job = Concurrency.run("MultiplayerChat") { startSession() }
             }
-        }, RECONNECT_TIME_MS)
+        }
     }
 
     init {
@@ -211,15 +225,15 @@ internal object ChatWebSocketManager {
         }
 
         eventReceiver.receive(PasswordChangeEvent::class) {
-            if (job != null) restartSocket()
+            if (job != null) restartSocket(force = true)
         }
 
         eventReceiver.receive(UserIdChangeEvent::class) {
-            if (job != null) restartSocket()
+            if (job != null) restartSocket(force = true)
         }
 
         eventReceiver.receive(MultiplayerServerUrlChangeEvent::class) {
-            if (job != null) restartSocket()
+            if (job != null) restartSocket(force = true)
         }
     }
 }

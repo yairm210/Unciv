@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.chat
 
+import com.badlogic.gdx.Gdx
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 
@@ -35,7 +36,7 @@ data class Chat(
     /**
      * Although public, this should only be called when a ChatMessageReceivedEvent is received once.
      */
-    internal fun addMessage(civName: String, message: String) {
+    fun addMessage(civName: String, message: String) {
         messages.add(Pair(civName, message))
     }
 
@@ -49,11 +50,13 @@ data class Chat(
         val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
 
         fun relayGlobalMessage(message: String, sender: String = "System") {
-            EventBus.send(
-                ChatMessageReceivedEvent(
-                    String(), sender, message
+            Gdx.app.postRunnable {
+                EventBus.send(
+                    ChatMessageReceivedEvent(
+                        String(), sender, message
+                    )
                 )
-            )
+            }
         }
     }
 }
@@ -71,14 +74,18 @@ object ChatStore {
     fun getGameIds() = gameIdToChat.keys.toSet()
 
     fun pollGlobalMessages(action: (String, String) -> Unit) {
-        while (globalMessagesQueue.isNotEmpty()) {
-            val item = globalMessagesQueue.removeFirst()
-            action(item.first, item.second)
+        Gdx.app.postRunnable {
+            while (globalMessagesQueue.isNotEmpty()) {
+                val item = globalMessagesQueue.removeFirst()
+                action(item.first, item.second)
+            }
         }
     }
 
     fun addGlobalMessage(civName: String, message: String) {
-        if (chatPopupAvailable) return
-        globalMessagesQueue.addLast(Pair(civName, message))
+        Gdx.app.postRunnable {
+            if (chatPopupAvailable) return@postRunnable
+            globalMessagesQueue.addLast(Pair(civName, message))
+        }
     }
 }
