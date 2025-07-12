@@ -29,15 +29,23 @@ class ChatPopup(
     private val messageField = TextField("", skin)
 
     init {
-        add("Chat".toLabel()).expandX()
+        /*
+          * Layout:
+          * |  ChatLabel | CloseButton  |
+          * |  ChatTable (colSpan = 2)  |
+          * | MessageField | SendButton |
+         */
+
+        // Header: |  ChatLabel | CloseButton  |
+        add("Chat".toLabel()).center().expandX()
         addCloseButton().row()
 
-        // Chat area (scrollable)
+        // Chat: |  ChatTable (colSpan = 2)  |
         scrollPane.setFadeScrollBars(false)
         scrollPane.setScrollingDisabled(true, false)
         add(scrollPane).colspan(2).size(400f, 200f).expand().fill().row()
 
-        // Input area: text field and send button
+        // Input: | MessageField | SendButton |
         add(messageField).expandX().fillX()
         val sendButton = "Send".toTextButton()
         add(sendButton).padLeft(1f).row()
