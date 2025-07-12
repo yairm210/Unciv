@@ -38,6 +38,7 @@ class ChatPopup(
 
     init {
         ChatStore.chatPopupAvailable = true
+        chatTable.defaults().growX().pad(5f).left()
 
         /*
           * Layout:
@@ -122,7 +123,7 @@ class ChatPopup(
             }
         }
 
-        chatTable.add(line).growX().pad(5f).left().row()
+        chatTable.add(line).row()
         if (scroll) scrollToBottom()
     }
 
