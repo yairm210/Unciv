@@ -10,6 +10,7 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -114,6 +115,9 @@ internal object ChatWebSocketManager {
 
     suspend fun startSocket(chatUrl: Url, isReconnecting: Boolean = false) {
         if (isReconnecting && !reconnect) return
+
+        // close previous session is available
+        session?.close()
 
         try {
             session = client.webSocketSession { url(chatUrl) }

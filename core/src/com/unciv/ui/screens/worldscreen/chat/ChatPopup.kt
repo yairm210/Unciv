@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -61,8 +62,17 @@ class ChatPopup(
         // Send button logic (for demo, just adds to UI)
         sendButton.onClick {
             val message = messageField.text.trim()
+
+            val userId = UncivGame.Current.settings.multiplayer.userId
+            val currentPlayerCiv = worldScreen.gameInfo.currentPlayerCiv
+            val civName = if (currentPlayerCiv.playerId == userId) {
+                currentPlayerCiv.civName
+            } else {
+                // what do I do if someone is a spectator?
+                worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civName ?: "Unknown"
+            }
+
             if (message.isNotEmpty()) {
-                val civName = worldScreen.gameInfo.currentPlayer
                 chat.requestMessageSend(civName, message)
                 messageField.setText("")
             }
