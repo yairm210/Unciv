@@ -50,14 +50,15 @@ import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
+import com.unciv.ui.screens.worldscreen.chat.ChatButton
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.screens.worldscreen.status.AutoPlayStatusButton
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
-import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.status.SmallUnitButton
+import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
@@ -73,9 +74,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import java.util.Timer
 import kotlin.concurrent.timer
-import com.unciv.ui.screens.worldscreen.chat.ChatPopup
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.ui.screens.worldscreen.chat.ChatButton
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -690,9 +688,7 @@ class WorldScreen(
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
 
         // Update chat button position to always be below techPolicyAndDiplomacy
-        chatButton.setSize(techPolicyAndDiplomacy.width, 50f)
-        chatButton.x = techPolicyAndDiplomacy.x
-        chatButton.y = techPolicyAndDiplomacy.y - chatButton.height - 10f
+        chatButton.update(this)
     }
 
     private fun updateAutoPlayStatusButton() {

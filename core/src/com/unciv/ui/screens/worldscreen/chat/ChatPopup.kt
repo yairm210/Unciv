@@ -10,7 +10,6 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
@@ -25,13 +24,13 @@ class ChatPopup(
     private val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
     private val chatEvents = EventBus.EventReceiver()
 
-    private val chatTable = Table(BaseScreen.skin)
-    private val scrollPane = ScrollPane(chatTable, BaseScreen.skin)
-    private val messageField = TextField("", BaseScreen.skin)
+    private val chatTable = Table(skin)
+    private val scrollPane = ScrollPane(chatTable, skin)
+    private val messageField = TextField("", skin)
 
     init {
         // Header row: Chat label and close button
-        val headerTable = Table(BaseScreen.skin)
+        val headerTable = Table(skin)
         val chatLabel = "Chat".toLabel(alignment = Align.left)
         headerTable.add(chatLabel).expandX().left().pad(8f)
         headerTable.add(addCloseButton().actor).right().pad(8f)
@@ -44,7 +43,7 @@ class ChatPopup(
         add(scrollPane).width(400f).height(220f).row()
 
         // Input area: text field and send button
-        val inputTable = Table(BaseScreen.skin)
+        val inputTable = Table(skin)
         inputTable.add(messageField).width(320f).padRight(10f)
         val sendButton = "Send".toTextButton()
         inputTable.add(sendButton).width(60f)

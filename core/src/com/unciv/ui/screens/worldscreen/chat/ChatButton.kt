@@ -16,10 +16,17 @@ class ChatButton(worldScreen: WorldScreen) : TextButton("Chat", BaseScreen.skin)
                 Message.Join(listOf(worldScreen.gameInfo.gameId)),
             )
 
-            setSize(worldScreen.techPolicyAndDiplomacy.width, 50f)
+            update(worldScreen)
             onClick {
                 ChatPopup(worldScreen).open()
             }
         } else isVisible = false
+    }
+
+    fun update(worldScreen: WorldScreen) {
+        setPosition(
+            worldScreen.techPolicyAndDiplomacy.x.coerceAtLeast(1f),
+            worldScreen.techPolicyAndDiplomacy.y - height - 1f
+        )
     }
 }
