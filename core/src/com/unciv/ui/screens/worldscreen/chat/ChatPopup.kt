@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.chat
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -9,6 +10,7 @@ import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -37,8 +39,11 @@ class ChatPopup(
          */
 
         // Header: |  ChatLabel | CloseButton  |
-        add("Chat".toLabel()).center().expandX()
-        addCloseButton().row()
+        add("Chat".toLabel(fontSize = 20)).center().expandX()
+        add(
+            ImageButton(ImageGetter.getImage("OtherIcons/Close").drawable)
+                .onClick { close() }
+        ).size(20f).row()
 
         // Chat: |  ChatTable (colSpan = 2)  |
         scrollPane.setFadeScrollBars(false)
