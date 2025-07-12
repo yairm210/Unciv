@@ -2,6 +2,9 @@ package com.unciv.ui.screens.worldscreen.chat
 
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.storage.PasswordChangeEvent
+import com.unciv.ui.popups.options.MultiplayerServerUrlChangeEvent
+import com.unciv.ui.popups.options.UserIdChangeEvent
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -10,13 +13,15 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
+import java.util.Timer
+import kotlin.concurrent.timerTask
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 // used when sending a message
@@ -68,9 +73,18 @@ internal object ChatWebSocketManager {
     private var reconnect = true
     private const val RECONNECT_TIME_MS: Long = 5_000
 
+    private lateinit var job: Job
     private lateinit var client: HttpClient
     private val eventReceiver = EventBus.EventReceiver()
     private var session: DefaultClientWebSocketSession? = null
+
+    private val chatUrl
+        get() = URLBuilder(
+            UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()
+        ).apply {
+            appendPathSegments("chat")
+            protocol = if (protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
+        }.build()
 
     @OptIn(ExperimentalEncodingApi::class, ExperimentalSerializationApi::class)
     private fun initializeClient() {
@@ -93,7 +107,7 @@ internal object ChatWebSocketManager {
      * Delivery not guaranted & failures are mosly ignored.
      */
     fun requestMessageSend(message: Message) {
-        init()
+        startSocket()
         if (session === null) return
         Concurrency.run("MultiplayerChatSendMessage") {
             session!!.runCatching {
@@ -102,12 +116,7 @@ internal object ChatWebSocketManager {
         }
     }
 
-    suspend fun startSocket(chatUrl: Url, isReconnecting: Boolean = false) {
-        if (isReconnecting && !reconnect) return
-
-        // close previous session is available
-        session?.close()
-
+    suspend fun startSession() {
         try {
             session = client.webSocketSession {
                 url(chatUrl)
@@ -133,31 +142,29 @@ internal object ChatWebSocketManager {
                     }
                 }
             }
-                .onSuccess { startSocket(chatUrl, true) }
-                .onFailure { startSocket(chatUrl, true) }
+                .onSuccess { restartSocket() }
+                .onFailure { restartSocket() }
         } catch (e: Exception) {
             println("${e.cause} - ${e.message}")
-            delay(RECONNECT_TIME_MS)
-            startSocket(chatUrl, true)
+            restartSocket()
         }
     }
 
-    private fun runSocket() {
+    private fun startSocket() {
         if (session !== null) return
 
-        val chatUrl = URLBuilder(
-            UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()
-        ).apply {
-            appendPathSegments("chat")
-            protocol = if (protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
-        }.build()
-
-        Concurrency.run("MultiplayerChat") { startSocket(chatUrl) }
+        initializeClient()
+        job = Concurrency.run("MultiplayerChat") { startSession() }
     }
 
-    fun init() {
-        initializeClient()
-        runSocket()
+    private fun restartSocket() {
+        if (::job.isInitialized) job.cancel()
+        Timer().schedule(timerTask {
+            job = Concurrency.run("MultiplayerChat") {
+                session?.close()
+                startSession()
+            }
+        }, 2000)
     }
 
     init {
@@ -168,6 +175,18 @@ internal object ChatWebSocketManager {
                     event.civName, event.gameId, event.message
                 )
             )
+        }
+
+        eventReceiver.receive(PasswordChangeEvent::class) {
+            if (session !== null) restartSocket()
+        }
+
+        eventReceiver.receive(UserIdChangeEvent::class) {
+            if (session !== null) restartSocket()
+        }
+
+        eventReceiver.receive(MultiplayerServerUrlChangeEvent::class) {
+            if (session !== null) restartSocket()
         }
     }
 }

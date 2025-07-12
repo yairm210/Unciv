@@ -688,7 +688,7 @@ class WorldScreen(
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
 
         // Update chat button position to always be below techPolicyAndDiplomacy
-        chatButton.update(this)
+        chatButton.updatePosition(this)
     }
 
     private fun updateAutoPlayStatusButton() {

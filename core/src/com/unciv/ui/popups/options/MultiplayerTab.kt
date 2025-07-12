@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.event.Event
+import com.unciv.logic.event.EventBus
 import com.unciv.logic.files.IMediaFinder
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.AuthStatus
@@ -120,7 +122,9 @@ private fun addMultiplayerServerOptions(
     multiplayerServerTextField.onChange {
         fixTextFieldUrlOnType(multiplayerServerTextField)
         // we can't trim on 'fixTextFieldUrlOnType' for reasons
+        val oldServerUrl = settings.multiplayer.server
         settings.multiplayer.server = multiplayerServerTextField.text.trimEnd('/')
+        EventBus.send(MultiplayerServerUrlChangeEvent(oldServerUrl, settings.multiplayer.server))
 
         val isCustomServer = Multiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
@@ -379,3 +383,6 @@ private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<
     tab.add(table).growX().fillX().row()
 }
 
+data class MultiplayerServerUrlChangeEvent(
+    val oldUrl: String, val newUrl: String
+) : Event
