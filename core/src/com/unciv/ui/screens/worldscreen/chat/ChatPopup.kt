@@ -24,6 +24,11 @@ private val civChatColorsMap = mapOf<String, Color>(
 class ChatPopup(
     val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
+    companion object {
+        // the percentage of the minimum lightness allowed for a civName
+        const val CIVNAME_COLOR_LIGHTNESS_THRESHOLD = 0.45f
+    }
+
     private val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
     private val eventReceiver = EventBus.EventReceiver()
 
@@ -78,8 +83,9 @@ class ChatPopup(
             }
         }
 
+        // empty Ids are used to display server & system messages unspecific to any Chat
         eventReceiver.receive(
-            ChatMessageReceivedEvent::class, { it.gameId == chat.gameId }) {
+            ChatMessageReceivedEvent::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }) {
             addMessage(it.civName, it.message, true)
         }
     }
@@ -93,12 +99,18 @@ class ChatPopup(
     }
 
     private fun addMessage(senderCivName: String, message: String, scroll: Boolean = true) {
-        val civColor = civChatColorsMap[senderCivName]
-            ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor() ?: Color.BLACK
-
         val line = "$senderCivName: $message".toLabel(alignment = Align.left).apply {
-            color = civColor
             wrap = true
+
+            color = civChatColorsMap[senderCivName]
+                ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor() ?: Color.BLACK
+
+            val colorHsv = color.toHsv(FloatArray(3))
+            val lightness = colorHsv[2]
+            if (lightness < CIVNAME_COLOR_LIGHTNESS_THRESHOLD) {
+                colorHsv[2] = CIVNAME_COLOR_LIGHTNESS_THRESHOLD
+                color = color.fromHsv(colorHsv)
+            }
         }
 
         chatTable.add(line).growX().pad(5f).left().row()

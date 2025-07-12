@@ -15,8 +15,6 @@ internal data class ChatMessageReceivedEvent(
     val message: String,
 ) : Event
 
-private val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
-
 internal data class Chat(
     val gameId: String,
 ) {
@@ -46,6 +44,10 @@ internal data class Chat(
             action(civName, message)
         }
     }
+
+    companion object {
+        val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
+    }
 }
 
 internal object ChatStore {
@@ -58,7 +60,8 @@ internal object ChatStore {
     fun getGameIds() = gameIdToChat.keys.toSet()
 
     init {
-        eventReceiver.receive(ChatMessageReceivedEvent::class) {
+        // empty Ids are used to display server & system messages unspecific to any Chat
+        eventReceiver.receive(ChatMessageReceivedEvent::class, { it.gameId.isNotEmpty() }) {
             getChatByGameId(it.gameId).addMessage(it.civName, it.message)
         }
     }
