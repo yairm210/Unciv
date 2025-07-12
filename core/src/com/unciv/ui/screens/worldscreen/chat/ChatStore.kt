@@ -15,11 +15,16 @@ internal data class ChatMessageReceivedEvent(
     val message: String,
 ) : Event
 
+private val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
+
 internal data class Chat(
     val gameId: String,
-    // <civName, message> pairs
-    private val messages: MutableList<Pair<String, String>> = mutableListOf(),
 ) {
+    // <civName, message> pairs
+    private val messages: MutableList<Pair<String, String>> = mutableListOf(INITIAL_MESSAGE)
+
+    fun length(): Int = messages.size
+
     /**
      * Only requests a message to be sent, does not guarantee delivery.
      *

@@ -22,32 +22,25 @@ class ChatPopup(
     val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
     private val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
-    private val chatEvents = EventBus.EventReceiver()
+    private val eventReceiver = EventBus.EventReceiver()
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
     private val messageField = TextField("", skin)
 
     init {
-        // Header row: Chat label and close button
-        val headerTable = Table(skin)
-        val chatLabel = "Chat".toLabel(alignment = Align.left)
-        headerTable.add(chatLabel).expandX().left().pad(8f)
-        headerTable.add(addCloseButton().actor).right().pad(8f)
-        add(headerTable).fillX().row()
+        add("Chat".toLabel()).expandX()
+        addCloseButton().row()
 
         // Chat area (scrollable)
-        chatTable.top().pad(10f)
         scrollPane.setFadeScrollBars(false)
         scrollPane.setScrollingDisabled(true, false)
-        add(scrollPane).width(400f).height(220f).row()
+        add(scrollPane).colspan(2).size(400f, 200f).expand().fill().row()
 
         // Input area: text field and send button
-        val inputTable = Table(skin)
-        inputTable.add(messageField).width(320f).padRight(10f)
+        add(messageField).expandX().fillX()
         val sendButton = "Send".toTextButton()
-        inputTable.add(sendButton).width(60f)
-        add(inputTable).padTop(8f).row()
+        add(sendButton).padLeft(1f).row()
 
         // populate previous chats
         populateChat()
@@ -62,7 +55,7 @@ class ChatPopup(
             }
         }
 
-        chatEvents.receive(
+        eventReceiver.receive(
             ChatMessageReceivedEvent::class, { it.gameId == chat.gameId }) {
             addMessage(it.civName, it.message, true)
         }
@@ -80,17 +73,12 @@ class ChatPopup(
         val civColor = civChatColorsMap[senderCivName]
             ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor() ?: Color.BLACK
 
-        val line = "$senderCivName: $message".toLabel().apply {
+        val line = "$senderCivName: $message".toLabel(alignment = Align.left).apply {
             color = civColor
             wrap = true
-            setAlignment(Align.left)
         }
 
-        chatTable.add(line).growX().pad(6f, 8f, 6f, 8f).align(Align.left).row()
-        // Separator line
-        val sep = Table().apply { background = null }
-        sep.add("".toLabel()).height(1f).growX().padTop(2f).padBottom(2f)
-        chatTable.add(sep).growX().row()
+        chatTable.add(line).growX().pad(5f).left().row()
         if (scroll) scrollToBottom()
     }
 
