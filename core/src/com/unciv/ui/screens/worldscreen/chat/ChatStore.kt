@@ -55,6 +55,8 @@ internal object ChatStore {
 
     fun getChatByGameId(gameId: String) = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
 
+    fun getGameIds() = gameIdToChat.keys.toSet()
+
     init {
         eventReceiver.receive(ChatMessageReceivedEvent::class) {
             getChatByGameId(it.gameId).addMessage(it.civName, it.message)

@@ -123,8 +123,9 @@ internal object ChatWebSocketManager {
             session = client.webSocketSession { url(chatUrl) }
 
             session!!.runCatching {
-                val gameIds = UncivGame.Current.onlineMultiplayer.games.mapNotNull { it.preview?.gameId }
-                this.sendSerialized(Message.Join(gameIds))
+                val gameIds = ChatStore.getGameIds()
+                    .union(UncivGame.Current.onlineMultiplayer.games.mapNotNull { it.preview?.gameId })
+                this.sendSerialized(Message.Join(gameIds.toList()))
 
                 while (this.isActive) {
                     val response = receiveDeserialized<Response>()
