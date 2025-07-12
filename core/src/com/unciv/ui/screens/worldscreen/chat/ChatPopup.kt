@@ -21,7 +21,7 @@ private val civChatColorsMap = mapOf<String, Color>(
 
 class ChatPopup(
     val worldScreen: WorldScreen,
-) : Popup(worldScreen) {
+) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
     private val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
     private val chatEvents = EventBus.EventReceiver()
 
