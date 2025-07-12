@@ -67,7 +67,7 @@ internal sealed class Response {
 
 internal object ChatWebSocketManager {
     private var reconnect = true
-    private const val reconnectTimeMS = 5_000L
+    private const val RECONNECT_TIME_MS: Long = 5_000
 
     private lateinit var client: HttpClient
     private val eventReceiver = EventBus.EventReceiver()
@@ -104,7 +104,7 @@ internal object ChatWebSocketManager {
      */
     fun requestMessageSend(message: Message) {
         init()
-        if (session == null) return
+        if (session === null) return
         Concurrency.run("MultiplayerChatSendMessage") {
             session!!.runCatching {
                 this.sendSerialized(message)
@@ -121,10 +121,10 @@ internal object ChatWebSocketManager {
             session!!.runCatching {
                 val gameIds = mutableListOf<String>()
                 UncivGame.Current.onlineMultiplayer.games.forEach { it ->
-                    if (it.preview != null) {
+                    if (it.preview !== null) {
                         gameIds.add(it.preview!!.gameId)
                     } else {
-                        TODO("should try to load the game to get gameId but don't know how to")
+                        // TODO: should try to load the game to get gameId but don't know how to
                     }
                 }
                 this.sendSerialized(Message.Join(gameIds))
@@ -138,19 +138,22 @@ internal object ChatWebSocketManager {
                             )
                         )
 
-                        is Response.Error -> TODO()
-                        is Response.JoinSuccess -> TODO()
+                        is Response.Error -> Unit
+                        is Response.JoinSuccess -> Unit
                     }
                 }
-            }.onSuccess { startSocket(chatUrl, true) }.onFailure { startSocket(chatUrl, true) }
+            }
+                .onSuccess { startSocket(chatUrl, true) }
+                .onFailure { startSocket(chatUrl, true) }
         } catch (e: Exception) {
-            delay(reconnectTimeMS)
+            println("${e.cause} - ${e.message}")
+            delay(RECONNECT_TIME_MS)
             startSocket(chatUrl, true)
         }
     }
 
     private fun runSocket() {
-        if (session != null) return
+        if (session !== null) return
 
         val chatUrl = URLBuilder(
             UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()
