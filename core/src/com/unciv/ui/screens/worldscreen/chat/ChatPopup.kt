@@ -1,6 +1,9 @@
 package com.unciv.ui.screens.worldscreen.chat
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
@@ -42,7 +45,6 @@ class ChatPopup(
     )
 
     init {
-        setDebug(true)
         ChatStore.chatPopupAvailable = true
         chatTable.defaults().growX().pad(5f).left()
 
@@ -90,28 +92,39 @@ class ChatPopup(
         populateChat()
 
         // Send button logic (for demo, just adds to UI)
-        sendButton.onClick {
-            val message = messageField.text.trim()
+        sendButton.onClick { sendMessage() }
 
-            val userId = UncivGame.Current.settings.multiplayer.userId
-            val currentPlayerCiv = worldScreen.gameInfo.currentPlayerCiv
-            val civName = if (currentPlayerCiv.playerId == userId) {
-                currentPlayerCiv.civName
-            } else {
-                // what do I do if someone is a spectator?
-                worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civName ?: "Unknown"
+        messageField.addListener(object : InputListener() {
+            override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
+                if (keycode == Input.Keys.ENTER || keycode == Input.Keys.NUMPAD_ENTER) {
+                    sendMessage()
+                }
+                return true
             }
-
-            if (message.isNotEmpty()) {
-                chat.requestMessageSend(civName, message)
-                messageField.setText("")
-            }
-        }
+        })
 
         // empty Ids are used to display server & system messages unspecific to any Chat
         eventReceiver.receive(
             ChatMessageReceived::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }
         ) { addMessage(it.civName, it.message, true) }
+    }
+
+    fun sendMessage() {
+        val message = messageField.text.trim()
+
+        val userId = UncivGame.Current.settings.multiplayer.userId
+        val currentPlayerCiv = worldScreen.gameInfo.currentPlayerCiv
+        val civName = if (currentPlayerCiv.playerId == userId) {
+            currentPlayerCiv.civName
+        } else {
+            // what do I do if someone is a spectator?
+            worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civName ?: "Unknown"
+        }
+
+        if (message.isNotEmpty()) {
+            chat.requestMessageSend(civName, message)
+            messageField.setText("")
+        }
     }
 
     fun populateChat() {
