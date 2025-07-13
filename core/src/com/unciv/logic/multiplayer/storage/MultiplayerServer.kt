@@ -80,7 +80,7 @@ class MultiplayerServer(
             val oldPassword = settings.passwords[settings.server]
             settings.passwords[settings.server] = password
             EventBus.send(
-                PasswordChangeEvent(settings.server, oldPassword, password)
+                PasswordChanged(settings.server, oldPassword, password)
             )
         }
         return success
@@ -97,7 +97,7 @@ class MultiplayerServer(
             val oldPassword = settings.passwords[settings.server]
             settings.passwords[settings.server] = password
             EventBus.send(
-                PasswordChangeEvent(
+                PasswordChanged(
                     serverUrl = settings.server, oldPassword = oldPassword, newPassword = password
                 )
             )
@@ -175,6 +175,14 @@ class MultiplayerServer(
     }
 }
 
-data class PasswordChangeEvent(
+data class ServerUrlChanged(
+    val oldUrl: String, val newUrl: String
+) : Event
+
+data class UserIdChanged(
+    val oldUserId: String, val newUserId: String
+) : Event
+
+data class PasswordChanged(
     val serverUrl: String, val oldPassword: String?, val newPassword: String
 ) : Event

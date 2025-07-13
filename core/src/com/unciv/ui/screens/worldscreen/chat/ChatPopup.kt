@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.chat.ChatMessageReceived
+import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -94,10 +96,8 @@ class ChatPopup(
 
         // empty Ids are used to display server & system messages unspecific to any Chat
         eventReceiver.receive(
-            ChatMessageReceivedEvent::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }
-        ) {
-            addMessage(it.civName, it.message, true)
-        }
+            ChatMessageReceived::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }
+        ) { addMessage(it.civName, it.message, true) }
     }
 
     fun populateChat() {

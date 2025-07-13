@@ -1,16 +1,16 @@
-package com.unciv.ui.screens.worldscreen.chat
+package com.unciv.logic.multiplayer.chat
 
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 
-data class ChatMessageSendRequestEvent(
+data class ChatMessageSendRequested(
     val gameId: String,
     val civName: String,
     val message: String,
 ) : Event
 
-data class ChatMessageReceivedEvent(
+data class ChatMessageReceived(
     val gameId: String,
     val civName: String,
     val message: String,
@@ -30,7 +30,7 @@ data class Chat(
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
      * **/
     fun requestMessageSend(civName: String, message: String) {
-        EventBus.send(ChatMessageSendRequestEvent(gameId, civName, message))
+        EventBus.send(ChatMessageSendRequested(gameId, civName, message))
     }
 
     /**
@@ -52,7 +52,7 @@ data class Chat(
         fun relayGlobalMessage(message: String, sender: String = "System") {
             Gdx.app.postRunnable {
                 EventBus.send(
-                    ChatMessageReceivedEvent(
+                    ChatMessageReceived(
                         String(), sender, message
                     )
                 )
@@ -65,7 +65,7 @@ object ChatStore {
     var chatPopupAvailable = false
     private val gameIdToChat = mutableMapOf<String, Chat>()
 
-    /** When no [ChatPopup] is open to receive these oddities, we keep them here.
+    /** When no [com.unciv.ui.screens.worldscreen.chat.ChatPopup] is open to receive these oddities, we keep them here.
      * Certainly better than not knowing why the socket closed.
      */
     private val globalMessagesQueue = ArrayDeque<Pair<String, String>>()

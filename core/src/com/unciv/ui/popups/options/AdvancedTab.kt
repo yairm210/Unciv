@@ -16,8 +16,8 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
-import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.storage.UserIdChanged
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
@@ -359,7 +359,7 @@ class AdvancedTab(
                     ) {
                         val oldUserId = settings.multiplayer.userId
                         settings.multiplayer.userId = clipboardContents
-                        EventBus.send(UserIdChangeEvent(oldUserId, clipboardContents))
+                        EventBus.send(UserIdChanged(oldUserId, clipboardContents))
                         idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                     }.open(true)
                     idSetLabel.isVisible = true
@@ -380,7 +380,3 @@ class AdvancedTab(
         optionsPopup.addCheckbox(this, "Enlarge selected notifications", settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
     }
 }
-
-data class UserIdChangeEvent(
-    val oldUserId: String, val newUserId: String
-) : Event

@@ -1,12 +1,12 @@
-package com.unciv.ui.screens.worldscreen.chat
+package com.unciv.logic.multiplayer.chat
 
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.storage.PasswordChangeEvent
-import com.unciv.ui.popups.options.MultiplayerServerUrlChangeEvent
-import com.unciv.ui.popups.options.UserIdChangeEvent
-import com.unciv.ui.screens.worldscreen.chat.Chat.Companion.relayGlobalMessage
-import com.unciv.ui.screens.worldscreen.chat.ChatWebSocketManager.job
+import com.unciv.logic.multiplayer.chat.Chat.Companion.relayGlobalMessage
+import com.unciv.logic.multiplayer.chat.ChatWebSocketManager.job
+import com.unciv.logic.multiplayer.storage.PasswordChanged
+import com.unciv.logic.multiplayer.storage.ServerUrlChanged
+import com.unciv.logic.multiplayer.storage.UserIdChanged
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -15,8 +15,15 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.yield
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -159,7 +166,7 @@ object ChatWebSocketManager {
                     val response = receiveDeserialized<Response>()
                     when (response) {
                         is Response.Chat -> EventBus.send(
-                            ChatMessageReceivedEvent(
+                            ChatMessageReceived(
                                 response.gameId, response.civName, response.message
                             )
                         )
@@ -212,7 +219,7 @@ object ChatWebSocketManager {
 
     init {
         // empty Ids are used to display server & system messages unspecific to any Chat
-        eventReceiver.receive(ChatMessageSendRequestEvent::class, { it.gameId.isNotEmpty() }) { event ->
+        eventReceiver.receive(ChatMessageSendRequested::class, { it.gameId.isNotEmpty() }) { event ->
             requestMessageSend(
                 Message.Chat(
                     event.civName, event.gameId, event.message
@@ -220,22 +227,22 @@ object ChatWebSocketManager {
             )
         }
 
-        eventReceiver.receive(ChatMessageReceivedEvent::class) {
+        eventReceiver.receive(ChatMessageReceived::class) {
             if (it.gameId.isEmpty())
                 ChatStore.addGlobalMessage(it.civName, it.message)
             else
                 ChatStore.getChatByGameId(it.gameId).addMessage(it.civName, it.message)
         }
 
-        eventReceiver.receive(PasswordChangeEvent::class) {
+        eventReceiver.receive(PasswordChanged::class) {
             if (job != null) restartSocket(force = true)
         }
 
-        eventReceiver.receive(UserIdChangeEvent::class) {
+        eventReceiver.receive(UserIdChanged::class) {
             if (job != null) restartSocket(force = true)
         }
 
-        eventReceiver.receive(MultiplayerServerUrlChangeEvent::class) {
+        eventReceiver.receive(ServerUrlChanged::class) {
             if (job != null) restartSocket(force = true)
         }
     }
