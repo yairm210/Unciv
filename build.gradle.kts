@@ -5,6 +5,7 @@ import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.jnaVersion
 import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
+import java.util.Properties
 
 
 buildscript {
@@ -116,7 +117,19 @@ project(":server") {
 
 }
 
-if (System.getenv("ANDROID_HOME") != null) {
+private fun getSdkPath(): String? {
+    val localProperties = project.file("local.properties")
+    return if (localProperties.exists()) {
+        val properties = Properties()
+        localProperties.inputStream().use { properties.load(it) }
+
+        properties.getProperty("sdk.dir") ?: System.getenv("ANDROID_HOME")
+    } else {
+        System.getenv("ANDROID_HOME")
+    }
+}
+
+if (getSdkPath() != null) {
     project(":android") {
         apply(plugin = "com.android.application")
         apply(plugin = "kotlin-android")
