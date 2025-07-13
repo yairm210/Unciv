@@ -534,6 +534,7 @@ fun String.getModifiers(): List<Unique> {
     return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
 }
 
+@Readonly @Suppress("purity") // todo fix val reference in purity
 fun String.removeConditionals(): String {
     if (!this.contains('<')) return this // no need to regex search
     return this
