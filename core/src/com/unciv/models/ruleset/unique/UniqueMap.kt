@@ -1,6 +1,6 @@
 package com.unciv.models.ruleset.unique
 
-import org.jetbrains.annotations.Contract
+import yairm210.purity.annotations.Readonly
 import java.util.*
 
 open class UniqueMap() {
@@ -41,33 +41,33 @@ open class UniqueMap() {
         typedUniqueMap.clear()
     }
     
-    @Contract("readonly")
+    @Readonly
     fun isEmpty(): Boolean = innerUniqueMap.isEmpty()
     
-    @Contract("readonly")
+    @Readonly
     fun hasUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueType).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
 
-    @Contract("readonly")
+    @Readonly
     fun hasUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueTag).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
 
-    @Contract("readonly")
+    @Readonly
     fun hasTagUnique(tagUnique: String) =
         innerUniqueMap.containsKey(tagUnique)
 
     // 160ms vs 1000-1250ms/30s
-    @Contract("readonly")
+    @Readonly
     fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
         ?.asSequence()
         ?: emptySequence()
 
-    @Contract("readonly")
+    @Readonly
     fun getUniques(uniqueTag: String) = innerUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
-    @Contract("readonly")
+    @Readonly
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
         getUniques(uniqueType)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -79,7 +79,7 @@ open class UniqueMap() {
                 }
             }
 
-    @Contract("readonly")
+    @Readonly
     fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueTag)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -91,19 +91,19 @@ open class UniqueMap() {
                 }
             }
 
-    @Contract("readonly")
+    @Readonly
     fun hasMatchingUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
-    @Contract("readonly")
+    @Readonly
     fun hasMatchingUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
         getUniques(uniqueTag)
             .any { it.conditionalsApply(state) }
 
-    @Contract("readonly")
+    @Readonly
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 
-    @Contract("readonly")
+    @Readonly
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals,
                             triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
         return getAllUniques().filter { unique ->
