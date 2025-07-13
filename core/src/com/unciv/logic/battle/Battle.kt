@@ -228,7 +228,7 @@ object Battle {
         val defenderStateForConditionals = StateForConditionals(defender.getCivInfo(),
             ourCombatant = defender, theirCombatant = attacker, tile = attackedTile, combatAction = CombatAction.Defend)
         if (defender is MapUnitCombatant)
-            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerStateForConditionals)) {
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, defenderStateForConditionals)) {
                 UniqueTriggerActivation.triggerUnique(unique, defender.unit)
             }
     }
