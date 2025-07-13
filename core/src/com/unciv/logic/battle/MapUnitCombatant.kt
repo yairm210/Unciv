@@ -46,8 +46,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.name+" of "+unit.civ.civName
     }
 
-    fun getMatchingUniques(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> =
-        unit.getMatchingUniques(uniqueType, conditionalState, checkCivUniques)
+    override fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> =
+        unit.getMatchingUniques(uniqueType, stateForConditionals, checkCivUniques)
 
     fun hasUnique(uniqueType: UniqueType, conditionalState: StateForConditionals? = null): Boolean =
         if (conditionalState == null) unit.hasUnique(uniqueType)

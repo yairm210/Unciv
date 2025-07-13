@@ -138,6 +138,8 @@ object Battle {
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
+        triggerCombatUniques(attacker, defender, attackedTile)
+
         val damageDealt = takeDamage(attacker, defender)
 
         // check if unit is captured by the attacker (prize ships unique)
@@ -214,6 +216,21 @@ object Battle {
         }
 
         return damageDealt + interceptDamage
+    }
+    
+    private fun triggerCombatUniques(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
+        val attackerStateForConditionals = StateForConditionals(attacker.getCivInfo(),
+            ourCombatant = attacker, theirCombatant = defender, tile = attackedTile, combatAction = CombatAction.Attack)
+        if (attacker is MapUnitCombatant)
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerStateForConditionals)) {
+                UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
+            }
+        val defenderStateForConditionals = StateForConditionals(defender.getCivInfo(),
+            ourCombatant = defender, theirCombatant = attacker, tile = attackedTile, combatAction = CombatAction.Defend)
+        if (defender is MapUnitCombatant)
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerStateForConditionals)) {
+                UniqueTriggerActivation.triggerUnique(unique, defender.unit)
+            }
     }
 
 
