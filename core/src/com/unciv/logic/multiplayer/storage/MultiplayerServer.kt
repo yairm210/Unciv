@@ -26,6 +26,14 @@ class MultiplayerServer(
     private var authenticationHeader: Map<String, String>? = null
 ) {
     internal var featureSet = ServerFeatureSet()
+        set(value) {
+            if (field != value) {
+                EventBus.send(ServerFeatureSetChanged(field, value))
+            }
+
+            field = value
+        }
+
     fun getServerUrl() = fileStorageIdentifier ?: UncivGame.Current.settings.multiplayer.server
 
     fun fileStorage(): FileStorage {
@@ -77,11 +85,7 @@ class MultiplayerServer(
             password=password ?: settings.passwords[settings.server] ?: ""
         )
         if (password != null && success) {
-            val oldPassword = settings.passwords[settings.server]
             settings.passwords[settings.server] = password
-            EventBus.send(
-                PasswordChanged(settings.server, oldPassword, password)
-            )
         }
         return success
     }
@@ -94,13 +98,7 @@ class MultiplayerServer(
     fun setPassword(password: String): Boolean {
         if (featureSet.authVersion > 0 && fileStorage().setPassword(newPassword = password)) {
             val settings = UncivGame.Current.settings.multiplayer
-            val oldPassword = settings.passwords[settings.server]
             settings.passwords[settings.server] = password
-            EventBus.send(
-                PasswordChanged(
-                    serverUrl = settings.server, oldPassword = oldPassword, newPassword = password
-                )
-            )
             return true
         }
 
@@ -175,14 +173,6 @@ class MultiplayerServer(
     }
 }
 
-data class ServerUrlChanged(
-    val oldUrl: String, val newUrl: String
-) : Event
-
-data class UserIdChanged(
-    val oldUserId: String, val newUserId: String
-) : Event
-
-data class PasswordChanged(
-    val serverUrl: String, val oldPassword: String?, val newPassword: String
+data class ServerFeatureSetChanged(
+    val oldFeatureSet: ServerFeatureSet, val newFeatureSet: ServerFeatureSet
 ) : Event

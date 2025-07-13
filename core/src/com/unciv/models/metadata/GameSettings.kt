@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.event.Event
+import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.fonts.FontFamilyData
@@ -266,10 +268,35 @@ class GameSettings {
 
     class GameSettingsMultiplayer {
         var userId = ""
+            set(value) {
+                if (field.isNotEmpty() && field != value) {
+                    EventBus.send(UserIdChanged(field, value))
+                }
+                field = value
+            }
+
         var passwords = mutableMapOf<String, String>()
+        operator fun MutableMap<String, String>.set(key: String, value: String) {
+            val oldPassword = get(key)
+            if (oldPassword != null && oldPassword != value) {
+                EventBus.send(PasswordChanged(server, oldPassword, value))
+            }
+
+            // Default set behavior
+            put(key, value)
+        }
+
         @Suppress("unused")  // @GGuenni knows what he intended with this field
         var userName: String = ""
+
         var server = Constants.uncivXyzServer
+            set(value) {
+                if (field != value) {
+                    EventBus.send(ServerUrlChanged(field, value))
+                }
+                field = value
+            }
+
         var friendList: MutableList<FriendList.Friend> = mutableListOf()
         var turnCheckerEnabled = true
         var turnCheckerPersistentNotificationEnabled = true
@@ -329,3 +356,15 @@ class GameSettings {
 
     //endregion
 }
+
+data class ServerUrlChanged(
+    val oldUrl: String, val newUrl: String
+) : Event
+
+data class UserIdChanged(
+    val oldUserId: String, val newUserId: String
+) : Event
+
+data class PasswordChanged(
+    val serverUrl: String, val oldPassword: String?, val newPassword: String
+) : Event

@@ -4,9 +4,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.chat.Chat.Companion.relayGlobalMessage
 import com.unciv.logic.multiplayer.chat.ChatWebSocketManager.job
-import com.unciv.logic.multiplayer.storage.PasswordChanged
-import com.unciv.logic.multiplayer.storage.ServerUrlChanged
-import com.unciv.logic.multiplayer.storage.UserIdChanged
+import com.unciv.models.metadata.PasswordChanged
+import com.unciv.models.metadata.ServerUrlChanged
+import com.unciv.models.metadata.UserIdChanged
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*

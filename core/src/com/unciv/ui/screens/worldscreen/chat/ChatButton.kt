@@ -5,7 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.chat.ChatWebSocketManager
 import com.unciv.logic.multiplayer.chat.Message
-import com.unciv.logic.multiplayer.storage.ServerUrlChanged
+import com.unciv.logic.multiplayer.storage.ServerFeatureSetChanged
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -18,7 +18,7 @@ class ChatButton(worldScreen: WorldScreen) : TextButton("Chat", BaseScreen.skin)
             ChatPopup(worldScreen).open()
         }
 
-        eventReceiver.receive(ServerUrlChanged::class) {
+        eventReceiver.receive(ServerFeatureSetChanged::class) {
             refreshVisibility(worldScreen)
         }
 

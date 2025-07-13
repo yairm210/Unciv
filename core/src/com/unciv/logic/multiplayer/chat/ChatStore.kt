@@ -22,7 +22,7 @@ data class Chat(
     // <civName, message> pairs
     private val messages: MutableList<Pair<String, String>> = mutableListOf(INITIAL_MESSAGE)
 
-    fun length(): Int = messages.size
+    val length: Int get() = messages.size
 
     /**
      * Only requests a message to be sent, does not guarantee delivery.

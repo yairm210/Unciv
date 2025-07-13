@@ -16,8 +16,6 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
-import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.storage.UserIdChanged
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
@@ -357,9 +355,7 @@ class AdvancedTab(
                         "Doing this will reset your current user ID to the clipboard contents - are you sure?",
                         "Take user ID from clipboard"
                     ) {
-                        val oldUserId = settings.multiplayer.userId
                         settings.multiplayer.userId = clipboardContents
-                        EventBus.send(UserIdChanged(oldUserId, clipboardContents))
                         idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                     }.open(true)
                     idSetLabel.isVisible = true
