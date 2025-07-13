@@ -167,7 +167,6 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             }
             return unitIcon
         }
-        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     },
     
     CityDefense {
