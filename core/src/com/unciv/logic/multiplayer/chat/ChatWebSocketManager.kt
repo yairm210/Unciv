@@ -114,9 +114,9 @@ object ChatWebSocketManager {
     fun requestMessageSend(message: Message) {
         startSocket()
         Concurrency.run("MultiplayerChatSendMessage") {
-            withTimeoutOrNull(1000) {
+            withTimeoutOrNull(RECONNECT_TIME_MS * 2) {
                 while (session == null) {
-                    delay(50)
+                    delay(100)
                     yield()
                 }
             }
