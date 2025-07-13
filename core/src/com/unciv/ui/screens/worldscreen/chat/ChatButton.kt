@@ -1,19 +1,24 @@
 package com.unciv.ui.screens.worldscreen.chat
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.ServerFeatureSetChanged
 import com.unciv.logic.multiplayer.chat.ChatWebSocketManager
 import com.unciv.logic.multiplayer.chat.Message
-import com.unciv.logic.multiplayer.storage.ServerFeatureSetChanged
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-class ChatButton(worldScreen: WorldScreen) : TextButton("Chat", BaseScreen.skin) {
+class ChatButton(worldScreen: WorldScreen) : IconTextButton(
+    "Chat", ImageGetter.getImage("OtherIcons/Chat"), 23
+) {
     private val eventReceiver = EventBus.EventReceiver()
 
     init {
+        width = 95f
+        iconCell.pad(3f).center()
+
         onClick {
             ChatPopup(worldScreen).open()
         }

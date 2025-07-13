@@ -1,10 +1,10 @@
 package com.unciv.ui.screens.worldscreen.chat
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
@@ -12,8 +12,8 @@ import com.unciv.logic.multiplayer.chat.ChatMessageReceived
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -37,28 +37,41 @@ class ChatPopup(
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
-    private val messageField = TextField("", skin)
+    private val messageField = UncivTextField(
+        hint = "Type something... Chats are not stored and dissapears on app close."
+    )
 
     init {
+        setDebug(true)
         ChatStore.chatPopupAvailable = true
         chatTable.defaults().growX().pad(5f).left()
 
         /**
          * Layout:
-         * |  ChatLabel | CloseButton  |
+         * |  ChatHeader | CloseButton |
          * |  ChatTable (colSpan = 2)  |
          * | MessageField | SendButton |
          */
 
-        // Header: |  ChatLabel | CloseButton  |
-        add("Chat".toLabel(fontSize = 30)).left().pad(5f).expandX()
+        // Header: |  ChatHeader | CloseButton  |
+        val chatHeader = Table(skin)
+        chatTable.defaults().center()
+
+        val chatLabel = "Chat".toLabel(fontSize = 30, alignment = Align.center)
+        val chatIcon = ImageGetter.getImage("OtherIcons/Chat")
+
+        chatHeader.add(chatIcon).size(chatLabel.height * 1.6f)
+            .padRight(chatLabel.height / 3).padBottom(chatLabel.height / 4)
+        chatHeader.add(chatLabel).expandX()
+
+        add(chatHeader).left().pad(5f).expandX()
         add(
             ImageButton(ImageGetter.getImage("OtherIcons/Close").drawable)
                 .onClick {
                     ChatStore.chatPopupAvailable = false
                     close()
                 }
-        ).size(30f).right().row()
+        ).size(chatLabel.height * 1.3f).right().row()
 
         // Chat: |  ChatTable (colSpan = 2)  |
         scrollPane.setFadeScrollBars(false)
@@ -69,8 +82,9 @@ class ChatPopup(
 
         // Input: | MessageField | SendButton |
         add(messageField).expandX().fillX()
-        val sendButton = "Send".toTextButton()
-        add(sendButton).padLeft(1f).row()
+        val sendButton = Button(skin)
+        sendButton.add(ImageGetter.getImage("OtherIcons/Send"))
+        add(sendButton).size(messageField.height * 1.2f, messageField.height).padLeft(1f).row()
 
         // populate previous chats
         populateChat()
