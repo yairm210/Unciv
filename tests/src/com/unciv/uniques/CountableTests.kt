@@ -30,8 +30,6 @@ class CountableTests {
     private lateinit var game: TestGame
     private lateinit var civ: Civilization
     private lateinit var city: City
-    private lateinit var civ2: Civilization
-    private lateinit var city2: City
 
 //    @Test
 //    fun testCountableConventions() {
