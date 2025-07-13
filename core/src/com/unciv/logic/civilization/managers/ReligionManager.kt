@@ -142,6 +142,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
+
+        val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
+        for (civ in humanPlayers)
+            civ.addNotification(
+                "[${civInfo.civName}] has founded pantheon [${beliefName}]!",
+                Notification.NotificationCategory.Religion, NotificationIcon.Faith)
     }
 
     fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
@@ -315,8 +321,17 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun useProphetForEnhancingReligion(prophet: MapUnit) {
-        if (!mayEnhanceReligionHere(prophet.getTile())) return // How did you do this?
+        val currentTile = prophet.getTile()
+        if (!mayEnhanceReligionHere(currentTile)) return // How did you do this?
         religionState = ReligionState.EnhancingReligion
+        
+        val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
+        for (civ in humanPlayers) {
+            val city = currentTile.getCity()!!
+            civ.addNotification(
+                "[${civInfo.civName}] has enhanced [${civInfo.religionManager.religion!!.name}] in [${city.name}]!",
+                city.location, Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        }
     }
 
     /**
