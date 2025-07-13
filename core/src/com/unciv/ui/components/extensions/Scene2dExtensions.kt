@@ -42,6 +42,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import kotlin.math.max
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -95,10 +96,14 @@ fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1
 fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
 /** Linearly interpolates between this [Color] and [BLACK][ImageGetter.CHARCOAL] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
-fun Color.darken(t: Float): Color = Color(this).lerp(Color.BLACK, t)
+fun Color.darken(t: Float): Color = brighten(-t)
 /** Linearly interpolates between this [Color] and [WHITE][Color.WHITE] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
-fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
+fun Color.brighten(t: Float): Color = Color(this).let {
+    val lightness = max(r, max(g, b))
+    val targetRatio = (lightness + t * (1 - lightness)) / lightness
+    return this.mul(targetRatio);
+}
 
 
 fun Actor.centerX(parent: Actor) { x = parent.width / 2 - width / 2 }
