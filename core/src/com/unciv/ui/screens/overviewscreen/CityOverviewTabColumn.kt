@@ -179,10 +179,10 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() = compareBy<City>() { CityCombatant(it).getDefendingStrength() }.thenBy { it.getMaxHealth() }
         override fun getHeaderActor(iconSize: Float) = getCircledIcon("BuildingIcons/Walls", iconSize)
-        override fun getEntryValue(item: City) = 0
+        override fun getEntryValue(item: City) = CityCombatant(item).getDefendingStrength()
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
-            (CityCombatant(item).getDefendingStrength().toString() + "/" + item.getMaxHealth().toString()).toLabel()
-        override fun getTotalsActor(items: Iterable<City>) = "${items.sumOf { CityCombatant(it).getDefendingStrength() }}".toLabel()
+            "${getEntryValue(item)}/${item.getMaxHealth()}".toLabel()
+        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     };
 
     //endregion
