@@ -28,7 +28,7 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
-import org.jetbrains.annotations.Contract
+import yairm210.purity.annotations.Readonly
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -170,7 +170,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
-    @Contract("readonly")
+    @Readonly
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
     fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
