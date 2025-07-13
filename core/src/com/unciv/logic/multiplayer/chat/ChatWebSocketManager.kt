@@ -124,14 +124,11 @@ object ChatWebSocketManager {
     fun handleWebSocketThrowables(t: Throwable) {
         println("ChatError: ${t.message}")
 
-        if (errorReconnectionAttempts == 0)
+        if (errorReconnectionAttempts == 0) {
             relayGlobalMessage("WebSocket connection closed. Cause: ${t.cause}!")
-
-        if (
-            errorReconnectionAttempts == 0 &&
-            t.message?.contains("401") == true
-        ) {
-            relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
+            if (t.message?.contains("401") == true) {
+                relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
+            }
         }
 
         restartSocket(true)
