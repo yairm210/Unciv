@@ -4,12 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 
-data class ChatMessageSendRequested(
-    val gameId: String,
-    val civName: String,
-    val message: String,
-) : Event
-
 data class ChatMessageReceived(
     val gameId: String,
     val civName: String,
@@ -25,12 +19,14 @@ data class Chat(
     val length: Int get() = messages.size
 
     /**
-     * Only requests a message to be sent, does not guarantee delivery.
+     * Only requests a message to be sent.
+     * Does not guarantee delivery.
+     * Failures are mosly ignored.
      *
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
-     * **/
+     */
     fun requestMessageSend(civName: String, message: String) {
-        EventBus.send(ChatMessageSendRequested(gameId, civName, message))
+        ChatWebSocketManager.requestMessageSend(Message.Chat(gameId, civName, message))
     }
 
     /**

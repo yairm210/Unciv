@@ -35,7 +35,7 @@ sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val gameId: String, val message: String
+        val gameId: String, val civName: String, val message: String
     ) : Message()
 
     @Serializable
@@ -57,7 +57,7 @@ sealed class Response {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val gameId: String, val message: String
+        val gameId: String, val civName: String, val message: String
     ) : Response()
 
     @Serializable
@@ -104,8 +104,12 @@ object ChatWebSocketManager {
             protocol = if (protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
         }.build()
 
-    /*
-     * Delivery not guaranted & failures are mosly ignored.
+    /**
+     * Only requests a message to be sent.
+     * Does not guarantee delivery.
+     * Failures are mosly ignored.
+     *
+     * The server will relay it back if a delivery was acknowledged and that is when we should display it.
      */
     fun requestMessageSend(message: Message) {
         startSocket()
@@ -121,7 +125,7 @@ object ChatWebSocketManager {
         }
     }
 
-    fun handleWebSocketThrowables(t: Throwable) {
+    private fun handleWebSocketThrowables(t: Throwable) {
         println("ChatError: ${t.message}")
 
         if (errorReconnectionAttempts == 0) {
@@ -134,7 +138,7 @@ object ChatWebSocketManager {
         restartSocket(true)
     }
 
-    suspend fun startSession() {
+    private suspend fun startSession() {
         try {
             session?.close()
             session = client.webSocketSession {
@@ -212,15 +216,6 @@ object ChatWebSocketManager {
     }
 
     init {
-        // empty Ids are used to display server & system messages unspecific to any Chat
-        eventReceiver.receive(ChatMessageSendRequested::class, { it.gameId.isNotEmpty() }) { event ->
-            requestMessageSend(
-                Message.Chat(
-                    event.civName, event.gameId, event.message
-                )
-            )
-        }
-
         eventReceiver.receive(ChatMessageReceived::class) {
             if (it.gameId.isEmpty())
                 ChatStore.addGlobalMessage(it.civName, it.message)
