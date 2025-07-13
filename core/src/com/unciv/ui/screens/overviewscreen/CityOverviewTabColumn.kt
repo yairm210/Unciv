@@ -47,8 +47,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 .onClick {
                     actionContext.game.pushScreen(CityScreen(item))
                 }
-        override fun getTotalsActor(items: Iterable<City>) =
-                "{Total} ${items.count()}".toLabel()
+        override fun getTotalsActor(items: Iterable<City>) = "{Total} ${items.count()}".toLabel()
     },
 
     Status {
@@ -70,7 +69,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             // getImage is an ImageWithCustomSize, but setting size here fails - width is not respected
             return ImageGetter.getImage(iconPath).surroundWithCircle(iconSize * 0.7f, color = Color.CLEAR)
         }
-        override fun getTotalsActor(items: Iterable<City>) = null
+        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     },
 
     ConstructionIcon {
@@ -82,7 +81,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             if (construction.isEmpty()) return null
             return ImageGetter.getConstructionPortrait(construction, iconSize * 0.8f)
         }
-        override fun getTotalsActor(items: Iterable<City>) = null
+        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     },
 
     Construction {
@@ -98,30 +97,25 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override fun getEntryValue(item: City) = 0
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
             item.cityConstructions.getCityProductionTextForCityButton().toLabel()
-        override fun getTotalsActor(items: Iterable<City>) = null
+        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     },
 
     Population {
-        override fun getEntryValue(item: City) =
-                item.population.population
+        override fun getEntryValue(item: City) = item.population.population
     },
 
-    Food {
-        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
-    },
+    Food,
     Gold,
     Science,
-    Production{
-        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
-    },
+    Production,
     Culture,
     Happiness {
         override fun getEntryValue(item: City) =
-                item.cityStats.happinessList.values.sum().roundToInt()
+            item.cityStats.happinessList.values.sum().roundToInt()
     },
     Faith {
         override fun isVisible(gameInfo: GameInfo) =
-                gameInfo.isReligionEnabled()
+            gameInfo.isReligionEnabled()
     },
 
     WLTK {
@@ -151,6 +145,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             }
             else -> null
         }
+        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     },
 
     Garrison {
@@ -172,6 +167,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             }
             return unitIcon
         }
+        override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     },
     
     CityDefense {
