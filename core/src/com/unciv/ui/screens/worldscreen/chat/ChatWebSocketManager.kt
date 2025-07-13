@@ -22,6 +22,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.yield
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -109,6 +111,12 @@ object ChatWebSocketManager {
     fun requestMessageSend(message: Message) {
         startSocket()
         Concurrency.run("MultiplayerChatSendMessage") {
+            withTimeoutOrNull(1000) {
+                while (session == null) {
+                    delay(50)
+                    yield()
+                }
+            }
             session?.runCatching {
                 this.sendSerialized(message)
             }
@@ -166,6 +174,7 @@ object ChatWebSocketManager {
                         is Response.Error -> relayGlobalMessage("Error: ${response.message}", "Server")
                         is Response.JoinSuccess -> Unit
                     }
+                    yield()
                 }
             }
                 .onSuccess { restartSocket() }
