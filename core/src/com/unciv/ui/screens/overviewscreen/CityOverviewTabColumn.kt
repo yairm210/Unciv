@@ -171,7 +171,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     CityDefense {
         override val headerTip = "City defense"
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
-        override fun getComparator() = compareBy<City>() { CityCombatant(it).getDefendingStrength() }.thenBy { it.getMaxHealth() }
+        override fun getComparator() = compareBy<City>() { getEntryValue(it) }.thenBy { it.getMaxHealth() }
         override fun getHeaderActor(iconSize: Float) = getCircledIcon("BuildingIcons/Walls", iconSize)
         override fun getEntryValue(item: City) = CityCombatant(item).getDefendingStrength()
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
