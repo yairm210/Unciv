@@ -5,6 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.ReligionAction
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -144,10 +145,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             city.religion.addPressure(beliefName, 200 * city.population.population)
 
         val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
-        for (civ in humanPlayers)
-            civ.addNotification(
-                "[${civInfo.civName}] has founded pantheon [${beliefName}]!",
-                Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        for (civ in humanPlayers) {
+            if (civInfo in civ.getKnownCivs())
+                civ.addNotification("[${civInfo.civName}] has founded pantheon [${beliefName}]!",
+                    ReligionAction(beliefName), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+            else civ.addNotification("An unknown civilization has founded pantheon [${beliefName}]!",
+                ReligionAction(beliefName), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        }
     }
 
     fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
@@ -324,13 +328,16 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val currentTile = prophet.getTile()
         if (!mayEnhanceReligionHere(currentTile)) return // How did you do this?
         religionState = ReligionState.EnhancingReligion
-        
+
         val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
+        val religion = civInfo.religionManager.religion!!
+        
         for (civ in humanPlayers) {
-            val city = currentTile.getCity()!!
-            civ.addNotification(
-                "[${civInfo.civName}] has enhanced [${civInfo.religionManager.religion!!.name}] in [${city.name}]!",
-                city.location, Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+            if (civInfo in civ.getKnownCivs())
+                civ.addNotification("[${civInfo.civName}] has enhanced [${religion.name}]!",
+                    ReligionAction(religion.name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+            else civ.addNotification("An unknown civilization has enhanced [${religion.name}]!",
+                ReligionAction(religion.name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
         }
     }
 
@@ -457,10 +464,18 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                 unit.religion = newReligion.name
 
         val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
-        for (civ in humanPlayers)
-            civ.addNotification(
-                "[${civInfo.civName}] has founded [${displayName}] in [${holyCity.name}]!",
-                holyCity.location, Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        for (civ in humanPlayers) {
+            if (civInfo in civ.getKnownCivs()) {
+                if (civ.hasExplored(holyCity.getCenterTile()))
+                    civ.addNotification("[${civInfo.civName}] has founded [$displayName] in [${holyCity.name}]!",
+                        ReligionAction.withLocation(holyCity.location, name),
+                        Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+                else civ.addNotification("[${civInfo.civName}] has founded [$displayName]!",
+                    ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+            }
+            else civ.addNotification("An unknown civilization has founded [$displayName]!",
+                ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        }
     }
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
