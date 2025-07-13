@@ -42,6 +42,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import kotlin.math.max
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -99,6 +100,16 @@ fun Color.darken(t: Float): Color = Color(this).lerp(Color.BLACK, t)
 /** Linearly interpolates between this [Color] and [WHITE][Color.WHITE] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
 fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
+/** Ensures that the `lightness` value of the given color
+ * in `HSL` scale is at least [minLightness].
+ */
+fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
+    /** see [Color.toHsv] implementation to understand this */
+    val lightness = max(max(r, g), b)
+    return if (lightness < minLightness) {
+        this.mul(minLightness / lightness)
+    } else this
+}
 
 
 fun Actor.centerX(parent: Actor) { x = parent.width / 2 - width / 2 }

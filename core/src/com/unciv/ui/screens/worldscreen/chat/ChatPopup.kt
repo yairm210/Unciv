@@ -8,30 +8,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
+import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import kotlin.math.max
 
 
 private val civChatColorsMap = mapOf<String, Color>(
     "System" to Color.WHITE,
     "Server" to Color.DARK_GRAY,
 )
-
-/** Ensures that the `lightness` value of the given color
- * in `HSL` scale is at least [minLightness].
- */
-fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
-    /** see [Color.toHsv] implementation to understand this */
-    val lightness = max(max(r, g), b)
-    return if (lightness < minLightness) {
-        this.mul(minLightness / lightness)
-    } else this
-}
 
 class ChatPopup(
     val worldScreen: WorldScreen,
