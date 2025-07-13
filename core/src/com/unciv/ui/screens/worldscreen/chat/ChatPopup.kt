@@ -14,6 +14,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import kotlin.math.max
 
 
 private val civChatColorsMap = mapOf<String, Color>(
@@ -21,17 +22,14 @@ private val civChatColorsMap = mapOf<String, Color>(
     "Server" to Color.DARK_GRAY,
 )
 
-/** Given that the lightness value of a color ranges between `0` and `1`
- * where `0` is `pure black` and `1` is `pure white`,
- * this extension function returns the color after increasing its lightness value to
- * a maximum of `minLightness` if required.
+/** Ensures that the `lightness` value of the given color
+ * in `HSL` scale is at least [minLightness].
  */
 fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
-    val colorHsv = toHsv(FloatArray(3))
-    val lightness = colorHsv[2]
+    /** see [Color.toHsv] implementation to understand this */
+    val lightness = max(max(r, g), b)
     return if (lightness < minLightness) {
-        colorHsv[2] = minLightness
-        fromHsv(colorHsv)
+        this.mul(minLightness / lightness)
     } else this
 }
 
@@ -62,19 +60,21 @@ class ChatPopup(
          */
 
         // Header: |  ChatLabel | CloseButton  |
-        add("Chat".toLabel(fontSize = 20)).center().expandX()
+        add("Chat".toLabel(fontSize = 30)).left().pad(5f).expandX()
         add(
             ImageButton(ImageGetter.getImage("OtherIcons/Close").drawable)
                 .onClick {
                     ChatStore.chatPopupAvailable = false
                     close()
                 }
-        ).size(20f).row()
+        ).size(30f).right().row()
 
         // Chat: |  ChatTable (colSpan = 2)  |
         scrollPane.setFadeScrollBars(false)
         scrollPane.setScrollingDisabled(true, false)
-        add(scrollPane).colspan(2).size(400f, 200f).expand().fill().row()
+        add(scrollPane).colspan(2)
+            .size(0.5f * worldScreen.stage.width, 0.5f * worldScreen.stage.height)
+            .expand().fill().row()
 
         // Input: | MessageField | SendButton |
         add(messageField).expandX().fillX()
