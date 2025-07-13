@@ -13,6 +13,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.chat.ChatMessageReceived
 import com.unciv.logic.multiplayer.chat.ChatStore
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
@@ -139,7 +140,7 @@ class ChatPopup(
     }
 
     private fun addMessage(senderCivName: String, message: String, scroll: Boolean = true) {
-        val line = "$senderCivName: $message".toLabel(alignment = Align.left).apply {
+        val line = "${senderCivName.tr()}: ${message.tr()}".toLabel(alignment = Align.left).apply {
             wrap = true
 
             val civNameColor = civChatColorsMap[senderCivName] ?: worldScreen.gameInfo.getCivilizationOrNull(
