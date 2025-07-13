@@ -130,7 +130,7 @@ object ChatWebSocketManager {
         println("ChatError: ${t.message}")
 
         if (errorReconnectionAttempts == 0) {
-            relayGlobalMessage("WebSocket connection closed. Cause: ${t.cause}!")
+            relayGlobalMessage("WebSocket connection closed. Cause: [${t.cause}]!")
             if (t.message?.contains("401") == true) {
                 relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
             }
@@ -156,6 +156,8 @@ object ChatWebSocketManager {
                         println("ChatLog: Re-established webSocket connection.")
                         relayGlobalMessage("Successfully re-established WebSocket connection!")
                     }
+                    // we are successfully connected
+                    errorReconnectionAttempts = 0
                 }
 
                 val gameIds = ChatStore.getGameIds()
@@ -171,7 +173,7 @@ object ChatWebSocketManager {
                             )
                         )
 
-                        is Response.Error -> relayGlobalMessage("Error: ${response.message}", "Server")
+                        is Response.Error -> relayGlobalMessage("Error: [${response.message}]", "Server")
                         is Response.JoinSuccess -> Unit
                     }
                     yield()
