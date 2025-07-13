@@ -8,7 +8,7 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import org.jetbrains.annotations.Contract
+import yairm210.purity.annotations.Readonly
 import org.jetbrains.annotations.VisibleForTesting
 
 /**
@@ -258,7 +258,7 @@ enum class Countables(
     open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    @Contract("readonly")
+    @Readonly
     open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
         else parameterText.equalsPlaceholderText(placeholderText)
     
@@ -268,9 +268,9 @@ enum class Countables(
     /** This indicates whether a parameter *is of this countable type*, not *whether its parameters are correct*
      * E.g. "[fakeBuilding] Buildings" is obviously a countable of type "[buildingFilter] Buildings", therefore matches will return true.
      * But it has another problem, which is that the building filter is bad, so its getErrorSeverity will return "ruleset specific" */
-    @Contract("readonly")
+    @Readonly
     open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
-    @Contract("readonly")
+    @Readonly
     abstract fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int?
 
     open val documentationHeader get() =
@@ -293,7 +293,7 @@ enum class Countables(
         getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
 
     companion object {
-        @Contract("readonly")
+        @Readonly
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .firstOrNull {
                 if (it.matchesWithRuleset)
@@ -301,7 +301,7 @@ enum class Countables(
                 else it.matches(parameterText)
             }
 
-        @Contract("readonly")
+        @Readonly
         fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val ruleset = stateForConditionals.gameInfo?.ruleset
             val countable = getMatching(parameterText, ruleset) ?: return null
