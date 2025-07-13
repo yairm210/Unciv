@@ -34,7 +34,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
-import org.jetbrains.annotations.Contract
+import yairm210.purity.annotations.Readonly
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.abs
@@ -258,7 +258,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return null
     }
 
-    @Contract("readonly")
+    @Readonly
     fun getCity(): City? = owningCity
 
     internal fun getNaturalWonder(): Terrain =
@@ -353,7 +353,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
-    @Contract("readonly")
+    @Readonly
     fun getOwner(): Civilization? = getCity()?.civ
 
     fun getRoadOwner(): Civilization? {
@@ -404,7 +404,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return uniques
     }
 
-    @Contract("readonly")
+    @Readonly
     fun getWorkingCity(): City? {
         val civInfo = getOwner() ?: return null
         if (owningCity?.isWorked(this) == true) return owningCity // common case
@@ -437,7 +437,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return false
     }
 
-    @Contract("readonly")
+    @Readonly
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield(): Boolean {
         if (getCity() == null) return false
@@ -486,12 +486,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
-    @Contract("readonly")
+    @Readonly
     fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo) })
     }
 
-    @Contract("readonly") @Suppress("purity")
+    @Readonly @Suppress("purity")
     private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
