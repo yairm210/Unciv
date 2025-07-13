@@ -19,10 +19,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.yield
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -117,6 +117,7 @@ object ChatWebSocketManager {
             withTimeoutOrNull(1000) {
                 while (session == null) {
                     delay(50)
+                    yield()
                 }
             }
             session?.runCatching {
@@ -173,6 +174,7 @@ object ChatWebSocketManager {
                         is Response.Error -> relayGlobalMessage("Error: ${response.message}", "Server")
                         is Response.JoinSuccess -> Unit
                     }
+                    yield()
                 }
             }
                 .onSuccess { restartSocket() }
@@ -202,16 +204,12 @@ object ChatWebSocketManager {
         } else errorReconnectionAttempts = 0
 
         GlobalScope.launch {
-            flow {
-                delay(RECONNECT_TIME_MS)
-                emit(Unit)
-            }.collect {
-                if (job?.isActive == true && !force)
-                    return@collect
+            delay(RECONNECT_TIME_MS)
+            if (job?.isActive == true && !force) return@launch
 
-                job?.cancel()
-                job = Concurrency.run("MultiplayerChat") { startSession() }
-            }
+            yield()
+            job?.cancel()
+            job = Concurrency.run("MultiplayerChat") { startSession() }
         }
     }
 
