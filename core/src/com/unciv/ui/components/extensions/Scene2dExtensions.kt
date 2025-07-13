@@ -96,13 +96,13 @@ fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1
 fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
 /** Linearly interpolates between this [Color] and [BLACK][ImageGetter.CHARCOAL] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
-fun Color.darken(t: Float): Color = brighten(-t)
+fun Color.darken(t: Float): Color = Color(this).mul(t)
 /** Linearly interpolates between this [Color] and [WHITE][Color.WHITE] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
 fun Color.brighten(t: Float): Color = Color(this).let {
     val lightness = max(r, max(g, b))
     val targetRatio = (lightness + t * (1 - lightness)) / lightness
-    return this.mul(targetRatio);
+    return it.mul(targetRatio)
 }
 
 
