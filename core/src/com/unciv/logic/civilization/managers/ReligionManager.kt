@@ -3,6 +3,8 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -438,6 +440,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         for (unit in civInfo.units.getCivUnits())
             if (unit.hasUnique(UniqueType.ReligiousUnit) && unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                 unit.religion = newReligion.name
+
+        val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
+        for (civ in humanPlayers)
+            civ.addNotification(
+                "[${civInfo.civName}] has founded [${displayName}] in [${holyCity.name}]!",
+                holyCity.location, Notification.NotificationCategory.Religion, NotificationIcon.Faith)
     }
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
