@@ -5,10 +5,10 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
+import com.unciv.logic.multiplayer.ServerFeatureSetChanged
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -172,7 +172,3 @@ class MultiplayerServer(
         return UncivFiles.gameInfoPreviewFromString(zippedGameInfo)
     }
 }
-
-data class ServerFeatureSetChanged(
-    val oldFeatureSet: ServerFeatureSet, val newFeatureSet: ServerFeatureSet
-) : Event

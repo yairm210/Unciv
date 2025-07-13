@@ -1,5 +1,7 @@
 package com.unciv.logic.multiplayer
 
+import com.unciv.logic.event.Event
+
 
 /**
  * This class is used to store the features of the server.
@@ -14,3 +16,7 @@ data class ServerFeatureSet(
     val authVersion: Int = 0,
     val chatVersion: Int = 0,
 )
+
+data class ServerFeatureSetChanged(
+    val oldFeatureSet: ServerFeatureSet, val newFeatureSet: ServerFeatureSet
+) : Event
