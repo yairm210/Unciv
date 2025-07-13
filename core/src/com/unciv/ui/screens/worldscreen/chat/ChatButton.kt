@@ -37,10 +37,8 @@ class ChatButton(worldScreen: WorldScreen) : TextButton("Chat", BaseScreen.skin)
         } else false
     }
 
-    fun updatePosition(worldScreen: WorldScreen) {
-        setPosition(
-            worldScreen.techPolicyAndDiplomacy.x.coerceAtLeast(1f),
-            worldScreen.techPolicyAndDiplomacy.y - height - 1f
-        )
-    }
+    fun updatePosition(worldScreen: WorldScreen) = setPosition(
+        worldScreen.techPolicyAndDiplomacy.x.coerceAtLeast(1f),
+        worldScreen.techPolicyAndDiplomacy.y - height - 1f
+    )
 }
