@@ -57,9 +57,81 @@ enum class Countables(
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.civInfo?.cities?.size
     },
+
+    CitiesCityFilter("[cityFilter] Cities", shortDocumentation = "The number of cities that match the given cityFilter") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val cities = stateForConditionals.civInfo?.cities ?: return null
+            return cities.count { it.matchesFilter(filter) }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.CityFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+    },
+
+    CitiesCivFilterCityFilter("[civFilter] [cityFilter] Cities", shortDocumentation = "The number of cities owned by the given matching Civilization(s) that match the given cityFilter") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civFilter = parameterText.getPlaceholderParameters()[0]
+            val cityFilter = parameterText.getPlaceholderParameters()[1]
+            return civilizations
+                .filter { it.isAlive() && it.matchesFilter(civFilter) }
+                .sumOf { civ -> civ.cities.count { city -> city.matchesFilter(cityFilter) } }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilterSeverity = UniqueParameterType.CivFilter.getErrorSeverity(params.getOrNull(0) ?: "", ruleset)
+            val cityFilterSeverity = UniqueParameterType.CityFilter.getErrorSeverity(params.getOrNull(1) ?: "", ruleset)
+            return civFilterSeverity ?: cityFilterSeverity
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
+            val civFilters = UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
+            val cityFilters = UniqueParameterType.CityFilter.getKnownValuesForAutocomplete(ruleset)
+            return civFilters.flatMap { civ ->
+                cityFilters.map { city -> "[$civ] [$city] Cities" }
+            }.toSet()
+        }
+    },
+
     Units("Units", shortDocumentation = "The number of units the relevant Civilization owns") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
             stateForConditionals.civInfo?.units?.getCivUnitsSize()
+    },
+
+    UnitsCivFilterMapUnitFilter("[civFilter] [mapUnitFilter] Units") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilter = params[0]
+            val mapUnitFilter = params[1]
+            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) }.sumOf { civ ->
+                civ.units.getCivUnits().count { it.matchesFilter(mapUnitFilter) }
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilterSeverity = UniqueParameterType.CivFilter.getErrorSeverity(params.getOrNull(0) ?: "", ruleset)
+            val mapUnitFilterSeverity = UniqueParameterType.MapUnitFilter.getErrorSeverity(params.getOrNull(1) ?: "", ruleset)
+            return civFilterSeverity ?: mapUnitFilterSeverity
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
+            val civFilters = UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
+            val unitFilters = (ruleset.unitTypes.keys + ruleset.units.keys)
+            return civFilters.flatMap { civ ->
+                unitFilters.map { unit -> "[$civ] [$unit] Units" }
+            }.toSet()
+        }
+    },
+
+    UnitsMapUnitFilter("[mapUnitFilter] Units") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val unitManager = stateForConditionals.civInfo?.units ?: return null
+            return unitManager.getCivUnits().count { it.matchesFilter(filter) }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
     },
 
     Stats {
@@ -87,26 +159,16 @@ enum class Countables(
             stateForConditionals.civInfo?.getCompletedPolicyBranchesCount()
     },
 
-    FilteredCities("[cityFilter] Cities") {
+    PolicyBranchesCivFilter("[civFilter] Completed Policy branches") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
-            val filter = parameterText.getPlaceholderParameters()[0]
-            val cities = stateForConditionals.civInfo?.cities ?: return null
-            return cities.count { it.matchesFilter(filter) }
+            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civFilter = parameterText.getPlaceholderParameters()[0]
+            return civilizations
+                .filter { it.isAlive() && it.matchesFilter(civFilter) }
+                .sumOf { it.getCompletedPolicyBranchesCount() }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.CityFilter.getTranslatedErrorSeverity(parameterText, ruleset)
-    },
-
-    FilteredUnits("[mapUnitFilter] Units") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
-            val filter = parameterText.getPlaceholderParameters()[0]
-            val unitManager = stateForConditionals.civInfo?.units ?: return null
-            return unitManager.getCivUnits().count { it.matchesFilter(filter) }
-        }
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
-            (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
+            UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
     },
 
     FilteredBuildings("[buildingFilter] Buildings") {
@@ -122,6 +184,35 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
+    BuildingsCivFilterBuildingFilter("[civFilter] [buildingFilter] Buildings") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilter = params[0]
+            val buildingFilter = params[1]
+            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            return civilizations
+                .filter { it.isAlive() && it.matchesFilter(civFilter) }
+                .sumOf { civ ->
+                    civ.cities.sumOf { city ->
+                        city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(buildingFilter) }
+                    }
+                }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilterSeverity = UniqueParameterType.CivFilter.getErrorSeverity(params.getOrNull(0) ?: "", ruleset)
+            val buildingFilterSeverity = UniqueParameterType.BuildingFilter.getErrorSeverity(params.getOrNull(1) ?: "", ruleset)
+            return civFilterSeverity ?: buildingFilterSeverity
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
+            val civFilters = UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
+            val buildingFilters = UniqueParameterType.BuildingFilter.getKnownValuesForAutocomplete(ruleset)
+            return civFilters.flatMap { civ ->
+                buildingFilters.map { building -> "[$civ] [$building] Buildings" }
+            }.toSet()
+        }
+    },
+
     FilteredPolicies("Adopted [policyFilter] Policies") {
         override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -133,6 +224,31 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             UniqueParameterType.PolicyFilter.getKnownValuesForAutocomplete(ruleset)
                 .map { text.fillPlaceholders(it) }.toSet()
+    },
+
+    PoliciesCivFilterPolicyFilter("[civFilter] Adopted [policyFilter] Policies") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilter = params[0]
+            val policyFilter = params[1]
+            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) } .sumOf { civ ->
+                civ.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals).size
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilterSeverity = UniqueParameterType.CivFilter.getErrorSeverity(params.getOrNull(0) ?: "", ruleset)
+            val policyFilterSeverity = UniqueParameterType.PolicyFilter.getErrorSeverity(params.getOrNull(1) ?: "", ruleset)
+            return civFilterSeverity ?: policyFilterSeverity
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
+            val civFilters = UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
+            val policyFilters = UniqueParameterType.PolicyFilter.getKnownValuesForAutocomplete(ruleset)
+            return civFilters.flatMap { civ ->
+                policyFilters.map { policy -> "[$civ] Adopted [$policy] Policies" }
+            }.toSet()
+        }
     },
 
     RemainingCivs("Remaining [civFilter] Civilizations") {
@@ -155,6 +271,28 @@ enum class Countables(
             UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
+
+    OwnedTilesCivFilterTileFilter("Owned [civFilter] [tileFilter] Tiles") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilter = params[0]
+            val tileFilter = params[1]
+            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) }.sumOf { civ ->
+                civ.cities.sumOf { city ->
+                    city.getTiles().count { it.matchesFilter(tileFilter) }
+                }
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilterSeverity = UniqueParameterType.CivFilter.getErrorSeverity(params.getOrNull(0) ?: "", ruleset)
+            val tileFilterSeverity = UniqueParameterType.TileFilter.getErrorSeverity(params.getOrNull(1) ?: "", ruleset)
+            return civFilterSeverity ?: tileFilterSeverity
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
     TileFilterTiles("[tileFilter] Tiles") {
     override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
         val filter = parameterText.getPlaceholderParameters()[0]
@@ -180,6 +318,24 @@ enum class Countables(
 
         override val example = "Iron"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
+    },
+
+    ResourcesCivFilterResourceFilter("[civFilter] [resource] Resources") {
+        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+            val params = parameterText.getPlaceholderParameters()
+            val civFilter = params[0]
+            val resource = params[1]
+            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) }.sumOf { it.getResourceAmount(resource) }
+        }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> {
+            val civFilters = UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
+            val resources = ruleset.tileResources.keys
+            return civFilters.flatMap { civ ->
+                resources.map { resource -> "[$civ] [$resource] Resources" }
+            }.toSet()
+        }
     },
 
     /** Please leave this one in, it is tested against in [com.unciv.uniques.CountableTests.testRulesetValidation] */

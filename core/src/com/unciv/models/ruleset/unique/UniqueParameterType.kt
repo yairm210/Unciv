@@ -488,6 +488,8 @@ enum class UniqueParameterType(
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
             staticKnownValues + ruleset.tileResources.keys + ResourceType.entries.map { it.name } + Stat.names()
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
     /** Used by [UniqueType.FreeExtraBeliefs], see ReligionManager.getBeliefsToChooseAt* functions */

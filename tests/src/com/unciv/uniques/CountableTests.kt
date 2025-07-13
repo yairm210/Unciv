@@ -30,6 +30,8 @@ class CountableTests {
     private lateinit var game: TestGame
     private lateinit var civ: Civilization
     private lateinit var city: City
+    private lateinit var civ2: Civilization
+    private lateinit var city2: City
 
 //    @Test
 //    fun testCountableConventions() {
@@ -208,6 +210,32 @@ class CountableTests {
     }
 
     @Test
+    fun testBuildingsCivFilterBuildingFilterCountable() {
+        setupModdedGame()
+        val city2 = addCivCity()
+
+        val ancestorTree = game.createBuilding("Ancestor Tree")
+        val library = game.createBuilding("Library")
+
+        city.cityConstructions.addBuilding(ancestorTree)
+        city.cityConstructions.addBuilding(library)
+        city2.cityConstructions.addBuilding(ancestorTree)
+
+        val tests = listOf(
+            "[${civ.civName}] [Ancestor Tree] Buildings" to 1,
+            "[All] [Ancestor Tree] Buildings" to 2,
+            "[${civ.civName}] [Library] Buildings" to 1,
+            "[All] [Library] Buildings" to 1,
+            "[All] [Nonexistent] Buildings" to 0,
+        )
+
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
     fun testPoliciesCountables() {
         setupModdedGame()
         civ.policies.run {
@@ -231,6 +259,38 @@ class CountableTests {
             "Adopted [Liberty Complete] Policies" to 0,
             "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
             "Adopted [Some marker] Policies" to 1,
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
+    fun testPoliciesCivFilterPolicyFilterCountables() {
+        setupModdedGame()
+
+        // Test the Policy Countables with the civFilter
+        val civ2 = addCivCity().civ
+
+        civ.policies.freePolicies += 20
+        civ2.policies.freePolicies += 20
+
+        for (name in listOf(
+            "Tradition", "Aristocracy", "Legalism", "Oligarchy", "Landed Elite", "Monarchy",
+            "Liberty", "Citizenship", "Honor", "Piety"
+        )) {
+            var policy = civ.policies.getPolicyByName(name)
+            civ.policies.adopt(policy)
+            civ2.policies.adopt(policy)
+        }
+
+        val civName = civ.civName
+        val tests = listOf(
+            "[All] Completed Policy branches" to 2,       // Tradition, for both Civs
+            "[All] Adopted [Tradition Complete] Policies" to 2,
+            "[$civName] Adopted [[Tradition] branch] Policies" to 7,   // Branch start and completion plus 5 members
+            "[All] Adopted [[Liberty] branch] Policies" to 4,     // Liberty has only 1 member adopted
         )
         for ((test, expected) in tests) {
             val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
@@ -334,5 +394,11 @@ class CountableTests {
         civ = game.addCiv()
         city = game.addCity(civ, game.tileMap[2,0])
         return game.ruleset
+    }
+
+    /** Adds a new City for a new Civilization */
+    private fun addCivCity(): City {
+        val civ = game.addCiv()
+        return game.addCity(civ, game.tileMap[0,2])
     }
 }
