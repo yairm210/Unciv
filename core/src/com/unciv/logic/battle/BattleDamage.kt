@@ -3,7 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -72,12 +72,12 @@ object BattleDamage {
         combatAction: CombatAction,
         combatant: ICombatant,
         enemy: ICombatant,
-    ): StateForConditionals {
+    ): GameContext {
         val attackedTile =
             if (combatAction == CombatAction.Attack) enemy.getTile()
             else combatant.getTile()
 
-        val conditionalState = StateForConditionals(
+        val conditionalState = GameContext(
             combatant.getCivInfo(),
             city = (combatant as? CityCombatant)?.city,
             ourCombatant = combatant,
@@ -88,7 +88,7 @@ object BattleDamage {
         return conditionalState
     }
 
-    private fun addUnitUniqueModifiers(combatant: MapUnitCombatant, enemy: ICombatant, conditionalState: StateForConditionals,
+    private fun addUnitUniqueModifiers(combatant: MapUnitCombatant, enemy: ICombatant, conditionalState: GameContext,
                                        tileToAttackFrom: Tile, modifiers: Counter<String>) {
         val civInfo = combatant.getCivInfo()
 
@@ -159,7 +159,7 @@ object BattleDamage {
 
                     // e.g., Discipline policy - https://civilization.fandom.com/wiki/Discipline_(Civ5)
                     for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true,
-                            stateForConditionals = getStateForConditionals(CombatAction.Attack, attacker, defender)))
+                            gameContext = getStateForConditionals(CombatAction.Attack, attacker, defender)))
                         flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
                         (flankingBonus * numberOfOtherAttackersSurroundingDefender).toInt()

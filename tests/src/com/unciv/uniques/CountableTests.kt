@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Countables
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -117,7 +117,7 @@ class CountableTests {
     @Test
     fun testStatsCountables() {
         setupModdedGame()
-        fun verifyStats(state: StateForConditionals) {
+        fun verifyStats(state: GameContext) {
             for (stat in Stat.entries) {
                 val countableResult = Countables.Stats.eval(stat.name, state)
                 val expected = if (stat == Stat.Happiness) civ.getHappiness()
@@ -129,13 +129,13 @@ class CountableTests {
         val providesStats =
             game.createBuilding("[+1 Gold, +2 Food, +3 Production, +4 Happiness, +3 Science, +2 Culture, +1 Faith] [in this city] <when number of [Cities] is equal to [1]>")
         city.cityConstructions.addBuilding(providesStats)
-        verifyStats(StateForConditionals(civ, city))
+        verifyStats(GameContext(civ, city))
 
         val city2 = game.addCity(civ, game.tileMap[-2,0])
         val providesStats2 =
             game.createBuilding("[+3 Gold, +2 Food, +1 Production, -4 Happiness, +1 Science, +2 Culture, +3 Faith] [in this city] <when number of [Cities] is more than [1]>")
         city2.cityConstructions.addBuilding(providesStats2)
-        verifyStats(StateForConditionals(civ, city2))
+        verifyStats(GameContext(civ, city2))
     }
 
     @Test
@@ -154,7 +154,7 @@ class CountableTests {
             "Owned [Farm] Tiles" to 0,
         )
         for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
     }
@@ -173,7 +173,7 @@ class CountableTests {
             "[Your] Cities" to 2,
         )
         for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
     }
@@ -233,7 +233,7 @@ class CountableTests {
             "Adopted [Some marker] Policies" to 1,
         )
         for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
     }
@@ -322,7 +322,7 @@ class CountableTests {
         game.addCity(cityState, game.tileMap[-2,0], true)
         civ.updateStatsForNextTurn()
 
-        val happiness = Countables.getCountableAmount("Happiness", StateForConditionals(civ, city))
+        val happiness = Countables.getCountableAmount("Happiness", GameContext(civ, city))
         // Base 9, -1 city, -3 population +1 deprecated countable should still work, but the bogus one should not
         assertEquals("Testing Happiness", 6, happiness)
     }

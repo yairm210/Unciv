@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
 class DiplomacyFunctions(val civInfo: Civilization) {
@@ -74,7 +75,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         }
     }
 
-
+    @Readonly
     fun isAtWarWith(otherCiv: Civilization): Boolean {
         return when {
             otherCiv == civInfo -> false

@@ -83,6 +83,18 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             }
         }
 
+        if (!civInfo.isCityState && !otherCivilization.isCityState) {
+            val thirdCivsAtWarTheyKnow = otherCivilization.getKnownCivs()
+                .filter { it.isAtWarWith(civInfo) && !it.isDefeated()
+                    && !it.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange) }
+
+            for (thirdCiv in thirdCivsAtWarTheyKnow) {
+                // Setting amount to 0 makes TradeOffer.isTradable() return false and also disables the button in trade window
+                val amount = if (TradeEvaluation().isPeaceProposalEnabled(thirdCiv, civInfo)) 1 else 0
+                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))
+            }
+        }
+        
         return offers
     }
 
@@ -155,6 +167,27 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     else WarType.JoinWar
 
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
+                }
+                TradeOfferType.PeaceProposal -> {
+                    // Convert PeaceProposal to peaceTreaty and apply to warring civs
+                    val trade = Trade()
+                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = offer.duration)
+                    trade.ourOffers.add(peaceOffer)
+                    trade.theirOffers.add(peaceOffer)
+                    
+                    val thirdCiv = from.gameInfo.getCivilization(offer.name)
+                    val tradePartnerDiplo = from.getDiplomacyManager(thirdCiv)!!
+                    tradePartnerDiplo.apply {
+                        trades.add(trade)
+                        updateHasOpenBorders()
+                    }
+
+                    thirdCiv.getDiplomacyManager(from)!!.apply {
+                        trades.add(trade)
+                        updateHasOpenBorders()
+                    }
+
+                    tradePartnerDiplo.makePeace()
                 }
                 else -> {}
             }

@@ -6,7 +6,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.extensions.toPercent
@@ -64,9 +64,9 @@ class CityCombatant(val city: City) : ICombatant {
             strength += cityTile.militaryUnit!!.baseUnit.strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
 
         var buildingsStrength = city.getStrength()
-        val stateForConditionals = StateForConditionals(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)
+        val gameContext = GameContext(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)
 
-        for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, stateForConditionals))
+        for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, gameContext))
             buildingsStrength *= unique.params[0].toPercent()
         strength += buildingsStrength
 

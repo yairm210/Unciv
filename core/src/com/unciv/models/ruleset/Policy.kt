@@ -2,7 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.Constants
 import com.unciv.logic.MultiFilter
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -35,7 +35,7 @@ open class Policy : RulesetObject() {
         fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
     }
 
-    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+    fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
                 state != null && hasUnique(filter, state) ||
@@ -112,7 +112,7 @@ open class Policy : RulesetObject() {
         }
 
         fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).any {
                     it.getModifiers(UniqueType.ConditionalAfterPolicyOrBelief).any { it.params[0] == name } }
                 || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any {
                     it.getModifiers(UniqueType.ConditionalBeforePolicyOrBelief).any { it.params[0] == name }
@@ -131,12 +131,12 @@ open class Policy : RulesetObject() {
 
 
         fun isDisabledByPolicy(rulesetObject: IRulesetObject): Boolean {
-            if (rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any {
+            if (rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).any {
                     it.getModifiers(UniqueType.ConditionalBeforePolicyOrBelief).any { it.params[0] == name }
                 })
                 return true
 
-            if (rulesetObject.getMatchingUniques(UniqueType.Unavailable, StateForConditionals.IgnoreConditionals).any {
+            if (rulesetObject.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals).any {
                     it.getModifiers(UniqueType.ConditionalAfterPolicyOrBelief).any { it.params[0] == name } })
                 return true
             

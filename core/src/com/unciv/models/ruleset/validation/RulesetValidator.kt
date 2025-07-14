@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -257,9 +257,9 @@ open class RulesetValidator protected constructor(
                 )
             }
 
-            val hasPillageUnique = improvement.hasUnique(UniqueType.PillageYieldRandom, StateForConditionals.IgnoreConditionals)
-                || improvement.hasUnique(UniqueType.PillageYieldFixed, StateForConditionals.IgnoreConditionals)
-            if (hasPillageUnique && improvement.hasUnique(UniqueType.Unpillagable, StateForConditionals.IgnoreConditionals)) {
+            val hasPillageUnique = improvement.hasUnique(UniqueType.PillageYieldRandom, GameContext.IgnoreConditionals)
+                || improvement.hasUnique(UniqueType.PillageYieldFixed, GameContext.IgnoreConditionals)
+            if (hasPillageUnique && improvement.hasUnique(UniqueType.Unpillagable, GameContext.IgnoreConditionals)) {
                 lines.add(
                     "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
                     RulesetErrorSeverity.Warning, improvement
@@ -463,7 +463,7 @@ open class RulesetValidator protected constructor(
     }
 
     protected open fun checkUnit(unit: BaseUnit, lines: RulesetErrorList) {
-        for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
+        for (upgradesTo in unit.getUpgradeUnits(GameContext.IgnoreConditionals)) {
             if (upgradesTo == unit.name || upgradesTo == unit.replaces)
                 lines.add("${unit.name} upgrades to itself!", sourceObject = unit)
         }

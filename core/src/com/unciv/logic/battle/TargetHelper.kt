@@ -5,7 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 
 object TargetHelper {
@@ -115,20 +115,20 @@ object TargetHelper {
 
         
         if (combatant is MapUnitCombatant) {
-            val stateForConditionals = StateForConditionals(
+            val gameContext = GameContext(
                 unit = (combatant as? MapUnitCombatant)?.unit, tile = tile, 
                 ourCombatant = combatant, theirCombatant = tileCombatant, combatAction = CombatAction.Attack)
 
-            if (combatant.hasUnique(UniqueType.CannotAttack, stateForConditionals))
+            if (combatant.hasUnique(UniqueType.CannotAttack, gameContext))
                 return false
 
-            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits, stateForConditionals).run {
+            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits, gameContext).run {
                     any() && none { tileCombatant.matchesFilter(it.params[0]) }
                 }
             )
                 return false
 
-            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles, stateForConditionals).run {
+            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles, gameContext).run {
                     any() && none { tile.matchesFilter(it.params[0]) }
                 }
             )

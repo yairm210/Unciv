@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
 
@@ -149,7 +149,7 @@ object AirInterception {
         interceptingCiv: Civilization,
         defender: ICombatant?
     ): Battle.DamageDealt {
-        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, attackedTile = attackedTile)))
+        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, attackedTile = attackedTile)))
             return Battle.DamageDealt.None
 
         // Pick highest chance interceptor
@@ -158,7 +158,7 @@ object AirInterception {
             .sortedByDescending { it.interceptChance() }
             .firstOrNull { unit ->
                 // Can't intercept if we have a unique preventing it
-                val conditionalState = StateForConditionals(interceptingCiv, ourCombatant = MapUnitCombatant(unit), theirCombatant = attacker, combatAction = CombatAction.Intercept, attackedTile = attackedTile)
+                val conditionalState = GameContext(interceptingCiv, ourCombatant = MapUnitCombatant(unit), theirCombatant = attacker, combatAction = CombatAction.Intercept, attackedTile = attackedTile)
                 unit.getMatchingUniques(UniqueType.CannotInterceptUnits, conditionalState)
                     .none { attacker.matchesFilter(it.params[0]) }
                     // Defender can't intercept either
