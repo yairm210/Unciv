@@ -3,6 +3,8 @@ package com.unciv.logic.multiplayer.chat
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
+import com.unciv.ui.screens.worldscreen.chat.ChatPopup
+import java.util.LinkedList
 
 data class ChatMessageReceived(
     val gameId: String,
@@ -61,10 +63,10 @@ object ChatStore {
     var chatPopupAvailable = false
     private val gameIdToChat = mutableMapOf<String, Chat>()
 
-    /** When no [com.unciv.ui.screens.worldscreen.chat.ChatPopup] is open to receive these oddities, we keep them here.
+    /** When no [ChatPopup] is open to receive these oddities, we keep them here.
      * Certainly better than not knowing why the socket closed.
      */
-    private val globalMessagesQueue = ArrayDeque<Pair<String, String>>()
+    private val globalMessages = LinkedList<Pair<String, String>>()
 
     fun getChatByGameId(gameId: String) = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
 
@@ -72,8 +74,8 @@ object ChatStore {
 
     fun pollGlobalMessages(action: (String, String) -> Unit) {
         Gdx.app.postRunnable {
-            while (globalMessagesQueue.isNotEmpty()) {
-                val item = globalMessagesQueue.removeFirst()
+            while (globalMessages.isNotEmpty()) {
+                val item = globalMessages.poll()
                 action(item.first, item.second)
             }
         }
@@ -82,7 +84,7 @@ object ChatStore {
     fun addGlobalMessage(civName: String, message: String) {
         Gdx.app.postRunnable {
             if (chatPopupAvailable) return@postRunnable
-            globalMessagesQueue.addLast(Pair(civName, message))
+            globalMessages.add(Pair(civName, message))
         }
     }
 }

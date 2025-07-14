@@ -378,3 +378,4 @@ private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<
     settingsSelect.addTo(table)
     tab.add(table).growX().fillX().row()
 }
+

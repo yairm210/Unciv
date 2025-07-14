@@ -31,6 +31,9 @@ import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.popups.Popup.Scrollability.All
+import com.unciv.ui.popups.Popup.Scrollability.None
+import com.unciv.ui.popups.Popup.Scrollability.WithoutButtons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 
