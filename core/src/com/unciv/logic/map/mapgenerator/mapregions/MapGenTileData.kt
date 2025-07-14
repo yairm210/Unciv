@@ -2,7 +2,7 @@ package com.unciv.logic.map.mapgenerator.mapregions
 
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.max
 import kotlin.math.min
@@ -53,7 +53,7 @@ class MapGenTileData(val tile: Tile, val region: Region?, ruleset: Ruleset) {
         // Add all applicable qualities
         for (unique in terrainToCheck.getMatchingUniques(
             UniqueType.HasQuality,
-            StateForConditionals(region = region)
+            GameContext(region = region)
         )) {
             when (unique.params[0]) {
                 "Food" -> isFood = true

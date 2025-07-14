@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.stats.INamed
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 
 /**
  * Common interface for all 'ruleset objects' that have Uniques, like BaseUnit, Nation, etc.
@@ -42,34 +43,43 @@ interface IHasUniques : INamed {
      * */
     fun getUniqueTarget(): UniqueTarget
 
-    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
+    @Readonly
+    fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueType, state)
 
-    fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+    @Readonly
+    fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueTag, state)
 
-    fun hasUnique(uniqueType: UniqueType, state: StateForConditionals? = null) =
-        uniqueMap.hasMatchingUnique(uniqueType, state ?: StateForConditionals.EmptyState)
+    @Readonly
+    fun hasUnique(uniqueType: UniqueType, state: GameContext? = null) =
+        uniqueMap.hasMatchingUnique(uniqueType, state ?: GameContext.EmptyState)
 
-    fun hasUnique(uniqueTag: String, state: StateForConditionals? = null) =
-        uniqueMap.hasMatchingUnique(uniqueTag, state ?: StateForConditionals.EmptyState)
+    @Readonly
+    fun hasUnique(uniqueTag: String, state: GameContext? = null) =
+        uniqueMap.hasMatchingUnique(uniqueTag, state ?: GameContext.EmptyState)
 
+    @Readonly
     fun hasTagUnique(tagUnique: String) =
         uniqueMap.hasTagUnique(tagUnique)
-
-    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals)
-
+    
+    @Readonly
     fun techsRequiredByUniques(): Sequence<String> {
-        return availabilityUniques()
+        val availabilityUniques = getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals) + 
+                getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, GameContext.IgnoreConditionals)
+        
+        return availabilityUniques
                 // Currently an OnlyAvailableWhen can have multiple conditionals, implicitly a conjunction.
                 // Therefore, if any of its several conditionals is a ConditionalTech, then that tech is required.
                 .flatMap { it.modifiers }
-                .filter{ it.type == UniqueType.ConditionalTech }
+                .filter { it.type == UniqueType.ConditionalTech }
                 .map { it.params[0] }
     }
 
+    @Readonly
     fun legacyRequiredTechs(): Sequence<String> = emptySequence()
 
+    @Readonly
     fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
 
     fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology?> =
@@ -93,9 +103,9 @@ interface IHasUniques : INamed {
         return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
     }
 
-    fun getWeightForAiDecision(stateForConditionals: StateForConditionals): Float {
+    fun getWeightForAiDecision(gameContext: GameContext): Float {
         var weight = 1f
-        for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, stateForConditionals))
+        for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, gameContext))
             weight *= unique.params[0].toPercent()
         return weight
     }
@@ -118,20 +128,20 @@ interface IHasUniques : INamed {
             UniqueType.ConditionalEspionageEnabled,
             UniqueType.ConditionalEspionageDisabled,
         )
-        val stateForConditionals = StateForConditionals(gameInfo = gameInfo)
+        val gameContext = GameContext(gameInfo = gameInfo)
 
-        if (getMatchingUniques(UniqueType.Unavailable, StateForConditionals.IgnoreConditionals)
+        if (getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
                 .any { unique ->
                     unique.modifiers.any {
                         it.type in gameBasedConditionals
-                                && Conditionals.conditionalApplies(null, it, stateForConditionals) } })
+                                && Conditionals.conditionalApplies(null, it, gameContext) } })
             return true
 
-        if (getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+        if (getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                 .any { unique ->
                     unique.modifiers.any {
                         it.type in gameBasedConditionals
-                                && !Conditionals.conditionalApplies(null, it, stateForConditionals) } })
+                                && !Conditionals.conditionalApplies(null, it, gameContext) } })
             return true
 
         return false
@@ -183,7 +193,7 @@ interface IHasUniques : INamed {
      *  @param disabler The modifier testing feature is off: `ConditionalReligionDisabled` or `ConditionalEspionageDisabled`
      */
     private fun shouldBeHiddenIfNoGameLoaded(hasFeature: Boolean, enabler: UniqueType, disabler: UniqueType): Boolean {
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)) {
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)) {
             if (unique.hasModifier(enabler)) return !hasFeature
             if (unique.hasModifier(disabler)) return hasFeature
         }

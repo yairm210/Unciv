@@ -6,7 +6,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
@@ -114,11 +114,11 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     fun getFounder() = gameInfo.getCivilization(foundingCivName)
 
-    fun matchesFilter(filter: String, state: StateForConditionals = StateForConditionals.IgnoreConditionals, civ: Civilization? = null): Boolean {
+    fun matchesFilter(filter: String, state: GameContext = GameContext.IgnoreConditionals, civ: Civilization? = null): Boolean {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state, civ) })
     }
     
-    private fun matchesSingleFilter(filter: String, state: StateForConditionals = StateForConditionals.IgnoreConditionals, civ: Civilization? = null): Boolean {
+    private fun matchesSingleFilter(filter: String, state: GameContext = GameContext.IgnoreConditionals, civ: Civilization? = null): Boolean {
         val foundingCiv = getFounder()
         when (filter) {
             "any" -> return true

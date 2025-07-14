@@ -13,7 +13,7 @@ import com.unciv.models.Counter
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -320,16 +320,16 @@ object UnitActionsFromUniques {
         val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.ConstructImprovementInstantly)
 
         val civResources = unit.civ.getCivResourcesByName()
-        val stateForConditionals = StateForConditionals(civInfo = unit.civ, unit = unit, tile = tile)
+        val gameContext = GameContext(civInfo = unit.civ, unit = unit, tile = tile)
 
         for (unique in uniquesToCheck) {
             val improvementFilter = unique.params[0]
-            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, stateForConditionals) }
+            val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, gameContext) }
 
             for (improvement in improvements) {
                 // Try to skip Improvements we can never build
                 // (getImprovementBuildingProblems catches those so the button is always disabled, but it nevertheless looks nicer)
-                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, stateForConditionals).any { it.permanent })
+                if (tile.improvementFunctions.getImprovementBuildingProblems(improvement, gameContext).any { it.permanent })
                     continue
 
                 val resourcesAvailable = improvement.getMatchingUniques(UniqueType.ConsumesResources).none { improvementUnique ->
@@ -401,7 +401,7 @@ object UnitActionsFromUniques {
 
             // Respect OnlyAvailable criteria
             if (unitToTransformTo.getMatchingUniques(
-                    UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals
+                    UniqueType.OnlyAvailable, GameContext.IgnoreConditionals
                 ).any { !it.conditionalsApply(stateForConditionals) }
             ) continue
 
