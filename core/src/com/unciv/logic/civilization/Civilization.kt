@@ -339,18 +339,23 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  city-states to contain the barbarians. Therefore, [getKnownCivs] will **not** list the barbarians
      *  for major civs, but **will** do so for city-states after some gameplay.
      */
+    @Readonly
     fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }
         .filter { !it.isDefeated() && !it.isSpectator() }
 
     fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv() }
         .filter { !it.isDefeated() }
 
+    @Readonly
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
+    @Readonly
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
     fun getCapital(firstCityIfNoCapital: Boolean = true) = cities.firstOrNull { it.isCapital() } ?:
         if (firstCityIfNoCapital) cities.firstOrNull() else null
+    @Readonly
     fun isHuman() = playerType == PlayerType.Human
+    @Readonly
     fun isAI() = playerType == PlayerType.AI
     fun isAIOrAutoPlaying(): Boolean {
         if (playerType == PlayerType.AI) return true
@@ -370,7 +375,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     @delegate:Transient
     val isBarbarian by lazy { nation.isBarbarian }
 
+    @Readonly
     fun isSpectator() = nation.isSpectator
+    @Readonly
     fun isAlive(): Boolean = !isDefeated()
 
     @delegate:Transient
@@ -524,11 +531,13 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
+    @Readonly
     fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =
         getMatchingUniques(uniqueType, gameContext).any()
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
+    @Readonly
     fun getMatchingUniques(
         uniqueType: UniqueType,
         gameContext: GameContext = state
@@ -653,16 +662,20 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  If the civ has never controlled an original capital, it stays 'alive' as long as it has units (irrespective of non-original-capitals owned)
      *  Otherwise, it stays 'alive' as long as it has cities (irrespective of settlers owned)
      */
+    @Readonly
     fun isDefeated() = when {
         isBarbarian || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnitsSize() == 0
     }
 
+    @Readonly
     fun getEra(): Era = tech.era
 
+    @Readonly
     fun getEraNumber(): Int = getEra().eraNumber
 
+    @Readonly
     fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
@@ -1039,6 +1052,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getAllyCiv(): Civilization? = if (allyCivName == null) null
         else gameInfo.getCivilization(allyCivName!!)
+    @Readonly @Suppress("purity") // should be autorecognized!
     fun getAllyCivName() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 

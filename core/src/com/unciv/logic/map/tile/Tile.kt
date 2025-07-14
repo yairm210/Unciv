@@ -650,6 +650,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
+    @Readonly @Suppress("purity") // sets cached value
     fun isAdjacentToRiver(): Boolean {
         if (!isAdjacentToRiverKnown) {
             isAdjacentToRiver =

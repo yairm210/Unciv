@@ -43,9 +43,11 @@ interface IHasUniques : INamed {
      * */
     fun getUniqueTarget(): UniqueTarget
 
+    @Readonly
     fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueType, state)
 
+    @Readonly
     fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueTag, state)
 

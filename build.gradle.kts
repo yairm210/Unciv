@@ -54,6 +54,9 @@ allprojects {
             "kotlin.apply",
             "kotlin.takeIf",
             "kotlin.takeUnless",
+            "kotlin.ranges.coerceIn",
+            "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
+//            "kotlin.Enum.compareTo", // so overrides are considered pure as well :think:
         )
         wellKnownReadonlyFunctions = setOf(
             "kotlin.collections.any",
@@ -62,6 +65,11 @@ allprojects {
             "kotlin.ranges.coerceAtLeast",
             // Looks like the Collection.contains is not considered overridden :thunk:
             "java.util.AbstractCollection.contains",
+            "kotlin.collections.sum",
+        )
+        wellKnownPureClasses = setOf(
+            "kotlin.enums.EnumEntries",
+            "kotlin.Enum",
         )
     }
     

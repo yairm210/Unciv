@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import yairm210.purity.annotations.Readonly
 
 class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
@@ -32,6 +33,7 @@ fun ArrayList<TemporaryUnique>.endTurn() {
     removeAll { it.turnsLeft == 0 }
 }
 
+@Readonly
 fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> {
     return this.asSequence()
         .map { it.uniqueObject }

@@ -545,6 +545,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     // Uniques coming from this city, but that should be provided globally
+    @Readonly
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, gameContext: GameContext = state): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed

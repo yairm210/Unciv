@@ -27,6 +27,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
@@ -408,10 +409,12 @@ class CityStateFunctions(val civInfo: Civilization) {
         civInfo.destroy(notificationLocation)
     }
 
+    @Readonly
     fun getTributeWillingness(demandingCiv: Civilization, demandingWorker: Boolean = false): Int {
         return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
     }
 
+    @Readonly @Suppress("purity")
     fun getTributeModifiers(demandingCiv: Civilization, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
         val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
         // Can't bully major civs or unsettled CS's
@@ -789,6 +792,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     // TODO: Optimize, update whenever status changes, otherwise retain the same list
+    @Readonly
     fun getUniquesProvidedByCityStates(
         uniqueType: UniqueType,
         gameContext: GameContext
@@ -809,6 +813,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
 
+    @Readonly
     fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType: UniqueType? = null): Sequence<Unique> {
         val cityStateUniqueMap = when (relationshipLevel) {
             RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
