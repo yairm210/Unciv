@@ -136,7 +136,7 @@ object ChatWebSocketManager {
 
     @OptIn(ExperimentalTime::class)
     private fun handleWebSocketThrowables(t: Throwable) {
-        var reconnectionLog = "ChatError: ${t.message}. Reconnecting..."
+        print("ChatError: ${t.message}. Reconnecting...")
 
         if (reconnectionAttempts == 0) {
             lastRetry = Clock.System.now()
@@ -146,11 +146,11 @@ object ChatWebSocketManager {
             }
         } else {
             val now = Clock.System.now()
-            reconnectionLog += "(Last retry was ${(now - lastRetry).toString(DurationUnit.SECONDS, 2)} ago)"
+            print(" (Last retry was ${(now - lastRetry).toString(DurationUnit.SECONDS, 2)} ago)")
             lastRetry = now
         }
 
-        println(reconnectionLog)
+        println()
         restartSocket(true)
     }
 
