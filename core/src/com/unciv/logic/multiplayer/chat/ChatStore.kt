@@ -28,7 +28,7 @@ data class Chat(
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
      */
     fun requestMessageSend(civName: String, message: String) {
-        ChatWebSocketManager.requestMessageSend(Message.Chat(gameId, civName, message))
+        ChatWebSocket.requestMessageSend(Message.Chat(gameId, civName, message))
     }
 
     /**

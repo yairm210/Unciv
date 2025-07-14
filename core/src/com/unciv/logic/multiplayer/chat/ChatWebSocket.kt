@@ -3,10 +3,7 @@ package com.unciv.logic.multiplayer.chat
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.chat.Chat.Companion.relayGlobalMessage
-import com.unciv.logic.multiplayer.chat.ChatWebSocketManager.job
-import com.unciv.models.metadata.PasswordChanged
-import com.unciv.models.metadata.ServerUrlChanged
-import com.unciv.models.metadata.UserIdChanged
+import com.unciv.logic.multiplayer.chat.ChatWebSocket.job
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -80,7 +77,9 @@ sealed class Response {
 
 class ChatRestartException : CancellationException("Chat restart requested")
 
-object ChatWebSocketManager {
+object ChatWebSocket {
+    private var isStarted = false
+
     @OptIn(ExperimentalTime::class)
     private var lastRetry = Clock.System.now()
     private var reconnectionAttempts = 0
@@ -121,7 +120,7 @@ object ChatWebSocketManager {
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
      */
     fun requestMessageSend(message: Message) {
-        startSocket()
+        start()
         Concurrency.run("MultiplayerChatSendMessage") {
             withTimeoutOrNull(INITIAL_SESSION_WAIT_FOR_MS) {
                 while (session == null) {
@@ -151,7 +150,7 @@ object ChatWebSocketManager {
         }
 
         println()
-        restartSocket(true)
+        restart(true)
     }
 
     private suspend fun startSession() {
@@ -194,17 +193,18 @@ object ChatWebSocketManager {
                     yield()
                 }
             }
-                .onSuccess { restartSocket() }
+                .onSuccess { restart() }
                 .onFailure { handleWebSocketThrowables(it) }
         } catch (e: Exception) {
             handleWebSocketThrowables(e)
         }
     }
 
-    private fun startSocket() {
-        if (job?.isActive == true) return
-        job?.cancel()
-        job = Concurrency.run("MultiplayerChat") { startSession() }
+    private fun start() {
+        if (!isStarted) {
+            isStarted = true
+            job = Concurrency.run("MultiplayerChat") { startSession() }
+        }
     }
 
     /**
@@ -213,7 +213,8 @@ object ChatWebSocketManager {
      * This is helpfull when we need to reset [job] due to events.
      */
     @OptIn(DelicateCoroutinesApi::class)
-    private fun restartSocket(dueToError: Boolean = false, force: Boolean = false) {
+    fun restart(dueToError: Boolean = false, force: Boolean = false) {
+        if (!isStarted) return
         if (dueToError) {
             if (++reconnectionAttempts > MAX_RECONNECTION_ATTEMPTS) {
                 return
@@ -242,18 +243,6 @@ object ChatWebSocketManager {
                 ChatStore.addGlobalMessage(it.civName, it.message)
             else
                 ChatStore.getChatByGameId(it.gameId).addMessage(it.civName, it.message)
-        }
-
-        eventReceiver.receive(PasswordChanged::class) {
-            if (job != null) restartSocket(force = true)
-        }
-
-        eventReceiver.receive(UserIdChanged::class) {
-            if (job != null) restartSocket(force = true)
-        }
-
-        eventReceiver.receive(ServerUrlChanged::class) {
-            if (job != null) restartSocket(force = true)
         }
     }
 }

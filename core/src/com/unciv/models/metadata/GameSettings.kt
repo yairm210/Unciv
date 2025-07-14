@@ -5,9 +5,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.event.Event
-import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.FriendList
+import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
@@ -270,7 +269,7 @@ class GameSettings {
         var userId = ""
             set(value) {
                 if (field.isNotEmpty() && field != value) {
-                    EventBus.send(UserIdChanged(field, value))
+                    ChatWebSocket.restart()
                 }
                 field = value
             }
@@ -279,7 +278,7 @@ class GameSettings {
         operator fun MutableMap<String, String>.set(key: String, value: String) {
             val oldPassword = get(key)
             if (oldPassword != null && oldPassword != value) {
-                EventBus.send(PasswordChanged(server, oldPassword, value))
+                ChatWebSocket.restart()
             }
 
             // Default set behavior
@@ -292,7 +291,7 @@ class GameSettings {
         var server = Constants.uncivXyzServer
             set(value) {
                 if (field != value) {
-                    EventBus.send(ServerUrlChanged(field, value))
+                    ChatWebSocket.restart()
                 }
                 field = value
             }
@@ -356,15 +355,3 @@ class GameSettings {
 
     //endregion
 }
-
-data class ServerUrlChanged(
-    val oldUrl: String, val newUrl: String
-) : Event
-
-data class UserIdChanged(
-    val oldUserId: String, val newUserId: String
-) : Event
-
-data class PasswordChanged(
-    val serverUrl: String, val oldPassword: String?, val newPassword: String
-) : Event
