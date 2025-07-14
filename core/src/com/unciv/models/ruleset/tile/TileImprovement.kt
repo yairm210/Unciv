@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -50,8 +51,11 @@ class TileImprovement : RulesetStatsObject() {
     fun getDescription(ruleset: Ruleset): String  = ImprovementDescriptions.getDescription(this, ruleset)
     fun getShortDecription() = ImprovementDescriptions.getShortDescription(this)
 
+    @Readonly
     fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
+    @Readonly
     fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
+    @Readonly
     fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
     fun canBeBuiltOn(terrain: String): Boolean {
@@ -77,6 +81,7 @@ class TileImprovement : RulesetStatsObject() {
 
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
+    @Readonly
     fun matchesFilter(filter: String, tileState: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(it) ||
@@ -88,6 +93,7 @@ class TileImprovement : RulesetStatsObject() {
             tileState == null && hasTagUnique(filter)
     }
 
+    @Readonly
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             "all", "All" -> true

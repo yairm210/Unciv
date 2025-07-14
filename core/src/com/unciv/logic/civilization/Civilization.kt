@@ -56,6 +56,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -323,7 +324,9 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (!knows(civInfo)) diplomacyFunctions.makeCivilizationsMeet(civInfo)
         return getDiplomacyManager(civInfo.civName)!!
     }
+    @Readonly
     fun getDiplomacyManager(civInfo: Civilization): DiplomacyManager? = getDiplomacyManager(civInfo.civName)
+    @Readonly
     fun getDiplomacyManager(civName: String): DiplomacyManager? = diplomacy[civName]
 
     fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)

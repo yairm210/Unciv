@@ -283,12 +283,18 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun hasImprovementInProgress() = improvementQueue.isNotEmpty()
 
+    @Readonly
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
+    @Readonly
     fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
+    @Readonly
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
+    @Readonly
     fun getTileImprovementInProgress(): TileImprovement? = improvementQueue.firstOrNull()?.let { ruleset.tileImprovements[it.improvement] }
+    @Readonly
     fun containsGreatImprovement() = getTileImprovement()?.isGreatImprovement() == true
 
+    @Readonly
     fun getImprovementToPillage(): TileImprovement? {
         if (canPillageTileImprovement())
             return ruleset.tileImprovements[improvement]!!
@@ -297,6 +303,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return null
     }
     // same as above, but slightly quicker
+    @Readonly
     fun getImprovementToPillageName(): String? {
         if (canPillageTileImprovement())
             return improvement
@@ -304,6 +311,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             return roadStatus.name
         return null
     }
+    @Readonly
     fun getImprovementToRepair(): TileImprovement? {
         if (improvement != null && improvementIsPillaged)
             return ruleset.tileImprovements[improvement]!!
@@ -311,24 +319,30 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             return ruleset.tileImprovements[roadStatus.name]!!
         return null
     }
+    @Readonly
     fun canPillageTile(): Boolean {
         return canPillageTileImprovement() || canPillageRoad()
     }
+    @Readonly
     fun canPillageTileImprovement(): Boolean {
         return improvement != null && !improvementIsPillaged
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
     }
+    @Readonly
     fun canPillageRoad(): Boolean {
         return roadStatus != RoadStatus.None && !roadIsPillaged
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
     }
+    @Readonly
     fun getUnpillagedImprovement(): String? = if (improvementIsPillaged) null else improvement
     
     /** @return [RoadStatus] on this [Tile], pillaged road counts as [RoadStatus.None] */
+    @Readonly
     fun getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus
-
+    
+    @Readonly
     fun getUnpillagedRoadImprovement(): TileImprovement? {
         return if (getUnpillagedRoad() == RoadStatus.None) null
         else ruleset.tileImprovements[getUnpillagedRoad().name]
@@ -491,7 +505,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo) })
     }
 
-    @Readonly @Suppress("purity")
+    @Readonly
     private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
@@ -507,8 +521,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
         else matchesSingleTerrainFilter(filter, observingCiv)
     }
-    
 
+    @Readonly @Suppress("purity")
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization?): Boolean {
         // Constant strings get their own 'when' for performance - 
         //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734

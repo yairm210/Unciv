@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.stats.INamed
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 
 /**
  * Common interface for all 'ruleset objects' that have Uniques, like BaseUnit, Nation, etc.
@@ -48,12 +49,15 @@ interface IHasUniques : INamed {
     fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueTag, state)
 
+    @Readonly
     fun hasUnique(uniqueType: UniqueType, state: GameContext? = null) =
         uniqueMap.hasMatchingUnique(uniqueType, state ?: GameContext.EmptyState)
 
+    @Readonly
     fun hasUnique(uniqueTag: String, state: GameContext? = null) =
         uniqueMap.hasMatchingUnique(uniqueTag, state ?: GameContext.EmptyState)
 
+    @Readonly
     fun hasTagUnique(tagUnique: String) =
         uniqueMap.hasTagUnique(tagUnique)
 
