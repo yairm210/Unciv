@@ -96,13 +96,12 @@ object ChatWebSocketManager {
         }
     }
 
-    private val chatUrl
-        get() = URLBuilder(
-            UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()
-        ).apply {
-            appendPathSegments("chat")
-            protocol = if (protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
-        }.build()
+    private fun getChatUrl(): Url = URLBuilder(
+        UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()
+    ).apply {
+        appendPathSegments("chat")
+        protocol = if (protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
+    }.build()
 
     /**
      * Only requests a message to be sent.
@@ -117,7 +116,6 @@ object ChatWebSocketManager {
             withTimeoutOrNull(RECONNECT_TIME_MS * 2) {
                 while (session == null) {
                     delay(100)
-                    yield()
                 }
             }
             session?.runCatching {
@@ -143,7 +141,7 @@ object ChatWebSocketManager {
         try {
             session?.close()
             session = client.webSocketSession {
-                url(chatUrl)
+                url(getChatUrl())
                 header(HttpHeaders.Authorization, UncivGame.Current.settings.multiplayer.getAuthHeader())
             }
 
