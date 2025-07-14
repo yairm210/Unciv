@@ -29,12 +29,15 @@ object Nuke {
      *  Both [BattleTable.simulateNuke] and [AirUnitAutomation.automateNukes] check range, so that check is omitted here.
      */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
-        if (nuke.getTile() == targetTile) return false
+        val attackerCiv = nuke.getCivInfo()
+        val launchTile = nuke.getTile()
+        
+        if (launchTile == targetTile) return false
+        if (!targetTile.isExplored(attackerCiv)) return false
         // Can only nuke in unit's range, visibility doesn't matter
-        if (nuke.getTile().aerialDistanceTo(targetTile) > nuke.unit.getRange()) return false
+        if (launchTile.aerialDistanceTo(targetTile) > nuke.unit.getRange()) return false
 
         var canNuke = true
-        val attackerCiv = nuke.getCivInfo()
         fun checkDefenderCiv(defenderCiv: Civilization?) {
             if (defenderCiv == null) return
             // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
