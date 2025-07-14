@@ -167,6 +167,8 @@ SaveFiles/
 scenarios/
 
 
+/.kotlin/errors/*
+
 # Visual Studio Code
 .vscode/
 /.github/workflows/node_modules/*

@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import yairm210.purity.annotations.Readonly
 
 class UnitManager(val civInfo: Civilization) {
 
@@ -126,6 +127,7 @@ class UnitManager(val civInfo: Civilization) {
         }
         return unit
     }
+    @Readonly
     fun getCivUnitsSize(): Int = unitList.size
     fun getCivUnits(): Sequence<MapUnit> = unitList.asSequence()
     fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }

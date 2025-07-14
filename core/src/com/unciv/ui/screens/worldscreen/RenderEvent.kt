@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.EventChoice
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
@@ -34,8 +34,8 @@ class RenderEvent(
     init {
         defaults().fillX().center().pad(5f)
 
-        val stateForConditionals = StateForConditionals(gameInfo.currentPlayerCiv, unit = unit)
-        val choices = event.getMatchingChoices(stateForConditionals)
+        val gameContext = GameContext(gameInfo.currentPlayerCiv, unit = unit)
+        val choices = event.getMatchingChoices(gameContext)
         isValid = choices != null
         if (isValid) {
             if (event.text.isNotEmpty()) {

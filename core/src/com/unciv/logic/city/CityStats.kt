@@ -161,7 +161,7 @@ class CityStats(val city: City) {
         val growthSources = StatMap()
         val stateForConditionals = city.state
         // "[amount]% growth [cityFilter]"
-        for (unique in city.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals = stateForConditionals)) {
+        for (unique in city.getMatchingUniques(UniqueType.GrowthPercentBonus, gameContext = stateForConditionals)) {
             if (!city.matchesFilter(unique.params[1])) continue
 
             growthSources.add(

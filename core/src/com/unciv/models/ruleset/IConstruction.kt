@@ -5,7 +5,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
@@ -20,13 +20,13 @@ interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
-    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals) = sequenceOf<Unique>()
+    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext) = sequenceOf<Unique>()
     
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/
-    fun getResourceRequirementsPerTurn(state: StateForConditionals? = null): Counter<String>
-    fun requiredResources(state: StateForConditionals = StateForConditionals.EmptyState): Set<String>
-    fun getStockpiledResourceRequirements(state: StateForConditionals): Counter<String>
+    fun getResourceRequirementsPerTurn(state: GameContext? = null): Counter<String>
+    fun requiredResources(state: GameContext = GameContext.EmptyState): Set<String>
+    fun getStockpiledResourceRequirements(state: GameContext): Counter<String>
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
@@ -49,24 +49,24 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     fun canBePurchasedWithStatReasons(city: City?, stat: Stat): PurchaseReason {
-        val stateForConditionals = city?.state ?: StateForConditionals.EmptyState
+        val gameContext = city?.state ?: GameContext.EmptyState
         if (stat == Stat.Production || stat == Stat.Happiness) return PurchaseReason.Invalid
-        if (hasUnique(UniqueType.CannotBePurchased, stateForConditionals)) return PurchaseReason.Unpurchasable
+        if (hasUnique(UniqueType.CannotBePurchased, gameContext)) return PurchaseReason.Unpurchasable
         // Can be purchased with [Stat] [cityFilter]
-        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, StateForConditionals.IgnoreConditionals)
+        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, GameContext.IgnoreConditionals)
             .any {
                 it.params[0] == stat.name &&
-                    (city == null || (it.conditionalsApply(stateForConditionals) && city.matchesFilter(it.params[1])))
+                    (city == null || (it.conditionalsApply(gameContext) && city.matchesFilter(it.params[1])))
             }
         ) return PurchaseReason.UniqueAllowed
         // Can be purchased for [amount] [Stat] [cityFilter]
-        if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, StateForConditionals.IgnoreConditionals)
+        if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, GameContext.IgnoreConditionals)
             .any {
                 it.params[1] == stat.name &&
-                    (city == null || (it.conditionalsApply(stateForConditionals) && city.matchesFilter(it.params[2])))
+                    (city == null || (it.conditionalsApply(gameContext) && city.matchesFilter(it.params[2])))
             }
         ) return PurchaseReason.UniqueAllowed
-        if (stat == Stat.Gold && !hasUnique(UniqueType.Unbuildable, stateForConditionals)) return PurchaseReason.Allowed
+        if (stat == Stat.Gold && !hasUnique(UniqueType.Unbuildable, gameContext)) return PurchaseReason.Allowed
         return PurchaseReason.NotAllowed
     }
 
@@ -112,15 +112,15 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
 
-    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> =
-            getMatchingUniques(uniqueType, stateForConditionals)
+    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> =
+            getMatchingUniques(uniqueType, gameContext)
 
-    override fun requiredResources(state: StateForConditionals): Set<String> {
+    override fun requiredResources(state: GameContext): Set<String> {
         return getResourceRequirementsPerTurn(state).keys +
                 getMatchingUniques(UniqueType.CostsResources, state).map { it.params[1] }
     }
     
-    override fun getStockpiledResourceRequirements(state: StateForConditionals): Counter<String> {
+    override fun getStockpiledResourceRequirements(state: GameContext): Counter<String> {
         val counter = Counter<String>()
         for (unique in getMatchingUniquesNotConflicting(UniqueType.CostsResources, state)){
             var amount = unique.params[0].toInt()
@@ -282,7 +282,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
-    override fun getStockpiledResourceRequirements(state: StateForConditionals) = Counter.ZERO
+    override fun getStockpiledResourceRequirements(state: GameContext) = Counter.ZERO
 
     companion object {
         val science = PerpetualStatConversion(Stat.Science)
@@ -303,9 +303,9 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun getResourceRequirementsPerTurn(state: StateForConditionals?) = Counter.ZERO
+    override fun getResourceRequirementsPerTurn(state: GameContext?) = Counter.ZERO
 
-    override fun requiredResources(state: StateForConditionals): Set<String> = emptySet()
+    override fun requiredResources(state: GameContext): Set<String> = emptySet()
 }
 
 open class PerpetualStatConversion(val stat: Stat) :
