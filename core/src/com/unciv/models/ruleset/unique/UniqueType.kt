@@ -800,15 +800,11 @@ enum class UniqueType(
     ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
     ConditionalNearTiles("within [positiveAmount] tiles of a [tileFilter]", UniqueTarget.Conditional),
-
     ConditionalAdjacentTo("in tiles adjacent to [tileFilter] tiles", UniqueTarget.Conditional),
-
     ConditionalNotAdjacentTo("in tiles not adjacent to [tileFilter] tiles", UniqueTarget.Conditional),
     
     /////// terrain conditibnals
-
-    ConditionalInTerrains("in [tileFilter/terrainName] tiles", UniqueTarget.Conditional),
-
+    ConditionalInTerrains("in [tileFilter/terrainName] terrains", UniqueTarget.Conditional),
 
     /////// area conditionals
     ConditionalOnWaterMaps("on water maps", UniqueTarget.Conditional),

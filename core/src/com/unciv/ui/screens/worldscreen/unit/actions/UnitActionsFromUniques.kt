@@ -45,12 +45,9 @@ object UnitActionsFromUniques {
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
         
-        /*
-        Sadly mountain will not work with this unique because it's not in terrainFilter.
-         */
-        val inTilesModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
+        val inTilesModifier = unique.getModifiers(UniqueType.ConditionalInTerrains).firstOrNull()
         
-        if ((tile.isWater && inTilesModifier == null || tile.isImpassible() && inTilesModifier == null)) return null
+        if (tile.isWater && inTilesModifier == null || tile.isImpassible() && inTilesModifier == null) return null
         
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null

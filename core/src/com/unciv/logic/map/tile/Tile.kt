@@ -645,15 +645,17 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
          */
         val rulesetName = tileMap.gameInfo.ruleset.mods.first() 
         val terrainsSet = RulesetCache[rulesetName]?.terrains!! // if this is null we have some bigger problems
-        val tiles =  terrainsSet.values.filter { it.matchesFilter(modifierCondition) }
-        val waterTiles = terrainsSet.values.filter { it.matchesFilter("Water") }
-        val isOnWaterTile = tiles.any { it in waterTiles }
-        println(isOnWaterTile)
+        val terrains =  terrainsSet.values.filter { it.matchesFilter(modifierCondition) }
+        val waterTerrains = terrainsSet.values.filter { it.matchesFilter("Water") }
+        val montainTerrains = terrainsSet.values.filter { it.matchesFilter("Mountain") }
+        val isOnMontainTerrain = terrains.any{it in montainTerrains} 
+        val isOnWaterTerrains = terrains.any { it in waterTerrains }
         
-        val addedDistanceOnDifferentContinents = if (isOnWaterTile) 1 else 0
+        // To stop settle from settle too near other cities
+        val addedDistanceOnDifferentContinents = if (isOnWaterTerrains || isOnMontainTerrain) 1 else 0
         
         return when {                     
-            isWater && !isOnWaterTile || isImpassible() -> false
+            isWater && !isOnWaterTerrains || isImpassible() && !isOnMontainTerrain -> false
             getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents+addedDistanceOnDifferentContinents)
                 .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
