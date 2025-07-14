@@ -8,12 +8,15 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
+import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
+import yairm210.purity.annotations.Readonly
 import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
@@ -274,15 +277,21 @@ class GameSettings {
                 field = value
             }
 
-        var passwords = mutableMapOf<String, String>()
-        operator fun MutableMap<String, String>.set(key: String, value: String) {
-            val oldPassword = get(key)
-            if (oldPassword != null && oldPassword != value) {
-                ChatWebSocket.restart(force = true)
-            }
+        /**
+         * Never ever make it public. If you need a method make it.
+         * But do remember to call [ChatWebSocket.restart] with `force = true` whenever required.
+         */
+        private val passwords = mutableMapOf<String, String>()
 
-            // Default set behavior
-            put(key, value)
+        @Readonly
+        fun getPassword(serverUrl: String) = passwords[serverUrl]
+
+        @Readonly
+        fun getCurrentServerPassword() = passwords[server]
+
+        fun setCurrentServerPassword(password: String) {
+            passwords[server] = password
+            ChatWebSocket.restart(force = true)
         }
 
         @Suppress("unused")  // @GGuenni knows what he intended with this field
@@ -296,7 +305,7 @@ class GameSettings {
                 field = value
             }
 
-        var friendList: MutableList<FriendList.Friend> = mutableListOf()
+        val friendList: MutableList<FriendList.Friend> = mutableListOf()
         var turnCheckerEnabled = true
         var turnCheckerPersistentNotificationEnabled = true
         var turnCheckerDelay: Duration = Duration.ofMinutes(5)

@@ -85,7 +85,9 @@ object ChatWebSocket {
     @OptIn(ExperimentalTime::class)
     private var lastRetry = Clock.System.now()
     private var reconnectionAttempts = 0
-    private var reconnectTimeSeconds = 1
+    private var reconnectTimeSeconds = INITIAL_RECONNECT_TIME_SECONDS
+
+    private const val INITIAL_RECONNECT_TIME_SECONDS = 1
     private const val MAX_RECONNECTION_ATTEMPTS = 100
     private const val MAX_RECONNECT_TIME_SECONDS = 64
     private const val INITIAL_SESSION_WAIT_FOR_MS = 5_000L
@@ -105,6 +107,14 @@ object ChatWebSocket {
                 classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
             })
         }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private fun resetExponentialBackoff() {
+        lastRetry = Clock.System.now()
+
+        reconnectionAttempts = 0
+        reconnectionAttempts = INITIAL_RECONNECT_TIME_SECONDS
     }
 
     private fun getChatUrl(): Url = URLBuilder(
@@ -175,7 +185,7 @@ object ChatWebSocket {
                         relayGlobalMessage("Successfully re-established WebSocket connection!")
                     }
                     // we are successfully connected
-                    reconnectionAttempts = 0
+                    resetExponentialBackoff()
                 }
 
                 val gameIds = ChatStore.getGameIds()
@@ -232,13 +242,17 @@ object ChatWebSocket {
             if (++reconnectionAttempts > MAX_RECONNECTION_ATTEMPTS) {
                 return
             }
-        } else reconnectionAttempts = 0
+        } else resetExponentialBackoff()
+
+        if (force) println("ChatLog: A force restart seems to be requested!")
 
         GlobalScope.launch {
-            // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
-            delay(Random.nextLong(1000) + 1000L * reconnectTimeSeconds)
-            reconnectTimeSeconds = (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
-            if (job?.isActive == true && !force) return@launch
+            if (!force) {
+                // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
+                delay(Random.nextLong(1000) + 1000L * reconnectTimeSeconds)
+                reconnectTimeSeconds = (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
+                if (job?.isActive == true) return@launch
+            }
 
             yield()
             job?.cancel(ChatRestartException())

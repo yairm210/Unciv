@@ -156,7 +156,7 @@ private fun addMultiplayerServerOptions(
 
     if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
         val passwordTextField = UncivTextField(
-            settings.multiplayer.passwords[settings.multiplayer.server] ?: "Password"
+            settings.multiplayer.getCurrentServerPassword() ?: "Password"
         )
         val setPasswordButton = "Set password".toTextButton()
 
@@ -166,13 +166,11 @@ private fun addMultiplayerServerOptions(
         // initially assume no password
         val authStatusLabel = "Set a password to secure your userId".toLabel()
 
-        if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
-            val userId = settings.multiplayer.userId
-            val password = settings.multiplayer.passwords[settings.multiplayer.server] ?: ""
-
-
+        val password = settings.multiplayer.getCurrentServerPassword()
+        if (password != null) {
             authStatusLabel.setText("Validating your authentication status...")
             Concurrency.run {
+                val userId = settings.multiplayer.userId
                 val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
                     .checkAuthStatus(userId, password)
 

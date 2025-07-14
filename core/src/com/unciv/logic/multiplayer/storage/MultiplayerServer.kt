@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
+import com.unciv.logic.multiplayer.chat.ChatWebSocket
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -79,11 +80,10 @@ class MultiplayerServer(
         val settings = UncivGame.Current.settings.multiplayer
 
         val success = fileStorage().authenticate(
-            userId=settings.userId,
-            password=password ?: settings.passwords[settings.server] ?: ""
+            userId = settings.userId, password = password ?: settings.getCurrentServerPassword() ?: ""
         )
         if (password != null && success) {
-            settings.passwords[settings.server] = password
+            settings.setCurrentServerPassword(password)
         }
         return success
     }
@@ -95,8 +95,7 @@ class MultiplayerServer(
      */
     fun setPassword(password: String): Boolean {
         if (featureSet.authVersion > 0 && fileStorage().setPassword(newPassword = password)) {
-            val settings = UncivGame.Current.settings.multiplayer
-            settings.passwords[settings.server] = password
+            UncivGame.Current.settings.multiplayer.setCurrentServerPassword(password)
             return true
         }
 
