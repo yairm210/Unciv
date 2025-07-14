@@ -377,6 +377,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             getOwner()
     }
 
+    @Readonly
     fun isFriendlyTerritory(civInfo: Civilization): Boolean {
         val tileOwner = getOwner()
         return when {
@@ -387,6 +388,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
+    @Readonly
     fun isEnemyTerritory(civInfo: Civilization): Boolean {
         val tileOwner = getOwner() ?: return false
         return civInfo.isAtWarWith(tileOwner)
@@ -492,6 +494,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     // This should be the only adjacency function
+    @Readonly
     fun isAdjacentTo(terrainFilter: String, observingCiv: Civilization? = null): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == Constants.river) return isAdjacentToRiver()
@@ -522,7 +525,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         else matchesSingleTerrainFilter(filter, observingCiv)
     }
 
-    @Readonly @Suppress("purity")
+    @Readonly
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization?): Boolean {
         // Constant strings get their own 'when' for performance - 
         //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734
@@ -579,6 +582,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     @Readonly @Suppress("purity") // should be auto-recognized!
     fun isCoastalTile() = _isCoastalTile
 
+    @Readonly
     fun hasViewableResource(civInfo: Civilization): Boolean =
             resource != null && civInfo.tech.isRevealed(tileResource)
 

@@ -414,7 +414,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
     }
 
-    @Readonly @Suppress("purity")
+    @Readonly @Suppress("purity")  // Local state update
     fun getTributeModifiers(demandingCiv: Civilization, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
         val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
         // Can't bully major civs or unsettled CS's

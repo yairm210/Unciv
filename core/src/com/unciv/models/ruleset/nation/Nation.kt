@@ -18,6 +18,7 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
 class Nation : RulesetObject() {
@@ -265,7 +266,8 @@ class Nation : RulesetObject() {
             }
         }
     }
-    
+
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
         return if (multiFilter) MultiFilter.multiFilter(filter, {
@@ -278,6 +280,7 @@ class Nation : RulesetObject() {
             state == null && hasTagUnique(filter)
     }
 
+    @Readonly
     private fun matchesSingleFilter(filter: String): Boolean {
         // All cases are compile-time constants, for performance
         return when (filter) {

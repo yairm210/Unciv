@@ -471,6 +471,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
+    @Readonly
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState &&
             (isRelationshipLevelGE(RelationshipLevel.Friend) || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))

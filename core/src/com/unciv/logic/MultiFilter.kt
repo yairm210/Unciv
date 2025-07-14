@@ -20,7 +20,7 @@ object MultiFilter {
      *  @param filterFunction The single filter implementation
      *  @param forUniqueValidityTests Inverts the `non-[filter]` test because Unique validity doesn't check for actual matching
      */
-    @Readonly @Suppress("purity")
+    @Readonly @Suppress("purity") // Calls function invoke
     fun multiFilter(
         input: String,
         filterFunction: (String) -> Boolean,

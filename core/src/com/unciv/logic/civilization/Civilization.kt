@@ -583,10 +583,12 @@ class Civilization : IsPartOfGameInfoSerialization {
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = this.state, multiFilter: Boolean = true): Boolean =
         if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
         else matchesSingleFilter(filter, state)
 
+    @Readonly
     fun matchesSingleFilter(filter: String, state: GameContext? = this.state): Boolean {
         return when (filter) {
             "Human player" -> isHuman()
