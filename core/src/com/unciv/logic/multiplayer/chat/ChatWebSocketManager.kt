@@ -15,6 +15,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -73,6 +74,7 @@ sealed class Response {
     ) : Response()
 }
 
+class ChatRestartException : CancellationException("Chat restart requested")
 
 object ChatWebSocketManager {
     private var errorReconnectionAttempts = 0
@@ -209,7 +211,7 @@ object ChatWebSocketManager {
                 if (job?.isActive == true && !force) return@launch
 
                 yield()
-                job?.cancel()
+                job?.cancel(ChatRestartException())
                 job = Concurrency.run("MultiplayerChat") { startSession() }
             } catch (e: Exception) {
                 handleWebSocketThrowables(e)
