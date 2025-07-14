@@ -230,7 +230,7 @@ class CountableTests {
         )
 
         for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
     }
@@ -293,7 +293,7 @@ class CountableTests {
             "[All] Adopted [[Liberty] branch] Policies" to 4,     // Liberty has only 1 member adopted
         )
         for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, StateForConditionals(civ))
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
             assertEquals("Testing `$test` countable:", expected, actual)
         }
     }
