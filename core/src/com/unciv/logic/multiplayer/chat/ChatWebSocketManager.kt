@@ -29,6 +29,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
+import kotlin.random.Random
+import kotlin.time.Clock
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
 
 // used when sending a message
 @Serializable
@@ -77,9 +81,13 @@ sealed class Response {
 class ChatRestartException : CancellationException("Chat restart requested")
 
 object ChatWebSocketManager {
-    private var errorReconnectionAttempts = 0
-    private const val MAX_ERROR_RECONNECTION_ATTEMPTS = 100
-    private const val RECONNECT_TIME_MS: Long = 5_000
+    @OptIn(ExperimentalTime::class)
+    private var lastRetry = Clock.System.now()
+    private var reconnectionAttempts = 0
+    private var reconnectTimeSeconds = 1
+    private const val MAX_RECONNECTION_ATTEMPTS = 100
+    private const val MAX_RECONNECT_TIME_SECONDS = 64
+    private const val INITIAL_SESSION_WAIT_FOR_MS = 5_000L
 
     private var job: Job? = null
     private val eventReceiver = EventBus.EventReceiver()
@@ -115,7 +123,7 @@ object ChatWebSocketManager {
     fun requestMessageSend(message: Message) {
         startSocket()
         Concurrency.run("MultiplayerChatSendMessage") {
-            withTimeoutOrNull(RECONNECT_TIME_MS * 2) {
+            withTimeoutOrNull(INITIAL_SESSION_WAIT_FOR_MS) {
                 while (session == null) {
                     delay(100)
                 }
@@ -126,16 +134,23 @@ object ChatWebSocketManager {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun handleWebSocketThrowables(t: Throwable) {
-        println("ChatError: ${t.message}")
+        var reconnectionLog = "ChatError: ${t.message}. Reconnecting..."
 
-        if (errorReconnectionAttempts == 0) {
+        if (reconnectionAttempts == 0) {
+            lastRetry = Clock.System.now()
             relayGlobalMessage("WebSocket connection closed. Cause: [${t.cause}]!")
             if (t.message?.contains("401") == true) {
                 relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
             }
+        } else {
+            val now = Clock.System.now()
+            reconnectionLog += "(Last retry was ${(now - lastRetry).toString(DurationUnit.SECONDS, 2)} ago)"
+            lastRetry = now
         }
 
+        println(reconnectionLog)
         restartSocket(true)
     }
 
@@ -149,15 +164,15 @@ object ChatWebSocketManager {
 
             session!!.runCatching {
                 if (isActive) {
-                    if (errorReconnectionAttempts == 0) {
+                    if (reconnectionAttempts == 0) {
                         println("ChatLog: Connected to WebSocket.")
                         relayGlobalMessage("Successfully connected to WebSocket server!")
-                    } else if (errorReconnectionAttempts > 0) {
+                    } else if (reconnectionAttempts > 0) {
                         println("ChatLog: Re-established webSocket connection.")
                         relayGlobalMessage("Successfully re-established WebSocket connection!")
                     }
                     // we are successfully connected
-                    errorReconnectionAttempts = 0
+                    reconnectionAttempts = 0
                 }
 
                 val gameIds = ChatStore.getGameIds()
@@ -200,14 +215,16 @@ object ChatWebSocketManager {
     @OptIn(DelicateCoroutinesApi::class)
     private fun restartSocket(dueToError: Boolean = false, force: Boolean = false) {
         if (dueToError) {
-            if (errorReconnectionAttempts++ > MAX_ERROR_RECONNECTION_ATTEMPTS) {
+            if (++reconnectionAttempts > MAX_RECONNECTION_ATTEMPTS) {
                 return
             }
-        } else errorReconnectionAttempts = 0
+        } else reconnectionAttempts = 0
 
         GlobalScope.launch {
             try {
-                delay(RECONNECT_TIME_MS)
+                // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
+                delay(Random.nextLong(1000) + 1000L * reconnectTimeSeconds)
+                reconnectTimeSeconds = (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
                 if (job?.isActive == true && !force) return@launch
 
                 yield()
