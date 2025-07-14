@@ -804,6 +804,10 @@ enum class UniqueType(
     ConditionalAdjacentTo("in tiles adjacent to [tileFilter] tiles", UniqueTarget.Conditional),
 
     ConditionalNotAdjacentTo("in tiles not adjacent to [tileFilter] tiles", UniqueTarget.Conditional),
+    
+    /////// terrain conditibnals
+
+    ConditionalInTerrains("in [tileFilter/terrainName] tiles", UniqueTarget.Conditional),
 
 
     /////// area conditionals
