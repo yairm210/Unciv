@@ -108,7 +108,10 @@ class ChatPopup(
         // empty Ids are used to display server & system messages unspecific to any Chat
         eventReceiver.receive(
             ChatMessageReceived::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }
-        ) { addMessage(it.civName, it.message, scroll = true) }
+        ) {
+            val suffix = if (it.gameId.isEmpty()) "one time" else null
+            addMessage(it.civName, it.message, suffix, true)
+        }
     }
 
     fun sendMessage() {
