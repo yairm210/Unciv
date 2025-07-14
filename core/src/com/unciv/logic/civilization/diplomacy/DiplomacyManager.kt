@@ -12,7 +12,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
@@ -573,9 +573,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 
@@ -623,9 +623,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 

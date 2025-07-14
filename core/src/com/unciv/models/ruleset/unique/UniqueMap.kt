@@ -45,11 +45,11 @@ open class UniqueMap() {
     fun isEmpty(): Boolean = innerUniqueMap.isEmpty()
     
     @Readonly
-    fun hasUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
+    fun hasUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
         getUniques(uniqueType).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
 
     @Readonly
-    fun hasUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+    fun hasUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         getUniques(uniqueTag).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
 
     @Readonly
@@ -68,7 +68,7 @@ open class UniqueMap() {
         ?: emptySequence()
 
     @Readonly
-    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
+    fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
         getUniques(uniqueType)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
             .flatMap {
@@ -80,7 +80,7 @@ open class UniqueMap() {
             }
 
     @Readonly
-    fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+    fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         getUniques(uniqueTag)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
             .flatMap {
@@ -92,11 +92,11 @@ open class UniqueMap() {
             }
 
     @Readonly
-    fun hasMatchingUnique(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) = 
+    fun hasMatchingUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
     @Readonly
-    fun hasMatchingUnique(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+    fun hasMatchingUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         getUniques(uniqueTag)
             .any { it.conditionalsApply(state) }
 
@@ -104,11 +104,11 @@ open class UniqueMap() {
     fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
 
     @Readonly
-    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals,
+    fun getTriggeredUniques(trigger: UniqueType, gameContext: GameContext,
                             triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
         return getAllUniques().filter { unique ->
-            unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(stateForConditionals)
-        }.flatMap { it.getMultiplied(stateForConditionals) }
+            unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
+        }.flatMap { it.getMultiplied(gameContext) }
     }
     
     companion object{

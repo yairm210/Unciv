@@ -7,7 +7,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -30,7 +30,7 @@ class TileImprovement : RulesetStatsObject() {
     override fun legacyRequiredTechs() = if (techRequired == null) emptySequence() else sequenceOf(techRequired!!)
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
-        val state = StateForConditionals(civInfo, unit = unit)
+        val state = GameContext(civInfo, unit = unit)
         
         val buildSpeedUniques = unit.getMatchingUniques(UniqueType.SpecificImprovementTime, state, checkCivInfoUniques = true)
             .filter { matchesFilter(it.params[1], state) }
@@ -77,7 +77,7 @@ class TileImprovement : RulesetStatsObject() {
 
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
-    fun matchesFilter(filter: String, tileState: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+    fun matchesFilter(filter: String, tileState: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(it) ||
                 tileState != null && hasUnique(it, tileState) ||
@@ -149,7 +149,7 @@ class TileImprovement : RulesetStatsObject() {
         return ruleset.units.values.asSequence()
             .filter { unit ->
                 turnsToBuild != -1
-                    && unit.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
+                    && unit.getMatchingUniques(UniqueType.BuildImprovements, GameContext.IgnoreConditionals)
                         .any { matchesBuildImprovementsFilter(it.params[0]) }
                 || unit.hasUnique(UniqueType.CreateWaterImprovements)
                     && terrainsCanBeBuiltOnTypes.contains(TerrainType.Water)
@@ -159,7 +159,7 @@ class TileImprovement : RulesetStatsObject() {
     fun getCreatingUnits(ruleset: Ruleset): List<BaseUnit> {
         return ruleset.units.values.asSequence()
             .filter { unit ->
-                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, StateForConditionals.IgnoreConditionals)
+                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, GameContext.IgnoreConditionals)
                     .any { it.params[0] == name }
             }.toList()
     }

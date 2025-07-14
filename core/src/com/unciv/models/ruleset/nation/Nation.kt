@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -266,7 +266,7 @@ class Nation : RulesetObject() {
         }
     }
     
-    fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+    fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||

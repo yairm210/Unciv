@@ -42,22 +42,22 @@ interface IHasUniques : INamed {
      * */
     fun getUniqueTarget(): UniqueTarget
 
-    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals = StateForConditionals.EmptyState) =
+    fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueType, state)
 
-    fun getMatchingUniques(uniqueTag: String, state: StateForConditionals = StateForConditionals.EmptyState) =
+    fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueTag, state)
 
-    fun hasUnique(uniqueType: UniqueType, state: StateForConditionals? = null) =
-        uniqueMap.hasMatchingUnique(uniqueType, state ?: StateForConditionals.EmptyState)
+    fun hasUnique(uniqueType: UniqueType, state: GameContext? = null) =
+        uniqueMap.hasMatchingUnique(uniqueType, state ?: GameContext.EmptyState)
 
-    fun hasUnique(uniqueTag: String, state: StateForConditionals? = null) =
-        uniqueMap.hasMatchingUnique(uniqueTag, state ?: StateForConditionals.EmptyState)
+    fun hasUnique(uniqueTag: String, state: GameContext? = null) =
+        uniqueMap.hasMatchingUnique(uniqueTag, state ?: GameContext.EmptyState)
 
     fun hasTagUnique(tagUnique: String) =
         uniqueMap.hasTagUnique(tagUnique)
 
-    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals)
+    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, GameContext.IgnoreConditionals)
 
     fun techsRequiredByUniques(): Sequence<String> {
         return availabilityUniques()
@@ -93,9 +93,9 @@ interface IHasUniques : INamed {
         return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
     }
 
-    fun getWeightForAiDecision(stateForConditionals: StateForConditionals): Float {
+    fun getWeightForAiDecision(gameContext: GameContext): Float {
         var weight = 1f
-        for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, stateForConditionals))
+        for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, gameContext))
             weight *= unique.params[0].toPercent()
         return weight
     }
@@ -118,20 +118,20 @@ interface IHasUniques : INamed {
             UniqueType.ConditionalEspionageEnabled,
             UniqueType.ConditionalEspionageDisabled,
         )
-        val stateForConditionals = StateForConditionals(gameInfo = gameInfo)
+        val gameContext = GameContext(gameInfo = gameInfo)
 
-        if (getMatchingUniques(UniqueType.Unavailable, StateForConditionals.IgnoreConditionals)
+        if (getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
                 .any { unique ->
                     unique.modifiers.any {
                         it.type in gameBasedConditionals
-                                && Conditionals.conditionalApplies(null, it, stateForConditionals) } })
+                                && Conditionals.conditionalApplies(null, it, gameContext) } })
             return true
 
-        if (getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+        if (getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                 .any { unique ->
                     unique.modifiers.any {
                         it.type in gameBasedConditionals
-                                && !Conditionals.conditionalApplies(null, it, stateForConditionals) } })
+                                && !Conditionals.conditionalApplies(null, it, gameContext) } })
             return true
 
         return false
@@ -183,7 +183,7 @@ interface IHasUniques : INamed {
      *  @param disabler The modifier testing feature is off: `ConditionalReligionDisabled` or `ConditionalEspionageDisabled`
      */
     private fun shouldBeHiddenIfNoGameLoaded(hasFeature: Boolean, enabler: UniqueType, disabler: UniqueType): Boolean {
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)) {
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)) {
             if (unique.hasModifier(enabler)) return !hasFeature
             if (unique.hasModifier(disabler)) return hasFeature
         }

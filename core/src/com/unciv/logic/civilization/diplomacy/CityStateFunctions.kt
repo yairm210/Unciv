@@ -20,7 +20,7 @@ import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -791,7 +791,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     // TODO: Optimize, update whenever status changes, otherwise retain the same list
     fun getUniquesProvidedByCityStates(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals
+        gameContext: GameContext
     ):Sequence<Unique> {
         if (civInfo.isCityState) return emptySequence()
 
@@ -804,8 +804,8 @@ class CityStateFunctions(val civInfo: Civilization) {
                         else RelationshipLevel.Neutral
                 getCityStateBonuses(it.cityStateType, relationshipLevel, uniqueType)
             }
-            .filter { it.conditionalsApply(stateForConditionals) }
-            .flatMap { it.getMultiplied(stateForConditionals) }
+            .filter { it.conditionalsApply(gameContext) }
+            .flatMap { it.getMultiplied(gameContext) }
     }
 
 

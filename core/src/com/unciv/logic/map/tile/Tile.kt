@@ -25,7 +25,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
@@ -381,26 +381,26 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     @Transient
-    internal var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
+    internal var stateThisTile: GameContext = GameContext.EmptyState
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
-    fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = stateThisTile) =
+    fun terrainHasUnique(uniqueType: UniqueType, state: GameContext = stateThisTile) =
         cachedTerrainData.uniques.hasMatchingUnique(uniqueType, state)
     /** Get all uniques of this type that any TERRAIN on this tile has */
-    fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = stateThisTile ): Sequence<Unique> {
-        return cachedTerrainData.uniques.getMatchingUniques(uniqueType, stateForConditionals)
+    fun getTerrainMatchingUniques(uniqueType: UniqueType, gameContext: GameContext = stateThisTile ): Sequence<Unique> {
+        return cachedTerrainData.uniques.getMatchingUniques(uniqueType, gameContext)
     }
 
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = stateThisTile): Sequence<Unique> {
-        var uniques = getTerrainMatchingUniques(uniqueType, stateForConditionals)
+    fun getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext = stateThisTile): Sequence<Unique> {
+        var uniques = getTerrainMatchingUniques(uniqueType, gameContext)
         if (getUnpillagedImprovement() != null) {
             val tileImprovement = getTileImprovement()
             if (tileImprovement != null) {
-                uniques += tileImprovement.getMatchingUniques(uniqueType, stateForConditionals)
+                uniques += tileImprovement.getMatchingUniques(uniqueType, gameContext)
             }
         }
         if (resource != null)
-            uniques += tileResource.getMatchingUniques(uniqueType, stateForConditionals)
+            uniques += tileResource.getMatchingUniques(uniqueType, gameContext)
         return uniques
     }
 
@@ -770,7 +770,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun setOwnerTransients() {
         // If it has an owning city, the state was already set in setOwningCity
-        if (owningCity == null) stateThisTile = StateForConditionals(tile = this,
+        if (owningCity == null) stateThisTile = GameContext(tile = this,
             // When generating maps we call this function but there's no gameinfo
             gameInfo = if (tileMap.hasGameInfo()) tileMap.gameInfo else null)
         if (owningCity == null && roadOwner != "")
@@ -789,7 +789,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             roadOwner = ""
         }
         owningCity = city
-        stateThisTile = StateForConditionals(tile = this, city = city, gameInfo = tileMap.gameInfo)
+        stateThisTile = GameContext(tile = this, city = city, gameInfo = tileMap.gameInfo)
         isCityCenterInternal = getCity()?.location == position
     }
 

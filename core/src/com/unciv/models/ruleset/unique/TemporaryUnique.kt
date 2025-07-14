@@ -32,9 +32,9 @@ fun ArrayList<TemporaryUnique>.endTurn() {
     removeAll { it.turnsLeft == 0 }
 }
 
-fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> {
     return this.asSequence()
         .map { it.uniqueObject }
-        .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
-        .flatMap { it.getMultiplied(stateForConditionals) }
+        .filter { it.type == uniqueType && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 }

@@ -89,7 +89,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     lateinit var nation: Nation
     
     @Transient
-    var state = StateForConditionals.EmptyState
+    var state = GameContext.EmptyState
 
     @Transient
     val units = UnitManager(this)
@@ -521,54 +521,54 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals = state) =
-        getMatchingUniques(uniqueType, stateForConditionals).any()
+    fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =
+        getMatchingUniques(uniqueType, gameContext).any()
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = state
+        gameContext: GameContext = state
     ): Sequence<Unique> = sequence {
-        yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(nation.getMatchingUniques(uniqueType, gameContext))
         yieldAll(cities.asSequence()
-            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, stateForConditionals) }
+            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, gameContext) }
         )
-        yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(temporaryUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
+        yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, gameContext))
+        yieldAll(tech.techUniques.getMatchingUniques(uniqueType, gameContext))
+        yieldAll(temporaryUniques.getMatchingUniques(uniqueType, gameContext))
+        yieldAll(getEra().getMatchingUniques(uniqueType, gameContext))
+        yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, gameContext))
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, gameContext))
 
-        yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, gameContext))
+        yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, gameContext))
     }
 
     fun getTriggeredUniques(
         trigger: UniqueType,
-        stateForConditionals: StateForConditionals = state,
+        gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true }
     ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
         yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter) }
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals, triggerFilter))
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter))
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
+        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
+        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
+        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
-    fun matchesFilter(filter: String, state: StateForConditionals? = this.state, multiFilter: Boolean = true): Boolean =
+    fun matchesFilter(filter: String, state: GameContext? = this.state, multiFilter: Boolean = true): Boolean =
         if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
         else matchesSingleFilter(filter, state)
 
-    fun matchesSingleFilter(filter: String, state: StateForConditionals? = this.state): Boolean {
+    fun matchesSingleFilter(filter: String, state: GameContext? = this.state): Boolean {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
@@ -632,13 +632,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun capitalCityIndicator(city: City? = null): Building? {
-        val stateForConditionals = if (city?.civ == this) city.state
+        val gameContext = if (city?.civ == this) city.state
         else if (city == null) state
-        else StateForConditionals(this, city)
+        else GameContext(this, city)
         val indicatorBuildings = gameInfo.ruleset.buildings.values.asSequence()
-            .filter { it.hasUnique(UniqueType.IndicatesCapital, stateForConditionals) }
+            .filter { it.hasUnique(UniqueType.IndicatesCapital, gameContext) }
 
-        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && matchesFilter(it.uniqueTo!!, stateForConditionals) }
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo != null && matchesFilter(it.uniqueTo!!, gameContext) }
         return civSpecificBuilding ?: indicatorBuildings.firstOrNull()
     }
 

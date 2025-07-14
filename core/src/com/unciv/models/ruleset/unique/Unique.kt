@@ -81,11 +81,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     fun conditionalsApply(civInfo: Civilization? = null, city: City? = null): Boolean {
-        return conditionalsApply(StateForConditionals(civInfo, city))
+        return conditionalsApply(GameContext(civInfo, city))
     }
 
     @Readonly
-    fun conditionalsApply(state: StateForConditionals): Boolean {
+    fun conditionalsApply(state: GameContext): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
         if (isTimedTriggerable) return true
@@ -97,31 +97,31 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     @Readonly
-    private fun getUniqueMultiplier(stateForConditionals: StateForConditionals): Int {
-        if (stateForConditionals == StateForConditionals.IgnoreMultiplicationForCaching)
+    private fun getUniqueMultiplier(gameContext: GameContext): Int {
+        if (gameContext == GameContext.IgnoreMultiplicationForCaching)
             return 1
         
         var amount = 1
         
         val forEveryModifiers = getModifiers(UniqueType.ForEveryCountable)
         for (conditional in forEveryModifiers) { // multiple multipliers DO multiply.
-            val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
+            val multiplier = Countables.getCountableAmount(conditional.params[0], gameContext)
                 ?: 0 // If the countable is invalid, ignore this unique entirely
             amount *= multiplier
         }
         
         val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
         for (conditional in forEveryAmountModifiers) { // multiple multipliers DO multiply.
-            val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
+            val multiplier = Countables.getCountableAmount(conditional.params[1], gameContext)
                 ?: 0 // If the countable is invalid, ignore this unique entirely
             val perEvery = conditional.params[0].toInt()
             amount *= multiplier / perEvery
         }
 
-        if (stateForConditionals.relevantTile != null){
+        if (gameContext.relevantTile != null){
             val forEveryAdjacentTileModifiers = getModifiers(UniqueType.ForEveryAdjacentTile)
             for (conditional in forEveryAdjacentTileModifiers) {
-                val multiplier = stateForConditionals.relevantTile!!.neighbors
+                val multiplier = gameContext.relevantTile!!.neighbors
                     .count { it.matchesFilter(conditional.params[0]) }
                 amount *= multiplier
             }
@@ -132,8 +132,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     /** Multiplies the unique according to the multiplication conditionals */
     @Readonly
-    fun getMultiplied(stateForConditionals: StateForConditionals): Sequence<Unique> {
-        val multiplier = getUniqueMultiplier(stateForConditionals)
+    fun getMultiplied(gameContext: GameContext): Sequence<Unique> {
+        val multiplier = getUniqueMultiplier(gameContext)
         return EndlessSequenceOf(this).take(multiplier)
     }
 

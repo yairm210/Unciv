@@ -14,7 +14,7 @@ import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.Conditionals
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -105,17 +105,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
-    fun getUpgradeUnits(stateForConditionals: StateForConditionals = StateForConditionals.EmptyState): Sequence<String> {
+    fun getUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<String> {
         return sequence {
             yieldIfNotNull(upgradesTo)
-            for (unique in getMatchingUniques(UniqueType.CanUpgrade, stateForConditionals))
+            for (unique in getMatchingUniques(UniqueType.CanUpgrade, gameContext))
                 yield(unique.params[0])
         }
     }
 
-    fun getRulesetUpgradeUnits(stateForConditionals: StateForConditionals = StateForConditionals.EmptyState): Sequence<BaseUnit> {
+    fun getRulesetUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<BaseUnit> {
         return sequence {
-            for (unit in getUpgradeUnits(stateForConditionals))
+            for (unit in getUpgradeUnits(gameContext))
                 yieldIfNotNull(ruleset.units[unit])
         }
     }
@@ -134,16 +134,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return unit
     }
 
-    override fun hasUnique(uniqueType: UniqueType, state: StateForConditionals?): Boolean {
-        val stateForConditionals = state ?: StateForConditionals.EmptyState
-        return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueType, stateForConditionals)
-        else super<RulesetObject>.hasUnique(uniqueType, stateForConditionals)
+    override fun hasUnique(uniqueType: UniqueType, state: GameContext?): Boolean {
+        val gameContext = state ?: GameContext.EmptyState
+        return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueType, gameContext)
+        else super<RulesetObject>.hasUnique(uniqueType, gameContext)
     }
 
-    override fun hasUnique(uniqueTag: String, state: StateForConditionals?): Boolean {
-        val stateForConditionals = state ?: StateForConditionals.EmptyState
-        return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueTag, stateForConditionals)
-        else super<RulesetObject>.hasUnique(uniqueTag, stateForConditionals)
+    override fun hasUnique(uniqueTag: String, state: GameContext?): Boolean {
+        val gameContext = state ?: GameContext.EmptyState
+        return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueTag, gameContext)
+        else super<RulesetObject>.hasUnique(uniqueTag, gameContext)
     }
 
     override fun hasTagUnique(tagUnique: String): Boolean {
@@ -152,13 +152,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
-    override fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals): Sequence<Unique> {
+    override fun getMatchingUniques(uniqueType: UniqueType, state: GameContext): Sequence<Unique> {
         return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueType, state)
         else super<RulesetObject>.getMatchingUniques(uniqueType, state)
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
-    override fun getMatchingUniques(uniqueTag: String, state: StateForConditionals): Sequence<Unique> {
+    override fun getMatchingUniques(uniqueTag: String, state: GameContext): Sequence<Unique> {
         return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueTag, state)
         else super<RulesetObject>.getMatchingUniques(uniqueTag, state)
     }
@@ -214,10 +214,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (city != null && isWaterUnit && !city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
 
-        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals))
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals))
             yieldAll(notMetRejections(unique, civ, city))
 
-        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, StateForConditionals.IgnoreConditionals))
+        for (unique in getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, GameContext.IgnoreConditionals))
             yieldAll(notMetRejections(unique, civ, city, true))
 
         for (unique in getMatchingUniques(UniqueType.Unavailable, stateForConditionals))
@@ -247,7 +247,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
             yield(RejectionReasonType.Unbuildable.toInstance())
 
-        if ((civ.isCityState || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals))
+        if ((civ.isCityState || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals))
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
@@ -401,7 +401,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
-    fun matchesFilter(filter: String, state: StateForConditionals? = null, multiFilter: Boolean = true): Boolean {
+    fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
                 state != null && hasUnique(it, state) ||
@@ -451,21 +451,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Determine whether this is a City-founding unit - abstract, **without any game context**.
      *  Use other methods for MapUnits or when there is a better StateForConditionals available. */
-    fun isCityFounder() = hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals)
+    fun isCityFounder() = hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)
 
     val isGreatPerson by lazy { getMatchingUniques(UniqueType.GreatPerson).any() }
     fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
-    private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, StateForConditionals.IgnoreConditionals)
+    private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, GameContext.IgnoreConditionals)
 
     val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
-    override fun getResourceRequirementsPerTurn(state: StateForConditionals?): Counter<String> {
+    override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: StateForConditionals.EmptyState))
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: GameContext.EmptyState))
             resourceRequirements[unique.params[1]] += unique.params[0].toInt()
         return resourceRequirements
     }
@@ -481,7 +481,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isAirUnit() = type.isAirUnit()
 
     fun isProbablySiegeUnit() = isRanged()
-            && getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals)
+            && getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
 
     fun getForceEvaluation(): Int {
