@@ -62,20 +62,24 @@ interface IHasUniques : INamed {
     @Readonly
     fun hasTagUnique(tagUnique: String) =
         uniqueMap.hasTagUnique(tagUnique)
-
-    fun availabilityUniques(): Sequence<Unique> = getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals) + getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, GameContext.IgnoreConditionals)
-
+    
+    @Readonly
     fun techsRequiredByUniques(): Sequence<String> {
-        return availabilityUniques()
+        val availabilityUniques = getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals) + 
+                getMatchingUniques(UniqueType.CanOnlyBeBuiltWhen, GameContext.IgnoreConditionals)
+        
+        return availabilityUniques
                 // Currently an OnlyAvailableWhen can have multiple conditionals, implicitly a conjunction.
                 // Therefore, if any of its several conditionals is a ConditionalTech, then that tech is required.
                 .flatMap { it.modifiers }
-                .filter{ it.type == UniqueType.ConditionalTech }
+                .filter { it.type == UniqueType.ConditionalTech }
                 .map { it.params[0] }
     }
 
+    @Readonly
     fun legacyRequiredTechs(): Sequence<String> = emptySequence()
 
+    @Readonly
     fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
 
     fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology?> =

@@ -343,6 +343,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }
         .filter { !it.isDefeated() && !it.isSpectator() }
 
+    @Readonly
     fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv() }
         .filter { !it.isDefeated() }
 
@@ -350,23 +351,27 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     @Readonly
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
-
+    @Readonly
     fun getCapital(firstCityIfNoCapital: Boolean = true) = cities.firstOrNull { it.isCapital() } ?:
         if (firstCityIfNoCapital) cities.firstOrNull() else null
     @Readonly
     fun isHuman() = playerType == PlayerType.Human
     @Readonly
     fun isAI() = playerType == PlayerType.AI
+    @Readonly
     fun isAIOrAutoPlaying(): Boolean {
         if (playerType == PlayerType.AI) return true
         if (gameInfo.isSimulation()) return true
         val worldScreen = UncivGame.Current.worldScreen ?: return false
         return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
     }
+    @Readonly
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
-
+    @Readonly
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
+    @Readonly
     fun isMajorCiv() = nation.isMajorCiv
+    @Readonly
     fun isMinorCiv() = nation.isCityState || nation.isBarbarian
 
     @delegate:Transient
@@ -391,6 +396,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
+    @Readonly
     fun getPreferredVictoryTypes(): List<String> {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
@@ -408,6 +414,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                else preferredVictoryTypes.map { gameInfo.ruleset.victories[it]!! }
     }
 
+    @Readonly
     fun getPersonality(): Personality {
         return if (isAIOrAutoPlaying()) gameInfo.ruleset.personalities[nation.personality] ?: Personality.neutralPersonality
         else Personality.neutralPersonality

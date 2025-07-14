@@ -330,6 +330,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     // Do we automatically simulate until N turn?
+    @Readonly
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 

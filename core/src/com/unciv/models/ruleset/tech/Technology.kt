@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.objectdescriptions.TechnologyDescriptions
+import yairm210.purity.annotations.Readonly
 
 class Technology: RulesetObject() {
 
@@ -21,8 +22,10 @@ class Technology: RulesetObject() {
     var row: Int = 0
     var quote = ""
 
+    @Readonly
     fun era(): String = column!!.era
 
+    @Readonly
     fun isContinuallyResearchable() = hasUnique(UniqueType.ResearchableMultipleTimes)
 
 

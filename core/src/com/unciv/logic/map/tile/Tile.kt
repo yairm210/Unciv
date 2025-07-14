@@ -576,6 +576,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
+    @Readonly @Suppress("purity") // should be auto-recognized!
     fun isCoastalTile() = _isCoastalTile
 
     fun hasViewableResource(civInfo: Civilization): Boolean =

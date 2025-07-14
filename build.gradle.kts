@@ -37,7 +37,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.17" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.18" apply(false)
 }
 
 allprojects {
@@ -55,21 +55,15 @@ allprojects {
             "kotlin.takeIf",
             "kotlin.takeUnless",
             "kotlin.ranges.coerceIn",
+            "kotlin.ranges.coerceAtLeast",
             "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
-//            "kotlin.Enum.compareTo", // so overrides are considered pure as well :think:
         )
         wellKnownReadonlyFunctions = setOf(
-            "kotlin.collections.any",
-            "kotlin.collections.get",
-            "kotlin.collections.all",
-            "kotlin.ranges.coerceAtLeast",
             // Looks like the Collection.contains is not considered overridden :thunk:
             "java.util.AbstractCollection.contains",
-            "kotlin.collections.sum",
         )
         wellKnownPureClasses = setOf(
             "kotlin.enums.EnumEntries",
-            "kotlin.Enum",
         )
     }
     

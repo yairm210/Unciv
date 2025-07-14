@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
+import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -53,6 +54,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
+    @Readonly
     fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
     fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()

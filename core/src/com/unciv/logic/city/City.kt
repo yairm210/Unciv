@@ -173,7 +173,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly
     fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
+    @Readonly
     fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
+    @Readonly
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
     fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
