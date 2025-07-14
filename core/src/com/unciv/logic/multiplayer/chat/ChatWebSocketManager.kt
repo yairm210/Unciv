@@ -206,12 +206,16 @@ object ChatWebSocketManager {
         } else errorReconnectionAttempts = 0
 
         GlobalScope.launch {
-            delay(RECONNECT_TIME_MS)
-            if (job?.isActive == true && !force) return@launch
+            try {
+                delay(RECONNECT_TIME_MS)
+                if (job?.isActive == true && !force) return@launch
 
-            yield()
-            job?.cancel()
-            job = Concurrency.run("MultiplayerChat") { startSession() }
+                yield()
+                job?.cancel()
+                job = Concurrency.run("MultiplayerChat") { startSession() }
+            } catch (e: Exception) {
+                handleWebSocketThrowables(e)
+            }
         }
     }
 
