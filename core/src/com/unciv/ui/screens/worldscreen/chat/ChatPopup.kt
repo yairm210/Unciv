@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -107,7 +108,7 @@ class ChatPopup(
         // empty Ids are used to display server & system messages unspecific to any Chat
         eventReceiver.receive(
             ChatMessageReceived::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }
-        ) { addMessage(it.civName, it.message, true) }
+        ) { addMessage(it.civName, it.message, scroll = true) }
     }
 
     fun sendMessage() {
@@ -134,13 +135,16 @@ class ChatPopup(
             addMessage(civName, message)
         }
         ChatStore.pollGlobalMessages { civName, message ->
-            addMessage(civName, message)
+            addMessage(civName, message, suffix = "one time")
         }
         scrollToBottom()
     }
 
-    private fun addMessage(senderCivName: String, message: String, scroll: Boolean = true) {
-        val line = "${senderCivName.tr()}: ${message.tr()}".toLabel(alignment = Align.left).apply {
+    private fun addMessage(senderCivName: String, message: String, suffix: String? = null, scroll: Boolean = true) {
+        val line = Label(
+            "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
+            skin
+        ).apply {
             wrap = true
 
             val civNameColor = civChatColorsMap[senderCivName] ?: worldScreen.gameInfo.getCivilizationOrNull(
