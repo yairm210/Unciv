@@ -38,30 +38,30 @@ enum class Countables(
     Integer {
         override val documentationHeader = "Integer constant - any positive or negative integer number"
         override fun matches(parameterText: String) = parameterText.toIntOrNull() != null
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) = parameterText.toIntOrNull()
+        override fun eval(parameterText: String, gameContext: GameContext) = parameterText.toIntOrNull()
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String>  = setOf()
         override val example: String = "123"
     },
 
     Turns("turns", shortDocumentation = "Number of turns played") {
         override val documentationStrings = listOf("Always starts at zero irrespective of game speed or start era")
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
-            stateForConditionals.gameInfo?.turns
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.turns
     },
     Year("year", shortDocumentation = "The current year") {
         override val documentationStrings = listOf("Depends on game speed or start era, negative for years BC")
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
-            stateForConditionals.gameInfo?.run { getYear(turns) }
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.run { getYear(turns) }
     },
     Cities("Cities", shortDocumentation = "The number of cities the relevant Civilization owns") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
-            stateForConditionals.civInfo?.cities?.size
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.civInfo?.cities?.size
     },
 
     CitiesCityFilter("[cityFilter] Cities", shortDocumentation = "The number of cities that match the given cityFilter") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
-            val cities = stateForConditionals.civInfo?.cities ?: return null
+            val cities = gameContext.civInfo?.cities ?: return null
             return cities.count { it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
@@ -69,8 +69,8 @@ enum class Countables(
     },
 
     CitiesCivFilterCityFilter("[civFilter] [cityFilter] Cities", shortDocumentation = "The number of cities owned by the given matching Civilization(s) that match the given cityFilter") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             val civFilter = parameterText.getPlaceholderParameters()[0]
             val cityFilter = parameterText.getPlaceholderParameters()[1]
             return civilizations
@@ -93,16 +93,16 @@ enum class Countables(
     },
 
     Units("Units", shortDocumentation = "The number of units the relevant Civilization owns") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
-            stateForConditionals.civInfo?.units?.getCivUnitsSize()
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.civInfo?.units?.getCivUnitsSize()
     },
 
     UnitsCivFilterMapUnitFilter("[civFilter] [mapUnitFilter] Units") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
             val mapUnitFilter = params[1]
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) }.sumOf { civ ->
                 civ.units.getCivUnits().count { it.matchesFilter(mapUnitFilter) }
             }
@@ -123,9 +123,9 @@ enum class Countables(
     },
 
     UnitsMapUnitFilter("[mapUnitFilter] Units") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
-            val unitManager = stateForConditionals.civInfo?.units ?: return null
+            val unitManager = gameContext.civInfo?.units ?: return null
             return unitManager.getCivUnits().count { it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
@@ -138,12 +138,12 @@ enum class Countables(
         override val documentationHeader = "Stat name (${Stat.names().niceJoin()})"
         override val documentationStrings = listOf("Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
             // This one isn't covered by City.getStatReserve or Civilization.getStatReserve but should be available here
             if (relevantStat == Stat.Happiness)
-                return stateForConditionals.civInfo?.getHappiness()
-            return stateForConditionals.getStatAmount(relevantStat)
+                return gameContext.civInfo?.getHappiness()
+            return gameContext.getStatAmount(relevantStat)
         }
 
         override val example = "Science"
@@ -155,13 +155,13 @@ enum class Countables(
     },
 
     PolicyBranches("Completed Policy branches") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
-            stateForConditionals.civInfo?.getCompletedPolicyBranchesCount()
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.civInfo?.getCompletedPolicyBranchesCount()
     },
 
     PolicyBranchesCivFilter("[civFilter] Completed Policy branches") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             val civFilter = parameterText.getPlaceholderParameters()[0]
             return civilizations
                 .filter { it.isAlive() && it.matchesFilter(civFilter) }
@@ -172,9 +172,9 @@ enum class Countables(
     },
 
     FilteredBuildings("[buildingFilter] Buildings") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
-            val cities = stateForConditionals.civInfo?.cities ?: return null
+            val cities = gameContext.civInfo?.cities ?: return null
             return cities.sumOf { city ->
                 city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(filter) }
             }
@@ -185,11 +185,11 @@ enum class Countables(
     },
 
     BuildingsCivFilterBuildingFilter("[civFilter] [buildingFilter] Buildings") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
             val buildingFilter = params[1]
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations
                 .filter { it.isAlive() && it.matchesFilter(civFilter) }
                 .sumOf { civ ->
@@ -214,10 +214,10 @@ enum class Countables(
     },
 
     FilteredPolicies("Adopted [policyFilter] Policies") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
-            val policyManager = stateForConditionals.civInfo?.policies ?: return null
-            return policyManager.getAdoptedPoliciesMatching(filter, stateForConditionals).size
+            val policyManager = gameContext.civInfo?.policies ?: return null
+            return policyManager.getAdoptedPoliciesMatching(filter, gameContext).size
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.PolicyFilter.getTranslatedErrorSeverity(parameterText, ruleset)
@@ -227,13 +227,13 @@ enum class Countables(
     },
 
     PoliciesCivFilterPolicyFilter("[civFilter] Adopted [policyFilter] Policies") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
             val policyFilter = params[1]
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) } .sumOf { civ ->
-                civ.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals).size
+                civ.policies.getAdoptedPoliciesMatching(policyFilter, gameContext).size
             }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
@@ -252,9 +252,9 @@ enum class Countables(
     },
 
     RemainingCivs("Remaining [civFilter] Civilizations") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.matchesFilter(filter) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
@@ -262,9 +262,9 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
     OwnedTiles("Owned [tileFilter] Tiles") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
-            val cities = stateForConditionals.civInfo?.cities ?: return null
+            val cities = gameContext.civInfo?.cities ?: return null
             return cities.sumOf { city -> city.getTiles().count { it.matchesFilter(filter) } }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
@@ -273,11 +273,11 @@ enum class Countables(
     },
 
     OwnedTilesCivFilterTileFilter("Owned [civFilter] [tileFilter] Tiles") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
             val tileFilter = params[1]
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) }.sumOf { civ ->
                 civ.cities.sumOf { city ->
                     city.getTiles().count { it.matchesFilter(tileFilter) }
@@ -294,10 +294,10 @@ enum class Countables(
     },
 
     TileFilterTiles("[tileFilter] Tiles") {
-    override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+    override fun eval(parameterText: String, gameContext: GameContext): Int? {
         val filter = parameterText.getPlaceholderParameters()[0]
-        val tileMap = stateForConditionals.gameInfo?.tileMap ?: return null
-        return tileMap.tileList.count { it.matchesFilter(filter, stateForConditionals.civInfo) }
+        val tileMap = gameContext.gameInfo?.tileMap ?: return null
+        return tileMap.tileList.count { it.matchesFilter(filter, gameContext.civInfo) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
@@ -313,19 +313,19 @@ enum class Countables(
         )
         override val matchesWithRuleset = true
         override fun matches(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
-            stateForConditionals.getResourceAmount(parameterText)
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.getResourceAmount(parameterText)
 
         override val example = "Iron"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
     },
 
     ResourcesCivFilterResourceFilter("[civFilter] [resource] Resources") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
             val resource = params[1]
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations.filter { it.isAlive() && it.matchesFilter(civFilter) }.sumOf { it.getResourceAmount(resource) }
         }
 
@@ -341,8 +341,8 @@ enum class Countables(
     /** Please leave this one in, it is tested against in [com.unciv.uniques.CountableTests.testRulesetValidation] */
     @Deprecated("because it was never actually supported", ReplaceWith("Remaining [City-State] Civilizations"), DeprecationLevel.ERROR)
     CityStates("City-States", shortDocumentation = "counts all undefeated city-states") {
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
-            val civilizations = stateForConditionals.gameInfo?.civilizations ?: return null
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations.count { it.isAlive() && it.isCityState }
         }
     },
@@ -350,8 +350,8 @@ enum class Countables(
 
     EraNumber("Era number", shortDocumentation = "Number of the era the current player is in") {
         override val documentationStrings = listOf("Zero-based index of the Era in Eras.json.")
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals) =
-            stateForConditionals.civInfo?.getEraNumber()
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.civInfo?.getEraNumber()
     },
 
     GameSpeedModifier("Speed modifier for [stat]", shortDocumentation = "A game speed modifier for a specific Stat, as percentage") {
@@ -361,9 +361,9 @@ enum class Countables(
             "Food and Happiness return the generic `modifier` field.",
             "Other fields like `goldGiftModifier` or `barbarianModifier` are not accessible with this Countable."
         )
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val stat = Stat.safeValueOf(parameterText.getPlaceholderParameters()[0]) ?: return null
-            val speed = stateForConditionals.gameInfo?.speed ?: return null
+            val speed = gameContext.gameInfo?.speed ?: return null
             val modifier = when(stat) {
                 Stat.Gold -> speed.goldCostModifier
                 Stat.Production -> speed.productionCostModifier
@@ -387,8 +387,8 @@ enum class Countables(
 
         override fun matches(parameterText: String, ruleset: Ruleset) =
             engine.matches(parameterText, ruleset)
-        override fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? =
-            engine.eval(parameterText, stateForConditionals)
+        override fun eval(parameterText: String, gameContext: GameContext): Int? =
+            engine.eval(parameterText, gameContext)
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             engine.getErrorSeverity(parameterText, ruleset)
 
@@ -427,7 +427,7 @@ enum class Countables(
     @Readonly
     open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
     @Readonly
-    abstract fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int?
+    abstract fun eval(parameterText: String, gameContext: GameContext): Int?
 
     open val documentationHeader get() =
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
@@ -458,10 +458,10 @@ enum class Countables(
             }
 
         @Readonly
-        fun getCountableAmount(parameterText: String, stateForConditionals: StateForConditionals): Int? {
-            val ruleset = stateForConditionals.gameInfo?.ruleset
+        fun getCountableAmount(parameterText: String, gameContext: GameContext): Int? {
+            val ruleset = gameContext.gameInfo?.ruleset
             val countable = getMatching(parameterText, ruleset) ?: return null
-            val potentialResult = countable.eval(parameterText, stateForConditionals) ?: return null
+            val potentialResult = countable.eval(parameterText, gameContext) ?: return null
             return potentialResult
         }
 

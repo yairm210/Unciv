@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -59,7 +59,7 @@ internal class BaseRulesetValidator(
         for (specialistName in building.specialistSlots.keys)
             if (!ruleset.specialists.containsKey(specialistName))
                 lines.add("${building.name} provides specialist $specialistName which does not exist!", sourceObject = building)
-        for (resource in building.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
+        for (resource in building.getResourceRequirementsPerTurn(GameContext.IgnoreConditionals).keys)
             if (!ruleset.tileResources.containsKey(resource))
                 lines.add("${building.name} requires resource $resource which does not exist!", sourceObject = building)
         if (building.replaces != null && !ruleset.buildings.containsKey(building.replaces!!))
@@ -368,13 +368,13 @@ internal class BaseRulesetValidator(
         for (obsoleteTech: String in unit.techsAtWhichNoLongerAvailable())
             if (!ruleset.technologies.containsKey(obsoleteTech))
                 lines.add("${unit.name} obsoletes at tech $obsoleteTech which does not exist!", sourceObject = unit)
-        for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals))
+        for (upgradesTo in unit.getUpgradeUnits(GameContext.IgnoreConditionals))
             if (!ruleset.units.containsKey(upgradesTo))
                 lines.add("${unit.name} upgrades to unit $upgradesTo which does not exist!", sourceObject = unit)
 
         // Check that we don't obsolete ourselves before we can upgrade
         for (obsoleteTech: String in unit.techsAtWhichAutoUpgradeInProduction())
-            for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
+            for (upgradesTo in unit.getUpgradeUnits(GameContext.IgnoreConditionals)) {
                 if (!ruleset.units.containsKey(upgradesTo)) continue
                 if (!ruleset.technologies.containsKey(obsoleteTech)) continue
                 val upgradedUnit = ruleset.units[upgradesTo]!!
@@ -387,7 +387,7 @@ internal class BaseRulesetValidator(
                         )
             }
 
-        for (resource in unit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
+        for (resource in unit.getResourceRequirementsPerTurn(GameContext.IgnoreConditionals).keys)
             if (!ruleset.tileResources.containsKey(resource))
                 lines.add("${unit.name} requires resource $resource which does not exist!", sourceObject = unit)
         if (unit.replaces != null && !ruleset.units.containsKey(unit.replaces!!))
@@ -400,7 +400,7 @@ internal class BaseRulesetValidator(
         }
 
         // We should ignore conditionals here - there are condition implementations on this out there that require a game state (and will test false without)
-        for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, StateForConditionals.IgnoreConditionals)) {
+        for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, GameContext.IgnoreConditionals)) {
             val improvementName = unique.params[0]
             if (ruleset.tileImprovements[improvementName] == null) continue // this will be caught in the uniqueValidator.checkUniques
             if ((ruleset.tileImprovements[improvementName] as Stats).isEmpty() &&

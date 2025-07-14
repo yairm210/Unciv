@@ -11,7 +11,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.min
 import kotlin.random.Random
@@ -24,7 +24,7 @@ object BattleUnitCapture {
         // There are 3 ways of capturing a unit, we separate them for cleaner code but we also need to ensure a unit isn't captured twice
 
         if (defender !is MapUnitCombatant || attacker !is MapUnitCombatant) return false
-        if (defender.hasUnique(UniqueType.Uncapturable, StateForConditionals(unit = defender.unit,
+        if (defender.hasUnique(UniqueType.Uncapturable, GameContext(unit = defender.unit,
                 ourCombatant = defender, theirCombatant = attacker, attackedTile = attackedTile)))
             return false
 
@@ -67,7 +67,7 @@ object BattleUnitCapture {
     private fun unitGainFromDefeatingUnit(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
         if (!attacker.isMelee()) return false
         var unitCaptured = false
-        val state = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender)
+        val state = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender)
         for (unique in attacker.getMatchingUniques(UniqueType.GainFromDefeatingUnit, state, true)) {
             if (defender.unit.matchesFilter(unique.params[0])) {
                 attacker.getCivInfo().addGold(unique.params[1].toInt())
@@ -145,7 +145,7 @@ object BattleUnitCapture {
                 wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
-            capturedUnit.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) && attacker.getCivInfo().isCityState -> {
+            capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) && attacker.getCivInfo().isCityState -> {
                 capturedUnit.destroy()
                 wasDestroyedInstead = true
             }
@@ -206,7 +206,7 @@ object BattleUnitCapture {
      */
     fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): Vector2? {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
-        if (!capturedUnit.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) || capturingCiv.isBarbarian) {
+        if (!capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) || capturingCiv.isBarbarian) {
             capturedUnit.capturedBy(capturingCiv)
             return capturedUnit.currentTile.position // if capturedBy has moved the unit, this is updated
         }
@@ -215,10 +215,10 @@ object BattleUnitCapture {
         // This is so that future checks which check if a unit has been captured are caught give the right answer
         //  For example, in postBattleMoveToAttackedTile
         capturedUnit.civ = capturingCiv
-        capturedUnit.cache.state = StateForConditionals(capturedUnit)
+        capturedUnit.cache.state = GameContext(capturedUnit)
 
         val workerTypeUnit = capturingCiv.gameInfo.ruleset.units.values
-            .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
+            .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements, GameContext.IgnoreConditionals)
             .any { unique -> unique.params[0] == "Land" } }
             ?: return null
         return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit, capturedUnit.id)

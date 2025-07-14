@@ -5,7 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
@@ -44,13 +44,13 @@ class TileImprovementConstructionTests {
             // If this improvement requires additional conditions to be true,
             // its too complex to handle all of them, so just skip it and hope its fine
             // I would like some comments on whether this approach is fine or if it's better if I handle every single unique here as well
-            if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, StateForConditionals.IgnoreConditionals)) continue
-            if (improvement.hasUnique(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)) continue
+            if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, GameContext.IgnoreConditionals)) continue
+            if (improvement.hasUnique(UniqueType.Unbuildable, GameContext.IgnoreConditionals)) continue
 
             val tile = tileMap[1,1]
             tile.baseTerrain = terrain
             tile.resource = null
-            if (improvement.hasUnique(UniqueType.CanOnlyImproveResource, StateForConditionals.IgnoreConditionals)) {
+            if (improvement.hasUnique(UniqueType.CanOnlyImproveResource, GameContext.IgnoreConditionals)) {
                 tile.resource = testGame.ruleset.tileResources.values.firstOrNull { it.isImprovedBy(improvement.name) }?.name ?: continue
             }
             tile.setTransients()
@@ -77,7 +77,7 @@ class TileImprovementConstructionTests {
             if (tile.resource == null) continue
             // If this improvement requires additional conditions to be true,
             // its too complex to handle all of them, so just skip it and hope its fine
-            if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, StateForConditionals.IgnoreConditionals)) continue
+            if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, GameContext.IgnoreConditionals)) continue
 
             tile.setTransients()
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)

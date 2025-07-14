@@ -1,7 +1,7 @@
 package com.unciv.logic.map.mapunit
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
@@ -143,7 +143,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
         val stateForConditionals = unit.cache.state
         if (promotion.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
-        if (promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+        if (promotion.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
             .any { !it.conditionalsApply(stateForConditionals) }) return false
         return true
     }

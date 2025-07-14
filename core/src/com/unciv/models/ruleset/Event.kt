@@ -22,15 +22,15 @@ class Event : RulesetObject() {
     /** @return `null` when no choice passes the condition tests, so client code can easily bail using Elvis `?:`.
      *          An empty list is possible when the Event definition contains no choices and the event's conditions are fulfilled.
      */
-    fun getMatchingChoices(stateForConditionals: StateForConditionals): Collection<EventChoice>? {
-        if (!isAvailable(stateForConditionals)) return null
+    fun getMatchingChoices(gameContext: GameContext): Collection<EventChoice>? {
+        if (!isAvailable(gameContext)) return null
         if (choices.isEmpty()) return emptyList()
-        return choices.filter { it.matchesConditions(stateForConditionals) }.ifEmpty { null }
+        return choices.filter { it.matchesConditions(gameContext) }.ifEmpty { null }
     }
 
-    fun isAvailable(stateForConditionals: StateForConditionals) =
-        getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).none { !it.conditionalsApply(stateForConditionals) } &&
-        getMatchingUniques(UniqueType.Unavailable, stateForConditionals).none()
+    fun isAvailable(gameContext: GameContext) =
+        getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).none { !it.conditionalsApply(gameContext) } &&
+        getMatchingUniques(UniqueType.Unavailable, gameContext).none()
 }
 
 class EventChoice : ICivilopediaText, RulesetObject() {
@@ -42,19 +42,19 @@ class EventChoice : ICivilopediaText, RulesetObject() {
     val keyShortcut = ""
     
 
-    fun matchesConditions(stateForConditionals: StateForConditionals): Boolean {
-        if (hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
-        if (getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                .any { !it.conditionalsApply(stateForConditionals) })
+    fun matchesConditions(gameContext: GameContext): Boolean {
+        if (hasUnique(UniqueType.Unavailable, gameContext)) return false
+        if (getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .any { !it.conditionalsApply(gameContext) })
             return false
         return true
     }
 
     fun triggerChoice(civ: Civilization, unit: MapUnit? = null): Boolean {
         var success = false
-        val stateForConditionals = StateForConditionals(civ, unit = unit)
+        val gameContext = GameContext(civ, unit = unit)
         val triggerUniques = uniqueObjects.filter { it.isTriggerable }
-        for (unique in triggerUniques.flatMap { it.getMultiplied(stateForConditionals) })
+        for (unique in triggerUniques.flatMap { it.getMultiplied(gameContext) })
             if (UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit)) success = true
         return success
     }

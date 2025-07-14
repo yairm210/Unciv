@@ -12,7 +12,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -584,7 +584,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
         unit.currentTile = currentTile  // temporary
-        unit.cache.state = StateForConditionals(unit)
+        unit.cache.state = GameContext(unit)
         if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
 
         // if it's not suitable, try to find another tile nearby
