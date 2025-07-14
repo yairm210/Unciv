@@ -146,10 +146,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
         for (civ in humanPlayers) {
-            if (civInfo in civ.getKnownCivs())
-                civ.addNotification("[${civInfo.civName}] has founded pantheon [${beliefName}]!",
-                    ReligionAction(beliefName), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
-            else civ.addNotification("An unknown civilization has founded pantheon [${beliefName}]!",
+            val text = if (civInfo in civ.getKnownCivs()) "[${civInfo.civName}]"
+            else "An unknown civilization"
+
+            civ.addNotification(text + " has founded pantheon [${beliefName}]!",
                 ReligionAction(beliefName), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
         }
     }
@@ -333,10 +333,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val religion = civInfo.religionManager.religion!!
         
         for (civ in humanPlayers) {
-            if (civInfo in civ.getKnownCivs())
-                civ.addNotification("[${civInfo.civName}] has enhanced [${religion.name}]!",
-                    ReligionAction(religion.name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
-            else civ.addNotification("An unknown civilization has enhanced [${religion.name}]!",
+            val text = if (civInfo in civ.getKnownCivs()) "[${civInfo.civName}]"
+            else "An unknown civilization"
+
+            civ.addNotification(text + " has enhanced [${religion.name}]!",
                 ReligionAction(religion.name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
         }
     }
