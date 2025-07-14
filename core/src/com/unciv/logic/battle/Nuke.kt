@@ -30,8 +30,8 @@ object Nuke {
      */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         if (nuke.getTile() == targetTile) return false
-        // Can only nuke visible Tiles
-        if (!targetTile.isVisible(nuke.getCivInfo())) return false
+        // Can only nuke in unit's range, visibility doesn't matter
+        if (nuke.getTile().aerialDistanceTo(targetTile) > nuke.unit.getRange()) return false
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
