@@ -25,6 +25,9 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
         refreshVisibility()
     }
 
+    /**
+     * Toggles [ChatButton] if needed and also starts or stops [ChatWebSocket] as required.
+     */
     fun refreshVisibility() {
         isVisible = if (
             worldScreen.gameInfo.gameParameters.isOnlineMultiplayer &&
@@ -33,10 +36,12 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
             ChatWebSocket.requestMessageSend(
                 Message.Join(listOf(worldScreen.gameInfo.gameId)),
             )
-
             updatePosition()
             true
-        } else false
+        } else {
+            ChatWebSocket.stop()
+            false
+        }
     }
 
     fun updatePosition() = setPosition(

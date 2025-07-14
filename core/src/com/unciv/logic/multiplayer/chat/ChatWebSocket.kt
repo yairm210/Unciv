@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.chat.Chat.Companion.relayGlobalMessage
 import com.unciv.logic.multiplayer.chat.ChatWebSocket.job
+import com.unciv.logic.multiplayer.chat.ChatWebSocket.start
 import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -76,6 +77,7 @@ sealed class Response {
 }
 
 class ChatRestartException : CancellationException("Chat restart requested")
+class ChatStopException : CancellationException("Chat stop requested")
 
 object ChatWebSocket {
     private var isStarted = false
@@ -118,6 +120,8 @@ object ChatWebSocket {
      * Failures are mosly ignored.
      *
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
+     *
+     * Also calls [start] to start the connection in case it was not done beforehand.
      */
     fun requestMessageSend(message: Message) {
         start()
@@ -150,7 +154,7 @@ object ChatWebSocket {
         }
 
         println()
-        restart(true)
+        restart(dueToError = true)
     }
 
     private suspend fun startSession() {
@@ -208,6 +212,15 @@ object ChatWebSocket {
     }
 
     /**
+     * Stops the socket and clears all type of chat from [ChatStore]
+     */
+    fun stop() {
+        isStarted = false
+        ChatStore.clear()
+        job?.cancel(ChatStopException())
+    }
+
+    /**
      * By default, this gets autocancelled if the [job] is still running.
      * Force mode will cancel the previous [job] and reassign a new one.
      * This is helpfull when we need to reset [job] due to events.
@@ -222,18 +235,14 @@ object ChatWebSocket {
         } else reconnectionAttempts = 0
 
         GlobalScope.launch {
-            try {
-                // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
-                delay(Random.nextLong(1000) + 1000L * reconnectTimeSeconds)
-                reconnectTimeSeconds = (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
-                if (job?.isActive == true && !force) return@launch
+            // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
+            delay(Random.nextLong(1000) + 1000L * reconnectTimeSeconds)
+            reconnectTimeSeconds = (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
+            if (job?.isActive == true && !force) return@launch
 
-                yield()
-                job?.cancel(ChatRestartException())
-                job = Concurrency.run("MultiplayerChat") { startSession() }
-            } catch (e: Exception) {
-                handleWebSocketThrowables(e)
-            }
+            yield()
+            job?.cancel(ChatRestartException())
+            job = Concurrency.run("MultiplayerChat") { startSession() }
         }
     }
 

@@ -269,7 +269,7 @@ class GameSettings {
         var userId = ""
             set(value) {
                 if (field.isNotEmpty() && field != value) {
-                    ChatWebSocket.restart()
+                    ChatWebSocket.restart(force = true)
                 }
                 field = value
             }
@@ -278,7 +278,7 @@ class GameSettings {
         operator fun MutableMap<String, String>.set(key: String, value: String) {
             val oldPassword = get(key)
             if (oldPassword != null && oldPassword != value) {
-                ChatWebSocket.restart()
+                ChatWebSocket.restart(force = true)
             }
 
             // Default set behavior
@@ -291,7 +291,7 @@ class GameSettings {
         var server = Constants.uncivXyzServer
             set(value) {
                 if (field != value) {
-                    ChatWebSocket.restart()
+                    ChatWebSocket.restart(force = true)
                 }
                 field = value
             }

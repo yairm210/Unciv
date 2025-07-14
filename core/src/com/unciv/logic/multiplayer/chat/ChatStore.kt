@@ -61,16 +61,24 @@ data class Chat(
 
 object ChatStore {
     var chatPopupAvailable = false
-    private val gameIdToChat = mutableMapOf<String, Chat>()
+    private var gameIdToChat = mutableMapOf<String, Chat>()
 
     /** When no [ChatPopup] is open to receive these oddities, we keep them here.
      * Certainly better than not knowing why the socket closed.
      */
-    private val globalMessages = LinkedList<Pair<String, String>>()
+    private var globalMessages = LinkedList<Pair<String, String>>()
 
     fun getChatByGameId(gameId: String) = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
 
     fun getGameIds() = gameIdToChat.keys.toSet()
+
+    /**
+     * Clears chat by triggering a garbage collection.
+     */
+    fun clear() {
+        gameIdToChat = mutableMapOf()
+        globalMessages = LinkedList()
+    }
 
     fun pollGlobalMessages(action: (String, String) -> Unit) {
         Gdx.app.postRunnable {
