@@ -349,9 +349,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val attackButton = "NUKE".toTextButton().apply { color = Color.RED }
 
-        val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
-
-        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach || !canNuke) {
+        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canNuke) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }
