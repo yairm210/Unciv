@@ -232,10 +232,12 @@ object HexMath {
     }
 
     /** Get number of hexes from [origin] to [destination] _without respecting world-wrap_ */
+    @Pure
     fun getDistance(origin: Vector2, destination: Vector2): Int {
         return getDistance(origin.x.toInt(), origin.y.toInt(), destination.x.toInt(), destination.y.toInt())
     }
-    
+
+    @Pure
     fun getDistance(originX: Int, originY: Int, destinationX: Int, destinationY: Int): Int {
         val relativeX = originX - destinationX
         val relativeY = originY - destinationY

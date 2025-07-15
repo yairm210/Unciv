@@ -49,6 +49,9 @@ allprojects {
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
             "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
+            "kotlin.math.max",
+            "kotlin.math.min",
+            "kotlin.math.abs"
         )
         wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
