@@ -339,7 +339,7 @@ class DiplomacyScreen(
             messageLines += if (viewingCiv.knows(civ)) {
                 "[${civ.civName}] will also join them in the war"
             } else {
-                "An unknown civilization will also join them in the war"
+                "[An unknown civilization] will also join them in the war"
             }
         }
 

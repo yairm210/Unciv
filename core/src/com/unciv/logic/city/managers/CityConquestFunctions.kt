@@ -208,9 +208,9 @@ class CityConquestFunctions(val city: City) {
                     civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
                         civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
                     civ.knows(conqueringCiv) && !civ.knows(foundingCiv) ->
-                        civ.addNotification("[$conqueringCiv] has liberated an unknown civilization", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                        civ.addNotification("[$conqueringCiv] has liberated [an unknown civilization]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, conqueringCiv.civName)
                     !civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
-                        civ.addNotification("An unknown civilization has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, foundingCiv.civName)
+                        civ.addNotification("[An unknown civilization] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, foundingCiv.civName)
                     else -> continue
                 }
             }
