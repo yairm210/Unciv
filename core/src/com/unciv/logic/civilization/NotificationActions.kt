@@ -183,11 +183,24 @@ class EspionageAction : NotificationAction {
     }
 }
 
+/** Open [url] externally in the browser */
 class LinkAction(private val url: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         if (url.isNotEmpty()) Gdx.net.openURI(url)
     }
 }
+
+/** Open [EmpireOverviewScreen] on the [Religion][EmpireOverviewCategories.Religion] tab */
+class ReligionAction(private val religionName: String? = null) : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, EmpireOverviewCategories.Religion, religionName.orEmpty()))
+    }
+    companion object {
+        fun withLocation(location: Vector2?, religionName: String?): Sequence<NotificationAction> =
+            LocationAction(location) + ReligionAction(religionName)
+    }
+}
+
 
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
@@ -213,13 +226,14 @@ internal class NotificationActionsDeserializer {
     private val PolicyAction: PolicyAction? = null
     private val EspionageAction: EspionageAction? = null
     private val LinkAction: LinkAction? = null
+    private val ReligionAction: ReligionAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
             LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
             MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction, PolicyAction,
-            EspionageAction, LinkAction
+            EspionageAction, LinkAction, ReligionAction
         )
     }
 }

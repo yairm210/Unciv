@@ -531,13 +531,13 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return filledString
 }
 
-@Pure
+@Pure @Suppress("purity") // calls .map{}, .toList()
 fun String.getModifiers(): List<Unique> {
     if (!this.contains('<')) return emptyList()
     return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
 }
 
-@Pure @Suppress("purity") // todo fix val reference in purity
+@Pure
 fun String.removeConditionals(): String {
     if (!this.contains('<')) return this // no need to regex search
     return this
