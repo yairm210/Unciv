@@ -115,6 +115,7 @@ fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
     return if (lightness < minLightness) {
         this.mul(minLightness / lightness)
     } else this
+}
 
 fun Actor.centerX(parent: Actor) { x = parent.width / 2 - width / 2 }
 fun Actor.centerY(parent: Actor) { y = parent.height / 2 - height / 2 }
