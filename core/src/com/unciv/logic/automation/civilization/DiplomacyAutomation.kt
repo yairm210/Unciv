@@ -151,6 +151,7 @@ object DiplomacyAutomation {
                     && !civInfo.getDiplomacyManager(it)!!.hasOpenBorders
                     && !it.getDiplomacyManager(civInfo)!!.hasOpenBorders
                     && diploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+                    && it.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
                     && !diploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
                     && !areWeOfferingTrade(civInfo, it, Constants.openBorders)
             }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
@@ -218,7 +219,6 @@ object DiplomacyAutomation {
             .filter {
                 val diploManager = civInfo.getDiplomacyManager(it)!!
                 civInfo.diplomacyFunctions.canSignResearchAgreementsWith(it)
-                    && diploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
                     && !diploManager.hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
                     && !areWeOfferingTrade(civInfo, it, Constants.researchAgreement)
             }
