@@ -219,16 +219,16 @@ object Battle {
     }
     
     private fun triggerCombatUniques(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
-        val attackerStateForConditionals = StateForConditionals(attacker.getCivInfo(),
+        val attackerContext = GameContext(attacker.getCivInfo(),
             ourCombatant = attacker, theirCombatant = defender, tile = attackedTile, combatAction = CombatAction.Attack)
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerStateForConditionals)) {
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerContext)) {
                 UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
             }
-        val defenderStateForConditionals = StateForConditionals(defender.getCivInfo(),
+        val defenderContext = GameContext(defender.getCivInfo(),
             ourCombatant = defender, theirCombatant = attacker, tile = attackedTile, combatAction = CombatAction.Defend)
         if (defender is MapUnitCombatant)
-            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, defenderStateForConditionals)) {
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, defenderContext)) {
                 UniqueTriggerActivation.triggerUnique(unique, defender.unit)
             }
     }
