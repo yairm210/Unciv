@@ -42,7 +42,6 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import kotlin.math.max
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -106,7 +105,7 @@ fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
  */
 fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
     /** see [Color.toHsv] implementation to understand this */
-    val lightness = max(max(r, g), b)
+    val lightness = maxOf(r, g, b)
     return if (lightness < minLightness) {
         this.mul(minLightness / lightness)
     } else this
