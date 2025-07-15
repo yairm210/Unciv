@@ -42,7 +42,6 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import kotlin.math.max
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -104,7 +103,7 @@ fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
 /** Increases the lightness value of given color by [t] which is in the range [[0,1]] preserving color ration in RGBAc
  * where 0 is current lightness value and 1 is the maximum possible. The result is returned as a new instance. */
 fun Color.lighten(t: Float): Color = Color(this).let {
-    val lightness = max(r, max(g, b))
+    val lightness = maxOf(r, g, b)
     val targetRatio = (lightness + t * (1 - lightness)) / lightness
     return it.mul(targetRatio)
 }
