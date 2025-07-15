@@ -42,6 +42,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import kotlin.math.max
 
 /**
  * Collection of extension functions mostly for libGdx widgets
