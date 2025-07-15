@@ -459,7 +459,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 otherCiv.knows(city.civ) ->
                     otherCiv.addNotification("[${city.civ.civName}] has started constructing [${construction.name}]!",
                         NotificationCategory.General, NotificationIcon.Construction, icon)
-                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
+                else -> otherCiv.addNotification("[An unknown civilization] has started constructing [${construction.name}]!",
                     NotificationCategory.General, NotificationIcon.Construction, icon)
             }
         }
@@ -545,7 +545,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == city.civ) continue
                 val completingCivDescription =
-                    if (otherCiv.knows(city.civ)) "[${city.civ.civName}]" else "An unknown civilization"
+                    if (otherCiv.knows(city.civ)) "[${city.civ.civName}]" else "[An unknown civilization]"
                 otherCiv.addNotification("$completingCivDescription has completed [${construction.name}]!",
                     pediaAction, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
