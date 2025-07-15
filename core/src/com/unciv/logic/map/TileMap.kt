@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
+import yairm210.purity.annotations.Readonly
 import java.lang.Integer.max
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
@@ -206,19 +207,24 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+    @Readonly
     operator fun contains(vector: Vector2) =
         contains(vector.x.toInt(), vector.y.toInt())
 
+    @Readonly
     operator fun get(vector: Vector2) =
         get(vector.x.toInt(), vector.y.toInt())
 
+    @Readonly
     fun contains(x: Int, y: Int) =
         getOrNull(x, y) != null
 
+    @Readonly
     operator fun get(x: Int, y: Int) =
         tileMatrix[x - leftX][y - bottomY]!!
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Does *not* respect world wrap, use [getIfTileExistsOrNull] for that. */
+    @Readonly
     private fun getOrNull (x: Int, y: Int): Tile? =
             tileMatrix.getOrNull(x - leftX)?.getOrNull(y - bottomY)
 
@@ -230,16 +236,19 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
+    @Readonly
     fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<Tile> =
             getTilesInDistanceRange(origin, 0..distance)
 
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
+    @Readonly
     fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<Tile> =
             range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
+    @Readonly @Suppress("purity")
     fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<Tile> =
             if (distance <= 0) // silently take negatives.
                 sequenceOf(get(origin))
@@ -287,6 +296,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         }.filterNotNull()
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Respects map edges and world wrap. */
+    @Readonly
     fun getIfTileExistsOrNull(x: Int, y: Int): Tile? {
         val tile = getOrNull(x, y)
         if (tile != null) return tile
@@ -366,6 +376,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * Returns the closest position to (0, 0) outside the map which can be wrapped
      * to the position of the given vector
      */
+    
     fun getUnWrappedPosition(position: Vector2): Vector2 {
         if (!contains(position))
             return position //The position is outside the map so its unwrapped already

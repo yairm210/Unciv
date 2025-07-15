@@ -531,7 +531,7 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return filledString
 }
 
-@Pure
+@Pure @Suppress("purity")
 fun String.getModifiers(): List<Unique> {
     if (!this.contains('<')) return emptyList()
     return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
