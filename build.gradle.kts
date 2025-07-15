@@ -37,7 +37,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.21" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.22" apply(false)
 }
 
 allprojects {
@@ -52,6 +52,7 @@ allprojects {
         )
         wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
+            "com.badlogic.gdx.math.Vector2.len",
             "java.util.AbstractCollection.contains",
             "java.util.AbstractList.get",
         )
