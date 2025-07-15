@@ -1,34 +1,15 @@
 ## 4.17.5
 
-chore: update purity
-
-chore: Readonly 6
-
-chore: Readonly 5
-
-chore: Readonly 4
-
-chore: Readonly 3
-
-chore: Rename StateForConditionals -> GameContext
-
-Purity: Use new annotations 
-
 By metablaster:
 - Nukes don't require line of sight to hit target tile 
-- Get notification when pantheon, religion or religion enhancement is made by other civ 
 - Display city defense and health in cities overview tab 
-- fix few typos in docs 
+- Get notification when pantheon, religion or religion enhancement is made by other civ 
 
-Add upon entering combat trigger - By SeventhM
+Add 'upon entering combat trigger' - By SeventhM
 
 By SomeTroglodyte:
 - Workaround for "Mod has no graphics for configured tilesets" false positive 
 - No environment checks in Gradle project configs 
-
-By touhidurrr:
-- Color: Better methods of brightening and darkening colors 
-- Server Cleanup 
 
 ## 4.17.4
 
