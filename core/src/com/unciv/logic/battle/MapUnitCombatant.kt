@@ -45,8 +45,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun toString(): String {
         return unit.name+" of "+unit.civ.civName
     }
-    override fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> =
-        unit.getMatchingUniques(uniqueType, stateForConditionals, checkCivUniques)
+
     fun getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext, checkCivUniques: Boolean): Sequence<Unique> =
         unit.getMatchingUniques(uniqueType, gameContext, checkCivUniques)
 
