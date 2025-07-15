@@ -123,9 +123,9 @@ tasks.whenTaskAdded {
     }
 }
 
-tasks.register<JavaExec>("run") {
+private fun getSdkPath(): String? {
     val localProperties = project.file("../local.properties")
-    val path = if (localProperties.exists()) {
+    return if (localProperties.exists()) {
         val properties = Properties()
         localProperties.inputStream().use { properties.load(it) }
 
@@ -133,7 +133,11 @@ tasks.register<JavaExec>("run") {
     } else {
         System.getenv("ANDROID_HOME")
     }
+}
 
+tasks.register<JavaExec>("run") {
+
+    val path = getSdkPath()
     val adb = "$path/platform-tools/adb"
 
     doFirst {

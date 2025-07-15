@@ -4,7 +4,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.Countables
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.devconsole.CliInput.Companion.findCliInput
 
@@ -89,7 +89,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
 
         "checkcountable" to ConsoleAction("civ checkcountable <countable> [civName]") { console, params ->
             val civ = console.getCivByNameOrSelected(params.getOrNull(1))
-            val amount = Countables.getCountableAmount(params[0].originalUnquoted(), StateForConditionals(civ))
+            val amount = Countables.getCountableAmount(params[0].originalUnquoted(), GameContext(civ))
             DevConsoleResponse.hint(amount?.toString() ?: "Invalid countable")
         },
     )

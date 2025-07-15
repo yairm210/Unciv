@@ -1,6 +1,7 @@
 package com.unciv.logic
 
-import org.jetbrains.annotations.Contract
+import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.Pure
 
 object MultiFilter {
     private const val andPrefix = "{"
@@ -19,7 +20,7 @@ object MultiFilter {
      *  @param filterFunction The single filter implementation
      *  @param forUniqueValidityTests Inverts the `non-[filter]` test because Unique validity doesn't check for actual matching
      */
-    @Contract("readonly") @Suppress("purity")
+    @Readonly @Suppress("purity") // Calls function invoke
     fun multiFilter(
         input: String,
         filterFunction: (String) -> Boolean,
@@ -36,7 +37,7 @@ object MultiFilter {
         return filterFunction(input)
     }
 
-    @Contract("readonly")
+    @Pure
     fun getAllSingleFilters(input: String): Sequence<String> = when {
         input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator) ->
             // Resolve "AND" filters
@@ -49,7 +50,7 @@ object MultiFilter {
         else -> sequenceOf(input)
     }
 
-    @Contract("readonly")
+    @Pure
     fun String.hasSurrounding(prefix: String, suffix: String) =
         startsWith(prefix) && endsWith(suffix)
 }

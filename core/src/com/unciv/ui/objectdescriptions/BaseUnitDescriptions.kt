@@ -6,7 +6,7 @@ import com.unciv.logic.city.City
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -277,8 +277,8 @@ object BaseUnitDescriptions {
         if (betterUnit.movement != originalUnit.movement)
             yield("${Fonts.movement} {[${betterUnit.movement}] vs [${originalUnit.movement}]}" to null)
 
-        for (resource in originalUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).keys)
-            if (!betterUnit.getResourceRequirementsPerTurn(StateForConditionals.IgnoreConditionals).containsKey(resource)) {
+        for (resource in originalUnit.getResourceRequirementsPerTurn(GameContext.IgnoreConditionals).keys)
+            if (!betterUnit.getResourceRequirementsPerTurn(GameContext.IgnoreConditionals).containsKey(resource)) {
                 yield("[$resource] not required" to "Resource/$resource")
             }
         // We return the unique text directly, so Nation.getUniqueUnitsText will not use the

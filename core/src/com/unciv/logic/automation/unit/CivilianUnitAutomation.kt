@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
@@ -24,7 +24,7 @@ object CivilianUnitAutomation {
         
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
         fun hasSettlerAction(uniqueType: UniqueType) =
-            unit.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+            unit.getMatchingUniques(uniqueType, GameContext.IgnoreConditionals)
                 .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
                 .any { canUse(unit, it) }
         

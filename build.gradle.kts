@@ -5,6 +5,7 @@ import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.jnaVersion
 import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
+import java.util.Properties
 
 
 buildscript {
@@ -36,7 +37,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.15" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.18" apply(false)
 }
 
 allprojects {
@@ -46,13 +47,23 @@ allprojects {
     
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
-        wellKnownPureFunctions = setOf()
-        wellKnownReadonlyFunctions = setOf(
-            "kotlin.collections.any",
-            "kotlin.collections.all",
+        wellKnownPureFunctions = setOf(
+            "kotlin.let",
+            "kotlin.run",
+            "kotlin.also",
+            "kotlin.apply",
+            "kotlin.takeIf",
+            "kotlin.takeUnless",
+            "kotlin.ranges.coerceIn",
             "kotlin.ranges.coerceAtLeast",
+            "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
+        )
+        wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
             "java.util.AbstractCollection.contains",
+        )
+        wellKnownPureClasses = setOf(
+            "kotlin.enums.EnumEntries",
         )
     }
     
@@ -116,7 +127,19 @@ project(":server") {
 
 }
 
-if (System.getenv("ANDROID_HOME") != null) {
+private fun getSdkPath(): String? {
+    val localProperties = project.file("local.properties")
+    return if (localProperties.exists()) {
+        val properties = Properties()
+        localProperties.inputStream().use { properties.load(it) }
+
+        properties.getProperty("sdk.dir") ?: System.getenv("ANDROID_HOME")
+    } else {
+        System.getenv("ANDROID_HOME")
+    }
+}
+
+if (getSdkPath() != null) {
     project(":android") {
         apply(plugin = "com.android.application")
         apply(plugin = "kotlin-android")
@@ -147,6 +170,8 @@ project(":core") {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+        
+        "implementation"("io.github.yairm210:purity-annotations:0.0.17")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")

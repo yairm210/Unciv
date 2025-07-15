@@ -3,7 +3,7 @@ package com.unciv.models.ruleset.validation
 import com.badlogic.gdx.graphics.Color
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -34,7 +34,7 @@ class RulesetErrorList(
 ) : ArrayList<RulesetError>() {
     private val globalSuppressionFilters: Set<String> =
         ruleset?.modOptions
-        ?.getMatchingUniques(UniqueType.SuppressWarnings, StateForConditionals.IgnoreConditionals)
+        ?.getMatchingUniques(UniqueType.SuppressWarnings, GameContext.IgnoreConditionals)
         ?.map { it.params[0] }
         ?.toSet()
         ?: emptySet()

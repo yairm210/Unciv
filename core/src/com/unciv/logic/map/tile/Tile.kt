@@ -25,7 +25,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
@@ -34,7 +34,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
-import org.jetbrains.annotations.Contract
+import yairm210.purity.annotations.Readonly
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.abs
@@ -258,7 +258,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return null
     }
 
-    @Contract("readonly")
+    @Readonly
     fun getCity(): City? = owningCity
 
     internal fun getNaturalWonder(): Terrain =
@@ -283,12 +283,18 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun hasImprovementInProgress() = improvementQueue.isNotEmpty()
 
+    @Readonly
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
+    @Readonly
     fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
+    @Readonly
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
+    @Readonly
     fun getTileImprovementInProgress(): TileImprovement? = improvementQueue.firstOrNull()?.let { ruleset.tileImprovements[it.improvement] }
+    @Readonly
     fun containsGreatImprovement() = getTileImprovement()?.isGreatImprovement() == true
 
+    @Readonly
     fun getImprovementToPillage(): TileImprovement? {
         if (canPillageTileImprovement())
             return ruleset.tileImprovements[improvement]!!
@@ -297,6 +303,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return null
     }
     // same as above, but slightly quicker
+    @Readonly
     fun getImprovementToPillageName(): String? {
         if (canPillageTileImprovement())
             return improvement
@@ -304,6 +311,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             return roadStatus.name
         return null
     }
+    @Readonly
     fun getImprovementToRepair(): TileImprovement? {
         if (improvement != null && improvementIsPillaged)
             return ruleset.tileImprovements[improvement]!!
@@ -311,24 +319,30 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             return ruleset.tileImprovements[roadStatus.name]!!
         return null
     }
+    @Readonly
     fun canPillageTile(): Boolean {
         return canPillageTileImprovement() || canPillageRoad()
     }
+    @Readonly
     fun canPillageTileImprovement(): Boolean {
         return improvement != null && !improvementIsPillaged
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
     }
+    @Readonly
     fun canPillageRoad(): Boolean {
         return roadStatus != RoadStatus.None && !roadIsPillaged
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
     }
+    @Readonly
     fun getUnpillagedImprovement(): String? = if (improvementIsPillaged) null else improvement
     
     /** @return [RoadStatus] on this [Tile], pillaged road counts as [RoadStatus.None] */
+    @Readonly
     fun getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus
-
+    
+    @Readonly
     fun getUnpillagedRoadImprovement(): TileImprovement? {
         return if (getUnpillagedRoad() == RoadStatus.None) null
         else ruleset.tileImprovements[getUnpillagedRoad().name]
@@ -353,7 +367,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
-    @Contract("readonly")
+    @Readonly
     fun getOwner(): Civilization? = getCity()?.civ
 
     fun getRoadOwner(): Civilization? {
@@ -363,6 +377,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             getOwner()
     }
 
+    @Readonly
     fun isFriendlyTerritory(civInfo: Civilization): Boolean {
         val tileOwner = getOwner()
         return when {
@@ -373,6 +388,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
+    @Readonly
     fun isEnemyTerritory(civInfo: Civilization): Boolean {
         val tileOwner = getOwner() ?: return false
         return civInfo.isAtWarWith(tileOwner)
@@ -381,30 +397,30 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isRoughTerrain() = allTerrains.any { it.isRough() }
 
     @Transient
-    internal var stateThisTile: StateForConditionals = StateForConditionals.EmptyState
+    internal var stateThisTile: GameContext = GameContext.EmptyState
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
-    fun terrainHasUnique(uniqueType: UniqueType, state: StateForConditionals = stateThisTile) =
+    fun terrainHasUnique(uniqueType: UniqueType, state: GameContext = stateThisTile) =
         cachedTerrainData.uniques.hasMatchingUnique(uniqueType, state)
     /** Get all uniques of this type that any TERRAIN on this tile has */
-    fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = stateThisTile ): Sequence<Unique> {
-        return cachedTerrainData.uniques.getMatchingUniques(uniqueType, stateForConditionals)
+    fun getTerrainMatchingUniques(uniqueType: UniqueType, gameContext: GameContext = stateThisTile ): Sequence<Unique> {
+        return cachedTerrainData.uniques.getMatchingUniques(uniqueType, gameContext)
     }
 
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = stateThisTile): Sequence<Unique> {
-        var uniques = getTerrainMatchingUniques(uniqueType, stateForConditionals)
+    fun getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext = stateThisTile): Sequence<Unique> {
+        var uniques = getTerrainMatchingUniques(uniqueType, gameContext)
         if (getUnpillagedImprovement() != null) {
             val tileImprovement = getTileImprovement()
             if (tileImprovement != null) {
-                uniques += tileImprovement.getMatchingUniques(uniqueType, stateForConditionals)
+                uniques += tileImprovement.getMatchingUniques(uniqueType, gameContext)
             }
         }
         if (resource != null)
-            uniques += tileResource.getMatchingUniques(uniqueType, stateForConditionals)
+            uniques += tileResource.getMatchingUniques(uniqueType, gameContext)
         return uniques
     }
 
-    @Contract("readonly")
+    @Readonly
     fun getWorkingCity(): City? {
         val civInfo = getOwner() ?: return null
         if (owningCity?.isWorked(this) == true) return owningCity // common case
@@ -437,7 +453,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return false
     }
 
-    @Contract("readonly")
+    @Readonly
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield(): Boolean {
         if (getCity() == null) return false
@@ -478,6 +494,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     // This should be the only adjacency function
+    @Readonly
     fun isAdjacentTo(terrainFilter: String, observingCiv: Civilization? = null): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == Constants.river) return isAdjacentToRiver()
@@ -486,12 +503,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
-    @Contract("readonly")
+    @Readonly
     fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo) })
     }
 
-    @Contract("readonly") @Suppress("purity")
+    @Readonly
     private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
@@ -507,8 +524,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleTerrainFilter(it, observingCiv) })
         else matchesSingleTerrainFilter(filter, observingCiv)
     }
-    
 
+    @Readonly
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization?): Boolean {
         // Constant strings get their own 'when' for performance - 
         //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734
@@ -562,8 +579,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
+    @Readonly @Suppress("purity") // should be auto-recognized!
     fun isCoastalTile() = _isCoastalTile
 
+    @Readonly
     fun hasViewableResource(civInfo: Civilization): Boolean =
             resource != null && civInfo.tech.isRevealed(tileResource)
 
@@ -636,6 +655,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
+    @Readonly @Suppress("purity") // sets cached value
     fun isAdjacentToRiver(): Boolean {
         if (!isAdjacentToRiverKnown) {
             isAdjacentToRiver =
@@ -770,7 +790,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun setOwnerTransients() {
         // If it has an owning city, the state was already set in setOwningCity
-        if (owningCity == null) stateThisTile = StateForConditionals(tile = this,
+        if (owningCity == null) stateThisTile = GameContext(tile = this,
             // When generating maps we call this function but there's no gameinfo
             gameInfo = if (tileMap.hasGameInfo()) tileMap.gameInfo else null)
         if (owningCity == null && roadOwner != "")
@@ -789,7 +809,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             roadOwner = ""
         }
         owningCity = city
-        stateThisTile = StateForConditionals(tile = this, city = city, gameInfo = tileMap.gameInfo)
+        stateThisTile = GameContext(tile = this, city = city, gameInfo = tileMap.gameInfo)
         isCityCenterInternal = getCity()?.location == position
     }
 

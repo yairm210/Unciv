@@ -1,7 +1,7 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.expressions.Parser
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -100,7 +100,7 @@ class ExpressionTests {
         var fails = 0
         for ((expression, expected) in input) {
             val actual = try {
-                Parser.eval(expression, StateForConditionals(city))
+                Parser.eval(expression, GameContext(city))
             } catch (_: Parser.ParsingError) {
                 null
             }
