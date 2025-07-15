@@ -306,7 +306,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             val defaultNotificationText = if (civ.getKnownCivs().contains(civInfo)) {
                 "[${civInfo.civName}] has adopted the [${policy.name}] policy"
             } else {
-                "An unknown civilization has adopted the [${policy.name}] policy"
+                "[An unknown civilization] has adopted the [${policy.name}] policy"
             }
             civ.addNotification(
                 "{${defaultNotificationText}} {${extraNotificationText}}",

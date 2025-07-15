@@ -37,7 +37,7 @@ object MultiFilter {
         return filterFunction(input)
     }
 
-    @Pure
+    @Pure @Suppress("purity") // calls flatmap{}
     fun getAllSingleFilters(input: String): Sequence<String> = when {
         input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator) ->
             // Resolve "AND" filters

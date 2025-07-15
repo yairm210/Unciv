@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import yairm210.purity.annotations.Pure
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -270,6 +271,7 @@ object HexMath {
         12 to hex2WorldCoords(Vector2(-1f, -1f)) )
 
     /** Returns the world/screen-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
+    @Pure @Suppress("purity")
     fun getClockPositionToWorldVector(clockPosition: Int): Vector2 =
         clockPositionToWorldVectorMap[clockPosition] ?: Vector2.Zero
 
