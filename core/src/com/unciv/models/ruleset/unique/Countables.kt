@@ -68,7 +68,7 @@ enum class Countables(
             UniqueParameterType.CityFilter.getTranslatedErrorSeverity(parameterText, ruleset)
     },
 
-    CitiesCivFilterCityFilter("[civFilter] [cityFilter] Cities", shortDocumentation = "The number of cities owned by the given matching Civilization(s) that match the given cityFilter") {
+    CitiesCivFilterCityFilter("[civFilter] [cityFilter] Cities", shortDocumentation = "The number of cityFilter-matching cities owned by the given Civilization(s)") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
             val civFilter = parameterText.getPlaceholderParameters()[0]
@@ -90,6 +90,7 @@ enum class Countables(
                 cityFilters.map { city -> "[$civ] [$city] Cities" }
             }.toSet()
         }
+        override val example: String = "[All] [Holy] Cities"
     },
 
     Units("Units", shortDocumentation = "The number of units the relevant Civilization owns") {
@@ -97,7 +98,19 @@ enum class Countables(
             gameContext.civInfo?.units?.getCivUnitsSize()
     },
 
-    UnitsCivFilterMapUnitFilter("[civFilter] [mapUnitFilter] Units") {
+    UnitsMapUnitFilter("[mapUnitFilter] Units") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val unitManager = gameContext.civInfo?.units ?: return null
+            return unitManager.getCivUnits().count { it.matchesFilter(filter) }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
+    },
+
+    UnitsCivFilterMapUnitFilter("[civFilter] [mapUnitFilter] Units", shortDocumentation = "The number of mapUnitFilter-matching units the given Civilization(s) own") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
@@ -120,18 +133,6 @@ enum class Countables(
                 unitFilters.map { unit -> "[$civ] [$unit] Units" }
             }.toSet()
         }
-    },
-
-    UnitsMapUnitFilter("[mapUnitFilter] Units") {
-        override fun eval(parameterText: String, gameContext: GameContext): Int? {
-            val filter = parameterText.getPlaceholderParameters()[0]
-            val unitManager = gameContext.civInfo?.units ?: return null
-            return unitManager.getCivUnits().count { it.matchesFilter(filter) }
-        }
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
-            UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
-            (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
     },
 
     Stats {
@@ -159,7 +160,7 @@ enum class Countables(
             gameContext.civInfo?.getCompletedPolicyBranchesCount()
     },
 
-    PolicyBranchesCivFilter("[civFilter] Completed Policy branches") {
+    PolicyBranchesCivFilter("[civFilter] Completed Policy branches", shortDocumentation = "The number of policy branches that the given Civilization(s) have completed") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
             val civFilter = parameterText.getPlaceholderParameters()[0]
@@ -184,7 +185,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    BuildingsCivFilterBuildingFilter("[civFilter] [buildingFilter] Buildings") {
+    BuildingsCivFilterBuildingFilter("[civFilter] [buildingFilter] Buildings", shortDocumentation = "The number of buildingFilter-matching buildings that the given Civilization(s) own") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
@@ -272,7 +273,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    OwnedTilesCivFilterTileFilter("Owned [civFilter] [tileFilter] Tiles") {
+    OwnedTilesCivFilterTileFilter("Owned [civFilter] [tileFilter] Tiles", shortDocumentation = "The number of tileFilter tiles that the given Civilization(s) own within a city") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]
@@ -320,7 +321,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
     },
 
-    ResourcesCivFilterResourceFilter("[civFilter] [resource] Resources") {
+    ResourcesCivFilterResourceFilter("[civFilter] [resource] Resources", shortDocumentation = "The number of resources that the given Civilization(s) own") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val params = parameterText.getPlaceholderParameters()
             val civFilter = params[0]

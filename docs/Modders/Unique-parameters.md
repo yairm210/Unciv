@@ -351,25 +351,37 @@ Allowed values:
     - Depends on game speed or start era, negative for years BC
 -   `Cities` - The number of cities the relevant Civilization owns
     - Example: `Only available <when number of [Cities] is more than [0]>`
+-   `[cityFilter] Cities` - The number of cities that match the given cityFilter
+    - Example: `Only available <when number of [[in all cities] Cities] is more than [0]>`
+-   `[civFilter] [cityFilter] Cities` - The number of cityFilter-matching cities owned by the given Civilization(s)
+    - Example: `Only available <when number of [[All] [Holy] Cities] is more than [0]>`
 -   `Units` - The number of units the relevant Civilization owns
     - Example: `Only available <when number of [Units] is more than [0]>`
+-   `[mapUnitFilter] Units`
+    - Example: `Only available <when number of [[Wounded] Units] is more than [0]>`
+-   `[civFilter] [mapUnitFilter] Units` - The number of mapUnitFilter-matching units the given Civilization(s) own
+    - Example: `Only available <when number of [[City-States] [Wounded] Units] is more than [0]>`
 -   Stat name (`Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` or `Faith`)
     - Example: `Only available <when number of [Science] is more than [0]>`
     - Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
 -   `Completed Policy branches`
     - Example: `Only available <when number of [Completed Policy branches] is more than [0]>`
--   `[cityFilter] Cities`
-    - Example: `Only available <when number of [[in all cities] Cities] is more than [0]>`
--   `[mapUnitFilter] Units`
-    - Example: `Only available <when number of [[Wounded] Units] is more than [0]>`
+-   `[civFilter] Completed Policy branches` - The number of policy branches that the given Civilization(s) have completed
+    - Example: `Only available <when number of [[City-States] Completed Policy branches] is more than [0]>`
 -   `[buildingFilter] Buildings`
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
+-   `[civFilter] [buildingFilter] Buildings` - The number of buildingFilter-matching buildings that the given Civilization(s) own
+    - Example: `Only available <when number of [[City-States] [Culture] Buildings] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
     - Example: `Only available <when number of [Adopted [Oligarchy] Policies] is more than [0]>`
+-   `[civFilter] Adopted [policyFilter] Policies`
+    - Example: `Only available <when number of [[City-States] Adopted [Oligarchy] Policies] is more than [0]>`
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Owned [tileFilter] Tiles`
     - Example: `Only available <when number of [Owned [Farm] Tiles] is more than [0]>`
+-   `Owned [civFilter] [tileFilter] Tiles` - The number of tileFilter tiles that the given Civilization(s) own within a city
+    - Example: `Only available <when number of [Owned [City-States] [Farm] Tiles] is more than [0]>`
 -   `[tileFilter] Tiles`
     - Example: `Only available <when number of [[Desert] Tiles] is more than [0]>`
 -   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
@@ -377,6 +389,8 @@ Allowed values:
     - Can be city stats or civilization stats, depending on where the unique is used
     - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
     - This can make a difference for e.g. local resources, which are counted per city.
+-   `[civFilter] [resource] Resources` - The number of resources that the given Civilization(s) own
+    - Example: `Only available <when number of [[City-States] [Iron] Resources] is more than [0]>`
 -   `Era number` - Number of the era the current player is in
     - Example: `Only available <when number of [Era number] is more than [0]>`
     - Zero-based index of the Era in Eras.json.

@@ -160,7 +160,7 @@ class CountableTests {
     }
 
     @Test
-    fun testFilteredCitiesCountable() {
+    fun testCitiesCityFilterCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
 
@@ -171,6 +171,31 @@ class CountableTests {
             "[Puppeted] Cities" to 1,
             "[Coastal] Cities" to 1,
             "[Your] Cities" to 2,
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
+    fun testCitiesCivFilterCityFilterCountable() {
+        setupModdedGame()
+
+        val city2 = addCivCity()
+        val civ2 = city2.civ
+        city2.isPuppet = true
+        val city3 = game.addCity(civ2, game.tileMap[1, 2])
+
+        val tests = listOf(
+            "[${civ.civName}] [Capital] Cities" to 1,
+            "[All] [Capital] Cities" to 2,
+            "[${civ2.civName}] [Puppeted] Cities" to 1,
+            "[${civ.civName}] [Puppeted] Cities" to 0,
+            "[All] [Puppeted] Cities" to 1,
+            "[All] [All] Cities" to 3,
+            "[${civ2.civName}] [All] Cities" to 2,
+            "[${civ2.civName}] [Coastal] Cities" to 0,
         )
         for ((test, expected) in tests) {
             val actual = Countables.getCountableAmount(test, GameContext(civ))
@@ -268,9 +293,7 @@ class CountableTests {
     fun testPoliciesCivFilterPolicyFilterCountables() {
         setupModdedGame()
 
-        // Test the Policy Countables with the civFilter
         val civ2 = addCivCity().civ
-
         civ.policies.freePolicies += 20
         civ2.policies.freePolicies += 20
 
@@ -283,12 +306,11 @@ class CountableTests {
             civ2.policies.adopt(policy)
         }
 
-        val civName = civ.civName
         val tests = listOf(
-            "[All] Completed Policy branches" to 2,       // Tradition, for both Civs
+            "[All] Completed Policy branches" to 2, // Tradition, for both Civs
             "[All] Adopted [Tradition Complete] Policies" to 2,
-            "[$civName] Adopted [[Tradition] branch] Policies" to 7,   // Branch start and completion plus 5 members
-            "[All] Adopted [[Liberty] branch] Policies" to 4,     // Liberty has only 1 member adopted
+            "[${civ.civName}] Adopted [[Tradition] branch] Policies" to 7, // Branch start and completion plus 5 members
+            "[All] Adopted [[Liberty] branch] Policies" to 4, // Liberty has only 1 member adopted
         )
         for ((test, expected) in tests) {
             val actual = Countables.getCountableAmount(test, GameContext(civ))
