@@ -48,7 +48,7 @@ class ChatPopup(
 
     init {
         ChatStore.chatPopupAvailable = true
-        chatTable.defaults().growX().pad(5f).left()
+        chatTable.defaults().growX().pad(5f).center()
 
         /**
          * Layout:
@@ -59,8 +59,6 @@ class ChatPopup(
 
         // Header: |  ChatHeader | CloseButton  |
         val chatHeader = Table(skin)
-        chatTable.defaults().center()
-
         val chatLabel = "UncivChat™".toLabel(fontSize = 30, alignment = Align.center)
         val chatIcon = ImageGetter.getImage("OtherIcons/Chat")
 

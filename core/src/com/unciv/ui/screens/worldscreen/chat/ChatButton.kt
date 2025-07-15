@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.worldscreen.chat
 
 import com.unciv.UncivGame
-import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.logic.multiplayer.chat.Message
 import com.unciv.ui.components.input.onClick
@@ -12,8 +11,6 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
     "Chat", ImageGetter.getImage("OtherIcons/Chat"), 23
 ) {
-    private val eventReceiver = EventBus.EventReceiver()
-
     init {
         width = 95f
         iconCell.pad(3f).center()
