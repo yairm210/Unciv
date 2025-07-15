@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.randomWeighted
 import kotlin.random.Random
@@ -34,7 +34,7 @@ object MapRegionResources {
             ResourceType.Bonus -> ImpactType.Bonus
             ResourceType.Luxury -> ImpactType.Luxury
         }
-        val conditionalTerrain = StateForConditionals(attackedTile = tileList.firstOrNull())
+        val conditionalTerrain = GameContext(attackedTile = tileList.firstOrNull())
         val weightings = resourceOptions.associateWith {
             val unique = it.getMatchingUniques(UniqueType.ResourceWeighting, conditionalTerrain).firstOrNull()
             val weight = if (unique != null) unique.params[0].toFloat() else 1f

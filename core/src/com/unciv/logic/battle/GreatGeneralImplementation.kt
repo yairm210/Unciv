@@ -3,7 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -40,7 +40,7 @@ object GreatGeneralImplementation {
         val greatGeneral = allGenerals
             .flatMap { general ->
                 general.getMatchingUniques(UniqueType.StrengthBonusInRadius,
-                    StateForConditionals(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction))
+                    GameContext(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction))
                     .map { GeneralBonusData(general, it) }
             }.filter {
                 // Support the border case when a mod unit has several

@@ -13,7 +13,7 @@ import kotlin.random.Random
 
 object Conditionals {
 
-    private fun getStateBasedRandom(state: StateForConditionals, unique: Unique?): Float {
+    private fun getStateBasedRandom(state: GameContext, unique: Unique?): Float {
         var seed = state.gameInfo?.turns?.hashCode() ?: 0
         seed = seed * 31 + (unique?.hashCode() ?: 0)
         seed = seed * 31 + state.hashCode()
@@ -24,7 +24,7 @@ object Conditionals {
     fun conditionalApplies(
         unique: Unique?,
         conditional: Unique,
-        state: StateForConditionals
+        state: GameContext
     ): Boolean {
 
         if (conditional.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)

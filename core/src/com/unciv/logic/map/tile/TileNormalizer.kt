@@ -2,7 +2,7 @@ package com.unciv.logic.map.tile
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 
 object TileNormalizer {
 
@@ -51,7 +51,7 @@ object TileNormalizer {
     private fun normalizeTileImprovement(tile: Tile, ruleset: Ruleset) {
         val improvementObject = ruleset.tileImprovements[tile.improvement]
             ?: return tile.clearImprovement()
-        if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals, isNormalizeCheck = true))
+        if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, gameContext = GameContext.IgnoreConditionals, isNormalizeCheck = true))
             return
         tile.clearImprovement()
     }

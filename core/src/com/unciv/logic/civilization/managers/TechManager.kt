@@ -18,7 +18,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -28,6 +28,7 @@ import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.withItem
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -107,6 +108,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return 1 + numberOfCivsResearchedThisTech / numberOfCivsRemaining.toFloat() * 0.3f
     }
 
+    @Readonly
     private fun getRuleset() = civInfo.gameInfo.ruleset
 
     fun costOfTech(techName: String): Int {
@@ -152,26 +154,31 @@ class TechManager : IsPartOfGameInfoSerialization {
             ).tr()
         }
     }
-
+    @Readonly
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
 
+    @Readonly
     fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
     /** resources which need no research count as researched */
+    @Readonly
     fun isRevealed(resource: TileResource): Boolean {
         val revealedBy = resource.revealedBy ?: return true
         return isResearched(revealedBy)
     }
-    
+
+    @Readonly
     fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
 
+    @Readonly
     fun isUnresearchable(tech: Technology): Boolean {
-        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any { !it.conditionalsApply(civInfo.state) })
+        if (tech.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).any { !it.conditionalsApply(civInfo.state) })
             return true
         if (tech.hasUnique(UniqueType.Unavailable, civInfo.state)) return true
         return false
     }
 
+    @Readonly
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
 

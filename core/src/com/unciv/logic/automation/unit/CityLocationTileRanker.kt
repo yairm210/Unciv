@@ -9,7 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 
 object CityLocationTileRanker {
@@ -36,7 +36,7 @@ object CityLocationTileRanker {
         val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             // Filter out tiles that we can't actually found on
-            .filter { tile -> uniques.any { it.conditionalsApply(StateForConditionals(unit = unit, tile = tile)) } }
+            .filter { tile -> uniques.any { it.conditionalsApply(GameContext(unit = unit, tile = tile)) } }
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
         val uniqueCache = LocalUniqueCache()
         val bestTilesToFoundCity = BestTilesToFoundCity()

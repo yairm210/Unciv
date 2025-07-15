@@ -18,7 +18,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -368,11 +368,11 @@ class WorkerAutomation(
         // You can keep working on half-built improvements, even if they're unique to another civ
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress!!]
 
-        val stateForConditionals = StateForConditionals(civInfo = unit.civ, unit = unit, tile = tile)
+        val gameContext = GameContext(civInfo = unit.civ, unit = unit, tile = tile)
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
-            (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!, stateForConditionals))
+            (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!, gameContext))
                     && unit.canBuildImprovement(it.value, tile)
-                    && tile.improvementFunctions.canBuildImprovement(it.value, stateForConditionals)
+                    && tile.improvementFunctions.canBuildImprovement(it.value, gameContext)
         }
         if (potentialTileImprovements.isEmpty()) return null
 
