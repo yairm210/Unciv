@@ -57,7 +57,7 @@ class OffersListScroll(
 
         for (offerType in TradeOfferType.entries) {
             val labelName = when(offerType) {
-                Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
+                Embassy, Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
                 Stockpiled_Resource -> "Stockpiled resources"

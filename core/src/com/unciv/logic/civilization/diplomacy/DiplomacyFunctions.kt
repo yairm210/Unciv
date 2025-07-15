@@ -104,6 +104,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
+            && diplomacyManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            && otherCiv.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
             && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
             && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
@@ -131,6 +133,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
+            && diplomacyManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            && otherCiv.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
             && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)

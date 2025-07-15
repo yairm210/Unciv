@@ -7,6 +7,7 @@ import com.unciv.logic.automation.civilization.DeclareWarPlanEvaluator
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -51,6 +52,18 @@ class TradeEvaluation {
         }
 
         return when (tradeOffer.type) {
+            TradeOfferType.Embassy -> {
+                val theirDiploManager = tradePartner.getDiplomacyManager(offerer)!!
+                val ourDiploManager = offerer.getDiplomacyManager(tradePartner)!!
+
+                // If denounciation happened this turn from either side, establishing embassy is possible from next turn
+                val denouncedThisTurn = if (ourDiploManager.hasFlag(DiplomacyFlags.Denunciation))
+                    ourDiploManager.getFlag(DiplomacyFlags.Denunciation) == 30 else false
+
+                offerer.tech.isResearched("Writing") &&
+                    !offerer.isAtWarWith(tradePartner) && !denouncedThisTurn &&
+                    !theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            }
             // if they go a little negative it's okay, but don't allowing going overboard (promising same gold to many)
             TradeOfferType.Gold -> tradeOffer.amount * 0.9f < offerer.gold
             TradeOfferType.Gold_Per_Turn -> tradeOffer.amount * 0.9f < offerer.stats.statsForNextTurn.gold
@@ -122,6 +135,7 @@ class TradeEvaluation {
      */
     private fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
+            TradeOfferType.Embassy -> return 30
             TradeOfferType.Gold -> return offer.amount
             // GPT loses value for each 'future' turn, meaning: gold now is more valuable than gold in the future
             // Empire-wide production tends to grow at roughly 2% per turn (quick speed), so let's take that as a base line
@@ -322,6 +336,12 @@ class TradeEvaluation {
      */
     private fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
+            TradeOfferType.Embassy -> {
+                val tradePartnerDiplo = civInfo.getDiplomacyManager(tradePartner)!!
+                if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Enemy)) return Int.MIN_VALUE
+                else if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Competitor)) return 60
+                return 30 // 30 is Civ V default
+            }
             TradeOfferType.Gold -> return offer.amount
             TradeOfferType.Gold_Per_Turn -> return offer.amount * offer.duration
             TradeOfferType.Treaty -> {

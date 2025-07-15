@@ -107,16 +107,51 @@ object DiplomacyAutomation {
 
         return motivation > 0
     }
+    
+    internal fun offerEmbassy(civInfo: Civilization) {
+        // TODO: Unique to enable embassy
+        //if (!civInfo.hasUnique(UniqueType.EnablesEmbassy)) return
+        val civsThatWeCanEstablishEmbassyWith = civInfo.getKnownCivs()
+            .filter {
+                val diploManager = civInfo.getDiplomacyManager(it)!!
+                it.isMajorCiv() && !civInfo.isAtWarWith(it)
+                    // TODO: Unique to enable embassy
+                    // && it.hasUnique(UniqueType.EnablesEmbassy)
+                    && !civInfo.getDiplomacyManager(it)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+                    && !it.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+                    && !diploManager.hasFlag(DiplomacyFlags.DeclinedEmbassy)
+                    && !areWeOfferingTrade(civInfo, it, Constants.establishEmbassy)
+            }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
+
+        for (otherCiv in civsThatWeCanEstablishEmbassyWith) {
+            // Default setting is 3, this will be changed according to different civ.
+            if ((1..10).random() < 7) continue
+            if (wantsToEstablishEmbassy(civInfo, otherCiv)) {
+                val tradeLogic = TradeLogic(civInfo, otherCiv)
+                val embassyOffer = TradeOffer(Constants.establishEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
+
+                tradeLogic.currentTrade.ourOffers.add(embassyOffer)
+                tradeLogic.currentTrade.theirOffers.add(embassyOffer)
+
+                otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            } else {
+                // Remember this for a few turns to save computation power
+                civInfo.getDiplomacyManager(otherCiv)!!.setFlag(DiplomacyFlags.DeclinedEmbassy, 5)
+            }
+        }        
+    }
 
     internal fun offerOpenBorders(civInfo: Civilization) {
         if (!civInfo.hasUnique(UniqueType.EnablesOpenBorders)) return
         val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs()
             .filter {
+                val diploManager = civInfo.getDiplomacyManager(it)!!
                 it.isMajorCiv() && !civInfo.isAtWarWith(it)
                     && it.hasUnique(UniqueType.EnablesOpenBorders)
                     && !civInfo.getDiplomacyManager(it)!!.hasOpenBorders
                     && !it.getDiplomacyManager(civInfo)!!.hasOpenBorders
-                    && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
+                    && diploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+                    && !diploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
                     && !areWeOfferingTrade(civInfo, it, Constants.openBorders)
             }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
 
@@ -134,6 +169,30 @@ object DiplomacyAutomation {
                 civInfo.getDiplomacyManager(otherCiv)!!.setFlag(DiplomacyFlags.DeclinedOpenBorders, 5)
             }
         }
+    }
+
+    fun wantsToEstablishEmbassy(civInfo: Civilization, otherCiv: Civilization): Boolean {
+        val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        if (diploManager.hasFlag(DiplomacyFlags.DeclinedEmbassy)) return false
+        if (diploManager.isRelationshipLevelLT(RelationshipLevel.Afraid)) return false
+
+        // Being able to see their capital can give us an advantage later on, especially with espionage enabled
+        if (!civInfo.getCapital()!!.getCenterTile().isExplored(otherCiv)) return true
+
+        val hasExploredOurCapital = otherCiv.getCapital()!!.getCenterTile().isExplored(civInfo)
+        if (!hasExploredOurCapital) {
+            // If we're afraid of them then deny embassy
+            if (diploManager.relationshipLevel() == RelationshipLevel.Afraid) return false
+
+            // If they're much stronger than us deny embassy
+            val ourCombatStrength = otherCiv.getStatForRanking(RankingType.Force)
+            val theirCombatStrength = civInfo.getStatForRanking(RankingType.Force)
+            val absoluteAdvantage = ourCombatStrength - theirCombatStrength
+            val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()
+            if (percentageAdvantage > 0.5) return false
+        }
+
+        return true // Relationship is Afraid or greater
     }
 
     fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
@@ -157,8 +216,10 @@ object DiplomacyAutomation {
 
         val canSignResearchAgreementCiv = civInfo.getKnownCivs()
             .filter {
+                val diploManager = civInfo.getDiplomacyManager(it)!!
                 civInfo.diplomacyFunctions.canSignResearchAgreementsWith(it)
-                    && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
+                    && diploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+                    && !diploManager.hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
                     && !areWeOfferingTrade(civInfo, it, Constants.researchAgreement)
             }
             .sortedByDescending { it.stats.statsForNextTurn.science }

@@ -46,6 +46,7 @@ enum class DiplomacyFlags {
     DeclinedLuxExchange,
     DeclinedPeace,
     DeclinedResearchAgreement,
+    DeclinedEmbassy,
     DeclinedOpenBorders,
     DeclaredWar,
     DeclarationOfFriendship,
@@ -118,6 +119,7 @@ enum class DiplomaticModifiers(val text: String) {
     StoleOurAlly("You took the alliance we had with a City-State"),
 
     // Positive
+    EstablishedEmbassy("We have an embassy in your capital"),
     YearsOfPeace("Years of peace have strengthened our relations."),
     SharedEnemy("Our mutual military struggle brings us closer together."),
     LiberatedCity("We applaud your liberation of conquered cities!"),
@@ -678,6 +680,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
         setFlag(DiplomacyFlags.Denunciation, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
+
+        // Denounciation results in removal of embasies for both sides
+        removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        otherCivDiplomacy().removeModifier(DiplomaticModifiers.EstablishedEmbassy)
 
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)

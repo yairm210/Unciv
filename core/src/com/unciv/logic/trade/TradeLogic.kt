@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DeclareWarReason
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -20,11 +21,25 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
     private fun getAvailableOffers(civInfo: Civilization, otherCivilization: Civilization): TradeOffersList {
         val offers = TradeOffersList()
+        // TODO: Shouldn't this be OR??
         if (civInfo.isCityState && otherCivilization.isCityState) return offers
+        
+        val embassyOffer = TradeOffer(Constants.establishEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
+        val trade = Trade()
+        trade.ourOffers.add(embassyOffer)
+        if (TradeEvaluation().isTradeValid(trade, civInfo, otherCivilization))
+            offers.add(embassyOffer)
+
         if (civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+        
+        val otherCivDiploManager = otherCivilization.getDiplomacyManager(civInfo)!!
+        // TODO: Both civs need embassy to start opening borders, and signing treaties?
+        val weBothHaveEmbassy = otherCivDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            && civInfo.getDiplomacyManager(otherCivilization)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
 
-        if (!otherCivilization.getDiplomacyManager(civInfo)!!.hasOpenBorders
+        if (weBothHaveEmbassy
+                && !otherCivDiploManager.hasOpenBorders
                 && !otherCivilization.isCityState
                 && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
                 && otherCivilization.hasUnique(UniqueType.EnablesOpenBorders)) {
@@ -114,6 +129,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         // instant transfers
         fun transferTrade(from: Civilization, to: Civilization, offer: TradeOffer) {
             when (offer.type) {
+                TradeOfferType.Embassy -> {
+                    to.getDiplomacyManager(from)!!.addModifier(DiplomaticModifiers.EstablishedEmbassy, 1f)
+                    for (tile in from.getCapital()!!.getCenterTile().getTilesInDistance(2))
+                        tile.setExplored(to, true)
+                }
                 TradeOfferType.Gold -> {
                     to.addGold(offer.amount)
                     from.addGold(-offer.amount)
