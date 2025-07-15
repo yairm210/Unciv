@@ -35,7 +35,7 @@ object Nuke {
         if (launchTile == targetTile) return false
         if (!targetTile.isExplored(attackerCiv)) return false
         // Can only nuke in unit's range, visibility (line of sight) doesn't matter
-        if (!launchTile.getTilesInDistance(nuke.unit.getRange()).contains(targetTile)) return false
+        if (launchTile.aerialDistanceTo(targetTile) > nuke.unit.getRange()) return false
 
         var canNuke = true
         fun checkDefenderCiv(defenderCiv: Civilization?) {
