@@ -107,34 +107,46 @@ object DiplomacyAutomation {
 
         return motivation > 0
     }
-    
-    internal fun offerEmbassy(civInfo: Civilization) {
+
+    /**
+     * Try establishing embassy in other civs' capitals
+     */
+    internal fun establishEmbassy(civInfo: Civilization) {
         // TODO: Unique to enable embassy
         //if (!civInfo.hasUnique(UniqueType.EnablesEmbassy)) return
-        val civsThatWeCanEstablishEmbassyWith = civInfo.getKnownCivs()
-            .filter {
-                val diploManager = civInfo.getDiplomacyManager(it)!!
-                it.isMajorCiv() && !civInfo.isAtWarWith(it)
-                    // TODO: Unique to enable embassy
-                    // && it.hasUnique(UniqueType.EnablesEmbassy)
-                    && !civInfo.getDiplomacyManager(it)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
-                    && !it.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
-                    && !diploManager.hasFlag(DiplomacyFlags.DeclinedEmbassy)
-                    && !areWeOfferingTrade(civInfo, it, Constants.establishEmbassy)
-            }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
+        val civsThatWeCanEstablishEmbassyWith = civInfo.getKnownCivs().filter {
+            // && it.hasUnique(UniqueType.EnablesEmbassy)
+            civInfo.diplomacyFunctions.canEstablishEmbassyWith(it)
+            && !it.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)
+            && !areWeOfferingTrade(civInfo, it, Constants.acceptEmbassy)
+        }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
 
         for (otherCiv in civsThatWeCanEstablishEmbassyWith) {
             // Default setting is 3, this will be changed according to different civ.
             if ((1..10).random() < 7) continue
             if (wantsToEstablishEmbassy(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
-                val embassyOffer = TradeOffer(Constants.establishEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
-
-                tradeLogic.currentTrade.ourOffers.add(embassyOffer)
+                val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
                 tradeLogic.currentTrade.theirOffers.add(embassyOffer)
 
+                // If possible offer mutual embassies
+                if (otherCiv.diplomacyFunctions.canEstablishEmbassyWith(civInfo)) {
+                    tradeLogic.currentTrade.ourOffers.add(embassyOffer)
+                }
+                else { // Otherwise offer GPT (prefered) or flat gold
+                    val embassyValue = TradeEvaluation().evaluateBuyCostWithInflation(embassyOffer, civInfo, otherCiv, tradeLogic.currentTrade)
+                    val ourGpt = civInfo.stats.statsForNextTurn.gold.toInt()
+                    val gptValue = embassyValue / civInfo.gameInfo.speed.dealDuration
+                    if (ourGpt >= gptValue)
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold per turn", TradeOfferType.Gold_Per_Turn, gptValue, civInfo.gameInfo.speed))
+                    else if (civInfo.gold > embassyValue)
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold", TradeOfferType.Gold, embassyValue, civInfo.gameInfo.speed))
+                    // else let them make counter offer
+                }
+                
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
-            } else {
+            }
+            else {
                 // Remember this for a few turns to save computation power
                 civInfo.getDiplomacyManager(otherCiv)!!.setFlag(DiplomacyFlags.DeclinedEmbassy, 5)
             }

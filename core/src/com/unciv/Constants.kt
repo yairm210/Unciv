@@ -52,7 +52,7 @@ object Constants {
     const val openBorders = "Open Borders"
     
     // Other trade items
-    const val establishEmbassy = "Establish Embassy"
+    const val acceptEmbassy = "Accept Embassy"
     
     /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
     const val cityStates = "City-States"

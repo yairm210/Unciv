@@ -89,6 +89,7 @@ class OffersListScroll(
             for (offer in offersOfType) {
                 val tradeLabel = offer.getOfferText(untradableOffers.sumBy(offer.name))
                 val tradeIcon = when (offer.type) {
+                    Embassy -> ImageGetter.getImage("OtherIcons/Star")
                     Luxury_Resource, Strategic_Resource ->
                         ImageGetter.getResourcePortrait(offer.name, 30f)
                     WarDeclaration, PeaceProposal ->

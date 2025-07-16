@@ -88,6 +88,27 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         }
     }
 
+    fun canEstablishEmbassy(): Boolean {
+        return civInfo.isMajorCiv() && civInfo.tech.isResearched("Writing")
+    }
+
+    /**
+     * Test if we can establish embassy in [otherCiv] capital
+     */
+    fun canEstablishEmbassyWith(otherCiv: Civilization): Boolean {
+        if (!(civInfo.isMajorCiv() && otherCiv.isMajorCiv())) return false
+        val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
+
+        // If denounciation happened this turn from either side, establishing embassy again is possible from next turn
+        // This checks denounciation for both sides, no need for ourDiploManager check
+        val denouncedThisTurn = if (theirDiploManager.hasFlag(DiplomacyFlags.Denunciation))
+            theirDiploManager.getFlag(DiplomacyFlags.Denunciation) == 30 else false
+
+        return civInfo.tech.isResearched("Writing") &&
+            !civInfo.isAtWarWith(otherCiv) && !denouncedThisTurn &&
+            !theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+    }
+
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
         return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
             && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation)

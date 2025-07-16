@@ -52,18 +52,8 @@ class TradeEvaluation {
         }
 
         return when (tradeOffer.type) {
-            TradeOfferType.Embassy -> {
-                val theirDiploManager = tradePartner.getDiplomacyManager(offerer)!!
-                val ourDiploManager = offerer.getDiplomacyManager(tradePartner)!!
-
-                // If denounciation happened this turn from either side, establishing embassy is possible from next turn
-                val denouncedThisTurn = if (ourDiploManager.hasFlag(DiplomacyFlags.Denunciation))
-                    ourDiploManager.getFlag(DiplomacyFlags.Denunciation) == 30 else false
-
-                offerer.tech.isResearched("Writing") &&
-                    !offerer.isAtWarWith(tradePartner) && !denouncedThisTurn &&
-                    !theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
-            }
+            // TODO: Implement embassy offer validity
+            TradeOfferType.Embassy -> true
             // if they go a little negative it's okay, but don't allowing going overboard (promising same gold to many)
             TradeOfferType.Gold -> tradeOffer.amount * 0.9f < offerer.gold
             TradeOfferType.Gold_Per_Turn -> tradeOffer.amount * 0.9f < offerer.stats.statsForNextTurn.gold

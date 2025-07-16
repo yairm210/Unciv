@@ -15,21 +15,31 @@ import com.unciv.models.ruleset.unique.UniqueType
 class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civilization) {
 
     /** Contains everything we could offer the other player, whether we've actually offered it or not */
-    val ourAvailableOffers = getAvailableOffers(ourCivilization, otherCivilization)
-    val theirAvailableOffers = getAvailableOffers(otherCivilization, ourCivilization)
+    var ourAvailableOffers = TradeOffersList()
+    var theirAvailableOffers = TradeOffersList()
     val currentTrade = Trade()
 
+    init {
+        // TODO: This doesn't work
+        val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = ourCivilization.gameInfo.speed)
+        // Their embasy trade is visible to players who can establish embassy with them and to them if they can establish embassy
+        if (ourCivilization.diplomacyFunctions.canEstablishEmbassyWith(otherCivilization)) {
+            theirAvailableOffers.add(embassyOffer)
+        }
+        // Our embasy trade is visible to players who can establish embasy with us and to us if we can establish embassy
+        if (otherCivilization.diplomacyFunctions.canEstablishEmbassyWith(ourCivilization))
+            ourAvailableOffers.add(embassyOffer)
+
+        // Other trade items are added as usual for both sides
+        ourAvailableOffers += getAvailableOffers(ourCivilization, otherCivilization)
+        theirAvailableOffers += getAvailableOffers(otherCivilization, ourCivilization)
+    }
+    
     private fun getAvailableOffers(civInfo: Civilization, otherCivilization: Civilization): TradeOffersList {
         val offers = TradeOffersList()
         // TODO: Shouldn't this be OR??
         if (civInfo.isCityState && otherCivilization.isCityState) return offers
         
-        val embassyOffer = TradeOffer(Constants.establishEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
-        val trade = Trade()
-        trade.ourOffers.add(embassyOffer)
-        if (TradeEvaluation().isTradeValid(trade, civInfo, otherCivilization))
-            offers.add(embassyOffer)
-
         if (civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
         
