@@ -93,7 +93,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Returns true if no tech in ruleset's tech tree provide embassies
      */
     fun weBothHaveEmbassy(otherCiv: Civilization): Boolean {
-        // TODO: There must be better method to to do this and without processing all techs, tech may be called something else
+        // TODO: There must be better method to do this and without processing all techs, tech may be called something else
         val writingTech = civInfo.gameInfo.ruleset.technologies["Writing"]
         val embassiesAreEnabled = writingTech != null && writingTech.uniques.contains("Allows establishment of embassies")
 
@@ -158,8 +158,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         return canSignResearchAgreement()
             && weBothHaveEmbassy(otherCiv)
             && otherCiv.diplomacyFunctions.canSignResearchAgreement()
-            && (ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-            || ourDiploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+            && ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !ourDiploManager.hasFlag(DiplomacyFlags.ResearchAgreement)
             && !ourDiploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
     }
@@ -184,15 +183,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
+        val ourDiplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact()
             && otherCiv.diplomacyFunctions.canSignDefensivePact()
             && weBothHaveEmbassy(otherCiv)
-            && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-            || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
-            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
-            && diplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact
+            && ourDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !ourDiplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
+            && !ourDiplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
+            && ourDiplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact
     }
 
     /**

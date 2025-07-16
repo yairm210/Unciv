@@ -31,7 +31,17 @@ class TradeEvaluation {
             || (tradePartner.hasEverOwnedOriginalCapital && trade.theirOffers.count { it.type == TradeOfferType.City } == tradePartner.cities.size)) {
             return false
         }
+        
+        // No way to tell who offers what in isOfferValid()
+        val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = offerer.gameInfo.speed)
+        if (trade.ourOffers.contains(embassyOffer))
+            if (tradePartner.getDiplomacyManager(offerer)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy))
+                return false
 
+        if (trade.theirOffers.contains(embassyOffer))
+            if (offerer.getDiplomacyManager(tradePartner)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy))
+                return false
+            
         for (offer in trade.ourOffers)
             if (!isOfferValid(offer, offerer, tradePartner)) {
                 return false
@@ -52,8 +62,7 @@ class TradeEvaluation {
         }
 
         return when (tradeOffer.type) {
-            // TODO: Implement embassy offer validity
-            TradeOfferType.Embassy -> true
+            TradeOfferType.Embassy -> true // Already checked
             // if they go a little negative it's okay, but don't allowing going overboard (promising same gold to many)
             TradeOfferType.Gold -> tradeOffer.amount * 0.9f < offerer.gold
             TradeOfferType.Gold_Per_Turn -> tradeOffer.amount * 0.9f < offerer.stats.statsForNextTurn.gold
