@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -42,10 +43,12 @@ object HexMath {
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
 
     // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
+    @Readonly
     fun getLatitude(vector: Vector2): Float {
         return vector.x + vector.y
     }
 
+    @Readonly
     fun getLongitude(vector: Vector2): Float {
         return vector.x - vector.y
     }
@@ -68,6 +71,7 @@ object HexMath {
     /**
      * Convert hex latitude and longitude into world coordinates.
      */
+    @Readonly
     fun worldFromLatLong(vector: Vector2, tileRadius: Float): Vector2 {
         val x = vector.x * tileRadius * 1.5f * -1f
         val y = vector.y * tileRadius * sqrt(3f) * 0.5f
@@ -93,18 +97,6 @@ object HexMath {
     fun getEquivalentHexagonalRadius(width: Int, height: Int) =
         getHexagonalRadiusForArea(width * height).roundToInt()
     
-    fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
-        val vectors = arrayListOf(
-                Vector2(1f, 0f),
-                Vector2(1f, 1f),
-                Vector2(0f, 1f),
-                Vector2(-1f, 0f),
-                Vector2(-1f, -1f),
-                Vector2(0f, -1f)
-        )
-        for (vector in vectors) vector.add(origin)
-        return vectors
-    }
 
     // HexCoordinates are a (x,y) vector, where x is the vector getting us to the top-left hex (e.g. 10 o'clock)
     // and y is the vector getting us to the top-right hex (e.g. 2 o'clock)
@@ -149,11 +141,14 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
+    @Readonly
     fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
+    @Readonly
     fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
 
+    @Readonly
     fun getTileCoordsFromColumnRow(column: Int, row: Int): Vector2 {
         // we know that column = y-x in hex coords
         // And we know that row = (y+x)/2 in hex coords
@@ -171,8 +166,10 @@ object HexMath {
     }
 
     /** Todo: find a mathematically equivalent way to round hex coords without cubic magic */
+    @Readonly
     fun roundHexCoords(hexCoord: Vector2): Vector2 {
 
+        @Readonly
         fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
             var rx = round(cubicCoords.x)
             var ry = round(cubicCoords.y)
@@ -192,10 +189,12 @@ object HexMath {
             return Vector3(rx, ry, rz)
         }
 
+        @Readonly
         fun hex2CubicCoords(hexCoord: Vector2): Vector3 {
             return Vector3(hexCoord.y - hexCoord.x, hexCoord.x, -hexCoord.y)
         }
 
+        @Readonly
         fun cubic2HexCoords(cubicCoord: Vector3): Vector2 {
             return Vector2(cubicCoord.y, -cubicCoord.z)
         }
