@@ -43,10 +43,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         
         val otherCivDiploManager = otherCivilization.getDiplomacyManager(civInfo)!!
         // TODO: Both civs need embassy to start opening borders, and signing treaties?
-        val weBothHaveEmbassy = otherCivDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
-            && civInfo.getDiplomacyManager(otherCivilization)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
-
-        if (weBothHaveEmbassy
+        if (ourCivilization.diplomacyFunctions.weBothHaveEmbasy(otherCivilization)
                 && !otherCivDiploManager.hasOpenBorders
                 && !otherCivilization.isCityState
                 && civInfo.hasUnique(UniqueType.EnablesOpenBorders)

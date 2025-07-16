@@ -808,6 +808,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Allows establishment of embassies"
+	This unique is automatically hidden from users.
+
+	Applicable to: Global
+
 ??? example  "Enables Open Borders agreements"
 	Applicable to: Global
 

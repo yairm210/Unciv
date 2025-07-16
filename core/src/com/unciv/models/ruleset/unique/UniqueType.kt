@@ -216,6 +216,8 @@ enum class UniqueType(
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
     /// Agreements
+    // TODO: Using setOfHiddenToUsers because of incomplete implementation in [DiplomacyFunctions.weBothHaveEmbasy]
+    EnablesEmbassies("Allows establishment of embassies", UniqueTarget.Global, flags = UniqueFlag.setOfHiddenToUsers),
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
