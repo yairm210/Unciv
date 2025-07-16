@@ -92,12 +92,12 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Test if both civs have embassies established in each others' capital
      * Returns true if no tech in ruleset's tech tree provide embassies
      */
-    fun weBothHaveEmbasy(otherCiv: Civilization): Boolean {
+    fun weBothHaveEmbassy(otherCiv: Civilization): Boolean {
         // TODO: There must be better method to to do this and without processing all techs, tech may be called something else
         val writingTech = civInfo.gameInfo.ruleset.technologies["Writing"]
-        val embassiesEnabled = writingTech != null && writingTech.uniques.contains("Allows establishment of embassies")
+        val embassiesAreEnabled = writingTech != null && writingTech.uniques.contains("Allows establishment of embassies")
 
-        return if (embassiesEnabled)
+        return if (embassiesAreEnabled)
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy) 
                 && otherCiv.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
         else true
@@ -156,7 +156,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement()
-            && weBothHaveEmbasy(otherCiv)
+            && weBothHaveEmbassy(otherCiv)
             && otherCiv.diplomacyFunctions.canSignResearchAgreement()
             && (ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             || ourDiploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
@@ -187,7 +187,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact()
             && otherCiv.diplomacyFunctions.canSignDefensivePact()
-            && weBothHaveEmbasy(otherCiv)
+            && weBothHaveEmbassy(otherCiv)
             && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
