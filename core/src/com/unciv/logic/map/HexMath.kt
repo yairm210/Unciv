@@ -16,10 +16,12 @@ import kotlin.math.sqrt
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
 
+    @Pure
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
+    @Pure
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
@@ -28,12 +30,14 @@ object HexMath {
      * @param size Radius around origin tile
      * @return The number of tiles in a hexagonal map including origin tile
      */
+    @Pure
     fun getNumberOfTilesInHexagon(size: Int): Int {
         if (size < 0) return 0
         return 1 + 6 * size * (size + 1) / 2
     }
 
     /** Almost inverse of [getNumberOfTilesInHexagon] - get equivalent fractional Hexagon radius for an Area */
+    @Pure
     fun getHexagonalRadiusForArea(numberOfTiles: Int) =
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
 
@@ -54,6 +58,7 @@ object HexMath {
      * @param longitude As from [getLongitude].
      * @return Hex coordinate. May need to be passed through [roundHexCoords] for further use.
      * */
+    @Pure
     fun hexFromLatLong(latitude: Float, longitude: Float): Vector2 {
         val y = (latitude - longitude) / 2f
         val x = longitude + y
@@ -71,6 +76,7 @@ object HexMath {
 
     /** returns a vector containing width and height a rectangular map should have to have
      *  approximately the same number of tiles as an hexagonal map given a height/width ratio */
+    @Pure
     fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {
         if (size < 0)
             return Vector2.Zero
@@ -83,9 +89,10 @@ object HexMath {
 
     /** Returns a radius of a hexagonal map that has approximately the same number of
      *  tiles as a rectangular map of a given width/height */
+    @Pure
     fun getEquivalentHexagonalRadius(width: Int, height: Int) =
         getHexagonalRadiusForArea(width * height).roundToInt()
-
+    
     fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
         val vectors = arrayListOf(
                 Vector2(1f, 0f),
@@ -232,10 +239,12 @@ object HexMath {
     }
 
     /** Get number of hexes from [origin] to [destination] _without respecting world-wrap_ */
+    @Pure
     fun getDistance(origin: Vector2, destination: Vector2): Int {
         return getDistance(origin.x.toInt(), origin.y.toInt(), destination.x.toInt(), destination.y.toInt())
     }
-    
+
+    @Pure
     fun getDistance(originX: Int, originY: Int, destinationX: Int, destinationY: Int): Int {
         val relativeX = originX - destinationX
         val relativeY = originY - destinationY

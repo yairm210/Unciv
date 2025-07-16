@@ -497,12 +497,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun setTransients(ruleset: Ruleset? = null, setUnitCivTransients: Boolean = true) {
         if (ruleset != null) this.ruleset = ruleset
         check(this.ruleset != null) { "TileMap.setTransients called without ruleset" }
+        check(tileList.isNotEmpty()) { "No tiles were found in the save?!" }
 
         if (tileMatrix.isEmpty()) {
-            val topY = tileList.asSequence().map { it.position.y.toInt() }.maxOrNull()!!
-            bottomY = tileList.asSequence().map { it.position.y.toInt() }.minOrNull()!!
-            val rightX = tileList.asSequence().map { it.position.x.toInt() }.maxOrNull()!!
-            leftX = tileList.asSequence().map { it.position.x.toInt() }.minOrNull()!!
+            val topY = tileList.asSequence().map { it.position.y.toInt() }.max()
+            bottomY = tileList.asSequence().map { it.position.y.toInt() }.min()
+            val rightX = tileList.asSequence().map { it.position.x.toInt() }.max()
+            leftX = tileList.asSequence().map { it.position.x.toInt() }.min()
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
             // We have just calculated the dimensions above, so we know the final size.
