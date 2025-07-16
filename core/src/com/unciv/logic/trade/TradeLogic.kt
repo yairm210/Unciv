@@ -20,14 +20,12 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
     val currentTrade = Trade()
 
     init {
-        // TODO: This doesn't work
+        // Embassy trade availability depends solely on our ability to trade it
         val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = ourCivilization.gameInfo.speed)
-        // Their embasy trade is visible to players who can establish embassy with them and to them if they can establish embassy
-        if (ourCivilization.diplomacyFunctions.canEstablishEmbassyWith(otherCivilization)) {
+        if (ourCivilization.diplomacyFunctions.canEstablishEmbassyWith(otherCivilization))
             theirAvailableOffers.add(embassyOffer)
-        }
-        // Our embasy trade is visible to players who can establish embasy with us and to us if we can establish embassy
-        if (otherCivilization.diplomacyFunctions.canEstablishEmbassyWith(ourCivilization))
+
+        if (ourCivilization.diplomacyFunctions.canOfferEmbassyTo(otherCivilization))
             ourAvailableOffers.add(embassyOffer)
 
         // Other trade items are added as usual for both sides
@@ -37,7 +35,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
     
     private fun getAvailableOffers(civInfo: Civilization, otherCivilization: Civilization): TradeOffersList {
         val offers = TradeOffersList()
-        // TODO: Shouldn't this be OR??
+        // TODO: Shouldn't this be OR? what trades can there be with CS's?
         if (civInfo.isCityState && otherCivilization.isCityState) return offers
         
         if (civInfo.isAtWarWith(otherCivilization))

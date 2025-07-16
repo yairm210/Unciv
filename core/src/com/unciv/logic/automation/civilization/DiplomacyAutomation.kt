@@ -110,6 +110,8 @@ object DiplomacyAutomation {
 
     /**
      * Try establishing embassy in other civs' capitals
+     * 
+     * @param civInfo Civilization which initiates trade
      */
     internal fun establishEmbassy(civInfo: Civilization) {
         // TODO: Unique to enable embassy
@@ -133,7 +135,7 @@ object DiplomacyAutomation {
                 if (otherCiv.diplomacyFunctions.canEstablishEmbassyWith(civInfo)) {
                     tradeLogic.currentTrade.ourOffers.add(embassyOffer)
                 }
-                else { // Otherwise offer GPT (prefered) or flat gold
+                else { // Otherwise offer GPT (prefered) or flat gold for embassy in their capital
                     val embassyValue = TradeEvaluation().evaluateBuyCostWithInflation(embassyOffer, civInfo, otherCiv, tradeLogic.currentTrade)
                     val ourGpt = civInfo.stats.statsForNextTurn.gold.toInt()
                     val gptValue = embassyValue / civInfo.gameInfo.speed.dealDuration
