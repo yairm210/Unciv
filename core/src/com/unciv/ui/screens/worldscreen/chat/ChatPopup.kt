@@ -11,8 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.chat.ChatMessageReceived
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
@@ -30,15 +28,14 @@ private val civChatColorsMap = mapOf<String, Color>(
 )
 
 class ChatPopup(
-    val worldScreen: WorldScreen,
+    private val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
     companion object {
         // the percentage of the minimum lightness allowed for a civName
-        const val CIVNAME_COLOR_LIGHTNESS_THRESHOLD = 0.45f
+        const val CIVNAME_COLOR_LIGHTNESS_THRESHOLD = 0.55f
     }
 
-    private val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
-    private val eventReceiver = EventBus.EventReceiver()
+    val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
@@ -47,7 +44,7 @@ class ChatPopup(
     )
 
     init {
-        ChatStore.chatPopupAvailable = true
+        ChatStore.chatPopup = this
         chatTable.defaults().growX().pad(5f).center()
 
         /**
@@ -70,7 +67,7 @@ class ChatPopup(
         add(
             ImageButton(ImageGetter.getImage("OtherIcons/Close").drawable)
                 .onClick {
-                    ChatStore.chatPopupAvailable = false
+                    ChatStore.chatPopup = null
                     close()
                 }
         ).size(chatLabel.height * 1.3f).right().row()
@@ -102,17 +99,9 @@ class ChatPopup(
                 return true
             }
         })
-
-        // empty Ids are used to display server & system messages unspecific to any Chat
-        eventReceiver.receive(
-            ChatMessageReceived::class, { it.gameId.isEmpty() || it.gameId == chat.gameId }
-        ) {
-            val suffix = if (it.gameId.isEmpty()) "one time" else null
-            addMessage(it.civName, it.message, suffix, true)
-        }
     }
 
-    fun sendMessage() {
+    private fun sendMessage() {
         val message = messageField.text.trim()
 
         val userId = UncivGame.Current.settings.multiplayer.userId
@@ -121,7 +110,8 @@ class ChatPopup(
             currentPlayerCiv.civName
         } else {
             // what do I do if someone is a spectator?
-            worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civName ?: "Unknown"
+            worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civName
+                ?: "Unknown"
         }
 
         if (message.isNotEmpty()) {
@@ -130,7 +120,7 @@ class ChatPopup(
         }
     }
 
-    fun populateChat() {
+    private fun populateChat() {
         chatTable.clearChildren()
         chat.forEachMessage { civName, message ->
             addMessage(civName, message)
@@ -141,16 +131,22 @@ class ChatPopup(
         scrollToBottom()
     }
 
-    private fun addMessage(senderCivName: String, message: String, suffix: String? = null, scroll: Boolean = true) {
+    fun addMessage(
+        senderCivName: String,
+        message: String,
+        suffix: String? = null,
+        scroll: Boolean = true
+    ) {
         val line = Label(
             "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
             skin
         ).apply {
             wrap = true
 
-            val civNameColor = civChatColorsMap[senderCivName] ?: worldScreen.gameInfo.getCivilizationOrNull(
-                senderCivName
-            )?.nation?.getOuterColor() ?: Color.BLACK
+            val civNameColor =
+                civChatColorsMap[senderCivName] ?: worldScreen.gameInfo.getCivilizationOrNull(
+                    senderCivName
+                )?.nation?.getOuterColor() ?: Color.BLACK
 
             color = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_LIGHTNESS_THRESHOLD)
         }

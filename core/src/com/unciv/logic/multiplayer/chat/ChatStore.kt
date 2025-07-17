@@ -2,7 +2,6 @@ package com.unciv.logic.multiplayer.chat
 
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.event.Event
-import com.unciv.logic.event.EventBus
 import com.unciv.ui.screens.worldscreen.chat.ChatPopup
 import java.util.LinkedList
 
@@ -46,21 +45,15 @@ data class Chat(
 
     companion object {
         val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
-
-        fun relayGlobalMessage(message: String, sender: String = "System") {
-            Gdx.app.postRunnable {
-                EventBus.send(
-                    ChatMessageReceived(
-                        String(), sender, message
-                    )
-                )
-            }
-        }
     }
 }
 
 object ChatStore {
-    var chatPopupAvailable = false
+    /** The reference to the [ChatPopup] instance which trying to take a peek at our messages currently.
+     * What audacity this popup has!!
+     */
+    var chatPopup: ChatPopup? = null
+
     private var gameIdToChat = mutableMapOf<String, Chat>()
 
     /** When no [ChatPopup] is open to receive these oddities, we keep them here.
@@ -79,6 +72,13 @@ object ChatStore {
         gameIdToChat = mutableMapOf()
         globalMessages = LinkedList()
     }
+    
+    fun relayChatMessage(chat: Response.Chat) {
+        getChatByGameId(chat.gameId).addMessage(chat.civName, chat.message)
+        if (chatPopup?.chat?.gameId == chat.gameId) {
+            chatPopup?.addMessage(chat.civName, chat.message)
+        }
+    }
 
     fun pollGlobalMessages(action: (String, String) -> Unit) {
         Gdx.app.postRunnable {
@@ -89,10 +89,10 @@ object ChatStore {
         }
     }
 
-    fun addGlobalMessage(civName: String, message: String) {
+    fun relayGlobalMessage(message: String, civName: String = "System") {
         Gdx.app.postRunnable {
-            if (chatPopupAvailable) return@postRunnable
-            globalMessages.add(Pair(civName, message))
+            chatPopup?.addMessage(civName, message, suffix = "one time")
+                ?: globalMessages.add(Pair(civName, message))
         }
     }
 }

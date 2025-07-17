@@ -1,8 +1,6 @@
 package com.unciv.logic.multiplayer.chat
 
 import com.unciv.UncivGame
-import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.chat.Chat.Companion.relayGlobalMessage
 import com.unciv.logic.multiplayer.chat.ChatWebSocket.job
 import com.unciv.logic.multiplayer.chat.ChatWebSocket.start
 import com.unciv.utils.Concurrency
@@ -93,7 +91,6 @@ object ChatWebSocket {
     private const val INITIAL_SESSION_WAIT_FOR_MS = 5_000L
 
     private var job: Job? = null
-    private val eventReceiver = EventBus.EventReceiver()
     private var session: DefaultClientWebSocketSession? = null
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -153,9 +150,9 @@ object ChatWebSocket {
 
         if (reconnectionAttempts == 0) {
             lastRetry = Clock.System.now()
-            relayGlobalMessage("WebSocket connection closed. Cause: [${t.cause}]!")
+            ChatStore.relayGlobalMessage("WebSocket connection closed. Cause: [${t.cause}]!")
             if (t.message?.contains("401") == true) {
-                relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
+                ChatStore.relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
             }
         } else {
             val now = Clock.System.now()
@@ -172,17 +169,20 @@ object ChatWebSocket {
             session?.close()
             session = client.webSocketSession {
                 url(getChatUrl())
-                header(HttpHeaders.Authorization, UncivGame.Current.settings.multiplayer.getAuthHeader())
+                header(
+                    HttpHeaders.Authorization,
+                    UncivGame.Current.settings.multiplayer.getAuthHeader()
+                )
             }
 
             session!!.runCatching {
                 if (isActive) {
                     if (reconnectionAttempts == 0) {
                         println("ChatLog: Connected to WebSocket.")
-                        relayGlobalMessage("Successfully connected to WebSocket server!")
+                        ChatStore.relayGlobalMessage("Successfully connected to WebSocket server!")
                     } else if (reconnectionAttempts > 0) {
                         println("ChatLog: Re-established webSocket connection.")
-                        relayGlobalMessage("Successfully re-established WebSocket connection!")
+                        ChatStore.relayGlobalMessage("Successfully re-established WebSocket connection!")
                     }
                     // we are successfully connected
                     resetExponentialBackoff()
@@ -195,14 +195,14 @@ object ChatWebSocket {
                 while (this.isActive) {
                     val response = receiveDeserialized<Response>()
                     when (response) {
-                        is Response.Chat -> EventBus.send(
-                            ChatMessageReceived(
-                                response.gameId, response.civName, response.message
-                            )
+                        is Response.Chat -> ChatStore.relayChatMessage(response)
+
+                        is Response.Error -> ChatStore.relayGlobalMessage(
+                            "Error: [${response.message}]",
+                            "Server"
                         )
 
-                        is Response.Error -> relayGlobalMessage("Error: [${response.message}]", "Server")
-                        is Response.JoinSuccess -> Unit
+                        is Response.JoinSuccess -> Unit // TODO
                     }
                     yield()
                 }
@@ -250,22 +250,14 @@ object ChatWebSocket {
             if (!force) {
                 // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
                 delay(Random.nextLong(1000) + 1000L * reconnectTimeSeconds)
-                reconnectTimeSeconds = (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
+                reconnectTimeSeconds =
+                    (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
                 if (job?.isActive == true) return@launch
             }
 
             yield()
             job?.cancel(ChatRestartException())
             job = Concurrency.run("MultiplayerChat") { startSession() }
-        }
-    }
-
-    init {
-        eventReceiver.receive(ChatMessageReceived::class) {
-            if (it.gameId.isEmpty())
-                ChatStore.addGlobalMessage(it.civName, it.message)
-            else
-                ChatStore.getChatByGameId(it.gameId).addMessage(it.civName, it.message)
         }
     }
 }
