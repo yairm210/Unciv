@@ -156,6 +156,7 @@ android/assets/scenarios/
 SaveFiles/
 
 /.kotlin/errors/*
+/.kotlin/sessions/*
 
 # Visual Studio Code
 .vscode/
