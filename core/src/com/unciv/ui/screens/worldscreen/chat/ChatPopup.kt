@@ -32,7 +32,7 @@ class ChatPopup(
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
     companion object {
         // the percentage of the minimum lightness allowed for a civName
-        const val CIVNAME_COLOR_LIGHTNESS_THRESHOLD = 0.55f
+        const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.60f
     }
 
     val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
@@ -148,7 +148,7 @@ class ChatPopup(
                     senderCivName
                 )?.nation?.getOuterColor() ?: Color.BLACK
 
-            color = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_LIGHTNESS_THRESHOLD)
+            color = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_MIN_LIGHTNESS)
         }
 
         chatTable.add(line).row()
