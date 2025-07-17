@@ -92,8 +92,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Test if both civs have embassies established in each others' capital
      * Returns true if no tech in ruleset's tech tree provide embassies
      */
-    fun weBothHaveEmbassy(otherCiv: Civilization): Boolean {
-        // TODO: There must be better method to do this and without processing all techs, tech may be called something else
+    fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
+        // TODO: There must be better method to do this and without processing all techs, also tech may be called something else
         val writingTech = civInfo.gameInfo.ruleset.technologies["Writing"]
         val embassiesAreEnabled = writingTech != null && writingTech.uniques.contains("Allows establishment of embassies")
 
@@ -156,14 +156,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement()
-            && weBothHaveEmbassy(otherCiv)
             && otherCiv.diplomacyFunctions.canSignResearchAgreement()
+            && hasMutualEmbassyWith(otherCiv)
             && ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !ourDiploManager.hasFlag(DiplomacyFlags.ResearchAgreement)
             && !ourDiploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
     }
 
-    fun canSignResearchAgreementsWith(otherCiv: Civilization): Boolean {
+    fun canSignResearchAgreementWith(otherCiv: Civilization): Boolean {
         val cost = getResearchAgreementCost(otherCiv)
         return canSignResearchAgreementNoCostWith(otherCiv)
             && civInfo.gold >= cost && otherCiv.gold >= cost
@@ -186,7 +186,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val ourDiplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact()
             && otherCiv.diplomacyFunctions.canSignDefensivePact()
-            && weBothHaveEmbassy(otherCiv)
+            && hasMutualEmbassyWith(otherCiv)
             && ourDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !ourDiplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
             && !ourDiplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)

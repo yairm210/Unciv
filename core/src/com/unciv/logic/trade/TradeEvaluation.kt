@@ -34,14 +34,14 @@ class TradeEvaluation {
         
         // No way to tell who offers what in isOfferValid()
         val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = offerer.gameInfo.speed)
-        if (trade.ourOffers.contains(embassyOffer))
-            if (tradePartner.getDiplomacyManager(offerer)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy))
-                return false
+        if (trade.ourOffers.contains(embassyOffer)
+            && tradePartner.getDiplomacyManager(offerer)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy))
+            return false
 
-        if (trade.theirOffers.contains(embassyOffer))
-            if (offerer.getDiplomacyManager(tradePartner)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy))
-                return false
-            
+        if (trade.theirOffers.contains(embassyOffer)
+            && offerer.getDiplomacyManager(tradePartner)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy))
+            return false
+
         for (offer in trade.ourOffers)
             if (!isOfferValid(offer, offerer, tradePartner)) {
                 return false

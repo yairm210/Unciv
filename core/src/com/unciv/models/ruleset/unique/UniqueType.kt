@@ -216,7 +216,7 @@ enum class UniqueType(
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
     /// Agreements
-    // TODO: Using setOfHiddenToUsers because of incomplete implementation in [DiplomacyFunctions.weBothHaveEmbassy]
+    // TODO: Using setOfHiddenToUsers because of incomplete implementation in [DiplomacyFunctions.hasMutualEmbassyWith]
     EnablesEmbassies("Allows establishment of embassies", UniqueTarget.Global, flags = UniqueFlag.setOfHiddenToUsers),
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?

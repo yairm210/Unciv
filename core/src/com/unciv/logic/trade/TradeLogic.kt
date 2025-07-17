@@ -41,13 +41,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         if (civInfo.isAtWarWith(otherCiv))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
         
-        val otherCivDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
-        // TODO: Both civs need embassy to start opening borders, and signing treaties?
-        if (civInfo.diplomacyFunctions.weBothHaveEmbassy(otherCiv)
-                && !otherCivDiploManager.hasOpenBorders
-                && !otherCiv.isCityState
-                && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
-                && otherCiv.hasUnique(UniqueType.EnablesOpenBorders)) {
+        if (!otherCiv.isCityState
+            && civInfo.diplomacyFunctions.hasMutualEmbassyWith(otherCiv)
+            && !otherCiv.getDiplomacyManager(civInfo)!!.hasOpenBorders
+            && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
+            && otherCiv.hasUnique(UniqueType.EnablesOpenBorders)) {
             offers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
         }
 
