@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -89,13 +90,24 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     /**
+     * Test if any mods define [UniqueType.RequiresEmbassiesForDiplomacy]
+     * Returns true if no mods present or if mods don't provide the unique
+     */
+    private fun areEmbassiesEnabledInMods(): Boolean {
+        val ruleset = civInfo.gameInfo.ruleset
+        if (ruleset.toString() == BaseRuleset.Civ_V_GnK.fullName) return true
+
+        // else it's mod or combined ruleset, so check for unique
+        return ruleset.modOptions.uniques.find {
+            it == "Requires establishing embassies to conduct diplomatic relations" } != null
+    }
+
+    /**
      * Test if both civs have embassies established in each others' capital
-     * Returns true if ruleset or mods don't provide embassies unique
+     * Returns true if ruleset or mods don't deal with embassies
      */
     fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
-        return if (civInfo.hasUnique(UniqueType.EnablesEmbassies)
-            || civInfo.gameInfo.ruleset.modOptions.uniques.find {
-                it == "Requires establishing embassies to conduct diplomatic relations" } != null)
+        return if (areEmbassiesEnabledInMods() && civInfo.hasUnique(UniqueType.EnablesEmbassies))
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
         else true // Embassies are not enabled
     }
@@ -120,7 +132,9 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Use [canOfferEmbassyTo] and [canEstablishEmbassyWith] instead
      */
     private fun canEstablishEmbassy(): Boolean {
-        return civInfo.isMajorCiv() && civInfo.hasUnique(UniqueType.EnablesEmbassies)
+        return civInfo.isMajorCiv()
+            && areEmbassiesEnabledInMods()
+            && civInfo.hasUnique(UniqueType.EnablesEmbassies)
     }
 
     /**
