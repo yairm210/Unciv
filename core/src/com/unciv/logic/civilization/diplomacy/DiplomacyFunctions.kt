@@ -93,11 +93,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Returns true if no tech in ruleset's tech tree provide embassies
      */
     fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
-        // TODO: There must be better method to do this and without processing all techs, also tech may be called something else
-        val writingTech = civInfo.gameInfo.ruleset.technologies["Writing"]
-        val embassiesAreEnabled = writingTech != null && writingTech.uniques.contains("Allows establishment of embassies")
-
-        return if (embassiesAreEnabled)
+        // TODO: There must be a method without processing all techs every time this function is called
+        return if (civInfo.gameInfo.ruleset.technologies.values.find { it.hasUnique(UniqueType.EnablesEmbassies) } != null)
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
         else true
     }

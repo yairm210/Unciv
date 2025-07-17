@@ -215,9 +215,10 @@ enum class UniqueType(
     @Deprecated("As of 4.16.18", ReplaceWith("[+100]% [resource] resource production"))
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
+    /// Diplomacy
+    EnablesEmbassies("Allows establishment of embassies", UniqueTarget.Tech),
+
     /// Agreements
-    // TODO: Using setOfHiddenToUsers because of incomplete implementation in [DiplomacyFunctions.hasMutualEmbassyWith]
-    EnablesEmbassies("Allows establishment of embassies", UniqueTarget.Global, flags = UniqueFlag.setOfHiddenToUsers),
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),

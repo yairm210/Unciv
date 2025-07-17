@@ -40,7 +40,7 @@ class TradeEvaluation {
             && theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
             || theirDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies))
             return false
-        
+
         if (trade.theirOffers.contains(embassyOffer)
             && ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
             || ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies))
