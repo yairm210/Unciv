@@ -168,6 +168,7 @@ scenarios/
 
 
 /.kotlin/errors/*
+/.kotlin/sessions/*
 
 # Visual Studio Code
 .vscode/

@@ -248,7 +248,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
-    @Readonly @Suppress("purity")
+    @Readonly
     fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<Tile> =
             if (distance <= 0) // silently take negatives.
                 sequenceOf(get(origin))
@@ -326,6 +326,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * Returns the clock position of [otherTile] seen from [tile]'s position
      * Returns -1 if not neighbors
      */
+    @Readonly
     fun getNeighborTileClockPosition(tile: Tile, otherTile: Tile): Int {
         val radius = if (mapParameters.shape == MapShape.rectangular)
             mapParameters.mapSize.width / 2
@@ -358,6 +359,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * Takes world wrap into account
      * Returns null if there is no such neighbor tile or if [clockPosition] is not a valid clock position
      */
+    @Readonly @Suppress("purity") // Copy position and add
     fun getClockPositionNeighborTile(tile: Tile, clockPosition: Int): Tile? {
         val difference = HexMath.getClockPositionToHexVector(clockPosition)
         if (difference == Vector2.Zero) return null
@@ -369,6 +371,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * in world coordinates of length sqrt(3), so that it can be used to go from tile center to
      * the edge of the hex in that direction (meaning the center of the border between the hexes)
      */
+    @Readonly
     fun getNeighborTilePositionAsWorldCoords(tile: Tile, otherTile: Tile): Vector2 =
         HexMath.getClockPositionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
 
@@ -376,7 +379,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * Returns the closest position to (0, 0) outside the map which can be wrapped
      * to the position of the given vector
      */
-    
+    @Readonly
     fun getUnWrappedPosition(position: Vector2): Vector2 {
         if (!contains(position))
             return position //The position is outside the map so its unwrapped already
@@ -494,12 +497,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun setTransients(ruleset: Ruleset? = null, setUnitCivTransients: Boolean = true) {
         if (ruleset != null) this.ruleset = ruleset
         check(this.ruleset != null) { "TileMap.setTransients called without ruleset" }
+        check(tileList.isNotEmpty()) { "No tiles were found in the save?!" }
 
         if (tileMatrix.isEmpty()) {
-            val topY = tileList.asSequence().map { it.position.y.toInt() }.maxOrNull()!!
-            bottomY = tileList.asSequence().map { it.position.y.toInt() }.minOrNull()!!
-            val rightX = tileList.asSequence().map { it.position.x.toInt() }.maxOrNull()!!
-            leftX = tileList.asSequence().map { it.position.x.toInt() }.minOrNull()!!
+            val topY = tileList.asSequence().map { it.position.y.toInt() }.max()
+            bottomY = tileList.asSequence().map { it.position.y.toInt() }.min()
+            val rightX = tileList.asSequence().map { it.position.x.toInt() }.max()
+            leftX = tileList.asSequence().map { it.position.x.toInt() }.min()
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
             // We have just calculated the dimensions above, so we know the final size.

@@ -37,7 +37,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.21" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.25" apply(false)
 }
 
 allprojects {
@@ -49,9 +49,14 @@ allprojects {
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
             "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
+            "kotlin.math.max",
+            "kotlin.math.min",
+            "kotlin.math.abs"
         )
         wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
+            "com.badlogic.gdx.math.Vector2.len",
+            "com.badlogic.gdx.math.Vector2.cpy",
             "java.util.AbstractCollection.contains",
             "java.util.AbstractList.get",
         )
@@ -166,7 +171,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
         
-        "implementation"("io.github.yairm210:purity-annotations:0.0.17")
+        "implementation"("io.github.yairm210:purity-annotations:0.0.25")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
