@@ -90,11 +90,10 @@ class DiplomacyFunctions(val civInfo: Civilization) {
 
     /**
      * Test if both civs have embassies established in each others' capital
-     * Returns true if no tech in ruleset's tech tree provide embassies
+     * Returns true if ruleset doesn't provide embassies unique
      */
     fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
-        // TODO: There must be a method without processing all techs every time this function is called
-        return if (civInfo.gameInfo.ruleset.technologies.values.find { it.hasUnique(UniqueType.EnablesEmbassies) } != null)
+        return if (civInfo.hasUnique(UniqueType.EnablesEmbassies))
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
         else true
     }
@@ -124,11 +123,12 @@ class DiplomacyFunctions(val civInfo: Civilization) {
 
     /**
      * If denounciation happened this turn from either side, establishing embassy again is possible only from next turn.
-     * This checks denounciation for both sides, no need for other side diplo manager check
      */
     private fun isDenouncedThisTurn(diploManager: DiplomacyManager): Boolean {
         return if (diploManager.hasFlag(DiplomacyFlags.Denunciation))
-            diploManager.getFlag(DiplomacyFlags.Denunciation) == 30 else false
+            diploManager.getFlag(DiplomacyFlags.Denunciation) == 30
+                || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denunciation) == 30
+        else false
     }
 
     /**

@@ -272,7 +272,7 @@
     {
         "name": "Embassies",
         "steps": [
-            "Establishing an embassy in other player's Capital city shows the location of their Capital, likewise other players who establish an embassy in your Capital can see location of your Capital.",
+            "Establishing an embassy in other players' Capital city shows the location of their Capital, likewise other players who establish an embassy in your Capital can see location of your Capital.",
             "Embassies thus allow Spies to be placed in another players' Capital City if Espionage is enabled.",
             "Mutual embassies are required to allow trading open borders and to sign Research Agreement and Defensive Pact.",
             "Declaring war on another player or denouncing them will remove embassies from both players' Capitals. You will have to re-establish them to use their effect.",
