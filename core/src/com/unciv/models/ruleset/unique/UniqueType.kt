@@ -216,7 +216,8 @@ enum class UniqueType(
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
     /// Diplomacy
-    EnablesEmbassies("Enables establishment of embassies", UniqueTarget.Global),
+    EnablesEmbassies("Enables establishment of embassies", UniqueTarget.Tech),
+    RequiresEmbassiesForDiplomacy("Requires establishing embassies to conduct diplomatic relations", UniqueTarget.Global),
 
     /// Agreements
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),

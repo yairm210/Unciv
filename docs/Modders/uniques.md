@@ -808,7 +808,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Enables establishment of embassies"
+??? example  "Requires establishing embassies to conduct diplomatic relations"
 	Applicable to: Global
 
 ??? example  "Enables Open Borders agreements"
@@ -1151,6 +1151,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Era
 
 ## Tech uniques
+??? example  "Enables establishment of embassies"
+	Applicable to: Tech
+
 ??? example  "Starting tech"
 	Applicable to: Tech
 

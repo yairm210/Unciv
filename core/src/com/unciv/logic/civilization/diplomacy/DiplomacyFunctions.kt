@@ -90,12 +90,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
 
     /**
      * Test if both civs have embassies established in each others' capital
-     * Returns true if ruleset doesn't provide embassies unique
+     * Returns true if ruleset or mods don't provide embassies unique
      */
     fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
-        return if (civInfo.hasUnique(UniqueType.EnablesEmbassies))
+        return if (civInfo.hasUnique(UniqueType.EnablesEmbassies)
+            || civInfo.gameInfo.ruleset.modOptions.uniques.find {
+                it == "Requires establishing embassies to conduct diplomatic relations" } != null)
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
-        else true
+        else true // Embassies are not enabled
     }
 
     /**
