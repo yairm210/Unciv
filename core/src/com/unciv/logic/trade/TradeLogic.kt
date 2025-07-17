@@ -35,14 +35,12 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
     
     private fun getAvailableOffers(civInfo: Civilization, otherCiv: Civilization): TradeOffersList {
         val offers = TradeOffersList()
-        // TODO: Shouldn't this be OR? what trades can there be with CS's?
-        if (civInfo.isCityState && otherCiv.isCityState) return offers
+        if (civInfo.isCityState || otherCiv.isCityState) return offers
         
         if (civInfo.isAtWarWith(otherCiv))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
         
-        if (!otherCiv.isCityState
-            && civInfo.diplomacyFunctions.hasMutualEmbassyWith(otherCiv)
+        if (civInfo.diplomacyFunctions.hasMutualEmbassyWith(otherCiv)
             && !otherCiv.getDiplomacyManager(civInfo)!!.hasOpenBorders
             && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
             && otherCiv.hasUnique(UniqueType.EnablesOpenBorders)) {
@@ -72,12 +70,9 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         offers.add(TradeOffer("Gold", TradeOfferType.Gold, civInfo.gold, speed = civInfo.gameInfo.speed))
         offers.add(TradeOffer("Gold per turn", TradeOfferType.Gold_Per_Turn, civInfo.stats.statsForNextTurn.gold.toInt(), civInfo.gameInfo.speed))
 
-        if (!civInfo.isOneCityChallenger() && !otherCiv.isOneCityChallenger()
-                && !civInfo.isCityState && !otherCiv.isCityState
-        ) {
+        if (!civInfo.isOneCityChallenger() && !otherCiv.isOneCityChallenger())
             for (city in civInfo.cities.filterNot { it.isCapital() || it.isInResistance() })
                 offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
-        }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
             .filter { it.civName != otherCiv.civName && it.isMajorCiv() && !it.isDefeated() }
@@ -90,8 +85,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             }
         }
 
-        if (!civInfo.isCityState && !otherCiv.isCityState
-                && !civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
+        if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
                     .filter { otherCiv.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow
@@ -100,17 +94,16 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
             }
         }
+        
+        val thirdCivsAtWarTheyKnow = otherCiv.getKnownCivs().filter {
+            it.isAtWarWith(civInfo) && !it.isDefeated()
+                && !it.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)
+        }
 
-        if (!civInfo.isCityState && !otherCiv.isCityState) {
-            val thirdCivsAtWarTheyKnow = otherCiv.getKnownCivs()
-                .filter { it.isAtWarWith(civInfo) && !it.isDefeated()
-                    && !it.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange) }
-
-            for (thirdCiv in thirdCivsAtWarTheyKnow) {
-                // Setting amount to 0 makes TradeOffer.isTradable() return false and also disables the button in trade window
-                val amount = if (TradeEvaluation().isPeaceProposalEnabled(thirdCiv, civInfo)) 1 else 0
-                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))
-            }
+        for (thirdCiv in thirdCivsAtWarTheyKnow) {
+            // Setting amount to 0 makes TradeOffer.isTradable() return false and also disables the button in trade window
+            val amount = if (TradeEvaluation().isPeaceProposalEnabled(thirdCiv, civInfo)) 1 else 0
+            offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))
         }
         
         return offers
