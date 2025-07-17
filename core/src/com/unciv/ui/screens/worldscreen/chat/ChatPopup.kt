@@ -104,7 +104,7 @@ class ChatPopup(
     private fun sendMessage() {
         val message = messageField.text.trim()
 
-        val userId = UncivGame.Current.settings.multiplayer.userId
+        val userId = UncivGame.Current.settings.multiplayer.getUserId()
         val currentPlayerCiv = worldScreen.gameInfo.currentPlayerCiv
         val civName = if (currentPlayerCiv.playerId == userId) {
             currentPlayerCiv.civName

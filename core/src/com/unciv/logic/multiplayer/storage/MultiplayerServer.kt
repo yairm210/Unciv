@@ -24,16 +24,16 @@ class MultiplayerServer(
     val fileStorageIdentifier: String? = null,
     private var authenticationHeader: Map<String, String>? = null
 ) {
-    internal var featureSet = ServerFeatureSet()
-        set(value) {
-            if (field != value) {
-                UncivGame.Current.worldScreen?.chatButton?.refreshVisibility()
-            }
-
-            field = value
+    private var featureSet = ServerFeatureSet()
+    fun getFeatureSet() = featureSet
+    fun setFeatureSet(value: ServerFeatureSet) {
+        if (featureSet != value) {
+            UncivGame.Current.worldScreen?.chatButton?.refreshVisibility()
+            featureSet = value
         }
+    }
 
-    fun getServerUrl() = fileStorageIdentifier ?: UncivGame.Current.settings.multiplayer.server
+    fun getServerUrl() = fileStorageIdentifier ?: UncivGame.Current.settings.multiplayer.getServer()
 
     fun fileStorage(): FileStorage {
         val authHeader = if (authenticationHeader == null) {
@@ -80,7 +80,7 @@ class MultiplayerServer(
         val settings = UncivGame.Current.settings.multiplayer
 
         val success = fileStorage().authenticate(
-            userId = settings.userId, password = password ?: settings.getCurrentServerPassword() ?: ""
+            userId = settings.getUserId(), password = password ?: settings.getCurrentServerPassword() ?: ""
         )
         if (password != null && success) {
             settings.setCurrentServerPassword(password)
@@ -145,7 +145,7 @@ class MultiplayerServer(
     suspend fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = fileStorage().loadFileData(gameId)
         val gameInfo = UncivFiles.gameInfoFromString(zippedGameInfo)
-        gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.server
+        gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.getServer()
         return gameInfo
     }
 

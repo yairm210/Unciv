@@ -269,41 +269,43 @@ class GameSettings {
     //region Multiplayer-specific
 
     class GameSettingsMultiplayer {
-        var userId = ""
-            set(value) {
-                if (field.isNotEmpty() && field != value) {
-                    ChatWebSocket.restart(force = true)
-                }
-                field = value
+        private var userId = ""
+        fun getUserId() = userId
+        fun setUserId(value: String) {
+            if (userId.isNotEmpty() && userId != value) {
+                ChatWebSocket.restart(force = true)
             }
+            userId = value
+        }
 
         /**
          * Never ever make it public. If you need a method make it.
          * But do remember to call [ChatWebSocket.restart] with `force = true` whenever required.
          */
         private val passwords = mutableMapOf<String, String>()
-
         @Readonly
         fun getPassword(serverUrl: String) = passwords[serverUrl]
-
         @Readonly
         fun getCurrentServerPassword() = passwords[server]
-
         fun setCurrentServerPassword(password: String) {
+            val oldPassword = passwords[server]
+            if (oldPassword != null && oldPassword != password) {
+                ChatWebSocket.restart(force = true)
+            }
             passwords[server] = password
-            ChatWebSocket.restart(force = true)
         }
 
         @Suppress("unused")  // @GGuenni knows what he intended with this field
         var userName: String = ""
 
-        var server = Constants.uncivXyzServer
-            set(value) {
-                if (field != value) {
-                    ChatWebSocket.restart(force = true)
-                }
-                field = value
+        private var server = Constants.uncivXyzServer
+        fun getServer() = server
+        fun setServer(value: String) {
+            if (server != value) {
+                server = value
+                ChatWebSocket.restart(force = true)
             }
+        }
 
         val friendList: MutableList<FriendList.Friend> = mutableListOf()
         var turnCheckerEnabled = true

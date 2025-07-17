@@ -105,7 +105,7 @@ private fun addMultiplayerServerOptions(
     val connectionToServerButton = "Check connection".toTextButton()
 
     val textToShowForOnlineMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
-        settings.multiplayer.server
+        settings.multiplayer.getServer()
     } else {
         "https://"
     }
@@ -120,7 +120,7 @@ private fun addMultiplayerServerOptions(
     multiplayerServerTextField.onChange {
         fixTextFieldUrlOnType(multiplayerServerTextField)
         // we can't trim on 'fixTextFieldUrlOnType' for reasons
-        settings.multiplayer.server = multiplayerServerTextField.text.trimEnd('/')
+        settings.multiplayer.setServer(multiplayerServerTextField.text.trimEnd('/'))
 
         val isCustomServer = Multiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
@@ -154,7 +154,7 @@ private fun addMultiplayerServerOptions(
         }
     }).row()
 
-    if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
+    if (UncivGame.Current.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion > 0) {
         val passwordTextField = UncivTextField(
             settings.multiplayer.getCurrentServerPassword() ?: "Password"
         )
@@ -170,7 +170,7 @@ private fun addMultiplayerServerOptions(
         if (password != null) {
             authStatusLabel.setText("Validating your authentication status...")
             Concurrency.run {
-                val userId = settings.multiplayer.userId
+                val userId = settings.multiplayer.getUserId()
                 val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
                     .checkAuthStatus(userId, password)
 
@@ -269,7 +269,7 @@ private fun setPassword(password: String, optionsPopup: OptionsPopup) {
         return
     }
 
-    if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion == 0) {
+    if (UncivGame.Current.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion == 0) {
         popup.reuseWith("This server does not support authentication", true)
         return
     }
@@ -277,7 +277,7 @@ private fun setPassword(password: String, optionsPopup: OptionsPopup) {
     successfullySetPassword(password) { success, ex ->
         if (success) {
             popup.reuseWith(
-                "Password set successfully for server [${optionsPopup.settings.multiplayer.server}]",
+                "Password set successfully for server [${optionsPopup.settings.multiplayer.getServer()}]",
                 true
             )
         } else {

@@ -211,7 +211,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     fun getPlayerToViewAs(): Civilization {
         if (!gameParameters.isOnlineMultiplayer) return getCurrentPlayerCivilization() // non-online, play as human player
-        val userId = UncivGame.Current.settings.multiplayer.userId
+        val userId = UncivGame.Current.settings.multiplayer.getUserId()
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
         // This allows multiple civs from the same UserID

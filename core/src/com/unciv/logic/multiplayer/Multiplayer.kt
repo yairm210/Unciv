@@ -286,7 +286,7 @@ class Multiplayer {
     }
 
     companion object {
-        fun usesCustomServer() = UncivGame.Current.settings.multiplayer.server != Constants.dropboxMultiplayerServer
+        fun usesCustomServer() = UncivGame.Current.settings.multiplayer.getServer() != Constants.dropboxMultiplayerServer
         fun usesDropbox() = !usesCustomServer()
     }
 }
@@ -342,5 +342,5 @@ suspend fun <T> attemptAction(
 }
 
 
-fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
-fun GameInfo.isUsersTurn() = currentPlayer.isNotEmpty() && getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
+fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.getUserId()
+fun GameInfo.isUsersTurn() = currentPlayer.isNotEmpty() && getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.getUserId()
