@@ -57,12 +57,14 @@ class MultiplayerServer(
         SimpleHttp.sendGetRequest("${getServerUrl()}/isalive") { success, result, _ ->
             statusOk = success
             if (result.isNotEmpty()) {
-                featureSet = try {
-                    json().fromJson(ServerFeatureSet::class.java, result)
-                } catch (_: Exception) {
-                    // The server does not support server feature set - not an error!
-                    ServerFeatureSet()
-                }
+                setFeatureSet(
+                    try {
+                        json().fromJson(ServerFeatureSet::class.java, result)
+                    } catch (_: Exception) {
+                        // The server does not support server feature set - not an error!
+                        ServerFeatureSet()
+                    }
+                )
             }
         }
         return statusOk
