@@ -98,9 +98,23 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val embassiesAreEnabled = writingTech != null && writingTech.uniques.contains("Allows establishment of embassies")
 
         return if (embassiesAreEnabled)
-            civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy) 
-                && otherCiv.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
         else true
+    }
+
+    /**
+     * Remove mutual embassies from both civs
+     */
+    fun removeEmbassies(otherCiv: Civilization) {
+        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        ourDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        ourDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
+        ourDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
+
+        val theirDiploManager = ourDiploManager.otherCivDiplomacy()
+        theirDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        theirDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
+        theirDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
     }
 
     /**
@@ -128,6 +142,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
         return !civInfo.isAtWarWith(otherCiv) && !isDenouncedThisTurn(theirDiploManager)
             && !theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            && !theirDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)
     }
 
     /**
@@ -138,6 +153,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return !civInfo.isAtWarWith(otherCiv) && !isDenouncedThisTurn(ourDiploManager)
             && !ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            && !ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)
     }
 
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {

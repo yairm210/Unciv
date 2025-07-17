@@ -118,13 +118,13 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
     fun acceptTrade(applyGifts: Boolean = true) {
         val ourDiploManager = ourCivilization.getDiplomacyManager(otherCivilization)!!
-        val theirDiploManger = otherCivilization.getDiplomacyManager(ourCivilization)!!
+        val theirDiploManager = otherCivilization.getDiplomacyManager(ourCivilization)!!
 
         ourDiploManager.apply {
             trades.add(currentTrade)
             updateHasOpenBorders()
         }
-        theirDiploManger.apply {
+        theirDiploManager.apply {
             trades.add(currentTrade.reverse())
             updateHasOpenBorders()
         }
@@ -133,7 +133,6 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         fun transferTrade(from: Civilization, to: Civilization, offer: TradeOffer) {
             when (offer.type) {
                 TradeOfferType.Embassy -> {
-                    to.getDiplomacyManager(from)!!.addModifier(DiplomaticModifiers.EstablishedEmbassy, 1f)
                     for (tile in from.getCapital()!!.getCenterTile().getTilesInDistance(2))
                         tile.setExplored(to, true)
                 }
@@ -227,7 +226,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 ourDiploManager.giftGold(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0), isPureGift)
             } else if (theirGoldValueOfTrade > ourGoldValueOfTrade) {
                 val isPureGift = currentTrade.theirOffers.isEmpty()
-                theirDiploManger.giftGold(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0), isPureGift)
+                theirDiploManager.giftGold(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0), isPureGift)
             }
         }
 
@@ -240,6 +239,28 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         // Transfter of treaties should only be done from one side to avoid double signing and notifying
         for (offer in currentTrade.theirOffers.filter { it.type == TradeOfferType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
+
+        // Diplomatic modifiers for embassy depend on whether a civ gives its embassy, accepts it or both
+        if (currentTrade.ourOffers.any { it.type == TradeOfferType.Embassy }) {
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)) {
+                ourDiploManager.replaceModifier(DiplomaticModifiers.EstablishedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+                theirDiploManager.replaceModifier(DiplomaticModifiers.ReceivedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+            }
+            else {
+                ourDiploManager.addModifier(DiplomaticModifiers.ReceivedEmbassy, 1f)
+                theirDiploManager.addModifier(DiplomaticModifiers.EstablishedEmbassy, 2f)
+            }
+        }
+        if (currentTrade.theirOffers.any { it.type == TradeOfferType.Embassy }) {
+            if (theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)) {
+                theirDiploManager.replaceModifier(DiplomaticModifiers.EstablishedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+                ourDiploManager.replaceModifier(DiplomaticModifiers.ReceivedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+            }
+            else {
+                ourDiploManager.addModifier(DiplomaticModifiers.EstablishedEmbassy, 2f)
+                theirDiploManager.addModifier(DiplomaticModifiers.ReceivedEmbassy, 1f)
+            }
+        }
 
         ourCivilization.cache.updateCivResources()
         ourCivilization.updateStatsForNextTurn()

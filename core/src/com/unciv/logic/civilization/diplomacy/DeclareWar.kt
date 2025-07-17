@@ -166,8 +166,7 @@ object DeclareWar {
         diplomacyManager.removeFlag(DiplomacyFlags.BorderConflict)
 
         // War results in removal of embassies for both sides
-        diplomacyManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
-        civAtWarWith.getDiplomacyManager(diplomacyManager.civInfo)!!.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        diplomacyManager.civInfo.diplomacyFunctions.removeEmbassies(civAtWarWith)
     }
 
     private fun changeOpinions(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {
