@@ -261,7 +261,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return null
     }
 
-    @Readonly @Suppress("purity") // should be autorecognized as readonly
     fun getCity(): City? = owningCity
 
     @Readonly internal fun getNaturalWonder(): Terrain =
@@ -282,7 +281,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return exploredBy.contains(player.civName)
     }
 
-    @Readonly @Suppress("purity") // should be autorecognized as readonly
     fun isCityCenter(): Boolean = isCityCenterInternal
     @Readonly fun isNaturalWonder(): Boolean = naturalWonder != null
     @Readonly fun isImpassible() = lastTerrain.impassable
@@ -583,7 +581,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
-    @Readonly @Suppress("purity") // should be auto-recognized!
+    @Readonly @Suppress("purity") // should be autorecognized
     fun isCoastalTile() = _isCoastalTile
 
     @Readonly
@@ -743,7 +741,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return out
     }
 
-    @Readonly @Suppress("purity") // should be auto-recognized as readonly
     fun getContinent() = continent
 
     /** Checks if this tile is marked as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */

@@ -198,10 +198,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     //region pure functions
-    @Readonly
-    fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
-    @Readonly
-    fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
+
+    @Readonly fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
+    @Readonly fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
 
     fun turnsToPeaceTreaty(): Int {
         for (trade in trades)

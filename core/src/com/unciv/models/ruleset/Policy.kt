@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Pure
 
 open class Policy : RulesetObject() {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics
@@ -32,6 +33,7 @@ open class Policy : RulesetObject() {
         /** Some tests to count policies by completion or not use only the String collection without instantiating them.
          *  To keep the hardcoding in one place, this is public and should be used instead of duplicating it.
          */
+        @Pure
         fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
     }
 

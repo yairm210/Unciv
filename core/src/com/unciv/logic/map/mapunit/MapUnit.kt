@@ -497,7 +497,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     // Only military land units can truly "garrison"
     fun canGarrison() = isMilitary() && baseUnit.isLandUnit
 
-    fun isGreatPerson() = baseUnit.isGreatPerson
+    @Readonly fun isGreatPerson() = baseUnit.isGreatPerson
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
     fun canIntercept(attackedTile: Tile): Boolean {
@@ -621,6 +621,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
     }
 
+    @Readonly
     fun getForceEvaluation(): Int {
         val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
         var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()

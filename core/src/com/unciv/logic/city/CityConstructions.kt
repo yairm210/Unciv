@@ -37,6 +37,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -253,7 +254,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
-    fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
+    @Readonly fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
             isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique, city.state) }

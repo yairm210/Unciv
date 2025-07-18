@@ -96,7 +96,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun getNumberOfTechsResearched(): Int = techsResearched.size
+    @Readonly fun getNumberOfTechsResearched(): Int = techsResearched.size
 
     fun getOverflowScience(): Int = overflowScience
 

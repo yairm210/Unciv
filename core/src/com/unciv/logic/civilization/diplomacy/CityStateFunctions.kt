@@ -27,6 +27,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.math.pow
@@ -214,6 +215,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         civInfo.questManager.receivedGoldGift(donorCiv)
     }
 
+    @Readonly
     fun getProtectorCivs() : List<Civilization> {
         if(civInfo.isMajorCiv()) return emptyList()
         return civInfo.diplomacy.values
@@ -414,8 +416,9 @@ class CityStateFunctions(val civInfo: Civilization) {
         return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
     }
 
-    @Readonly @Suppress("purity")  // Local state update
+    @Readonly
     fun getTributeModifiers(demandingCiv: Civilization, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
+        @LocalState
         val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
         // Can't bully major civs or unsettled CS's
         if (!civInfo.isCityState) {

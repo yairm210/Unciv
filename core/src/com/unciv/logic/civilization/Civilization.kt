@@ -425,6 +425,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         stats.statsForNextTurn = newStats
     }
 
+    @Readonly
     fun getHappiness() = stats.happiness
 
     /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
@@ -694,7 +695,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             }
     }
 
-
+    @Readonly
     fun getStatForRanking(category: RankingType): Int {
         return if (isDefeated()) 0
         else when (category) {
@@ -711,12 +712,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly @Suppress("purity") // caches
     private fun getMilitaryMight(): Int {
         if (cachedMilitaryMight < 0)
             cachedMilitaryMight = calculateMilitaryMight()
         return  cachedMilitaryMight
     }
 
+    @Readonly
     private fun calculateMilitaryMight(): Int {
         var sum = 1 // minimum value, so we never end up with 0
         for (unit in units.getCivUnits()) {
@@ -740,6 +743,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
+    @Readonly
     fun calculateScoreBreakdown(): HashMap<String,Double> {
         val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
@@ -762,6 +766,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return scoreBreakdown
     }
 
+    @Readonly
     fun calculateTotalScore() = calculateScoreBreakdown().values.sum()
 
     //endregion
@@ -824,7 +829,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.speed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
-    fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
+    @Readonly fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
     fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
 
     fun mayVoteForDiplomaticVictory() =
@@ -1046,7 +1051,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getAllyCiv(): Civilization? = if (allyCivName == null) null
         else gameInfo.getCivilization(allyCivName!!)
-    @Readonly @Suppress("purity") // should be autorecognized!
+    @Readonly @Suppress("purity") // should be autorecognized
     fun getAllyCivName() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
