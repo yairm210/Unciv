@@ -101,7 +101,7 @@ class ChatPopup(
         })
     }
 
-    private fun sendMessage() {
+    fun sendMessage() {
         val message = messageField.text.trim()
 
         val userId = UncivGame.Current.settings.multiplayer.getUserId()
@@ -118,17 +118,6 @@ class ChatPopup(
             chat.requestMessageSend(civName, message)
             messageField.setText("")
         }
-    }
-
-    private fun populateChat() {
-        chatTable.clearChildren()
-        chat.forEachMessage { civName, message ->
-            addMessage(civName, message)
-        }
-        ChatStore.pollGlobalMessages { civName, message ->
-            addMessage(civName, message, suffix = "one time")
-        }
-        scrollToBottom()
     }
 
     fun addMessage(
@@ -153,6 +142,17 @@ class ChatPopup(
 
         chatTable.add(line).row()
         if (scroll) scrollToBottom()
+    }
+
+    private fun populateChat() {
+        chatTable.clearChildren()
+        chat.forEachMessage { civName, message ->
+            addMessage(civName, message)
+        }
+        ChatStore.pollGlobalMessages { civName, message ->
+            addMessage(civName, message, suffix = "one time")
+        }
+        scrollToBottom()
     }
 
     private fun scrollToBottom() {

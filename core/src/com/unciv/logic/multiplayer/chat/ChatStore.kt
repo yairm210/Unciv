@@ -72,12 +72,14 @@ object ChatStore {
         gameIdToChat = mutableMapOf()
         globalMessages = LinkedList()
     }
-    
+
     fun relayChatMessage(chat: Response.Chat) {
-        getChatByGameId(chat.gameId).addMessage(chat.civName, chat.message)
-        if (chatPopup?.chat?.gameId == chat.gameId) {
-            chatPopup?.addMessage(chat.civName, chat.message)
-        }
+        if (chat.gameId.isNotEmpty()) {
+            getChatByGameId(chat.gameId).addMessage(chat.civName, chat.message)
+            if (chatPopup?.chat?.gameId == chat.gameId) {
+                chatPopup?.addMessage(chat.civName, chat.message)
+            }
+        } else relayGlobalMessage(chat.message, chat.civName)
     }
 
     fun pollGlobalMessages(action: (String, String) -> Unit) {
