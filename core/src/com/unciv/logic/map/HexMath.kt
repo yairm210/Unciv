@@ -2,6 +2,10 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import yairm210.purity.annotations.Immutable
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -15,10 +19,12 @@ import kotlin.math.sqrt
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
 
+    @Pure
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
+    @Pure
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
@@ -27,20 +33,24 @@ object HexMath {
      * @param size Radius around origin tile
      * @return The number of tiles in a hexagonal map including origin tile
      */
+    @Pure
     fun getNumberOfTilesInHexagon(size: Int): Int {
         if (size < 0) return 0
         return 1 + 6 * size * (size + 1) / 2
     }
 
     /** Almost inverse of [getNumberOfTilesInHexagon] - get equivalent fractional Hexagon radius for an Area */
+    @Pure
     fun getHexagonalRadiusForArea(numberOfTiles: Int) =
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
 
     // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
+    @Readonly
     fun getLatitude(vector: Vector2): Float {
         return vector.x + vector.y
     }
 
+    @Readonly
     fun getLongitude(vector: Vector2): Float {
         return vector.x - vector.y
     }
@@ -53,6 +63,7 @@ object HexMath {
      * @param longitude As from [getLongitude].
      * @return Hex coordinate. May need to be passed through [roundHexCoords] for further use.
      * */
+    @Pure
     fun hexFromLatLong(latitude: Float, longitude: Float): Vector2 {
         val y = (latitude - longitude) / 2f
         val x = longitude + y
@@ -62,6 +73,7 @@ object HexMath {
     /**
      * Convert hex latitude and longitude into world coordinates.
      */
+    @Readonly
     fun worldFromLatLong(vector: Vector2, tileRadius: Float): Vector2 {
         val x = vector.x * tileRadius * 1.5f * -1f
         val y = vector.y * tileRadius * sqrt(3f) * 0.5f
@@ -70,6 +82,7 @@ object HexMath {
 
     /** returns a vector containing width and height a rectangular map should have to have
      *  approximately the same number of tiles as an hexagonal map given a height/width ratio */
+    @Pure
     fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {
         if (size < 0)
             return Vector2.Zero
@@ -82,21 +95,10 @@ object HexMath {
 
     /** Returns a radius of a hexagonal map that has approximately the same number of
      *  tiles as a rectangular map of a given width/height */
+    @Pure
     fun getEquivalentHexagonalRadius(width: Int, height: Int) =
         getHexagonalRadiusForArea(width * height).roundToInt()
-
-    fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
-        val vectors = arrayListOf(
-                Vector2(1f, 0f),
-                Vector2(1f, 1f),
-                Vector2(0f, 1f),
-                Vector2(-1f, 0f),
-                Vector2(-1f, -1f),
-                Vector2(0f, -1f)
-        )
-        for (vector in vectors) vector.add(origin)
-        return vectors
-    }
+    
 
     // HexCoordinates are a (x,y) vector, where x is the vector getting us to the top-left hex (e.g. 10 o'clock)
     // and y is the vector getting us to the top-right hex (e.g. 2 o'clock)
@@ -114,26 +116,39 @@ object HexMath {
      *
      * @see [com.unciv.logic.map.TileMap.getUnWrappedPosition]
      */
-    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Number): Vector2 {
+    @Readonly
+    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Float): Vector2 {
         val referenceLong = getLongitude(staticHexCoord)
         val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier.
         val toWrapLong = getLongitude(unwrapHexCoord)
-        val longRadius = longitudinalRadius.toFloat()
-        return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longRadius).mod(longRadius * 2f) - longRadius + referenceLong)
+        return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longitudinalRadius).mod(longitudinalRadius * 2f)
+                - longitudinalRadius + referenceLong)
     }
 
+    @Readonly
     fun hex2WorldCoords(hexCoord: Vector2): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
-        val xVector = getVectorByClockHour(10).scl(sqrt(3.0).toFloat())
-        val yVector = getVectorByClockHour(2).scl(sqrt(3.0).toFloat())
-        return xVector.scl(hexCoord.x).add(yVector.scl(hexCoord.y))
+        @LocalState
+        val xVector = getVectorByClockHour(10)
+        xVector.scl(sqrt(3.0).toFloat() * hexCoord.x)
+        
+        @LocalState
+        val yVector = getVectorByClockHour(2)
+        yVector.scl(sqrt(3.0).toFloat() * hexCoord.y)
+        
+        return xVector.add(yVector)
     }
 
     @Suppress("LocalVariableName")  // clearer
+    @Readonly
     fun world2HexCoords(worldCoord: Vector2): Vector2 {
         // D: diagonal, A: antidiagonal versors
-        val D = getVectorByClockHour(10).scl(sqrt(3.0).toFloat())
-        val A = getVectorByClockHour(2).scl(sqrt(3.0).toFloat())
+        @LocalState
+        val D = getVectorByClockHour(10)
+        D.scl(sqrt(3.0).toFloat())
+        @LocalState
+        val A = getVectorByClockHour(2)
+        A.scl(sqrt(3.0).toFloat())
         val den = D.x * A.y - D.y * A.x
         val x = (worldCoord.x * A.y - worldCoord.y * A.x) / den
         val y = (worldCoord.y * D.x - worldCoord.x * D.y) / den
@@ -141,11 +156,14 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
+    @Readonly
     fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
+    @Readonly
     fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
 
+    @Pure
     fun getTileCoordsFromColumnRow(column: Int, row: Int): Vector2 {
         // we know that column = y-x in hex coords
         // And we know that row = (y+x)/2 in hex coords
@@ -163,8 +181,10 @@ object HexMath {
     }
 
     /** Todo: find a mathematically equivalent way to round hex coords without cubic magic */
+    @Readonly
     fun roundHexCoords(hexCoord: Vector2): Vector2 {
 
+        @Readonly
         fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
             var rx = round(cubicCoords.x)
             var ry = round(cubicCoords.y)
@@ -184,10 +204,12 @@ object HexMath {
             return Vector3(rx, ry, rz)
         }
 
+        @Readonly
         fun hex2CubicCoords(hexCoord: Vector2): Vector3 {
             return Vector3(hexCoord.y - hexCoord.x, hexCoord.x, -hexCoord.y)
         }
 
+        @Readonly
         fun cubic2HexCoords(cubicCoord: Vector3): Vector2 {
             return Vector2(cubicCoord.y, -cubicCoord.z)
         }
@@ -195,34 +217,49 @@ object HexMath {
         return cubic2HexCoords(roundCubicCoords(hex2CubicCoords(hexCoord)))
     }
 
+    @Readonly
     fun getVectorsAtDistance(origin: Vector2, distance: Int, maxDistance: Int, worldWrap: Boolean): List<Vector2> {
+        @LocalState
         val vectors = mutableListOf<Vector2>()
         if (distance == 0) {
-            vectors += origin.cpy()
-            return vectors
+            return listOf(origin.cpy())
         }
-        val current = origin.cpy().sub(distance.toFloat(), distance.toFloat()) // start at 6 o clock
+        
+        @Readonly
+        fun getVectorOnOtherSideOfClock(vector: Vector2): Vector2 {
+            @LocalState
+            val vec = origin.cpy()
+            vec.scl(2f)
+            vec.sub(vector)
+            return vec
+        }
+        
+        @LocalState
+        val current = origin.cpy()
+        current.sub(distance.toFloat(), distance.toFloat()) // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            vectors += getVectorOnOtherSideOfClock(current)
             current.add(1f, 0f)
         }
         for (i in 0 until distance) { // 8 to 10
             vectors += current.cpy()
             if (!worldWrap || distance != maxDistance)
-                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+                vectors += getVectorOnOtherSideOfClock(current)
             current.add(1f, 1f)
         }
         for (i in 0 until distance) { // 10 to 12
             vectors += current.cpy()
             if (!worldWrap || distance != maxDistance || i != 0)
-                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+                vectors += getVectorOnOtherSideOfClock(current)
             current.add(0f, 1f)
         }
         return vectors
     }
 
+    @Readonly
     fun getVectorsInDistance(origin: Vector2, distance: Int, worldWrap: Boolean): List<Vector2> {
+        @LocalState
         val hexesToReturn = mutableListOf<Vector2>()
         for (i in 0..distance) {
             hexesToReturn += getVectorsAtDistance(origin, i, distance, worldWrap)
@@ -231,10 +268,12 @@ object HexMath {
     }
 
     /** Get number of hexes from [origin] to [destination] _without respecting world-wrap_ */
+    @Pure
     fun getDistance(origin: Vector2, destination: Vector2): Int {
         return getDistance(origin.x.toInt(), origin.y.toInt(), destination.x.toInt(), destination.y.toInt())
     }
-    
+
+    @Pure
     fun getDistance(originX: Int, originY: Int, destinationX: Int, destinationY: Int): Int {
         val relativeX = originX - destinationX
         val relativeY = originY - destinationY
@@ -244,6 +283,7 @@ object HexMath {
             (abs(relativeX) + abs(relativeY))
     }
 
+    @Immutable
     private val clockPositionToHexVectorMap: Map<Int, Vector2> = mapOf(
         0 to Vector2(1f, 1f), // This alias of 12 makes clock modulo logic easier
         12 to Vector2(1f, 1f),
@@ -255,12 +295,14 @@ object HexMath {
     )
 
     /** Returns the hex-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
+    @Pure
     fun getClockPositionToHexVector(clockPosition: Int): Vector2 {
         return clockPositionToHexVectorMap[clockPosition]?: Vector2.Zero
     }
 
     // Statically allocate the Vectors (in World coordinates)
     // of the 6 clock directions for border and road drawing in TileGroup
+    @Immutable
     private val clockPositionToWorldVectorMap: Map<Int,Vector2> = mapOf(
         2 to hex2WorldCoords(Vector2(0f, -1f)),
         4 to hex2WorldCoords(Vector2(1f, 0f)),
@@ -270,9 +312,11 @@ object HexMath {
         12 to hex2WorldCoords(Vector2(-1f, -1f)) )
 
     /** Returns the world/screen-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
+    @Pure
     fun getClockPositionToWorldVector(clockPosition: Int): Vector2 =
         clockPositionToWorldVectorMap[clockPosition] ?: Vector2.Zero
 
+    @Readonly
     fun getDistanceFromEdge(vector: Vector2, mapParameters: MapParameters): Int {
         val x = vector.x.toInt()
         val y = vector.y.toInt()
@@ -305,6 +349,7 @@ object HexMath {
      * The goal here is to map from hexagonal positions (centered on 0,0) to positive integers (starting from 0) so we can replace hashmap/hashset with arrays/bitsets
      * Places 1-6 are ring 1, 7-18 are ring 2, etc.
      */
+    @Pure
     fun getZeroBasedIndex(x: Int, y: Int): Int {
         if (x == 0 && y == 0) return 0
         val ring = getDistance(0,0, x, y)

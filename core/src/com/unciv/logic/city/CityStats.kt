@@ -15,8 +15,8 @@ import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 
 class StatTreeNode {
@@ -162,7 +162,7 @@ class CityStats(val city: City) {
         val growthSources = StatMap()
         val stateForConditionals = city.state
         // "[amount]% growth [cityFilter]"
-        for (unique in city.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals = stateForConditionals)) {
+        for (unique in city.getMatchingUniques(UniqueType.GrowthPercentBonus, gameContext = stateForConditionals)) {
             if (!city.matchesFilter(unique.params[1])) continue
 
             growthSources.add(
@@ -173,6 +173,7 @@ class CityStats(val city: City) {
         return growthSources
     }
 
+    @Readonly
     fun hasExtraAnnexUnhappiness(): Boolean {
         if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)
@@ -331,21 +332,9 @@ class CityStats(val city: City) {
 
     private fun getBuildingMaintenanceCosts(): Float {
         // Same here - will have a different UI display.
-        var buildingsMaintenance = city.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
+        var buildingsMaintenance = city.cityConstructions.getMaintenanceCosts() // this is AFTER the bonus calculation!
         if (!city.civ.isHuman()) {
             buildingsMaintenance *= city.civ.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
-        }
-
-        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenanceOld)) {
-            buildingsMaintenance *= unique.params[0].toPercent()
-        }
-        
-        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenance)) {
-            city.cityConstructions.getBuiltBuildings().filter { 
-                it.matchesFilter(unique.params[1])
-            }.forEach {
-                it.maintenance = (it.maintenance * unique.params[0].toPercent()).roundToInt()
-            }
         }
 
         return buildingsMaintenance

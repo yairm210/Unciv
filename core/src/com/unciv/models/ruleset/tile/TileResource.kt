@@ -6,13 +6,14 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 
 class TileResource : RulesetStatsObject(), GameResource {
 
@@ -37,9 +38,9 @@ class TileResource : RulesetStatsObject(), GameResource {
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
 
-    val isCityWide by lazy { hasUnique(UniqueType.CityResource, StateForConditionals.IgnoreConditionals) }
+    val isCityWide by lazy { hasUnique(UniqueType.CityResource, GameContext.IgnoreConditionals) }
 
-    val isStockpiled by lazy { hasUnique(UniqueType.Stockpiled, StateForConditionals.IgnoreConditionals) }
+    val isStockpiled by lazy { hasUnique(UniqueType.Stockpiled, GameContext.IgnoreConditionals) }
 
     private var improvementsInitialized = false
     /** Cache collecting [improvement], [improvedBy] and [UniqueType.ImprovesResources] uniques on the improvements themselves. */
@@ -52,6 +53,7 @@ class TileResource : RulesetStatsObject(), GameResource {
      *  @see improvedBy
      *  @see UniqueType.ImprovesResources
      */
+    @Readonly @Suppress("purity") // requires some plumbing
     fun getImprovements(): Set<String> {
         if (improvementsInitialized) return allImprovements
         val ruleset = this.ruleset
@@ -139,7 +141,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         }
 
         val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirementsPerTurn(
-            StateForConditionals.IgnoreConditionals).containsKey(name) }
+            GameContext.IgnoreConditionals).containsKey(name) }
         if (buildingsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{Buildings that consume this resource}:")
@@ -149,7 +151,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         }
 
         val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirementsPerTurn(
-            StateForConditionals.IgnoreConditionals).containsKey(name) }
+            GameContext.IgnoreConditionals).containsKey(name) }
         if (unitsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{Units that consume this resource}: ")
@@ -178,14 +180,18 @@ class TileResource : RulesetStatsObject(), GameResource {
         return getImprovements().contains(improvementName)
     }
 
-    /** @return Of all the potential improvements in [getImprovements], the first this [civ] can actually build, if any. */
-    fun getImprovingImprovement(tile: Tile, civ: Civilization): String? {
-        return getImprovements().firstOrNull {
-            tile.improvementFunctions.canBuildImprovement(civ.gameInfo.ruleset.tileImprovements[it]!!, civ)
+    /** @return Of all the potential improvements in [getImprovements], the first this civ can actually build, if any. */
+    fun getImprovingImprovement(tile: Tile, gameContext: GameContext): String? {
+        if (gameContext.civInfo != null) {
+            val civ: Civilization = gameContext.civInfo
+            return getImprovements().firstOrNull {
+                tile.improvementFunctions.canBuildImprovement(civ.gameInfo.ruleset.tileImprovements[it]!!, gameContext)
+            }
         }
+        return null
     }
 
-    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+    fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
                 state != null && hasUnique(filter, state) ||
@@ -202,12 +208,12 @@ class TileResource : RulesetStatsObject(), GameResource {
 
     fun generatesNaturallyOn(tile: Tile): Boolean {
         if (tile.lastTerrain.name !in terrainsCanBeFoundOn) return false
-        val stateForConditionals = StateForConditionals(tile = tile)
-        if (hasUnique(UniqueType.NoNaturalGeneration, stateForConditionals)) return false
-        if (tile.allTerrains.any { it.hasUnique(UniqueType.BlocksResources, stateForConditionals) }) return false
+        val gameContext = GameContext(tile = tile)
+        if (hasUnique(UniqueType.NoNaturalGeneration, gameContext)) return false
+        if (tile.allTerrains.any { it.hasUnique(UniqueType.BlocksResources, gameContext) }) return false
 
         if (tile.temperature!=null && tile.humidity!=null) // Only works when in map generation
-            for (unique in getMatchingUniques(UniqueType.TileGenerationConditions, stateForConditionals)){
+            for (unique in getMatchingUniques(UniqueType.TileGenerationConditions, gameContext)){
                 if (tile.temperature!! !in unique.params[0].toDouble() .. unique.params[1].toDouble()) return false
                 if (tile.humidity!! !in unique.params[2].toDouble() .. unique.params[3].toDouble()) return false
             }

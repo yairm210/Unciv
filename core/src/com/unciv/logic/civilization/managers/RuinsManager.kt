@@ -4,7 +4,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.RuinReward
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
@@ -48,10 +48,10 @@ class RuinsManager(
     private fun isPossibleReward(ruinReward: RuinReward, unit: MapUnit): Boolean {
         if (ruinReward.name in lastChosenRewards) return false
         if (ruinReward.isUnavailableBySettings(civInfo.gameInfo)) return false
-        val stateForConditionals = StateForConditionals(civInfo, unit = unit, tile = unit.getTile())
-        if (ruinReward.hasUnique(UniqueType.Unavailable, stateForConditionals)) return false
-        if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
-                .any { !it.conditionalsApply(stateForConditionals) }) return false
+        val gameContext = GameContext(civInfo, unit = unit, tile = unit.getTile())
+        if (ruinReward.hasUnique(UniqueType.Unavailable, gameContext)) return false
+        if (ruinReward.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .any { !it.conditionalsApply(gameContext) }) return false
         return true
     }
 

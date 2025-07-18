@@ -12,7 +12,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = city.state
+        gameContext: GameContext = city.state
     ): Sequence<Unique> {
         // City uniques are a combination of *global civ* uniques plus *city relevant* uniques (see City.getMatchingUniques())
         // We can cache the civ uniques separately, so if we have several cities using the same cache,
@@ -20,11 +20,11 @@ class LocalUniqueCache(val cache: Boolean = true) {
 
         val citySpecificUniques = get(
             "city-${city.id}-${uniqueType.name}",
-            city.getLocalMatchingUniques(uniqueType, StateForConditionals.IgnoreMultiplicationForCaching)
-        ).filter { it.conditionalsApply(stateForConditionals) }
-            .flatMap { it.getMultiplied(stateForConditionals) }
+            city.getLocalMatchingUniques(uniqueType, GameContext.IgnoreMultiplicationForCaching)
+        ).filter { it.conditionalsApply(gameContext) }
+            .flatMap { it.getMultiplied(gameContext) }
 
-        val civUniques = forCivGetMatchingUniques(city.civ, uniqueType, stateForConditionals)
+        val civUniques = forCivGetMatchingUniques(city.civ, uniqueType, gameContext)
 
         return citySpecificUniques + civUniques
     }
@@ -32,9 +32,9 @@ class LocalUniqueCache(val cache: Boolean = true) {
     fun forCivGetMatchingUniques(
         civ: Civilization,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = civ.state
+        gameContext: GameContext = civ.state
     ): Sequence<Unique> {
-        val sequence = civ.getMatchingUniques(uniqueType, StateForConditionals.IgnoreMultiplicationForCaching)
+        val sequence = civ.getMatchingUniques(uniqueType, GameContext.IgnoreMultiplicationForCaching)
         // The uniques CACHED are ALL civ uniques, regardless of conditional matching.
         // The uniques RETURNED are uniques AFTER conditional matching.
         // This allows reuse of the cached values, between runs with different conditionals -
@@ -43,8 +43,8 @@ class LocalUniqueCache(val cache: Boolean = true) {
         return get(
             "civ-${civ.civName}-${uniqueType.name}",
             sequence
-        ).filter { it.conditionalsApply(stateForConditionals) }
-            .flatMap { it.getMultiplied(stateForConditionals) }
+        ).filter { it.conditionalsApply(gameContext) }
+            .flatMap { it.getMultiplied(gameContext) }
     }
 
     /** Get cached results as a sequence */

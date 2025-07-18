@@ -2,12 +2,13 @@ package com.unciv.models.ruleset
 
 import com.unciv.Constants
 import com.unciv.logic.MultiFilter
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Pure
 
 open class Policy : RulesetObject() {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics
@@ -32,10 +33,11 @@ open class Policy : RulesetObject() {
         /** Some tests to count policies by completion or not use only the String collection without instantiating them.
          *  To keep the hardcoding in one place, this is public and should be used instead of duplicating it.
          */
+        @Pure
         fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
     }
 
-    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+    fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
                 state != null && hasUnique(filter, state) ||
@@ -112,7 +114,7 @@ open class Policy : RulesetObject() {
         }
 
         fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any {
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).any {
                     it.getModifiers(UniqueType.ConditionalAfterPolicyOrBelief).any { it.params[0] == name } }
                 || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any {
                     it.getModifiers(UniqueType.ConditionalBeforePolicyOrBelief).any { it.params[0] == name }
@@ -131,12 +133,12 @@ open class Policy : RulesetObject() {
 
 
         fun isDisabledByPolicy(rulesetObject: IRulesetObject): Boolean {
-            if (rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals).any {
+            if (rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).any {
                     it.getModifiers(UniqueType.ConditionalBeforePolicyOrBelief).any { it.params[0] == name }
                 })
                 return true
 
-            if (rulesetObject.getMatchingUniques(UniqueType.Unavailable, StateForConditionals.IgnoreConditionals).any {
+            if (rulesetObject.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals).any {
                     it.getModifiers(UniqueType.ConditionalAfterPolicyOrBelief).any { it.params[0] == name } })
                 return true
             

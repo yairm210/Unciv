@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.unique.expressions
 
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.roundToInt
 
@@ -25,9 +25,9 @@ class Expressions {
         return parseResult.node != null && parseResult.node.getErrors(ruleset).isEmpty()
     }
 
-    fun eval(parameterText: String, stateForConditionals: StateForConditionals): Int? {
+    fun eval(parameterText: String, gameContext: GameContext): Int? {
         val node = parse(parameterText).node ?: return null
-        return node.eval(stateForConditionals).roundToInt()
+        return node.eval(gameContext).roundToInt()
     }
 
     fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {

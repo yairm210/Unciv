@@ -316,7 +316,7 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf(
             "Terrain",
             Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
-            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your",
+            "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your", "Unowned",
             "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
             "Impassable", "Land", "Water"
         ) + ResourceType.entries.map { it.name + " resource" } + Constants.all
@@ -601,7 +601,13 @@ enum class UniqueParameterType(
 
     /** Mod declarative compatibility: Define Mod relations by their name. */
     ModName("modFilter",
-        "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter",
+        docExample = "DeCiv Redux",
+        docDescription = """
+            |A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
+            |Note that this must use the Mod name as Unciv displays it, not the Repository name.
+            |There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.
+        """.trimMargin(),
+        displayName = "Mod name filter",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {

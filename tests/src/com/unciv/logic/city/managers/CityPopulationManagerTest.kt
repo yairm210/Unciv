@@ -45,12 +45,10 @@ class CityPopulationManagerTest {
     @Test
     fun `should change food requirements for different gamespeeds`() {
         // given
-        val quickSpeedGame = TestGame()
-        quickSpeedGame.gameInfo.speed = quickSpeedGame.ruleset.speeds["Quick"]!!
+        val quickSpeedGame = TestGame().apply { setSpeed("Quick") }
         val quickSpeedCity = quickSpeedGame.addCity(quickSpeedGame.addCiv(), quickSpeedGame.getTile(Vector2.Zero), initialPopulation = 1)
 
-        val epicSpeedGame = TestGame()
-        epicSpeedGame.gameInfo.speed = epicSpeedGame.ruleset.speeds["Epic"]!!
+        val epicSpeedGame = TestGame().apply { setSpeed("Epic") }
         val epicSpeedCity = epicSpeedGame.addCity(epicSpeedGame.addCiv(), epicSpeedGame.getTile(Vector2.Zero), initialPopulation = 1)
 
         // when
@@ -80,9 +78,7 @@ class CityPopulationManagerTest {
     @Test
     fun `should increase food requirements for AI on easier difficulties`() {
         // given
-        val easierDifficultyGame = TestGame()
-        easierDifficultyGame.gameInfo.difficulty = "Chieftain"
-        easierDifficultyGame.gameInfo.difficultyObject = easierDifficultyGame.ruleset.difficulties["Chieftain"]!!
+        val easierDifficultyGame = TestGame().apply { setDifficulty("Chieftain") }
         val easierCity = easierDifficultyGame.addCity(easierDifficultyGame.addCiv(), easierDifficultyGame.getTile(Vector2.Zero), initialPopulation = 1)
 
         // when
@@ -96,9 +92,7 @@ class CityPopulationManagerTest {
     @Test
     fun `should decrease food requirements for AI on higher difficulties`() {
         // given
-        val harderDifficultyGame = TestGame()
-        harderDifficultyGame.gameInfo.difficulty = "Deity"
-        harderDifficultyGame.gameInfo.difficultyObject = harderDifficultyGame.ruleset.difficulties["Deity"]!!
+        val harderDifficultyGame = TestGame().apply { setDifficulty("Deity") }
         val harderCity = harderDifficultyGame.addCity(harderDifficultyGame.addCiv(), harderDifficultyGame.getTile(Vector2.Zero), initialPopulation = 1)
 
         // when

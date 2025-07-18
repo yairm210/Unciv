@@ -17,7 +17,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.mapeditorscreen.MapGeneratorSteps
 import com.unciv.logic.map.tile.TileNormalizer
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
@@ -265,7 +266,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         fun convertTerrains(ruleset: Ruleset, tiles: Iterable<Tile>) {
             for (tile in tiles) {
                 val conversionUnique =
-                    tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain, StateForConditionals(tile = tile))
+                    tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain, GameContext(tile = tile))
                         .firstOrNull { tile.isAdjacentTo(it.params[1]) }
                         ?: continue
                 val terrain = ruleset.terrains[conversionUnique.params[0]] ?: continue
@@ -317,13 +318,13 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
             while (waterTiles.isNotEmpty()) {
-                val initialWaterTile = waterTiles.removeFirst()
+                val initialWaterTile = waterTiles.removeAt(0)
                 tilesInArea += initialWaterTile
                 tilesToCheck += initialWaterTile
 
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
-                    val tileWeAreChecking = tilesToCheck.removeFirst()
+                    val tileWeAreChecking = tilesToCheck.removeAt(0)
                     for (vector in tileWeAreChecking.neighbors){
                         if (tilesInArea.contains(vector)) continue
                         if (!waterTiles.contains(vector)) continue
@@ -353,13 +354,18 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val ruinsEquivalents = ruleset.tileImprovements.filter { it.value.isAncientRuinsEquivalent() }
         if (map.mapParameters.noRuins || ruinsEquivalents.isEmpty() )
             return
-        val suitableTiles = map.values.filter { it.isLand && !it.isImpassible() }
+        
+        fun isPlaceable(improvement: TileImprovement, tile: Tile) =
+            tile.improvementFunctions.canImprovementBeBuiltHere(improvement, gameContext = GameContext.IgnoreConditionals)
+        
+        val suitableTiles = map.values.filter { it.isLand && !it.isImpassible()
+                && ruinsEquivalents.values.any { improvement -> isPlaceable(improvement, it) } }
         val locations = randomness.chooseSpreadOutLocations(
                 (suitableTiles.size * ruleset.modOptions.constants.ancientRuinCountMultiplier).roundToInt(),
                 suitableTiles,
                 map.mapParameters.mapSize.radius)
         for (tile in locations)
-            tile.improvement = ruinsEquivalents.keys.random()
+            tile.improvement = ruinsEquivalents.values.filter { isPlaceable(it, tile) }.random().name
     }
 
     private fun spreadResources(tileMap: TileMap) {

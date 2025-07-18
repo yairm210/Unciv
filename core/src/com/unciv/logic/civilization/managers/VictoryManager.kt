@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
@@ -47,7 +47,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
     fun getUNBuildingAndOwnerNames(): Pair<String?, String?> = getVotingCivs()
             .flatMap { civ -> civ.cities.asSequence()
                 .flatMap { it.cityConstructions.getBuiltBuildings() }
-                .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, StateForConditionals.IgnoreConditionals) }
+                .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, GameContext.IgnoreConditionals) }
                 .map { it.name to civ.civName }
             }.firstOrNull() ?: (null to null)
 

@@ -60,7 +60,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         isTransform = false
 
         defaults().pad(defaultTopPad, defaultHorizontalPad, defaultBottomPad, defaultHorizontalPad)
-        
+
         fun addStat(
             icon: String,
             label: Label,
@@ -124,7 +124,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         resetScale()
 
         val nextTurnStats = civInfo.stats.statsForNextTurn
-        
+
         goldLabel.setText(civInfo.gold.tr())
         goldPerTurnLabel.setText(rateLabel(nextTurnStats.gold))
 
@@ -155,9 +155,9 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         // kotlin Float division by Zero produces `Float.POSITIVE_INFINITY`, not an exception
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
         cultureString += when {
-            turnsToNextPolicy <= 0f -> " (!)" // Can choose policy right now
-            nextTurnStats.culture <= 0 -> " (${Fonts.infinity})" // when you start the game, you're not producing any culture
-            else -> " (" + Fonts.turn + " " + ceil(turnsToNextPolicy).toInt().tr() + ")"
+            turnsToNextPolicy <= 0f -> "\u2004(!)" // Can choose policy right now
+            nextTurnStats.culture <= 0 -> "\u2004(${Fonts.infinity})" // when you start the game, you're not producing any culture
+            else -> "\u2004(" + Fonts.turn + "\u2009" + ceil(turnsToNextPolicy).toInt().tr() + ")" // U+2004: Three-Per-Em Space, U+2009: Thin Space
         }
         return cultureString
     }

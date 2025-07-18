@@ -3,21 +3,21 @@ package com.unciv.models.ruleset.validation
 import com.badlogic.gdx.graphics.Color
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 
 class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
 
-enum class RulesetErrorSeverity(val color: Color) {
+enum class RulesetErrorSeverity(val color: Color, val iconName: String) {
     /** Only appears in mod checker - used for possible misspellings, etc */
-    OK(Color.GREEN),
+    OK(Color.GREEN, "OtherIcons/Checkmark"),
     /** Only appears in mod checker */
-    WarningOptionsOnly(Color.YELLOW),
-    Warning(Color.YELLOW),
+    WarningOptionsOnly(Color.YELLOW, "OtherIcons/ExclamationMark"),
+    Warning(Color.YELLOW, "OtherIcons/ExclamationMark"),
     /** Only appears in mod checker */
-    ErrorOptionsOnly(Color.ORANGE),
-    Error(Color.RED),
+    ErrorOptionsOnly(Color.ORANGE, "OtherIcons/ExclamationMark"),
+    Error(Color.RED, "OtherIcons/Stop"),
 }
 
 /**
@@ -34,7 +34,7 @@ class RulesetErrorList(
 ) : ArrayList<RulesetError>() {
     private val globalSuppressionFilters: Set<String> =
         ruleset?.modOptions
-        ?.getMatchingUniques(UniqueType.SuppressWarnings, StateForConditionals.IgnoreConditionals)
+        ?.getMatchingUniques(UniqueType.SuppressWarnings, GameContext.IgnoreConditionals)
         ?.map { it.params[0] }
         ?.toSet()
         ?: emptySet()

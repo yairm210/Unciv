@@ -35,7 +35,7 @@ object TileDescription {
             else
                 FormattedLine(tile.resource!!, link="Resource/${tile.resource}")
         if (tile.resource != null && viewingCiv != null && tile.hasViewableResource(viewingCiv)) {
-            val resourceImprovement = tile.tileResource.getImprovements().firstOrNull { tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, viewingCiv) }
+            val resourceImprovement = tile.tileResource.getImprovements().firstOrNull { tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, viewingCiv.state) }
             val tileImprovement = tile.ruleset.tileImprovements[resourceImprovement]
             if (tileImprovement?.techRequired != null
                     && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {

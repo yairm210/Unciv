@@ -20,13 +20,15 @@ import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
@@ -213,6 +215,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         civInfo.questManager.receivedGoldGift(donorCiv)
     }
 
+    @Readonly
     fun getProtectorCivs() : List<Civilization> {
         if(civInfo.isMajorCiv()) return emptyList()
         return civInfo.diplomacy.values
@@ -408,11 +411,14 @@ class CityStateFunctions(val civInfo: Civilization) {
         civInfo.destroy(notificationLocation)
     }
 
+    @Readonly
     fun getTributeWillingness(demandingCiv: Civilization, demandingWorker: Boolean = false): Int {
         return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
     }
 
+    @Readonly
     fun getTributeModifiers(demandingCiv: Civilization, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
+        @LocalState
         val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
         // Can't bully major civs or unsettled CS's
         if (!civInfo.isCityState) {
@@ -789,9 +795,10 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     // TODO: Optimize, update whenever status changes, otherwise retain the same list
+    @Readonly
     fun getUniquesProvidedByCityStates(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals
+        gameContext: GameContext
     ):Sequence<Unique> {
         if (civInfo.isCityState) return emptySequence()
 
@@ -804,11 +811,12 @@ class CityStateFunctions(val civInfo: Civilization) {
                         else RelationshipLevel.Neutral
                 getCityStateBonuses(it.cityStateType, relationshipLevel, uniqueType)
             }
-            .filter { it.conditionalsApply(stateForConditionals) }
-            .flatMap { it.getMultiplied(stateForConditionals) }
+            .filter { it.conditionalsApply(gameContext) }
+            .flatMap { it.getMultiplied(gameContext) }
     }
 
 
+    @Readonly
     fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType: UniqueType? = null): Sequence<Unique> {
         val cityStateUniqueMap = when (relationshipLevel) {
             RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap

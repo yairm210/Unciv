@@ -23,6 +23,12 @@ class UniqueValidator(val ruleset: Ruleset) {
     /** Used to determine if certain uniques are used for filtering */
     private val allUniqueParameters = HashSet<String>()
 
+    private val anyAncientRuins: Boolean by lazy {
+        ruleset.tileImprovements.values.asSequence()
+            .flatMap { it.uniqueObjects }
+            .any { it.type == UniqueType.IsAncientRuinsEquivalent }
+    }
+
     private fun addToHashsets(uniqueHolder: IHasUniques) {
         for (unique in uniqueHolder.uniqueObjects) {
             if (unique.type == null) allNonTypedUniques.add(unique.text)
@@ -93,6 +99,8 @@ class UniqueValidator(val ruleset: Ruleset) {
         for (conditional in unique.modifiers) {
             addConditionalErrors(conditional, rulesetErrors, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
         }
+
+        addUniqueTypeSpecificErrors(rulesetErrors, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
 
         val conditionals = unique.modifiers.filter { it.type?.canAcceptUniqueTarget(UniqueTarget.Conditional) == true }
         if (conditionals.size > 1){
@@ -258,6 +266,18 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         addDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
+    }
+
+    private fun addUniqueTypeSpecificErrors(
+        rulesetErrors: RulesetErrorList, prefix: String, unique: Unique, uniqueContainer: IHasUniques?, reportRulesetSpecificErrors: Boolean
+    ) {
+        when(unique.type) {
+            UniqueType.RuinsUpgrade -> {
+                if (reportRulesetSpecificErrors && !anyAncientRuins)
+                    rulesetErrors.add("$prefix is pointless - there are no ancient ruins", RulesetErrorSeverity.Warning, uniqueContainer, unique)
+            }
+            else -> return
+        }
     }
 
     private fun addDeprecationAnnotationErrors(

@@ -33,6 +33,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
@@ -46,6 +47,7 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
 import java.util.UUID
 
@@ -148,10 +150,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region Fields - Transient
 
     @Transient
-    lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+    private lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
 
     @Transient
     lateinit var speed: Speed
+
+    @Transient
+    private lateinit var combinedGlobalUniques: GlobalUniques
 
     @Transient
     lateinit var currentPlayerCiv: Civilization // this is called thousands of times, no reason to search for it with a find{} every time
@@ -227,19 +232,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     val civMap by lazy { civilizations.associateBy { it.civName } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
+    @Readonly
     fun getCivilization(civName: String) = civMap[civName]
         ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
-    fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
+    @Readonly fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
-    
+    /** Access a cached `GlobalUniques` that combines the [ruleset]'s [globalUniques][Ruleset.globalUniques]
+     *  with the Uniques of the chosen [speed] and [difficulty][getDifficulty] */
+    @Readonly @Suppress("purity") // should be autorecognized 
+    fun getGlobalUniques() = combinedGlobalUniques
+
     /** @return Sequence of all cities in game, both major civilizations and city states */
-    fun getCities() = civilizations.asSequence().flatMap { it.cities }
-    fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
-    fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+    @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }
+    @Readonly fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
+    @Readonly fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
 
     /** Gets civilizations in their commonly used order - City-states last,
      *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force
@@ -304,21 +314,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return turns + (totalTurns * startPercent / 100)
     }
 
-    fun getYear(turnOffset: Int = 0): Int {
-        val turn = getEquivalentTurn() + turnOffset
-        val yearsToTurn = speed.yearsPerTurn
-        var year = speed.startYear
-        var i = 0
-        var yearsPerTurn: Float
-
-        while (i < turn) {
-            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.untilTurn }?.yearInterval ?: yearsToTurn.last().yearInterval)
-            year += yearsPerTurn
-            ++i
-        }
-
-        return year.toInt()
-    }
+    fun getYear(turnOffset: Int = 0) = speed.turnToYear(getEquivalentTurn() + turnOffset).toInt()
 
     fun calculateChecksum(): String {
         val oldChecksum = checksum
@@ -334,6 +330,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     // Do we automatically simulate until N turn?
+    @Readonly
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
@@ -657,6 +654,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
         }
 
+        // combinedGlobalUniques needs to be set before tileMap.setTransients!
+        setGlobalTransients()
+
         tileMap.setTransients(ruleset)
 
         // Temporary - All games saved in 4.12.15 turned into 'hexagonal non world wrapped'
@@ -670,10 +670,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() }.civName // For MP, spectator doesn't get a 'turn'
             else civilizations.first { it.isHuman()  }.civName // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
         currentPlayerCiv = getCivilization(currentPlayer)
-
-        difficultyObject = ruleset.difficulties[difficulty]!!
-
-        speed = ruleset.speeds[gameParameters.speed]!!
 
         for (religion in religions.values) religion.setTransients(this)
 
@@ -697,6 +693,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         migrateToTileHistory()
         migrateGreatGeneralPools()
         ensureUnitIds()
+    }
+
+    fun setGlobalTransients() {
+        difficultyObject = ruleset.difficulties[difficulty]!!
+
+        speed = ruleset.speeds[gameParameters.speed]!!
+
+        combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
 
     private fun updateCivilizationState() {

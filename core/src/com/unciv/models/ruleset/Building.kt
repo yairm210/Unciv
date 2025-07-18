@@ -338,11 +338,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
                 }
 
-                UniqueType.HiddenBeforeAmountPolicies -> {
-                    if (cityConstructions.city.civ.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
-                        yield(RejectionReasonType.MorePolicyBranches.toInstance(unique.text))
-                }
-
                 else -> {}
             }
         }
@@ -477,7 +472,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BuildingFilter] */
-    fun matchesFilter(filter: String, state: StateForConditionals? = null): Boolean =
+    fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
                 state != null && hasUnique(it, state) ||
@@ -544,9 +539,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirementsPerTurn(state: StateForConditionals?): Counter<String> {
+    override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
         val uniques = getMatchingUniques(UniqueType.ConsumesResources,
-            state ?: StateForConditionals.EmptyState)
+            state ?: GameContext.EmptyState)
         if (uniques.none() && requiredResource == null) return Counter.ZERO
         
         val resourceRequirements = Counter<String>()

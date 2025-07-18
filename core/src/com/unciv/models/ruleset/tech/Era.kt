@@ -5,7 +5,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -73,7 +73,7 @@ class Era : RulesetObject() {
             .flatMap { obj ->
                 obj.getMatchingUniques(
                     UniqueType.OnlyAvailable,
-                    StateForConditionals.IgnoreConditionals
+                    GameContext.IgnoreConditionals
                 )
                 .map { unique -> obj to unique }
             }.filter { (_, unique) ->

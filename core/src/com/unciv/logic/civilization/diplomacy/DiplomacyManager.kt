@@ -12,11 +12,12 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -34,6 +35,7 @@ enum class RelationshipLevel(val color: Color) {
     Friend(Color.ROYAL),
     Ally(Color.CYAN)
     ;
+    @Readonly
     operator fun plus(delta: Int): RelationshipLevel {
         val newOrdinal = (ordinal + delta).coerceIn(0, entries.size - 1)
         return entries[newOrdinal]
@@ -196,8 +198,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     //region pure functions
-    fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
-    fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
+
+    @Readonly fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
+    @Readonly fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
 
     fun turnsToPeaceTreaty(): Int {
         for (trade in trades)
@@ -206,6 +209,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return 0
     }
 
+    @Readonly
     fun opinionOfOtherCiv(): Float {
         var modifierSum = diplomaticModifiers.values.sum()
         // Angry about attacked CS and destroyed CS do not stack
@@ -224,6 +228,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      *  @param comparesAs same as [RelationshipLevel.compareTo]
      *  @return `true` if [relationshipLevel] ().compareTo([level]) == [comparesAs] - or: when [comparesAs] > 0 only if [relationshipLevel] > [level] and so on.
      */
+    @Readonly
     private fun compareRelationshipLevel(level: RelationshipLevel, comparesAs: Int): Boolean {
         if (!civInfo.isCityState)
             return relationshipLevel().compareTo(level).sign == comparesAs
@@ -259,6 +264,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             if (level == RelationshipLevel.Ally) true
             else compareRelationshipLevel(level + 1, -1)
     /** @see compareRelationshipLevel */
+    @Readonly
     fun isRelationshipLevelGE(level: RelationshipLevel) =
             if (level == RelationshipLevel.Unforgivable) true
             else compareRelationshipLevel(level + -1, 1)
@@ -268,6 +274,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      *  @see compareRelationshipLevel
      *  @see relationshipIgnoreAfraid
      */
+    @Readonly
     fun relationshipLevel(): RelationshipLevel {
         val level = relationshipIgnoreAfraid()
         return when {
@@ -278,6 +285,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /** Same as [relationshipLevel] but omits the distinction Neutral/Afraid, which can be _much_ cheaper */
+    @Readonly
     fun relationshipIgnoreAfraid(): RelationshipLevel {
         if (civInfo.isHuman() && otherCiv().isHuman())
             return RelationshipLevel.Neutral // People make their own choices.
@@ -365,6 +373,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         civInfo.cityStateFunctions.updateAllyCivForCityState()
     }
 
+    @Readonly
     fun getInfluence() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else influence
 
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
@@ -461,6 +470,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
+    @Readonly
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState &&
             (isRelationshipLevelGE(RelationshipLevel.Friend) || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
@@ -528,12 +538,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
+    @Readonly fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
     fun setFlag(flag: DiplomacyFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
     }
 
-    fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name]!!
+    /** 0 indicates 'flag does not exist' */
+    @Readonly fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name] ?: 0
     fun removeFlag(flag: DiplomacyFlags) {
         flagsCountdown.remove(flag.name)
     }
@@ -549,12 +560,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         diplomaticModifiers[modifier.name] = amount
     }
 
+    @Readonly
     internal fun getModifier(modifier: DiplomaticModifiers): Float {
         if (!hasModifier(modifier)) return 0f
         return diplomaticModifiers[modifier.name]!!
     }
 
     internal fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
+    @Readonly
     fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.name)
 
     fun signDeclarationOfFriendship() {
@@ -573,9 +586,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 
@@ -623,9 +636,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals))
             UniqueTriggerActivation.triggerUnique(unique, otherCiv())
     }
 

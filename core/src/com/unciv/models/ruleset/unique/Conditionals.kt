@@ -8,21 +8,23 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
+import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 object Conditionals {
 
-    private fun getStateBasedRandom(state: StateForConditionals, unique: Unique?): Float {
+    private fun getStateBasedRandom(state: GameContext, unique: Unique?): Float {
         var seed = state.gameInfo?.turns?.hashCode() ?: 0
         seed = seed * 31 + (unique?.hashCode() ?: 0)
         seed = seed * 31 + state.hashCode()
         return Random(seed).nextFloat()
     }
-    
+
+    @Readonly @Suppress("purity")
     fun conditionalApplies(
         unique: Unique?,
         conditional: Unique,
-        state: StateForConditionals
+        state: GameContext
     ): Boolean {
 
         if (conditional.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)

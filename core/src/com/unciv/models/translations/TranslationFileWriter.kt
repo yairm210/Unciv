@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.civilization.diplomacy.Demand
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.SpyAction
 import com.unciv.models.metadata.BaseRuleset
@@ -140,6 +141,16 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
             for (diplomaticModifier in DiplomaticModifiers.entries)
                 linesToTranslate += "${diplomaticModifier.text} = "
+            
+            linesToTranslate += "\n\n#################### Lines from demands #######################\n"
+            for (demand in Demand.entries) {
+                linesToTranslate += "\n### ${demand.name} \n"
+                val uiTexts = listOf(demand.demandText, demand.acceptDemandText, demand.refuseDemandText,
+                    demand.violationNoticedText, demand.agreedToDemandText, demand.refusedDemandText,
+                    demand.wePromisedText, demand.theyPromisedText)
+                for (text in uiTexts)
+                    linesToTranslate += "$text = "
+            }
 
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
             for (bindingLabel in KeyboardBinding.getTranslationEntries())

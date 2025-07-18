@@ -15,7 +15,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -127,7 +127,7 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
-            && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, stateForConditionals = StateForConditionals(
+            && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, gameContext = GameContext(
                         civInfo = defender.getCivInfo(),
                         ourCombatant = defender,
                         theirCombatant = attacker,
@@ -137,6 +137,8 @@ object Battle {
 
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
+
+        triggerCombatUniques(attacker, defender, attackedTile)
 
         val damageDealt = takeDamage(attacker, defender)
 
@@ -215,21 +217,36 @@ object Battle {
 
         return damageDealt + interceptDamage
     }
+    
+    private fun triggerCombatUniques(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
+        val attackerContext = GameContext(attacker.getCivInfo(),
+            ourCombatant = attacker, theirCombatant = defender, tile = attackedTile, combatAction = CombatAction.Attack)
+        if (attacker is MapUnitCombatant)
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerContext)) {
+                UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
+            }
+        val defenderContext = GameContext(defender.getCivInfo(),
+            ourCombatant = defender, theirCombatant = attacker, tile = attackedTile, combatAction = CombatAction.Defend)
+        if (defender is MapUnitCombatant)
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, defenderContext)) {
+                UniqueTriggerActivation.triggerUnique(unique, defender.unit)
+            }
+    }
 
 
     private fun triggerVictoryUniques(ourUnit: MapUnitCombatant, enemy: MapUnitCombatant, attackedTile: Tile) {
-        val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
+        val gameContext = GameContext(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
-        for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals)
+        for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, gameContext)
         { enemy.unit.matchesFilter(it.params[0]) })
             UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
     }
 
     private fun triggerDamageUniquesForUnit(triggeringUnit: MapUnitCombatant, enemy: MapUnitCombatant, attackedTile: Tile, combatAction: CombatAction){
-        val stateForConditionals = StateForConditionals(civInfo = triggeringUnit.getCivInfo(),
+        val gameContext = GameContext(civInfo = triggeringUnit.getCivInfo(),
             ourCombatant = triggeringUnit, theirCombatant = enemy, tile = attackedTile, combatAction = combatAction)
 
-        for (unique in triggeringUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDamagingUnit, stateForConditionals)
+        for (unique in triggeringUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDamagingUnit, gameContext)
         { enemy.matchesFilter(it.params[0]) }){
             if (unique.params[0] == Constants.targetUnit){
                 UniqueTriggerActivation.triggerUnique(unique, enemy.unit, triggerNotificationText = "due to our [${enemy.getName()}] being damaged by a [${triggeringUnit.getName()}]")
@@ -240,9 +257,9 @@ object Battle {
     }
 
     internal fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant, attackedTile: Tile) {
-        val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
+        val gameContext = GameContext(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
-        for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
+        for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, gameContext))
             UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
     }
 
@@ -285,19 +302,19 @@ object Battle {
     private fun getKillUnitPlunderUniques(civUnit: ICombatant, defeatedUnit: MapUnitCombatant): ArrayList<Unique> {
         val bonusUniques = ArrayList<Unique>()
 
-        val stateForConditionals = StateForConditionals(civInfo = civUnit.getCivInfo(), ourCombatant = civUnit, theirCombatant = defeatedUnit)
+        val gameContext = GameContext(civInfo = civUnit.getCivInfo(), ourCombatant = civUnit, theirCombatant = defeatedUnit)
         if (civUnit is MapUnitCombatant) {
-            bonusUniques.addAll(civUnit.getMatchingUniques(UniqueType.KillUnitPlunder, stateForConditionals, true))
+            bonusUniques.addAll(civUnit.getMatchingUniques(UniqueType.KillUnitPlunder, gameContext, true))
         } else {
-            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(UniqueType.KillUnitPlunder, stateForConditionals))
+            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(UniqueType.KillUnitPlunder, gameContext))
         }
 
         val cityWithReligion =
             civUnit.getTile().getTilesInDistance(4).firstOrNull {
-                it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals).any()
+                it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, gameContext).any()
             }?.getCity()
         if (cityWithReligion != null) {
-            bonusUniques.addAll(cityWithReligion.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
+            bonusUniques.addAll(cityWithReligion.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, gameContext))
         }
         return bonusUniques
     }
@@ -503,14 +520,14 @@ object Battle {
             return
         val unitCouldAlreadyPromote = promotions.canBePromoted()
 
-        val stateForConditionals = StateForConditionals(civInfo = civ, ourCombatant = thisCombatant, theirCombatant = otherCombatant)
+        val gameContext = GameContext(civInfo = civ, ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
         val baseXP = amount + thisCombatant
-            .getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true)
+            .getMatchingUniques(UniqueType.FlatXPGain, gameContext, true)
             .sumOf { it.params[0].toInt() }
 
         val xpBonus = thisCombatant
-            .getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true)
+            .getMatchingUniques(UniqueType.PercentageXPGain, gameContext, true)
             .sumOf { it.params[0].toDouble() }
         val xpModifier = 1.0 + xpBonus / 100
 
@@ -519,7 +536,7 @@ object Battle {
 
         if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
             var greatGeneralUnits = civ.gameInfo.ruleset.greatGeneralUnits
-                .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, stateForConditionals) &&
+                .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, gameContext) &&
                         // Check if the unit is allowed for the Civ, ignoring build constrants
                         it.getRejectionReasons(civ).none { reason ->
                             !reason.isConstructionRejection() &&
@@ -533,8 +550,8 @@ object Battle {
 
             for (unit in greatGeneralUnits) {
                 val greatGeneralPointsBonus = thisCombatant
-                    .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
-                    .filter { unit.matchesFilter(it.params[0], stateForConditionals) }
+                    .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, gameContext, true)
+                    .filter { unit.matchesFilter(it.params[0], gameContext) }
                     .sumOf { it.params[1].toDouble() }
                 val greatGeneralPointsModifier = 1.0 + greatGeneralPointsBonus / 100
 
@@ -563,9 +580,9 @@ object Battle {
         // And we've used a movement already
         if (defender.isCivilian() && attacker.getTile() == defender.getTile()) return
 
-        val stateForConditionals = StateForConditionals(attacker, defender, attackedTile, CombatAction.Attack)
+        val gameContext = GameContext(attacker, defender, attackedTile, CombatAction.Attack)
         unit.attacksThisTurn += 1
-        if (unit.hasUnique(UniqueType.CanMoveAfterAttacking, stateForConditionals)
+        if (unit.hasUnique(UniqueType.CanMoveAfterAttacking, gameContext)
             || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
             // if it was a melee attack, and we won, then the unit ALREADY got movement points deducted,
             // for the movement to the enemy's tile!
@@ -590,8 +607,8 @@ object Battle {
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
-        for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
+        val gameContext = GameContext(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
+        for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, gameContext, true)) {
             val resource = attacker.getCivInfo().gameInfo.ruleset.getGameResource(unique.params[2])
                 ?: continue
             attackerCiv.addGameResource(
@@ -618,8 +635,8 @@ object Battle {
         if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
 
-        for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals)
-                + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals))
+        for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, gameContext)
+                + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, gameContext))
             UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
     }
 
@@ -709,7 +726,7 @@ object Battle {
     private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: Tile, defender: ICombatant) {
         if (attackedTile.improvement == null) return
 
-        val conditionalState = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
+        val conditionalState = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
         if (!attackedTile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)
             && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
         ) {
