@@ -127,10 +127,10 @@ class UnitManager(val civInfo: Civilization) {
         }
         return unit
     }
-    @Readonly
-    fun getCivUnitsSize(): Int = unitList.size
-    fun getCivUnits(): Sequence<MapUnit> = unitList.asSequence()
-    fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
+
+    @Readonly fun getCivUnitsSize(): Int = unitList.size
+    @Readonly fun getCivUnits(): Sequence<MapUnit> = unitList.asSequence()
+    @Readonly fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
 
     // Similar to getCivUnits(), but the returned list is rotated so that the
     // 'nextPotentiallyDueAt' unit is first here.

@@ -218,6 +218,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Use [UnitMovement.canPassThrough] to check whether a specific unit can pass through
      * a specific tile.
      */
+    @Readonly
     fun canPassThroughTiles(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true
         if (otherCiv.isBarbarian) return true

@@ -1,3 +1,11 @@
+## 4.17.6
+
+Better way to brighten colors - By touhidurrr
+
+By metablaster:
+- Fix AI civilian unit not escaping enemy 
+- Fix translation for an unknown civilization 
+
 ## 4.17.5
 
 By metablaster:

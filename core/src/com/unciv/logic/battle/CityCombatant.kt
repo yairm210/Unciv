@@ -10,6 +10,8 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -19,10 +21,10 @@ class CityCombatant(val city: City) : ICombatant {
     }
 
     override fun getHealth(): Int = city.health
-    override fun getCivInfo(): Civilization = city.civ
+    @Readonly override fun getCivInfo(): Civilization = city.civ
     override fun getTile(): Tile = city.getCenterTile()
     override fun getName(): String = city.name
-    override fun isDefeated(): Boolean = city.health == 1
+    @Readonly override fun isDefeated(): Boolean = city.health == 1
     override fun isInvisible(to: Civilization): Boolean = false
     override fun canAttack(): Boolean = city.canBombard()
     override fun matchesFilter(filter: String, multiFilter: Boolean) = 
@@ -37,12 +39,13 @@ class CityCombatant(val city: City) : ICombatant {
 
     override fun getUnitType(): UnitType = UnitType.City
     override fun getAttackingStrength(): Int = (getCityStrength(CombatAction.Attack) * 0.75).roundToInt()
-    override fun getDefendingStrength(attackedByRanged: Boolean): Int {
+    @Readonly override fun getDefendingStrength(attackedByRanged: Boolean): Int {
         if (isDefeated()) return 1
         return getCityStrength()
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
+    @Readonly
     fun getCityStrength(combatAction: CombatAction = CombatAction.Defend): Int { // Civ fanatics forum, from a modder who went through the original code
         val modConstants = getCivInfo().gameInfo.ruleset.modOptions.constants
         var strength = modConstants.cityStrengthBase
