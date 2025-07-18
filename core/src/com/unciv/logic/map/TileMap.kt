@@ -18,10 +18,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
-import java.lang.Integer.max
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
+import kotlin.math.max
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.screens.mapeditorscreen.MapEditorScreen]
  * or [MapGenerator][com.unciv.logic.map.mapgenerator.MapGenerator]; or as part of a running [game][GameInfo].
@@ -400,8 +401,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     data class ViewableTile(val tile: Tile, val maxHeightSeenToTile: Int, val isVisible: Boolean, val isAttackable: Boolean)
 
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
+    @Readonly
     fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack: Boolean = false): List<Tile> {
         val aUnitHeight = get(position).unitHeight
+        @LocalState
         val viewableTiles = mutableListOf(ViewableTile(
             get(position),
             aUnitHeight,
@@ -412,6 +415,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         for (i in 1..sightDistance+1) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
+            @LocalState
             val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
             for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,

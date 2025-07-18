@@ -324,10 +324,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (!knows(civInfo)) diplomacyFunctions.makeCivilizationsMeet(civInfo)
         return getDiplomacyManager(civInfo.civName)!!
     }
-    @Readonly
-    fun getDiplomacyManager(civInfo: Civilization): DiplomacyManager? = getDiplomacyManager(civInfo.civName)
-    @Readonly
-    fun getDiplomacyManager(civName: String): DiplomacyManager? = diplomacy[civName]
+    @Readonly fun getDiplomacyManager(civInfo: Civilization): DiplomacyManager? = getDiplomacyManager(civInfo.civName)
+    @Readonly fun getDiplomacyManager(civName: String): DiplomacyManager? = diplomacy[civName]
 
     fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
@@ -347,17 +345,15 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv() }
         .filter { !it.isDefeated() }
 
-    @Readonly
-    fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
-    @Readonly
-    fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
+
+    @Readonly fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
+    @Readonly fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
     @Readonly
     fun getCapital(firstCityIfNoCapital: Boolean = true) = cities.firstOrNull { it.isCapital() } ?:
         if (firstCityIfNoCapital) cities.firstOrNull() else null
-    @Readonly
-    fun isHuman() = playerType == PlayerType.Human
-    @Readonly
-    fun isAI() = playerType == PlayerType.AI
+
+    @Readonly fun isHuman() = playerType == PlayerType.Human
+    @Readonly fun isAI() = playerType == PlayerType.AI
     @Readonly
     fun isAIOrAutoPlaying(): Boolean {
         if (playerType == PlayerType.AI) return true
@@ -365,14 +361,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         val worldScreen = UncivGame.Current.worldScreen ?: return false
         return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
     }
-    @Readonly
-    fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
-    @Readonly
-    fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
-    @Readonly
-    fun isMajorCiv() = nation.isMajorCiv
-    @Readonly
-    fun isMinorCiv() = nation.isCityState || nation.isBarbarian
+
+    @Readonly fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
+    @Readonly fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
+    @Readonly fun isMajorCiv() = nation.isMajorCiv
+    @Readonly fun isMinorCiv() = nation.isCityState || nation.isBarbarian
 
     @delegate:Transient
     val isCityState by lazy { nation.isCityState }
@@ -380,10 +373,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     @delegate:Transient
     val isBarbarian by lazy { nation.isBarbarian }
 
-    @Readonly
-    fun isSpectator() = nation.isSpectator
-    @Readonly
-    fun isAlive(): Boolean = !isDefeated()
+
+    @Readonly fun isSpectator() = nation.isSpectator
+    @Readonly fun isAlive(): Boolean = !isDefeated()
 
     @delegate:Transient
     val cityStateType: CityStateType by lazy { gameInfo.ruleset.cityStateTypes[nation.cityStateType!!]!! }
@@ -405,13 +397,6 @@ class Civilization : IsPartOfGameInfoSerialization {
             .filter { it in gameInfo.gameParameters.victoryTypes && it in gameInfo.ruleset.victories }
         return victoryType.ifEmpty { listOf(Constants.neutralVictoryType) }
 
-    }
-
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun getPreferredVictoryTypeObjects(): List<Victory> {
-        val preferredVictoryTypes = getPreferredVictoryTypes()
-        return if (preferredVictoryTypes.contains(Constants.neutralVictoryType)) emptyList()
-               else preferredVictoryTypes.map { gameInfo.ruleset.victories[it]!! }
     }
 
     @Readonly
@@ -1081,6 +1066,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun asPreview() = CivilizationInfoPreview(this)
 
+    @Readonly
     fun getLastSeenImprovement(position: Vector2): String? {
         if (isAI() || isSpectator()) return null
         return lastSeenImprovement[position]

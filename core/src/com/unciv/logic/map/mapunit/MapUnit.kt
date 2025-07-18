@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
+import yairm210.purity.annotations.Readonly
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
@@ -230,6 +231,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getMovementString(): String =
         (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
+    @Readonly @Suppress("purity") // should be autorecognized
     fun getTile(): Tile = currentTile
 
     fun getClosestCity(): City? = civ.cities.minByOrNull {
@@ -284,6 +286,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
 
+    @Readonly
     fun getMatchingUniques(
         uniqueType: UniqueType,
         gameContext: GameContext = cache.state,
@@ -296,6 +299,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             yieldAll(civ.getMatchingUniques(uniqueType, gameContext))
     }
 
+    @Readonly
     fun hasUnique(
         uniqueType: UniqueType,
         gameContext: GameContext = cache.state,
@@ -405,12 +409,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return getRange() * 2
     }
 
+    @Readonly
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit) return false
         if (cache.canMoveOnWater) return false
         return currentTile.isWater
     }
 
+    @Readonly
     fun isInvisible(to: Civilization): Boolean {
         if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
             return true
