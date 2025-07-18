@@ -144,7 +144,7 @@ object Nuke {
                 )
             else
                 otherCiv.addNotification(
-                    "A(n) [${attacker.getName()}] has been detonated by an [unknown civilization]!",
+                    "A(n) [${attacker.getName()}] has been detonated by [an unknown civilization]!",
                     nukeNotificationAction, NotificationCategory.War, NotificationIcon.War, attacker.getName()
                 )
         }
