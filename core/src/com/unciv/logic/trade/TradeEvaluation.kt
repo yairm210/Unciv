@@ -279,11 +279,9 @@ class TradeEvaluation {
      */
     fun isPeaceProposalEnabled(thirdCiv: Civilization, civInfo: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(thirdCiv)!!
-        val warCountDown = if (diploManager.hasFlag(DiplomacyFlags.DeclaredWar))
-            diploManager.getFlag(DiplomacyFlags.DeclaredWar) else 0
 
         // On standard speed 10 turns must pass before peace can be proposed
-        if (warCountDown > 0) return false
+        if (diploManager.getFlag(DiplomacyFlags.DeclaredWar) > 0) return false
 
         // TODO: We don't know if other human player would agree to peace
         if (thirdCiv.isHuman()) return false

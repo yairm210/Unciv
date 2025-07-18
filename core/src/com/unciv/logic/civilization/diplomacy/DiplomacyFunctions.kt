@@ -93,10 +93,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * If denounciation happened this turn from either side, establishing embassy again is possible only from next turn.
      */
     private fun isDenouncedThisTurn(diploManager: DiplomacyManager): Boolean {
-        return if (diploManager.hasFlag(DiplomacyFlags.Denunciation))
-            diploManager.getFlag(DiplomacyFlags.Denunciation) == 30
-                || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denunciation) == 30
-        else false
+        return diploManager.getFlag(DiplomacyFlags.Denunciation) == 30
+            || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denunciation) == 30
     }
 
     /**
