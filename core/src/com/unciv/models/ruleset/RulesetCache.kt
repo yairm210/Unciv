@@ -7,13 +7,10 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.validation.RulesetError
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
-import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.ruleset.validation.getRelativeTextDistance
 import com.unciv.utils.Log
-import com.unciv.utils.debug
 
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
@@ -54,32 +51,14 @@ object RulesetCache : HashMap<String, Ruleset>() {
                     modRuleset.load(modFolder.child("jsons"))
                     modRuleset.folderLocation = modFolder
                     newRulesets[modRuleset.name] = modRuleset
-                    debug("Mod loaded successfully: %s", modRuleset.name)
-                    if (Log.shouldLog()) {
-                        val modLinksErrors = modRuleset.getErrorList()
-                        // For extension mods which use references to base ruleset objects, the parameter type
-                        // errors are irrelevant - the checker ran without a base ruleset
-                        val logFilter: (RulesetError) -> Boolean =
-                            if (modRuleset.modOptions.isBaseRuleset) {
-                                { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly }
-                            } else {
-                                { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly &&
-                                    !it.text.contains(UniqueValidator.whichDoesNotFitParameterType) }
-                            }
-                        if (modLinksErrors.any(logFilter)) {
-                            debug(
-                                "checkModLinks errors: %s",
-                                modLinksErrors.getErrorText(logFilter)
-                            )
-                        }
-                    }
+                    Log.debug("Mod loaded successfully: %s", modRuleset.name)
                 } catch (ex: Exception) {
                     errorLines += "Exception loading mod '${modFolder.name()}':"
                     errorLines += "  ${ex.localizedMessage}"
                     errorLines += "  ${ex.cause?.localizedMessage}"
                 }
             }
-            if (Log.shouldLog()) for (line in errorLines) debug(line)
+            if (Log.shouldLog()) for (line in errorLines) Log.debug(line)
         }
 
         // We save the 'old' cache values until we're ready to replace everything, so that the cache isn't empty while we try to load ruleset files
@@ -174,15 +153,15 @@ object RulesetCache : HashMap<String, Ruleset>() {
         mods: LinkedHashSet<String>,
         baseRuleset: String? = null,
         tryFixUnknownUniques: Boolean = false
-    ): RulesetErrorList {
+    ): Pair<Ruleset?, RulesetErrorList> {
         return try {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-            newRuleset.getErrorList(tryFixUnknownUniques)
+            newRuleset to newRuleset.getErrorList(tryFixUnknownUniques)
         } catch (ex: UncivShowableException) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
-            RulesetErrorList.of(ex.message, RulesetErrorSeverity.Error)
+            null to RulesetErrorList.of(ex.message, RulesetErrorSeverity.Error)
         }
     }
 }

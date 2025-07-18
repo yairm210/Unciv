@@ -5,7 +5,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -86,7 +86,7 @@ object Suppression {
         var suppressions = globalSuppressionFilters.asSequence()
         // Allow suppressing from suppression uniques in the same Unique collection
         if (sourceObject != null)
-            suppressions += sourceObject.getMatchingUniques(UniqueType.SuppressWarnings, StateForConditionals.IgnoreConditionals).map { getWildcardFilter(it) }
+            suppressions += sourceObject.getMatchingUniques(UniqueType.SuppressWarnings, GameContext.IgnoreConditionals).map { getWildcardFilter(it) }
         // Allow suppressing from modifiers in the same Unique
         if (sourceUnique != null)
             suppressions += sourceUnique.getModifiers(UniqueType.SuppressWarnings).map { getWildcardFilter(it) }
@@ -101,7 +101,7 @@ object Suppression {
     fun autoSuppressAllWarnings(ruleset: Ruleset, toModOptions: ModOptions) {
         if (ruleset.folderLocation == null)
             throw UncivShowableException("autoSuppressAllWarnings needs Ruleset.folderLocation")
-        for (error in RulesetValidator(ruleset).getErrorList()) {
+        for (error in RulesetValidator.create(ruleset).getErrorList()) {
             if (error.errorSeverityToReport >= RulesetErrorSeverity.Error) continue
             toModOptions.uniques += UniqueType.SuppressWarnings.text.fillPlaceholders(error.text)
         }

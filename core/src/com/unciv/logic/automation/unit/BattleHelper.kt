@@ -8,7 +8,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 
 object BattleHelper {
@@ -19,11 +19,13 @@ object BattleHelper {
         val distanceToTiles = unit.movement.getDistanceToTiles()
         val attackableEnemies = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
             // Only take enemies we can fight without dying or are made to die
-            .filter {unit.hasUnique(UniqueType.SelfDestructs) ||
+            .filter {
+                val defender = Battle.getMapCombatantOfTile(it.tileToAttack)
+                unit.hasUnique(UniqueType.SelfDestructs) || (defender != null &&
                 (BattleDamage.calculateDamageToAttacker(
                     MapUnitCombatant(unit),
-                    Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
-                    && unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0)
+                    defender) < unit.health
+                    && unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0))
                     // For mounted units it is fine to attack from these tiles, but with current AI movement logic it is not easy to determine if our unit can meaningfully move away after attacking
                     // Also, AI doesn't build tactical roads
             }
@@ -165,7 +167,7 @@ object BattleHelper {
                 if (civilianUnit.isGreatPerson()) {
                     attackValue += 150
                 }
-                if (civilianUnit.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals)) attackValue += 60
+                if (civilianUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)) attackValue += 60
             } else if (attacker.baseUnit.isRanged() && !civilianUnit.hasUnique(UniqueType.Uncapturable)) {
                 return 10 // Don't shoot civilians that we can capture!
             }

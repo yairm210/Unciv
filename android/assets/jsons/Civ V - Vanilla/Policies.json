@@ -569,7 +569,7 @@
             {
                 "name": "Fascism",
                 "uniques": [
-                    "Quantity of strategic resources produced by the empire +[100]%",
+                    "[+100]% [Strategic] resource production"
                 ],
                 "requires": ["Populism", "Militarism"],
                 "row": 2,

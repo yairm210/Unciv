@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unique
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.validation.UniqueValidator
@@ -11,6 +12,7 @@ import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
 
@@ -46,10 +48,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
     fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
 
-    fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
-    fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
-    fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
-    fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
+
+    @Readonly fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
+    @Readonly fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
+    @Readonly fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
+    @Readonly fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
+    @Readonly
     fun getGameProgressModifier(civ: Civilization): Float {
         //According to: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
         var modifier = 1f
@@ -64,6 +68,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             //Mod creators likely expect this to stack multiplicatively, otherwise they'd use a single modifier 
         return modifier
     }
+    @Readonly
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false
         return modifiers.any { conditional ->
@@ -77,10 +82,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     fun conditionalsApply(civInfo: Civilization? = null, city: City? = null): Boolean {
-        return conditionalsApply(StateForConditionals(civInfo, city))
+        return conditionalsApply(GameContext(civInfo, city))
     }
 
-    fun conditionalsApply(state: StateForConditionals): Boolean {
+    @Readonly
+    fun conditionalsApply(state: GameContext): Boolean {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
         if (isTimedTriggerable) return true
@@ -91,31 +97,32 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
-    private fun getUniqueMultiplier(stateForConditionals: StateForConditionals): Int {
-        if (stateForConditionals == StateForConditionals.IgnoreMultiplicationForCaching)
+    @Readonly
+    private fun getUniqueMultiplier(gameContext: GameContext): Int {
+        if (gameContext == GameContext.IgnoreMultiplicationForCaching)
             return 1
         
         var amount = 1
         
         val forEveryModifiers = getModifiers(UniqueType.ForEveryCountable)
         for (conditional in forEveryModifiers) { // multiple multipliers DO multiply.
-            val multiplier = Countables.getCountableAmount(conditional.params[0], stateForConditionals)
+            val multiplier = Countables.getCountableAmount(conditional.params[0], gameContext)
                 ?: 0 // If the countable is invalid, ignore this unique entirely
             amount *= multiplier
         }
         
         val forEveryAmountModifiers = getModifiers(UniqueType.ForEveryAmountCountable)
         for (conditional in forEveryAmountModifiers) { // multiple multipliers DO multiply.
-            val multiplier = Countables.getCountableAmount(conditional.params[1], stateForConditionals)
+            val multiplier = Countables.getCountableAmount(conditional.params[1], gameContext)
                 ?: 0 // If the countable is invalid, ignore this unique entirely
             val perEvery = conditional.params[0].toInt()
             amount *= multiplier / perEvery
         }
 
-        if (stateForConditionals.relevantTile != null){
+        if (gameContext.relevantTile != null){
             val forEveryAdjacentTileModifiers = getModifiers(UniqueType.ForEveryAdjacentTile)
             for (conditional in forEveryAdjacentTileModifiers) {
-                val multiplier = stateForConditionals.relevantTile!!.neighbors
+                val multiplier = gameContext.relevantTile!!.neighbors
                     .count { it.matchesFilter(conditional.params[0]) }
                 amount *= multiplier
             }
@@ -125,8 +132,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     /** Multiplies the unique according to the multiplication conditionals */
-    fun getMultiplied(stateForConditionals: StateForConditionals): Sequence<Unique> {
-        val multiplier = getUniqueMultiplier(stateForConditionals)
+    @Readonly
+    fun getMultiplied(gameContext: GameContext): Sequence<Unique> {
+        val multiplier = getUniqueMultiplier(gameContext)
         return EndlessSequenceOf(this).take(multiplier)
     }
 
@@ -150,6 +158,18 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             else -> sourceObjectType.name
         }
     }
+    
+    /** Zero-based, so n=0 returns the first */
+    private fun getNthIndex(string:String, list:List<String>, n: Int): Int {
+        var count = 0
+        for (i in list.indices) {
+            if (list[i] == string) {
+                if (count == n) return i
+                count += 1
+            }
+        }
+        return -1 // Not found
+    }
 
     fun getReplacementText(ruleset: Ruleset): String {
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
@@ -166,12 +186,21 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         for (possibleUnique in possibleUniques) {
             var resultingUnique = possibleUnique
+            
+            val timesParameterWasSeen = Counter<String>()
             for (parameter in possibleUnique.replace('<', ' ').getPlaceholderParameters()) {
                 val parameterHasSign = parameter.startsWith('-') || parameter.startsWith('+')
                 val parameterUnsigned = if (parameterHasSign) parameter.drop(1) else parameter
-                val parameterNumberInDeprecatedUnique = deprecatedUniquePlaceholders.indexOf(parameterUnsigned)
+                val timesSeen = timesParameterWasSeen[parameterUnsigned]
+                
+                // When deprecating a unique like "from [amount] to [amount]", we want to replace the first [amount] 
+                //  in the 'replaceWith' with the first [amount] in the unique, and the second with the second, etc.
+                val parameterNumberInDeprecatedUnique = getNthIndex(parameterUnsigned, deprecatedUniquePlaceholders, timesSeen)
+                
                 if (parameterNumberInDeprecatedUnique !in params.indices) continue
-                val positionInDeprecatedUnique = type.text.indexOf("[$parameterUnsigned]")
+                timesParameterWasSeen.add(parameterUnsigned, 1)
+                
+                val positionInDeprecatedUnique =  type.text.indexOf("[$parameterUnsigned]")
                 var replacementText = params[parameterNumberInDeprecatedUnique]
                 if (UniqueParameterType.Number in type.parameterTypeMap[parameterNumberInDeprecatedUnique]) {
                     // The following looks for a sign just before [amount] and detects replacing "-[-33]" with "[+33]" and similar situations
@@ -193,7 +222,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                         else -> replacementTextUnsigned
                     }
                 }
-                resultingUnique = resultingUnique.replace("[$parameter]", "[$replacementText]")
+                resultingUnique = resultingUnique.replaceFirst("[$parameter]", "[$replacementText]")
             }
             finalPossibleUniques += resultingUnique
         }

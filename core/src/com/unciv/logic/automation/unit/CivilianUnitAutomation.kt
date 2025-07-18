@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
@@ -24,7 +24,7 @@ object CivilianUnitAutomation {
         
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
         fun hasSettlerAction(uniqueType: UniqueType) =
-            unit.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+            unit.getMatchingUniques(uniqueType, GameContext.IgnoreConditionals)
                 .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
                 .any { canUse(unit, it) }
         
@@ -111,9 +111,9 @@ object CivilianUnitAutomation {
         // TODO: This could be more complex to walk to the city state that is most beneficial to
         //  also have more influence.
         if (unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
-            // Don't wander around with the great merchant when at war. Barbs might also be a
-            // problem, but hopefully by the time we have a great merchant, they're under control.
-            && !unit.civ.isAtWar()
+            // There's a risk our merchant gets intercepted and killed by the enemy during war.
+            // If such happens, it is a failure of our military unit movement to protect our merchant.
+            // Barbs might also be a problem, but hopefully by the time we have a great merchant, they're under control.
             && isLateGame
         ) {
             val tradeMissionCanBeConductedEventually =

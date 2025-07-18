@@ -6,7 +6,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.debug
@@ -150,11 +150,11 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 clearTile(location, wonder.occursOn)
             }
 
-            val conversionUniques = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighbors, StateForConditionals.IgnoreConditionals)
+            val conversionUniques = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighbors, GameContext.IgnoreConditionals)
             if (conversionUniques.none()) return
 
             for (tile in location.neighbors) {
-                val state = StateForConditionals(tile = tile)
+                val state = GameContext(tile = tile)
                 for (unique in conversionUniques) {
                     if (!unique.conditionalsApply(state)) continue
                     val convertTo = unique.params[0]

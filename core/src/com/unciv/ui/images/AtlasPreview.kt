@@ -1,10 +1,12 @@
 package com.unciv.ui.images
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.json.json
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.utils.Log
@@ -12,7 +14,7 @@ import java.io.File
 
 /**
  *  This extracts all texture names from all atlases of a Ruleset.
- *  - Weak point: For combined rulesets, this always loads the builtin assets.
+ *  - For combined rulesets, this loads assets for all component rulesets that are present in RulesetCache
  *  - Used by RulesetValidator to check texture names without relying on ImageGetter
  *  - Doubles as integrity checker and detects:
  *      - Atlases.json names an atlas that does not exist
@@ -27,12 +29,27 @@ class AtlasPreview(ruleset: Ruleset, errorList: RulesetErrorList) : Iterable<Str
     private val regionNames = mutableSetOf<String>()
 
     init {
+        if (ruleset.name.isNotEmpty()) loadSingleRuleset(ruleset, errorList)
+        else loadComplexRuleset(ruleset, errorList)
+        Log.debug("Atlas preview for $ruleset: ${regionNames.size} entries.")
+    }
+
+    private fun loadComplexRuleset(ruleset: Ruleset, errorList: RulesetErrorList) {
+        for (modName in ruleset.mods) {
+            val componentRuleset = RulesetCache[modName] ?: continue
+            loadSingleRuleset(componentRuleset, errorList)
+        }
+    }
+
+    private fun loadSingleRuleset(ruleset: Ruleset, errorList: RulesetErrorList) {
         // For builtin rulesets, the Atlases.json is right in internal root
         val folder = ruleset.folder()
         val controlFile = folder.child("Atlases.json")
         val controlFileExists = controlFile.exists()
-        val fileNames = (if (controlFileExists) json().fromJson(Array<String>::class.java, controlFile)
-            else emptyArray()).toMutableSet()
+
+
+        val fileNames = getFileNames(controlFileExists, controlFile, errorList).toMutableSet()
+
         val backwardsCompatibility = ruleset.name.isNotEmpty() && "game" !in fileNames
         if (backwardsCompatibility)
             fileNames += "game"  // Backwards compatibility - when packed by 4.9.15+ this is already in the control file
@@ -50,7 +67,19 @@ class AtlasPreview(ruleset: Ruleset, errorList: RulesetErrorList) : Iterable<Str
                 errorList.add("${file.name()} contains no textures")
             data.regions.mapTo(regionNames) { it.name }
         }
-        Log.debug("Atlas preview for $ruleset: ${regionNames.size} entries.")
+    }
+
+    private fun getFileNames(
+        controlFileExists: Boolean,
+        controlFile: FileHandle?,
+        errorList: RulesetErrorList
+    ): Array<String> {
+        if (!controlFileExists) return emptyArray()
+
+        // Type checker doesn't know that fromJson can return null if the file is empty, treat as an empty array
+        val fileNames = json().fromJson(Array<String>::class.java, controlFile) ?: emptyArray()
+        if (fileNames.isEmpty()) errorList.add("Atlases.json is empty", RulesetErrorSeverity.Warning)
+        return fileNames
     }
 
     fun imageExists(name: String) = name in regionNames

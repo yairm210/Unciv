@@ -9,5 +9,12 @@ internal class ConsoleGameCommands : ConsoleCommandNode {
             console.gameInfo.setTransients()
             DevConsoleResponse.OK
         },
+
+        "setturn" to ConsoleAction("game setturn <nonNegativeAmount>") { console, params ->
+            val turn = params[0].toInt()
+            console.gameInfo.turns = turn
+            console.gameInfo.setTransients()
+            DevConsoleResponse.OK
+        },
     )
 }

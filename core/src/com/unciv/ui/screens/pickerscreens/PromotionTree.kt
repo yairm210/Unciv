@@ -2,7 +2,7 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.unciv.GUI
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
@@ -111,7 +111,7 @@ class PromotionTree(val unit: MapUnit) {
                 node.unreachable = true
 
             // Slight copy from UnitPromotions.isAvailable
-            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                     .any { !it.conditionalsApply(state) })
                 node.unreachable = true
             if (node.promotion.hasUnique(UniqueType.Unavailable, state)) node.unreachable = true
@@ -197,5 +197,7 @@ class PromotionTree(val unit: MapUnit) {
 
     // These exist to allow future optimization - this is safe, but more than actually needed
     fun getMaxRows() = nodes.size
-    fun getMaxColumns() = nodes.values.maxOf { it.promotion.row.coerceAtLeast(it.depth + 1) }
+    fun getMaxColumns() = nodes.values.maxOfOrNull {
+            it.promotion.row.coerceAtLeast(it.depth + 1)
+        } ?: 0 // nodes can be empty (civilians with statuses)
 }

@@ -94,10 +94,16 @@ class AlertPopup(
             AlertType.WarDeclaration -> shouldOpen = addWarDeclaration()
             AlertType.BorderConflict -> shouldOpen = addBorderConflict()
             AlertType.TilesStolen -> shouldOpen = addTilesStolen()
-            AlertType.DemandToStopSettlingCitiesNear -> shouldOpen = addDemandToStopSettlingCitiesNear()
-            AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addCitySettledNearOtherCivDespiteOurPromise()
-            AlertType.DemandToStopSpreadingReligion -> shouldOpen = addDemandToStopSpreadingReligion()
-            AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addReligionSpreadDespiteOurPromise()
+            
+            // demands
+            AlertType.DemandToStopSettlingCitiesNear -> shouldOpen = addDemand(Demand.DoNotSettleNearUs)
+            AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotSettleNearUs)
+            AlertType.DemandToStopSpreadingReligion -> shouldOpen = addDemand(Demand.DoNotSpreadReligion)
+            AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotSpreadReligion)
+            AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemand(Demand.DontSpyOnUs)
+            AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addDemand(Demand.DontSpyOnUs)
+            
+            
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
                 shouldOpen = addBulliedOrAttackedProtectedOrAlliedMinor()
@@ -211,11 +217,11 @@ class AlertPopup(
         }
     }
 
-    private fun addCitySettledNearOtherCivDespiteOurPromise(): Boolean {
+    private fun addDemandViolationNoticed(demand: Demand): Boolean {
         val otherciv = getCiv(popupAlert.value)
         if (otherciv.isDefeated()) return false
         addLeaderName(otherciv)
-        addGoodSizedLabel("We noticed your new city near our borders, despite your promise. This will have....implications.").row()
+        addGoodSizedLabel(demand.violationNoticedText).row()
         addCloseButton("Very well.")
         return true
     }
@@ -260,44 +266,22 @@ class AlertPopup(
         music.playVoice("${civInfo.civName}.defeated")
     }
 
-    private fun addDemandToStopSettlingCitiesNear(): Boolean {
+    private fun addDemand(demand: Demand): Boolean {
         val otherciv = getCiv(popupAlert.value)
         if (otherciv.isDefeated()) return false
+        
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
-        addGoodSizedLabel("Please don't settle new cities near us.").row()
-        addCloseButton("Very well, we shall look for new lands to settle.", KeyboardBinding.Confirm) {
-            playerDiploManager.agreeNotToSettleNear()
+        addGoodSizedLabel(demand.demandText).row()
+        addCloseButton(demand.acceptDemandText, KeyboardBinding.Confirm) {
+            playerDiploManager.agreeToDemand(demand)
         }.row()
-        addCloseButton("We shall do as we please.", KeyboardBinding.Cancel) {
-            playerDiploManager.refuseDemandNotToSettleNear()
+        addCloseButton(demand.refuseDemandText, KeyboardBinding.Cancel) {
+            playerDiploManager.refuseDemand(demand)
         }
         return true
     }
 
-    private fun addDemandToStopSpreadingReligion(): Boolean {
-        val otherciv = getCiv(popupAlert.value)
-        if (otherciv.isDefeated()) return false
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
-        addLeaderName(otherciv)
-        addGoodSizedLabel("Please don't spread religion to us.").row()
-        addCloseButton("Very well, we shall spread our faith elsewhere.", KeyboardBinding.Confirm) {
-            playerDiploManager.agreeNotToSpreadReligionTo()
-        }.row()
-        addCloseButton("We shall do as we please.", KeyboardBinding.Cancel) {
-            playerDiploManager.refuseNotToSpreadReligionTo()
-        }
-        return true
-    }
-
-    private fun addReligionSpreadDespiteOurPromise(): Boolean {
-        val otherciv = getCiv(popupAlert.value)
-        if (otherciv.isDefeated()) return false
-        addLeaderName(otherciv)
-        addGoodSizedLabel("We noticed you have continued spreading your faith, despite your promise. This will have....consequences.").row()
-        addCloseButton("Very well.")
-        return true
-    }
 
     private fun addDiplomaticMarriage() {
         val city = getCity(popupAlert.value)

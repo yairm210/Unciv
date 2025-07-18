@@ -30,12 +30,14 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -118,13 +120,26 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /**
      * @return Maintenance cost of all built buildings
      */
-    fun getMaintenanceCosts(): Int {
-        var maintenanceCost = 0
+    fun getMaintenanceCosts(): Float {
+        var maintenanceCost = 0f
         val freeBuildings = city.civ.civConstructions.getFreeBuildingNames(city)
+        
+        val buildingMaintenanceUniques = city.getMatchingUniques(UniqueType.BuildingMaintenance)
+            .filter { city.matchesFilter(it.params[2]) }.toList()
+        
+        for (building in getBuiltBuildings().filterNot { it.name in freeBuildings }) {
+            var maintenanceForThisBuilding = building.maintenance.toFloat()
+            for (unique in buildingMaintenanceUniques)
+                if (building.matchesFilter(unique.params[1]))
+                    maintenanceForThisBuilding *= unique.params[0].toPercent()
+            
+            maintenanceCost += maintenanceForThisBuilding
+        }
 
-        for (building in getBuiltBuildings())
-            if (building.name !in freeBuildings)
-                maintenanceCost += building.maintenance
+        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenanceOld)) {
+            maintenanceCost = (maintenanceCost * unique.params[0].toPercent())
+        }
+
 
         return maintenanceCost
     }
@@ -239,7 +254,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
-    fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
+    @Readonly fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
             isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique, city.state) }
@@ -445,7 +460,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 otherCiv.knows(city.civ) ->
                     otherCiv.addNotification("[${city.civ.civName}] has started constructing [${construction.name}]!",
                         NotificationCategory.General, NotificationIcon.Construction, icon)
-                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
+                else -> otherCiv.addNotification("[An unknown civilization] has started constructing [${construction.name}]!",
                     NotificationCategory.General, NotificationIcon.Construction, icon)
             }
         }
@@ -531,7 +546,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == city.civ) continue
                 val completingCivDescription =
-                    if (otherCiv.knows(city.civ)) "[${city.civ.civName}]" else "An unknown civilization"
+                    if (otherCiv.knows(city.civ)) "[${city.civ.civName}]" else "[An unknown civilization]"
                 otherCiv.addNotification("$completingCivDescription has completed [${construction.name}]!",
                     pediaAction, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }

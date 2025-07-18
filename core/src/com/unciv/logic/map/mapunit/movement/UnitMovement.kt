@@ -11,6 +11,8 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.utils.getOrPut
+import java.util.BitSet
 
 
 class UnitMovement(val unit: MapUnit) {
@@ -20,7 +22,8 @@ class UnitMovement(val unit: MapUnit) {
     class ParentTileAndTotalMovement(val tile: Tile, val parentTile: Tile, val totalMovement: Float)
 
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
-
+    
+    
     /**
      * Gets the tiles the unit could move to at [position] with [unitMovement].
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
@@ -30,8 +33,8 @@ class UnitMovement(val unit: MapUnit) {
         position: Vector2,
         unitMovement: Float,
         considerZoneOfControl: Boolean = true,
-        tilesToIgnore: HashSet<Tile>? = null,
-        passThroughCache: HashMap<Tile, Boolean> = HashMap(),
+        tilesToIgnoreBitset: BitSet? = null,
+        canPassThroughCache: ArrayList<Boolean?> = ArrayList(),
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
@@ -49,16 +52,20 @@ class UnitMovement(val unit: MapUnit) {
             && unit.getOtherEscortUnit()?.currentMovement == 0f) return distanceToTiles
 
         var tilesToCheck = listOf(unitTile)
-
+        
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<Tile>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
-                    if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
+                    // ignore this tile
+                    if (tilesToIgnoreBitset != null && tilesToIgnoreBitset.get(neighbor.zeroBasedIndex)) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !neighbor.isExplored(unit.civ) ->
                             distanceToTiles[tileToCheck]!!.totalMovement + 1f  // If we don't know then we just guess it to be 1.
-                        !passThroughCache.getOrPut(neighbor) { canPassThrough(neighbor) } -> unitMovement // Can't go here.
+                        
+                        !canPassThroughCache.getOrPut(neighbor.zeroBasedIndex){
+                            canPassThrough(neighbor)
+                        } -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
@@ -131,10 +138,10 @@ class UnitMovement(val unit: MapUnit) {
         var distance = 1
         val unitMaxMovement = unit.getMaxMovement().toFloat()
         val newTilesToCheck = ArrayList<Tile>()
-        val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
+        val visitedTilesBitset = BitSet().apply { set(currentTile.zeroBasedIndex) }
         val civilization = unit.civ
 
-        val passThroughCache = HashMap<Tile, Boolean>()
+        val passThroughCacheNew = ArrayList<Boolean?>()
         val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
         val canMoveToCache = HashMap<Tile, Boolean>()
 
@@ -153,15 +160,15 @@ class UnitMovement(val unit: MapUnit) {
 
             for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {
-                    getDistanceToTiles(true, passThroughCache, movementCostCache) // check cache
+                    getDistanceToTiles(true, passThroughCacheNew, movementCostCache) // check cache
                 }
                 else {
                     getMovementToTilesAtPosition(
                         tileToCheck.position,
                         unitMaxMovement,
                         false,
-                        visitedTiles,
-                        passThroughCache,
+                        visitedTilesBitset,
+                        passThroughCacheNew,
                         movementCostCache
                     )
                 }
@@ -203,11 +210,11 @@ class UnitMovement(val unit: MapUnit) {
             }
 
             // add newTilesToCheck to visitedTiles so we do not path over these tiles in a later iteration
-            visitedTiles.addAll(newTilesToCheck)
+            for (tile in newTilesToCheck) visitedTilesBitset.set(tile.zeroBasedIndex)
             // no need to check tiles that are surrounded by reachable tiles, only need to check the edgemost tiles.
             // Because anything we can reach from intermediate tiles, can be more easily reached by the edgemost tiles,
             // since we'll have to pass through an edgemost tile in order to reach the destination anyway
-            tilesToCheck = newTilesToCheck.filterNot { tile -> tile.neighbors.all { it in visitedTiles } }
+            tilesToCheck = newTilesToCheck.filterNot { tile -> tile.neighbors.all { visitedTilesBitset.get(it.zeroBasedIndex) } }
 
             distance++
         }
@@ -282,7 +289,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.baseUnit.movesLikeAirUnits ->
             unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         unit.isPreparingParadrop() ->
-            unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
+            canParadropOn(destination, unit.currentTile.aerialDistanceTo(destination))
         else ->
             specificFunction(destination)  // Note: Could pass destination as implicit closure from outer fun to lambda, but explicit is clearer
     }
@@ -296,9 +303,10 @@ class UnitMovement(val unit: MapUnit) {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.movesLikeAirUnits ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
-            unit.isPreparingParadrop() ->
-                unit.getTile().getTilesInDistance(unit.cache.paradropRange)
-                    .filter { unit.movement.canParadropOn(it) }
+            unit.isPreparingParadrop() -> {
+                unit.getTile().getTilesInDistance(unit.cache.paradropDestinationTileFilters.maxOf { it.value } )
+                    .filter { unit.movement.canParadropOn(it, it.aerialDistanceTo(unit.getTile())) }
+            }
             includeOtherEscortUnit && unit.isEscorting() -> {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
@@ -629,12 +637,19 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     // Can a paratrooper land at this tile?
-    private fun canParadropOn(destination: Tile): Boolean {
+    private fun canParadropOn(destination: Tile, distance: Int): Boolean {
         if (unit.cache.cannotMove) return false
-        // Can only move to land tiles within range that are visible and not impassible
+
+        // Can only move to tiles within range that are visible and not impassible
         // Based on some testing done in the base game
-        if (!destination.isLand || destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false
-        return true
+        if (destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false
+
+        // The destination is valid if any of the `tileFilters` match, and is within range
+        for ((tileFilter, distanceAllowed) in unit.cache.paradropDestinationTileFilters) {
+            if (distance <= distanceAllowed && destination.matchesFilter(tileFilter, unit.civ)) return true
+        }
+
+        return false
     }
 
     /**
@@ -709,7 +724,7 @@ class UnitMovement(val unit: MapUnit) {
      */
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
-        passThroughCache: HashMap<Tile, Boolean> = HashMap(),
+        passThroughCacheNew: ArrayList<Boolean?> = ArrayList(),
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
@@ -722,7 +737,7 @@ class UnitMovement(val unit: MapUnit) {
             unit.currentMovement,
             considerZoneOfControl,
             null,
-            passThroughCache,
+            passThroughCacheNew,
             movementCostCache,
             includeOtherEscortUnit
         )

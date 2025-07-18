@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.randomWeighted
 import kotlin.math.abs
@@ -58,7 +58,7 @@ object LuxuryResourcePlacementLogic {
             if (candidateLuxuries.isEmpty()) continue
 
             // Pick a luxury at random. Weight is reduced if the luxury has been picked before
-            val regionConditional = StateForConditionals(region = region)
+            val regionConditional = GameContext(region = region)
             region.luxury = candidateLuxuries.randomWeighted {
                 val weightingUnique = it.getMatchingUniques(UniqueType.ResourceWeighting, regionConditional).firstOrNull()
                 val relativeWeight = if (weightingUnique == null) 1f else weightingUnique.params[0].toFloat()
@@ -105,7 +105,7 @@ object LuxuryResourcePlacementLogic {
         region: Region,
         ruleset: Ruleset
     ): List<TileResource> {
-        val regionConditional = StateForConditionals(region = region)
+        val regionConditional = GameContext(region = region)
 
         var candidateLuxuries = assignableLuxuries.filter {
             amountRegionsWithLuxury[it.name]!! < maxRegionsWithLuxury &&

@@ -11,12 +11,11 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -170,12 +169,11 @@ object Automation {
             yieldStats.production /= 6
         }
 
-        for (stat in Stat.entries) {
-            if (city.civ.wantsToFocusOn(stat))
-                yieldStats[stat] *= 2f
-
-            val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
-            if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
+        if (!city.civ.isHuman()) { // Don't mess things up with a single turn of Autoplay
+            for (stat in Stat.entries) {
+                val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
+                if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
+            }
         }
 
         // Apply City focus
@@ -343,7 +341,7 @@ object Automation {
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
         val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
         return city.getTiles().any {
-            it.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }
     }
 
@@ -384,8 +382,7 @@ object Automation {
             }
 
             // Make sure we have some for space
-            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits
-                < getReservedSpaceResourceAmount(civInfo)) {
+            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits < 2) {
                 return false
             }
 
@@ -418,10 +415,6 @@ object Automation {
         return true
     }
 
-    fun getReservedSpaceResourceAmount(civInfo: Civilization): Int {
-        return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 3 else 2
-    }
-
     fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {
         val powerLevelComparison =
             assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
@@ -434,15 +427,24 @@ object Automation {
         }
     }
 
+    private fun improvementIsRemovable(city: City, tile: Tile): Boolean {
+        val gameContext = GameContext(city.civ, city, tile = tile)
+        return (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, gameContext) == false  && tile.getTileImprovement()?.hasUnique(UniqueType.Irremovable, gameContext) == false)
+    }
+
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
         val localUniqueCache = LocalUniqueCache()
+        val civ = city.civ
         return city.getTiles().filter {
-            it.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace,
-                    StateForConditionals(city.civ, city, tile = it)) == false
-                && it.improvementFunctions.canBuildImprovement(improvement, city.civ)
-        }.maxByOrNull {
-            rankTileForCityWork(it, city, localUniqueCache)
+            (it.getTileImprovement() == null || improvementIsRemovable(city, it))
+                && it.improvementFunctions.canBuildImprovement(improvement, city.state)
+        }.maxByOrNull { 
+            // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
+            rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, localUniqueCache, it.stats.getTileStats(city, civ, localUniqueCache)), civ) + (
+                if (improvement.hasUnique(UniqueType.DefensiveBonus)) { 
+                    it.aerialDistanceTo(city.getCenterTile()) + it.getDefensiveBonus(false) } 
+                else 0).toFloat()
         }
     }
 

@@ -22,7 +22,6 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.UpgradeUnitAction
@@ -108,9 +107,9 @@ object UniqueTriggerActivation {
             }
         }
 
-        val stateForConditionals = StateForConditionals(civInfo, city, unit, tile)
+        val gameContext = GameContext(civInfo, city, unit, tile)
 
-        if (!unique.conditionalsApply(stateForConditionals)) return null
+        if (!unique.conditionalsApply(gameContext)) return null
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
@@ -123,10 +122,10 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.TriggerEvent -> {
                 val event = ruleset.events[unique.params[0]] ?: return null
-                val choices = event.getMatchingChoices(stateForConditionals)
+                val choices = event.getMatchingChoices(gameContext)
                     ?: return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
-                    val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                    val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
@@ -247,7 +246,7 @@ object UniqueTriggerActivation {
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger()) {
                      val replacementUnit = ruleset.units.values
                          .firstOrNull {
-                             it.getMatchingUniques(UniqueType.BuildImprovements)
+                             it.getMatchingUniques(UniqueType.BuildImprovements, GameContext.IgnoreConditionals)
                                 .any { unique -> unique.params[0] == "Land" }
                          } ?: return null
                     civUnit = civInfo.getEquivalentUnit(replacementUnit.name)
@@ -329,7 +328,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeRemovePolicy -> {
                 val policyFilter = unique.params[0]
-                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals)
+                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, gameContext)
                 if (policiesToRemove.isEmpty()) return null
 
                 return {
@@ -350,7 +349,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeRemovePolicyRefund -> {
                 val policyFilter = unique.params[0]
                 val refundPercentage = unique.params[1].toInt()
-                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, stateForConditionals)
+                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, gameContext)
                 if (policiesToRemove.isEmpty()) return null
 
                 val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
@@ -885,7 +884,7 @@ object UniqueTriggerActivation {
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
                                 spy.addNotification("We have recruited [${spy.name}] as a spy!")
                             else
-                                spy.addNotification("After an unknown civilization entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
+                                spy.addNotification("After [an unknown civilization] entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
                         }
                     }
                     true
@@ -909,6 +908,23 @@ object UniqueTriggerActivation {
                 return {
                     val spy = civInfo.espionageManager.addSpy()
                     spy.addNotification("We have recruited [${spy.name}] as a spy!")
+                    true
+                }
+            }
+
+            UniqueType.OneTimeTakeOverTilesInCity -> {
+                val applicableCities = getApplicableCities(unique.params[1])
+                if (applicableCities.none()) return null
+                if (applicableCities.none { it.expansion.chooseNewTileToOwn() != null }) return null
+
+                return {
+                    val positiveAmount = unique.params[0].toInt()
+                    for (applicableCity in applicableCities) {
+                        for (i in 1..positiveAmount) {
+                            val tileToOwn = applicableCity.expansion.chooseNewTileToOwn() ?: break
+                            applicableCity.expansion.takeOwnership(tileToOwn)
+                        }
+                    }
                     true
                 }
             }

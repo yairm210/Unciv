@@ -110,3 +110,19 @@ fun <KT, ET> HashMap<KT, HashSet<ET>>.addToMapOfSets(key: KT, element: ET) =
 /** Simplifies testing whether in a sparse map of sets the [element] exists for [key]. */
 fun <KT, ET> HashMap<KT, HashSet<ET>>.contains(key: KT, element: ET) =
     get(key)?.contains(element) == true
+
+
+/** This is for arraylists that replace hashmaps - they contain nulls where we don't know the answer yet */
+fun <T> ArrayList<T?>.getOrPut(index: Int, getValue: () -> T): T {
+    val currentValue = getOrNull(index)
+    if (currentValue != null) return currentValue
+
+    val value = getValue()
+
+    // grow the arraylist if required - if not, these are no-ops
+    ensureCapacity(index + 1) // So we don't need to copy the array multiple times if adding a lot
+    while (size <= index) add(null) // Fill with nulls until we reach the index
+
+    this[index] = value // Now we can safely set the value
+    return value
+}

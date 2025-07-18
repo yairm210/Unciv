@@ -4,6 +4,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.BaseRuleset
+import yairm210.purity.annotations.Readonly
 
 
 object MapShape {
@@ -172,6 +173,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         yield(", {Water level}=" + waterThreshold.niceToString(2))
     }.joinToString("")
 
+    @Readonly
     fun numberOfTiles() =
         if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)

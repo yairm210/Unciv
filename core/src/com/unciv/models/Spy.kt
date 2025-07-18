@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.EspionageAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.models.ruleset.unique.Unique
@@ -226,7 +227,6 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         if (detectionString != null)
             // Not using Spy.addNotification, shouldn't open the espionage screen
             otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-
         if (spyResult < 200 && stolenTech != null) {
             civInfo.tech.addTechnology(stolenTech)
             addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!")
@@ -237,11 +237,19 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             addNotification("Your spy [$name] was killed trying to steal Technology in [$city]!")
             defendingSpy?.levelUpSpy()
             killSpy()
+            // if they kill your spy they should know that you are spying on them and able to demande to not be speid on.
+            demandeToNotBeSpiedOn(otherCiv)
         } else startStealingTech()  // reset progress
 
         if (spyResult >= 100) {
-            otherCiv.getDiplomacyManager(civInfo)?.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+            demandeToNotBeSpiedOn(otherCiv)
         }
+    }
+    
+    private fun demandeToNotBeSpiedOn(otherCiv: Civilization) {
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
+        otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
+        otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
     }
 
     fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
@@ -340,8 +348,30 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         this.city = city
         setAction(SpyAction.Moving, 1)
     }
+    
+    private fun canDismissAgreementToNotSendSpies(city: City): Boolean {
+        val otherCivDiplomacyManager = city.civ.getDiplomacyManager(civInfo) ?: return false
+        val otherCiv = otherCivDiplomacyManager.civInfo
+        
+        val techSize = civInfo.gameInfo.ruleset.technologies.values.size.toFloat()
+        val ourResearchTechSize = civInfo.tech.techsResearched.size.toFloat()
+        val otherCivResearchTechSize =  otherCiv.tech.techsResearched.size.toFloat()
+        
+        val ourTechResearchLevel = ((ourResearchTechSize/techSize)*100f)
+        val otherCivTechResearchLevel = ((otherCivResearchTechSize/techSize)*100f)
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
+            /*
+            * if there is equal or more than 10% difference in tech, 
+            * compare to the other civ in tech we the Ai will bypass the agreement
+            * */
+            otherCivTechResearchLevel <= ourTechResearchLevel + 10f) {
+            return true
+        }
+        return false
+    }
 
     fun canMoveTo(city: City): Boolean {
+        if (canDismissAgreementToNotSendSpies(city)) return false
         if (getCityOrNull() == city) return true
         if (!city.getCenterTile().isExplored(civInfo)) return false
         return espionageManager.getSpyAssignedToCity(city) == null

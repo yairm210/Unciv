@@ -3,6 +3,7 @@ package com.unciv.ui.components.extensions
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
+import yairm210.purity.annotations.Pure
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -11,13 +12,13 @@ import java.util.Locale
 import java.util.SortedMap
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun String.toPercent() = toFloat().toPercent()
+@Pure fun String.toPercent() = toFloat().toPercent()
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun Int.toPercent() = toFloat().toPercent()
+@Pure fun Int.toPercent() = toFloat().toPercent()
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun Float.toPercent() = 1 + this/100
+@Pure fun Float.toPercent() = 1 + this/100
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
 fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {

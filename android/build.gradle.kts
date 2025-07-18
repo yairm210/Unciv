@@ -2,6 +2,7 @@
 import com.unciv.build.AndroidImagePacker
 import com.unciv.build.BuildConfig
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
@@ -38,8 +39,10 @@ android {
     }
 
     // necessary for Android Work lib
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
+        }
     }
 
     // Had to add this crap for Travis to build, it wanted to sign the app
@@ -120,9 +123,9 @@ tasks.whenTaskAdded {
     }
 }
 
-tasks.register<JavaExec>("run") {
+private fun getSdkPath(): String? {
     val localProperties = project.file("../local.properties")
-    val path = if (localProperties.exists()) {
+    return if (localProperties.exists()) {
         val properties = Properties()
         localProperties.inputStream().use { properties.load(it) }
 
@@ -130,7 +133,11 @@ tasks.register<JavaExec>("run") {
     } else {
         System.getenv("ANDROID_HOME")
     }
+}
 
+tasks.register<JavaExec>("run") {
+
+    val path = getSdkPath()
     val adb = "$path/platform-tools/adb"
 
     doFirst {

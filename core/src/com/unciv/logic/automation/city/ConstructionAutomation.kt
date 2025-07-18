@@ -174,7 +174,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
         // most buildings and civ units contribute the the civ's growth, military units are anti-growth
         var modifier = 1 + sqrt(unitsToCitiesRatio) / 2
-        if (civInfo.wantsToFocusOn(Victory.Focus.Military) || isAtWar) modifier *= 2
+        if (isAtWar) modifier *= 2
 
         if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
         if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
@@ -360,8 +360,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
 
         for (stat in Stat.entries) {
-            if (civInfo.wantsToFocusOn(stat))
-                buildingStats[stat] *= 2f
 
             buildingStats[stat] *= personality.modifierFocus(PersonalityValue[stat], .5f)
         }
@@ -372,11 +370,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private fun getStatDifferenceFromBuilding(building: String, localUniqueCache: LocalUniqueCache): Stats {
         val newCity = city.clone()
         newCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
+        //todo: breaks city connection; trade route gold is currently not considered for markets etc.
+        newCity.cityStats.update(updateCivStats = false, localUniqueCache = localUniqueCache, calculateGrowthModifiers = false) // Don't consider growth penalties for food values (we can work more mines/specialists instead of farms)
+        val oldStats = newCity.cityStats.currentCityStats
         newCity.cityConstructions.builtBuildings.add(building)
         newCity.cityConstructions.setTransients()
-        newCity.cityStats.update(updateCivStats = false, localUniqueCache = localUniqueCache)
+        newCity.cityStats.update(updateCivStats = false, localUniqueCache = LocalUniqueCache(), calculateGrowthModifiers = false) // Establish new localUniqueCache (for tile yield uniques)
         city.expansion.setTransients() // Revert owned tiles to original city
-        return newCity.cityStats.currentCityStats - city.cityStats.currentCityStats
+        return newCity.cityStats.currentCityStats - oldStats
     }
 
     private fun getBuildingStatsFromUniques(building: Building, buildingStats: Stats) {

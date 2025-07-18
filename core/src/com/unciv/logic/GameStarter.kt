@@ -16,7 +16,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -385,7 +385,7 @@ object GameStarter {
 
         val cityCenterMinStats = sequenceOf(ruleSet.tileImprovements[Constants.cityCenter])
             .filterNotNull()
-            .flatMap { it.getMatchingUniques(UniqueType.EnsureMinimumStats, StateForConditionals.IgnoreConditionals) }
+            .flatMap { it.getMatchingUniques(UniqueType.EnsureMinimumStats, GameContext.IgnoreConditionals) }
             .firstOrNull()
             ?.stats ?: Stats.DefaultCityCenterMinimum
 
@@ -440,9 +440,10 @@ object GameStarter {
             adjustStartingUnitsForCityStatesAndOneCityChallenge(civ, gameInfo, startingUnits, settlerLikeUnits)
             placeStartingUnits(civ, startingLocation, startingUnits, ruleset, ruleset.eras[startingEra]!!.startingMilitaryUnit, settlerLikeUnits)
 
-            //Trigger any global or nation uniques that should triggered.
-            //We may need the starting location for some uniques, which is why we're doing it now
-            val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
+            // Trigger any global or nation uniques that should triggered.
+            // We may need the starting location for some uniques, which is why we're doing it now
+            // This relies on gameInfo.ruleset already being initialized
+            val startingTriggers = (gameInfo.getGlobalUniques().uniqueObjects + civ.nation.uniqueObjects)
             for (unique in startingTriggers.filter { !it.hasTriggerConditional() && it.conditionalsApply(civ.state) })
                 UniqueTriggerActivation.triggerUnique(unique, civ, tile = startingLocation)
         }

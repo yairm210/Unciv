@@ -8,8 +8,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
@@ -230,7 +229,7 @@ object ReligionAutomation {
         if (belief.type == BeliefType.Pantheon)
             score *= 0.9f
         
-        score *= belief.getWeightForAiDecision(StateForConditionals(civInfo))
+        score *= belief.getWeightForAiDecision(GameContext(civInfo))
 
         return score
     }
@@ -347,9 +346,7 @@ object ReligionAutomation {
             // Some city-filters are modified by personality (non-enemy foreign cities)
             score += modifier * when (unique.type) {
                 UniqueType.KillUnitPlunderNearCity ->
-                    unique.params[0].toFloat() * //can be very strong, but a low weight for now as the AI currently isn't farming barb camp
-                        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 0.5f
-                        else 0.25f
+                    unique.params[0].toFloat() * 0.25f//can be very strong, but a low weight for now as the AI currently isn't farming barb camp
                 UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.followerBeliefUniqueMap.getUniques(unique.type).any()
@@ -372,10 +369,7 @@ object ReligionAutomation {
                 UniqueType.StatsWhenAdoptingReligion ->
                     unique.stats.values.sum() / 50f
                 UniqueType.RestingPointOfCityStatesFollowingReligionChange ->
-                    if (civInfo.wantsToFocusOn(Victory.Focus.CityStates))
-                        unique.params[0].toFloat() / 4f
-                    else
-                        unique.params[0].toFloat() / 8f
+                    unique.params[0].toFloat() / 8f
                 UniqueType.StatsFromGlobalCitiesFollowingReligion ->
                     unique.stats.values.sum() * 2f //free yields that are potentially more than our own number of cities would allow
                 UniqueType.StatsFromGlobalFollowers ->
@@ -480,7 +474,7 @@ object ReligionAutomation {
                 (it.type == beliefType || beliefType == BeliefType.Any)
                     && !additionalBeliefsToExclude.contains(it)
                     && civInfo.religionManager.getReligionWithBelief(it) == null
-                    && it.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+                    && it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                     .none { unique -> !unique.conditionalsApply(civInfo.state) }
             }
             .maxByOrNull { rateBelief(civInfo, it) }

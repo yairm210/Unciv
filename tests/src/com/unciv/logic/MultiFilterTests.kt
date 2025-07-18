@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityFlags
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Conditionals
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -21,7 +21,7 @@ class MultiFilterTests {
     private val game = TestGame()
     private val civ = game.addCiv()
     private val city = game.addCity(civ, game.getTile(Vector2.Zero))
-    private val stateForConditionals = StateForConditionals(city)
+    private val gameContext = GameContext(city)
 
     @Test
     fun testSplitTerms() {
@@ -80,33 +80,33 @@ class MultiFilterTests {
     fun `test cityFilter combining two non-filters`() {
         val condition = "in [{non-[Puppeted]} {non-[Razing]}] cities"
         val conditional = Unique(condition)
-        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, gameContext))
 
         city.isBeingRazed = true
-        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, gameContext))
 
         city.isBeingRazed = false
         city.isPuppet = true
-        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, gameContext))
 
         city.isBeingRazed = true
-        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, gameContext))
     }
 
     @Test
     fun `test cityFilter negating a combined filter`() {
         val condition = "in [non-[{Puppeted} {Resisting}]] cities"
         val conditional = Unique(condition)
-        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, gameContext))
 
         city.isPuppet = true
-        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, gameContext))
 
         city.isPuppet = false
         city.setFlag(CityFlags.Resistance, 3)
-        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertTrue(Conditionals.conditionalApplies(null, conditional, gameContext))
 
         city.isPuppet = true
-        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, stateForConditionals))
+        Assert.assertFalse(Conditionals.conditionalApplies(null, conditional, gameContext))
     }
 }

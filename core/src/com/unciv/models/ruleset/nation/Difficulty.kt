@@ -1,13 +1,14 @@
 package com.unciv.models.ruleset.nation
 
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.stats.INamed
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
-class Difficulty: INamed, ICivilopediaText {
+class Difficulty: RulesetObject() {
     override lateinit var name: String
     var baseHappiness: Int = 0
     var extraHappinessPerLuxury: Float = 0f
@@ -40,8 +41,8 @@ class Difficulty: INamed, ICivilopediaText {
     // property defined in json but so far unused:
     // var aisExchangeTechs = false
 
-    override var civilopediaText = listOf<FormattedLine>()
-
+    // Note: Difficulty uniques will be treated as part of GlobalUniques
+    override fun getUniqueTarget(): UniqueTarget = UniqueTarget.Difficulty
 
     override fun makeLink() = "Difficulty/$name"
 
@@ -110,6 +111,8 @@ class Difficulty: INamed, ICivilopediaText {
         lines += FormattedLine()
         lines += FormattedLine("{Turns until barbarians enter player tiles}: $turnBarbariansCanEnterPlayerTiles ${Fonts.turn}")
         lines += FormattedLine("{Gold reward for clearing barbarian camps}: $clearBarbarianCampReward ${Fonts.gold}")
+
+        uniquesToCivilopediaTextLines(lines)
         return lines
     }
 

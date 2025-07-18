@@ -4,6 +4,7 @@ package com.unciv.testing
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
@@ -327,5 +328,51 @@ class BasicTests {
                 stats.timesInPlace(0.1f)
         }
         return stats
+    }
+
+    @Test
+    fun turnToYearTest() {
+        // Pretty random choice, but ensures 'turn > last definition' and 'float to int rounding' is tested
+        val testData = mapOf(
+            "Quick" to mapOf(
+                0 to -4000,
+                100 to 800,
+                200 to 1860,
+                300 to 2020,
+                5000 to 6720
+            ),
+            "Standard" to mapOf(
+                99 to -400,
+                479 to 2039,
+                999 to 2299
+            ),
+            "Epic" to mapOf(
+                66 to -2350,
+                666 to 2008,
+                4242 to 3796
+            ),
+            "Marathon" to mapOf(
+                222 to -1280,
+                1111 to 1978,
+                1400 to 2041
+            ),
+        )
+        val gameInfo = GameInfo()
+        gameInfo.ruleset = ruleset
+        Assert.assertEquals(0, ruleset.eras[gameInfo.gameParameters.startingEra]!!.startPercent)
+        var fails = 0
+
+        for ((speedName, tests) in testData) {
+            val speed = ruleset.speeds[speedName]!!
+            gameInfo.speed = speed
+            for ((turn, expected) in tests) {
+                val actual = gameInfo.getYear(turn)
+                if (actual == expected) continue
+                println("speed: $speedName, turn: $turn, expected: $expected, actual: $actual")
+                fails++
+            }
+        }
+
+        Assert.assertEquals("Some turn to year conversions do not match", 0, fails)
     }
 }

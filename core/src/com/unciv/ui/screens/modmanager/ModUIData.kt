@@ -5,6 +5,7 @@ import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.screens.modmanager.ModManagementScreen
 
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists.
  *
@@ -44,8 +45,8 @@ class ModUIData private constructor(
     fun author() = ruleset?.modOptions?.author ?: repo?.owner?.login ?: ""
     fun topics() = ruleset?.modOptions?.topics ?: repo?.topics ?: emptyList()
     fun buttonText() = when {
-        ruleset != null -> ruleset.name
-        repo != null -> repo.name + (if (hasUpdate) " - {Updated}" else "")
+        ruleset != null -> ModManagementScreen.cleanModName(ruleset.name)
+        repo != null -> ModManagementScreen.cleanModName(repo.name) + (if (hasUpdate) " - {Updated}" else "")
         else -> ""
     }
 

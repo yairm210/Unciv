@@ -1,6 +1,7 @@
 
 import com.google.common.io.Files
 import com.unciv.build.BuildConfig
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("kotlin")
@@ -13,10 +14,8 @@ sourceSets {
 }
 
 kotlin {
-    target {
-        compilations.all {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
-        }
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 java {

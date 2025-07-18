@@ -64,10 +64,6 @@ class Victory : INamed {
     val defeatString = "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
 
     fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
-    fun getThingsToFocus(civInfo: Civilization): Set<Focus> = milestoneObjects
-        .filter { !it.hasBeenCompletedBy(civInfo) }
-        .map { it.getFocus(civInfo) }
-        .toSet()
 }
 
 class Milestone(val uniqueDescription: String, private val parentVictory: Victory) {

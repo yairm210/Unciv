@@ -44,7 +44,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
     
     fun updateState() {
-        civInfo.state = StateForConditionals(civInfo)
+        civInfo.state = GameContext(civInfo)
     }
 
     fun setTransients() {
@@ -271,7 +271,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             }
 
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,
-                StateForConditionals(civInfo, tile = tile)
+                GameContext(civInfo, tile = tile)
             ))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
         }

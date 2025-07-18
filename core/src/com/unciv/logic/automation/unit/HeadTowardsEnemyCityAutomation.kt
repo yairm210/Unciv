@@ -128,18 +128,33 @@ object HeadTowardsEnemyCityAutomation {
         unitRange: Int,
         unit: MapUnit
     ): Boolean {
-        val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
-        val tileToMoveTo =
-            unitDistanceToTiles.asSequence()
-                .filter {
-                    it.key.aerialDistanceTo(closestReachableEnemyCity) <=
-                        unitRange && it.key !in tilesInBombardRange
-                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain
-                }
-                .minByOrNull { it.value.totalMovement }?.key ?: return false // return false if no tile to move to
+        // If we're already in fire range but have no sight, hold position
+        // If there IS sight, automateUnitMoves would order attacking instead of heading to city
+        if (closestReachableEnemyCity.getTilesInDistance(unitRange).contains(unit.getTile()))
+            return true
 
-        // move into position far away enough that the bombard doesn't hurt
-        unit.movement.headTowards(tileToMoveTo)
-        return true
+        val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
+        val candidateTiles = unitDistanceToTiles.asSequence().filter {
+            it.key.aerialDistanceTo(closestReachableEnemyCity) >= unitRange
+                && it.key !in tilesInBombardRange
+                && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain 
+                // Avoid mountains in path because unitDistanceToTiles parameter doesn't exclude them due to getMovementToTilesAtPosition
+                && unit.movement.canMoveTo(it.key)
+        }
+
+        // Sort by closest distance to target city, then by the least amount of moves needed to get into fire range
+        val tileToMoveTo = candidateTiles.sortedWith(compareBy(
+            { it.key.aerialDistanceTo(closestReachableEnemyCity) },
+            { it.value.totalMovement }
+        )).firstOrNull()
+
+        if (tileToMoveTo != null) {
+            // move into position far away enough so that city bombard or enemy units don't hurt
+            unit.movement.headTowards(tileToMoveTo.key)
+            return true
+        }
+
+        // return false if no tile to move to
+        return false
     }
 }

@@ -4,7 +4,7 @@
       Here is a template to show what values should be filled in. 
       Use the description at http://civdata.com/, and adjust the numbers accordingly.
       Even then, its up to personal interpretation.
-      To generate lines with multiple parameters I used the funciton: (FirstParam + (SeccondParam - 5) / 2)
+      To generate lines with multiple parameters I used the function: (FirstParam + (SecondParam - 5) / 2)
       Note: BNW leaders are included for now.
   {
       "name": "Template",

@@ -2,7 +2,7 @@ package com.unciv.logic.map.mapunit
 
 import com.unciv.Constants
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -59,7 +59,9 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var canEnterCityStates: Boolean = false
     var costToDisembark: Float? = null
     var costToEmbark: Float? = null
-    var paradropRange = 0
+
+    /** A hashmap where the key represents the tileFilter, and the value is how far away the tile could be */
+    val paradropDestinationTileFilters = mutableMapOf<String, Int>()
 
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
     var hasUniqueToCreateWaterImprovements = false
@@ -67,11 +69,11 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var hasStrengthBonusInRadiusUnique = false
     var hasCitadelPlacementUnique = false
     
-    var state = StateForConditionals.EmptyState
+    var state = GameContext.EmptyState
 
     fun updateUniques() {
 
-        state = StateForConditionals(mapUnit)
+        state = GameContext(mapUnit)
         allTilesCosts1 = mapUnit.hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = mapUnit.hasUnique(UniqueType.CanPassImpassable)
         ignoresTerrainCost = mapUnit.hasUnique(UniqueType.IgnoresTerrainCost)
@@ -82,7 +84,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
         doubleMovementInTerrain.clear()
         for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain,
-                stateForConditionals = StateForConditionals.IgnoreConditionals, true)) {
+                gameContext = GameContext.IgnoreConditionals, true)) {
             val param = unique.params[0]
             val terrain = mapUnit.civ.gameInfo.ruleset.terrains[param]
             doubleMovementInTerrain[param] = DoubleMovement(unique = unique,
@@ -119,7 +121,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
         canEnterCityStates = mapUnit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
 
-        hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius, StateForConditionals.IgnoreConditionals)
+        hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius, GameContext.IgnoreConditionals)
         hasCitadelPlacementUnique = mapUnit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
             .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.OneTimeTakeOverTilesInRadius) }

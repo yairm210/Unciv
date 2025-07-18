@@ -6,7 +6,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.MapUnitCache
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 
 object MovementCost {
@@ -88,9 +88,9 @@ object MovementCost {
         if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost
 
-        val stateForConditionals = StateForConditionals(unit.civ, unit = unit, tile = to)
+        val gameContext = GameContext(unit.civ, unit = unit, tile = to)
 
-        if (to.terrainFeatures.any { hasDoubleMovement(unit, it, MapUnitCache.DoubleMovementTerrainTarget.Feature, stateForConditionals) })
+        if (to.terrainFeatures.any { hasDoubleMovement(unit, it, MapUnitCache.DoubleMovementTerrainTarget.Feature, gameContext) })
             return terrainCost * 0.5f + extraCost
 
         if (unit.cache.roughTerrainPenalty && to.isRoughTerrain())
@@ -103,16 +103,16 @@ object MovementCost {
         if (unit.cache.noBaseTerrainOrHillDoubleMovementUniques)
             return terrainCost + extraCost
 
-        if (hasDoubleMovement(unit, to.baseTerrain, MapUnitCache.DoubleMovementTerrainTarget.Base, stateForConditionals))
+        if (hasDoubleMovement(unit, to.baseTerrain, MapUnitCache.DoubleMovementTerrainTarget.Base, gameContext))
             return terrainCost * 0.5f + extraCost
-        if (hasDoubleMovement(unit, Constants.hill, MapUnitCache.DoubleMovementTerrainTarget.Hill, stateForConditionals)
+        if (hasDoubleMovement(unit, Constants.hill, MapUnitCache.DoubleMovementTerrainTarget.Hill, gameContext)
             && to.isHill())
             return terrainCost * 0.5f + extraCost
 
         if (unit.cache.noFilteredDoubleMovementUniques)
             return terrainCost + extraCost
         if (unit.cache.doubleMovementInTerrain.any {
-                hasDoubleMovement(it.value, MapUnitCache.DoubleMovementTerrainTarget.Filter, stateForConditionals)
+                hasDoubleMovement(it.value, MapUnitCache.DoubleMovementTerrainTarget.Filter, gameContext)
                     && to.matchesFilter(it.key)
             })
             return terrainCost * 0.5f + extraCost
@@ -124,11 +124,11 @@ object MovementCost {
     private fun hasDoubleMovement(
         doubleMovement: MapUnitCache.DoubleMovement,
         target: MapUnitCache.DoubleMovementTerrainTarget,
-        stateForConditionals: StateForConditionals
+        gameContext: GameContext
     ): Boolean {
         if (doubleMovement.terrainTarget != target) return false
         if (doubleMovement.unique.modifiers.isNotEmpty()
-            && !doubleMovement.unique.conditionalsApply(stateForConditionals)) return false
+            && !doubleMovement.unique.conditionalsApply(gameContext)) return false
 
         return true
     }
@@ -137,10 +137,10 @@ object MovementCost {
         unit: MapUnit,
         terrainName: String,
         target: MapUnitCache.DoubleMovementTerrainTarget,
-        stateForConditionals: StateForConditionals
+        gameContext: GameContext
     ): Boolean {
         val doubleMovement = unit.cache.doubleMovementInTerrain[terrainName] ?: return false
-        return hasDoubleMovement(doubleMovement, target, stateForConditionals)
+        return hasDoubleMovement(doubleMovement, target, gameContext)
     }
 
     private fun getEnemyMovementPenalty(civInfo: Civilization, enemyUnit: MapUnit): Float {

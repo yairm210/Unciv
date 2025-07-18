@@ -225,7 +225,7 @@ Civilopedia falls back to the icon for the Belief type - as you can see in the b
 
 You can enable pictures for each of the Victories, illustrating their progress. That could be a Spaceship under construction, showing the parts you've added, or cultural progress as you complete Policy branches. They will be shown on a new tab of the Victory Screen.
 
-For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](Mod-file-structure/5-Miscellaneous-JSON-files#victorytypesjson), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
+For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](Mod-file-structure/5-Miscellaneous-JSON-files.md#victorytypesjson), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
 
 * `VictoryIllustrations/<name>/Background.png` - this determines overall dimensions, the others must not exceed its size and should ideally have identical size. Mandatory, if this file is missing, no illustrations will be shown for this Victory Type.
 * `VictoryIllustrations/<name>/Won.png` - shown if _you_ (the viewing player) won this Victory.
@@ -246,7 +246,7 @@ There's no suggested size, but keep in mind textures are a maximum of 2048x2048 
 
 ## Sounds
 
-Standard values are below. The sounds themselves can be found [here](/sounds).
+Standard values are below. The sounds themselves can be found [here](https://github.com/yairm210/Unciv/tree/master/android/assets/sounds).
 
 -   _arrow, artillery, bombard, bombing, cannon, chimes, choir, click, coin, construction, elephant, fortify, gdrAttack, horse, jetgun, machinegun, metalhit, missile, nonmetalhit, nuke, paper, policy, promote, setup, shipguns, shot, slider, swap, tankshot, throw, torpedo, upgrade, whoosh_.
 
@@ -321,22 +321,13 @@ Also note that voices for City-State leaders work only for those messages a City
 ## Modding Easter eggs
 
 Here's a list of special dates (or date ranges) Unciv will recognize:
-|-----|
-| AprilFoolsDay |
-| DiaDeLosMuertos |
-| Diwali |
-| Easter |
-| Friday13th |
-| LunarNewYear |
-| Passover |
-| PrideDay |
-| Qingming |
-| Samhain |
-| StarWarsDay |
-| TowelDay |
-| UncivBirthday |
-| Xmas |
-| YuleGoat |
+
+| name            |              |             |               |
+|-----------------|--------------|-------------|---------------|
+| AprilFoolsDay   | Friday13th   | Qingming    | UncivBirthday |
+| DiaDeLosMuertos | LunarNewYear | Samhain     | Xmas          |
+| Diwali          | Passover     | StarWarsDay | YuleGoat      |
+| Easter          | PrideDay     | TowelDay    |               |
 
 ... When these are or what they mean - look it up, if in doubt in our sources (😈).
 
