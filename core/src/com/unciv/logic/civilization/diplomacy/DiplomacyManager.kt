@@ -538,12 +538,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
+    @Readonly fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
     fun setFlag(flag: DiplomacyFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
     }
 
-    fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name]!!
+    @Readonly fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name]!!
     fun removeFlag(flag: DiplomacyFlags) {
         flagsCountdown.remove(flag.name)
     }

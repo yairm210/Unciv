@@ -200,7 +200,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             else FormattedLine(label, link="$category/$currentConstructionSnapshot")
     }
 
-    fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
+    @Readonly fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
 
@@ -238,6 +238,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
 
+    @Readonly
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = city.getRuleset()
         when {
@@ -259,6 +260,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
             isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique, city.state) }
 
+    @Readonly
     fun getWorkDone(constructionName: String): Int {
         return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
             else 0

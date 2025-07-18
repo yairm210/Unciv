@@ -10,6 +10,7 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 
 class CityReligionManager : IsPartOfGameInfoSerialization {
     @Transient
@@ -57,6 +58,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         getAffectedBySurroundingCities()
     }
 
+    @Readonly
     fun getUniques(uniqueType: UniqueType): Sequence<Unique> {
         val majorityReligion = getMajorityReligion() ?: return emptySequence()
         return majorityReligion.followerBeliefUniqueMap.getUniques(uniqueType)
@@ -223,6 +225,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         updateNumberOfFollowers()
     }
 
+    @Readonly
     fun getMajorityReligionName(): String? {
         if (followers.isEmpty()) return null
         val religionWithMaxPressure = followers.maxByOrNull { it.value }!!.key
@@ -233,6 +236,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun getMajorityReligion(): Religion? {
         val majorityReligionName = getMajorityReligionName() ?: return null
         return city.civ.gameInfo.religions[majorityReligionName]

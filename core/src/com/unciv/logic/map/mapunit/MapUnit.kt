@@ -238,14 +238,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
         it.getCenterTile().aerialDistanceTo(currentTile)
     }
 
-    fun isMilitary() = baseUnit.isMilitary
-    fun isCivilian() = baseUnit.isCivilian()
+    @Readonly fun isMilitary() = baseUnit.isMilitary
+    @Readonly fun isCivilian() = baseUnit.isCivilian()
 
-    fun isActionUntilHealed() = action?.endsWith("until healed") == true
+    @Readonly fun isActionUntilHealed() = action?.endsWith("until healed") == true
 
-    fun isFortified() = action?.startsWith(UnitActionType.Fortify.value) == true
-    fun isGuarding() = action?.equals(UnitActionType.Guard.value) == true
-    fun isFortifyingUntilHealed() = isFortified() && isActionUntilHealed()
+    @Readonly fun isFortified() = action?.startsWith(UnitActionType.Fortify.value) == true
+    @Readonly fun isGuarding() = action?.equals(UnitActionType.Guard.value) == true
+    @Readonly fun isFortifyingUntilHealed() = isFortified() && isActionUntilHealed()
+    @Readonly
     fun getFortificationTurns(): Int {
         if (!(isFortified() || isGuarding())) return 0
         return turnsFortified
@@ -495,7 +496,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     // Only military land units can truly "garrison"
-    fun canGarrison() = isMilitary() && baseUnit.isLandUnit
+    @Readonly fun canGarrison() = isMilitary() && baseUnit.isLandUnit
 
     @Readonly fun isGreatPerson() = baseUnit.isGreatPerson
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
