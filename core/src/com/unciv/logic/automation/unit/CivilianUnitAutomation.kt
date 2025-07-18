@@ -210,10 +210,11 @@ object CivilianUnitAutomation {
             unit.movement.moveToTile(defensiveUnit)
             return
         }
+        val distanceToClosestEnemyUnit = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), 4, false)
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, distanceToClosestEnemyUnit)
         val tileFurthestFromEnemy = reachableTiles.keys
             .filter { unit.movement.canMoveTo(it) && unit.getDamageFromTerrain(it) < unit.health }
-            .maxByOrNull { unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), 4, false) }
-            ?: return // can't move anywhere!
+            .maxByOrNull { if (it in dangerousTiles) 0 else distanceToClosestEnemyUnit } ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
     }
 
