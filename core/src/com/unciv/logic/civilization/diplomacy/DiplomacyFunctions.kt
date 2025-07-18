@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -90,51 +90,16 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     /**
-     * Test if any mods define [UniqueType.RequiresEmbassiesForDiplomacy]
-     * Returns true if no mods present or if mods don't provide the unique
+     * Test if base ruleset and mods define [UniqueType.RequiresEmbassiesForDiplomacy]
      */
     private fun areEmbassiesEnabledInMods(): Boolean {
-        val ruleset = civInfo.gameInfo.ruleset
-        if (ruleset.toString() == BaseRuleset.Civ_V_GnK.fullName) return true
-
-        // else it's mod or combined ruleset, so check for unique
-        return ruleset.modOptions.uniques.find {
-            it == "Requires establishing embassies to conduct diplomatic relations" } != null
-    }
-
-    /**
-     * Test if both civs have embassies established in each others' capital
-     * Returns true if ruleset or mods don't deal with embassies
-     */
-    fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
-        return if (areEmbassiesEnabledInMods() && civInfo.hasUnique(UniqueType.EnablesEmbassies))
-            civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
-        else true // Embassies are not enabled
-    }
-
-    /**
-     * Remove mutual embassies from both civs
-     */
-    fun removeEmbassies(otherCiv: Civilization) {
-        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
-        ourDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
-        ourDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
-        ourDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
-
-        val theirDiploManager = ourDiploManager.otherCivDiplomacy()
-        theirDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
-        theirDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
-        theirDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
-    }
-
-    /**
-     * Basic check if we can trade embassies, does not check all prerequisities
-     * Use [canOfferEmbassyTo] and [canEstablishEmbassyWith] instead
-     */
-    private fun canEstablishEmbassy(): Boolean {
-        return civInfo.isMajorCiv()
-            && areEmbassiesEnabledInMods()
-            && civInfo.hasUnique(UniqueType.EnablesEmbassies)
+        // TODO: This is called multiple times in turn processing
+        for (mod in civInfo.gameInfo.ruleset.mods)
+            if (RulesetCache[mod]!!.globalUniques.uniques.firstOrNull {
+                it == "Requires establishing embassies to conduct advanced diplomacy" } == null) {
+                return false
+            }
+        return true
     }
 
     /**
@@ -145,6 +110,16 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             diploManager.getFlag(DiplomacyFlags.Denunciation) == 30
                 || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denunciation) == 30
         else false
+    }
+
+    /**
+     * Basic check if we can trade embassies, does not check all prerequisities
+     * Use [canOfferEmbassyTo] and [canEstablishEmbassyWith] instead
+     */
+    private fun canEstablishEmbassy(): Boolean {
+        return civInfo.isMajorCiv()
+            && areEmbassiesEnabledInMods()
+            && civInfo.hasUnique(UniqueType.EnablesEmbassies)
     }
 
     /**
@@ -167,6 +142,31 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         return !civInfo.isAtWarWith(otherCiv) && !isDenouncedThisTurn(ourDiploManager)
             && !ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
             && !ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)
+    }
+
+    /**
+     * Test if both civs have embassies established in each others' capital
+     * Returns true if base ruleset or mods don't enable embassies
+     */
+    fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
+        return if (areEmbassiesEnabledInMods() && civInfo.hasUnique(UniqueType.EnablesEmbassies))
+            civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
+        else true // Embassies are not enabled
+    }
+
+    /**
+     * Remove mutual embassies from both civs
+     */
+    fun removeEmbassies(otherCiv: Civilization) {
+        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        ourDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        ourDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
+        ourDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
+
+        val theirDiploManager = ourDiploManager.otherCivDiplomacy()
+        theirDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        theirDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
+        theirDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
     }
 
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {

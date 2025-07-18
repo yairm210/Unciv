@@ -217,7 +217,7 @@ enum class UniqueType(
 
     /// Diplomacy
     EnablesEmbassies("Enables establishment of embassies", UniqueTarget.Tech),
-    RequiresEmbassiesForDiplomacy("Requires establishing embassies to conduct diplomatic relations", UniqueTarget.Global),
+    RequiresEmbassiesForDiplomacy("Requires establishing embassies to conduct advanced diplomacy", UniqueTarget.Global),
 
     /// Agreements
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
