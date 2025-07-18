@@ -53,6 +53,8 @@ object Constants {
     
     // Other trade items
     const val acceptEmbassy = "Accept Embassy"
+    const val goldPerTurn = "Gold per turn"
+    const val flatGold = "Gold"
     
     /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
     const val cityStates = "City-States"

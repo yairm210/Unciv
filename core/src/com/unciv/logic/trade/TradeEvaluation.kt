@@ -141,7 +141,7 @@ class TradeEvaluation {
      */
     private fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
-            TradeOfferType.Embassy -> return 30
+            TradeOfferType.Embassy -> return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt()
             TradeOfferType.Gold -> return offer.amount
             // GPT loses value for each 'future' turn, meaning: gold now is more valuable than gold in the future
             // Empire-wide production tends to grow at roughly 2% per turn (quick speed), so let's take that as a base line
@@ -343,8 +343,9 @@ class TradeEvaluation {
             TradeOfferType.Embassy -> {
                 val tradePartnerDiplo = civInfo.getDiplomacyManager(tradePartner)!!
                 if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Enemy)) return Int.MIN_VALUE
-                else if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Competitor)) return 60
-                return 30 // 30 is Civ V default
+                else if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Competitor))
+                    return (60 * civInfo.gameInfo.speed.goldCostModifier).toInt()
+                return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt() // 30 is Civ V default (on standard only?)
             }
             TradeOfferType.Gold -> return offer.amount
             TradeOfferType.Gold_Per_Turn -> return offer.amount * offer.duration

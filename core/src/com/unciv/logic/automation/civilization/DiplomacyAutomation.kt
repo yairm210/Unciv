@@ -114,7 +114,6 @@ object DiplomacyAutomation {
      * @param civInfo Civilization which initiates trade
      */
     internal fun offerToEstablishEmbassy(civInfo: Civilization) {
-        if (!civInfo.hasUnique(UniqueType.EnablesEmbassies)) return
         val civsThatWeCanEstablishEmbassyWith = civInfo.getKnownCivs().filter {
             civInfo.diplomacyFunctions.canEstablishEmbassyWith(it)
             && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)
@@ -137,10 +136,10 @@ object DiplomacyAutomation {
                     val embassyValue = TradeEvaluation().evaluateBuyCostWithInflation(embassyOffer, civInfo, otherCiv, tradeLogic.currentTrade)
                     val embassyGptValue = embassyValue / civInfo.gameInfo.speed.dealDuration
                     val ourGpt = civInfo.stats.statsForNextTurn.gold.toInt()
-                    if (ourGpt >= embassyGptValue)
-                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold per turn", TradeOfferType.Gold_Per_Turn, embassyGptValue, civInfo.gameInfo.speed))
+                    if (embassyGptValue in 1..ourGpt)
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.goldPerTurn, TradeOfferType.Gold_Per_Turn, embassyGptValue, civInfo.gameInfo.speed))
                     else if (civInfo.gold >= embassyValue && ourGpt >= 0)
-                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold", TradeOfferType.Gold, embassyValue, civInfo.gameInfo.speed))
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.flatGold, TradeOfferType.Gold, embassyValue, civInfo.gameInfo.speed))
                     // else let them make counter offer
                 }
                 
