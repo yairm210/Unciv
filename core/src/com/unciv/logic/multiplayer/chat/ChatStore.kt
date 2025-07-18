@@ -1,15 +1,8 @@
 package com.unciv.logic.multiplayer.chat
 
 import com.badlogic.gdx.Gdx
-import com.unciv.logic.event.Event
 import com.unciv.ui.screens.worldscreen.chat.ChatPopup
 import java.util.LinkedList
-
-data class ChatMessageReceived(
-    val gameId: String,
-    val civName: String,
-    val message: String,
-) : Event
 
 data class Chat(
     val gameId: String,
@@ -27,7 +20,9 @@ data class Chat(
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
      */
     fun requestMessageSend(civName: String, message: String) {
-        ChatWebSocket.requestMessageSend(Message.Chat(gameId, civName, message))
+        Gdx.app.postRunnable {
+            ChatWebSocket.requestMessageSend(Message.Chat(gameId, civName, message))
+        }
     }
 
     /**
@@ -74,12 +69,14 @@ object ChatStore {
     }
 
     fun relayChatMessage(chat: Response.Chat) {
-        if (chat.gameId.isNotEmpty()) {
-            getChatByGameId(chat.gameId).addMessage(chat.civName, chat.message)
-            if (chatPopup?.chat?.gameId == chat.gameId) {
-                chatPopup?.addMessage(chat.civName, chat.message)
-            }
-        } else relayGlobalMessage(chat.message, chat.civName)
+        Gdx.app.postRunnable {
+            if (chat.gameId.isNotEmpty()) {
+                getChatByGameId(chat.gameId).addMessage(chat.civName, chat.message)
+                if (chatPopup?.chat?.gameId == chat.gameId) {
+                    chatPopup?.addMessage(chat.civName, chat.message)
+                }
+            } else relayGlobalMessage(chat.message, chat.civName)
+        }
     }
 
     fun pollGlobalMessages(action: (String, String) -> Unit) {
@@ -93,8 +90,7 @@ object ChatStore {
 
     fun relayGlobalMessage(message: String, civName: String = "System") {
         Gdx.app.postRunnable {
-            chatPopup?.addMessage(civName, message, suffix = "one time")
-                ?: globalMessages.add(Pair(civName, message))
+            chatPopup?.addMessage(civName, message, suffix = "one time") ?: globalMessages.add(Pair(civName, message))
         }
     }
 }

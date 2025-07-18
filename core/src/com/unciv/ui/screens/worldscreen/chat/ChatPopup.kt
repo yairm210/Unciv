@@ -133,9 +133,9 @@ class ChatPopup(
             wrap = true
 
             val civNameColor =
-                civChatColorsMap[senderCivName] ?: worldScreen.gameInfo.getCivilizationOrNull(
-                    senderCivName
-                )?.nation?.getOuterColor() ?: Color.BLACK
+                civChatColorsMap[senderCivName]
+                    ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
+                    ?: Color.BLACK
 
             color = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_MIN_LIGHTNESS)
         }

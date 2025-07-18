@@ -235,8 +235,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Readonly
     fun getCivilization(civName: String) = civMap[civName]
         ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
+
+    @Readonly
     fun getCivilizationOrNull(civName: String) = civMap[civName]
-        ?: civilizations.firstOrNull() { it.civName == civName }
+        ?: civilizations.firstOrNull { it.civName == civName }
+
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
