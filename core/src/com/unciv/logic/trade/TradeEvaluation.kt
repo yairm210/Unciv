@@ -36,12 +36,15 @@ class TradeEvaluation {
         val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = offerer.gameInfo.speed)
         val theirDiploManager = tradePartner.getDiplomacyManager(offerer)!!
         val ourDiploManager = offerer.getDiplomacyManager(tradePartner)!!
+
         if (trade.ourOffers.contains(embassyOffer)
+            && offerer.getCapital() != null
             && theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
             || theirDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies))
             return false
 
         if (trade.theirOffers.contains(embassyOffer)
+            && tradePartner.getCapital() != null
             && ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
             || ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies))
             return false

@@ -90,19 +90,6 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     /**
-     * Test if base ruleset and mods define [UniqueType.RequiresEmbassiesForDiplomacy]
-     */
-    private fun areEmbassiesEnabledInMods(): Boolean {
-        // TODO: This is called multiple times in turn processing
-        for (mod in civInfo.gameInfo.ruleset.mods)
-            if (RulesetCache[mod]!!.globalUniques.uniques.firstOrNull {
-                it == "Requires establishing embassies to conduct advanced diplomacy" } == null) {
-                return false
-            }
-        return true
-    }
-
-    /**
      * If denounciation happened this turn from either side, establishing embassy again is possible only from next turn.
      */
     private fun isDenouncedThisTurn(diploManager: DiplomacyManager): Boolean {
@@ -118,8 +105,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      */
     private fun canEstablishEmbassy(): Boolean {
         return civInfo.isMajorCiv()
-            && areEmbassiesEnabledInMods()
             && civInfo.hasUnique(UniqueType.EnablesEmbassies)
+            && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy)
     }
 
     /**
@@ -149,7 +136,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Returns true if base ruleset or mods don't enable embassies
      */
     fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
-        return if (areEmbassiesEnabledInMods() && civInfo.hasUnique(UniqueType.EnablesEmbassies))
+        return if (civInfo.hasUnique(UniqueType.EnablesEmbassies)
+            && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy))
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
         else true // Embassies are not enabled
     }

@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DeclareWarReason
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.models.ruleset.tile.ResourceType
@@ -233,27 +234,22 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         for (offer in currentTrade.theirOffers.filter { it.type == TradeOfferType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
 
+        fun applyEmbassyOffer(diploManager: DiplomacyManager) {
+            if (diploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)) {
+                diploManager.replaceModifier(DiplomaticModifiers.EstablishedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+                diploManager.otherCivDiplomacy().replaceModifier(DiplomaticModifiers.ReceivedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+            }
+            else {
+                diploManager.addModifier(DiplomaticModifiers.ReceivedEmbassy, 1f)
+                diploManager.otherCivDiplomacy().addModifier(DiplomaticModifiers.EstablishedEmbassy, 2f)
+            }
+        }
+
         // Diplomatic modifiers for embassy depend on whether a civ gives its embassy, accepts it or both
-        if (currentTrade.ourOffers.any { it.type == TradeOfferType.Embassy }) {
-            if (ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)) {
-                ourDiploManager.replaceModifier(DiplomaticModifiers.EstablishedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
-                theirDiploManager.replaceModifier(DiplomaticModifiers.ReceivedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
-            }
-            else {
-                ourDiploManager.addModifier(DiplomaticModifiers.ReceivedEmbassy, 1f)
-                theirDiploManager.addModifier(DiplomaticModifiers.EstablishedEmbassy, 2f)
-            }
-        }
-        if (currentTrade.theirOffers.any { it.type == TradeOfferType.Embassy }) {
-            if (theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)) {
-                theirDiploManager.replaceModifier(DiplomaticModifiers.EstablishedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
-                ourDiploManager.replaceModifier(DiplomaticModifiers.ReceivedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
-            }
-            else {
-                ourDiploManager.addModifier(DiplomaticModifiers.EstablishedEmbassy, 2f)
-                theirDiploManager.addModifier(DiplomaticModifiers.ReceivedEmbassy, 1f)
-            }
-        }
+        if (currentTrade.ourOffers.any { it.type == TradeOfferType.Embassy })
+            applyEmbassyOffer(ourDiploManager)
+        if (currentTrade.theirOffers.any { it.type == TradeOfferType.Embassy })
+            applyEmbassyOffer(theirDiploManager)
 
         ourCivilization.cache.updateCivResources()
         ourCivilization.updateStatsForNextTurn()
