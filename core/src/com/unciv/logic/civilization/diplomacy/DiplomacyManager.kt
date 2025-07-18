@@ -547,7 +547,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         flagsCountdown[flag.name] = amount
     }
 
-    @Readonly fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name]!!
+    /** 0 indicates 'flag does not exist' */
+    @Readonly fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name] ?: 0
     fun removeFlag(flag: DiplomacyFlags) {
         flagsCountdown.remove(flag.name)
     }
