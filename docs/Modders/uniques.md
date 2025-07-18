@@ -808,7 +808,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Requires establishing embassies to conduct diplomatic relations"
+??? example  "Requires establishing embassies to conduct advanced diplomacy"
 	Applicable to: Global
 
 ??? example  "Enables Open Borders agreements"
