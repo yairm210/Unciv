@@ -1,3 +1,27 @@
+## 4.17.6
+
+chore: purity - big batch
+
+chore: Tile purity
+
+chore: Hexmath purity final round
+
+chore: Hexmath purity round 2
+
+chore: Hexmath purity round 1
+
+Raise error if tilemap has no tiles
+
+chore: Hexmath purity
+
+chore: Update purity
+
+better way to brighten colors - By touhidurrr
+
+By metablaster:
+- Fix AI civilian unit not escaping enemy 
+- Fix translation for an unknown civilization 
+
 ## 4.17.5
 
 By metablaster:
