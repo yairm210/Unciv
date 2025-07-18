@@ -14,6 +14,8 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -473,12 +475,13 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
  */
-@Readonly @Suppress("purity")
+@Readonly
 fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
 
     val stringToParse = this.removeConditionals()
     
+    @LocalState
     val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
@@ -512,6 +515,7 @@ fun String.equalsPlaceholderText(str: String): Boolean {
     return this.getPlaceholderText() == str
 }
 
+@Pure
 fun String.hasPlaceholderParameters(): Boolean {
     if (!this.contains('[')) return false
     return squareBraceRegex.containsMatchIn(this.removeConditionals())
@@ -529,12 +533,13 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return filledString
 }
 
+@Pure @Suppress("purity")
 fun String.getModifiers(): List<Unique> {
     if (!this.contains('<')) return emptyList()
     return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
 }
 
-@Readonly @Suppress("purity") // todo fix val reference in purity
+@Pure
 fun String.removeConditionals(): String {
     if (!this.contains('<')) return this // no need to regex search
     return this

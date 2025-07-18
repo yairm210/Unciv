@@ -1,3 +1,24 @@
+## 4.17.6
+
+Better way to brighten colors - By touhidurrr
+
+By metablaster:
+- Fix AI civilian unit not escaping enemy 
+- Fix translation for an unknown civilization 
+
+## 4.17.5
+
+By metablaster:
+- Nukes don't require line of sight to hit target tile 
+- Display city defense and health in cities overview tab 
+- Get notification when pantheon, religion or religion enhancement is made by other civ 
+
+Add 'upon entering combat trigger' - By SeventhM
+
+By SomeTroglodyte:
+- Workaround for "Mod has no graphics for configured tilesets" false positive 
+- No environment checks in Gradle project configs 
+
 ## 4.17.4
 
 AI: swap spaceship parts into capital - By EmperorPinguin

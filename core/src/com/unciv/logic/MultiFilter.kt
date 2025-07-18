@@ -20,7 +20,7 @@ object MultiFilter {
      *  @param filterFunction The single filter implementation
      *  @param forUniqueValidityTests Inverts the `non-[filter]` test because Unique validity doesn't check for actual matching
      */
-    @Readonly @Suppress("purity")
+    @Readonly @Suppress("purity") // Calls function invoke
     fun multiFilter(
         input: String,
         filterFunction: (String) -> Boolean,
@@ -37,7 +37,7 @@ object MultiFilter {
         return filterFunction(input)
     }
 
-    @Pure
+    @Pure @Suppress("purity") // calls flatmap{}
     fun getAllSingleFilters(input: String): Sequence<String> = when {
         input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator) ->
             // Resolve "AND" filters

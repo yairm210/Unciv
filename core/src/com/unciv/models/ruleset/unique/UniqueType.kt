@@ -937,6 +937,7 @@ enum class UniqueType(
 
     ///////////////////////////////////////// region 11 UNIT TRIGGERS /////////////////////////////////////////
 
+    TriggerUponCombat("upon entering combat", UniqueTarget.UnitTriggerCondition),
     TriggerUponDamagingUnit("upon damaging a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition,
         docDescription = "Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'"),
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),

@@ -884,7 +884,7 @@ object UniqueTriggerActivation {
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
                                 spy.addNotification("We have recruited [${spy.name}] as a spy!")
                             else
-                                spy.addNotification("After an unknown civilization entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
+                                spy.addNotification("After [an unknown civilization] entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
                         }
                     }
                     true

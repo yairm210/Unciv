@@ -198,10 +198,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     //region pure functions
-    @Readonly
-    fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
-    @Readonly
-    fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
+
+    @Readonly fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
+    @Readonly fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
 
     fun turnsToPeaceTreaty(): Int {
         for (trade in trades)
@@ -471,6 +470,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
+    @Readonly
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState &&
             (isRelationshipLevelGE(RelationshipLevel.Friend) || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
@@ -538,12 +538,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
+    @Readonly fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
     fun setFlag(flag: DiplomacyFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
     }
 
-    fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name]!!
+    /** 0 indicates 'flag does not exist' */
+    @Readonly fun getFlag(flag: DiplomacyFlags) = flagsCountdown[flag.name] ?: 0
     fun removeFlag(flag: DiplomacyFlags) {
         flagsCountdown.remove(flag.name)
     }
