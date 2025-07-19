@@ -38,15 +38,15 @@ class TradeEvaluation {
         val ourDiploManager = offerer.getDiplomacyManager(tradePartner)!!
 
         if (trade.ourOffers.contains(embassyOffer)
-            && offerer.getCapital() != null
-            && theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
-            || theirDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies))
+            && (offerer.getCapital() == null
+            || theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            || theirDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)))
             return false
 
         if (trade.theirOffers.contains(embassyOffer)
-            && tradePartner.getCapital() != null
-            && ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
-            || ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies))
+            && (tradePartner.getCapital() == null
+            || ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            || ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)))
             return false
 
         for (offer in trade.ourOffers)
