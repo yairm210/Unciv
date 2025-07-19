@@ -239,17 +239,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
-    fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
+    @Readonly fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
     /** Access a cached `GlobalUniques` that combines the [ruleset]'s [globalUniques][Ruleset.globalUniques]
      *  with the Uniques of the chosen [speed] and [difficulty][getDifficulty] */
-    @Readonly @Suppress("purity") // This should be autorecognized!!
+    @Readonly @Suppress("purity") // should be autorecognized 
     fun getGlobalUniques() = combinedGlobalUniques
 
     /** @return Sequence of all cities in game, both major civilizations and city states */
-    fun getCities() = civilizations.asSequence().flatMap { it.cities }
-    fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
-    fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+    @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }
+    @Readonly fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
+    @Readonly fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
 
     /** Gets civilizations in their commonly used order - City-states last,
      *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force

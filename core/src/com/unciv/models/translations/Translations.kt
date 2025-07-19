@@ -14,6 +14,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -474,12 +475,13 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
  */
-@Readonly @Suppress("purity") // Local state update
+@Readonly
 fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
 
     val stringToParse = this.removeConditionals()
     
+    @LocalState
     val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1

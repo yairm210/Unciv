@@ -13,6 +13,7 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 
 class TileResource : RulesetStatsObject(), GameResource {
 
@@ -52,6 +53,7 @@ class TileResource : RulesetStatsObject(), GameResource {
      *  @see improvedBy
      *  @see UniqueType.ImprovesResources
      */
+    @Readonly @Suppress("purity") // requires some plumbing
     fun getImprovements(): Set<String> {
         if (improvementsInitialized) return allImprovements
         val ruleset = this.ruleset

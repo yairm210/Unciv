@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 object CityResources {
 
