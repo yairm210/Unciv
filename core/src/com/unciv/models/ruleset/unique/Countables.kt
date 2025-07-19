@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.ruleset.unique.expressions.Operator
@@ -8,6 +9,8 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.models.translations.getModifiers
+import com.unciv.models.translations.removeConditionals
 import yairm210.purity.annotations.Readonly
 import org.jetbrains.annotations.VisibleForTesting
 
@@ -55,11 +58,11 @@ enum class Countables(
     },
     Cities("Cities", shortDocumentation = "The number of cities the relevant Civilization owns") {
         override fun eval(parameterText: String, gameContext: GameContext) =
-            gameContext.civInfo?.cities?.size
+            civilizations(parameterText, gameContext)?.sumOf { it.cities.size }
     },
     Units("Units", shortDocumentation = "The number of units the relevant Civilization owns") {
-        override fun eval(parameterText: String, gameContext: GameContext) =
-            gameContext.civInfo?.units?.getCivUnitsSize()
+        override fun eval(parameterText: String, gameContext: GameContext): Int? =
+            civilizations(parameterText, gameContext)?.sumOf { it.units.getCivUnitsSize() }
     },
 
     Stats {
@@ -255,12 +258,12 @@ enum class Countables(
     open val matchesWithRuleset = false
 
     @VisibleForTesting
-    open val noPlaceholders = !text.contains('[')
+    open val noPlaceholders = !text.contains('[') && !text.contains('<')
 
     // Leave these in place only for the really simple cases
     @Readonly
     open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
-        else parameterText.equalsPlaceholderText(placeholderText)
+        else parameterText.equalsPlaceholderText(placeholderText.removeConditionals())
     
     /** Needs to return the ENTIRE countable, not just parameters. */
     open fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
@@ -283,6 +286,20 @@ enum class Countables(
                 .mapNotNull { UniqueParameterType.safeValueOf(it)?.docExample }
             return text.fillPlaceholders(*placeholderParams.toTypedArray())
         }
+
+    open fun civilizations(parameterText: String, gameContext: GameContext): List<Civilization>? {
+        val modifiers = parameterText.getModifiers()
+        if (modifiers.isEmpty()) {
+            if (gameContext.civInfo != null) {
+                return listOf(gameContext.civInfo)
+            }
+            return null
+        }
+
+        return gameContext.gameInfo?.civilizations?.filter {
+            modifiers.all { modifier -> modifier.conditionalsApply(it) }
+        }
+    }
 
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
     open fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
