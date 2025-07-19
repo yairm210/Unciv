@@ -164,6 +164,9 @@ object DeclareWar {
         diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, diplomacyManager.civInfo.gameInfo.ruleset.modOptions.constants.minimumWarDuration) // AI won't propose peace for 10 turns
         diplomacyManager.setFlag(DiplomacyFlags.DeclaredWar, diplomacyManager.civInfo.gameInfo.ruleset.modOptions.constants.minimumWarDuration) // AI won't agree to trade for 10 turns
         diplomacyManager.removeFlag(DiplomacyFlags.BorderConflict)
+
+        // War results in removal of embassies for both sides
+        diplomacyManager.civInfo.diplomacyFunctions.removeEmbassies(civAtWarWith)
     }
 
     private fun changeOpinions(diplomacyManager: DiplomacyManager, declareWarReason: DeclareWarReason) {

@@ -1,6 +1,7 @@
 {
     "name": "Global uniques",
     "uniques": [
+        "Requires establishing embassies to conduct advanced diplomacy",
         "[-75]% growth [in all cities] <when between [-10] and [-1] [Happiness]>",
         "Nullifies Growth [in all cities] <when below [-10] [Happiness]>",
         "[-50]% [Production] [in all cities] <when below [-10] [Happiness]>",

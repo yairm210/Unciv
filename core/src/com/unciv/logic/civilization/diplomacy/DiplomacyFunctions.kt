@@ -88,6 +88,72 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         }
     }
 
+    /**
+     * If denounciation happened this turn from either side, establishing embassy again is possible only from next turn.
+     */
+    private fun isDenouncedThisTurn(diploManager: DiplomacyManager): Boolean {
+        return diploManager.getFlag(DiplomacyFlags.Denunciation) == 30
+            || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denunciation) == 30
+    }
+
+    /**
+     * Basic check if we can trade embassies, does not check all prerequisities
+     * Use [canOfferEmbassyTo] and [canEstablishEmbassyWith] instead
+     */
+    private fun canEstablishEmbassy(): Boolean {
+        return civInfo.isMajorCiv()
+            && civInfo.hasUnique(UniqueType.EnablesEmbassies)
+            && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy)
+    }
+
+    /**
+     * Test if we can offer our embassy to [otherCiv]
+     */
+    fun canOfferEmbassyTo(otherCiv: Civilization): Boolean {
+        if (!canEstablishEmbassy() || !otherCiv.isMajorCiv()) return false
+        val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
+        return !civInfo.isAtWarWith(otherCiv) && !isDenouncedThisTurn(theirDiploManager)
+            && !theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            && !theirDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)
+    }
+
+    /**
+     * Test if we can establish embassy in [otherCiv] capital
+     */
+    fun canEstablishEmbassyWith(otherCiv: Civilization): Boolean {
+        if (!canEstablishEmbassy() || !otherCiv.isMajorCiv()) return false
+        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        return !civInfo.isAtWarWith(otherCiv) && !isDenouncedThisTurn(ourDiploManager)
+            && !ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            && !ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)
+    }
+
+    /**
+     * Test if both civs have embassies established in each others' capital
+     * Returns true if base ruleset or mods don't enable embassies
+     */
+    fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
+        return if (civInfo.hasUnique(UniqueType.EnablesEmbassies)
+            && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy))
+            civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
+        else true // Embassies are not enabled
+    }
+
+    /**
+     * Remove mutual embassies from both civs
+     */
+    fun removeEmbassies(otherCiv: Civilization) {
+        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        ourDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        ourDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
+        ourDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
+
+        val theirDiploManager = ourDiploManager.otherCivDiplomacy()
+        theirDiploManager.removeModifier(DiplomaticModifiers.EstablishedEmbassy)
+        theirDiploManager.removeModifier(DiplomaticModifiers.ReceivedEmbassy)
+        theirDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
+    }
+
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
         return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
             && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation)
@@ -102,14 +168,16 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
-        return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
-            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-            && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
+        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        return canSignResearchAgreement()
+            && otherCiv.diplomacyFunctions.canSignResearchAgreement()
+            && hasMutualEmbassyWith(otherCiv)
+            && ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !ourDiploManager.hasFlag(DiplomacyFlags.ResearchAgreement)
+            && !ourDiploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
     }
 
-    fun canSignResearchAgreementsWith(otherCiv: Civilization): Boolean {
+    fun canSignResearchAgreementWith(otherCiv: Civilization): Boolean {
         val cost = getResearchAgreementCost(otherCiv)
         return canSignResearchAgreementNoCostWith(otherCiv)
             && civInfo.gold >= cost && otherCiv.gold >= cost
@@ -129,15 +197,15 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
-        return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
-            && (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-            || diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
-            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
-            && diplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact
+        val ourDiplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
+        return canSignDefensivePact()
+            && otherCiv.diplomacyFunctions.canSignDefensivePact()
+            && hasMutualEmbassyWith(otherCiv)
+            && ourDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !ourDiplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
+            && !ourDiplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
+            && ourDiplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact
     }
-
 
     /**
      * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],

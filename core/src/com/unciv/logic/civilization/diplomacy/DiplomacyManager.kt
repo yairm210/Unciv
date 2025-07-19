@@ -46,6 +46,7 @@ enum class DiplomacyFlags {
     DeclinedLuxExchange,
     DeclinedPeace,
     DeclinedResearchAgreement,
+    DeclinedEmbassy,
     DeclinedOpenBorders,
     DeclaredWar,
     DeclarationOfFriendship,
@@ -118,6 +119,9 @@ enum class DiplomaticModifiers(val text: String) {
     StoleOurAlly("You took the alliance we had with a City-State"),
 
     // Positive
+    EstablishedEmbassy("We have an embassy in your capital"),
+    ReceivedEmbassy("You have an embassy in our capital"),
+    SharedEmbassies("We have shared embassies"),
     YearsOfPeace("Years of peace have strengthened our relations."),
     SharedEnemy("Our mutual military struggle brings us closer together."),
     LiberatedCity("We applaud your liberation of conquered cities!"),
@@ -569,6 +573,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     internal fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
     @Readonly
     fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.name)
+    
+    fun replaceModifier(oldModifier: DiplomaticModifiers, newModifier: DiplomaticModifiers, amount: Float) {
+        removeModifier(oldModifier)
+        addModifier(newModifier, amount)
+    }
 
     fun signDeclarationOfFriendship() {
         setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
@@ -678,6 +687,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
         setFlag(DiplomacyFlags.Denunciation, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
+
+        // Denounciation results in removal of embasies for both sides
+        civInfo.diplomacyFunctions.removeEmbassies(otherCiv())
 
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
