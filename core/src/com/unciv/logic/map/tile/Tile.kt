@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
@@ -645,6 +646,34 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             else -> true
         }
     }
+    fun canBeSettled(uniqueModifier: Unique): Boolean {
+        val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
+        val modifierCondition = uniqueModifier.params[0]
+        /*
+            Did it like this because if keep getting " " from tileMap.gameInfo.ruleset.name
+            and you always get the ruleset first.
+         */
+        val rulesetName = tileMap.gameInfo.ruleset.mods.first() 
+        val terrainsSet = RulesetCache[rulesetName]?.terrains!! // if this is null we have some bigger problems
+        val terrains =  terrainsSet.values.filter { it.matchesFilter(modifierCondition) }
+        val waterTerrains = terrainsSet.values.filter { it.matchesFilter("Water") }
+        val montainTerrains = terrainsSet.values.filter { it.matchesFilter("Mountain") }
+        val isOnMontainTerrain = terrains.any{it in montainTerrains} 
+        val isOnWaterTerrains = terrains.any { it in waterTerrains }
+        
+        // To stop settle from settle too near other cities
+        val addedDistanceOnDifferentContinents = if (isOnWaterTerrains || isOnMontainTerrain) 1 else 0
+        
+        return when {                     
+            isWater && !isOnWaterTerrains || isImpassible() && !isOnMontainTerrain -> false
+            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents+addedDistanceOnDifferentContinents)
+                .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
+            getTilesInDistance(modConstants.minimalCityDistance)
+                .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
+            else -> true
+        }
+    }
+
 
     /** The two tiles have a river between them */
     @Readonly

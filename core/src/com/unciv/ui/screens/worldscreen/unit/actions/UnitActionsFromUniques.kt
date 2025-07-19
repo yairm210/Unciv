@@ -44,12 +44,18 @@ object UnitActionsFromUniques {
             UniqueType.FoundCity).firstOrNull() ?: 
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
-
-        if (tile.isWater || tile.isImpassible()) return null
+        
+        val inTilesModifier = unique.getModifiers(UniqueType.ConditionalInTerrains).firstOrNull()
+        
+        if (tile.isWater && inTilesModifier == null || tile.isImpassible() && inTilesModifier == null) return null
+        
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
+        
+        if  (!unit.hasMovement() || inTilesModifier == null && !tile.canBeSettled()) 
+            return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
-        if (!unit.hasMovement() || !tile.canBeSettled())
+        if (!unit.hasMovement() || inTilesModifier != null && !tile.canBeSettled(inTilesModifier))
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
