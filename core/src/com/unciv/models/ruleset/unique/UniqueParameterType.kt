@@ -262,6 +262,7 @@ enum class UniqueParameterType(
             "in annexed cities", "Annexed",
             "in puppeted cities", "Puppeted",
             "in resisting cities", "Resisting",
+            "in cities owned by original founder", "Original Founder",
             "in cities being razed", "Razing",
             "in holy cities", "Holy",
             "in City-State cities",
