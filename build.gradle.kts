@@ -59,6 +59,8 @@ allprojects {
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "java.util.AbstractCollection.contains",
+            "java.util.AbstractCollection.isEmpty",
+            "java.util.AbstractCollection.iterator",
             "java.util.AbstractList.get",
         )
         wellKnownPureClasses = setOf(

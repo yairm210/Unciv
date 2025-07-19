@@ -909,6 +909,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         resourceStockpiles.add(resource.name, amount)
     }
 
+    @Readonly
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
             Stat.Culture -> policies.storedCulture

@@ -478,10 +478,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
 
-    fun isRanged() = rangedStrength > 0
-    fun isMelee() = !isRanged() && strength > 0
+    @Readonly fun isRanged() = rangedStrength > 0
+    @Readonly fun isMelee() = !isRanged() && strength > 0
     val isMilitary by lazy { isRanged() || isMelee() }
-    fun isCivilian() = !isMilitary
+    @Readonly fun isCivilian() = !isMilitary
 
     val isLandUnit by lazy { type.isLandUnit() }
     val isWaterUnit by lazy { type.isWaterUnit() }

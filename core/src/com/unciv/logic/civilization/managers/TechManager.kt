@@ -108,8 +108,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return 1 + numberOfCivsResearchedThisTech / numberOfCivsRemaining.toFloat() * 0.3f
     }
 
-    @Readonly
-    private fun getRuleset() = civInfo.gameInfo.ruleset
+    @Readonly private fun getRuleset() = civInfo.gameInfo.ruleset
 
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
@@ -126,16 +125,18 @@ class TechManager : IsPartOfGameInfoSerialization {
         return techCost.toInt()
     }
 
+    @Readonly
     fun currentTechnology(): Technology? {
         val currentTechnologyName = currentTechnologyName() ?: return null
         return getRuleset().technologies[currentTechnologyName]
     }
 
+    @Readonly
     fun currentTechnologyName(): String? {
         return if (techsToResearch.isEmpty()) null else techsToResearch[0]
     }
 
-    fun researchOfTech(techName: String?) = techsInProgress[techName] ?: 0
+    @Readonly fun researchOfTech(techName: String?) = techsInProgress[techName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
     fun remainingScienceToTech(techName: String): Int {
@@ -188,6 +189,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return tech.prerequisites.all { isResearched(it) }
     }
 
+    @Readonly @Suppress("purity") // should be autorecognized
     fun allTechsAreResearched() = allTechsAreResearched
 
     //endregion

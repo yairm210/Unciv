@@ -3,6 +3,7 @@ package com.unciv.models
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Implements a specialized Map storing on-zero Integers.
@@ -47,6 +48,8 @@ open class Counter<K>(
     }
     operator fun minusAssign(other: Counter<K>) = remove(other)
 
+    @Readonly
+    /** Creates a new instance (does not modify) */
     operator fun times(amount: Int): Counter<K> {
         val newCounter = Counter<K>()
         for (key in keys) newCounter[key] = this[key] * amount
