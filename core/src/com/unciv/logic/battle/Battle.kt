@@ -29,6 +29,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import kotlin.math.sqrt
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -214,7 +215,32 @@ object Battle {
                 .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
-
+        
+        if (attacker is MapUnitCombatant) {
+            val blastRadiusUnique = attacker.unit.getMatchingUniques(UniqueType.BlastRadius).firstOrNull()
+            if (blastRadiusUnique != null) {
+                val radius = blastRadiusUnique.params[0].toIntOrNull() ?: 1
+                if (radius > 0) {
+                    val centerTile = defender.getTile()
+                    val affectedTiles = centerTile.getTilesInDistance(radius).toList()
+                    for (tile in affectedTiles) {
+                        val dx = Math.abs(centerTile.position.x - tile.position.x)
+                        val dy = Math.abs(centerTile.position.y - tile.position.y)
+                        val distance = kotlin.math.sqrt(dx * dx + dy * dy)
+                        val distanceFactor = (1.0 - distance.toDouble() / (radius + 1))
+                        for (unit in tile.getUnits()) {
+                            if (unit != attacker.unit && unit != (defender as? MapUnitCombatant)?.unit) {
+                                val aoeDefender = if (unit is MapUnitCombatant) unit else MapUnitCombatant(unit)
+                                var damage = BattleDamage.calculateDamageToDefender(attacker, aoeDefender)
+                                damage = (damage * distanceFactor).toInt().coerceAtLeast(1)
+                                unit.takeDamage(damage)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         return damageDealt + interceptDamage
     }
     
