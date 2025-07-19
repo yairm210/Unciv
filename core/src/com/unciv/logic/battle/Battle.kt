@@ -215,7 +215,7 @@ object Battle {
                 .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
-
+        
         if (attacker is MapUnitCombatant) {
             val blastRadiusUnique = attacker.unit.getMatchingUniques(UniqueType.BlastRadius).firstOrNull()
             if (blastRadiusUnique != null) {
