@@ -208,6 +208,21 @@ class CountableTests {
     }
 
     @Test
+    fun testConditionalCountables() {
+        setupModdedGame()
+        val civ2 = game.addCiv()
+        val city2 = game.addCity(civ2, game.tileMap[0,2])
+        val tests = listOf(
+            "Cities" to 1,
+            "Cities <for [all] Civilizations>" to 2
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
     fun testPoliciesCountables() {
         setupModdedGame()
         civ.policies.run {
