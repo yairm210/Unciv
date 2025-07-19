@@ -126,6 +126,13 @@ class ThreatManager(val civInfo: Civilization) {
             // Cache our results for later
             distanceToClosestEnemyTiles[tile] = ClosestEnemyTileData(maxDist, tileDataTilesWithEnemies)
         }
+
+        // Make sure we don't return result of getTilesAtDistance excluding tiles up to distance
+        // Since this function returns InDistance
+        val tilesWithEnemiesIterator = tileDataTilesWithEnemies.listIterator()
+        for (tileWithEnemy in tilesWithEnemiesIterator)
+            tilesWithEnemies.add(tileWithEnemy.first)
+
         return tilesWithEnemies
     }
 
