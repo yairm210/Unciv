@@ -32,7 +32,7 @@ class FriendList {
             return ErrorType.NONAME
         } else if (playerID == "") {
             return ErrorType.NOID
-        } else if (playerID == UncivGame.Current.settings.multiplayer.userId) {
+        } else if (playerID == UncivGame.Current.settings.multiplayer.getUserId()) {
             return ErrorType.YOURSELF
         }
         listOfFriends.add(Friend(friendName, playerID))

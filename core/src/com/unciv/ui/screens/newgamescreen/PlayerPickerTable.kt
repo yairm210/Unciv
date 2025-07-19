@@ -253,7 +253,7 @@ class PlayerPickerTable(
         onPlayerIdTextUpdated()
         playerIdTextField.addListener { onPlayerIdTextUpdated(); true }
 
-        val currentUserId = UncivGame.Current.settings.multiplayer.userId
+        val currentUserId = UncivGame.Current.settings.multiplayer.getUserId()
         val setCurrentUserButton = "Set current user".toTextButton()
         setCurrentUserButton.onClick {
             playerIdTextField.text = currentUserId

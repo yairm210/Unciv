@@ -342,7 +342,7 @@ class MultiplayerScreen : PickerScreen() {
     private fun createCopyUserIdButton(): TextButton {
         val btn = "Copy user ID".toTextButton()
         btn.onClick {
-            Gdx.app.clipboard.contents = game.settings.multiplayer.userId
+            Gdx.app.clipboard.contents = game.settings.multiplayer.getUserId()
             ToastPopup("UserID copied to clipboard", this)
         }
         return btn
@@ -411,7 +411,7 @@ class MultiplayerScreen : PickerScreen() {
             rightSideButton.disable()
         }
 
-        resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.userId
+        resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.getUserId()
 
         val preview = multiplayerGame.preview
         if (resignButton.isEnabled || preview == null){
@@ -419,12 +419,12 @@ class MultiplayerScreen : PickerScreen() {
         } else {
             val durationInactive = Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now())
             forceResignButton.isVisible =
-                game.settings.multiplayer.userId in preview.civilizations.map { it.playerId } &&
-                        preview.getPlayerCiv(game.settings.multiplayer.userId)?.civName == Constants.spectator
+                game.settings.multiplayer.getUserId() in preview.civilizations.map { it.playerId } &&
+                        preview.getPlayerCiv(game.settings.multiplayer.getUserId())?.civName == Constants.spectator
                             || durationInactive > Duration.ofDays(2)
         }
         skipTurnButton.isVisible = preview != null
-                && game.settings.multiplayer.userId in preview.civilizations.map { it.playerId }
+                && game.settings.multiplayer.getUserId() in preview.civilizations.map { it.playerId }
                 && preview.gameParameters.minutesUntilSkipTurn <= 
                     Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now()).toMinutes()
         

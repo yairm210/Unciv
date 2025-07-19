@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
+import com.unciv.logic.multiplayer.chat.ChatWebSocket
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -23,8 +24,16 @@ class MultiplayerServer(
     val fileStorageIdentifier: String? = null,
     private var authenticationHeader: Map<String, String>? = null
 ) {
-    internal var featureSet = ServerFeatureSet()
-    fun getServerUrl() = fileStorageIdentifier ?: UncivGame.Current.settings.multiplayer.server
+    private var featureSet = ServerFeatureSet()
+    fun getFeatureSet() = featureSet
+    fun setFeatureSet(value: ServerFeatureSet) {
+        if (featureSet != value) {
+            UncivGame.Current.worldScreen?.chatButton?.refreshVisibility()
+            featureSet = value
+        }
+    }
+
+    fun getServerUrl() = fileStorageIdentifier ?: UncivGame.Current.settings.multiplayer.getServer()
 
     fun fileStorage(): FileStorage {
         val authHeader = if (authenticationHeader == null) {
@@ -48,12 +57,14 @@ class MultiplayerServer(
         SimpleHttp.sendGetRequest("${getServerUrl()}/isalive") { success, result, _ ->
             statusOk = success
             if (result.isNotEmpty()) {
-                featureSet = try {
-                    json().fromJson(ServerFeatureSet::class.java, result)
-                } catch (_: Exception) {
-                    // The server does not support server feature set - not an error!
-                    ServerFeatureSet()
-                }
+                setFeatureSet(
+                    try {
+                        json().fromJson(ServerFeatureSet::class.java, result)
+                    } catch (_: Exception) {
+                        // The server does not support server feature set - not an error!
+                        ServerFeatureSet()
+                    }
+                )
             }
         }
         return statusOk
@@ -71,11 +82,10 @@ class MultiplayerServer(
         val settings = UncivGame.Current.settings.multiplayer
 
         val success = fileStorage().authenticate(
-            userId=settings.userId,
-            password=password ?: settings.passwords[settings.server] ?: ""
+            userId = settings.getUserId(), password = password ?: settings.getCurrentServerPassword() ?: ""
         )
         if (password != null && success) {
-            settings.passwords[settings.server] = password
+            settings.setCurrentServerPassword(password)
         }
         return success
     }
@@ -87,8 +97,7 @@ class MultiplayerServer(
      */
     fun setPassword(password: String): Boolean {
         if (featureSet.authVersion > 0 && fileStorage().setPassword(newPassword = password)) {
-            val settings = UncivGame.Current.settings.multiplayer
-            settings.passwords[settings.server] = password
+            UncivGame.Current.settings.multiplayer.setCurrentServerPassword(password)
             return true
         }
 
@@ -138,7 +147,7 @@ class MultiplayerServer(
     suspend fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = fileStorage().loadFileData(gameId)
         val gameInfo = UncivFiles.gameInfoFromString(zippedGameInfo)
-        gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.server
+        gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.getServer()
         return gameInfo
     }
 

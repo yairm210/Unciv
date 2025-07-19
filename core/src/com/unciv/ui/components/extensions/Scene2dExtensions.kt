@@ -107,6 +107,16 @@ fun Color.brighten(t: Float): Color = Color(this).let {
     return it.mul(targetRatio)
 }
 
+/** Ensures that the `lightness` value of the given color
+ * in `HSL` scale is at least [minLightness].
+ */
+fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
+    /** see [Color.toHsv] implementation to understand this */
+    val lightness = maxOf(r, g, b)
+    return if (lightness < minLightness) {
+        this.mul(minLightness / lightness)
+    } else this
+}
 
 fun Actor.centerX(parent: Actor) { x = parent.width / 2 - width / 2 }
 fun Actor.centerY(parent: Actor) { y = parent.height / 2 - height / 2 }
