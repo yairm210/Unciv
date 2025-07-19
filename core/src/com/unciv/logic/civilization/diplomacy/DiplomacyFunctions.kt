@@ -91,6 +91,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     /**
      * If denounciation happened this turn from either side, establishing embassy again is possible only from next turn.
      */
+    @Readonly
     private fun isDenouncedThisTurn(diploManager: DiplomacyManager): Boolean {
         return diploManager.getFlag(DiplomacyFlags.Denunciation) == 30
             || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denunciation) == 30
@@ -100,6 +101,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Basic check if we can trade embassies, does not check all prerequisities
      * Use [canOfferEmbassyTo] and [canEstablishEmbassyWith] instead
      */
+    @Readonly
     private fun canEstablishEmbassy(): Boolean {
         return civInfo.isMajorCiv()
             && civInfo.hasUnique(UniqueType.EnablesEmbassies)
@@ -109,6 +111,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     /**
      * Test if we can offer our embassy to [otherCiv]
      */
+    @Readonly
     fun canOfferEmbassyTo(otherCiv: Civilization): Boolean {
         if (!canEstablishEmbassy() || !otherCiv.isMajorCiv()) return false
         val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
@@ -120,6 +123,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     /**
      * Test if we can establish embassy in [otherCiv] capital
      */
+    @Readonly
     fun canEstablishEmbassyWith(otherCiv: Civilization): Boolean {
         if (!canEstablishEmbassy() || !otherCiv.isMajorCiv()) return false
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
@@ -132,6 +136,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Test if both civs have embassies established in each others' capital
      * Returns true if base ruleset or mods don't enable embassies
      */
+    @Readonly
     fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
         return if (civInfo.hasUnique(UniqueType.EnablesEmbassies)
             && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy))
@@ -160,6 +165,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
     }
 
+    @Readonly
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
@@ -167,6 +173,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         return true
     }
 
+    @Readonly
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement()
@@ -177,12 +184,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             && !ourDiploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
     }
 
+    @Readonly
     fun canSignResearchAgreementWith(otherCiv: Civilization): Boolean {
         val cost = getResearchAgreementCost(otherCiv)
         return canSignResearchAgreementNoCostWith(otherCiv)
             && civInfo.gold >= cost && otherCiv.gold >= cost
     }
 
+    @Readonly
     fun getResearchAgreementCost(otherCiv: Civilization): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         return ( max(civInfo.getEra().researchAgreementCost, otherCiv.getEra().researchAgreementCost)
@@ -190,12 +199,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             ).toInt()
     }
 
+    @Readonly
     fun canSignDefensivePact(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
         return true
     }
 
+    @Readonly
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
         val ourDiplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact()
@@ -228,7 +239,4 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         if (!civInfo.isAIOrAutoPlaying() && otherCiv.isCityState) return true
         return false
     }
-
-
-
 }
