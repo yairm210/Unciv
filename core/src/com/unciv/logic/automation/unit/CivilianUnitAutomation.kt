@@ -216,7 +216,7 @@ object CivilianUnitAutomation {
         val tileClosestToDanger = dangerousTiles
             // Priotirize capture threat over ranged attack
             // if other unit is civilian it can still serve enemy behind it with sight
-            .sortedByDescending { it.getUnits().any() }
+            .sortedByDescending { unit.civ.threatManager.getEnemyUnitsOnTiles(listOf(it), true).isNotEmpty() }
             .minByOrNull { it.aerialDistanceTo(unitTile) } ?: unitTile
         val tileFurthestFromDanger = reachableTiles.keys
             .filter {
