@@ -2,6 +2,7 @@
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Cursor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
@@ -35,6 +36,7 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onLongPress
+import com.unciv.ui.components.input.CursorHoverInputListener
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
@@ -102,6 +104,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             .padTopDescent()
 
         table.touchable = Touchable.enabled
+        table.addListener(CursorHoverInputListener())
         table.onActivation(binding = binding) {
             stopBackgroundMapGeneration()
             function()
