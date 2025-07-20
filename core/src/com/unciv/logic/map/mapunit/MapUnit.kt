@@ -17,7 +17,7 @@ import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
+import yairm210.purity.annotations.Readonly
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
@@ -230,20 +231,22 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getMovementString(): String =
         (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
+    @Readonly @Suppress("purity") // should be autorecognized
     fun getTile(): Tile = currentTile
 
     fun getClosestCity(): City? = civ.cities.minByOrNull {
         it.getCenterTile().aerialDistanceTo(currentTile)
     }
 
-    fun isMilitary() = baseUnit.isMilitary
-    fun isCivilian() = baseUnit.isCivilian()
+    @Readonly fun isMilitary() = baseUnit.isMilitary
+    @Readonly fun isCivilian() = baseUnit.isCivilian()
 
-    fun isActionUntilHealed() = action?.endsWith("until healed") == true
+    @Readonly fun isActionUntilHealed() = action?.endsWith("until healed") == true
 
-    fun isFortified() = action?.startsWith(UnitActionType.Fortify.value) == true
-    fun isGuarding() = action?.equals(UnitActionType.Guard.value) == true
-    fun isFortifyingUntilHealed() = isFortified() && isActionUntilHealed()
+    @Readonly fun isFortified() = action?.startsWith(UnitActionType.Fortify.value) == true
+    @Readonly fun isGuarding() = action?.equals(UnitActionType.Guard.value) == true
+    @Readonly fun isFortifyingUntilHealed() = isFortified() && isActionUntilHealed()
+    @Readonly
     fun getFortificationTurns(): Int {
         if (!(isFortified() || isGuarding())) return 0
         return turnsFortified
@@ -284,32 +287,34 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
 
+    @Readonly
     fun getMatchingUniques(
-            uniqueType: UniqueType,
-            stateForConditionals: StateForConditionals = cache.state,
-            checkCivInfoUniques: Boolean = false
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean = false
     ) = sequence {
         yieldAll(
-                tempUniquesMap.getMatchingUniques(uniqueType, stateForConditionals)
+                tempUniquesMap.getMatchingUniques(uniqueType, gameContext)
         )
         if (checkCivInfoUniques)
-            yieldAll(civ.getMatchingUniques(uniqueType, stateForConditionals))
+            yieldAll(civ.getMatchingUniques(uniqueType, gameContext))
     }
 
+    @Readonly
     fun hasUnique(
-            uniqueType: UniqueType,
-            stateForConditionals: StateForConditionals = cache.state,
-            checkCivInfoUniques: Boolean = false
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean = false
     ): Boolean {
-        return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
+        return getMatchingUniques(uniqueType, gameContext, checkCivInfoUniques).any()
     }
 
     fun getTriggeredUniques(
         trigger: UniqueType,
-        stateForConditionals: StateForConditionals = cache.state,
+        gameContext: GameContext = cache.state,
         triggerFilter: (Unique) -> Boolean = { true }
     ): Sequence<Unique> {
-        return tempUniquesMap.getTriggeredUniques(trigger, stateForConditionals, triggerFilter)
+        return tempUniquesMap.getTriggeredUniques(trigger, gameContext, triggerFilter)
     }
     
 
@@ -405,12 +410,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return getRange() * 2
     }
 
+    @Readonly
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit) return false
         if (cache.canMoveOnWater) return false
         return currentTile.isWater
     }
 
+    @Readonly
     fun isInvisible(to: Civilization): Boolean {
         if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
             return true
@@ -489,9 +496,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     // Only military land units can truly "garrison"
-    fun canGarrison() = isMilitary() && baseUnit.isLandUnit
+    @Readonly fun canGarrison() = isMilitary() && baseUnit.isLandUnit
 
-    fun isGreatPerson() = baseUnit.isGreatPerson
+    @Readonly fun isGreatPerson() = baseUnit.isGreatPerson
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
     fun canIntercept(attackedTile: Tile): Boolean {
@@ -615,6 +622,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
     }
 
+    @Readonly
     fun getForceEvaluation(): Int {
         val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
         var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()
@@ -713,7 +721,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         if (!shouldUpdateTiles) return
         
-        val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, StateForConditionals.IgnoreConditionals).toList()
+        val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, GameContext.IgnoreConditionals).toList()
         if (unfilteredTriggeredUniques.isNotEmpty()) {
             val newlyExploredTiles = viewableTiles.filter { !it.isExplored(civ) }
             for (tile in newlyExploredTiles) {
@@ -867,7 +875,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
         // The state also needs to be valid for uniques to see the cached version
-        cache.state = StateForConditionals(this)
+        cache.state = GameContext(this)
         // The improvement may get removed if it has ruins effects or is a barbarian camp, and will still be needed if removed
         val improvement = tile.improvement
 

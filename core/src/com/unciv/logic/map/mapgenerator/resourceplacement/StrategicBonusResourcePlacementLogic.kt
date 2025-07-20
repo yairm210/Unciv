@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.randomWeighted
@@ -56,7 +56,7 @@ object StrategicBonusResourcePlacementLogic {
         
         // Now go through the entire map to build lists
         for (tile in tileMap.values.asSequence().shuffled()) {
-            val terrainCondition = StateForConditionals(attackedTile = tile, region = regions.firstOrNull { tile in it.tiles })
+            val terrainCondition = GameContext(attackedTile = tile, region = regions.firstOrNull { tile in it.tiles })
             if (tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, terrainCondition)) continue // Don't count snow hills
             if (tile.isLand) landList.add(tile)
             for ((rule, list) in ruleLists) {
@@ -230,7 +230,7 @@ object StrategicBonusResourcePlacementLogic {
         for (tile in landList) {
             if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
                 continue
-            val conditionalTerrain = StateForConditionals(attackedTile = tile)
+            val conditionalTerrain = GameContext(attackedTile = tile)
             if (tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
                 continue
             val weightings = strategicResources.map {

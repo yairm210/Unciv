@@ -20,7 +20,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -184,9 +184,9 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             
             val headerColor = if (currentRelationLevel == bonusLevel) Color.GREEN else Color.WHITE
             diplomacyTable.add(header.toLabel(fontColor = headerColor).apply { setAlignment(Align.center) }).row()
-            val stateForConditionals = StateForConditionals(viewingCiv)
+            val gameContext = GameContext(viewingCiv)
             for (bonus in bonuses) {
-                val bonusLabelColor = if (currentRelationLevel == bonusLevel && bonus.conditionalsApply(stateForConditionals))
+                val bonusLabelColor = if (currentRelationLevel == bonusLevel && bonus.conditionalsApply(gameContext))
                     Color.GREEN else Color.GRAY
                 val bonusLabel = ColorMarkupLabel(bonus.getDisplayText(), bonusLabelColor)
                     .apply { setAlignment(Align.center) }

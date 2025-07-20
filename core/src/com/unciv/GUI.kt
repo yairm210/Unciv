@@ -9,6 +9,7 @@ import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoin
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import yairm210.purity.annotations.Readonly
 
 object GUI {
 
@@ -24,6 +25,7 @@ object GUI {
         UncivGame.Current.resetToWorldScreen()
     }
 
+    @Readonly
     fun getSettings(): GameSettings {
         return UncivGame.Current.settings
     }

@@ -1861,8 +1861,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Removes other religions when spreading religion"
 	Applicable to: Unit
 
-??? example  "May Paradrop up to [amount] tiles from inside friendly territory"
-	Example: "May Paradrop up to [3] tiles from inside friendly territory"
+??? example  "May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away"
+	Example: "May Paradrop to [Farm] tiles up to [3] tiles away"
 
 	Applicable to: Unit
 
@@ -3699,6 +3699,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon turn start&gt;"
 	Applicable to: TriggerCondition, UnitTriggerCondition
+
+??? example  "&lt;upon entering combat&gt;"
+	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon damaging a [mapUnitFilter] unit&gt;"
 	Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'

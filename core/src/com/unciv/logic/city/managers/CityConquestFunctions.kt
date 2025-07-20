@@ -15,7 +15,7 @@ import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.max
@@ -121,7 +121,7 @@ class CityConquestFunctions(val city: City) {
             city.removeFlag(CityFlags.Resistance)
         }
         
-        for (unique in conqueredCiv.getTriggeredUniques(UniqueType.TriggerUponLosingCity, StateForConditionals(civInfo = conqueredCiv))) {
+        for (unique in conqueredCiv.getTriggeredUniques(UniqueType.TriggerUponLosingCity, GameContext(civInfo = conqueredCiv))) {
             UniqueTriggerActivation.triggerUnique(unique, civInfo = conqueredCiv)
         }
     }
@@ -208,9 +208,9 @@ class CityConquestFunctions(val city: City) {
                     civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
                         civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
                     civ.knows(conqueringCiv) && !civ.knows(foundingCiv) ->
-                        civ.addNotification("[$conqueringCiv] has liberated an unknown civilization", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                        civ.addNotification("[$conqueringCiv] has liberated [an unknown civilization]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, conqueringCiv.civName)
                     !civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
-                        civ.addNotification("An unknown civilization has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, foundingCiv.civName)
+                        civ.addNotification("[An unknown civilization] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, foundingCiv.civName)
                     else -> continue
                 }
             }
@@ -270,7 +270,7 @@ class CityConquestFunctions(val city: City) {
         oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
         newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
         city.civ = newCiv
-        city.state = StateForConditionals(city)
+        city.state = GameContext(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns
         city.previousOwner = oldCiv.civName

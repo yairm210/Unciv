@@ -6,10 +6,11 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
+import yairm210.purity.annotations.Readonly
 
 /** Data object for Religions */
 class Religion() : INamed, IsPartOfGameInfoSerialization {
@@ -77,11 +78,13 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         if (displayName != null) displayName!!
         else name
 
+    @Readonly
     private fun mapToExistingBeliefs(beliefs: Set<String>): Sequence<Belief> {
         val rulesetBeliefs = gameInfo.ruleset.beliefs
         return beliefs.asSequence().mapNotNull { rulesetBeliefs[it] }
     }
 
+    @Readonly
     fun getBeliefs(beliefType: BeliefType): Sequence<Belief> {
         if (beliefType == BeliefType.Any)
             return mapToExistingBeliefs((founderBeliefs + followerBeliefs).toHashSet())
@@ -104,21 +107,21 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             mapToExistingBeliefs(founderBeliefs).filter { it.type == BeliefType.Enhancer }
     }
 
-    fun hasBelief(belief: String) = followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
+    @Readonly fun hasBelief(belief: String) = followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
 
-    fun isPantheon() = getBeliefs(BeliefType.Pantheon).any() && !isMajorReligion()
+    @Readonly fun isPantheon() = getBeliefs(BeliefType.Pantheon).any() && !isMajorReligion()
+    @Readonly fun isMajorReligion() = getBeliefs(BeliefType.Founder).any()
+    @Readonly fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 
-    fun isMajorReligion() = getBeliefs(BeliefType.Founder).any()
+    @Readonly fun getFounder() = gameInfo.getCivilization(foundingCivName)
 
-    fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
-
-    fun getFounder() = gameInfo.getCivilization(foundingCivName)
-
-    fun matchesFilter(filter: String, state: StateForConditionals = StateForConditionals.IgnoreConditionals, civ: Civilization? = null): Boolean {
+    @Readonly
+    fun matchesFilter(filter: String, state: GameContext = GameContext.IgnoreConditionals, civ: Civilization? = null): Boolean {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state, civ) })
     }
-    
-    private fun matchesSingleFilter(filter: String, state: StateForConditionals = StateForConditionals.IgnoreConditionals, civ: Civilization? = null): Boolean {
+
+    @Readonly
+    private fun matchesSingleFilter(filter: String, state: GameContext = GameContext.IgnoreConditionals, civ: Civilization? = null): Boolean {
         val foundingCiv = getFounder()
         when (filter) {
             "any" -> return true

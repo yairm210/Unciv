@@ -7,7 +7,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import kotlin.math.abs
@@ -269,7 +269,7 @@ object StartNormalizer {
             candidatePlots.remove(plot) // remove the plot as it has now been tried, whether successfully or not
             if (plot.getBaseTerrain().hasUnique(
                     UniqueType.BlocksResources,
-                    StateForConditionals(attackedTile = plot)
+                    GameContext(attackedTile = plot)
                 )
             )
                 continue // Don't put bonuses on snow hills

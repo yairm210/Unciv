@@ -47,6 +47,7 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
 import java.util.UUID
 
@@ -231,22 +232,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     val civMap by lazy { civilizations.associateBy { it.civName } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
+    @Readonly
     fun getCivilization(civName: String) = civMap[civName]
         ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
-    fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
+    @Readonly fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
     /** Access a cached `GlobalUniques` that combines the [ruleset]'s [globalUniques][Ruleset.globalUniques]
      *  with the Uniques of the chosen [speed] and [difficulty][getDifficulty] */
+    @Readonly @Suppress("purity") // should be autorecognized 
     fun getGlobalUniques() = combinedGlobalUniques
 
     /** @return Sequence of all cities in game, both major civilizations and city states */
-    fun getCities() = civilizations.asSequence().flatMap { it.cities }
-    fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
-    fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+    @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }
+    @Readonly fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
+    @Readonly fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
 
     /** Gets civilizations in their commonly used order - City-states last,
      *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force
@@ -327,6 +330,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     // Do we automatically simulate until N turn?
+    @Readonly
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 

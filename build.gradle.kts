@@ -1,9 +1,11 @@
 
+import com.unciv.build.BuildConfig.appVersion
 import com.unciv.build.BuildConfig.coroutinesVersion
 import com.unciv.build.BuildConfig.gdxVersion
+import com.unciv.build.BuildConfig.jnaVersion
 import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
-import com.unciv.build.BuildConfig.appVersion
+import java.util.Properties
 
 
 buildscript {
@@ -35,9 +37,36 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
+    id("io.github.yairm210.purity-plugin") version "0.0.27" apply(false)
 }
 
 allprojects {
+//    repositories{ // for local purity
+//        mavenLocal()
+//    }
+    
+    apply(plugin = "io.github.yairm210.purity-plugin")
+    configure<yairm210.purity.PurityConfiguration>{
+        wellKnownPureFunctions = setOf(
+            "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
+            "kotlin.math.max",
+            "kotlin.math.min",
+            "kotlin.math.abs",
+            "kotlin.internal.ir.noWhenBranchMatchedException",
+        )
+        wellKnownReadonlyFunctions = setOf(
+            // Looks like the Collection.contains is not considered overridden :thunk:
+            "com.badlogic.gdx.math.Vector2.len",
+            "com.badlogic.gdx.math.Vector2.cpy",
+            "java.util.AbstractCollection.contains",
+            "java.util.AbstractCollection.isEmpty",
+            "java.util.AbstractCollection.iterator",
+            "java.util.AbstractList.get",
+        )
+        wellKnownPureClasses = setOf(
+        )
+    }
+    
     apply(plugin = "eclipse")
     apply(plugin = "idea")
     
@@ -72,26 +101,45 @@ project(":desktop") {
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
 
         // Needed for Windows turn notifiers
-        "implementation"("net.java.dev.jna:jna:5.11.0")
-        "implementation"("net.java.dev.jna:jna-platform:5.11.0")
+        "implementation"("net.java.dev.jna:jna:$jnaVersion")
+        "implementation"("net.java.dev.jna:jna-platform:$jnaVersion")
     }
 }
 
 // For server-side
 project(":server") {
     apply(plugin = "kotlin")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     dependencies {
         // For server-side
-        "implementation"("io.ktor:ktor-server-core:1.6.8")
-        "implementation"("io.ktor:ktor-server-netty:1.6.8")
-        "implementation"("ch.qos.logback:logback-classic:1.2.5")
-        "implementation"("com.github.ajalt.clikt:clikt:3.4.0")
+        "implementation"("io.ktor:ktor-server-core:$ktorVersion")
+        "implementation"("io.ktor:ktor-server-netty:$ktorVersion")
+        "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+        "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+        "implementation"("ch.qos.logback:logback-classic:1.5.18")
+        "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
+
+        // clikt somehow needs this
+        "implementation"("net.java.dev.jna:jna:$jnaVersion")
+        "implementation"("net.java.dev.jna:jna-platform:$jnaVersion")
     }
 
 }
 
-if (System.getenv("ANDROID_HOME") != null) {
+private fun getSdkPath(): String? {
+    val localProperties = project.file("local.properties")
+    return if (localProperties.exists()) {
+        val properties = Properties()
+        localProperties.inputStream().use { properties.load(it) }
+
+        properties.getProperty("sdk.dir") ?: System.getenv("ANDROID_HOME")
+    } else {
+        System.getenv("ANDROID_HOME")
+    }
+}
+
+if (getSdkPath() != null) {
     project(":android") {
         apply(plugin = "com.android.application")
         apply(plugin = "kotlin-android")
@@ -122,6 +170,8 @@ project(":core") {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+        
+        "implementation"("io.github.yairm210:purity-annotations:0.0.25")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")

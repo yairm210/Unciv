@@ -4,7 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
@@ -46,10 +46,10 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.name+" of "+unit.civ.civName
     }
 
-    fun getMatchingUniques(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> =
-        unit.getMatchingUniques(uniqueType, conditionalState, checkCivUniques)
+    fun getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext, checkCivUniques: Boolean): Sequence<Unique> =
+        unit.getMatchingUniques(uniqueType, gameContext, checkCivUniques)
 
-    fun hasUnique(uniqueType: UniqueType, conditionalState: StateForConditionals? = null): Boolean =
+    fun hasUnique(uniqueType: UniqueType, conditionalState: GameContext? = null): Boolean =
         if (conditionalState == null) unit.hasUnique(uniqueType)
         else unit.hasUnique(uniqueType, conditionalState)
 

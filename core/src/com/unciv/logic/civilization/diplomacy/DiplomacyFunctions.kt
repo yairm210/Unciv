@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
 class DiplomacyFunctions(val civInfo: Civilization) {
@@ -74,7 +75,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         }
     }
 
-
+    @Readonly
     fun isAtWarWith(otherCiv: Civilization): Boolean {
         return when {
             otherCiv == civInfo -> false
@@ -86,13 +87,15 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             }
         }
     }
-
+    
+    @Readonly
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
         return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
             && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation)
             && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
     }
 
+    @Readonly
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
@@ -100,6 +103,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         return true
     }
 
+    @Readonly
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
@@ -108,12 +112,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
     }
 
+    @Readonly
     fun canSignResearchAgreementsWith(otherCiv: Civilization): Boolean {
         val cost = getResearchAgreementCost(otherCiv)
         return canSignResearchAgreementNoCostWith(otherCiv)
             && civInfo.gold >= cost && otherCiv.gold >= cost
     }
 
+    @Readonly
     fun getResearchAgreementCost(otherCiv: Civilization): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         return ( max(civInfo.getEra().researchAgreementCost, otherCiv.getEra().researchAgreementCost)
@@ -121,12 +127,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             ).toInt()
     }
 
+    @Readonly
     fun canSignDefensivePact(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
         return true
     }
 
+    @Readonly
     fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
@@ -146,6 +154,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      * Use [UnitMovement.canPassThrough] to check whether a specific unit can pass through
      * a specific tile.
      */
+    @Readonly
     fun canPassThroughTiles(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true
         if (otherCiv.isBarbarian) return true

@@ -3,6 +3,9 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.ReligionAction
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -140,6 +143,15 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
+
+        val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
+        for (civ in humanPlayers) {
+            val text = if (civInfo in civ.getKnownCivs()) "[${civInfo.civName}]"
+            else "[An unknown civilization]"
+
+            civ.addNotification(text + " has founded pantheon [${beliefName}]!",
+                ReligionAction(beliefName), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        }
     }
 
     fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
@@ -313,8 +325,20 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun useProphetForEnhancingReligion(prophet: MapUnit) {
-        if (!mayEnhanceReligionHere(prophet.getTile())) return // How did you do this?
+        val currentTile = prophet.getTile()
+        if (!mayEnhanceReligionHere(currentTile)) return // How did you do this?
         religionState = ReligionState.EnhancingReligion
+
+        val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
+        val religion = civInfo.religionManager.religion!!
+        
+        for (civ in humanPlayers) {
+            val text = if (civInfo in civ.getKnownCivs()) "[${civInfo.civName}]"
+            else "[An unknown civilization]"
+
+            civ.addNotification(text + " has enhanced [${religion.name}]!",
+                ReligionAction(religion.name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        }
     }
 
     /**
@@ -438,6 +462,20 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         for (unit in civInfo.units.getCivUnits())
             if (unit.hasUnique(UniqueType.ReligiousUnit) && unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                 unit.religion = newReligion.name
+
+        val humanPlayers = civInfo.gameInfo.civilizations.filter { it.isHuman() && it != civInfo }
+        for (civ in humanPlayers) {
+            if (civInfo in civ.getKnownCivs()) {
+                if (civ.hasExplored(holyCity.getCenterTile()))
+                    civ.addNotification("[${civInfo.civName}] has founded [$displayName] in [${holyCity.name}]!",
+                        ReligionAction.withLocation(holyCity.location, name),
+                        Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+                else civ.addNotification("[${civInfo.civName}] has founded [$displayName]!",
+                    ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+            }
+            else civ.addNotification("[An unknown civilization] has founded [$displayName]!",
+                ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+        }
     }
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {

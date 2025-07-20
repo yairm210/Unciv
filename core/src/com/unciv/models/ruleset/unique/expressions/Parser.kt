@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.unique.expressions
 
 import com.unciv.models.ruleset.unique.Countables
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.expressions.Operator.Parentheses
 import com.unciv.models.ruleset.unique.expressions.Tokenizer.Token
 import com.unciv.models.ruleset.unique.expressions.Tokenizer.toToken
@@ -27,7 +27,7 @@ object Parser {
     /**
      *  Parse and evaluate an expression. If it needs to support countables, [context] should be supplied.
      */
-    fun eval(text: String, context: StateForConditionals = StateForConditionals.EmptyState): Double =
+    fun eval(text: String, context: GameContext = GameContext.EmptyState): Double =
         parse(text).eval(context)
 
     internal fun parse(text: String): Node {
