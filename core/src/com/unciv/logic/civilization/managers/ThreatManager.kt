@@ -136,13 +136,11 @@ class ThreatManager(val civInfo: Civilization) {
         getEnemyUnitsOnTiles(getTilesWithEnemyUnitsInDistance(tile, maxDist))
 
     /**
-     * Returns all enemy units on tiles
-     *
-     * @param includeCivilians If true enemy civilians are included
+     * Returns all enemy military units on tiles
      */
-    fun getEnemyUnitsOnTiles(tilesWithEnemyUnitsInDistance:List<Tile>, includeCivilians: Boolean = false): List<MapUnit> =
+    fun getEnemyUnitsOnTiles(tilesWithEnemyUnitsInDistance:List<Tile>): List<MapUnit> =
         tilesWithEnemyUnitsInDistance.flatMap { enemyTile -> enemyTile.getUnits()
-            .filter { civInfo.isAtWarWith(it.civ) && if (includeCivilians) true else it.isMilitary()  } }
+            .filter { civInfo.isAtWarWith(it.civ) && it.isMilitary()  } }
     
     fun getDangerousTiles(unit: MapUnit, distance: Int = 3): HashSet<Tile> {
         val tilesWithEnemyUnits = getTilesWithEnemyUnitsInDistance(unit.getTile(), distance)
