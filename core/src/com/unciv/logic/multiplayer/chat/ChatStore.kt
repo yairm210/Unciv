@@ -3,6 +3,7 @@ package com.unciv.logic.multiplayer.chat
 import com.badlogic.gdx.Gdx
 import com.unciv.ui.screens.worldscreen.chat.ChatPopup
 import java.util.LinkedList
+import java.util.Queue
 
 data class Chat(
     val gameId: String,
@@ -54,7 +55,7 @@ object ChatStore {
     /** When no [ChatPopup] is open to receive these oddities, we keep them here.
      * Certainly better than not knowing why the socket closed.
      */
-    private var globalMessages = LinkedList<Pair<String, String>>()
+    private var globalMessages: Queue<Pair<String, String>> = LinkedList()
 
     fun getChatByGameId(gameId: String) = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
 
