@@ -150,7 +150,7 @@ object ChatWebSocket {
 
         if (reconnectionAttempts == 0) {
             lastRetry = Clock.System.now()
-            ChatStore.relayGlobalMessage("WebSocket connection closed. Cause: [${t.cause}]!")
+            ChatStore.relayGlobalMessage("WebSocket connection closed. Cause: [${t.cause}]")
             if (t.message?.contains("401") == true) {
                 ChatStore.relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
             }
@@ -204,7 +204,6 @@ object ChatWebSocket {
 
                         is Response.JoinSuccess -> Unit // TODO
                     }
-                    yield()
                 }
             }
                 .onSuccess { restart() }
@@ -255,7 +254,6 @@ object ChatWebSocket {
                 if (job?.isActive == true) return@launch
             }
 
-            yield()
             job?.cancel(ChatRestartException())
             job = Concurrency.run("MultiplayerChat") { startSession() }
         }
