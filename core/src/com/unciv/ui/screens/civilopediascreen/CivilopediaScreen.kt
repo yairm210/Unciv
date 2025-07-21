@@ -20,6 +20,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.CursorHoverInputListener
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -144,6 +145,7 @@ class CivilopediaScreen(
                 .toLabel(Color.WHITE, 25, hideIcons=true)).pad(10f)
             entryButton.onClick { selectEntry(entry) }
             entryButton.name = entry.name               // make button findable
+            entryButton.addListener(CursorHoverInputListener())
             val cell = entrySelectTable.add(entryButton).height(75f).expandX().fillX()
             entrySelectTable.row()
             if (currentY < 0f) currentY = cell.padTop
@@ -226,6 +228,7 @@ class CivilopediaScreen(
             val icon = if (categoryKey.headerIcon.isNotEmpty()) ImageGetter.getImage(categoryKey.headerIcon) else null
             val button = IconTextButton(categoryKey.label, icon)
             button.onActivation(binding = categoryKey.binding) { selectCategory(categoryKey) }
+            button.addListener(CursorHoverInputListener())
             val cell = buttonTable.add(button)
             categoryToButtons[categoryKey] = CategoryButtonInfo(button, currentX, cell.prefWidth)
             currentX += cell.prefWidth + 20f

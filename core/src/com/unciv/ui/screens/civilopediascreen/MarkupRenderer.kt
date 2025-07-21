@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.input.CursorHoverInputListener
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -49,10 +50,12 @@ object MarkupRenderer {
                 continue
             }
             val actor = line.render(labelWidth, iconDisplay)
-            if (line.linkType == FormattedLine.LinkType.Internal && linkAction != null)
+            if (line.linkType == FormattedLine.LinkType.Internal && linkAction != null) {
                 actor.onClick {
                     linkAction(line.link)
                 }
+                actor.addListener(CursorHoverInputListener())
+            }
             else if (line.linkType == FormattedLine.LinkType.External) {
                 actor.onClick {
                     Gdx.net.openURI(line.link)
@@ -60,6 +63,7 @@ object MarkupRenderer {
                 actor.onRightClick {
                     Gdx.app.clipboard.contents = line.link
                 }
+                actor.addListener(CursorHoverInputListener())
             }
             if (labelWidth == 0f)
                 table.add(actor).align(line.align).row()

@@ -18,6 +18,8 @@ import com.unciv.ui.components.extensions.right
 import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
 import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.CursorHoverInputListener
+import com.badlogic.gdx.graphics.Cursor
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
@@ -52,6 +54,7 @@ open class UncivTextField(
         messageText = hint.tr()
 
         this.addListener(UncivTextFieldFocusListener())
+        this.addListener(CursorHoverInputListener(Cursor.SystemCursor.Ibeam))
 
         if (isAndroid) this.addListener(VisibleAreaChangedListener())
     }
