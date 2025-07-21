@@ -118,12 +118,12 @@ object DiplomacyAutomation {
             civInfo.diplomacyFunctions.canEstablishEmbassyWith(it)
             && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)
             && !areWeOfferingTrade(civInfo, it, Constants.acceptEmbassy)
-        }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
+        }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }
 
         for (otherCiv in civsThatWeCanEstablishEmbassyWith) {
             // Default setting is 3
             if ((1..10).random() < 7) continue
-            if (wantsToEstablishEmbassy(civInfo, otherCiv)) {
+            if (wantsToAcceptEmbassy(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
                 tradeLogic.currentTrade.theirOffers.add(embassyOffer)
@@ -165,7 +165,7 @@ object DiplomacyAutomation {
                 && civInfo.diplomacyFunctions.hasMutualEmbassyWith(it)
                 && !ourDiploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
                 && !areWeOfferingTrade(civInfo, it, Constants.openBorders)
-        }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
+        }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }
 
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3
@@ -186,7 +186,7 @@ object DiplomacyAutomation {
     /**
      * Test if [otherCiv] wants to accept our embassy in their capital
      */
-    fun wantsToEstablishEmbassy(civInfo: Civilization, otherCiv: Civilization): Boolean {
+    fun wantsToAcceptEmbassy(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
         if (civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)) return false
         if (theirDiploManager.isRelationshipLevelLT(RelationshipLevel.Afraid)) return false
