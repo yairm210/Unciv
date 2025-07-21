@@ -240,7 +240,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
     @Readonly fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
-    fun getDifficulty() = difficultyObject
+    @Readonly fun getDifficulty() = difficultyObject
     /** Access a cached `GlobalUniques` that combines the [ruleset]'s [globalUniques][Ruleset.globalUniques]
      *  with the Uniques of the chosen [speed] and [difficulty][getDifficulty] */
     @Readonly @Suppress("purity") // should be autorecognized 
