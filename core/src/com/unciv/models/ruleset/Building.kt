@@ -40,7 +40,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     /** This Building can only be built if one of these resources is nearby - it must be improved! */
     var requiredNearbyImprovedResources: List<String>? = null
-    var cityStrength = 0
+    var cityStrength = 0.0
     var cityHealth = 0
     var replaces: String? = null
     var uniqueTo: String? = null
