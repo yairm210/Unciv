@@ -19,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.coroutines.yield
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -177,14 +176,8 @@ object ChatWebSocket {
 
             session!!.runCatching {
                 if (isActive) {
-                    if (reconnectionAttempts == 0) {
-                        println("ChatLog: Connected to WebSocket.")
-                        ChatStore.relayGlobalMessage("Successfully connected to WebSocket server!")
-                    } else if (reconnectionAttempts > 0) {
-                        println("ChatLog: Re-established webSocket connection.")
-                        ChatStore.relayGlobalMessage("Successfully re-established WebSocket connection!")
-                    }
-                    // we are successfully connected
+                    println("ChatLog: Connected to WebSocket.")
+                    ChatStore.relayGlobalMessage("Successfully connected to WebSocket server!")
                     resetExponentialBackoff()
                 }
 
