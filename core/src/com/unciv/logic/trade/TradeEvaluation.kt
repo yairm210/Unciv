@@ -7,6 +7,7 @@ import com.unciv.logic.automation.civilization.DeclareWarPlanEvaluator
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -30,6 +31,23 @@ class TradeEvaluation {
             || (tradePartner.hasEverOwnedOriginalCapital && trade.theirOffers.count { it.type == TradeOfferType.City } == tradePartner.cities.size)) {
             return false
         }
+        
+        // No way to tell who offers what in isOfferValid()
+        val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = offerer.gameInfo.speed)
+        val theirDiploManager = tradePartner.getDiplomacyManager(offerer)!!
+        val ourDiploManager = offerer.getDiplomacyManager(tradePartner)!!
+
+        if (trade.ourOffers.contains(embassyOffer)
+            && (offerer.getCapital() == null
+            || theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            || theirDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)))
+            return false
+
+        if (trade.theirOffers.contains(embassyOffer)
+            && (tradePartner.getCapital() == null
+            || ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
+            || ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)))
+            return false
 
         for (offer in trade.ourOffers)
             if (!isOfferValid(offer, offerer, tradePartner)) {
@@ -51,6 +69,7 @@ class TradeEvaluation {
         }
 
         return when (tradeOffer.type) {
+            TradeOfferType.Embassy -> true // Already checked
             // if they go a little negative it's okay, but don't allowing going overboard (promising same gold to many)
             TradeOfferType.Gold -> tradeOffer.amount * 0.9f < offerer.gold
             TradeOfferType.Gold_Per_Turn -> tradeOffer.amount * 0.9f < offerer.stats.statsForNextTurn.gold
@@ -122,6 +141,7 @@ class TradeEvaluation {
      */
     private fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
+            TradeOfferType.Embassy -> return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt()
             TradeOfferType.Gold -> return offer.amount
             // GPT loses value for each 'future' turn, meaning: gold now is more valuable than gold in the future
             // Empire-wide production tends to grow at roughly 2% per turn (quick speed), so let's take that as a base line
@@ -259,11 +279,9 @@ class TradeEvaluation {
      */
     fun isPeaceProposalEnabled(thirdCiv: Civilization, civInfo: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(thirdCiv)!!
-        val warCountDown = if (diploManager.hasFlag(DiplomacyFlags.DeclaredWar))
-            diploManager.getFlag(DiplomacyFlags.DeclaredWar) else 0
 
         // On standard speed 10 turns must pass before peace can be proposed
-        if (warCountDown > 0) return false
+        if (diploManager.getFlag(DiplomacyFlags.DeclaredWar) > 0) return false
 
         // TODO: We don't know if other human player would agree to peace
         if (thirdCiv.isHuman()) return false
@@ -322,6 +340,13 @@ class TradeEvaluation {
      */
     private fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
+            TradeOfferType.Embassy -> {
+                val tradePartnerDiplo = civInfo.getDiplomacyManager(tradePartner)!!
+                if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Enemy)) return Int.MIN_VALUE
+                else if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Competitor))
+                    return (60 * civInfo.gameInfo.speed.goldCostModifier).toInt()
+                return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt() // 30 is Civ V default (on standard only?)
+            }
             TradeOfferType.Gold -> return offer.amount
             TradeOfferType.Gold_Per_Turn -> return offer.amount * offer.duration
             TradeOfferType.Treaty -> {

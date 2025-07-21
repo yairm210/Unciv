@@ -50,7 +50,8 @@ object NextTurnAutomation {
             if (civInfo.gameInfo.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
-            
+
+            DiplomacyAutomation.offerToEstablishEmbassy(civInfo)
             DiplomacyAutomation.offerOpenBorders(civInfo)
             DiplomacyAutomation.offerResearchAgreement(civInfo)
             DiplomacyAutomation.offerDefensivePact(civInfo)
