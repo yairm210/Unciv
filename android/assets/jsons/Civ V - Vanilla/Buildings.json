@@ -9,7 +9,7 @@
 		"science": 3,
 		"gold": 3,
 		"culture": 1,
-		"cityStrength": 2,
+		"cityStrength": 2.5,
 		"cost": 1,
 		"uniques": ["Indicates the capital city"]
 	},
@@ -631,7 +631,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["[-10]% Unhappiness from [Population] [in all cities]"],
+		"uniques": ["[-10]% Unhappiness from [Population] [in all non-occupied cities]"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
@@ -844,7 +844,7 @@
 	},
 	{
 		"name": "Cristo Redentor",
-		"culture": 5,
+		"culture": 4,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 2},
 		"uniques": ["[-10]% Culture cost of adopting new Policies"],
@@ -889,6 +889,7 @@
 	{
 		"name": "Sydney Opera House",
 		"isWonder": true,
+        "culture": 4,
 		"greatPersonPoints": {"Great Artist": 2},
 		"percentStatBonus": {"culture": 50},
 		"uniques": ["Free Social Policy","Must be next to [Coast]"],
