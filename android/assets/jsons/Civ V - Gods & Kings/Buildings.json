@@ -537,7 +537,7 @@
 	{
 		"name": "Harbor",
 		"cost": 120,
-		"maintenance": 2,
+		"maintenance": 3,
 		"hurryCostModifier": 25,
 		"uniques": ["[+1 Production] from [Water resource] tiles [in this city]",
 			"Connects trade routes over water","Must be next to [Coast]"],
