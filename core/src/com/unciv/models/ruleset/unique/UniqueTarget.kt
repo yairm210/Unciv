@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset.unique
 
+import yairm210.purity.annotations.Readonly
+
 /**
  * Expresses which RulesetObject types a UniqueType is applicable to.
  *
@@ -78,6 +80,7 @@ enum class UniqueTarget(
     /** Checks whether a specific UniqueTarget `this` as e.g. given by [IHasUniques.getUniqueTarget] works with [uniqueTarget] as e.g. declared in UniqueType */
     // Building.canAcceptUniqueTarget(Global) == true
     // Global.canAcceptUniqueTarget(Building) == false
+    @Readonly
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
         if (this == uniqueTarget) return true
         if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)
