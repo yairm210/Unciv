@@ -1,19 +1,13 @@
 ## 4.17.7
 
-Hide icon for city in religion overview if
-
-chore: Got rid of fake Github error messages when attempting to download mod preview images
-
-chore: purity diplomacyFunctions
-
-getFlag returns 0 and does not crash if the flag does is not set
-
 By metablaster:
 - Implementation for establishing embassies in diplomacy 
 - Fix for AI civilian unit escape from threat 
-- Fix for event names not translatable 
+- Fixed event names not being autotranslatable in mods
 
-Fix readonly calls to getDifficulty() - By RobLoach
+Hide icon for city in religion overview
+
+Got rid of fake Github error messages when attempting to download mod preview images
 
 ## 4.17.6
 
