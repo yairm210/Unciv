@@ -21,6 +21,7 @@ import io.ktor.server.websocket.*
 import io.ktor.utils.io.jvm.javaio.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -117,7 +118,12 @@ private class WebSocketSessionManager {
         userId2GameIds.getOrPut(userId) { synchronizedSet(mutableSetOf()) }.contains(gameId)
 
     suspend fun publish(gameId: String, message: Response) {
-        for (session in gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }) {
+        val sessions = gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }
+        for (session in sessions) {
+            if (!session.isActive) {
+                sessions.remove(session)
+                continue
+            }
             session.sendSerialized(message)
         }
     }
@@ -159,7 +165,7 @@ private class UncivServerRunner : CliktCommand() {
         envvar = "UncivServerIdentify",
         help = "Display each operation archive request IP to assist management personnel"
     ).flag("-no-Identify", default = false)
-    
+
     lateinit var isAliveInfo: IsAliveInfo
 
     override fun run() {
@@ -172,7 +178,7 @@ private class UncivServerRunner : CliktCommand() {
 
     // region Auth
     private val authMap: MutableMap<String, String> = mutableMapOf()
-    
+
     private val wsSessionManager = WebSocketSessionManager()
 
     private fun loadAuthFile() {
@@ -355,7 +361,10 @@ private class UncivServerRunner : CliktCommand() {
                             if (password == null || password == authInfo.password) {
                                 val newPassword = call.receiveText()
                                 if (newPassword.length < 6)
-                                    return@put call.respond(HttpStatusCode.BadRequest, "Password should be at least 6 characters long")
+                                    return@put call.respond(
+                                        HttpStatusCode.BadRequest,
+                                        "Password should be at least 6 characters long"
+                                    )
                                 authMap[authInfo.userId] = newPassword
                                 call.respond(HttpStatusCode.OK)
                             } else {
@@ -396,10 +405,12 @@ private class UncivServerRunner : CliktCommand() {
                                             sendSerialized(Response.Error("You are not subscribed to this channel!"))
                                         }
                                     }
+
                                     is Message.Join -> {
                                         wsSessionManager.subscribe(userId, message.gameIds, this)
                                         sendSerialized(Response.JoinSuccess(gameIds = message.gameIds))
                                     }
+
                                     is Message.Leave ->
                                         wsSessionManager.unsubscribe(userId, message.gameIds, this)
                                 }
