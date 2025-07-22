@@ -29,14 +29,12 @@ internal object UniqueTriggerExecutors {
         val (messageSuffix, iconName) = when {
             triggerNotificationText.startsWith("due to adopting ") ->
                 // templates:
-                // An unknown civilization has adopted the [policyName] policy
-                // [civName] has adopted the [policyName] policy
+                // [civName|An unknown civilization] has adopted the [policyName] policy
                 "has adopted the " + triggerNotificationText.removePrefix("due to adopting ") +
                 " policy" to NotificationIcon.Culture
             triggerNotificationText.startsWith("due to researching ") ->
                 // templates:
-                // An unknown civilization has researched [techName]
-                // [civName] has researched [techName]
+                // [civName|An unknown civilization] has researched [techName]
                 "has researched " + triggerNotificationText.removePrefix("due to researching ") to
                 NotificationIcon.Science
             // Kludge! If we get here, the translation template will be missing.
@@ -51,7 +49,7 @@ internal object UniqueTriggerExecutors {
             val defaultNotificationText = if (civ.getKnownCivs().contains(civInfo)) {
                 "[${civInfo.civName}] $messageSuffix"
             } else {
-                "An unknown civilization $messageSuffix"
+                "[An unknown civilization] $messageSuffix"
             }
             civ.addNotification(
                 "{${defaultNotificationText}} {${alertText}}",
