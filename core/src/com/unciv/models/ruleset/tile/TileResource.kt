@@ -92,6 +92,12 @@ class TileResource : RulesetStatsObject(), GameResource {
 
         textList += FormattedLine(cloneStats().toString())
 
+        if (revealedBy != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Revealed by}:")
+            textList += FormattedLine(revealedBy!!, link = "Technology/$revealedBy", indent = 1)
+        }
+
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()
             if (terrainsCanBeFoundOn.size == 1) {
