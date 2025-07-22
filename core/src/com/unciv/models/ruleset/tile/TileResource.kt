@@ -19,11 +19,16 @@ class TileResource : RulesetStatsObject(), GameResource {
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
 
-    /** stats that this resource adds to a tile */
+    /** Stats that this resource adds to a tile when a correct improvement has been constructed
+     *  - The Stats component of this resource on the other hand is always in effect. */
     var improvementStats: Stats? = null
+
+    /** Name of the Technology needed to see and use this resource
+     *  - Note: Currently, Unciv cannot treat e.g. `UniqueType.OnlyAvailable` with tech-based
+     *    Conditionals as equivalent for purposes such as description and map generation */
     var revealedBy: String? = null
 
-    /** Legacy "which improvement will unlock this treausre"
+    /** Legacy "which improvement will unlock this resource"
      *  @see improvedBy
      *  @see getImprovements
      */
@@ -54,12 +59,12 @@ class TileResource : RulesetStatsObject(), GameResource {
     @Readonly
     fun getImprovements(): Set<String> {
         if (allImprovements != null) return allImprovements!!
-        
+
         val ruleset = this.ruleset
             ?: throw IllegalStateException("No ruleset on TileResource when initializing improvements")
-        
+
         val allImprovementsLocal = mutableSetOf<String>()
-        
+
         if (improvement != null) allImprovementsLocal += improvement!!
         allImprovementsLocal.addAll(improvedBy)
         for (improvement in ruleset.tileImprovements.values) {
@@ -69,8 +74,8 @@ class TileResource : RulesetStatsObject(), GameResource {
                 allImprovementsLocal += improvement.name
             }
         }
-        
-        
+
+
         allImprovements = allImprovementsLocal
         return allImprovementsLocal
     }
