@@ -45,7 +45,7 @@ object UnitActionsFromUniques {
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
         
-        val inTilesModifier = unique.getModifiers(UniqueType.ConditionalInTerrains).firstOrNull()
+        val inTilesModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
         
         if (tile.isWater && inTilesModifier == null || tile.isImpassible() && inTilesModifier == null) return null
         

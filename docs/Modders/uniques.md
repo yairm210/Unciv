@@ -3552,11 +3552,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;in [tileFilter/terrainName] terrains&gt;"
-	Example: "&lt;in [Farm] terrains&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;on water maps&gt;"
 	Applicable to: Conditional
 
