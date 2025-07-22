@@ -58,6 +58,9 @@ class DetailedStatsPopup(
         row()
         addCloseButton(additionalKey = KeyCharAndCode.SPACE)
         update()
+
+        showListeners.add { cityScreen.pauseFireworks = true }
+        closeListeners.add { cityScreen.pauseFireworks = false }
     }
 
     private fun update() {
