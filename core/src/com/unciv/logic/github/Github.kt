@@ -49,11 +49,12 @@ object Github {
     /**
      * Helper opens an url and accesses its input stream, logging errors to the console
      * @param url String representing a [URI] to download.
+     * @param shouldLogError Some downloads are just us guessing where an image could be, an exception is acceptable in these circumstances
      * @param preDownloadAction Optional callback that will be executed between opening the connection and
      *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers.
      * @return The [InputStream] if successful, `null` otherwise.
      */
-    fun download(url: String, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
+    fun download(url: String, shouldLogError: Boolean = true, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
         try {
             // Problem type 1 - opening the URL connection
             // URL(string) is deprecated, URI.toUrl(string) API level 36, see [Android Doc](https://developer.android.com/reference/java/net/URI#toURL()):
@@ -75,7 +76,7 @@ object Github {
         } catch (_: RedirectionException) {
             return null
         } catch (ex: Exception) {
-            Log.error("Exception during GitHub download", ex)
+            if (shouldLogError) Log.error("Exception during GitHub download", ex)
             return null
         }
     }
@@ -374,12 +375,12 @@ object Github {
         // Thus we ask for a "preview" file as part of the repo contents instead.
         val fileLocation = GithubAPI.getUrlForPreview(modUrl, defaultBranch)
         try {
-            val file = download("$fileLocation.jpg")
-                ?: download("$fileLocation.png")
+            val file = download("$fileLocation.jpg", shouldLogError = false)
+                ?: download("$fileLocation.png", shouldLogError = false)
                     // Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
                     // So the image format is only recognizable from the response "Content-Type" header
                     // or by looking for magic markers in the bits - which the Pixmap constructor below does.
-                ?: avatarUrl?.let { download(it) }
+                ?: avatarUrl?.let { download(it, shouldLogError = false) }
                 ?: return null
             val byteArray = file.readBytes()
             val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)

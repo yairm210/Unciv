@@ -76,6 +76,7 @@
 				"name": "Writing",
 				"row": 3,
 				"prerequisites": ["Pottery"],
+                "uniques": ["Enables establishment of embassies"],
 				"quote": "'He who destroys a good book kills reason itself.' - John Milton"
 			},
 			{

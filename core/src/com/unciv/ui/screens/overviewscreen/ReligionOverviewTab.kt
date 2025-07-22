@@ -165,7 +165,7 @@ class ReligionOverviewTab(
                     if (viewingPlayer.hasExplored(holyCity.getCenterTile()))
                         holyCity.name
                     else Constants.unknownNationName
-                statsTable.add(cityName.toLabel()).right().row()
+                statsTable.add(cityName.toLabel(hideIcons = true)).right().row()
             }
         }
         val manager = religion.getFounder().religionManager

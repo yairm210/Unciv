@@ -9,8 +9,8 @@
 		"science": 3,
 		"gold": 3,
 		"culture": 1,
-		"cityStrength": 2,
-		"cost": 1,
+		"cityStrength": 2.5,
+		"cost": 0,
 		"uniques": ["Indicates the capital city"]
 	},
 	{
@@ -530,15 +530,14 @@
 		"hurryCostModifier": 25,
 		"requiredNearbyImprovedResources": ["Iron"],
 		"requiredTech": "Metal Casting",
-		"uniques": ["[+15]% Production when constructing [Spaceship part] units [in this city]",
-			"[+15]% Production when constructing [Land] units [in this city]",
+		"uniques": ["[+15]% Production when constructing [Land] units [in this city]",
 			"[+1 Production] from [Iron] tiles [in this city]"]
 	},
 	// Column 6
 	{
 		"name": "Harbor",
 		"cost": 120,
-		"maintenance": 2,
+		"maintenance": 3,
 		"hurryCostModifier": 25,
 		"uniques": ["[+1 Production] from [Water resource] tiles [in this city]",
 			"Connects trade routes over water","Must be next to [Coast]"],
@@ -736,7 +735,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["[-10]% Unhappiness from [Population] [in all cities]"],
+		"uniques": ["[-10]% Unhappiness from [Population] [in all non-occupied cities]"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
@@ -771,7 +770,7 @@
 	{
 		"name": "Seaport",
 		"hurryCostModifier": 25,
-		"maintenance": 3,
+		"maintenance": 2,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles [in this city]",
 			"Must be next to [Coast]", "[+15]% Production when constructing [Water] units [in this city]"],
@@ -819,7 +818,7 @@
 		"replaces": "Windmill",
 		"uniqueTo": "Austria",
 		"production": 2,
-		"percentStatBonus": {"production": 10},
+		"percentStatBonus": {"production": 5},
 		"specialistSlots": {"Engineer": 1},
 		"hurryCostModifier": 25,
 		"maintenance": 2,
@@ -929,7 +928,7 @@
 	{
 		"name": "Stock Exchange",
 		"gold": 3,
-		"percentStatBonus": {"gold": 25},
+		"percentStatBonus": {"gold": 33},
 		"specialistSlots": {"Merchant": 2},
 		"hurryCostModifier": 15,
 		"requiredBuilding": "Bank",
@@ -1130,7 +1129,6 @@
 	{
 		"name": "CN Tower",
 		"isWonder": true,
-		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 1},
 		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]", "Gain a free [Broadcast Tower] [in all cities]"],
 		"requiredTech": "Telecommunications",
@@ -1158,6 +1156,7 @@
 	{
 		"name": "Spaceship Factory",
 		"production": 3,
+        "maintenance": 3,
 		"requiredResource": "Aluminum",
 		"cost": 360,
 		"requiredBuilding": "Factory",
