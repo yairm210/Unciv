@@ -233,7 +233,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         if (!findTileWorthImproving()) return
 
-        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }.name, 0.6f)
+        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }.name, 6f) // Improving coastal luxuries etc. is quite important
     }
 
     private fun addWorkerChoice() {
@@ -348,12 +348,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats.food *= 8 // Starving, need Food, get to 0
         } else buildingStats.food *= 3
 
-        if (civInfo.stats.statsForNextTurn.gold < 10) {
-            buildingStats.gold *= 2 // We have a gold problem and need to adjust build queue accordingly
-        }
+        buildingStats.production *= 2
+
+        buildingStats.gold *= 2 // Everything's weighed by rankStatsValue, which ranks gold at 0.3, let's make that 0.6 (vs Science being 1)
 
         if (civInfo.getHappiness() < 10 || civInfo.getHappiness() < civInfo.cities.size)
-            buildingStats.happiness * 5
+            buildingStats.happiness *= 3
 
         if (city.cityStats.currentCityStats.culture < 2) {
             buildingStats.culture *= 2 // We need to start growing borders
