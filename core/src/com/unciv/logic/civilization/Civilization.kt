@@ -36,7 +36,6 @@ import com.unciv.models.Counter
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
@@ -56,6 +55,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -472,7 +472,9 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      * Stockpiled resources return the stockpiled amount
      */
+    @Readonly @Suppress("purity")
     fun getCivResourcesByName(): HashMap<String, Int> {
+        @LocalState
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
         for (entry in getCivResourceSupply())
@@ -486,6 +488,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Gets the number of resources available to this city
      * Does not include city-wide resources
      * Returns 0 for undefined resources */
+    @Readonly
     fun getResourceAmount(resourceName: String): Int {
         return getCivResourcesByName()[resourceName] ?: 0
     }
@@ -745,6 +748,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun calculateScoreBreakdown(): HashMap<String,Double> {
+        @LocalState
         val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps

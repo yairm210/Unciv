@@ -3,6 +3,7 @@ package com.unciv.models
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -51,6 +52,7 @@ open class Counter<K>(
     @Readonly
     /** Creates a new instance (does not modify) */
     operator fun times(amount: Int): Counter<K> {
+        @LocalState
         val newCounter = Counter<K>()
         for (key in keys) newCounter[key] = this[key] * amount
         return newCounter

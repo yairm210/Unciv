@@ -162,7 +162,7 @@ class Terrain : RulesetStatsObject() {
     /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
     val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
-    @Readonly
+    @Readonly @Suppress("purity")
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
