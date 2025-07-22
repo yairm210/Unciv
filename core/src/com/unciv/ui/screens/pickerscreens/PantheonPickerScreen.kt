@@ -3,7 +3,7 @@ package com.unciv.ui.screens.pickerscreens
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
@@ -20,7 +20,7 @@ class PantheonPickerScreen(
             if (belief.type != BeliefType.Pantheon) continue
             val beliefButton = getBeliefButton(belief, withTypeLabel = false)
             if (choosingCiv.religionManager.getReligionWithBelief(belief) == null
-                && belief.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+                && belief.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                     .none { !it.conditionalsApply(choosingCiv.state) }) {
                 beliefButton.onClickSelect(selection, belief) {
                     selectedPantheon = belief

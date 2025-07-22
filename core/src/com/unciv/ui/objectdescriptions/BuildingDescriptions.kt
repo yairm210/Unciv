@@ -32,7 +32,7 @@ object BuildingDescriptions {
             if (replacementTextForUniques.isNotEmpty()) infoList += replacementTextForUniques
             else infoList += getUniquesStringsWithoutDisablers(uniqueInclusionFilter)
         }
-        if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
+        if (cityStrength != 0.0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
         val separator = if (multiline) "\n" else "; "
         return infoList.joinToString(separator) { it.tr() }
@@ -77,7 +77,7 @@ object BuildingDescriptions {
         if (requiredNearbyImprovedResources != null)
             translatedLines += "Requires improved [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
 
-        if (cityStrength != 0) translatedLines += "{City strength} +$cityStrength".tr()
+        if (cityStrength != 0.0) translatedLines += "{City strength} +$cityStrength".tr()
         if (cityHealth != 0) translatedLines += "{City health} +$cityHealth".tr()
         if (maintenance != 0 && !isFree) translatedLines += "{Maintenance cost}: $maintenance {Gold}".tr()
         if (showAdditionalInfo) additionalDescription(building, city, translatedLines)
@@ -241,8 +241,8 @@ object BuildingDescriptions {
             }
         }
 
-        if (cityStrength != 0 || cityHealth != 0 || maintenance != 0) textList += FormattedLine()
-        if (cityStrength != 0) textList +=  FormattedLine("{City strength} +$cityStrength")
+        if (cityStrength != 0.0 || cityHealth != 0 || maintenance != 0) textList += FormattedLine()
+        if (cityStrength != 0.0) textList +=  FormattedLine("{City strength} +$cityStrength")
         if (cityHealth != 0) textList +=  FormattedLine("{City health} +$cityHealth")
         if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
 

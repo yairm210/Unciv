@@ -155,6 +155,9 @@ android/assets/SaveFiles/
 android/assets/scenarios/
 SaveFiles/
 
+/.kotlin/errors/*
+/.kotlin/sessions/*
+
 # Visual Studio Code
 .vscode/
 /.github/workflows/node_modules/*
@@ -170,3 +173,6 @@ detekt/reports.html
 
 # When you test the wiki by running mkdocs locally:
 /site/
+
+# When running the desktop app locally using "gradlew desktop:run"
+GameSettings.json

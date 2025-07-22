@@ -17,11 +17,10 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -51,7 +50,8 @@ object NextTurnAutomation {
             if (civInfo.gameInfo.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
-            
+
+            DiplomacyAutomation.offerToEstablishEmbassy(civInfo)
             DiplomacyAutomation.offerOpenBorders(civInfo)
             DiplomacyAutomation.offerResearchAgreement(civInfo)
             DiplomacyAutomation.offerDefensivePact(civInfo)
@@ -443,7 +443,9 @@ object NextTurnAutomation {
 
     /** Returns the priority of the unit, a lower value is higher priority **/
     fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
-        if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
+        if (unit.hasUnique(UniqueType.SpaceshipPart)) return 0 // Move before everything else so we can swap
+        if (unit.isCivilian() && unit.hasUnique(UniqueType.FoundCity)) return 1// Settlers before workers
+        if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 2 // Civilian
         if (unit.baseUnit.isAirUnit()) return when {
             unit.canIntercept() -> 2 // Fighers first
             unit.isNuclearWeapon() -> 3 // Then Nukes (area damage)
@@ -501,7 +503,7 @@ object NextTurnAutomation {
 
         // This is a tough one - if we don't ignore conditionals we could have units that can found only on certain tiles that are ignored
         // If we DO ignore conditionals we could get a unit that can only found if there's a certain tech, or something
-        if (civInfo.units.getCivUnits().any { it.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) }) return
+        if (civInfo.units.getCivUnits().any { it.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) }) return
         if (civInfo.cities.any {
                 val currentConstruction = it.cityConstructions.getCurrentConstruction()
                 currentConstruction is BaseUnit && currentConstruction.isCityFounder()

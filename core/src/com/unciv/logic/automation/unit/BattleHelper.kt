@@ -8,7 +8,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 
 object BattleHelper {
@@ -167,7 +167,7 @@ object BattleHelper {
                 if (civilianUnit.isGreatPerson()) {
                     attackValue += 150
                 }
-                if (civilianUnit.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals)) attackValue += 60
+                if (civilianUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)) attackValue += 60
             } else if (attacker.baseUnit.isRanged() && !civilianUnit.hasUnique(UniqueType.Uncapturable)) {
                 return 10 // Don't shoot civilians that we can capture!
             }

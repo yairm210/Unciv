@@ -289,7 +289,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.baseUnit.movesLikeAirUnits ->
             unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         unit.isPreparingParadrop() ->
-            unit.currentTile.aerialDistanceTo(destination) <= unit.cache.paradropRange && canParadropOn(destination)
+            canParadropOn(destination, unit.currentTile.aerialDistanceTo(destination))
         else ->
             specificFunction(destination)  // Note: Could pass destination as implicit closure from outer fun to lambda, but explicit is clearer
     }
@@ -303,9 +303,10 @@ class UnitMovement(val unit: MapUnit) {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.movesLikeAirUnits ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
-            unit.isPreparingParadrop() ->
-                unit.getTile().getTilesInDistance(unit.cache.paradropRange)
-                    .filter { unit.movement.canParadropOn(it) }
+            unit.isPreparingParadrop() -> {
+                unit.getTile().getTilesInDistance(unit.cache.paradropDestinationTileFilters.maxOf { it.value } )
+                    .filter { unit.movement.canParadropOn(it, it.aerialDistanceTo(unit.getTile())) }
+            }
             includeOtherEscortUnit && unit.isEscorting() -> {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
@@ -636,12 +637,19 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     // Can a paratrooper land at this tile?
-    private fun canParadropOn(destination: Tile): Boolean {
+    private fun canParadropOn(destination: Tile, distance: Int): Boolean {
         if (unit.cache.cannotMove) return false
-        // Can only move to land tiles within range that are visible and not impassible
+
+        // Can only move to tiles within range that are visible and not impassible
         // Based on some testing done in the base game
-        if (!destination.isLand || destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false
-        return true
+        if (destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false
+
+        // The destination is valid if any of the `tileFilters` match, and is within range
+        for ((tileFilter, distanceAllowed) in unit.cache.paradropDestinationTileFilters) {
+            if (distance <= distanceAllowed && destination.matchesFilter(tileFilter, unit.civ)) return true
+        }
+
+        return false
     }
 
     /**

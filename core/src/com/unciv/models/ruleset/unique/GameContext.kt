@@ -12,7 +12,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
 
-data class StateForConditionals(
+data class GameContext(
     val civInfo: Civilization? = null,
     val city: City? = null,
     val unit: MapUnit? = null,
@@ -91,11 +91,11 @@ data class StateForConditionals(
     }
 
     companion object {
-        val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
-        val EmptyState = StateForConditionals()
+        val IgnoreConditionals = GameContext(ignoreConditionals = true)
+        val EmptyState = GameContext()
         /** When caching uniques, we need to cache them unmultiplied, and apply multiplication only on retrieval from cache
          * This state lets the multiplication function know that it's always 1:1 */
-        val IgnoreMultiplicationForCaching = StateForConditionals(ignoreConditionals = true)
+        val IgnoreMultiplicationForCaching = GameContext(ignoreConditionals = true)
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */

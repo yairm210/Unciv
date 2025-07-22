@@ -3,8 +3,9 @@ package com.unciv.logic.city
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 object CityResources {
 
@@ -84,16 +85,16 @@ object CityResources {
 
     private fun addResourceFromUniqueImprovedTiles(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
         for (tileInfo in city.getTiles().filter { it.getUnpillagedImprovement() != null }) {
-            val stateForConditionals = StateForConditionals(city.civ, city, tile = tileInfo)
+            val gameContext = GameContext(city.civ, city, tile = tileInfo)
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
-            for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
+            for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, gameContext)) {
                 val resource = city.getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
                     resource, "Improvements",
                     (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
                 )
             }
-            for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
+            for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, gameContext)) {
                 val resource = city.getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
                     resource, "Improvements",

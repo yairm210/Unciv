@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.ImprovementFunctions
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
@@ -37,13 +37,13 @@ enum class ImprovementBuildingProblem(
 class TileImprovementFunctions(val tile: Tile) {
 
     /** Returns true if the [improvement] can be built on this [Tile] */
-    fun canBuildImprovement(improvement: TileImprovement, civInfo: Civilization): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
+    fun canBuildImprovement(improvement: TileImprovement, gameContext: GameContext): Boolean = getImprovementBuildingProblems(improvement, gameContext).none()
 
     /** Generates a sequence of reasons that prevent building given [improvement].
      *  If the sequence is empty, improvement can be built immediately.
      */
-    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: Civilization): Sequence<ImprovementBuildingProblem> = 
-        ImprovementFunctions.getImprovementBuildingProblems(improvement, civInfo, tile)
+    fun getImprovementBuildingProblems(improvement: TileImprovement, gameContext: GameContext): Sequence<ImprovementBuildingProblem> =
+        ImprovementFunctions.getImprovementBuildingProblems(improvement, gameContext, tile)
 
     /** Without regards to what CivInfo it is (so no tech requirement check), a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
@@ -52,7 +52,7 @@ class TileImprovementFunctions(val tile: Tile) {
         improvement: TileImprovement,
         resourceIsVisible: Boolean = tile.resource != null,
         knownFeatureRemovals: List<TileImprovement>? = null,
-        stateForConditionals: StateForConditionals = StateForConditionals(tile=tile),
+        gameContext: GameContext = GameContext(tile=tile),
         isNormalizeCheck: Boolean = false
     ): Boolean {
 
@@ -64,7 +64,7 @@ class TileImprovementFunctions(val tile: Tile) {
             if (isAllowedOnFeature(topTerrain)) return true
 
             // Otherwise, we can if this improvement removes the top terrain
-            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
+            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, gameContext)) return false
             if (knownFeatureRemovals.isNullOrEmpty()) return false
             val featureRemovals = tile.terrainFeatures.mapNotNull { feature ->
                 tile.ruleset.tileRemovals.firstOrNull { it.name == Constants.remove + feature } }
@@ -73,7 +73,7 @@ class TileImprovementFunctions(val tile: Tile) {
             val clonedTile = tile.clone(addUnits = false)
             clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
                 feature -> featureRemovals.any { it.name.removePrefix(Constants.remove) == feature } })
-            return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
+            return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, gameContext)
         }
 
         return when {
@@ -96,36 +96,36 @@ class TileImprovementFunctions(val tile: Tile) {
             // Then we check if there is any reason to not allow this improvement to be built
 
             // Can't build if there is already an irremovable improvement here
-            tile.improvement != null && tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
+            tile.improvement != null && tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable, gameContext) -> false
 
             // Can't build if this terrain is unbuildable, except when we are specifically allowed to
             tile.lastTerrain.unbuildable && !improvement.canBeBuiltOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
 
             // Can't build if any terrain specifically prevents building this improvement
-            tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).toList()
+            tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, gameContext).toList()
                 .let { it.any() && it.none {
-                        unique -> improvement.matchesFilter(unique.params[0], StateForConditionals(tile = tile))
+                        unique -> improvement.matchesFilter(unique.params[0], GameContext(tile = tile))
                 } } -> false
 
             // Can't build if the improvement specifically prevents building on some present feature
-            improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
-                    unique -> tile.matchesFilter(unique.params[0], stateForConditionals.civInfo)
+            improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, gameContext).any {
+                    unique -> tile.matchesFilter(unique.params[0], gameContext.civInfo)
             } ->
                 false
 
             // Can't build if an improvement is only allowed to be built on specific tiles and this is not one of them
             // If multiple uniques of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful)
-            improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile, stateForConditionals).let {
-                it.any() && it.any { unique -> !tile.matchesFilter(unique.params[0], stateForConditionals.civInfo) }
+            improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile, gameContext).let {
+                it.any() && it.any { unique -> !tile.matchesFilter(unique.params[0], gameContext.civInfo) }
             } -> false
 
             // Can't build if the improvement requires an adjacent terrain that is not present
-            improvement.getMatchingUniques(UniqueType.MustBeNextTo, stateForConditionals).any {
+            improvement.getMatchingUniques(UniqueType.MustBeNextTo, gameContext).any {
                 !tile.isAdjacentTo(it.params[0])
             } -> false
 
             // Can't build it if it is only allowed to improve resources and it doesn't improve this resource
-            improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
+            improvement.hasUnique(UniqueType.CanOnlyImproveResource, gameContext) && (
                     !resourceIsVisible || !tile.tileResource.isImprovedBy(improvement.name)
                     ) -> false
 
@@ -136,7 +136,7 @@ class TileImprovementFunctions(val tile: Tile) {
             tile.isLand && improvement.canBeBuiltOn("Land") -> true
             tile.isWater && improvement.canBeBuiltOn("Water") -> true
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
-            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, stateForConditionals)
+            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, gameContext)
                     && tile.isAdjacentTo(Constants.freshWater) -> true
 
             // I don't particularly like this check, but it is required to build mines on non-hill resources
@@ -210,9 +210,9 @@ class TileImprovementFunctions(val tile: Tile) {
         civ: Civilization,
         unit: MapUnit? = null
     ) {
-        val stateForConditionals = StateForConditionals(civ, unit = unit, tile = tile)
+        val gameContext = GameContext(civ, unit = unit, tile = tile)
         
-        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, stateForConditionals)) {
+        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, gameContext)) {
             val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
             var amount = unique.params[0].toInt()
             if (unique.isModifiedByGameSpeed()) amount = (amount * civ.gameInfo.speed.modifier).toInt()
@@ -220,16 +220,16 @@ class TileImprovementFunctions(val tile: Tile) {
         }
 
         for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
-            && it.conditionalsApply(stateForConditionals) })
+            && it.conditionalsApply(gameContext) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
-        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0], stateForConditionals) })
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, gameContext)
+            { improvement.matchesFilter(it.params[0], gameContext) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
 
         if (unit == null) return
-        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, stateForConditionals)
-            { improvement.matchesFilter(it.params[0], stateForConditionals) })
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, gameContext)
+            { improvement.matchesFilter(it.params[0], gameContext) })
             UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
     }
 

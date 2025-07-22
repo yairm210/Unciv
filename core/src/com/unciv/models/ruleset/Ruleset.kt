@@ -18,7 +18,7 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -125,7 +125,7 @@ class Ruleset {
 
     //region cache fields
     val greatGeneralUnits by lazy {
-        units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, StateForConditionals.IgnoreConditionals) }
+        units.values.filter { it.hasUnique(UniqueType.GreatPersonFromCombat, GameContext.IgnoreConditionals) }
     }
 
     val tileRemovals by lazy { tileImprovements.values.filter { it.name.startsWith(Constants.remove) } }
@@ -211,6 +211,22 @@ class Ruleset {
             }
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
+
+        // Remove the policies
+        ruleset.modOptions.policiesToRemove
+            .flatMap { policyToRemove ->
+                policies.filter { it.value.matchesFilter(policyToRemove) }.keys
+            }.toSet().forEach {
+                policies.remove(it)
+            }
+
+        // Remove the policies if they exist in the policy branches too
+        for (policyToRemove in ruleset.modOptions.policiesToRemove) {
+            for (branch in policyBranches.values) {
+                branch.policies.removeAll { it.matchesFilter(policyToRemove) }
+            }
+        }
+
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
         ruinRewards.putAll(ruleset.ruinRewards)

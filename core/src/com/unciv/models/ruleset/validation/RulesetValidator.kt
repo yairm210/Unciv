@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -257,9 +257,9 @@ open class RulesetValidator protected constructor(
                 )
             }
 
-            val hasPillageUnique = improvement.hasUnique(UniqueType.PillageYieldRandom, StateForConditionals.IgnoreConditionals)
-                || improvement.hasUnique(UniqueType.PillageYieldFixed, StateForConditionals.IgnoreConditionals)
-            if (hasPillageUnique && improvement.hasUnique(UniqueType.Unpillagable, StateForConditionals.IgnoreConditionals)) {
+            val hasPillageUnique = improvement.hasUnique(UniqueType.PillageYieldRandom, GameContext.IgnoreConditionals)
+                || improvement.hasUnique(UniqueType.PillageYieldFixed, GameContext.IgnoreConditionals)
+            if (hasPillageUnique && improvement.hasUnique(UniqueType.Unpillagable, GameContext.IgnoreConditionals)) {
                 lines.add(
                     "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
                     RulesetErrorSeverity.Warning, improvement
@@ -328,7 +328,21 @@ open class RulesetValidator protected constructor(
             lines.add("${nation.name} can settle cities, but has no city names!", sourceObject = nation)
         }
 
-        checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
+        fun isColorFaulty(rgb: List<Int>?) = when {
+            rgb == null -> false
+            rgb.size != 3 -> true
+            rgb.any { it !in 0..255 } -> true
+            else -> false
+        }
+        val badInner = isColorFaulty(nation.innerColor)
+        val badOuter = isColorFaulty(nation.outerColor)
+        if (badInner)
+            lines.add("${nation.name}'s innerColor is not an array of three integers in the 0..255 range", sourceObject = nation)
+        if (badOuter)
+            lines.add("${nation.name}'s outerColor is not an array of three integers in the 0..255 range", sourceObject = nation)
+
+        if (!badInner && !badOuter)
+            checkContrasts(nation.getInnerColor(), nation.getOuterColor(), nation, lines)
     }
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {
@@ -449,7 +463,7 @@ open class RulesetValidator protected constructor(
     }
 
     protected open fun checkUnit(unit: BaseUnit, lines: RulesetErrorList) {
-        for (upgradesTo in unit.getUpgradeUnits(StateForConditionals.IgnoreConditionals)) {
+        for (upgradesTo in unit.getUpgradeUnits(GameContext.IgnoreConditionals)) {
             if (upgradesTo == unit.name || upgradesTo == unit.replaces)
                 lines.add("${unit.name} upgrades to itself!", sourceObject = unit)
         }
@@ -687,7 +701,13 @@ open class RulesetValidator protected constructor(
 
         // There should be atlas images corresponding to each json name
         val atlasTilesets = getTilesetNamesFromAtlases()
-        val configOnlyTilesets = configTilesets - atlasTilesets
+        // This is a minor kludge (see #13537): Fallback to Vanilla is active for Tileset *configs*,
+        // but not for Tileset *graphics* as loaded by AtlasPreview, if it sees a non-vanilla base
+        // ruleset. Therefore, if we're checking a base or combined ruleset, ignore those configs.
+        val vanillaTilesets = if (this is BaseRulesetValidator && ruleset.mods.isNotEmpty())
+                setOf("Minimal", Constants.defaultTileset, Constants.defaultFallbackTileset)
+            else emptySet()
+        val configOnlyTilesets = configTilesets - atlasTilesets - vanillaTilesets
         if (configOnlyTilesets.isNotEmpty())
             lines.add("Mod has no graphics for configured tilesets: ${configOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning, sourceObject = null)
 

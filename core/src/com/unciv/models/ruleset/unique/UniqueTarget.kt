@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset.unique
 
+import yairm210.purity.annotations.Readonly
+
 /**
  * Expresses which RulesetObject types a UniqueType is applicable to.
  *
@@ -65,8 +67,8 @@ enum class UniqueTarget(
 
     // Modifiers
     Conditional("Modifiers that can be added to other uniques to limit when they will be active", modifierType = ModifierType.Conditional),
-    TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", inheritsFrom = Global, modifierType = ModifierType.Other),
-    UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", inheritsFrom = Global, modifierType = ModifierType.Other),
+    TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", modifierType = ModifierType.Other),
+    UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", modifierType = ModifierType.Other),
     UnitActionModifier("Modifiers that can be added to UnitAction uniques as conditionals", modifierType = ModifierType.Other),
     MetaModifier("Modifiers that can be added to other uniques changing user experience, not their behavior", modifierType = ModifierType.Other),
     ;
@@ -78,6 +80,7 @@ enum class UniqueTarget(
     /** Checks whether a specific UniqueTarget `this` as e.g. given by [IHasUniques.getUniqueTarget] works with [uniqueTarget] as e.g. declared in UniqueType */
     // Building.canAcceptUniqueTarget(Global) == true
     // Global.canAcceptUniqueTarget(Building) == false
+    @Readonly
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
         if (this == uniqueTarget) return true
         if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)

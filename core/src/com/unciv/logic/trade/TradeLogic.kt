@@ -7,6 +7,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DeclareWarReason
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -14,28 +16,43 @@ import com.unciv.models.ruleset.unique.UniqueType
 class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civilization) {
 
     /** Contains everything we could offer the other player, whether we've actually offered it or not */
-    val ourAvailableOffers = getAvailableOffers(ourCivilization, otherCivilization)
-    val theirAvailableOffers = getAvailableOffers(otherCivilization, ourCivilization)
+    var ourAvailableOffers = TradeOffersList()
+    var theirAvailableOffers = TradeOffersList()
     val currentTrade = Trade()
 
-    private fun getAvailableOffers(civInfo: Civilization, otherCivilization: Civilization): TradeOffersList {
-        val offers = TradeOffersList()
-        if (civInfo.isCityState && otherCivilization.isCityState) return offers
-        if (civInfo.isAtWarWith(otherCivilization))
-            offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+    init {
+        // Embassy trade availability depends solely on our ability to trade it
+        val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = ourCivilization.gameInfo.speed)
+        if (ourCivilization.diplomacyFunctions.canEstablishEmbassyWith(otherCivilization))
+            theirAvailableOffers.add(embassyOffer)
 
-        if (!otherCivilization.getDiplomacyManager(civInfo)!!.hasOpenBorders
-                && !otherCivilization.isCityState
-                && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
-                && otherCivilization.hasUnique(UniqueType.EnablesOpenBorders)) {
+        if (ourCivilization.diplomacyFunctions.canOfferEmbassyTo(otherCivilization))
+            ourAvailableOffers.add(embassyOffer)
+
+        // Other trade items are added as usual for both sides
+        ourAvailableOffers += getAvailableOffers(ourCivilization, otherCivilization)
+        theirAvailableOffers += getAvailableOffers(otherCivilization, ourCivilization)
+    }
+    
+    private fun getAvailableOffers(civInfo: Civilization, otherCiv: Civilization): TradeOffersList {
+        val offers = TradeOffersList()
+        if (civInfo.isCityState || otherCiv.isCityState) return offers
+        
+        if (civInfo.isAtWarWith(otherCiv))
+            offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+        
+        if (civInfo.diplomacyFunctions.hasMutualEmbassyWith(otherCiv)
+            && !otherCiv.getDiplomacyManager(civInfo)!!.hasOpenBorders
+            && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
+            && otherCiv.hasUnique(UniqueType.EnablesOpenBorders)) {
             offers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
         }
 
-        if (civInfo.diplomacyFunctions.canSignResearchAgreementNoCostWith(otherCivilization))
+        if (civInfo.diplomacyFunctions.canSignResearchAgreementNoCostWith(otherCiv))
             offers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty,
-                civInfo.diplomacyFunctions.getResearchAgreementCost(otherCivilization), civInfo.gameInfo.speed))
+                civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv), civInfo.gameInfo.speed))
 
-        if (civInfo.diplomacyFunctions.canSignDefensivePactWith(otherCivilization))
+        if (civInfo.diplomacyFunctions.canSignDefensivePactWith(otherCiv))
             offers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
 
         for (entry in civInfo.getPerTurnResourcesWithOriginsForTrade()
@@ -51,50 +68,57 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             offers.add(TradeOffer(entry.resource.name, TradeOfferType.Stockpiled_Resource, entry.amount, speed = civInfo.gameInfo.speed))
         }
 
-        offers.add(TradeOffer("Gold", TradeOfferType.Gold, civInfo.gold, speed = civInfo.gameInfo.speed))
-        offers.add(TradeOffer("Gold per turn", TradeOfferType.Gold_Per_Turn, civInfo.stats.statsForNextTurn.gold.toInt(), civInfo.gameInfo.speed))
+        offers.add(TradeOffer(Constants.flatGold, TradeOfferType.Gold, civInfo.gold, speed = civInfo.gameInfo.speed))
+        offers.add(TradeOffer(Constants.goldPerTurn, TradeOfferType.Gold_Per_Turn, civInfo.stats.statsForNextTurn.gold.toInt(), civInfo.gameInfo.speed))
 
-        if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
-                && !civInfo.isCityState && !otherCivilization.isCityState
-        ) {
+        if (!civInfo.isOneCityChallenger() && !otherCiv.isOneCityChallenger())
             for (city in civInfo.cities.filterNot { it.isCapital() || it.isInResistance() })
                 offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
-        }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-            .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
+            .filter { it.civName != otherCiv.civName && it.isMajorCiv() && !it.isDefeated() }
 
         if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.TradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
-                .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
+                .filter { !otherCiv.diplomacy.containsKey(it.civName) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.Introduction, speed = civInfo.gameInfo.speed))
             }
         }
 
-        if (!civInfo.isCityState && !otherCivilization.isCityState
-                && !civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
+        if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
-                    .filter { otherCivilization.diplomacy.containsKey(it.civName) }
+                    .filter { otherCiv.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it)!!.canDeclareWar() }
             for (thirdCiv in civsWeArentAtWarWith) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
             }
         }
+        
+        val thirdCivsAtWarTheyKnow = otherCiv.getKnownCivs().filter {
+            it.isAtWarWith(civInfo) && !it.isDefeated()
+                && !it.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)
+        }
 
+        for (thirdCiv in thirdCivsAtWarTheyKnow) {
+            // Setting amount to 0 makes TradeOffer.isTradable() return false and also disables the button in trade window
+            val amount = if (TradeEvaluation().isPeaceProposalEnabled(thirdCiv, civInfo)) 1 else 0
+            offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))
+        }
+        
         return offers
     }
 
     fun acceptTrade(applyGifts: Boolean = true) {
         val ourDiploManager = ourCivilization.getDiplomacyManager(otherCivilization)!!
-        val theirDiploManger = otherCivilization.getDiplomacyManager(ourCivilization)!!
+        val theirDiploManager = otherCivilization.getDiplomacyManager(ourCivilization)!!
 
         ourDiploManager.apply {
             trades.add(currentTrade)
             updateHasOpenBorders()
         }
-        theirDiploManger.apply {
+        theirDiploManager.apply {
             trades.add(currentTrade.reverse())
             updateHasOpenBorders()
         }
@@ -102,6 +126,10 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         // instant transfers
         fun transferTrade(from: Civilization, to: Civilization, offer: TradeOffer) {
             when (offer.type) {
+                TradeOfferType.Embassy -> {
+                    for (tile in from.getCapital()!!.getCenterTile().getTilesInDistance(2))
+                        tile.setExplored(to, true)
+                }
                 TradeOfferType.Gold -> {
                     to.addGold(offer.amount)
                     from.addGold(-offer.amount)
@@ -156,6 +184,27 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
                 }
+                TradeOfferType.PeaceProposal -> {
+                    // Convert PeaceProposal to peaceTreaty and apply to warring civs
+                    val trade = Trade()
+                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = offer.duration)
+                    trade.ourOffers.add(peaceOffer)
+                    trade.theirOffers.add(peaceOffer)
+                    
+                    val thirdCiv = from.gameInfo.getCivilization(offer.name)
+                    val tradePartnerDiplo = from.getDiplomacyManager(thirdCiv)!!
+                    tradePartnerDiplo.apply {
+                        trades.add(trade)
+                        updateHasOpenBorders()
+                    }
+
+                    thirdCiv.getDiplomacyManager(from)!!.apply {
+                        trades.add(trade)
+                        updateHasOpenBorders()
+                    }
+
+                    tradePartnerDiplo.makePeace()
+                }
                 else -> {}
             }
         }
@@ -171,7 +220,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 ourDiploManager.giftGold(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0), isPureGift)
             } else if (theirGoldValueOfTrade > ourGoldValueOfTrade) {
                 val isPureGift = currentTrade.theirOffers.isEmpty()
-                theirDiploManger.giftGold(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0), isPureGift)
+                theirDiploManager.giftGold(theirGoldValueOfTrade - ourGoldValueOfTrade.coerceAtLeast(0), isPureGift)
             }
         }
 
@@ -184,6 +233,23 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         // Transfter of treaties should only be done from one side to avoid double signing and notifying
         for (offer in currentTrade.theirOffers.filter { it.type == TradeOfferType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
+
+        fun applyEmbassyOffer(diploManager: DiplomacyManager) {
+            if (diploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)) {
+                diploManager.replaceModifier(DiplomaticModifiers.EstablishedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+                diploManager.otherCivDiplomacy().replaceModifier(DiplomaticModifiers.ReceivedEmbassy, DiplomaticModifiers.SharedEmbassies, 3f)
+            }
+            else {
+                diploManager.addModifier(DiplomaticModifiers.ReceivedEmbassy, 1f)
+                diploManager.otherCivDiplomacy().addModifier(DiplomaticModifiers.EstablishedEmbassy, 2f)
+            }
+        }
+
+        // Diplomatic modifiers for embassy depend on whether a civ gives its embassy, accepts it or both
+        if (currentTrade.ourOffers.any { it.type == TradeOfferType.Embassy })
+            applyEmbassyOffer(ourDiploManager)
+        if (currentTrade.theirOffers.any { it.type == TradeOfferType.Embassy })
+            applyEmbassyOffer(theirDiploManager)
 
         ourCivilization.cache.updateCivResources()
         ourCivilization.updateStatsForNextTurn()

@@ -11,12 +11,11 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -342,7 +341,7 @@ object Automation {
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
         val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
         return city.getTiles().any {
-            it.improvementFunctions.canBuildImprovement(improvement, civInfo)
+            it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }
     }
 
@@ -429,8 +428,8 @@ object Automation {
     }
 
     private fun improvementIsRemovable(city: City, tile: Tile): Boolean {
-        val stateForConditionals = StateForConditionals(city.civ, city, tile = tile)
-        return (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, stateForConditionals) == false  && tile.getTileImprovement()?.hasUnique(UniqueType.Irremovable, stateForConditionals) == false)
+        val gameContext = GameContext(city.civ, city, tile = tile)
+        return (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, gameContext) == false  && tile.getTileImprovement()?.hasUnique(UniqueType.Irremovable, gameContext) == false)
     }
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
@@ -439,7 +438,7 @@ object Automation {
         val civ = city.civ
         return city.getTiles().filter {
             (it.getTileImprovement() == null || improvementIsRemovable(city, it))
-                && it.improvementFunctions.canBuildImprovement(improvement, civ)
+                && it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
             rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, localUniqueCache, it.stats.getTileStats(city, civ, localUniqueCache)), civ) + (

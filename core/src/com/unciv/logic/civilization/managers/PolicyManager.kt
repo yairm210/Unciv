@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -172,10 +172,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     /** Uncached, use carefully */
-    fun getAdoptedPoliciesMatching(policyFilter: String, stateForConditionals: StateForConditionals) =
+    fun getAdoptedPoliciesMatching(policyFilter: String, gameContext: GameContext) =
         adoptedPolicies.asSequence()
             .mapNotNull { getRulesetPolicies()[it] }
-            .filter { it.matchesFilter(policyFilter, stateForConditionals) }
+            .filter { it.matchesFilter(policyFilter, gameContext) }
             .toList()
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
@@ -192,7 +192,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleset.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
-        if (policy.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+        if (policy.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                 .any { !it.conditionalsApply(civInfo.state) }) return false
         if (policy.hasUnique(UniqueType.Unavailable, civInfo.state)) return false
         return true

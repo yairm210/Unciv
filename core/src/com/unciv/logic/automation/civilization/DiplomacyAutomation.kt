@@ -108,20 +108,67 @@ object DiplomacyAutomation {
         return motivation > 0
     }
 
+    /**
+     * Try establishing embassy in other civs' capitals
+     * 
+     * @param civInfo Civilization which initiates trade
+     */
+    internal fun offerToEstablishEmbassy(civInfo: Civilization) {
+        val civsThatWeCanEstablishEmbassyWith = civInfo.getKnownCivs().filter {
+            civInfo.diplomacyFunctions.canEstablishEmbassyWith(it)
+            && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)
+            && !areWeOfferingTrade(civInfo, it, Constants.acceptEmbassy)
+        }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }
+
+        for (otherCiv in civsThatWeCanEstablishEmbassyWith) {
+            // Default setting is 3
+            if ((1..10).random() < 7) continue
+            if (wantsToAcceptEmbassy(civInfo, otherCiv)) {
+                val tradeLogic = TradeLogic(civInfo, otherCiv)
+                val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
+                tradeLogic.currentTrade.theirOffers.add(embassyOffer)
+
+                // If possible offer mutual embassies (Civ V behavior) so we don't waste gold
+                if (otherCiv.diplomacyFunctions.canEstablishEmbassyWith(civInfo)) {
+                    tradeLogic.currentTrade.ourOffers.add(embassyOffer)
+                }
+                else { // Otherwise offer GPT (prefered) or flat gold for embassy in their capital
+                    val embassyValue = TradeEvaluation().evaluateBuyCostWithInflation(embassyOffer, civInfo, otherCiv, tradeLogic.currentTrade)
+                    val embassyGptValue = embassyValue / civInfo.gameInfo.speed.dealDuration
+                    val ourGpt = civInfo.stats.statsForNextTurn.gold.toInt()
+                    if (embassyGptValue in 1..ourGpt)
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.goldPerTurn, TradeOfferType.Gold_Per_Turn, embassyGptValue, civInfo.gameInfo.speed))
+                    else if (civInfo.gold >= embassyValue && ourGpt >= 0)
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.flatGold, TradeOfferType.Gold, embassyValue, civInfo.gameInfo.speed))
+                    // else let them make counter offer
+                }
+                
+                otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            }
+            else {
+                // Remember this for a few turns to save computation power
+                civInfo.getDiplomacyManager(otherCiv)!!.setFlag(DiplomacyFlags.DeclinedEmbassy, 5)
+            }
+        }        
+    }
+
     internal fun offerOpenBorders(civInfo: Civilization) {
         if (!civInfo.hasUnique(UniqueType.EnablesOpenBorders)) return
-        val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs()
-            .filter {
-                it.isMajorCiv() && !civInfo.isAtWarWith(it)
-                    && it.hasUnique(UniqueType.EnablesOpenBorders)
-                    && !civInfo.getDiplomacyManager(it)!!.hasOpenBorders
-                    && !it.getDiplomacyManager(civInfo)!!.hasOpenBorders
-                    && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
-                    && !areWeOfferingTrade(civInfo, it, Constants.openBorders)
-            }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
+
+        val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs().filter {
+            val ourDiploManager = civInfo.getDiplomacyManager(it)!!
+            it.isMajorCiv()
+                && !civInfo.isAtWarWith(it) 
+                && it.hasUnique(UniqueType.EnablesOpenBorders)
+                && !ourDiploManager.hasOpenBorders
+                && !ourDiploManager.otherCivDiplomacy().hasOpenBorders
+                && civInfo.diplomacyFunctions.hasMutualEmbassyWith(it)
+                && !ourDiploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
+                && !areWeOfferingTrade(civInfo, it, Constants.openBorders)
+        }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }
 
         for (otherCiv in civsThatWeCanOpenBordersWith) {
-            // Default setting is 3, this will be changed according to different civ.
+            // Default setting is 3
             if ((1..10).random() < 7) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
@@ -136,41 +183,67 @@ object DiplomacyAutomation {
         }
     }
 
+    /**
+     * Test if [otherCiv] wants to accept our embassy in their capital
+     */
+    fun wantsToAcceptEmbassy(civInfo: Civilization, otherCiv: Civilization): Boolean {
+        val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
+        if (civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)) return false
+        if (theirDiploManager.isRelationshipLevelLT(RelationshipLevel.Afraid)) return false
+
+        // Being able to see their capital can give us an advantage later on, especially with espionage enabled
+        if (!civInfo.getCapital()!!.getCenterTile().isExplored(otherCiv)) return true
+
+        // Did they not discovered our capital yet?
+        if (!otherCiv.getCapital()!!.getCenterTile().isExplored(civInfo)) {
+            // If we're afraid of them deny embassy
+            if (theirDiploManager.relationshipLevel() == RelationshipLevel.Afraid) return false
+
+            // If they're much stronger than us deny embassy
+            val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force)
+            val theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force)
+            val ourAbsoluteAdvantage = ourCombatStrength - theirCombatStrength
+            val percentageAdvantage = ourAbsoluteAdvantage / theirCombatStrength.toFloat()
+            if (percentageAdvantage > 0.5) return false
+        }
+
+        return true // Relationship is Afraid or greater
+    }
+
     fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
-        val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
-        if (diploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)) return false
-        if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
+        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        if (ourDiploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)) return false
+        if (ourDiploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv) })
             return false
         // Being able to see their cities can give us an advantage later on, especially with espionage enabled
         if (otherCiv.cities.count { !it.getCenterTile().isVisible(civInfo) } < otherCiv.cities.count() * .8f)
             return true
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, 
-                diploManager.opinionOfOtherCiv() * civInfo.getPersonality().modifierFocus(PersonalityValue.Commerce, .3f) / 2) > 0)
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv,
+                ourDiploManager.opinionOfOtherCiv() * civInfo.getPersonality().modifierFocus(PersonalityValue.Commerce, .3f) / 2) > 0)
             return false
         return true
     }
 
     internal fun offerResearchAgreement(civInfo: Civilization) {
         if (!civInfo.diplomacyFunctions.canSignResearchAgreement()) return // don't waste your time
+        
+        val civsThatWeCanSignResearchAgreementWith = civInfo.getKnownCivs().filter {
+            civInfo.diplomacyFunctions.canSignResearchAgreementWith(it)
+                && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
+                && !areWeOfferingTrade(civInfo, it, Constants.researchAgreement)
+        }.sortedByDescending { it.stats.statsForNextTurn.science }
 
-        val canSignResearchAgreementCiv = civInfo.getKnownCivs()
-            .filter {
-                civInfo.diplomacyFunctions.canSignResearchAgreementsWith(it)
-                    && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
-                    && !areWeOfferingTrade(civInfo, it, Constants.researchAgreement)
-            }
-            .sortedByDescending { it.stats.statsForNextTurn.science }
-
-        for (otherCiv in canSignResearchAgreementCiv) {
+        for (otherCiv in civsThatWeCanSignResearchAgreementWith) {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() <= 5 * civInfo.getPersonality().modifierFocus(PersonalityValue.Science, .3f)) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv)
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost, civInfo.gameInfo.speed))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost, civInfo.gameInfo.speed))
+            val tradeOffer = TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost, civInfo.gameInfo.speed)
 
+            tradeLogic.currentTrade.ourOffers.add(tradeOffer)
+            tradeLogic.currentTrade.theirOffers.add(tradeOffer)
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
     }
@@ -178,23 +251,24 @@ object DiplomacyAutomation {
     internal fun offerDefensivePact(civInfo: Civilization) {
         if (!civInfo.diplomacyFunctions.canSignDefensivePact()) return // don't waste your time
 
-        val canSignDefensivePactCiv = civInfo.getKnownCivs()
-            .filter {
-                civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
-                    && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedDefensivePact)
-                    && civInfo.getDiplomacyManager(it)!!.opinionOfOtherCiv() < 70f * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.Aggressive, .2f)
-                    && !areWeOfferingTrade(civInfo, it, Constants.defensivePact)
-            }
+        val civsThatWeCanSignDefensivePactWith = civInfo.getKnownCivs().filter {
+            val ourDiploManager = civInfo.getDiplomacyManager(it)!!
+            civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
+                && !ourDiploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)
+                && ourDiploManager.opinionOfOtherCiv() < 70f * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.Aggressive, .2f)
+                && !areWeOfferingTrade(civInfo, it, Constants.defensivePact)
+        }
 
-        for (otherCiv in canSignDefensivePactCiv) {
+        for (otherCiv in civsThatWeCanSignDefensivePactWith) {
             // Default setting is 3, this will be changed according to different civ.
             if ((1..10).random() <= 7 * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.Loyal, .3f)) continue
             if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+                val tradeOffer = TradeOffer(Constants.defensivePact, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed)
 
+                tradeLogic.currentTrade.ourOffers.add(tradeOffer)
+                tradeLogic.currentTrade.theirOffers.add(tradeOffer)
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             } else {
                 // Remember this for a few turns to save computation power
@@ -204,10 +278,11 @@ object DiplomacyAutomation {
     }
 
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
-        val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
-        if (diploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)) return false
-        if (diploManager.opinionOfOtherCiv() < 65f * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.Aggressive, .3f)) return false
-        val commonknownCivs = diploManager.getCommonKnownCivs()
+        val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+        if (ourDiploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)) return false
+        if (ourDiploManager.opinionOfOtherCiv() < 65f * civInfo.getPersonality().inverseModifierFocus(PersonalityValue.Aggressive, .3f)) return false
+        val commonknownCivs = ourDiploManager.getCommonKnownCivs()
+
         for (thirdCiv in commonknownCivs) {
             // If they have bad relations with any of our friends, don't consider it
             if (civInfo.getDiplomacyManager(thirdCiv)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
@@ -230,11 +305,11 @@ object DiplomacyAutomation {
         val allAliveCivs = allCivs - deadCivs
 
         // We have to already be at RelationshipLevel.Ally, so we must have 80 oppinion of them
-        var motivation = diploManager.opinionOfOtherCiv() - 80
+        var motivation = ourDiploManager.opinionOfOtherCiv() - 80
 
         // Warmongerers don't make good allies
-        if (diploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
-            motivation -= diploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().modifierFocus(PersonalityValue.Diplomacy, .5f)
+        if (ourDiploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
+            motivation -= ourDiploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().modifierFocus(PersonalityValue.Diplomacy, .5f)
         }
 
         // If they are stronger than us, then we value it a lot more
@@ -323,9 +398,10 @@ object DiplomacyAutomation {
 
             // pay for peace
             val tradeLogic = TradeLogic(civInfo, enemy)
+            val tradeOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed)
 
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
+            tradeLogic.currentTrade.ourOffers.add(tradeOffer)
+            tradeLogic.currentTrade.theirOffers.add(tradeOffer)
 
             if (enemy.isMajorCiv()) {
                 var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)

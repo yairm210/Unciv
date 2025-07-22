@@ -11,7 +11,7 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.AutoScrollPane
@@ -220,7 +220,7 @@ class ReligiousBeliefsPickerScreen (
                     // The Belief is not available because someone already has it
                     beliefButton.disable(redDisableColor)
                 }
-                belief.getMatchingUniques(UniqueType.OnlyAvailable, StateForConditionals.IgnoreConditionals)
+                belief.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                     .any { !it.conditionalsApply(choosingCiv.state) } ->
                     // The Belief is blocked
                     beliefButton.disable(redDisableColor)
