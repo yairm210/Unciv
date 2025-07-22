@@ -1,6 +1,8 @@
 package com.unciv.ui.screens.worldscreen.minimap
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Cursor
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -14,6 +16,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.addInTable
+import com.unciv.ui.components.input.CursorHoverInputListener
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
@@ -122,6 +125,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             val image = ImageGetter.getImage("OtherIcons/$name")
             table.add(image).expand().size(20f).pad(8f).bottom().right()
             table.touchable = Touchable.enabled
+            table.addListener(CursorHoverInputListener())
             table.onActivation(toggle)
         } else {
             // map is really small: use whole MinimapHolder as click area to maximize map
@@ -174,6 +178,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         toggleIconTable.defaults().padTop(paddingBetweenElements)
 
         for (button in buttons) {
+            button.addListener(CursorHoverInputListener())
             toggleIconTable.add(button).row()
         }
 
@@ -204,6 +209,8 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             val targetSize = Vector2(stage.width - event.stageX, event.stageY)
             minimapSize = minimap.getClosestMinimapSize(targetSize)
             rebuildAndUpdateMap(civInfo)
+            // Cursor.SystemCursor.NWSEResize would be optimal, but there's an GLFW issue in X11 preventing that
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand)
         }
         override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
             super.touchUp(event, x, y, pointer, button)
@@ -211,6 +218,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
                 worldScreen.game.settings.minimapSize = minimapSize
                 GUI.setUpdateWorldOnNextRender() // full update    
             }
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
         }
     }
 }

@@ -14,9 +14,11 @@ class CursorHoverInputListener(
     private val exitCursor: Cursor.SystemCursor = Cursor.SystemCursor.Arrow
 ) : InputListener() {
     override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
+        super.enter(event, x, y, pointer, fromActor)
         Gdx.graphics.setSystemCursor(hoverCursor)
     }
     override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+        super.exit(event, x, y, pointer, toActor)
         Gdx.graphics.setSystemCursor(exitCursor)
     }
 }
