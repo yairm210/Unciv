@@ -28,7 +28,6 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.UUID
 import kotlin.math.roundToInt
@@ -210,7 +209,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getResourcesGeneratedByCity(civResourceModifiers: HashMap<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
+    fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     @Readonly fun isGrowing() = foodForNextTurn() > 0

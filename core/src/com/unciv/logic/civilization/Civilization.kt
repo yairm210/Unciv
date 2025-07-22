@@ -494,12 +494,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     /** Gets modifiers for ALL resources */
-    fun getResourceModifiers(): HashMap<String, Float> {
-        val resourceModifers = HashMap<String, Float>()
-        for (resource in gameInfo.ruleset.tileResources.values)
-            resourceModifers[resource.name] = getResourceModifier(resource)
-        return resourceModifers
-    }
+    @Readonly
+    fun getResourceModifiers(): Map<String, Float> =
+        gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
 
     /**
      * Returns the resource production modifier as a multiplier.
@@ -509,6 +506,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      * @param resource The resource for which to calculate the modifier.
      * @return The production modifier as a multiplier.
      */
+    @Readonly
     fun getResourceModifier(resource: TileResource): Float {
         var finalModifier = 1f
 

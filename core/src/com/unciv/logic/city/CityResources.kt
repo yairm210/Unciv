@@ -5,12 +5,11 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
-import yairm210.purity.annotations.Readonly
 
 object CityResources {
 
     /** Returns ALL resources, city-wide and civ-wide */
-    fun getResourcesGeneratedByCity(city: City, resourceModifiers: HashMap<String, Float>): ResourceSupplyList {
+    fun getResourcesGeneratedByCity(city: City, resourceModifiers: Map<String, Float>): ResourceSupplyList {
         val cityResources = getResourcesGeneratedByCityNotIncludingBuildings(city, resourceModifiers)
         addCityResourcesGeneratedFromUniqueBuildings(city, cityResources, resourceModifiers)
         return cityResources
@@ -35,7 +34,7 @@ object CityResources {
     }
 
 
-    private fun getResourcesGeneratedByCityNotIncludingBuildings(city: City, resourceModifers: HashMap<String, Float>): ResourceSupplyList {
+    private fun getResourcesGeneratedByCityNotIncludingBuildings(city: City, resourceModifers: Map<String, Float>): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
 
         addResourcesFromTiles(city, resourceModifers, cityResources)
@@ -54,7 +53,7 @@ object CityResources {
         return cityResources
     }
 
-    private fun addCityResourcesGeneratedFromUniqueBuildings(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+    private fun addCityResourcesGeneratedFromUniqueBuildings(city: City, cityResources: ResourceSupplyList, resourceModifer: Map<String, Float>) {
         for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, city.state, false)) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
@@ -75,7 +74,7 @@ object CityResources {
         return getCityResourcesAvailableToCity(city).asSequence().filter { it.resource == resource }.sumOf { it.amount }
     }
 
-    private fun addResourcesFromTiles(city: City, resourceModifer: HashMap<String, Float>, cityResources: ResourceSupplyList) {
+    private fun addResourcesFromTiles(city: City, resourceModifer: Map<String, Float>, cityResources: ResourceSupplyList) {
         for (tileInfo in city.getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(city, tileInfo) * resourceModifer[resource.name]!!
@@ -83,7 +82,7 @@ object CityResources {
         }
     }
 
-    private fun addResourceFromUniqueImprovedTiles(city: City, cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+    private fun addResourceFromUniqueImprovedTiles(city: City, cityResources: ResourceSupplyList, resourceModifer: Map<String, Float>) {
         for (tileInfo in city.getTiles().filter { it.getUnpillagedImprovement() != null }) {
             val gameContext = GameContext(city.civ, city, tile = tileInfo)
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()

@@ -48,20 +48,13 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-            "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
-            "kotlin.math.max",
-            "kotlin.math.min",
-            "kotlin.math.abs",
+            "kotlin.to",
             "kotlin.internal.ir.noWhenBranchMatchedException",
         )
         wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
-            "java.util.AbstractCollection.contains",
-            "java.util.AbstractCollection.isEmpty",
-            "java.util.AbstractCollection.iterator",
-            "java.util.AbstractList.get",
         )
         wellKnownPureClasses = setOf(
         )
