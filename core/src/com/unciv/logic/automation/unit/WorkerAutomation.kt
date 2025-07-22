@@ -86,10 +86,9 @@ class WorkerAutomation(
 
         if (tileToWork != null) {
             if (tileToWork == currentTile) {
-                startWorkOnCurrentTile(unit)
+                return startWorkOnCurrentTile(unit)
             }
-            headTowardsTileToWork(unit, tileToWork, localUniqueCache)
-            return
+            return headTowardsTileToWork(unit, tileToWork, localUniqueCache)
         }
         // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
         if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return
@@ -338,11 +337,12 @@ class WorkerAutomation(
     }
 
     private fun potentialTileImprovements(unit: MapUnit, tile: Tile): Map <String, TileImprovement> {
-        return (ruleSet.tileImprovements.filter {
-            (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!, GameContext(unit = unit, tile = tile)))
+        val gameContext = GameContext(civInfo = unit.civ, unit = unit, tile = tile)
+        return ruleSet.tileImprovements.filter {
+            (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!, gameContext))
                 && unit.canBuildImprovement(it.value, tile)
-                && tile.improvementFunctions.canBuildImprovement(it.value, GameContext(civInfo))
-        }.filterNot { (it.value.isRoad() && tile !in roadBetweenCitiesAutomation.tilesOfRoadsMap) || (!it.value.isRoad() && tile.getOwner() != unit.civ) } )
+                && tile.improvementFunctions.canBuildImprovement(it.value, gameContext)
+        }
     }
     /**
      * Determine the improvement appropriate to a given tile and worker
