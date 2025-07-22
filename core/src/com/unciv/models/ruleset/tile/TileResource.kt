@@ -3,7 +3,6 @@ package com.unciv.models.ruleset.tile
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.GameContext
@@ -11,8 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stats
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.objectdescriptions.ResourceDescriptions
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
@@ -90,109 +88,8 @@ class TileResource : RulesetStatsObject(), GameResource {
 
     override fun makeLink() = "Resource/$name"
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        val textList = ArrayList<FormattedLine>()
-
-        textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
-        textList += FormattedLine()
-
-        uniquesToCivilopediaTextLines(textList)
-
-        textList += FormattedLine(cloneStats().toString())
-
-        if (revealedBy != null) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Revealed by:}")
-            textList += FormattedLine(revealedBy!!, link = "Technology/$revealedBy", indent = 1)
-        }
-
-        if (terrainsCanBeFoundOn.isNotEmpty()) {
-            textList += FormattedLine()
-            if (terrainsCanBeFoundOn.size == 1) {
-                val terrainName = terrainsCanBeFoundOn[0]
-                textList += FormattedLine("{Can be found on} {$terrainName}", link = "Terrain/$terrainName")
-            } else {
-                textList += FormattedLine("{Can be found on}:")
-                terrainsCanBeFoundOn.forEach {
-                    textList += FormattedLine(it, link = "Terrain/$it", indent = 1)
-                }
-            }
-        }
-
-        for (improvement in getImprovements()) {
-            textList += FormattedLine()
-            textList += FormattedLine("Improved by [$improvement]", link = "Improvement/$improvement")
-            if (improvementStats != null && !improvementStats!!.isEmpty())
-                textList += FormattedLine("{Bonus stats for improvement}: " + improvementStats.toString())
-        }
-
-        val improvementsThatProvideThis = ruleset.tileImprovements.values
-            .filter { improvement ->
-                improvement.uniqueObjects.any { unique ->
-                    unique.type == UniqueType.ProvidesResources && unique.params[1] == name
-                }
-            }
-        if (improvementsThatProvideThis.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Improvements that provide this resource}:")
-            improvementsThatProvideThis.forEach {
-                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
-            }
-        }
-
-        val buildingsThatProvideThis = ruleset.buildings.values
-            .filter { building ->
-                building.uniqueObjects.any { unique ->
-                    when (unique.type) {
-                        UniqueType.ProvidesResources -> unique.params[1] == name
-                        UniqueType.StatPercentFromObjectToResource -> unique.params[3] == name
-                        else -> false
-                    }
-                }
-            }
-        if (buildingsThatProvideThis.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Buildings that provide this resource}:")
-            buildingsThatProvideThis.forEach {
-                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
-            }
-        }
-
-        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirementsPerTurn(
-            GameContext.IgnoreConditionals).containsKey(name) }
-        if (buildingsThatConsumeThis.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Buildings that consume this resource}:")
-            buildingsThatConsumeThis.forEach {
-                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
-            }
-        }
-
-        val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirementsPerTurn(
-            GameContext.IgnoreConditionals).containsKey(name) }
-        if (unitsThatConsumeThis.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Units that consume this resource}: ")
-            unitsThatConsumeThis.forEach {
-                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
-            }
-        }
-
-        val buildingsRequiringThis =  ruleset.buildings.values.filter {
-            it.requiredNearbyImprovedResources?.contains(name) == true
-        }
-        if (buildingsRequiringThis.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Buildings that require this resource improved near the city}: ")
-            buildingsRequiringThis.forEach {
-                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
-            }
-        }
-
-        textList += Belief.getCivilopediaTextMatching(name, ruleset)
-
-        return textList
-    }
+    override fun getCivilopediaTextLines(ruleset: Ruleset) =
+        ResourceDescriptions.getCivilopediaTextLines(this, ruleset)
 
     @Readonly
     fun isImprovedBy(improvementName: String): Boolean {
