@@ -166,8 +166,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     @Readonly fun canBombard() = !attackedThisTurn && !isInResistance()
-    @Readonly @Suppress("purity") // should be autorecognized
-    fun getCenterTile(): Tile = centerTile
+    @Readonly fun getCenterTile(): Tile = centerTile
     @Readonly fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     @Readonly fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
@@ -181,7 +180,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
-    @Readonly @Suppress("purity") // Activates predicate
+    @Readonly
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)

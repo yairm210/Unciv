@@ -189,8 +189,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return tech.prerequisites.all { isResearched(it) }
     }
 
-    @Readonly @Suppress("purity") // should be autorecognized
-    fun allTechsAreResearched() = allTechsAreResearched
+    @Readonly fun allTechsAreResearched() = allTechsAreResearched
 
     //endregion
 

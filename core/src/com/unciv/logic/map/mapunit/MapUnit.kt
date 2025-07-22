@@ -231,8 +231,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getMovementString(): String =
         (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
-    @Readonly @Suppress("purity") // should be autorecognized
-    fun getTile(): Tile = currentTile
+    
+    @Readonly fun getTile(): Tile = currentTile
 
     fun getClosestCity(): City? = civ.cities.minByOrNull {
         it.getCenterTile().aerialDistanceTo(currentTile)

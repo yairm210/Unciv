@@ -14,6 +14,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -533,10 +534,12 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return filledString
 }
 
-@Pure @Suppress("purity")
+@Pure
 fun String.getModifiers(): List<Unique> {
     if (!this.contains('<')) return emptyList()
-    return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
+    @Immutable val matchResults = pointyBraceRegex.findAll(this)
+    @Immutable val uniques = matchResults.map { Unique(it.groups[1]!!.value) }
+    return uniques.toList()
 }
 
 @Pure

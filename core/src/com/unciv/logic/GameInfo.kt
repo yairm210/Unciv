@@ -248,8 +248,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Readonly fun getDifficulty() = difficultyObject
     /** Access a cached `GlobalUniques` that combines the [ruleset]'s [globalUniques][Ruleset.globalUniques]
      *  with the Uniques of the chosen [speed] and [difficulty][getDifficulty] */
-    @Readonly @Suppress("purity") // should be autorecognized 
-    fun getGlobalUniques() = combinedGlobalUniques
+    @Readonly fun getGlobalUniques() = combinedGlobalUniques
 
     /** @return Sequence of all cities in game, both major civilizations and city states */
     @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }

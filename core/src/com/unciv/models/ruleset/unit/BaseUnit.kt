@@ -65,8 +65,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var uniqueTo: String? = null
     var attackSound: String? = null
 
-    @Transient
-    var cachedForceEvaluation: Int = -1
 
     @Transient
     val costFunctions = BaseUnitCost(this)
@@ -491,18 +489,20 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             && getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
 
-    @Readonly
+
+    @Transient
+    var cachedForceEvaluation: Int = -1
+    
+    @Readonly @Suppress("purity") // caches
     fun getForceEvaluation(): Int {
-        if (cachedForceEvaluation < 0) evaluateForce()
+        if (cachedForceEvaluation < 0) 
+            cachedForceEvaluation = evaluateForce()
         return cachedForceEvaluation
     }
 
-    @Readonly @Suppress("purity") // reads from cache
-    private fun evaluateForce() {
-        if (strength == 0 && rangedStrength == 0) {
-            cachedForceEvaluation = 0
-            return
-        }
+    @Readonly
+    private fun evaluateForce(): Int {
+        if (strength == 0 && rangedStrength == 0) return 0
 
         var power = strength.toFloat().pow(1.5f)
         var rangedPower = rangedStrength.toFloat().pow(1.45f)
@@ -564,6 +564,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
 
-        cachedForceEvaluation = power.toInt()
+        return power.toInt()
     }
 }

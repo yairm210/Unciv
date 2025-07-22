@@ -1054,8 +1054,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getAllyCiv(): Civilization? = if (allyCivName == null) null
         else gameInfo.getCivilization(allyCivName!!)
-    @Readonly @Suppress("purity") // should be autorecognized
-    fun getAllyCivName() = allyCivName
+    @Readonly fun getAllyCivName() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
     /** Determine if this civ (typically as human player) is allowed to know how many major civs there are
