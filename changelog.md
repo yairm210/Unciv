@@ -1,3 +1,14 @@
+## 4.17.7
+
+By metablaster:
+- Implementation for establishing embassies in diplomacy 
+- Fix for AI civilian unit escape from threat 
+- Fixed event names not being autotranslatable in mods
+
+Hide icon for city in religion overview
+
+Got rid of fake Github error messages when attempting to download mod preview images
+
 ## 4.17.6
 
 Better way to brighten colors - By touhidurrr
