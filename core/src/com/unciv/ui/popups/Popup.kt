@@ -26,6 +26,7 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.CursorHoverInputListener
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardBindings
@@ -304,6 +305,7 @@ open class Popup(
         val button = text.toTextButton(style)
         button.onActivation { action() }
         button.keyShortcuts.add(key)
+        button.addListener(CursorHoverInputListener())
         return bottomTable.add(button)
     }
     fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
@@ -314,6 +316,7 @@ open class Popup(
     fun addButton(text: String, binding: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit): Cell<TextButton> {
         val button = text.toTextButton(style)
         button.onActivation(binding = binding) { action() }
+        button.addListener(CursorHoverInputListener())
         return bottomTable.add(button)
     }
 

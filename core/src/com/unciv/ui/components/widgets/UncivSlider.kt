@@ -24,6 +24,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.CursorHoverInputListener
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider.Companion.formatPercent
 import com.unciv.ui.images.IconCircleGroup
@@ -162,6 +163,7 @@ class UncivSlider (
             minusButton.onClick {
                 addToValue(-stepSize)
             }
+            minusButton.addListener(CursorHoverInputListener())
             add(minusButton).apply {
                 if (vertical) padBottom(padding) else padLeft(padding)
             }
@@ -178,6 +180,7 @@ class UncivSlider (
             plusButton.onClick {
                 addToValue(stepSize)
             }
+            plusButton.addListener(CursorHoverInputListener())
             add(plusButton).apply {
                 if (vertical) padTop(padding) else padRight(padding)
             }
@@ -202,6 +205,8 @@ class UncivSlider (
                 SoundPlayer.play(sound)
             }
         })
+
+        slider.addListener(CursorHoverInputListener())
     }
 
     // Helper for plus/minus button onClick, non-trivial only if setSnapToValues is used

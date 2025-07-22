@@ -210,6 +210,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         civilopediaButton.onActivation { openCivilopedia() }
         civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
         civilopediaButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
+        civilopediaButton.addListener(CursorHoverInputListener())
         civilopediaButton.setPosition(30f, 30f)
         stage.addActor(civilopediaButton)
 
@@ -227,6 +228,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         rightSideButtons.add(githubButton)
         
         rightSideButtons.pack()
+        rightSideButtons.addListener(CursorHoverInputListener())
         rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
         stage.addActor(rightSideButtons)
 
