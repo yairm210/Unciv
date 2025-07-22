@@ -94,7 +94,7 @@ class TileResource : RulesetStatsObject(), GameResource {
 
         if (revealedBy != null) {
             textList += FormattedLine()
-            textList += FormattedLine("{Revealed by}:")
+            textList += FormattedLine("{Revealed by:}")
             textList += FormattedLine(revealedBy!!, link = "Technology/$revealedBy", indent = 1)
         }
 
