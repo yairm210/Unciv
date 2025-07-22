@@ -608,7 +608,6 @@
 	},
 	{
 		"name": "Bank",
-		"gold": 2,
 		"specialistSlots": {"Merchant": 1},
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"gold": 25},
@@ -794,7 +793,6 @@
 	},
 	{
 		"name": "Stock Exchange",
-		"gold": 3,
 		"percentStatBonus": {"gold": 33},
 		"specialistSlots": {"Merchant": 2},
 		"hurryCostModifier": 15,
