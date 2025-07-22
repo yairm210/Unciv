@@ -191,6 +191,14 @@ enum class Countables(
         }
     },
 
+    DifficultyNumber("Difficulty number", shortDocumentation = "Number representing the difficulty the game is being played on") {
+        override val documentationStrings = listOf("Zero-based index of the Difficulty in Difficulties.json.")
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val difficulty = gameContext.gameInfo?.getDifficulty() ?: return null
+            val difficulties = gameContext.gameInfo?.ruleset?.difficulties?.keys?.toList() ?: return null
+            return difficulties.indexOf(difficulty.name)
+        }
+    },
 
     EraNumber("Era number", shortDocumentation = "Number of the era the current player is in") {
         override val documentationStrings = listOf("Zero-based index of the Era in Eras.json.")

@@ -139,6 +139,18 @@ class CountableTests {
     }
 
     @Test
+    fun testDifficultyNumberCountable() {
+        setupModdedGame()
+        val tests = listOf(
+            "Difficulty number" to 3 // Prince
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
     fun testOwnedTilesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
