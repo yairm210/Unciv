@@ -343,10 +343,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val buildingStats = getStatDifferenceFromBuilding(building.name, localUniqueCache)
         getBuildingStatsFromUniques(building, buildingStats)
 
-        val surplusFood = city.cityStats.currentCityStats[Stat.Food]
-        if (surplusFood < 0) {
-            buildingStats.food *= 8 // Starving, need Food, get to 0
-        } else buildingStats.food *= 3
+        buildingStats.food *= 3
 
         buildingStats.production *= 2
 
