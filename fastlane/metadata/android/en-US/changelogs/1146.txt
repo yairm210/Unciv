@@ -1,13 +1,10 @@
-
-
 By EmperorPinguin:
-- Perf: remove AI personality for citizen assignment 
 - AI: Update city construction evaluation of buildings + workboats 
-- Bugfix: Update WorkerAutomation.kt 
+- Automated Workers no longer run away after starting work on a tile  
 
 By SomeTroglodyte:
-- Minor UI fix: Don't display the WLTK fireworks over the detailed stats popup 
-- Enable the "triggers global alert" unique for most uniques 
+- Minor UI fix: Don't display WLTK fireworks over detailed stats popup 
+- Enable "triggers global alert" unique for most objects 
 
 Civilopedia: Add Revealed By on Tile Resource screen - By RobLoach
 
