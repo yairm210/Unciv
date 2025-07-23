@@ -1,0 +1,14 @@
+
+
+By EmperorPinguin:
+- Perf: remove AI personality for citizen assignment 
+- AI: Update city construction evaluation of buildings + workboats 
+- Bugfix: Update WorkerAutomation.kt 
+
+By SomeTroglodyte:
+- Minor UI fix: Don't display the WLTK fireworks over the detailed stats popup 
+- Enable the "triggers global alert" unique for most uniques 
+
+Civilopedia: Add Revealed By on Tile Resource screen - By RobLoach
+
+Multiplayer Chat Support - By touhidurrr
