@@ -147,6 +147,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
+    @Readonly
     fun getSourceNameForUser(): String {
         return when (sourceObjectType) {
             null -> ""

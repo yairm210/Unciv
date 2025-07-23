@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
 import com.unciv.utils.yieldAllNotNull
+import yairm210.purity.annotations.Readonly
 
 class CivConstructions : IsPartOfGameInfoSerialization {
 
@@ -76,6 +77,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
      *  Note: Operates on String city.id and String building name, close to the serialized and stored form.
      *  When/if we do a transient cache for these using our objects, please rewrite this.
      */
+    @Readonly
     private fun getFreeBuildingNamesSequence(cityId: String) = sequence {
         yieldAllNotNull(freeBuildings[cityId])
         for (city in civInfo.cities) {
@@ -84,6 +86,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** Gets a Set of all building names the [city] has for free, from nationwide sources or buildings in other cities */
+    @Readonly
     fun getFreeBuildingNames(city: City) =
         getFreeBuildingNamesSequence(city.id).toSet()
 
