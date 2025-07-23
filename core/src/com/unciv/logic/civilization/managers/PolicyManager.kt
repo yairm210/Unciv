@@ -230,15 +230,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             }
         }
 
-        // Todo make this a triggerable unique for other objects
-        for (unique in policy.getMatchingUniques(UniqueType.OneTimeGlobalAlert)) {
-            triggerGlobalAlerts(policy, unique.params[0])
-        }
-
         //todo Can this be mapped downstream to a PolicyAction:NotificationAction?
         val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
-            if (!unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
+            if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) {it.params[0] == policy.name})
@@ -297,25 +292,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         val filteredMap = priorityMap.filterKeys { branch -> branch in branchesToCompare }
         return filteredMap.values.maxOrNull()
     }
-
-    private fun triggerGlobalAlerts(
-        policy: Policy, extraNotificationText: String = ""
-    ) {
-        for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }) {
-            if (civ == civInfo) continue
-            val defaultNotificationText = if (civ.getKnownCivs().contains(civInfo)) {
-                "[${civInfo.civName}] has adopted the [${policy.name}] policy"
-            } else {
-                "An unknown civilization has adopted the [${policy.name}] policy"
-            }
-            civ.addNotification(
-                "{${defaultNotificationText}} {${extraNotificationText}}",
-                NotificationCategory.General,
-                NotificationIcon.Culture
-            )
-        }
-    }
-
 
     fun getCultureFromGreatWriter(): Int {
         return (cultureOfLast8Turns.sum() * civInfo.gameInfo.speed.cultureCostModifier).toInt()

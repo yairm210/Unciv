@@ -3,6 +3,8 @@ package com.unciv.ui.components.extensions
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -11,25 +13,25 @@ import java.util.Locale
 import java.util.SortedMap
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun String.toPercent() = toFloat().toPercent()
+@Pure fun String.toPercent() = toFloat().toPercent()
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun Int.toPercent() = toFloat().toPercent()
+@Pure fun Int.toPercent() = toFloat().toPercent()
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun Float.toPercent() = 1 + this/100
+@Pure fun Float.toPercent() = 1 + this/100
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
-fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
+@Pure fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
     val uniqueString = "{Consumes [$amount] [$this]}"
     return if (isStockpiled) "$uniqueString /${Fonts.turn}" else uniqueString
 }
 
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
-fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
+@Pure fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
 
 // todo: There's a few other `if (>0) "+" else ""` around, and a DecimalFormat solution in DetailedStatsPopup: unify
-fun Int.toStringSigned() = if (this > 0) "+${this.tr()}" else this.tr()
+@Readonly fun Int.toStringSigned() = if (this > 0) "+${this.tr()}" else this.tr()
 
 /** Formats the [Duration] into a translated string */
 fun Duration.format(): String {

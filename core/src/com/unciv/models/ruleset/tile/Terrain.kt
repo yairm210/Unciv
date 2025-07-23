@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 class Terrain : RulesetStatsObject() {
 
@@ -47,6 +49,7 @@ class Terrain : RulesetStatsObject() {
     var damagePerTurn = 0
 
     // Shouldn't this just be a lazy property so it's automatically cached?
+    @Readonly
     fun isRough(): Boolean = hasUnique(UniqueType.RoughTerrain)
 
     /** Tests base terrains, features and natural wonders whether they should be treated as Land/Water.
@@ -158,8 +161,9 @@ class Terrain : RulesetStatsObject() {
     }
 
     /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
-    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    @LocalState val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
@@ -172,6 +176,7 @@ class Terrain : RulesetStatsObject() {
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
+    @Readonly
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             in Constants.all -> true

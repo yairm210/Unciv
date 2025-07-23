@@ -15,6 +15,7 @@ import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
 
@@ -172,6 +173,7 @@ class CityStats(val city: City) {
         return growthSources
     }
 
+    @Readonly
     fun hasExtraAnnexUnhappiness(): Boolean {
         if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)

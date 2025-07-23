@@ -153,9 +153,22 @@ android/assets/MultiplayerGames/
 android/assets/music/
 android/assets/SaveFiles/
 android/assets/scenarios/
+
+# When running the desktop app locally using "gradlew desktop:run"
+lasterror.txt
+GameSettings.json
+ModListCache.json
+fonts/
+maps/
+mods/
+MultiplayerGames/
+music/
 SaveFiles/
+scenarios/
+
 
 /.kotlin/errors/*
+/.kotlin/sessions/*
 
 # Visual Studio Code
 .vscode/
@@ -173,5 +186,3 @@ detekt/reports.html
 # When you test the wiki by running mkdocs locally:
 /site/
 
-# When running the desktop app locally using "gradlew desktop:run"
-GameSettings.json

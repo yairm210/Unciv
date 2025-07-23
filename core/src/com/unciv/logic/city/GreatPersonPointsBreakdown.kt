@@ -5,6 +5,8 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 /** Manages calculating Great Person Points per City for nextTurn. See public constructor(city) below for details. */
 class GreatPersonPointsBreakdown private constructor(private val ruleset: Ruleset) {
@@ -38,8 +40,9 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
         const val fixedPointFactor = 1000
 
 
-        private fun getUniqueSourceName(unique: Unique) = unique.sourceObjectName ?: "Bonus"
+        @Readonly private fun getUniqueSourceName(unique: Unique) = unique.sourceObjectName ?: "Bonus"
 
+        @Readonly
         private fun guessPediaLink(unique: Unique): String? {
             if (unique.sourceObjectName == null) return null
             return unique.sourceObjectType!!.name + "/" + unique.sourceObjectName
@@ -50,6 +53,7 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
          *  This is used internally from the public constructor to include them in the brakdown,
          *  and exposed to autoAssignPopulation via [getGreatPersonPercentageBonus]
          */
+        @Readonly
         private fun getPercentagesApplyingToAllGP(city: City) = sequence {
             // Now add boni for GreatPersonPointPercentage
             for (unique in city.getMatchingUniques(UniqueType.GreatPersonPointPercentage)) {
@@ -73,6 +77,7 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
          *
          *  For use by [City.getGreatPersonPercentageBonus] (which in turn is only used by autoAssignPopulation)
          */
+        @Readonly
         fun getGreatPersonPercentageBonus(city: City) = getPercentagesApplyingToAllGP(city).sumOf { it.bonus }
     }
 
@@ -126,13 +131,16 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
     }
 
     /** Aggregate over sources, applying percentage boni using fixed-point math to avoid rounding surprises */
+    @Readonly
     fun sum(): Counter<String> {
         // Accumulate base points as fake "fixed-point"
+        @LocalState
         val result = Counter<String>()
         for (entry in basePoints)
             result.add(entry.counter * fixedPointFactor)
 
         // Accumulate percentage bonuses additively not multiplicatively
+        @LocalState
         val bonuses = Counter<String>()
         for (entry in percentBonuses) {
             bonuses.add(entry.counter)

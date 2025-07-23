@@ -210,11 +210,22 @@ object CivilianUnitAutomation {
             unit.movement.moveToTile(defensiveUnit)
             return
         }
-        val tileFurthestFromEnemy = reachableTiles.keys
-            .filter { unit.movement.canMoveTo(it) && unit.getDamageFromTerrain(it) < unit.health }
-            .maxByOrNull { unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), 4, false) }
-            ?: return // can't move anywhere!
-        unit.movement.moveToTile(tileFurthestFromEnemy)
-    }
 
+        val unitTile = unit.getTile()
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit)
+        val tileClosestToDanger = dangerousTiles
+            // Priotirize capture threat over ranged attack
+            .sortedByDescending { unit.civ.threatManager.getEnemyUnitsOnTiles(listOf(it)).isNotEmpty() }
+            .minByOrNull { it.aerialDistanceTo(unitTile) } ?: unitTile
+        val tileFurthestFromDanger = reachableTiles.keys
+            .filter {
+                unit.movement.canMoveTo(it)
+                    && unit.getDamageFromTerrain(it) < unit.health
+                    && it !in dangerousTiles }
+            .sortedWith(compareByDescending<Tile> { it.aerialDistanceTo(tileClosestToDanger) } // As far away from threat
+                .thenByDescending { it.isFriendlyTerritory(unit.civ) }) // Priotirize friendly territory
+            .firstOrNull() ?: return // can't move anywhere!
+
+        unit.movement.moveToTile(tileFurthestFromDanger)
+    }
 }

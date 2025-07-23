@@ -530,10 +530,10 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         if (me != null) {
             Log.error(
                 "Updating user ID from %s to %s. This is no error. But you may need the old ID to be able to access your old multiplayer saves.",
-                UncivGame.Current.settings.multiplayer.userId,
+                UncivGame.Current.settings.multiplayer.getUserId(),
                 me.uuid
             )
-            UncivGame.Current.settings.multiplayer.userId = me.uuid.toString()
+            UncivGame.Current.settings.multiplayer.setUserId(me.uuid.toString())
             UncivGame.Current.settings.save()
             ensureConnectedWebSocket()
         }
@@ -570,7 +570,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         }
         val success = auth.login(
             UncivGame.Current.settings.multiplayer.userName,
-            UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()] ?: "",
+            UncivGame.Current.settings.multiplayer.getPassword(
+                UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl()
+            ) ?: "",
             suppress = true
         )
         if (success) {

@@ -13,6 +13,7 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 
 class TileResource : RulesetStatsObject(), GameResource {
 
@@ -52,6 +53,7 @@ class TileResource : RulesetStatsObject(), GameResource {
      *  @see improvedBy
      *  @see UniqueType.ImprovesResources
      */
+    @Readonly @Suppress("purity") // requires some plumbing
     fun getImprovements(): Set<String> {
         if (improvementsInitialized) return allImprovements
         val ruleset = this.ruleset
@@ -89,6 +91,12 @@ class TileResource : RulesetStatsObject(), GameResource {
         uniquesToCivilopediaTextLines(textList)
 
         textList += FormattedLine(cloneStats().toString())
+
+        if (revealedBy != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Revealed by:}")
+            textList += FormattedLine(revealedBy!!, link = "Technology/$revealedBy", indent = 1)
+        }
 
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()
@@ -189,6 +197,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         return null
     }
 
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
@@ -196,6 +205,7 @@ class TileResource : RulesetStatsObject(), GameResource {
                 state == null && hasTagUnique(filter)
         })
 
+    @Readonly
     fun matchesSingleFilter(filter: String) = when (filter) {
         name -> true
         "any" -> true

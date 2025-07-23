@@ -355,7 +355,7 @@ class AdvancedTab(
                         "Doing this will reset your current user ID to the clipboard contents - are you sure?",
                         "Take user ID from clipboard"
                     ) {
-                        settings.multiplayer.userId = clipboardContents
+                        settings.multiplayer.setUserId(clipboardContents)
                         idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                     }.open(true)
                     idSetLabel.isVisible = true

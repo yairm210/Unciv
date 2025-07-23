@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
@@ -54,10 +55,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
-    @Readonly
-    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
-    fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
-    fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
+    
+    @Readonly fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
+    @Readonly fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
+    @Readonly fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
     @Suppress("unused") // Keep the how-to around
     fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
@@ -65,8 +66,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var uniqueTo: String? = null
     var attackSound: String? = null
 
-    @Transient
-    var cachedForceEvaluation: Int = -1
 
     @Transient
     val costFunctions = BaseUnitCost(this)
@@ -103,6 +102,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    @Readonly
     override fun isUnavailableBySettings(gameInfo: GameInfo) =
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
@@ -122,6 +122,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    
     fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
         val unit = MapUnit()
         unit.name = name
@@ -136,30 +137,35 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return unit
     }
 
+    @Readonly
     override fun hasUnique(uniqueType: UniqueType, state: GameContext?): Boolean {
         val gameContext = state ?: GameContext.EmptyState
         return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueType, gameContext)
         else super<RulesetObject>.hasUnique(uniqueType, gameContext)
     }
 
+    @Readonly
     override fun hasUnique(uniqueTag: String, state: GameContext?): Boolean {
         val gameContext = state ?: GameContext.EmptyState
         return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueTag, gameContext)
         else super<RulesetObject>.hasUnique(uniqueTag, gameContext)
     }
 
+    @Readonly
     override fun hasTagUnique(tagUnique: String): Boolean {
         return if (::ruleset.isInitialized) rulesetUniqueMap.hasTagUnique(tagUnique)
         else super<RulesetObject>.hasTagUnique(tagUnique)
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
+    @Readonly
     override fun getMatchingUniques(uniqueType: UniqueType, state: GameContext): Sequence<Unique> {
         return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueType, state)
         else super<RulesetObject>.getMatchingUniques(uniqueType, state)
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
+    @Readonly
     override fun getMatchingUniques(uniqueTag: String, state: GameContext): Sequence<Unique> {
         return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueTag, state)
         else super<RulesetObject>.getMatchingUniques(uniqueTag, state)
@@ -205,6 +211,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
         getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
 
+    @Readonly @Suppress("purity") // component1, component2
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
@@ -285,13 +292,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
 
-        if (city != null && isAirUnit()) {
+        if (city != null && isAirUnit() && !canUnitEnterTile(city)) {
             // Not actually added to civ so doesn't require destroy
-            val fakeUnit = getMapUnit(civ, Constants.NO_ID)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(city.getCenterTile())
-            if (!canUnitEnterTile)
-                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+            yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
         }
+    }
+    
+    @Readonly @Suppress("purity") // Good suppression - we cheat by creating a unit
+    fun canUnitEnterTile(city: City): Boolean {
+        val fakeUnit = getMapUnit(city.civ, Constants.NO_ID)
+        return fakeUnit.movement.canMoveTo(city.getCenterTile())
     }
 
     /**
@@ -299,6 +309,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
      * Also custom handles [UniqueType.ConditionalBuildingBuiltAmount], and
      * [UniqueType.ConditionalBuildingBuiltAll]
      */
+    @Readonly
     private fun notMetRejections(unique: Unique, civ: Civilization, city: City?, built: Boolean=false): Sequence<RejectionReason> = sequence {
         for (conditional in unique.modifiers) {
             // We yield a rejection only when conditionals are NOT met
@@ -400,9 +411,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
 
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    @LocalState private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
@@ -413,8 +425,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             state != null && hasUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
-            
-
+    
+    @Readonly
     fun matchesSingleFilter(filter: String): Boolean {
         // all cases are constants for performance
         return when (filter) {
@@ -453,49 +465,53 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Determine whether this is a City-founding unit - abstract, **without any game context**.
      *  Use other methods for MapUnits or when there is a better StateForConditionals available. */
-    fun isCityFounder() = hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)
+    @Readonly fun isCityFounder() = hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)
 
     val isGreatPerson by lazy { getMatchingUniques(UniqueType.GreatPerson).any() }
-    fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
+    @Readonly fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
-    private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, GameContext.IgnoreConditionals)
+    @Readonly private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, GameContext.IgnoreConditionals)
 
     val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
-        val resourceRequirements = Counter<String>()
+        @LocalState val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: GameContext.EmptyState))
-            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+            resourceRequirements.add(unique.params[1], unique.params[0].toInt())
         return resourceRequirements
     }
 
 
-    fun isRanged() = rangedStrength > 0
-    fun isMelee() = !isRanged() && strength > 0
+    @Readonly fun isRanged() = rangedStrength > 0
+    @Readonly fun isMelee() = !isRanged() && strength > 0
     val isMilitary by lazy { isRanged() || isMelee() }
-    fun isCivilian() = !isMilitary
+    @Readonly fun isCivilian() = !isMilitary
 
     val isLandUnit by lazy { type.isLandUnit() }
     val isWaterUnit by lazy { type.isWaterUnit() }
-    fun isAirUnit() = type.isAirUnit()
+    @Readonly fun isAirUnit() = type.isAirUnit()
 
     fun isProbablySiegeUnit() = isRanged()
             && getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
 
+
+    @Transient
+    var cachedForceEvaluation: Int = -1
+    
+    @Readonly @Suppress("purity") // caches
     fun getForceEvaluation(): Int {
-        if (cachedForceEvaluation < 0) evaluateForce()
+        if (cachedForceEvaluation < 0) 
+            cachedForceEvaluation = evaluateForce()
         return cachedForceEvaluation
     }
 
-    private fun evaluateForce() {
-        if (strength == 0 && rangedStrength == 0) {
-            cachedForceEvaluation = 0
-            return
-        }
+    @Readonly
+    private fun evaluateForce(): Int {
+        if (strength == 0 && rangedStrength == 0) return 0
 
         var power = strength.toFloat().pow(1.5f)
         var rangedPower = rangedStrength.toFloat().pow(1.45f)
@@ -557,6 +573,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
 
-        cachedForceEvaluation = power.toInt()
+        return power.toInt()
     }
 }

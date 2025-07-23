@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import yairm210.purity.annotations.Pure
 
@@ -20,7 +21,7 @@ object MultiFilter {
      *  @param filterFunction The single filter implementation
      *  @param forUniqueValidityTests Inverts the `non-[filter]` test because Unique validity doesn't check for actual matching
      */
-    @Readonly @Suppress("purity")
+    @Readonly
     fun multiFilter(
         input: String,
         filterFunction: (String) -> Boolean,
@@ -39,11 +40,13 @@ object MultiFilter {
 
     @Pure
     fun getAllSingleFilters(input: String): Sequence<String> = when {
-        input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator) ->
+        input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator) -> {
             // Resolve "AND" filters
-            input.removeSurrounding(andPrefix, andSuffix)
+            @LocalState
+            val filters = input.removeSurrounding(andPrefix, andSuffix)
                 .splitToSequence(andSeparator)
-                .flatMap { getAllSingleFilters(it) }
+            filters.flatMap { getAllSingleFilters(it) }
+        }
         input.hasSurrounding(notPrefix, notSuffix) ->
             // Simply remove "non" syntax
             getAllSingleFilters(input.removeSurrounding(notPrefix, notSuffix))

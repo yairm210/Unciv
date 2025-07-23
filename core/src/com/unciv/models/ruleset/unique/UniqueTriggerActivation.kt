@@ -93,7 +93,7 @@ object UniqueTriggerActivation {
         val relevantCity by lazy {
             city?: tile?.getCity()
         }
-        fun getApplicableCities(cityFilter: String) = 
+        fun getApplicableCities(cityFilter: String) =
             if (cityFilter == "in this city") sequenceOf(relevantCity).filterNotNull()
             else civInfo.cities.asSequence().filter { it.matchesFilter(cityFilter) }
 
@@ -559,15 +559,15 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeGainResource -> {
                 val resourceName = unique.params[1]
-                
+
                 val resource = ruleset.getGameResource(resourceName) ?: return null
                 if (resource is TileResource && !resource.isStockpiled) return null
 
                 return {
                     var amount = unique.params[0].toInt()
                     if (unique.isModifiedByGameSpeed()) {
-                        if (resource is Stat) amount = (amount * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
-                        else amount = (amount * civInfo.gameInfo.speed.modifier).roundToInt()
+                        amount = if (resource is Stat) (amount * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
+                        else (amount * civInfo.gameInfo.speed.modifier).roundToInt()
                     }
                     city?.addGameResource(resource, amount) ?: civInfo.addGameResource(resource, amount)
                     true
@@ -884,7 +884,7 @@ object UniqueTriggerActivation {
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
                                 spy.addNotification("We have recruited [${spy.name}] as a spy!")
                             else
-                                spy.addNotification("After an unknown civilization entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
+                                spy.addNotification("After [an unknown civilization] entered the [$currentEra], we have recruited [${spy.name}] as a spy!")
                         }
                     }
                     true
@@ -1060,7 +1060,7 @@ object UniqueTriggerActivation {
                     else UnitActionsUpgrade.getFreeUpgradeAction(unit)
                 if (upgradeAction.none()) return null
                 return {
-                    
+
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
@@ -1104,8 +1104,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveImprovementsFromTile -> {
                 if (tile == null) return null
-                val tileImprovement = tile.getTileImprovement()
-                if (tileImprovement == null) return null
+                val tileImprovement = tile.getTileImprovement() ?: return null
                 val improvementFilter = unique.params[0]
                 if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {
@@ -1180,13 +1179,11 @@ object UniqueTriggerActivation {
                             otherCiv.getDiplomacyManagerOrMeet(civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                             civsToNotify.add(otherCiv)
                         }
-                        // check if civ has steal a tile from a citystate 
+                        // check if civ has stolen a tile from a citystate
                         if (otherCiv != null && otherCiv.isCityState) {
                             // create this varibale diplomacyCityState for more readability
                             val diplomacyCityState = otherCiv.getDiplomacyManagerOrMeet(civInfo)
                             diplomacyCityState.addInfluence(-15f)
-
-                            
 
                             if (!diplomacyCityState.hasFlag(DiplomacyFlags.TilesStolen)) {
                                 civInfo.popupAlerts.add(PopupAlert(AlertType.TilesStolen, otherCiv.civName))
@@ -1201,6 +1198,14 @@ object UniqueTriggerActivation {
                             tile.position, NotificationCategory.Cities, civInfo.civName, NotificationIcon.War)
 
                     true
+                }
+            }
+
+            UniqueType.OneTimeGlobalAlert -> {
+                if (triggerNotificationText == null) return null
+                val alertText = unique.params[0]
+                return {
+                    UniqueTriggerExecutors.triggerGlobalAlerts(civInfo, alertText, triggerNotificationText)
                 }
             }
 

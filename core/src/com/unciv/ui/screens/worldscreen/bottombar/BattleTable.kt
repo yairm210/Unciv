@@ -21,7 +21,13 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.extensions.addBorderAllowOpacity
+import com.unciv.ui.components.extensions.addRoundCloseButton
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.setSize
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UnitIconGroup
@@ -343,9 +349,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val attackButton = "NUKE".toTextButton().apply { color = Color.RED }
 
-        val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
-
-        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach || !canNuke) {
+        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canNuke) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }

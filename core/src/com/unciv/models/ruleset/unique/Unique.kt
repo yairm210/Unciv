@@ -45,15 +45,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     val isLocalEffect = params.contains("in this city") || hasModifier(UniqueType.ConditionalInThisCity)
 
-    fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
-    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
+    @Readonly fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
+    @Readonly fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
 
+
+    @Readonly fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
+    @Readonly fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
+    @Readonly fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
+    @Readonly fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
     @Readonly
-    fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
-    @Readonly
-    fun hasModifier(type: UniqueType) = modifiersMap.containsKey(type)
-    fun isModifiedByGameSpeed() = hasModifier(UniqueType.ModifiedByGameSpeed)
-    fun isModifiedByGameProgress() = hasModifier(UniqueType.ModifiedByGameProgress)
     fun getGameProgressModifier(civ: Civilization): Float {
         //According to: https://www.reddit.com/r/civ/comments/gvx44v/comment/fsrifc2/
         var modifier = 1f
@@ -68,6 +68,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             //Mod creators likely expect this to stack multiplicatively, otherwise they'd use a single modifier 
         return modifier
     }
+    @Readonly
     fun hasTriggerConditional(): Boolean {
         if (modifiers.none()) return false
         return modifiers.any { conditional ->
@@ -146,6 +147,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
+    @Readonly
     fun getSourceNameForUser(): String {
         return when (sourceObjectType) {
             null -> ""
@@ -244,6 +246,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
+    @Readonly
     fun getDisplayText(): String = if (modifiers.none { it.isHiddenToUsers() }) text
         else text.removeConditionals() + " " + modifiers.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
 }

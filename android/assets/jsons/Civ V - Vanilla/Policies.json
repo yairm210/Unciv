@@ -146,7 +146,7 @@
             "Scientific": 0
         },
         "uniques": [
-            "[+33]% Strength <vs [Barbarian] units>",
+            "[+25]% Strength <vs [Barbarian] units>",
             "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
             "Notified of new Barbarian encampments"
         ],
@@ -359,10 +359,7 @@
                 "name": "Naval Tradition",
                 "uniques": [
                     "[+1] Movement <for [{Military} {Water}] units>",
-                    "[+1] Sight <for [{Military} {Water}] units>",
-                    "Free [Great General] appears"
-                    // "[+2] Movement <for [Great Admiral] units>"
-                    // ToDo: Should be "Free [Great Admiral] appears"
+                    "[+1] Sight <for [{Military} {Water}] units>"
                 ],
                 "row": 1,
                 "column": 2
@@ -387,11 +384,7 @@
             {
                 "name": "Mercantilism",
                 "uniques": [
-                    "[Gold] cost of purchasing items in cities [-25]%",
-                    "[+1 Science] from every [Mint]",
-                    "[+1 Science] from every [Market]",
-                    "[+1 Science] from every [Bank]",
-                    "[+1 Science] from every [Stock Exchange]"
+                    "[Gold] cost of purchasing items in cities [-25]%"
                 ],
                 "requires": ["Trade Unions"],
                 "row": 2,
@@ -598,7 +591,7 @@
             {
                 "name": "Autocracy Complete",
                 "uniques": [
-                    "[+25]% Strength <when attacking> <for [Military] units> <for [30] turns>"
+                    "[+20]% Strength <when attacking> <for [Military] units> <for [30] turns>"
                 ]
             }
         ]
@@ -656,9 +649,8 @@
                 "name": "Communism",
                 "requires": ["Socialism"],
                 "uniques": [
-                    "[+1 Production] [in all cities]",
-                    "[+10]% Production when constructing [All] buildings [in all cities]",
-                    "[+1 Production] from every [Quarry]"
+                    "[+2 Production] [in all cities]",
+                    "[+10]% Production when constructing [All] buildings [in all cities]"
                 ],
                 "row": 3,
                 "column": 3
