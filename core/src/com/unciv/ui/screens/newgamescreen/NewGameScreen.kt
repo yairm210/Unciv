@@ -42,6 +42,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
+import java.net.URI
 import java.net.URL
 import java.util.UUID
 import kotlin.math.floor
@@ -164,7 +165,7 @@ class NewGameScreen(
             }
 
             if (!gameSetupInfo.gameParameters.anyoneCanSpectate) {
-                if (gameSetupInfo.gameParameters.players.none { it.playerId == UncivGame.Current.settings.multiplayer.userId })
+                if (gameSetupInfo.gameParameters.players.none { it.playerId == UncivGame.Current.settings.multiplayer.getUserId() })
                     return "You are not allowed to spectate!"
             }
         }
@@ -267,8 +268,8 @@ class NewGameScreen(
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
         return try {
-            val multiplayerServer = UncivGame.Current.settings.multiplayer.server
-            val u =  URL(if (Multiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
+            val multiplayerServer = UncivGame.Current.settings.multiplayer.getServer()
+            val u = URI(if (Multiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer).toURL()
             val con = u.openConnection()
             con.connectTimeout = 3000
             con.connect()

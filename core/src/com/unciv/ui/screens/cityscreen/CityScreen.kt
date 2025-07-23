@@ -145,6 +145,7 @@ class CityScreen(
     /** Particle effects for WLTK day decoration */
     private val isWLTKday = city.isWeLoveTheKingDayActive()
     private val fireworks: ParticleEffectMapFireworks?
+    internal var pauseFireworks = false
 
     init {
         if (isWLTKday && UncivGame.Current.settings.citySoundsVolume > 0) {
@@ -577,6 +578,7 @@ class CityScreen(
 
     override fun render(delta: Float) {
         super.render(delta)
+        if (pauseFireworks) return
         fireworks?.render(stage, delta)
     }
 }

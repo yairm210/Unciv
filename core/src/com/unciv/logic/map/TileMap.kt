@@ -360,11 +360,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * Takes world wrap into account
      * Returns null if there is no such neighbor tile or if [clockPosition] is not a valid clock position
      */
-    @Readonly @Suppress("purity") // Copy position and add
+    @Readonly
     fun getClockPositionNeighborTile(tile: Tile, clockPosition: Int): Tile? {
         val difference = HexMath.getClockPositionToHexVector(clockPosition)
         if (difference == Vector2.Zero) return null
-        val possibleNeighborPosition = tile.position.cpy().add(difference)
+        @LocalState val possibleNeighborPosition = tile.position.cpy()
+        possibleNeighborPosition.add(difference)
         return getIfTileExistsOrNull(possibleNeighborPosition.x.toInt(), possibleNeighborPosition.y.toInt())
     }
 

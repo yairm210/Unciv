@@ -1,6 +1,7 @@
 package com.unciv.utils
 
 import com.badlogic.gdx.utils.Array
+import yairm210.purity.annotations.Pure
 import kotlin.random.Random
 
 /** Get one random element of a given List.
@@ -86,14 +87,9 @@ suspend fun <T> SequenceScope<T>.yieldIfNotNull(element: T?) {
     if (element != null) yield(element)
 }
 /** [yield][SequenceScope.yield]s all elements of [elements] if it's not null */
+@Pure
 suspend fun <T> SequenceScope<T>.yieldAllNotNull(elements: Iterable<T>?) {
     if (elements != null) yieldAll(elements)
-}
-@JvmName("yieldAllNotNullNotNull")
-/** [yield][SequenceScope.yield]s all non-null elements of [elements] if it's not null */
-suspend fun <T> SequenceScope<T>.yieldAllNotNull(elements: Iterable<T?>?) {
-    if (elements == null) return
-    for (element in elements) yieldIfNotNull(element)
 }
 
 /**
