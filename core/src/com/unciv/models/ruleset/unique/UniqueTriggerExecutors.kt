@@ -44,15 +44,15 @@ internal object UniqueTriggerExecutors {
             else -> triggerNotificationText to ""
         }
 
-        for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }) {
-            if (civ == civInfo) continue
+        for (civ in civInfo.gameInfo.civilizations) {
+            if (civ == civInfo || !civ.isMajorCiv()) continue
             val defaultNotificationText = if (civ.getKnownCivs().contains(civInfo)) {
                 "[${civInfo.civName}] $messageSuffix"
             } else {
                 "[An unknown civilization] $messageSuffix"
             }
             civ.addNotification(
-                "{${defaultNotificationText}} {${alertText}}",
+                "{${defaultNotificationText}}.\n{${alertText}}",
                 NotificationCategory.General, iconName
             )
         }
