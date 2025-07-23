@@ -97,8 +97,6 @@ enum class DiplomacyFlags {
 }
 
 enum class DiplomaticModifiers(val text: String) {
-    // Reference to values and text: https://civ-5-cbp.fandom.com/wiki/Detailed_Guide_to_Diplomacy
-
     // Negative
     DeclaredWarOnUs("You declared war on us!"),
     WarMongerer("Your warmongering ways are unacceptable to us."),
@@ -701,7 +699,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      * TODO: Ending a Declaration of Friendship early through war, denouncing or discussion results in diplomatic penalties.
      */
     fun denounce() {
-        // Comments starting with REF represent Civ V behavior
+        // NOTE: Comments starting with REF represent Civ V behavior:
+        // https://civ-5-cbp.fandom.com/wiki/Detailed_Guide_to_Diplomacy
         // TODO: Should probably depend on game speed, if yes define in Speed.kt and handle updating it
         val flagsDuration = 30
 
@@ -775,13 +774,29 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 }
             }
 
-            // TODO: REF: The AI will only apply the highest Opinion penalty from all five "traitor opinion" modifiers, they do not stack.
-            // However, the text key for denouncing the AI while you were friends takes precedence over the one for denouncing other friends,
-            // even if that penalty is higher.
+            /*
+            TODO: REF: The AI will only apply the highest Opinion penalty from all five "traitor opinion" modifiers, they do not stack.
+            However, the text key for denouncing the AI while you were friends takes precedence over the one for denouncing other friends,
+            even if that penalty is higher.
+
+            BACKSTABBER PENALTY
+            
+            The AI regularly tests players to determine if they are a "backstabber".
+            Backstabbing penalties can occur if you:
+            - Break a Declaration of Friendship with a player
+            - Denounce a player you're friends with
+            - Declare war on a player you're friends with
+            - Break a promise not to declare war on a player
+            - Break a promise not to conquer a player's protected City-State
+            
+            AIs will ALSO view you as a backstabber if you've captured their original capital or Holy City
+            */
             if (backstabbing) {
                 // REF: Denouncing 2 or more friends will cause all AIs to view you as a backstabber
-                // TODO: Denouncing an AI player while you're friends will cause them to consider you a backstabber.
+                // REF: Denouncing an AI player while you're friends will cause them to consider you a backstabber.
                 val isBackstabber = countOfOurBackstabs > 1
+                    || (thirdCivDiploManagerWithUs.hasFlag(DiplomacyFlags.Denounced)
+                    && thirdCivDiploManagerWithUs.hasModifier(DiplomaticModifiers.BackstabbedUs))
 
                 val thirdCivRelationshipWithUs = thirdCivDiploManagerWithUs.relationshipIgnoreAfraid()
                 thirdCivDiploManagerWithUs.setFlag(DiplomacyFlags.BackstabbedFriends, flagsDuration) // Reset if existing

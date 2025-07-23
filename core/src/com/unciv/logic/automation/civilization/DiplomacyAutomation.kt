@@ -336,30 +336,59 @@ object DiplomacyAutomation {
         return motivation > 0
     }
 
-    internal fun denounceAdversaries(civInfo: Civilization) {
+    /**
+     * Denounce civs that behaved bad in our opinion
+     * @param civInfo Civilization which denounces
+     */
+    internal fun denounceMisbehavingCivs(civInfo: Civilization) {
         if (!civInfo.isMajorCiv()) return
         // You cannot denounce human players or AIs you are currently at war with.
         val civsWeMayDenounce = civInfo.getKnownCivs().filter {
             it.isMajorCiv() && !civInfo.isAtWarWith(it)
         }
+        
+        // For default civs range is 3-8
+        val denounceWillingness = civInfo.getPersonality().denounceWillingness
 
-        for (otherCiv in civsWeMayDenounce) {
+        loop@ for (otherCiv in civsWeMayDenounce) {
             val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
-            val civsWeBothKnow = ourDiploManager.getCommonKnownCivs()
+            val weAreFriends = ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
 
-            if (ourDiploManager.hasModifier(DiplomaticModifiers.UsedNuclearWeapons))
+            if (ourDiploManager.hasFlag(DiplomacyFlags.Denouncing))
+                continue // We already denounced you
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.UsedNuclearWeapons)) {
                 ourDiploManager.denounce() // You nuked us
-            
-            for (thirdCiv in civsWeBothKnow) {
-                val ourDiploManagerWithThirdCiv = civInfo.getDiplomacyManager(otherCiv)!!
-                val thirdCivDiploManagerWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv)!!
-
-                if (ourDiploManagerWithThirdCiv.hasFlag(DiplomacyFlags.DeclarationOfFriendship) &&
-                    thirdCivDiploManagerWithOtherCiv.hasModifier(DiplomaticModifiers.UsedNuclearWeapons))
-                    ourDiploManager.denounce() // You nuked our friends
+                continue
             }
-            
-            // TODO: For what other reasons should we denounce you?
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.AttackedAlliedMinor)
+                && ourDiploManager.hasModifier(DiplomaticModifiers.AttackedProtectedMinor)) {
+                // You attacked our ally CS that we also pledged to protect
+                if (!weAreFriends || denounceWillingness > 4) {
+                    ourDiploManager.denounce()
+                    continue
+                }
+            }
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedDefensivePact)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedPromiseToNotSendingSpiesToUs)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs)) {
+                // You betrayed your promise
+                if (!weAreFriends || denounceWillingness > 5) {
+                    ourDiploManager.denounce()
+                    continue
+                }
+            }
+
+            val ourFriendsWeBothKnow = ourDiploManager.getCommonKnownCivs().filter {
+                civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            }
+            for (thirdCiv in ourFriendsWeBothKnow) {
+                if (thirdCiv.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.UsedNuclearWeapons)) {
+                    ourDiploManager.denounce() // You nuked our friends
+                    continue@loop
+                }
+            }
         }
     }
 

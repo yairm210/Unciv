@@ -103,13 +103,13 @@ object MotivationToAttackAutomation {
         }
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DenouncedOurAllies))
-            modifiers.add(Pair("Denouncing", 3f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .3f)))
+            modifiers.add(Pair("DenouncedOurAllies", 3f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .3f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.BackstabbedFriends))
-            modifiers.add(Pair("Denouncing", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
+            modifiers.add(Pair("BackstabbedFriends", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.BackstabbedByFriend))
-            modifiers.add(Pair("Denouncing", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
+            modifiers.add(Pair("BackstabbedByFriend", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.WaryOf) && diplomacyManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
             // Completely defensive civs will plan defensively and have a 0 here

@@ -41,7 +41,7 @@ object NextTurnAutomation {
         TradeAutomation.respondToTradeRequests(civInfo, tradeAndChangeState)
 
         // Before attempting to establish embassy
-        DiplomacyAutomation.denounceAdversaries(civInfo)
+        DiplomacyAutomation.denounceMisbehavingCivs(civInfo)
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
