@@ -56,7 +56,7 @@ class TileImprovement : RulesetStatsObject() {
     @Readonly
     fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
     @Readonly
-    fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
+    fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent, GameContext.IgnoreConditionals)
 
     fun canBeBuiltOn(terrain: String): Boolean {
         return terrain in terrainsCanBeBuiltOn
