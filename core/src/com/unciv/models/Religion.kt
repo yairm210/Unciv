@@ -70,10 +70,12 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         updateUniqueMaps()
     }
 
+    @Readonly
     fun getIconName() =
         if (isPantheon()) "Pantheon"
         else name
 
+    @Readonly
     fun getReligionDisplayName() =
         if (displayName != null) displayName!!
         else name
