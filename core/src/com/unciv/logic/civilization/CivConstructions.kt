@@ -184,6 +184,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
      *  * Built buildings or those in a construction queue
      *  * Units on the map or being constructed
      */
+    @Readonly
     fun countConstructedObjects(objectToCount: INonPerpetualConstruction): Int {
         val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name]
 

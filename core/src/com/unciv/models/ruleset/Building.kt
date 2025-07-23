@@ -64,6 +64,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (!gameInfo.gameParameters.nuclearWeaponsEnabled && hasUnique(UniqueType.EnablesNuclearWeapons)) return true
         return isHiddenByStartingEra(gameInfo)
     }
+    
+    @Readonly
     private fun isHiddenByStartingEra(gameInfo: GameInfo): Boolean {
         if (!isWonder) return false
         // do not rely on this.ruleset or unit tests break

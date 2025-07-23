@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
@@ -54,10 +55,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
-    @Readonly
-    fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
-    fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
-    fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
+    
+    @Readonly fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
+    @Readonly fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
+    @Readonly fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
     @Suppress("unused") // Keep the how-to around
     fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
@@ -101,6 +102,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    @Readonly
     override fun isUnavailableBySettings(gameInfo: GameInfo) =
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
@@ -120,6 +122,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    
     fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
         val unit = MapUnit()
         unit.name = name
@@ -208,6 +211,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
         getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
 
+    @Readonly @Suppress("purity") // component1, component2
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
@@ -288,13 +292,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 else yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
 
-        if (city != null && isAirUnit()) {
+        if (city != null && isAirUnit() && !canUnitEnterTile(city)) {
             // Not actually added to civ so doesn't require destroy
-            val fakeUnit = getMapUnit(civ, Constants.NO_ID)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(city.getCenterTile())
-            if (!canUnitEnterTile)
-                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+            yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
         }
+    }
+    
+    @Readonly @Suppress("purity") // Good suppression - we cheat by creating a unit
+    fun canUnitEnterTile(city: City): Boolean {
+        val fakeUnit = getMapUnit(city.civ, Constants.NO_ID)
+        return fakeUnit.movement.canMoveTo(city.getCenterTile())
     }
 
     /**
@@ -302,6 +309,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
      * Also custom handles [UniqueType.ConditionalBuildingBuiltAmount], and
      * [UniqueType.ConditionalBuildingBuiltAll]
      */
+    @Readonly
     private fun notMetRejections(unique: Unique, civ: Civilization, city: City?, built: Boolean=false): Sequence<RejectionReason> = sequence {
         for (conditional in unique.modifiers) {
             // We yield a rejection only when conditionals are NOT met
@@ -468,10 +476,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
-        val resourceRequirements = Counter<String>()
+        @LocalState val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: GameContext.EmptyState))
-            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+            resourceRequirements.add(unique.params[1], unique.params[0].toInt())
         return resourceRequirements
     }
 
@@ -483,7 +491,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     val isLandUnit by lazy { type.isLandUnit() }
     val isWaterUnit by lazy { type.isWaterUnit() }
-    fun isAirUnit() = type.isAirUnit()
+    @Readonly fun isAirUnit() = type.isAirUnit()
 
     fun isProbablySiegeUnit() = isRanged()
             && getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)

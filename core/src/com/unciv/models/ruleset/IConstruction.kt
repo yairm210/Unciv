@@ -13,6 +13,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stat.Companion.statsUsableToBuy
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -24,7 +27,7 @@ interface IConstruction : INamed {
     
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/
-    fun getResourceRequirementsPerTurn(state: GameContext? = null): Counter<String>
+    @Readonly fun getResourceRequirementsPerTurn(state: GameContext? = null): Counter<String>
     fun requiredResources(state: GameContext = GameContext.EmptyState): Set<String>
     fun getStockpiledResourceRequirements(state: GameContext): Counter<String>
 }
@@ -108,20 +111,24 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return null
     }
 
+    @Readonly
     fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
 
+    @Readonly
     override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> =
             getMatchingUniques(uniqueType, gameContext)
 
+    @Readonly
     override fun requiredResources(state: GameContext): Set<String> {
         return getResourceRequirementsPerTurn(state).keys +
                 getMatchingUniques(UniqueType.CostsResources, state).map { it.params[1] }
     }
     
+    @Readonly
     override fun getStockpiledResourceRequirements(state: GameContext): Counter<String> {
-        val counter = Counter<String>()
+        @LocalState val counter = Counter<String>()
         for (unique in getMatchingUniquesNotConflicting(UniqueType.CostsResources, state)){
             var amount = unique.params[0].toInt()
             if (unique.isModifiedByGameSpeed()) amount = (amount * state.gameInfo!!.speed.modifier).toInt()
@@ -269,8 +276,9 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     NoPlaceToPutUnit(true, "No space to place this unit");
 
     val defaultInstance by lazy { RejectionReason(this, errorMessage, shouldShow) }
-    fun toInstance() = defaultInstance
+    @Pure fun toInstance() = defaultInstance
 
+    @Pure
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReason {
         return RejectionReason(this, errorMessage, shouldShow)

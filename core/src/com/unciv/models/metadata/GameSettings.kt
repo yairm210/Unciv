@@ -195,6 +195,7 @@ class GameSettings {
         return Collator.getInstance(getCurrentLocale())
     }
 
+    @Readonly
     fun getCurrentNumberFormat(): NumberFormat {
         return LocaleCode.getNumberFormatFromLanguage(language)
     }

@@ -55,8 +55,10 @@ allprojects {
             // Looks like the Collection.contains is not considered overridden :thunk:
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
+            "kotlin.collections.Collection.contains",
         )
         wellKnownPureClasses = setOf(
+            "java.text.NumberFormat"
         )
     }
     

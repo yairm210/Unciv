@@ -523,7 +523,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return finalModifier
     }
 
-    fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
+    @Readonly fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =
@@ -590,12 +590,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
 
+    @Readonly
     fun getEquivalentBuilding(buildingName: String): Building {
         val building = gameInfo.ruleset.buildings[buildingName]
             ?: throw Exception("No building by the name of $buildingName exists!")
         return getEquivalentBuilding(building)
     }
 
+    @Readonly
     fun getEquivalentBuilding(baseBuilding: Building): Building {
         if (baseBuilding.replaces != null
                 && baseBuilding.replaces in gameInfo.ruleset.buildings)
@@ -607,12 +609,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         return baseBuilding
     }
 
+    @Readonly
     fun getEquivalentTileImprovement(tileImprovementName: String): TileImprovement {
         val tileImprovement = gameInfo.ruleset.tileImprovements[tileImprovementName]
             ?: throw UncivShowableException("Improvement $tileImprovementName doesn't seem to exist!")
         return getEquivalentTileImprovement(tileImprovement)
     }
 
+    @Readonly
     fun getEquivalentTileImprovement(tileImprovement: TileImprovement): TileImprovement {
         if (tileImprovement.replaces != null)
             return getEquivalentTileImprovement(tileImprovement.replaces!!)
@@ -623,12 +627,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         return tileImprovement
     }
 
+    @Readonly
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
         val baseUnit = gameInfo.ruleset.units[baseUnitName]
             ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return getEquivalentUnit(baseUnit)
     }
 
+    @Readonly
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
@@ -639,6 +645,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return baseUnit
     }
 
+    @Readonly
     fun capitalCityIndicator(city: City? = null): Building? {
         val gameContext = if (city?.civ == this) city.state
         else if (city == null) state

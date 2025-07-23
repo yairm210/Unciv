@@ -58,11 +58,16 @@ open class Counter<K>(
         return newCounter
     }
 
-    operator fun plus(other: Counter<K>) = clone().apply { add(other) }
+    @Readonly 
+    operator fun plus(other: Counter<K>): Counter<K> {
+        @LocalState val clone = clone()
+        clone.add(other)
+        return clone
+    }
 
     fun sumValues() = values.sum()
 
-    override fun clone() = Counter(this)
+    @Readonly override fun clone() = Counter(this)
 
     companion object {
         val ZERO: Counter<String> = object : Counter<String>() {

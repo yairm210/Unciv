@@ -563,6 +563,7 @@ fun String.removeConditionals(): String {
  *
  *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
  */
+@Readonly
 fun Number.tr(): String {
     return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
 }
