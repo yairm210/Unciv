@@ -40,6 +40,9 @@ object NextTurnAutomation {
         respondToPopupAlerts(civInfo)
         TradeAutomation.respondToTradeRequests(civInfo, tradeAndChangeState)
 
+        // Before attempting to establish embassy
+        DiplomacyAutomation.denounceAdversaries(civInfo)
+
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
                 DiplomacyAutomation.declareWar(civInfo)

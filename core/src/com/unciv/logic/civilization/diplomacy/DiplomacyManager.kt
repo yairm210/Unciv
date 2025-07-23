@@ -82,7 +82,14 @@ enum class DiplomacyFlags {
     RememberBulliedProtectedMinor,
     RememberSidedWithProtectedMinor,
 
-    Denunciation,
+    Denouncing, // We are denouncing
+    Denounced, // We are denounced or backstabbed by otherCiv()
+    DenouncedOurAllies, // otherCiv() denounced our allies (those with whom we made DoF with)
+    BackstabbedFriends, // We are backstabbing otherCiv()
+    BackstabbedByFriend, // We are denouned by our friend that is not otherCiv()
+    DenouncedOurEnemies, // otherCiv() denounced our enemies
+    SharedDenounciation, // We and otherCiv() both denounced third civ
+
     WaryOf,
     Bullied,
     RecentlyAttacked,
@@ -90,6 +97,8 @@ enum class DiplomacyFlags {
 }
 
 enum class DiplomaticModifiers(val text: String) {
+    // Reference to values and text: https://civ-5-cbp.fandom.com/wiki/Detailed_Guide_to_Diplomacy
+
     // Negative
     DeclaredWarOnUs("You declared war on us!"),
     WarMongerer("Your warmongering ways are unacceptable to us."),
@@ -98,8 +107,12 @@ enum class DiplomaticModifiers(val text: String) {
     BetrayedDeclarationOfFriendship("Your so-called 'friendship' is worth nothing."),
     SignedDefensivePactWithOurEnemies("You have declared a defensive pact with our enemies!"),
     BetrayedDefensivePact("Your so-called 'defensive pact' is worth nothing."),
-    Denunciation("You have publicly denounced us!"),
-    DenouncedOurAllies("You have denounced our allies"),
+    Denouncing("We have publicly denounced you!"), // -35
+    DenuncedUs("You have publicly denounced us!"), // -35
+    BackstabbedUs("You made a Declaration of Friendship with us and then denounced us!"), // -35
+    DenouncedOurAllies("You have denounced a leader we made a Declaration of Friendship with!"), // -18
+    BackstabbedFriends("You have denounced leaders you've made Declarations of Friendship with!"), // -10 or -15 (times count of backstabs)
+    BackstabbedByFriend("Your friends found reason to denounce you!"), // -20
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
     RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
     RefusedToNotSendingSpiesToUs("You refused to stop spying on us"),
@@ -124,12 +137,13 @@ enum class DiplomaticModifiers(val text: String) {
     SharedEmbassies("We have shared embassies"),
     YearsOfPeace("Years of peace have strengthened our relations."),
     SharedEnemy("Our mutual military struggle brings us closer together."),
+    DenouncedOurEnemies("You have denounced our enemies"), // No reference, but 18 is the opposite of DenouncedOurAllies
+    SharedDenounciation("We have denounced the same leaders!"), // 18
     LiberatedCity("We applaud your liberation of conquered cities!"),
     DeclarationOfFriendship("We have signed a public declaration of friendship"),
     DeclaredFriendshipWithOurAllies("You have declared friendship with our allies"),
     DefensivePact("We have signed a promise to protect each other."),
     SignedDefensivePactWithOurAllies("You have declared a defensive pact with our allies"),
-    DenouncedOurEnemies("You have denounced our enemies"),
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
     FulfilledPromiseToNotSpreadReligion("You fulfilled your promise to stop spreading religion to us!"),
@@ -682,35 +696,122 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             removeModifier(DiplomaticModifiers.BelieveSameReligion)
     }
 
+    /**
+     * You cannot denounce human players or AIs you are currently at war with.
+     * TODO: Ending a Declaration of Friendship early through war, denouncing or discussion results in diplomatic penalties.
+     */
     fun denounce() {
-        setModifier(DiplomaticModifiers.Denunciation, -35f)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
-        setFlag(DiplomacyFlags.Denunciation, 30)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
+        // Comments starting with REF represent Civ V behavior
+        // TODO: Should probably depend on game speed, if yes define in Speed.kt and handle updating it
+        val flagsDuration = 30
 
-        // Denounciation results in removal of embasies for both sides
+        setFlag(DiplomacyFlags.Denouncing, flagsDuration)
+        setModifier(DiplomaticModifiers.Denouncing, -35f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.Denounced, flagsDuration)
+
+        val otherCivsWithSpectators = getCommonKnownCivsWithSpectators()
+        var countOfOurBackstabs = otherCivsWithSpectators.count {
+            !it.isSpectator() && it.getDiplomacyManager(civInfo)!!.hasModifier(DiplomaticModifiers.BackstabbedUs) }
+        val backstabbing = hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+
+        if (backstabbing) {
+            ++countOfOurBackstabs
+            otherCivDiplomacy().setModifier(DiplomaticModifiers.BackstabbedUs, -35f)
+        }
+        else otherCivDiplomacy().setModifier(DiplomaticModifiers.DenuncedUs, -35f)
+
+        // REF: Denounciation results in removal of embasies for both sides
         civInfo.diplomacyFunctions.removeEmbassies(otherCiv())
 
-        otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
-            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        if (otherCiv().isHuman()) 
+            otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
+                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        getCommonKnownCivsWithSpectators().forEach { thirdCiv ->
-            thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-            if (thirdCiv.isSpectator()) return@forEach
-            val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv())!!.relationshipIgnoreAfraid()
-            val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)!!
-            when (thirdCivRelationshipWithOtherCiv) {
-                RelationshipLevel.Unforgivable -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
-                RelationshipLevel.Enemy -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
-                RelationshipLevel.Friend -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
-                RelationshipLevel.Ally -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
-                else -> {}
+        for (thirdCiv in otherCivsWithSpectators) {
+            if (!thirdCiv.isAI())
+                thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
+                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+
+            if (thirdCiv.isSpectator()) continue
+            
+            val thirdCivDiploManagerWithUs = thirdCiv.getDiplomacyManager(civInfo)!!
+            val thirdCivDiploManagerWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv())!!
+            val thirdCivRelationshipWithOtherCiv = thirdCivDiploManagerWithOtherCiv.relationshipIgnoreAfraid()
+            val isDenouncementSharedWithThirdCiv = thirdCivDiploManagerWithOtherCiv.hasModifier(DiplomaticModifiers.Denouncing)
+
+            if (isDenouncementSharedWithThirdCiv) {
+                val ourDiploManagerWithThirdCiv = civInfo.getDiplomacyManager(thirdCiv)!!
+
+                // REF: You only need one mutual denouncement to get this bonus, it does not stack.
+                ourDiploManagerWithThirdCiv.replaceModifier(
+                    DiplomaticModifiers.SharedDenounciation, DiplomaticModifiers.SharedDenounciation, 18f)
+                thirdCivDiploManagerWithUs.replaceModifier(
+                    DiplomaticModifiers.SharedDenounciation, DiplomaticModifiers.SharedDenounciation, 18f)
+
+                // Reset countdowns if already set
+                ourDiploManagerWithThirdCiv.setFlag(DiplomacyFlags.SharedDenounciation, flagsDuration)
+                thirdCivDiploManagerWithUs.setFlag(DiplomacyFlags.SharedDenounciation, flagsDuration)
+                
+                // We don't replace DenouncedOurEnemies and DenouncedOurAllies here with SharedDenounciation,
+                // because those modifiers may apply to third civ unrelated to otherCiv()
+                // Also because reference says nothing about mutual exclusion of modifiers
+            }
+            else {
+                // REF: You only need to denounce one of their friends to get this penalty, it does not stack.
+                // No reference for DenouncedOurEnemies but we apply same logic as above to avoid stacking modifiers
+                when (thirdCivRelationshipWithOtherCiv) {
+                    RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> {
+                        thirdCivDiploManagerWithUs.setFlag(DiplomacyFlags.DenouncedOurEnemies, flagsDuration)
+                        thirdCivDiploManagerWithUs.replaceModifier(
+                            DiplomaticModifiers.DenouncedOurEnemies, DiplomaticModifiers.DenouncedOurEnemies, 18f)
+                    }
+                    RelationshipLevel.Friend, RelationshipLevel.Ally -> {
+                        thirdCivDiploManagerWithUs.setFlag(DiplomacyFlags.DenouncedOurAllies, flagsDuration)
+                        thirdCivDiploManagerWithUs.replaceModifier(
+                            DiplomaticModifiers.DenouncedOurAllies, DiplomaticModifiers.DenouncedOurAllies, -18f)
+                    }
+                    else -> {}
+                }
+            }
+
+            // TODO: REF: The AI will only apply the highest Opinion penalty from all five "traitor opinion" modifiers, they do not stack.
+            // However, the text key for denouncing the AI while you were friends takes precedence over the one for denouncing other friends,
+            // even if that penalty is higher.
+            if (backstabbing) {
+                // REF: Denouncing 2 or more friends will cause all AIs to view you as a backstabber
+                // TODO: Denouncing an AI player while you're friends will cause them to consider you a backstabber.
+                val isBackstabber = countOfOurBackstabs > 1
+
+                val thirdCivRelationshipWithUs = thirdCivDiploManagerWithUs.relationshipIgnoreAfraid()
+                thirdCivDiploManagerWithUs.setFlag(DiplomacyFlags.BackstabbedFriends, flagsDuration) // Reset if existing
+
+                // REF: The penalty is -15 * the number of friends you denounced if the AI views you as a backstabber.
+                // REF: If they do not view you as a backstabber, the AI will apply a penalty of -10 for each friend
+                // you denounced if their opinion of the friend you denounced is greater than their opinion of you.
+                if (isBackstabber) {
+                    thirdCivDiploManagerWithUs.replaceModifier(
+                        DiplomaticModifiers.BackstabbedFriends, DiplomaticModifiers.BackstabbedFriends, -15f * countOfOurBackstabs)
+
+                    // REF: The AI will disregard denouncements by players they view as backstabbers.
+                    continue
+                }
+                else if (thirdCivDiploManagerWithOtherCiv.isRelationshipLevelGT(thirdCivRelationshipWithUs)) {
+                    thirdCivDiploManagerWithUs.replaceModifier(
+                        DiplomaticModifiers.BackstabbedFriends, DiplomaticModifiers.BackstabbedFriends, -10f * countOfOurBackstabs)
+                }
+
+                // REF: The AI will only apply this penalty if their opinion of the player who denounced you is better than their opinion of you.
+                if (thirdCivDiploManagerWithUs.isRelationshipLevelGT(thirdCivRelationshipWithOtherCiv)) {
+                    // REF: You only need to be denounced by one friend to get this penalty, it does not stack.
+                    if (!thirdCivDiploManagerWithOtherCiv.hasFlag(DiplomacyFlags.BackstabbedByFriend))
+                        thirdCivDiploManagerWithOtherCiv.addModifier(DiplomaticModifiers.BackstabbedByFriend,-20f)
+                    thirdCivDiploManagerWithOtherCiv.setFlag(DiplomacyFlags.BackstabbedByFriend, flagsDuration) // Reset if existing
+                }
             }
         }
     }
-    
+
     fun agreeToDemand(demand: Demand){
         otherCivDiplomacy().setFlag(demand.agreedToDemand, 100)
         addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)

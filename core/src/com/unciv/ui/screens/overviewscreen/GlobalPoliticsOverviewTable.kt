@@ -240,9 +240,10 @@ class GlobalPoliticsOverviewTable(
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
-            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
+            // TODO: Maybe add case for Backstabbed?
+            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denouncing) == true) {
                 val denouncedText = ColorMarkupLabel("Denounced [${getCivName(otherCiv)}]", Color.RED)
-                val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
+                val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denouncing)} ${Fonts.turn})".toLabel()
                 politicsTable.add(denouncedText)
                 politicsTable.add(turnsLeftText).row()
             }

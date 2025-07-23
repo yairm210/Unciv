@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapPathing
@@ -91,9 +92,24 @@ object MotivationToAttackAutomation {
 
         modifiers.add(Pair("Relationship", getRelationshipModifier(diplomacyManager)))
 
-        if (diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)) {
-            modifiers.add(Pair("Denunciation", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
+        // TODO: Probably less motivation caused by denouncements since there are now 6 negative modifiers instead of 1
+        if (diplomacyManager.hasFlag(DiplomacyFlags.Denouncing))
+            modifiers.add(Pair("Denouncing", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
+
+        if (diplomacyManager.hasFlag(DiplomacyFlags.Denounced)) {
+            if (diplomacyManager.hasModifier(DiplomaticModifiers.BackstabbedUs)) 
+                modifiers.add(Pair("BackstabbedUs", 10f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .10f)))
+            else modifiers.add(Pair("DenuncedUs", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
         }
+
+        if (diplomacyManager.hasFlag(DiplomacyFlags.DenouncedOurAllies))
+            modifiers.add(Pair("Denouncing", 3f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .3f)))
+
+        if (diplomacyManager.hasFlag(DiplomacyFlags.BackstabbedFriends))
+            modifiers.add(Pair("Denouncing", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
+
+        if (diplomacyManager.hasFlag(DiplomacyFlags.BackstabbedByFriend))
+            modifiers.add(Pair("Denouncing", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.WaryOf) && diplomacyManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
             // Completely defensive civs will plan defensively and have a 0 here
@@ -179,8 +195,13 @@ object MotivationToAttackAutomation {
             val thirdCivDiploManager = civInfo.getDiplomacyManager(thirdCiv)
             if (thirdCivDiploManager!!.isRelationshipLevelLT(RelationshipLevel.Friend)) continue
 
-            if (thirdCiv.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation))
+            val thirdCivDiploManagerWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv)!!
+            if (thirdCivDiploManagerWithOtherCiv.hasFlag(DiplomacyFlags.Denouncing))
                 alliedWarMotivation += 2f
+            if (thirdCivDiploManagerWithOtherCiv.hasFlag(DiplomacyFlags.Denounced)) {
+                alliedWarMotivation += if (thirdCivDiploManagerWithOtherCiv.hasModifier(DiplomaticModifiers.BackstabbedUs))
+                    2f else 1f
+            }
 
             if (thirdCiv.isAtWarWith(otherCiv)) {
                 alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15f

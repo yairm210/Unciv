@@ -414,10 +414,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    /**
+     * @param challenger Civ being challenged by us to denounce [mostRecentBully]
+     * @param mostRecentBully Civ which bullied us
+     */
     private fun isDenounceCivQuestValid(challenger: Civilization, mostRecentBully: String?): Boolean {
         return mostRecentBully != null
             && challenger.knows(mostRecentBully)
-            && !challenger.getDiplomacyManager(mostRecentBully)!!.hasFlag(DiplomacyFlags.Denunciation)
+            && !challenger.getDiplomacyManager(mostRecentBully)!!.hasFlag(DiplomacyFlags.Denouncing)
             && challenger.getDiplomacyManager(mostRecentBully)!!.diplomaticStatus != DiplomaticStatus.War
             && !( challenger.playerType == PlayerType.Human
             && civ.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
@@ -434,7 +438,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             QuestName.FindPlayer -> assignee.hasMetCivTerritory(civ.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder -> assignee.naturalWonders.contains(assignedQuest.data1)
             QuestName.PledgeToProtect -> assignee in civ.cityStateFunctions.getProtectorCivs()
-            QuestName.DenounceCiv -> assignee.getDiplomacyManager(assignedQuest.data1)!!.hasFlag(DiplomacyFlags.Denunciation)
+            QuestName.DenounceCiv -> assignee.getDiplomacyManager(assignedQuest.data1)!!.hasFlag(DiplomacyFlags.Denouncing)
             QuestName.SpreadReligion -> civ.getCapital()!!.religion.getMajorityReligion() == civ.gameInfo.religions[assignedQuest.data2]
             else -> false
         }

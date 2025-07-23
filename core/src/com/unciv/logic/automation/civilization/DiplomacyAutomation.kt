@@ -336,6 +336,33 @@ object DiplomacyAutomation {
         return motivation > 0
     }
 
+    internal fun denounceAdversaries(civInfo: Civilization) {
+        if (!civInfo.isMajorCiv()) return
+        // You cannot denounce human players or AIs you are currently at war with.
+        val civsWeMayDenounce = civInfo.getKnownCivs().filter {
+            it.isMajorCiv() && !civInfo.isAtWarWith(it)
+        }
+
+        for (otherCiv in civsWeMayDenounce) {
+            val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+            val civsWeBothKnow = ourDiploManager.getCommonKnownCivs()
+
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.UsedNuclearWeapons))
+                ourDiploManager.denounce() // You nuked us
+            
+            for (thirdCiv in civsWeBothKnow) {
+                val ourDiploManagerWithThirdCiv = civInfo.getDiplomacyManager(otherCiv)!!
+                val thirdCivDiploManagerWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv)!!
+
+                if (ourDiploManagerWithThirdCiv.hasFlag(DiplomacyFlags.DeclarationOfFriendship) &&
+                    thirdCivDiploManagerWithOtherCiv.hasModifier(DiplomaticModifiers.UsedNuclearWeapons))
+                    ourDiploManager.denounce() // You nuked our friends
+            }
+            
+            // TODO: For what other reasons should we denounce you?
+        }
+    }
+
     internal fun declareWar(civInfo: Civilization) {
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return

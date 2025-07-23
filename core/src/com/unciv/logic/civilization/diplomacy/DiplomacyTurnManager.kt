@@ -203,6 +203,18 @@ object DiplomacyTurnManager {
                     DiplomacyFlags.RememberSidedWithProtectedMinor.name -> {      // 25
                         removeModifier(DiplomaticModifiers.SidedWithProtectedMinor)
                     }
+                    // Denouncements
+                    DiplomacyFlags.Denouncing.name -> removeModifier(DiplomaticModifiers.Denouncing)
+                    DiplomacyFlags.Denounced.name -> {
+                        removeModifier(DiplomaticModifiers.DenuncedUs)
+                        removeModifier(DiplomaticModifiers.BackstabbedUs)
+                    }
+                    DiplomacyFlags.DenouncedOurAllies.name -> removeModifier(DiplomaticModifiers.DenouncedOurAllies)
+                    DiplomacyFlags.BackstabbedFriends.name -> removeModifier(DiplomaticModifiers.BackstabbedFriends)
+                    DiplomacyFlags.BackstabbedByFriend.name -> removeModifier(DiplomaticModifiers.BackstabbedByFriend)
+                    DiplomacyFlags.DenouncedOurEnemies.name -> removeModifier(DiplomaticModifiers.DenouncedOurEnemies)
+                    DiplomacyFlags.SharedDenounciation.name -> removeModifier(DiplomaticModifiers.SharedDenounciation)
+                    
                     else -> {
                         for (demand in Demand.entries){
                             if (demand.agreedToDemand.name == flag) addModifier(demand.fulfilledPromiseDiplomacyModifier, 10f)
@@ -289,11 +301,20 @@ object DiplomacyTurnManager {
         }
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
-        revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
-        revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
-        revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
         revertToZero(DiplomaticModifiers.SpiedOnUs, 1 / 4f)
         revertToZero(DiplomaticModifiers.StoleOurAlly, 1 / 2f) // Fair enough, don't like it but not directly against us per se
+        
+        // Negative denouncements
+        // Fading time from shorter to longer: 4f, 8f or 12f
+        revertToZero(DiplomaticModifiers.Denouncing, 1 / 8f) // That's personal, it'll take a long time to fade
+        revertToZero(DiplomaticModifiers.DenuncedUs, 1 / 8f)
+        revertToZero(DiplomaticModifiers.BackstabbedUs, 1 / 12f)
+        revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
+        revertToZero(DiplomaticModifiers.BackstabbedFriends, 1 / 12f)
+        revertToZero(DiplomaticModifiers.BackstabbedByFriend, 1 / 12f)
+        // Positive denouncements
+        revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
+        revertToZero(DiplomaticModifiers.SharedDenounciation, 1 / 4f)
 
         // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
@@ -361,5 +382,4 @@ object DiplomacyTurnManager {
         else if (currentAmount > 0) addModifier(modifier, -amount)
         else addModifier(modifier, amount)
     }
-
 }
