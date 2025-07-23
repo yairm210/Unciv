@@ -4,6 +4,7 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 class GlobalUniques: RulesetObject() {
     override var name = "GlobalUniques"
@@ -13,6 +14,7 @@ class GlobalUniques: RulesetObject() {
     override fun getUniqueTarget() = UniqueTarget.GlobalUniques
 
     companion object {
+        @Readonly
         fun getUniqueSourceDescription(unique: Unique): String {
             if (unique.modifiers.isEmpty())
                 return "Global Effect"

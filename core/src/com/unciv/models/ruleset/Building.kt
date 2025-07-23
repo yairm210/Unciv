@@ -14,6 +14,8 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
@@ -62,6 +64,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (!gameInfo.gameParameters.nuclearWeaponsEnabled && hasUnique(UniqueType.EnablesNuclearWeapons)) return true
         return isHiddenByStartingEra(gameInfo)
     }
+    
+    @Readonly
     private fun isHiddenByStartingEra(gameInfo: GameInfo): Boolean {
         if (!isWonder) return false
         // do not rely on this.ruleset or unit tests break
@@ -539,15 +543,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
+    @Readonly
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
         val uniques = getMatchingUniques(UniqueType.ConsumesResources,
             state ?: GameContext.EmptyState)
         if (uniques.none() && requiredResource == null) return Counter.ZERO
         
-        val resourceRequirements = Counter<String>()
+        @LocalState val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniques)
-            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+            resourceRequirements.add(unique.params[1], unique.params[0].toInt())
         return resourceRequirements
     }
 }

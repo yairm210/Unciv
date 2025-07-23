@@ -6,13 +6,17 @@ import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
+import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
+import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
+import yairm210.purity.annotations.Readonly
 import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
@@ -191,6 +195,7 @@ class GameSettings {
         return Collator.getInstance(getCurrentLocale())
     }
 
+    @Readonly
     fun getCurrentNumberFormat(): NumberFormat {
         return LocaleCode.getNumberFormatFromLanguage(language)
     }
@@ -265,12 +270,45 @@ class GameSettings {
     //region Multiplayer-specific
 
     class GameSettingsMultiplayer {
-        var userId = ""
-        var passwords = mutableMapOf<String, String>()
+        private var userId = ""
+        fun getUserId() = userId
+        fun setUserId(value: String) {
+            if (userId.isNotEmpty() && userId != value) {
+                ChatWebSocket.restart(force = true)
+            }
+            userId = value
+        }
+
+        /**
+         * Never ever make it public. If you need a method make it.
+         * But do remember to call [ChatWebSocket.restart] with `force = true` whenever required.
+         */
+        private val passwords = mutableMapOf<String, String>()
+        @Readonly
+        fun getPassword(serverUrl: String) = passwords[serverUrl]
+        @Readonly
+        fun getCurrentServerPassword() = passwords[server]
+        fun setCurrentServerPassword(password: String) {
+            val oldPassword = passwords[server]
+            if (oldPassword != null && oldPassword != password) {
+                ChatWebSocket.restart(force = true)
+            }
+            passwords[server] = password
+        }
+
         @Suppress("unused")  // @GGuenni knows what he intended with this field
         var userName: String = ""
-        var server = Constants.uncivXyzServer
-        var friendList: MutableList<FriendList.Friend> = mutableListOf()
+
+        private var server = Constants.uncivXyzServer
+        fun getServer() = server
+        fun setServer(value: String) {
+            if (server != value) {
+                server = value
+                ChatWebSocket.restart(force = true)
+            }
+        }
+
+        val friendList: MutableList<FriendList.Friend> = mutableListOf()
         var turnCheckerEnabled = true
         var turnCheckerPersistentNotificationEnabled = true
         var turnCheckerDelay: Duration = Duration.ofMinutes(5)

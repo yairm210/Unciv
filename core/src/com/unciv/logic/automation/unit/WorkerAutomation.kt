@@ -92,7 +92,7 @@ class WorkerAutomation(
         if (currentTile.improvementInProgress != null) return // we're working!
 
         if (tileToWork == currentTile && tileHasWorkToDo(currentTile, unit, localUniqueCache)) 
-            startWorkOnCurrentTile(unit)
+            return startWorkOnCurrentTile(unit)
 
         // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
         if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return

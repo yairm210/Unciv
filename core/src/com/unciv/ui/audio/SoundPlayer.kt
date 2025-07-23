@@ -117,13 +117,13 @@ object SoundPlayer {
     }
 
     /** Holds a Gdx Sound and a flag indicating the sound is freshly loaded and not from cache */
-    private data class GetSoundResult(val resource: Sound, val isFresh: Boolean)
+    data class GetSoundResult(val resource: Sound, val isFresh: Boolean)
 
     /** Retrieve (if not cached create from resources) a Gdx Sound from an UncivSound
      * @param sound The sound to fetch
      * @return `null` if file cannot be found, a [GetSoundResult] otherwise
      */
-    private fun get(sound: UncivSound): GetSoundResult? {
+    fun get(sound: UncivSound): GetSoundResult? {
         checkCache()
 
         // Look for cached sound
@@ -158,10 +158,17 @@ object SoundPlayer {
         }
 
         debug("Sound %s loaded from %s", sound.fileName, file.path())
-        val newSound = Gdx.audio.newSound(file)
-        // Store Sound for reuse
-        soundMap[sound] = newSound
-        return GetSoundResult(newSound, true)
+        try {
+            val newSound = Gdx.audio.newSound(file)
+            // Store Sound for reuse
+            soundMap[sound] = newSound
+            return GetSoundResult(newSound, true)
+        } catch (e: Exception) {
+            debug("Failed to create a sound %s from %s: %s", sound.fileName, file.path(), e.message)
+            // remember that the actual file is missing
+            soundMap[sound] = null
+            return null
+        }
     }
 
     /** Play a sound once. Will not play if the sound is [UncivSound.Silent] or the volume is too low.
