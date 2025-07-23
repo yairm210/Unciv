@@ -150,8 +150,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
 
-            if (settings.multiplayer.userId.isEmpty()) { // assign permanent user id
-                settings.multiplayer.userId = UUID.randomUUID().toString()
+            if (settings.multiplayer.getUserId().isEmpty()) { // assign permanent user id
+                settings.multiplayer.setUserId(UUID.randomUUID().toString())
                 settings.save()
             }
 
@@ -196,7 +196,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         if (gameInfo?.gameParameters?.isOnlineMultiplayer == true
                 && gameInfo?.gameParameters?.anyoneCanSpectate == false
-                && gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
+                && gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.getUserId() }) {
             throw UncivShowableException("You are not allowed to spectate!")
         }
 

@@ -19,11 +19,11 @@ fun GameSettings.isMigrationNecessary(): Boolean {
 private fun GameSettings.migrateMultiplayerSettings(json: JsonValue) {
     val userId = json.get("userId")
     if (userId != null && userId.isString) {
-        multiplayer.userId = userId.asString()
+        multiplayer.setUserId(userId.asString())
     }
     val server = json.get("multiplayerServer")
     if (server != null && server.isString) {
-        multiplayer.server = server.asString()
+        multiplayer.setServer(server.asString())
     }
     val enabled = json.get("multiplayerTurnCheckerEnabled")
     if (enabled != null && enabled.isBoolean) {
