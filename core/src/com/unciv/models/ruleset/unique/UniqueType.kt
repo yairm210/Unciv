@@ -868,7 +868,11 @@ enum class UniqueType(
     OneTimeRevealSpecificMapTiles("Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius", UniqueTarget.Triggerable),
     OneTimeRevealCrudeMap("From a randomly chosen tile [positiveAmount] tiles away from the ruins, reveal tiles up to [positiveAmount] tiles away with [positiveAmount]% chance", UniqueTarget.Ruins),
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable,
-        docDescription = "Only works on Policies at the moment.", flags = UniqueFlag.setOfNoConditionals),
+        docDescription = "Supported on Policies and Technologies.\n" +
+            "For other targets, the generated Notification may not read nicely, and will likely not support translation." +
+            " Reason: Your [comment] gets a generated introduction, other triggers usually notify _you_, not _others_," +
+            " and that difference is currently handled by mapping text.\n" +
+            "Conditionals evaluate in the context of the civilization having the Unique, not the recipients of the alerts."),
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
     OneTimeSpiesLevelUp("Promotes all spies [positiveAmount] time(s)", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainSpy("Gain an extra spy", UniqueTarget.Triggerable),  // used in Wonders
