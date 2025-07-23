@@ -56,6 +56,7 @@ allprojects {
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "kotlin.collections.Collection.contains",
+            "kotlin.collections.dropLastWhile",
         )
         wellKnownPureClasses = setOf(
             "java.text.NumberFormat"

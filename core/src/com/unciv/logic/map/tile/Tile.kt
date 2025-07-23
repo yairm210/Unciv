@@ -262,7 +262,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return null
     }
 
-    fun getCity(): City? = owningCity
+    @Readonly fun getCity(): City? = owningCity
 
     @Readonly internal fun getNaturalWonder(): Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
@@ -282,7 +282,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return exploredBy.contains(player.civName)
     }
 
-    fun isCityCenter(): Boolean = isCityCenterInternal
+    @Readonly fun isCityCenter(): Boolean = isCityCenterInternal
     @Readonly fun isNaturalWonder(): Boolean = naturalWonder != null
     @Readonly fun isImpassible() = lastTerrain.impassable
 

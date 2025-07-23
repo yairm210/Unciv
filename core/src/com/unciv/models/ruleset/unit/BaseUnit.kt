@@ -411,9 +411,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
 
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    @LocalState private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
@@ -424,8 +425,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             state != null && hasUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
-            
-
+    
+    @Readonly
     fun matchesSingleFilter(filter: String): Boolean {
         // all cases are constants for performance
         return when (filter) {
@@ -464,10 +465,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Determine whether this is a City-founding unit - abstract, **without any game context**.
      *  Use other methods for MapUnits or when there is a better StateForConditionals available. */
-    fun isCityFounder() = hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)
+    @Readonly fun isCityFounder() = hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)
 
     val isGreatPerson by lazy { getMatchingUniques(UniqueType.GreatPerson).any() }
-    fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
+    @Readonly fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
     @Readonly private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, GameContext.IgnoreConditionals)
