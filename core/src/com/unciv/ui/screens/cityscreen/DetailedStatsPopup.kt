@@ -53,11 +53,14 @@ class DetailedStatsPopup(
         val scrollPane = AutoScrollPane(totalTable)
         scrollPane.setOverscroll(false, false)
         val scrollPaneCell = add(scrollPane).padTop(0f)
-        scrollPaneCell.maxHeight(cityScreen.stage.height *3 / 4)
+        scrollPaneCell.maxHeight(cityScreen.stage.height * 3 / 4)
 
         row()
         addCloseButton(additionalKey = KeyCharAndCode.SPACE)
         update()
+
+        showListeners.add { cityScreen.pauseFireworks = true }
+        closeListeners.add { cityScreen.pauseFireworks = false }
     }
 
     private fun update() {
@@ -69,8 +72,8 @@ class DetailedStatsPopup(
 
         val stats = when {
             onlyWithStat != null -> listOfNotNull(onlyWithStat)
-            !showFaith -> Stat.values().filter { it != Stat.Faith }
-            else -> Stat.values().toList()
+            !showFaith -> Stat.entries.filter { it != Stat.Faith }
+            else -> Stat.entries
         }
         val columnCount = stats.size + 1
         val statColMinWidth = if (onlyWithStat != null) 150f else 110f

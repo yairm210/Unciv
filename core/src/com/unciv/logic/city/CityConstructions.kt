@@ -202,7 +202,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     @Readonly fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
-    fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
+    @Readonly fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
 
     // Note: There was a isEnqueued here functionally identical to isBeingConstructedOrEnqueued,
     // which was calling both isEnqueued and isBeingConstructed - BUT: currentConstructionFromQueue is just a
@@ -217,7 +217,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /** @return `true` if [constructionName] is queued but not the top queue entry */
     fun isEnqueuedForLater(constructionName: String) = constructionQueue.indexOf(constructionName) > 0
     /** @return `true` if [constructionName] is anywhere in the construction queue - [isBeingConstructed] **or** [isEnqueuedForLater] */
-    fun isBeingConstructedOrEnqueued(constructionName: String) = constructionQueue.contains(constructionName)
+    @Readonly fun isBeingConstructedOrEnqueued(constructionName: String) = constructionQueue.contains(constructionName)
 
     fun isQueueFull(): Boolean = constructionQueue.size >= queueMaxSize
 
@@ -257,7 +257,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     @Readonly fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
-    fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
+    @Readonly fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
             isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique, city.state) }
 
     @Readonly

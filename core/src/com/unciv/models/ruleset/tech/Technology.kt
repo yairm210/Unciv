@@ -22,11 +22,9 @@ class Technology: RulesetObject() {
     var row: Int = 0
     var quote = ""
 
-    @Readonly
-    fun era(): String = column!!.era
+    @Readonly fun era(): String = column!!.era
 
-    @Readonly
-    fun isContinuallyResearchable() = hasUnique(UniqueType.ResearchableMultipleTimes)
+    @Readonly fun isContinuallyResearchable() = hasUnique(UniqueType.ResearchableMultipleTimes)
 
 
     /** Get Civilization-specific description for TechPicker or AlertType.TechResearched */
@@ -40,6 +38,7 @@ class Technology: RulesetObject() {
 
     override fun era(ruleset: Ruleset) = ruleset.eras[era()]
 
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
@@ -50,7 +49,8 @@ class Technology: RulesetObject() {
             state != null && hasUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
-    
+
+    @Readonly
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             in Constants.all -> true

@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -21,16 +22,16 @@ import java.util.SortedMap
 @Pure fun Float.toPercent() = 1 + this/100
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
-fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
+@Pure fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
     val uniqueString = "{Consumes [$amount] [$this]}"
     return if (isStockpiled) "$uniqueString /${Fonts.turn}" else uniqueString
 }
 
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
-fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
+@Pure fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
 
 // todo: There's a few other `if (>0) "+" else ""` around, and a DecimalFormat solution in DetailedStatsPopup: unify
-fun Int.toStringSigned() = if (this > 0) "+${this.tr()}" else this.tr()
+@Readonly fun Int.toStringSigned() = if (this > 0) "+${this.tr()}" else this.tr()
 
 /** Formats the [Duration] into a translated string */
 fun Duration.format(): String {

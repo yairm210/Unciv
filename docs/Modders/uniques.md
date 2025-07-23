@@ -168,11 +168,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Triggers the following global alert: [comment]"
-	Only works on Policies at the moment.
+	Supported on Policies and Technologies.
+
+	For other targets, the generated Notification may not read nicely, and will likely not support translation. Reason: Your [comment] gets a generated introduction, other triggers usually notify _you_, not _others_, and that difference is currently handled by mapping text.
+
+	Conditionals evaluate in the context of the civilization having the Unique, not the recipients of the alerts.
 
 	Example: "Triggers the following global alert: [comment]"
-
-	This unique does not support conditionals.
 
 	Applicable to: Triggerable
 
@@ -808,6 +810,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Requires establishing embassies to conduct advanced diplomacy"
+	Applicable to: Global
+
 ??? example  "Enables Open Borders agreements"
 	Applicable to: Global
 
@@ -1148,6 +1153,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Era
 
 ## Tech uniques
+??? example  "Enables establishment of embassies"
+	Applicable to: Tech
+
 ??? example  "Starting tech"
 	Applicable to: Tech
 
