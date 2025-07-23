@@ -381,7 +381,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
      * @return Maximum distance of tiles this unit may possibly see
      */
-
     @Readonly
     fun getVisibilityRange(): Int {
         var visibilityRange = 2
