@@ -183,7 +183,7 @@ object UnitAutomation {
             // Restrict Human automated units from promotions via setting
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
             val promotions = unit.promotions.getAvailablePromotions()
-            val availablePromotions = if (unit.civ.civName == Constants.simulationCiv2 && unit.health <= 60
+            val availablePromotions = if (unit.health <= 60
                 && promotions.any {it.hasUnique(UniqueType.OneTimeUnitHeal)}
                 && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))) {
                 promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
