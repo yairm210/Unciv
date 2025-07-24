@@ -1,0 +1,11 @@
+By EmperorPinguin:
+- AI: Update city construction evaluation of buildings + workboats 
+- Automated Workers no longer run away after starting work on a tile  
+
+By SomeTroglodyte:
+- Minor UI fix: Don't display WLTK fireworks over detailed stats popup 
+- Enable "triggers global alert" unique for most objects 
+
+Civilopedia: Add Revealed By on Tile Resource screen - By RobLoach
+
+Multiplayer Chat Support - By touhidurrr

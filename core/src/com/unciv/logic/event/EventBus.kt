@@ -1,6 +1,5 @@
 package com.unciv.logic.event
 
-import com.unciv.logic.event.EventBus.EventReceiver
 import com.unciv.logic.event.EventBus.send
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass

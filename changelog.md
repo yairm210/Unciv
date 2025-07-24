@@ -1,3 +1,28 @@
+## 4.17.8
+
+By EmperorPinguin:
+- AI: Update city construction evaluation of buildings + workboats 
+- Automated Workers no longer run away after starting work on a tile  
+
+By SomeTroglodyte:
+- Minor UI fix: Don't display WLTK fireworks over detailed stats popup 
+- Enable "triggers global alert" unique for most objects 
+
+Civilopedia: Add Revealed By on Tile Resource screen - By RobLoach
+
+Multiplayer Chat Support - By touhidurrr
+
+## 4.17.7
+
+By metablaster:
+- Implementation for establishing embassies in diplomacy 
+- Fix for AI civilian unit escape from threat 
+- Fixed event names not being autotranslatable in mods
+
+Hide icon for city in religion overview
+
+Got rid of fake Github error messages when attempting to download mod preview images
+
 ## 4.17.6
 
 Better way to brighten colors - By touhidurrr

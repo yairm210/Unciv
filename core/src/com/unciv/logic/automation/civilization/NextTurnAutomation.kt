@@ -444,7 +444,8 @@ object NextTurnAutomation {
     /** Returns the priority of the unit, a lower value is higher priority **/
     fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
         if (unit.hasUnique(UniqueType.SpaceshipPart)) return 0 // Move before everything else so we can swap
-        if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
+        if (unit.isCivilian() && unit.hasUnique(UniqueType.FoundCity)) return 1// Settlers before workers
+        if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 2 // Civilian
         if (unit.baseUnit.isAirUnit()) return when {
             unit.canIntercept() -> 2 // Fighers first
             unit.isNuclearWeapon() -> 3 // Then Nukes (area damage)

@@ -92,6 +92,12 @@ class TileResource : RulesetStatsObject(), GameResource {
 
         textList += FormattedLine(cloneStats().toString())
 
+        if (revealedBy != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Revealed by:}")
+            textList += FormattedLine(revealedBy!!, link = "Technology/$revealedBy", indent = 1)
+        }
+
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()
             if (terrainsCanBeFoundOn.size == 1) {
@@ -191,6 +197,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         return null
     }
 
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
@@ -198,6 +205,7 @@ class TileResource : RulesetStatsObject(), GameResource {
                 state == null && hasTagUnique(filter)
         })
 
+    @Readonly
     fun matchesSingleFilter(filter: String) = when (filter) {
         name -> true
         "any" -> true

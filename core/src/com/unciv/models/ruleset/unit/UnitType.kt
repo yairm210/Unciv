@@ -4,6 +4,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions.getUnitTypeCivilopediaTextLines
+import yairm210.purity.annotations.Readonly
 
 
 enum class UnitMovementType { // The types of tiles the unit can by default enter
@@ -23,13 +24,14 @@ class UnitType() : RulesetObject() {
         this.movementType = domain
     }
 
-    fun getMovementType() = unitMovementType
+    @Readonly fun getMovementType() = unitMovementType
 
-    fun isLandUnit() = unitMovementType == UnitMovementType.Land
-    fun isWaterUnit() = unitMovementType == UnitMovementType.Water
-    fun isAirUnit() = unitMovementType == UnitMovementType.Air
+    @Readonly fun isLandUnit() = unitMovementType == UnitMovementType.Land
+    @Readonly fun isWaterUnit() = unitMovementType == UnitMovementType.Water
+    @Readonly fun isAirUnit() = unitMovementType == UnitMovementType.Air
 
     /** Implements [UniqueParameterType.UnitTypeFilter][com.unciv.models.ruleset.unique.UniqueParameterType.UnitTypeFilter] */
+    @Readonly
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             "Land" -> isLandUnit()

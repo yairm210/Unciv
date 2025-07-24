@@ -3,6 +3,7 @@ package com.unciv.models
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -51,16 +52,22 @@ open class Counter<K>(
     @Readonly
     /** Creates a new instance (does not modify) */
     operator fun times(amount: Int): Counter<K> {
+        @LocalState
         val newCounter = Counter<K>()
         for (key in keys) newCounter[key] = this[key] * amount
         return newCounter
     }
 
-    operator fun plus(other: Counter<K>) = clone().apply { add(other) }
+    @Readonly 
+    operator fun plus(other: Counter<K>): Counter<K> {
+        @LocalState val clone = clone()
+        clone.add(other)
+        return clone
+    }
 
     fun sumValues() = values.sum()
 
-    override fun clone() = Counter(this)
+    @Readonly override fun clone() = Counter(this)
 
     companion object {
         val ZERO: Counter<String> = object : Counter<String>() {
