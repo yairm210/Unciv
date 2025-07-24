@@ -211,7 +211,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
         getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
 
-    @Readonly @Suppress("purity") // component1, component2
+    @Readonly
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
@@ -350,7 +350,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
+    @Readonly fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             getRejectionReasons(cityConstructions).none()

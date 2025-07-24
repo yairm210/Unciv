@@ -43,7 +43,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     fun getProductionCost(civInfo: Civilization, city: City?): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
-    fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
+    @Readonly fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {

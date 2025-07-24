@@ -51,19 +51,12 @@ class TileImprovement : RulesetStatsObject() {
     fun getDescription(ruleset: Ruleset): String  = ImprovementDescriptions.getDescription(this, ruleset)
     fun getShortDecription() = ImprovementDescriptions.getShortDescription(this)
 
-    @Readonly
-    fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
-    @Readonly
-    fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
-    @Readonly
-    fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
+    @Readonly fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
+    @Readonly fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
+    @Readonly fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
-    fun canBeBuiltOn(terrain: String): Boolean {
-        return terrain in terrainsCanBeBuiltOn
-    }
-    fun canBeBuiltOn(terrain: Terrain): Boolean {
-        return terrainsCanBeBuiltOn.any{ terrain.matchesFilter(it) }
-    }
+    @Readonly fun canBeBuiltOn(terrain: String): Boolean = terrain in terrainsCanBeBuiltOn
+    @Readonly fun canBeBuiltOn(terrain: Terrain): Boolean = terrainsCanBeBuiltOn.any { terrain.matchesFilter(it) }
 
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
@@ -75,6 +68,7 @@ class TileImprovement : RulesetStatsObject() {
      * so this check is done in conjunction - for the user, success means he does not need to remove
      * a terrain feature, thus the unique name.
      */
+    @Readonly
     fun isAllowedOnFeature(terrain: Terrain) = canBeBuiltOn(terrain)
         || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { terrain.matchesFilter(it.params[0]) }
 

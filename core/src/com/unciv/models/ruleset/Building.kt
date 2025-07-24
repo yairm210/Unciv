@@ -34,7 +34,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override var hurryCostModifier = 0
     var isWonder = false
     var isNationalWonder = false
-    fun isAnyWonder() = isWonder || isNationalWonder
+    @Readonly fun isAnyWonder() = isWonder || isNationalWonder
     var requiredBuilding: String? = null
 
     /** A strategic resource that will be consumed by this building */
@@ -418,6 +418,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
      * Handles inverted conditional rejections and cumulative conditional reporting
      * See also [com.unciv.models.ruleset.unit.BaseUnit.notMetRejections]
      */
+    @Readonly
     private fun notMetRejections(unique: Unique, cityConstructions: CityConstructions, built: Boolean=false): Sequence<RejectionReason> = sequence {
         val civ = cityConstructions.city.civ
         for (conditional in unique.modifiers) {
