@@ -182,11 +182,13 @@ object UnitAutomation {
         while (unit.promotions.canBePromoted() &&
             // Restrict Human automated units from promotions via setting
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
-            val availablePromotions = unit.promotions.getAvailablePromotions()
-                // It can be assumed that "heal + skip promotion" is a bad choice - the cases where we WOULD want it are slim
-                .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
-            
-            
+            val promotions = unit.promotions.getAvailablePromotions()
+            val availablePromotions = if (unit.civ.civName == Constants.simulationCiv2 && unit.health <= 60
+                && promotions.any {it.hasUnique(UniqueType.OneTimeUnitHeal)}
+                && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))) {
+                promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+            } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+
             if (availablePromotions.none()) break
             val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
             val stateForConditionals = unit.cache.state
