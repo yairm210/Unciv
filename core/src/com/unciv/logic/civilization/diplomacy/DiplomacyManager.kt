@@ -3,9 +3,11 @@ package com.unciv.logic.civilization.diplomacy
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
@@ -722,9 +724,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         // REF: Denounciation results in removal of embasies for both sides
         civInfo.diplomacyFunctions.removeEmbassies(otherCiv())
 
-        if (otherCiv().isHuman()) 
+        if (otherCiv().isHuman()) {
             otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
                 NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+            otherCiv().popupAlerts.add(PopupAlert(AlertType.Denounced, civInfo.civName))
+        }
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
         for (thirdCiv in otherCivsWithSpectators) {
