@@ -113,7 +113,9 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      */
     @Readonly
     fun canOfferEmbassyTo(otherCiv: Civilization): Boolean {
-        if (!canTradeEmbassies() || !otherCiv.isMajorCiv()) return false
+        if (!canTradeEmbassies() || !otherCiv.isMajorCiv() || civInfo.getCapital() == null)
+            return false
+
         val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
         return !civInfo.isAtWarWith(otherCiv) && !isDenouncedThisTurn(theirDiploManager)
             && !theirDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
@@ -125,7 +127,9 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      */
     @Readonly
     fun canEstablishEmbassyWith(otherCiv: Civilization): Boolean {
-        if (!canTradeEmbassies() || !otherCiv.isMajorCiv()) return false
+        if (!canTradeEmbassies() || !otherCiv.isMajorCiv() || otherCiv.getCapital() == null)
+            return false
+
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return !civInfo.isAtWarWith(otherCiv) && !isDenouncedThisTurn(ourDiploManager)
             && !ourDiploManager.hasModifier(DiplomaticModifiers.EstablishedEmbassy)
