@@ -631,8 +631,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
         return min(distance, wrappedDistance).toInt()
     }
-
-    @Readonly
+    
     fun canBeSettled(): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
         return when {
@@ -645,7 +644,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
     
-    @Readonly
     fun canBeSettled(uniqueModifier: Unique): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
         val modifierConditionTerrain = uniqueModifier.params[0] //
@@ -662,7 +660,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         val impassableTerrains = terrainsSet.values.filter { it.matchesFilter("Impassable") }
         val isOnImpassableTerrain = terrainsModifierCondition.any{ it in impassableTerrains } 
         val isOnWaterTerrains = terrainsModifierCondition.any { it in waterTerrains }
-        println(terrainsModifierCondition.any { it in waterTerrains })
         
         // To stop settle from settle too near other cities
         val addedDistanceOnDifferentContinents = if (isOnWaterTerrains || isOnImpassableTerrain) 1 else 0

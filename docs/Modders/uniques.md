@@ -3530,7 +3530,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in [tileFilter] tiles&gt;"
-	Can also used to settle in specific tiles like Water/Coast/Hill/Impassible when add to FoundCity/FoundPuppetCity.
+	Can also  be used to settle in specific tiles like Water/Coast/Hill/Impassible when add to FoundCity/FoundPuppetCity.
 
 	Example: "&lt;in [Farm] tiles&gt;"
 
