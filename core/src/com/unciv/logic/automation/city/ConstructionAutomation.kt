@@ -129,7 +129,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                     PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith.name
                     else -> PerpetualConstruction.idle.name
                 }
-            } else { relativeCostEffectiveness.maxByOrNull { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }!!.choice }
+            } else { relativeCostEffectiveness.maxBy { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }.choice }
             //TODO: All bad things are build anyways at the moment, maybe let's stop doing that and chose perpetual construction instead
 
         // Do not notify while in resistance (you can't do anything about it) - still notify for puppets ("annex already!")
