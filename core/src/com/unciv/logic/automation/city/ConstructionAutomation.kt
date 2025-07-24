@@ -129,20 +129,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                     PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith.name
                     else -> PerpetualConstruction.idle.name
                 }
-            } else if (relativeCostEffectiveness.any { it.remainingWork < it.production * 30 }) {
-                relativeCostEffectiveness.removeAll { it.remainingWork >= it.production * 30 }
-                // If there are any positive choiceModifiers then we have to take out the negative value or else they will get a very low value
-                // If there are no positive choiceModifiers then we want to take the least negative value building since we will be dividing by a negative
-                if (relativeCostEffectiveness.none { it.choiceModifier >= 0 }) {
-                    relativeCostEffectiveness.maxByOrNull { (it.remainingWork / it.choiceModifier) / it.production.coerceAtLeast(1) }!!.choice
-                } else {
-                    relativeCostEffectiveness.removeAll { it.choiceModifier < 0 }
-                    relativeCostEffectiveness.minByOrNull { (it.remainingWork / it.choiceModifier) / it.production.coerceAtLeast(1) }!!.choice
-                }
-            }
-            // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
-            // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-            else relativeCostEffectiveness.minByOrNull { it.remainingWork / it.production.coerceAtLeast(1) }!!.choice
+            } else { relativeCostEffectiveness.maxByOrNull { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }!!.choice }
+            //TODO: All bad things are build anyways at the moment, maybe let's stop doing that and chose perpetual construction instead
 
         // Do not notify while in resistance (you can't do anything about it) - still notify for puppets ("annex already!")
         // Also do not notify while city screen open - might be a buying spree, not helpful
@@ -309,7 +297,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private fun applyVictoryBuildingValue(building: Building): Float {
         var value = 0f
         if (!cityIsOverAverageProduction) return value
-        if (building.isWonder) value += 2f
         if (building.hasUnique(UniqueType.TriggersCulturalVictory)
             || building.hasUnique(UniqueType.TriggersVictory)) value += 20f // if we're this close to actually winning, we don't care what your preferred victory type is
         if (building.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) value += 10f * personality.modifierFocus(PersonalityValue.Science, .3f)
