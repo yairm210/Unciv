@@ -29,7 +29,6 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
@@ -645,20 +644,25 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             else -> true
         }
     }
+    
+    @Readonly
     fun canBeSettled(uniqueModifier: Unique): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
-        val modifierCondition = uniqueModifier.params[0]
+        val modifierConditionTerrain = uniqueModifier.params[0] //
+
+        val terrainsSet = tileMap.gameInfo.ruleset.getBaseRuleset()?.terrains!! // If this is null we have some bigger problems
+        // Gets a list of tiles that matchs modifierConditionTerrain
+        val terrainsModifierCondition = terrainsSet.values.filter { it.matchesFilter(modifierConditionTerrain) }
         /*
-            Did it like this because if keep getting " " from tileMap.gameInfo.ruleset.name
-            and you always get the ruleset first.
-         */
-        val rulesetName = tileMap.gameInfo.ruleset.mods.first() 
-        val terrainsSet = RulesetCache[rulesetName]?.terrains!! // if this is null we have some bigger problems
-        val terrains =  terrainsSet.values.filter { it.matchesFilter(modifierCondition) }
+            Gets normally unfoundable tiles for settler condidtion.
+            If it's True that the current tile the player wants to settle on is in one of the unfoundable tiles, then add 1 for distance.
+            Because Water/Mountain tiles don't count in distance between different continents.
+        */
         val waterTerrains = terrainsSet.values.filter { it.matchesFilter("Water") }
         val impassableTerrains = terrainsSet.values.filter { it.matchesFilter("Impassable") }
-        val isOnImpassableTerrain = terrains.any{it in impassableTerrains} 
-        val isOnWaterTerrains = terrains.any { it in waterTerrains }
+        val isOnImpassableTerrain = terrainsModifierCondition.any{ it in impassableTerrains } 
+        val isOnWaterTerrains = terrainsModifierCondition.any { it in waterTerrains }
+        println(terrainsModifierCondition.any { it in waterTerrains })
         
         // To stop settle from settle too near other cities
         val addedDistanceOnDifferentContinents = if (isOnWaterTerrains || isOnImpassableTerrain) 1 else 0

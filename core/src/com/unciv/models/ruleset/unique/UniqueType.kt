@@ -801,7 +801,8 @@ enum class UniqueType(
 
     /////// tile conditionals
     ConditionalNeighborTiles("with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
-    ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional,
+        docDescription = "Can also  be used to settle in specific tiles like Water/Coast/Hill/Impassible when add to FoundCity/FoundPuppetCity."),
     ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
     ConditionalNearTiles("within [positiveAmount] tiles of a [tileFilter]", UniqueTarget.Conditional),
     ConditionalAdjacentTo("in tiles adjacent to [tileFilter] tiles", UniqueTarget.Conditional),
