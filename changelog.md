@@ -1,3 +1,30 @@
+## 4.17.9
+
+chore(purity): Update to @Cache version
+
+chore(purity): TileResource and friends, cloning functions
+
+4.17.8-patch1
+
+chore(purity): MapUnit
+
+Remove irrelevant counteroffer notifications when the trade request is invalid
+
+By EmperorPinguin:
+- Simulation: update map seed between games 
+- AI: update explore logic 
+- AI: reduce food weight for small cities 
+- AI: able too choose instant heal promotions again 
+- AI: don't annex cities if it causes severe unhappiness 
+- Cleanup: Update ConstructionAutomation.kt 
+
+Add 'on [difficulty] or higher' conditional - By RobLoach
+
+By metablaster:
+- Show religion display name when enhancement is made 
+- Fix for null pointer in embassy trade 
+- Fix for null pointer in embassy trade 
+
 ## 4.17.8
 
 By EmperorPinguin:
