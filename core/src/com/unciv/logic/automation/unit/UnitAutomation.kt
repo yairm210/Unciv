@@ -32,7 +32,7 @@ object UnitAutomation {
 
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
         return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
-                && tile.neighbors.any { !unit.civ.hasExplored(it) }
+                && tile.getTilesInDistance(unit.getVisibilityRange()).any { !unit.civ.hasExplored(it) }
                 && (!unit.civ.isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
                 && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
@@ -47,8 +47,10 @@ object UnitAutomation {
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
-                .sortedByDescending { it.tileHeight }  // secondary sort is by 'how far can you see'
-                .maxByOrNull { it.aerialDistanceTo(unit.currentTile) }!! // primary sort is by 'how far can you go'
+                .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
+            // Assign each tile a score for "explore value"
+            // This could be more elaborate: for example add a malus for distant tiles such as to move not too far away from capital (barb control)
+            // or bonus according to tile yields (likely candidates for city locations), but this comes at a cost of performance
             unit.movement.headTowards(bestTile)
             return true
         }
@@ -182,11 +184,13 @@ object UnitAutomation {
         while (unit.promotions.canBePromoted() &&
             // Restrict Human automated units from promotions via setting
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
-            val availablePromotions = unit.promotions.getAvailablePromotions()
-                // It can be assumed that "heal + skip promotion" is a bad choice - the cases where we WOULD want it are slim
-                .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
-            
-            
+            val promotions = unit.promotions.getAvailablePromotions()
+            val availablePromotions = if (unit.health <= 60
+                && promotions.any {it.hasUnique(UniqueType.OneTimeUnitHeal)}
+                && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))) {
+                promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+            } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+
             if (availablePromotions.none()) break
             val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
             val stateForConditionals = unit.cache.state

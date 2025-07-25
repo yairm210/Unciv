@@ -167,7 +167,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val position = Vector2(position)
 
-        fun clone() = UnitMovementMemory(position, type)
+        @Readonly fun clone() = UnitMovementMemory(position, type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
     }
 
@@ -196,8 +196,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         else "[$name]"
     }
 
+    @Readonly
     fun clone(): MapUnit {
-        val toReturn = MapUnit()
+        @LocalState val toReturn = MapUnit()
         toReturn.baseUnit = baseUnit
         toReturn.name = name
         toReturn.civ = civ
@@ -216,7 +217,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
-        toReturn.abilityToTimesUsed.putAll(abilityToTimesUsed)
+        toReturn.abilityToTimesUsed = HashMap(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
@@ -382,7 +383,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * @return Maximum distance of tiles this unit may possibly see
      */
     @Readonly
-    private fun getVisibilityRange(): Int {
+    fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
         val conditionalState = cache.state
@@ -685,7 +686,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Deep clone an ArrayList of [UnitMovementMemory]s. */
-    private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
+    @Readonly private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
 
     //endregion
     //region state-changing functions

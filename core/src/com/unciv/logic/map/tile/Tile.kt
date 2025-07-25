@@ -201,8 +201,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     //endregion
 
+    @Readonly
     fun clone(/** For stat diff checks, units are meaningless */ addUnits:Boolean = true): Tile {
-        val toReturn = Tile()
+        @LocalState val toReturn = Tile()
         toReturn.tileMap = tileMap
         toReturn.ruleset = ruleset
         toReturn.isCityCenterInternal = isCityCenterInternal
@@ -214,7 +215,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (addUnits) {
             if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
             if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
-            for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
+            toReturn.airUnits = ArrayList(airUnits.map { it.clone() })
         }
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
@@ -224,7 +225,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         toReturn.resource = resource
         toReturn.resourceAmount = resourceAmount
         toReturn.improvement = improvement
-        toReturn.improvementQueue.addAll(improvementQueue)
+        @LocalState val improvementQueue = toReturn.improvementQueue
+        improvementQueue.addAll(improvementQueue)
         toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
         toReturn.roadIsPillaged = roadIsPillaged

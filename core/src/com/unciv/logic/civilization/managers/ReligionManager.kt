@@ -336,8 +336,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             val text = if (civInfo in civ.getKnownCivs()) "[${civInfo.civName}]"
             else "[An unknown civilization]"
 
-            civ.addNotification(text + " has enhanced [${religion.name}]!",
-                ReligionAction(religion.name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
+            civ.addNotification(text + " has enhanced [${religion.displayName}]!",
+                ReligionAction(religion.displayName), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
         }
     }
 

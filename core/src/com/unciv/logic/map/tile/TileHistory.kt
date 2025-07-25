@@ -6,6 +6,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
 import java.util.TreeMap
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Readonly
 
 /**
  * Records events throughout the game related to a tile.
@@ -59,7 +60,7 @@ class TileHistory(
         return history.floorEntry(turn)?.value ?: TileHistoryState()
     }
 
-    fun clone(): TileHistory = TileHistory(TreeMap(history))
+    @Readonly fun clone(): TileHistory = TileHistory(TreeMap(history))
 
     /** Implement Json.Serializable
      *  - Output looked like this: `history:{0:[Spain,C],12:[China,R]}`

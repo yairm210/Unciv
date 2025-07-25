@@ -6,6 +6,8 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 class UnitPromotions : IsPartOfGameInfoSerialization {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
@@ -148,10 +150,11 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         return true
     }
 
+    @Readonly
     fun clone(): UnitPromotions {
-        val toReturn = UnitPromotions()
+        @LocalState val toReturn = UnitPromotions()
         toReturn.XP = XP
-        toReturn.promotions.addAll(promotions)
+        toReturn.promotions = HashSet(promotions)
         toReturn.numberOfPromotions = numberOfPromotions
         toReturn.unit = unit
         return toReturn

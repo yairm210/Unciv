@@ -142,6 +142,13 @@ object Conditionals {
             UniqueType.ConditionalIfStartingInEra -> checkOnGameInfo { gameParameters.startingEra == conditional.params[0] }
             UniqueType.ConditionalSpeed -> checkOnGameInfo { gameParameters.speed == conditional.params[0] }
             UniqueType.ConditionalDifficulty -> checkOnGameInfo { gameParameters.difficulty == conditional.params[0] }
+            UniqueType.ConditionalDifficultyOrHigher -> checkOnGameInfo {
+                val difficulty = conditional.params[0]
+                if (difficulty in ruleset.difficulties) {
+                    val difficulties = ruleset.difficulties.keys.toList()
+                    difficulties.indexOf(difficulty) >= difficulties.indexOf(getDifficulty().name)
+                } else false
+            }
             UniqueType.ConditionalVictoryEnabled -> checkOnGameInfo { gameParameters.victoryTypes.contains(conditional.params[0]) }
             UniqueType.ConditionalVictoryDisabled -> checkOnGameInfo { !gameParameters.victoryTypes.contains(conditional.params[0]) }
             UniqueType.ConditionalReligionEnabled -> checkOnGameInfo { isReligionEnabled() }

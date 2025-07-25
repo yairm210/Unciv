@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
@@ -211,7 +212,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
         getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
 
-    @Readonly @Suppress("purity") // component1, component2
+    @Readonly
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
@@ -350,7 +351,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
+    @Readonly fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             getRejectionReasons(cityConstructions).none()
@@ -411,7 +412,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
 
-    @LocalState private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    @Cache private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     @Readonly

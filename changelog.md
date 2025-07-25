@@ -1,3 +1,19 @@
+## 4.17.9
+
+Remove irrelevant counteroffer notifications when the trade request is invalid
+
+By EmperorPinguin: 
+- AI: better explore logic 
+- AI: reduce food weight for small cities 
+- AI: able to choose instant heal promotions 
+- AI: don't annex cities if it causes severe unhappiness 
+
+Add 'on [difficulty] or higher' conditional - By RobLoach
+
+By metablaster:
+- Show religion display name when enhancement is made 
+- Fix embassy trade offer crashes
+
 ## 4.17.8
 
 By EmperorPinguin:
