@@ -746,7 +746,7 @@ class WorldScreen(
 
 
     private fun showTutorialsOnNextTurn() {
-        if (!game.settings.showTutorials) return
+        if (!game.settings.showTutorials || autoPlay.isAutoPlaying()) return
         displayTutorial(TutorialTrigger.SlowStart)
         displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
         displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian } } }
