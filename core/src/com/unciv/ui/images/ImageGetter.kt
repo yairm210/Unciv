@@ -264,11 +264,6 @@ object ImageGetter {
         return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
 
-    fun getPolicyIcon(policyName: String, tintColor: Color? = null): Image =
-        if (imageExists("PolicyIcons/$policyName"))
-            getImage("PolicyIcons/$policyName", tintColor)
-        else getImage("PolicyBranchIcons/$policyName", tintColor)
-
     fun getUniquePortrait(uniqueName: String, size: Float): Group = PortraitUnique(uniqueName, size)
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
