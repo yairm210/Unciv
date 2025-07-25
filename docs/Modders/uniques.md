@@ -3535,6 +3535,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in [tileFilter] tiles&gt;"
+	Can be used with FoundCity and FoundPuppetCity to only found cities in Water/Impassible tiles.
+
 	Example: "&lt;in [Farm] tiles&gt;"
 
 	Applicable to: Conditional

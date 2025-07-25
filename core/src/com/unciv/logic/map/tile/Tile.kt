@@ -634,8 +634,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
         return min(distance, wrappedDistance).toInt()
     }
-
-    @Readonly
+    
     fun canBeSettled(unitCanFoundUnique: Unique?=null): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
         var conditionalTileName: String?
