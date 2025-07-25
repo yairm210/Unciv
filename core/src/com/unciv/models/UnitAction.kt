@@ -8,6 +8,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.images.ImageGetter
+import com.unciv.models.ruleset.unique.UniqueType
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -41,6 +42,31 @@ open class UnitAction(
                     if (ImageGetter.religionIconExists(religionName)) religionName
                     else "Pantheon", 20f
                 )
+            }
+            UnitActionType.TriggerUnique -> {
+                when (associatedUnique?.type) {
+                    UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> ImageGetter.getUnitActionPortrait("StartGoldenAge")
+                    UniqueType.GainFreeBuildings, UniqueType.RemoveBuilding, UniqueType.OneTimeSellBuilding, UniqueType.OneTimeFreeUnit, UniqueType.FreeSpecificBuildings -> ImageGetter.getConstructionPortrait(associatedUnique.params[0])
+                    UniqueType.OneTimeAmountFreeUnits -> ImageGetter.getConstructionPortrait(associatedUnique.params[1])
+                    UniqueType.OneTimeFreePolicy, UniqueType.OneTimeAmountFreePolicies, UniqueType.OneTimeAdoptPolicy, UniqueType.OneTimeRemovePolicy, UniqueType.OneTimeRemovePolicyRefund -> ImageGetter.getUnitActionPortrait("HurryPolicy")
+                    UniqueType.OneTimeFreeTechRuins, UniqueType.OneTimeAmountFreeTechs, UniqueType.OneTimeFreeTech, UniqueType.OneTimeDiscoverTech, UniqueType.OneTimeGainTechPercent -> ImageGetter.getUnitActionPortrait("HurryResearch")
+                    UniqueType.OneTimeRevealEntireMap, UniqueType.OneTimeRevealSpecificMapTiles -> ImageGetter.getUnitActionPortrait("Explore")
+                    UniqueType.OneTimeConsumeResources, UniqueType.OneTimeProvideResources, UniqueType.OneTimeGainResource -> ImageGetter.getResourcePortrait(associatedUnique.params[1], 20f)
+                    UniqueType.OneTimeChangeTerrain -> ImageGetter.getUnitActionPortrait("Transform")
+                    UniqueType.OneTimeRemoveResourcesFromTile, UniqueType.OneTimeRemoveImprovementsFromTile -> ImageGetter.getUnitActionPortrait("Pillage")
+                    UniqueType.OneTimeUnitHeal -> ImageGetter.getPromotionPortrait("Heal Instantly", 20f)
+                    UniqueType.OneTimeUnitGainXP -> ImageGetter.getUnitActionPortrait("Promote")
+                    UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade -> ImageGetter.getUnitActionPortrait("Upgrade")
+                    UniqueType.UnitsGainPromotion, UniqueType.OneTimeUnitGainPromotion, UniqueType.OneTimeUnitRemovePromotion, UniqueType.OneTimeUnitGainStatus, UniqueType.OneTimeUnitLoseStatus -> ImageGetter.getPromotionPortrait(associatedUnique.params[1], 20f)
+                    UniqueType.OneTimeFreeBelief, UniqueType.OneTimeGainPantheon, UniqueType.OneTimeGainProphet -> ImageGetter.getUnitActionPortrait("EnhanceReligion")
+                    UniqueType.OneTimeUnitDamage -> ImageGetter.getUnitActionPortrait("Pillage")
+                    UniqueType.FreeStatBuildings -> ImageGetter.getUnitActionPortrait("HurryConstruction")
+                    UniqueType.TriggerEvent -> ImageGetter.getUniquePortrait(associatedUnique.params[0], 20f)
+                    UniqueType.OneTimeUnitGainMovement -> ImageGetter.getUnitActionPortrait("MoveTo")
+                    UniqueType.OneTimeUnitLoseMovement -> ImageGetter.getUnitActionPortrait("StopMove")
+                    UniqueType.OneTimeUnitDestroyed -> ImageGetter.getUnitActionPortrait("DisbandUnit")
+                    else -> ImageGetter.getUnitActionPortrait("Star")
+                }
             }
             else -> ImageGetter.getUnitActionPortrait("Star")
         }
@@ -169,7 +195,7 @@ enum class UnitActionType(
     FoundReligion("Found a Religion",
         { ImageGetter.getUnitActionPortrait("FoundReligion") }, UncivSound.Choir),
     TriggerUnique("Trigger unique",
-        { ImageGetter.getUnitActionPortrait("Star") }, false, UncivSound.Chimes),
+        null, false, UncivSound.Chimes),
     SpreadReligion("Spread Religion",
         null, UncivSound.Choir),
     RemoveHeresy("Remove Heresy",

@@ -252,7 +252,7 @@ object ImageGetter {
             getImage("UnitIcons/${unit.name}").apply { this.color = color }
         else getImage("UnitTypeIcons/${unit.type}").apply { this.color = color }
 
-    fun getConstructionPortrait(construction: String, size: Float): Group {
+    fun getConstructionPortrait(construction: String, size: Float = 20f): Group {
         if (ruleset.buildings.containsKey(construction)) {
             return PortraitBuilding(construction, size)
         }
@@ -264,6 +264,11 @@ object ImageGetter {
         return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
 
+    fun getPolicyIcon(policyName: String, tintColor: Color? = null): Image =
+        if (imageExists("PolicyIcons/$policyName"))
+            getImage("PolicyIcons/$policyName", tintColor)
+        else getImage("PolicyBranchIcons/$policyName", tintColor)
+
     fun getUniquePortrait(uniqueName: String, size: Float): Group = PortraitUnique(uniqueName, size)
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
@@ -271,7 +276,7 @@ object ImageGetter {
     fun getResourcePortrait(resourceName: String, size: Float, amount: Int= 0): Group =
         PortraitResource(resourceName, size, amount)
 
-    fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
+    fun getTechIconPortrait(techName: String, circleSize: Float = 20f): Group = PortraitTech(techName, circleSize)
 
     fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false): Portrait =
         PortraitImprovement(improvementName, size, false, isPillaged)

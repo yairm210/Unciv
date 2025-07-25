@@ -87,7 +87,7 @@ private class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, va
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
 ) {
 
-    val icon = ImageGetter.getImage("PolicyIcons/" + policy.name)
+    val icon = ImageGetter.getPolicyIcon(policy.name)
 
     private val isPickable = policy.isPickable(viewingCiv, canChangeState)
     private val isAdopted = viewingCiv.policies.isAdopted(policy.name)
