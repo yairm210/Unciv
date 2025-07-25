@@ -61,6 +61,7 @@ class TileImprovementFunctions(val tile: Tile) {
         isNormalizeCheck: Boolean = false
     ): Boolean {
 
+        @Readonly
         fun TileImprovement.canBeBuiltOnThisUnbuildableTerrain(
             knownFeatureRemovals: List<TileImprovement>? = null,
         ): Boolean {
