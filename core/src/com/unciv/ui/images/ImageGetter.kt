@@ -271,7 +271,7 @@ object ImageGetter {
     fun getResourcePortrait(resourceName: String, size: Float, amount: Int= 0): Group =
         PortraitResource(resourceName, size, amount)
 
-    fun getTechIconPortrait(techName: String, circleSize: Float = 20f): Group = PortraitTech(techName, circleSize)
+    fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
     fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false): Portrait =
         PortraitImprovement(improvementName, size, false, isPillaged)
