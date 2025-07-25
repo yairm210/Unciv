@@ -48,7 +48,7 @@ class MapParametersTable(
     private lateinit var worldWrapCheckbox: CheckBox
     private lateinit var legendaryStartCheckbox: CheckBox
     private lateinit var strategicBalanceCheckbox: CheckBox
-    private lateinit var seedTextField: UncivTextField.Numeric
+    private lateinit var seedTextField: UncivTextField.RNGSeed
 
     private lateinit var mapShapesOptionsValues: HashSet<String>
     private lateinit var mapTypesOptionsValues: HashSet<String>
@@ -374,10 +374,10 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(2f).padTop(10f)
 
-        seedTextField = UncivTextField.Numeric("RNG Seed", mapParameters.seed, integerOnly = true)
+        seedTextField = UncivTextField.RNGSeed(mapParameters.seed)
 
         seedTextField.onChange {
-            mapParameters.seed = seedTextField.value?.toLong() ?: 0L
+            mapParameters.seed = seedTextField.value
         }
 
         table.add("RNG Seed".toLabel()).left()
