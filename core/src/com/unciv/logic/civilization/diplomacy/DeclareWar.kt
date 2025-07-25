@@ -43,6 +43,10 @@ object DeclareWar {
         if (otherCiv.isMajorCiv())
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
+        
+            for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponBeingDeclaredWarUpon))
+                UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+        
     }
 
     private fun handleCityStateDirectAttack(diplomacyManager: DiplomacyManager) {

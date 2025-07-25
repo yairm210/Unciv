@@ -3635,6 +3635,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon declaring war with a major Civilization&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon being declared war upon&gt;"
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon declaring friendship&gt;"
 	Applicable to: TriggerCondition
 
