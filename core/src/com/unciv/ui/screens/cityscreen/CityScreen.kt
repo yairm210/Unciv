@@ -320,11 +320,9 @@ class CityScreen(
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed = true; update() }
-            if (!canChangeState || !city.canBeDestroyed() || !canAnnex) {
-                razeCityButton.disable()
+            if (canChangeState && city.canBeDestroyed() && canAnnex) {
+                razeCityButtonHolder.add(razeCityButton)
             }
-
-            razeCityButtonHolder.add(razeCityButton) //.colspan(cityPickerTable.columns)
         } else {
             val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
