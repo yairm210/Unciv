@@ -24,6 +24,7 @@
       "diplomacy": Diplomatic Balance + Friendly,
       "loyal": Loyalty + Defense,
       "expansion": Expansion,
+      "denounceWillingness": Denounce Willingness,
 
       "priorities": {
           "Tradition": Culture + Wonder,
@@ -57,6 +58,7 @@
     "diplomacy": 6,
     "loyal": 7,
     "expansion": 4,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 7,
       "Liberty": 5,
@@ -86,6 +88,7 @@
     "diplomacy": 3,
     "loyal": 4,
     "expansion": 8,
+    "denounceWillingness": 7,
     "priorities": {
       "Tradition": 7,
       "Liberty": 8,
@@ -120,6 +123,7 @@
     "diplomacy": 5,
     "loyal": 4,
     "expansion": 6,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 5,
       "Liberty": 6,
@@ -149,6 +153,7 @@
     "diplomacy": 6,
     "loyal": 6,
     "expansion": 5,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 5,
       "Liberty": 5,
@@ -183,6 +188,7 @@
     "diplomacy": 3,
     "loyal": 4,
     "expansion": 7,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 5,
       "Liberty": 7,
@@ -217,6 +223,7 @@
     "diplomacy": 7,
     "loyal": 4,
     "expansion": 8,
+    "denounceWillingness": 7,
     "priorities": {
       "Tradition": 5,
       "Liberty": 9,
@@ -251,6 +258,7 @@
     "diplomacy": 9,
     "loyal": 6,
     "expansion": 7,
+    "denounceWillingness": 8,
     "priorities": {
       "Tradition": 5,
       "Liberty": 7,
@@ -285,6 +293,7 @@
     "diplomacy": 4,
     "loyal": 6,
     "expansion": 5,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 7,
       "Liberty": 5,
@@ -319,6 +328,7 @@
     "diplomacy": 7,
     "loyal": 7,
     "expansion": 7,
+    "denounceWillingness": 4,
     "priorities": {
       "Tradition": 6,
       "Liberty": 7,
@@ -348,6 +358,7 @@
     "diplomacy": 7,
     "loyal": 6,
     "expansion": 8,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 6,
       "Liberty": 8,
@@ -377,6 +388,7 @@
     "diplomacy": 6,
     "loyal": 8,
     "expansion": 5,
+    "denounceWillingness": 4,
     "priorities": {
       "Tradition": 5,
       "Liberty": 6,
@@ -406,6 +418,7 @@
     "diplomacy": 5,
     "loyal": 6,
     "expansion": 7,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 3,
       "Liberty": 7,
@@ -435,6 +448,7 @@
     "diplomacy": 7,
     "loyal": 5,
     "expansion": 6,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 6,
       "Liberty": 6,
@@ -464,6 +478,7 @@
     "diplomacy": 6,
     "loyal": 3,
     "expansion": 3,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 5,
       "Liberty": 3,
@@ -493,6 +508,7 @@
     "diplomacy": 5,
     "loyal": 4,
     "expansion": 8,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 6,
       "Liberty": 8,
@@ -522,6 +538,7 @@
     "diplomacy": 7,
     "loyal": 7,
     "expansion": 3,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 8,
       "Liberty": 3,
@@ -551,6 +568,7 @@
     "diplomacy": 4,
     "loyal": 6,
     "expansion": 8,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 4,
       "Liberty": 8,
@@ -580,6 +598,7 @@
     "diplomacy": 7,
     "loyal": 6,
     "expansion": 4,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 5,
       "Liberty": 4,
@@ -609,6 +628,7 @@
     "diplomacy": 7,
     "loyal": 7,
     "expansion": 4,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 7,
       "Liberty": 4,
@@ -638,6 +658,7 @@
     "diplomacy": 4,
     "loyal": 7,
     "expansion": 6,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 4,
       "Liberty": 6,
@@ -667,6 +688,7 @@
     "diplomacy": 5,
     "loyal": 6,
     "expansion": 5,
+    "denounceWillingness": 3,
     "priorities": {
       "Tradition": 6,
       "Liberty": 5,
@@ -696,6 +718,7 @@
     "diplomacy": 5,
     "loyal": 8,
     "expansion": 9,
+    "denounceWillingness": 4,
     "priorities": {
       "Tradition": 5,
       "Liberty": 9,
@@ -725,6 +748,7 @@
     "diplomacy": 3,
     "loyal": 5,
     "expansion": 7,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 5,
       "Liberty": 7,
@@ -754,6 +778,7 @@
     "diplomacy": 5,
     "loyal": 8,
     "expansion": 8,
+    "denounceWillingness": 7,
     "priorities": {
       "Tradition": 5,
       "Liberty": 8,
@@ -783,6 +808,7 @@
     "diplomacy": 5,
     "loyal": 5,
     "expansion": 7,
+    "denounceWillingness": 7,
     "priorities": {
       "Tradition": 5,
       "Liberty": 7,
@@ -812,6 +838,7 @@
     "diplomacy": 5,
     "loyal": 3,
     "expansion": 8,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 6,
       "Liberty": 8,
@@ -841,6 +868,7 @@
     "diplomacy": 3,
     "loyal": 2,
     "expansion": 8,
+    "denounceWillingness": 3,
     "priorities": {
       "Tradition": 8,
       "Liberty": 8,
@@ -870,6 +898,7 @@
     "diplomacy": 6,
     "loyal": 4,
     "expansion": 4,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 6,
       "Liberty": 5,
@@ -899,6 +928,7 @@
     "diplomacy": 7,
     "loyal": 3,
     "expansion": 8,
+    "denounceWillingness": 7,
     "priorities": {
       "Tradition": 6,
       "Liberty": 8,
@@ -928,6 +958,7 @@
     "diplomacy": 6,
     "loyal": 7,
     "expansion": 4,
+    "denounceWillingness": 4,
     "priorities": {
       "Tradition": 7,
       "Liberty": 4,
@@ -957,6 +988,7 @@
     "diplomacy": 4,
     "loyal": 5,
     "expansion": 6,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 7,
       "Liberty": 6,
@@ -986,6 +1018,7 @@
     "diplomacy": 6,
     "loyal": 7,
     "expansion": 5,
+    "denounceWillingness": 6,
     "priorities": {
       "Tradition": 7,
       "Liberty": 6,
@@ -1015,6 +1048,7 @@
     "diplomacy": 5,
     "loyal": 6,
     "expansion": 8,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 5,
       "Liberty": 8,
@@ -1044,6 +1078,7 @@
     "diplomacy": 5,
     "loyal": 4,
     "expansion": 5,
+    "denounceWillingness": 4,
     "priorities": {
       "Tradition": 9,
       "Liberty": 6,
@@ -1073,6 +1108,7 @@
     "diplomacy": 8,
     "loyal": 7,
     "expansion": 6,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 8,
       "Liberty": 6,
@@ -1102,6 +1138,7 @@
     "diplomacy": 6,
     "loyal": 8,
     "expansion": 5,
+    "denounceWillingness": 4,
     "priorities": {
       "Tradition": 5,
       "Liberty": 5,
@@ -1131,6 +1168,7 @@
     "diplomacy": 3,
     "loyal": 8,
     "expansion": 11,
+    "denounceWillingness": 8,
     "priorities": {
       "Tradition": 2,
       "Liberty": 11,
@@ -1160,6 +1198,7 @@
     "diplomacy": 7,
     "loyal": 5,
     "expansion": 8,
+    "denounceWillingness": 7,
     "priorities": {
       "Tradition": 6,
       "Liberty": 8,
@@ -1189,6 +1228,7 @@
     "diplomacy": 7,
     "loyal": 5,
     "expansion": 4,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 7,
       "Liberty": 4,
@@ -1218,6 +1258,7 @@
     "diplomacy": 7,
     "loyal": 7,
     "expansion": 7,
+    "denounceWillingness": 4,
     "priorities": {
       "Tradition": 6,
       "Liberty": 7,
@@ -1247,6 +1288,7 @@
     "diplomacy": 6,
     "loyal": 7,
     "expansion": 6,
+    "denounceWillingness": 5,
     "priorities": {
       "Tradition": 6,
       "Liberty": 7,
@@ -1276,6 +1318,7 @@
     "diplomacy": 7,
     "loyal": 4,
     "expansion": 6,
+    "denounceWillingness": 7,
     "priorities": {
       "Tradition": 6,
       "Liberty": 6,

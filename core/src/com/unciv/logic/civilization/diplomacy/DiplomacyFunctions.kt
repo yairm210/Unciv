@@ -93,8 +93,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      */
     @Readonly
     private fun isDenouncedThisTurn(diploManager: DiplomacyManager): Boolean {
-        return diploManager.getFlag(DiplomacyFlags.Denunciation) == 30
-            || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denunciation) == 30
+        return diploManager.getFlag(DiplomacyFlags.Denouncing) == 30
+            || diploManager.otherCivDiplomacy().getFlag(DiplomacyFlags.Denouncing) == 30
     }
 
     /**
@@ -164,9 +164,11 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
+        val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
-            && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation)
-            && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !diploManager.hasFlag(DiplomacyFlags.Denouncing)
+            && !diploManager.hasFlag(DiplomacyFlags.Denounced)
+            && !diploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
     }
 
     @Readonly
