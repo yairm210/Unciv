@@ -124,6 +124,7 @@ interface IHasUniques : INamed {
             UniqueType.ConditionalVictoryEnabled,
             UniqueType.ConditionalSpeed,
             UniqueType.ConditionalDifficulty,
+            UniqueType.ConditionalDifficultyOrHigher,
             UniqueType.ConditionalReligionEnabled,
             UniqueType.ConditionalReligionDisabled,
             UniqueType.ConditionalEspionageEnabled,
