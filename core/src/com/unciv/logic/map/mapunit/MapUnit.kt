@@ -383,7 +383,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * @return Maximum distance of tiles this unit may possibly see
      */
     @Readonly
-    private fun getVisibilityRange(): Int {
+    fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
         val conditionalState = cache.state
