@@ -19,6 +19,7 @@ import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.mapunit.movement.UnitMovement
+import com.unciv.models.UnitAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -635,11 +636,34 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     @Readonly
-    fun canBeSettled(): Boolean {
+    fun canBeSettled(unitCanFoundUnique: Unique?=null): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
+        var conditionalTileName: String?
+        var isConditionalTileInWater = false
+        var isConditionalTileInImpassible = false
+        var addedDistanceBeweenContinents = 0
+        
+        if (unitCanFoundUnique != null) {
+            val conditionalInTile = unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
+            val baseRuleSetTerrain = tileMap.gameInfo.ruleset.getBaseRulesetCache()?.terrains
+            if (conditionalInTile != null && baseRuleSetTerrain != null) {
+                
+                conditionalTileName = conditionalInTile.params[0]
+                val conditionalTerrain = baseRuleSetTerrain.values.filter { it.matchesFilter(conditionalTileName) }
+                val waterTerrain = baseRuleSetTerrain.values.filter { it.matchesFilter("Water") }
+                val impassableTerrain = baseRuleSetTerrain.values.filter { it.matchesFilter("Impassable") }
+
+                isConditionalTileInWater = conditionalTerrain.any { it in waterTerrain }
+                isConditionalTileInImpassible = conditionalTerrain.any { it in impassableTerrain }
+
+                addedDistanceBeweenContinents = if (isConditionalTileInWater || isConditionalTileInImpassible) 1 else 0
+            }
+        }
+        
         return when {
-            isWater || isImpassible() -> false
-            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+            isWater && !isConditionalTileInWater || isImpassible() && !isConditionalTileInImpassible -> false
+            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents+
+                addedDistanceBeweenContinents)
                 .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
