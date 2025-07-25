@@ -187,6 +187,7 @@ class Terrain : RulesetStatsObject() {
             type.name -> true
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
+            "Impassable" -> impassable
 
             else -> false
         }
