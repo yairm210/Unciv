@@ -29,7 +29,7 @@ open class UnitAction(
     /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
 ) {
-    fun getIcon(): Actor {
+    fun getIcon(size: Float = 20f): Actor {
         if (type.imageGetter != null)
             return type.imageGetter.invoke()
         return when (type) {
@@ -40,33 +40,33 @@ open class UnitAction(
                 val religionName = title.getPlaceholderParameters()[0]
                 ImageGetter.getReligionPortrait(
                     if (ImageGetter.religionIconExists(religionName)) religionName
-                    else "Pantheon", 20f
+                    else "Pantheon", size
                 )
             }
             UnitActionType.TriggerUnique -> {
                 when (associatedUnique?.type) {
                     UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> ImageGetter.getUnitActionPortrait("StartGoldenAge")
-                    UniqueType.GainFreeBuildings, UniqueType.RemoveBuilding, UniqueType.OneTimeSellBuilding, UniqueType.OneTimeFreeUnit, UniqueType.FreeSpecificBuildings -> ImageGetter.getConstructionPortrait(associatedUnique.params[0])
-                    UniqueType.OneTimeAmountFreeUnits -> ImageGetter.getConstructionPortrait(associatedUnique.params[1])
+                    UniqueType.GainFreeBuildings, UniqueType.RemoveBuilding, UniqueType.OneTimeSellBuilding, UniqueType.OneTimeFreeUnit, UniqueType.FreeSpecificBuildings -> ImageGetter.getConstructionPortrait(associatedUnique.params[0], size)
+                    UniqueType.OneTimeAmountFreeUnits -> ImageGetter.getConstructionPortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeFreePolicy, UniqueType.OneTimeAmountFreePolicies, UniqueType.OneTimeAdoptPolicy, UniqueType.OneTimeRemovePolicy, UniqueType.OneTimeRemovePolicyRefund -> ImageGetter.getUnitActionPortrait("HurryPolicy")
                     UniqueType.OneTimeRevealEntireMap, UniqueType.OneTimeRevealSpecificMapTiles, UniqueType.OneTimeRevealCrudeMap -> ImageGetter.getUnitActionPortrait("Explore")
-                    UniqueType.OneTimeConsumeResources, UniqueType.OneTimeProvideResources, UniqueType.OneTimeGainResource -> ImageGetter.getResourcePortrait(associatedUnique.params[1], 20f)
+                    UniqueType.OneTimeConsumeResources, UniqueType.OneTimeProvideResources, UniqueType.OneTimeGainResource -> ImageGetter.getResourcePortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeChangeTerrain -> ImageGetter.getUnitActionPortrait("Transform")
                     UniqueType.OneTimeRemoveResourcesFromTile, UniqueType.OneTimeRemoveImprovementsFromTile -> ImageGetter.getUnitActionPortrait("Pillage")
-                    UniqueType.OneTimeUnitHeal -> ImageGetter.getPromotionPortrait("Heal Instantly", 20f)
+                    UniqueType.OneTimeUnitHeal -> ImageGetter.getPromotionPortrait("Heal Instantly", size)
                     UniqueType.OneTimeUnitGainXP, UniqueType.OneTimeSpiesLevelUp -> ImageGetter.getUnitActionPortrait("Promote")
                     UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade -> ImageGetter.getUnitActionPortrait("Upgrade")
-                    UniqueType.UnitsGainPromotion, UniqueType.OneTimeUnitGainPromotion, UniqueType.OneTimeUnitRemovePromotion, UniqueType.OneTimeUnitGainStatus, UniqueType.OneTimeUnitLoseStatus -> ImageGetter.getPromotionPortrait(associatedUnique.params[1], 20f)
+                    UniqueType.UnitsGainPromotion, UniqueType.OneTimeUnitGainPromotion, UniqueType.OneTimeUnitRemovePromotion, UniqueType.OneTimeUnitGainStatus, UniqueType.OneTimeUnitLoseStatus -> ImageGetter.getPromotionPortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeFreeBelief, UniqueType.OneTimeGainPantheon, UniqueType.OneTimeGainProphet -> ImageGetter.getUnitActionPortrait("EnhanceReligion")
                     UniqueType.OneTimeUnitDamage -> ImageGetter.getUnitActionPortrait("Pillage")
                     UniqueType.FreeStatBuildings -> ImageGetter.getUnitActionPortrait("HurryConstruction")
-                    UniqueType.TriggerEvent -> ImageGetter.getUniquePortrait(associatedUnique.params[0], 20f)
+                    UniqueType.TriggerEvent -> ImageGetter.getUniquePortrait(associatedUnique.params[0], size)
                     UniqueType.OneTimeUnitGainMovement -> ImageGetter.getUnitActionPortrait("MoveTo")
                     UniqueType.OneTimeUnitLoseMovement -> ImageGetter.getUnitActionPortrait("StopMove")
                     UniqueType.OneTimeUnitDestroyed -> ImageGetter.getUnitActionPortrait("DisbandUnit")
                     UniqueType.OneTimeFreeTechRuins, UniqueType.OneTimeAmountFreeTechs, UniqueType.OneTimeFreeTech -> ImageGetter.getUnitActionPortrait("HurryResearch")
-                    UniqueType.OneTimeGainTechPercent -> ImageGetter.getTechIconPortrait(associatedUnique.params[1], 20f)
-                    UniqueType.OneTimeDiscoverTech -> ImageGetter.getTechIconPortrait(associatedUnique.params[0], 20f)
+                    UniqueType.OneTimeGainTechPercent -> ImageGetter.getTechIconPortrait(associatedUnique.params[1], size)
+                    UniqueType.OneTimeDiscoverTech -> ImageGetter.getTechIconPortrait(associatedUnique.params[0], size)
                     else -> ImageGetter.getUnitActionPortrait("Star")
                 }
             }

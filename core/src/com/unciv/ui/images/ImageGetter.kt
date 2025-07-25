@@ -252,7 +252,7 @@ object ImageGetter {
             getImage("UnitIcons/${unit.name}").apply { this.color = color }
         else getImage("UnitTypeIcons/${unit.type}").apply { this.color = color }
 
-    fun getConstructionPortrait(construction: String, size: Float = 20f): Group {
+    fun getConstructionPortrait(construction: String, size: Float): Group {
         if (ruleset.buildings.containsKey(construction)) {
             return PortraitBuilding(construction, size)
         }
