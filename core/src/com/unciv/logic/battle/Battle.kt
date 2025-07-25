@@ -215,6 +215,38 @@ object Battle {
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
 
+        //For both equal damage and degrading aoe attacks
+        if (attacker is MapUnitCombatant) {
+            val aoeDegrade = attacker.unit.getMatchingUniques(UniqueType.AoeDegradeAttack).firstOrNull()
+            val aoeFlat = attacker.unit.getMatchingUniques(UniqueType.AoeFlatAttack).firstOrNull()
+
+            val aoeUnique = aoeDegrade ?: aoeFlat //AoeDegradeAttack will be used as default if both are present
+            if (aoeUnique != null) {
+                val radius = aoeUnique.params[0].toIntOrNull() ?: 1
+                if (radius > 0) {
+                    val centerTile = defender.getTile()
+                    val affectedTiles = centerTile.getTilesInDistance(radius).toList()
+                    val attackerCiv = attacker.getCivInfo()
+                    for (tile in affectedTiles) {
+                        val distanceFactor = if (aoeDegrade != null) {
+                            val distance = centerTile.aerialDistanceTo(tile)
+                            (1.0 - distance.toDouble() / (radius + 1))
+                            } else {
+                                1.0 // full damage for all since uses flat damage unique
+                            }
+                        for (unit in tile.getUnits()) {
+                            if (unit != attacker.unit && unit != (defender as? MapUnitCombatant)?.unit && unit.civ.isAtWarWith(attackerCiv)) {
+                                val aoeDefender = MapUnitCombatant(unit)
+                                var damage = BattleDamage.calculateDamageToDefender(attacker, aoeDefender)
+                                damage = (damage * distanceFactor).toInt().coerceAtLeast(1)
+                                unit.takeDamage(damage)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         return damageDealt + interceptDamage
     }
     

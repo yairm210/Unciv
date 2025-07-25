@@ -433,6 +433,15 @@ enum class UniqueType(
     IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit, UniqueTarget.Global),
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
 
+    //Aoe Attacks
+    AoeFlatAttack("Attacks deal equal area damage to units in a [amount] tile radius", UniqueTarget.Unit, 
+        docDescription = "If both equal area damage and decreasing area damage is given to unit only the decreasing one will be used."),
+    AoeDegradeAttack("Attacks deal area damage to units in a [amount] tile radius, decreasing with distance", UniqueTarget.Unit, 
+        docDescription = "If both equal area damage and this is given to unit only this will be used." + 
+                "Damage is based on distance from the target unit and the set radius," + 
+                "meaning a unit takes more damage if the attacker has its radius set to 2 when it is 1 tile away compared to if the attacker has its radius set to 1." + 
+                "Damage is calculated as follows: Damage = (1 - (distance from center / radius of the attacker)) * baseDamage"),
+
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
     NoDamagePenaltyWoundedUnits("No damage penalty for wounded units", UniqueTarget.Unit, UniqueTarget.Global),
