@@ -637,30 +637,23 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     
     fun canBeSettled(unitCanFoundUnique: Unique?=null): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
-        var conditionalTileName: String?
-        var isConditionalTileInWater = false
-        var isConditionalTileInImpassible = false
-        var addedDistanceBeweenContinents = 0
-        
+        var addedDistanceBeweenContinents: Int
+        var canSettleInTileWithUnique = false
         if (unitCanFoundUnique != null) {
-            val conditionalInTile = unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
-            val baseRuleSetTerrain = tileMap.gameInfo.ruleset.getBaseRulesetCache()?.terrains
-            if (conditionalInTile != null && baseRuleSetTerrain != null) {
-                
-                conditionalTileName = conditionalInTile.params[0]
-                val conditionalTerrain = baseRuleSetTerrain.values.filter { it.matchesFilter(conditionalTileName) }
-                val waterTerrain = baseRuleSetTerrain.values.filter { it.matchesFilter("Water") }
-                val impassableTerrain = baseRuleSetTerrain.values.filter { it.matchesFilter("Impassable") }
-
-                isConditionalTileInWater = conditionalTerrain.any { it in waterTerrain }
-                isConditionalTileInImpassible = conditionalTerrain.any { it in impassableTerrain }
-
-                addedDistanceBeweenContinents = if (isConditionalTileInWater || isConditionalTileInImpassible) 1 else 0
-            }
+            canSettleInTileWithUnique = (isWater || isImpassible()) &&
+                unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).none{
+                    matchesFilter(it.params[0]) 
+                }
         }
+        /*
+        Putting the ! to make sure the player/Ai doesn't place cities too near each other.
+        Because when .none return False when one element has a match.
+        */ 
+        
+        addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
         
         return when {
-            isWater && !isConditionalTileInWater || isImpassible() && !isConditionalTileInImpassible -> false
+            canSettleInTileWithUnique -> false
             getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents+
                 addedDistanceBeweenContinents)
                 .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
