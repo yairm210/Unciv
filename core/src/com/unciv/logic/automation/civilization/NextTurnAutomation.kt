@@ -477,6 +477,7 @@ object NextTurnAutomation {
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
                     && !city.isInResistance() && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
+                    && (civInfo.stats.statsForNextTurn.happiness > city.population.population * 2 - 8) // At all cost, don't go below -10 happiness due to annexing (consider -9 minimum acceptable)
             ) {
                 city.annexCity()
             }
