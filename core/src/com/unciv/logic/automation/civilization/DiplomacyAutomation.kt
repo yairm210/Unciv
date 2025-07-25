@@ -114,6 +114,7 @@ object DiplomacyAutomation {
      * @param civInfo Civilization which initiates trade
      */
     internal fun offerToEstablishEmbassy(civInfo: Civilization) {
+        if (civInfo.getCapital() == null) return
         val civsThatWeCanEstablishEmbassyWith = civInfo.getKnownCivs().filter {
             civInfo.diplomacyFunctions.canEstablishEmbassyWith(it)
             && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)
