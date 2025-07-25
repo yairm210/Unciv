@@ -18,16 +18,17 @@ object UseGoldAutomation {
     fun useGold(civ: Civilization) {
         for (unit in civ.units.getCivUnits())
             UnitAutomation.tryUpgradeUnit(unit)
-        
+
         if (civ.isMajorCiv())
             useGoldForCityStates(civ)
 
-        for (city in civ.cities.sortedByDescending { it.population.population }) {
+        for (city in civ.cities.sortedByDescending { it.cityStats.currentCityStats.production }) {
+            // Low production cities are disallowed from building military and world wonders, and have low priority for xp buildings
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction !is INonPerpetualConstruction) continue
             val statBuyCost = construction.getStatBuyCost(city, Stat.Gold) ?: continue
             if (!city.cityConstructions.isConstructionPurchaseAllowed(construction, Stat.Gold, statBuyCost)) continue
-            if (civ.gold < statBuyCost * 3) continue
+            if (civ.gold < statBuyCost || construction.hurryCostModifier > 0) continue // Don't buy things that are more expensive than they need to be
             city.cityConstructions.purchaseConstruction(construction, 0, true)
         }
 
@@ -123,7 +124,8 @@ object UseGoldAutomation {
         )
 
         for (city in civInfo.cities.filter { !it.isPuppet && !it.isBeingRazed }) {
-            val highlyDesirableTilesInCity = city.tilesInRange.filter {
+            val highlyDesirableTilesInCity = city.getCenterTile().getTilesAtDistance(2).filter {
+                // Only consider second ring tiles: further tiles may be as good or better, but have much higher gold cost 
                 isHighlyDesirableTile(it, civInfo, city)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
@@ -141,17 +143,15 @@ object UseGoldAutomation {
 
         fun hasNaturalWonder() = it.naturalWonder != null
 
-        fun hasLuxuryCivDoesntOwn() =
+        fun hasLuxury() =
             it.hasViewableResource(civInfo)
                 && it.tileResource.resourceType == ResourceType.Luxury
-                && !civInfo.hasResource(it.resource!!)
+                && civInfo.getResourceAmount(it.resource!!) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
 
-        fun hasResourceCivHasNoneOrLittle() =
-            it.hasViewableResource(civInfo)
-                && it.tileResource.resourceType == ResourceType.Strategic
-                && civInfo.getResourceAmount(it.resource!!) <= 3
+        fun hasHighYields() =
+            it.stats.getTileStats(civInfo).food + it.stats.getTileStats(civInfo).production >= 3
 
-        return (hasNaturalWonder() || hasLuxuryCivDoesntOwn() || hasResourceCivHasNoneOrLittle())
+        return (hasNaturalWonder() || hasLuxury() || hasHighYields())
     }
 
     private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
