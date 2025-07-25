@@ -225,8 +225,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         toReturn.resource = resource
         toReturn.resourceAmount = resourceAmount
         toReturn.improvement = improvement
-        @LocalState val improvementQueue = toReturn.improvementQueue
-        improvementQueue.addAll(improvementQueue)
+        @LocalState val cloneImprovementQueue = toReturn.improvementQueue
+        cloneImprovementQueue.addAll(improvementQueue)
         toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
         toReturn.roadIsPillaged = roadIsPillaged
