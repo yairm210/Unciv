@@ -58,8 +58,6 @@ object MotivationToAttackAutomation {
             val scoreRatioModifier = getScoreRatioModifier(targetCiv, civInfo)
             modifiers.add(Pair("Relative score", scoreRatioModifier))
 
-            modifiers.add(Pair("Relative technologies", getRelativeTechModifier(civInfo, targetCiv)))
-
             if (civInfo.stats.getUnitSupplyDeficit() != 0) {
                 modifiers.add(Pair("Over unit supply", (civInfo.stats.getUnitSupplyDeficit() * 2f).coerceAtMost(20f)))
             } else if (targetCiv.stats.getUnitSupplyDeficit() == 0 && !targetCiv.isCityState) {
@@ -203,19 +201,6 @@ object MotivationToAttackAutomation {
             else -> 0f
         }
         return relationshipModifier * diplomacyManager.civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f)
-    }
-
-    private fun getRelativeTechModifier(civInfo: Civilization, otherCiv: Civilization): Float {
-        val relativeTech = civInfo.getStatForRanking(RankingType.Technologies) - otherCiv.getStatForRanking(RankingType.Technologies)
-        val relativeTechModifier = when {
-            relativeTech > 6 -> 10f
-            relativeTech > 3 -> 5f
-            relativeTech > -3 -> 0f
-            relativeTech > -6 -> -2f
-            relativeTech > -9 -> -5f
-            else -> -10f
-        }
-        return relativeTechModifier
     }
 
     private fun getProductionRatioModifier(civInfo: Civilization, otherCiv: Civilization): Float {
