@@ -551,6 +551,7 @@ object UnitAutomation {
                 val tile = it.currentTile
                 it.isCivilian() &&
                         (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
+                        && !it.hasUnique(UniqueType.StrengthBonusInRadius) // Exlude great generals, as they move independently after all military units
                         && (tile == unit.currentTile || tile.militaryUnit == null && unit.movement.canMoveTo(tile))
                         && distanceToTiles.containsKey(tile)
             } ?: return false
