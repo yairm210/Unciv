@@ -563,8 +563,7 @@ object UnitAutomation {
         val siegedCities = unit.civ.cities
                 .asSequence()
                 .filter {
-                    unit.civ == it.civ &&
-                            it.health < it.getMaxHealth()
+                    unit.civ == it.civ && it.health < it.getMaxHealth()
                 }
 
         if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 2 })
