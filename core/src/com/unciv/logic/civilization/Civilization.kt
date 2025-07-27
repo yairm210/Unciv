@@ -36,7 +36,6 @@ import com.unciv.models.Counter
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
@@ -56,6 +55,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -309,6 +309,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
 
     //region pure functions
+    @Readonly
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
         if (gameInfo.ruleset.difficulties.containsKey(gameInfo.getDifficulty().aiDifficultyLevel)) {
@@ -472,7 +473,9 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      * Stockpiled resources return the stockpiled amount
      */
+    @Readonly @Suppress("purity") // component1, component2
     fun getCivResourcesByName(): HashMap<String, Int> {
+        @LocalState
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
         for (entry in getCivResourceSupply())
@@ -486,17 +489,15 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Gets the number of resources available to this city
      * Does not include city-wide resources
      * Returns 0 for undefined resources */
+    @Readonly
     fun getResourceAmount(resourceName: String): Int {
         return getCivResourcesByName()[resourceName] ?: 0
     }
 
     /** Gets modifiers for ALL resources */
-    fun getResourceModifiers(): HashMap<String, Float> {
-        val resourceModifers = HashMap<String, Float>()
-        for (resource in gameInfo.ruleset.tileResources.values)
-            resourceModifers[resource.name] = getResourceModifier(resource)
-        return resourceModifers
-    }
+    @Readonly
+    fun getResourceModifiers(): Map<String, Float> =
+        gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
 
     /**
      * Returns the resource production modifier as a multiplier.
@@ -506,6 +507,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      * @param resource The resource for which to calculate the modifier.
      * @return The production modifier as a multiplier.
      */
+    @Readonly
     fun getResourceModifier(resource: TileResource): Float {
         var finalModifier = 1f
 
@@ -522,7 +524,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return finalModifier
     }
 
-    fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
+    @Readonly fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =
@@ -589,12 +591,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
 
+    @Readonly
     fun getEquivalentBuilding(buildingName: String): Building {
         val building = gameInfo.ruleset.buildings[buildingName]
             ?: throw Exception("No building by the name of $buildingName exists!")
         return getEquivalentBuilding(building)
     }
 
+    @Readonly
     fun getEquivalentBuilding(baseBuilding: Building): Building {
         if (baseBuilding.replaces != null
                 && baseBuilding.replaces in gameInfo.ruleset.buildings)
@@ -606,12 +610,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         return baseBuilding
     }
 
+    @Readonly
     fun getEquivalentTileImprovement(tileImprovementName: String): TileImprovement {
         val tileImprovement = gameInfo.ruleset.tileImprovements[tileImprovementName]
             ?: throw UncivShowableException("Improvement $tileImprovementName doesn't seem to exist!")
         return getEquivalentTileImprovement(tileImprovement)
     }
 
+    @Readonly
     fun getEquivalentTileImprovement(tileImprovement: TileImprovement): TileImprovement {
         if (tileImprovement.replaces != null)
             return getEquivalentTileImprovement(tileImprovement.replaces!!)
@@ -622,12 +628,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         return tileImprovement
     }
 
+    @Readonly
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
         val baseUnit = gameInfo.ruleset.units[baseUnitName]
             ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return getEquivalentUnit(baseUnit)
     }
 
+    @Readonly
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
@@ -638,6 +646,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return baseUnit
     }
 
+    @Readonly
     fun capitalCityIndicator(city: City? = null): Building? {
         val gameContext = if (city?.civ == this) city.state
         else if (city == null) state
@@ -745,6 +754,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun calculateScoreBreakdown(): HashMap<String,Double> {
+        @LocalState
         val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
@@ -1052,8 +1062,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getAllyCiv(): Civilization? = if (allyCivName == null) null
         else gameInfo.getCivilization(allyCivName!!)
-    @Readonly @Suppress("purity") // should be autorecognized
-    fun getAllyCivName() = allyCivName
+    @Readonly fun getAllyCivName() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
     /** Determine if this civ (typically as human player) is allowed to know how many major civs there are

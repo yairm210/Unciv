@@ -45,8 +45,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     val isLocalEffect = params.contains("in this city") || hasModifier(UniqueType.ConditionalInThisCity)
 
-    fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
-    fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
+    @Readonly fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
+    @Readonly fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
 
 
     @Readonly fun getModifiers(type: UniqueType) = modifiersMap[type] ?: emptyList()
@@ -147,6 +147,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
+    @Readonly
     fun getSourceNameForUser(): String {
         return when (sourceObjectType) {
             null -> ""
@@ -245,6 +246,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
+    @Readonly
     fun getDisplayText(): String = if (modifiers.none { it.isHiddenToUsers() }) text
         else text.removeConditionals() + " " + modifiers.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
 }

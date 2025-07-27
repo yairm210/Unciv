@@ -1,3 +1,33 @@
+## 4.17.9
+
+Remove irrelevant counteroffer notifications when the trade request is invalid
+
+By EmperorPinguin: 
+- AI: better explore logic 
+- AI: reduce food weight for small cities 
+- AI: able to choose instant heal promotions 
+- AI: don't annex cities if it causes severe unhappiness 
+
+Add 'on [difficulty] or higher' conditional - By RobLoach
+
+By metablaster:
+- Show religion display name when enhancement is made 
+- Fix embassy trade offer crashes
+
+## 4.17.8
+
+By EmperorPinguin:
+- AI: Update city construction evaluation of buildings + workboats 
+- Automated Workers no longer run away after starting work on a tile  
+
+By SomeTroglodyte:
+- Minor UI fix: Don't display WLTK fireworks over detailed stats popup 
+- Enable "triggers global alert" unique for most objects 
+
+Civilopedia: Add Revealed By on Tile Resource screen - By RobLoach
+
+Multiplayer Chat Support - By touhidurrr
+
 ## 4.17.7
 
 By metablaster:

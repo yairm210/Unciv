@@ -6,12 +6,14 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 object ImprovementFunctions {
 
     /** Generates a sequence of reasons that prevent building given [improvement].
      *  If the sequence is empty, improvement can be built immediately.
      */
+    @Readonly
     fun getImprovementBuildingProblems(improvement: TileImprovement, gameContext: GameContext, tile: Tile? = null): Sequence<ImprovementBuildingProblem> = sequence {
         if (gameContext.civInfo != null) {
             val civInfo: Civilization = gameContext.civInfo

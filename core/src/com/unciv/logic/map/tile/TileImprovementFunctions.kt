@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 
 /** Reason why an Improvement cannot be built by a given civ */
@@ -37,17 +39,20 @@ enum class ImprovementBuildingProblem(
 class TileImprovementFunctions(val tile: Tile) {
 
     /** Returns true if the [improvement] can be built on this [Tile] */
+    @Readonly
     fun canBuildImprovement(improvement: TileImprovement, gameContext: GameContext): Boolean = getImprovementBuildingProblems(improvement, gameContext).none()
 
     /** Generates a sequence of reasons that prevent building given [improvement].
      *  If the sequence is empty, improvement can be built immediately.
      */
+    @Readonly
     fun getImprovementBuildingProblems(improvement: TileImprovement, gameContext: GameContext): Sequence<ImprovementBuildingProblem> =
         ImprovementFunctions.getImprovementBuildingProblems(improvement, gameContext, tile)
 
     /** Without regards to what CivInfo it is (so no tech requirement check), a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
+    @Readonly @Suppress("purity")
     internal fun canImprovementBeBuiltHere(
         improvement: TileImprovement,
         resourceIsVisible: Boolean = tile.resource != null,
@@ -56,6 +61,7 @@ class TileImprovementFunctions(val tile: Tile) {
         isNormalizeCheck: Boolean = false
     ): Boolean {
 
+        @Readonly
         fun TileImprovement.canBeBuiltOnThisUnbuildableTerrain(
             knownFeatureRemovals: List<TileImprovement>? = null,
         ): Boolean {
@@ -70,7 +76,7 @@ class TileImprovementFunctions(val tile: Tile) {
                 tile.ruleset.tileRemovals.firstOrNull { it.name == Constants.remove + feature } }
             if (featureRemovals.isEmpty()) return false
             if (featureRemovals.any { it !in knownFeatureRemovals }) return false
-            val clonedTile = tile.clone(addUnits = false)
+            @LocalState val clonedTile = tile.clone(addUnits = false)
             clonedTile.setTerrainFeatures(tile.terrainFeatures.filterNot {
                 feature -> featureRemovals.any { it.name.removePrefix(Constants.remove) == feature } })
             return clonedTile.improvementFunctions.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, gameContext)

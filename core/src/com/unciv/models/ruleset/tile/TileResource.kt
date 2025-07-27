@@ -92,6 +92,12 @@ class TileResource : RulesetStatsObject(), GameResource {
 
         textList += FormattedLine(cloneStats().toString())
 
+        if (revealedBy != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Revealed by:}")
+            textList += FormattedLine(revealedBy!!, link = "Technology/$revealedBy", indent = 1)
+        }
+
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()
             if (terrainsCanBeFoundOn.size == 1) {
@@ -176,11 +182,13 @@ class TileResource : RulesetStatsObject(), GameResource {
         return textList
     }
 
+    @Readonly
     fun isImprovedBy(improvementName: String): Boolean {
         return getImprovements().contains(improvementName)
     }
 
     /** @return Of all the potential improvements in [getImprovements], the first this civ can actually build, if any. */
+    @Readonly
     fun getImprovingImprovement(tile: Tile, gameContext: GameContext): String? {
         if (gameContext.civInfo != null) {
             val civ: Civilization = gameContext.civInfo
@@ -191,6 +199,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         return null
     }
 
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
@@ -198,6 +207,7 @@ class TileResource : RulesetStatsObject(), GameResource {
                 state == null && hasTagUnique(filter)
         })
 
+    @Readonly
     fun matchesSingleFilter(filter: String) = when (filter) {
         name -> true
         "any" -> true
@@ -206,6 +216,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         else -> improvementStats?.any { filter == it.key.name } == true
     }
 
+    @Readonly
     fun generatesNaturallyOn(tile: Tile): Boolean {
         if (tile.lastTerrain.name !in terrainsCanBeFoundOn) return false
         val gameContext = GameContext(tile = tile)

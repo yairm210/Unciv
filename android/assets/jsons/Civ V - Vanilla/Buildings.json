@@ -350,6 +350,7 @@
 	},
 	{
 		"name": "Aqueduct",
+        "cost": 100,
 		"maintenance": 1,
 		"hurryCostModifier": 0,
 		"uniques": ["[40]% Food is carried over after population increases [in this city]"],
@@ -607,7 +608,6 @@
 	},
 	{
 		"name": "Bank",
-		"gold": 2,
 		"specialistSlots": {"Merchant": 1},
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"gold": 25},
@@ -793,7 +793,6 @@
 	},
 	{
 		"name": "Stock Exchange",
-		"gold": 3,
 		"percentStatBonus": {"gold": 33},
 		"specialistSlots": {"Merchant": 2},
 		"hurryCostModifier": 15,

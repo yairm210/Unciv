@@ -50,14 +50,15 @@ import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
+import com.unciv.ui.screens.worldscreen.chat.ChatButton
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.screens.worldscreen.status.AutoPlayStatusButton
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
-import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.status.SmallUnitButton
+import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
@@ -112,6 +113,7 @@ class WorldScreen(
     // Floating Widgets going counter-clockwise
     internal val topBar = WorldScreenTopBar(this)
     internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
+    internal val chatButton = ChatButton(this)
     private val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
     internal val bottomUnitTable = UnitTable(this)
@@ -157,6 +159,7 @@ class WorldScreen(
         stage.addActor(topBar)
         stage.addActor(statusButtons)
         stage.addActor(techPolicyAndDiplomacy)
+        stage.addActor(chatButton)
 
         stage.addActor(zoomController)
         zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
@@ -683,6 +686,9 @@ class WorldScreen(
             statusButtons.update(true)
         }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
+
+        // Update chat button position to always be below techPolicyAndDiplomacy
+        chatButton.updatePosition()
     }
 
     private fun updateAutoPlayStatusButton() {
@@ -740,7 +746,7 @@ class WorldScreen(
 
 
     private fun showTutorialsOnNextTurn() {
-        if (!game.settings.showTutorials) return
+        if (!game.settings.showTutorials || autoPlay.isAutoPlaying()) return
         displayTutorial(TutorialTrigger.SlowStart)
         displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
         displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian } } }

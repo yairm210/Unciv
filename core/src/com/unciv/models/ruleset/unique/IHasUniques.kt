@@ -117,12 +117,14 @@ interface IHasUniques : INamed {
      *  - Default implementation checks disabling by Religion, Espionage or Victory types.
      *  - Overrides need to deal with e.g. Era-specific wonder disabling, no-nukes, ruin rewards by difficulty, and so on!
      */
+    @Readonly
     fun isUnavailableBySettings(gameInfo: GameInfo): Boolean {
         val gameBasedConditionals = setOf(
             UniqueType.ConditionalVictoryDisabled,
             UniqueType.ConditionalVictoryEnabled,
             UniqueType.ConditionalSpeed,
             UniqueType.ConditionalDifficulty,
+            UniqueType.ConditionalDifficultyOrHigher,
             UniqueType.ConditionalReligionEnabled,
             UniqueType.ConditionalReligionDisabled,
             UniqueType.ConditionalEspionageEnabled,

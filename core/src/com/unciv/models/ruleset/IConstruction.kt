@@ -13,20 +13,21 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stat.Companion.statsUsableToBuy
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 interface IConstruction : INamed {
-    fun isBuildable(cityConstructions: CityConstructions): Boolean
-    fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
-    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext) = sequenceOf<Unique>()
+    @Readonly fun isBuildable(cityConstructions: CityConstructions): Boolean
+    @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/
-    fun getResourceRequirementsPerTurn(state: GameContext? = null): Counter<String>
-    fun requiredResources(state: GameContext = GameContext.EmptyState): Set<String>
-    fun getStockpiledResourceRequirements(state: GameContext): Counter<String>
+    @Readonly fun getResourceRequirementsPerTurn(state: GameContext? = null): Counter<String>
+    @Readonly fun requiredResources(state: GameContext = GameContext.EmptyState): Set<String>
+    @Readonly fun getStockpiledResourceRequirements(state: GameContext): Counter<String>
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
@@ -38,16 +39,17 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) emptySequence() else sequenceOf(requiredTech!!)
 
-    fun getProductionCost(civInfo: Civilization, city: City?): Int
-    fun getStatBuyCost(city: City, stat: Stat): Int?
-    fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
+    @Readonly fun getProductionCost(civInfo: Civilization, city: City?): Int
+    @Readonly fun getStatBuyCost(city: City, stat: Stat): Int?
+    @Readonly fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
-    fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
+    @Readonly fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         return canBePurchasedWithStatReasons(city, stat).purchasable
     }
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
+    @Readonly
     fun canBePurchasedWithStatReasons(city: City?, stat: Stat): PurchaseReason {
         val gameContext = city?.state ?: GameContext.EmptyState
         if (stat == Stat.Production || stat == Stat.Happiness) return PurchaseReason.Invalid
@@ -71,25 +73,30 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     }
 
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
+    @Readonly
     fun isPurchasable(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
     }
 
+    @Readonly
     fun canBePurchasedWithAnyStat(city: City): Boolean {
         return statsUsableToBuy.any { canBePurchasedWithStat(city, it) }
     }
 
+    @Readonly
     fun getCivilopediaGoldCost(): Int {
         // Same as getBaseGoldCost, but without game-specific modifiers
         return ((30.0 * cost.toFloat()).pow(0.75) * hurryCostModifier.toPercent() / 10).toInt() * 10
     }
 
+    @Readonly
     fun getBaseGoldCost(civInfo: Civilization, city: City?): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo, city)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
+    @Readonly
     fun getBaseBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = city.state
 
@@ -108,20 +115,25 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return null
     }
 
+    @Readonly
     fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
 
-    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> =
+    /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
+    @Readonly
+    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> =
             getMatchingUniques(uniqueType, gameContext)
 
+    @Readonly
     override fun requiredResources(state: GameContext): Set<String> {
         return getResourceRequirementsPerTurn(state).keys +
                 getMatchingUniques(UniqueType.CostsResources, state).map { it.params[1] }
     }
     
+    @Readonly
     override fun getStockpiledResourceRequirements(state: GameContext): Counter<String> {
-        val counter = Counter<String>()
+        @LocalState val counter = Counter<String>()
         for (unique in getMatchingUniquesNotConflicting(UniqueType.CostsResources, state)){
             var amount = unique.params[0].toInt()
             if (unique.isModifiedByGameSpeed()) amount = (amount * state.gameInfo!!.speed.modifier).toInt()
@@ -146,15 +158,15 @@ class RejectionReason(val type: RejectionReasonType,
                       val errorMessage: String = type.errorMessage,
                       val shouldShow: Boolean = type.shouldShow) {
 
-    fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
+    @Readonly fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
 
-    fun hasAReasonToBeRemovedFromQueue(): Boolean = type in reasonsToDefinitivelyRemoveFromQueue
+    @Readonly fun hasAReasonToBeRemovedFromQueue(): Boolean = type in reasonsToDefinitivelyRemoveFromQueue
 
-    fun isImportantRejection(): Boolean = type in orderedImportantRejectionTypes
+    @Readonly fun isImportantRejection(): Boolean = type in orderedImportantRejectionTypes
 
-    fun isConstructionRejection(): Boolean = type in constructionRejectionReasonType
+    @Readonly fun isConstructionRejection(): Boolean = type in constructionRejectionReasonType
 
-    fun isNeverVisible(): Boolean = type in neverVisible
+    @Readonly fun isNeverVisible(): Boolean = type in neverVisible
 
     /** Returns the index of [orderedImportantRejectionTypes] with the smallest index having the
      * highest precedence */
@@ -269,8 +281,9 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     NoPlaceToPutUnit(true, "No space to place this unit");
 
     val defaultInstance by lazy { RejectionReason(this, errorMessage, shouldShow) }
-    fun toInstance() = defaultInstance
+    @Pure fun toInstance() = defaultInstance
 
+    @Pure
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReason {
         return RejectionReason(this, errorMessage, shouldShow)

@@ -52,11 +52,7 @@ object Automation {
         if (city.civ.getHappiness() < -8)
             return 0f
         if (city.civ.isAI()) {
-            // When Happy, 2 production is better than 1 growth,
-            // but setting such by default worsens AI civ citizen assignment,
-            // probably due to badly configured personalities not properly weighing food vs non-food yields
-            if (city.population.population < 5)
-                return 2f
+            // Value 1 Growth at less than 2 Production, but above 1 Production + 1 Gold
             return 1.5f
         }
         // Human weights. May be different since AI Happiness is always "easier"
@@ -167,13 +163,6 @@ object Automation {
         if (city.cityConstructions.getCurrentConstruction() is PerpetualConstruction) {
             // With 4:1 conversion of production to science, production is overvalued by a factor (12*4)/7 = 6.9
             yieldStats.production /= 6
-        }
-
-        if (!city.civ.isHuman()) { // Don't mess things up with a single turn of Autoplay
-            for (stat in Stat.entries) {
-                val scaledFocus = civPersonality.scaledFocus(PersonalityValue[stat])
-                if (scaledFocus != 1f) yieldStats[stat] *= scaledFocus
-            }
         }
 
         // Apply City focus

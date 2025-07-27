@@ -202,6 +202,7 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: Tile) {
+        if (unit.currentTile.position == tile.position) return
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()

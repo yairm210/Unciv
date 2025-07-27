@@ -211,7 +211,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     fun getPlayerToViewAs(): Civilization {
         if (!gameParameters.isOnlineMultiplayer) return getCurrentPlayerCivilization() // non-online, play as human player
-        val userId = UncivGame.Current.settings.multiplayer.userId
+        val userId = UncivGame.Current.settings.multiplayer.getUserId()
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
         // This allows multiple civs from the same UserID
@@ -235,6 +235,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Readonly
     fun getCivilization(civName: String) = civMap[civName]
         ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
+
+    @Readonly
+    fun getCivilizationOrNull(civName: String) = civMap[civName]
+        ?: civilizations.firstOrNull { it.civName == civName }
+
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
@@ -243,8 +248,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Readonly fun getDifficulty() = difficultyObject
     /** Access a cached `GlobalUniques` that combines the [ruleset]'s [globalUniques][Ruleset.globalUniques]
      *  with the Uniques of the chosen [speed] and [difficulty][getDifficulty] */
-    @Readonly @Suppress("purity") // should be autorecognized 
-    fun getGlobalUniques() = combinedGlobalUniques
+    @Readonly fun getGlobalUniques() = combinedGlobalUniques
 
     /** @return Sequence of all cities in game, both major civilizations and city states */
     @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }
@@ -300,6 +304,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         it.setTransients()
     }
 
+    @Readonly
     fun isReligionEnabled(): Boolean {
         if (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)) return false
         if (ruleset.modOptions.hasUnique(UniqueType.DisableReligion)) return false

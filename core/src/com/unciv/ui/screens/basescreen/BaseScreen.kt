@@ -36,6 +36,7 @@ import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
 // Both `this is CrashScreen` and `this::createPopupBasedDispatcherVetoer` are flagged.
 // First - not a leak; second - passes out a pure function
@@ -122,6 +123,7 @@ abstract class BaseScreen : Screen {
     fun displayTutorial(tutorial: TutorialTrigger, test: (() -> Boolean)? = null) {
         if (!game.settings.showTutorials) return
         if (game.settings.tutorialsShown.contains(tutorial.name)) return
+        if (this is WorldScreen && this.autoPlay.isAutoPlaying()) return
         if (test != null && !test()) return
         tutorialController.showTutorial(tutorial)
     }

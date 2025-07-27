@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 class Terrain : RulesetStatsObject() {
@@ -160,7 +161,7 @@ class Terrain : RulesetStatsObject() {
     }
 
     /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
-    val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    @Cache private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {

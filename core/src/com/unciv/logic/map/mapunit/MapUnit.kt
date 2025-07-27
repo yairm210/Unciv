@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -166,7 +167,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val position = Vector2(position)
 
-        fun clone() = UnitMovementMemory(position, type)
+        @Readonly fun clone() = UnitMovementMemory(position, type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
     }
 
@@ -195,8 +196,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         else "[$name]"
     }
 
+    @Readonly
     fun clone(): MapUnit {
-        val toReturn = MapUnit()
+        @LocalState val toReturn = MapUnit()
         toReturn.baseUnit = baseUnit
         toReturn.name = name
         toReturn.civ = civ
@@ -215,7 +217,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
-        toReturn.abilityToTimesUsed.putAll(abilityToTimesUsed)
+        toReturn.abilityToTimesUsed = HashMap(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
@@ -231,8 +233,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getMovementString(): String =
         (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
-    @Readonly @Suppress("purity") // should be autorecognized
-    fun getTile(): Tile = currentTile
+    
+    @Readonly fun getTile(): Tile = currentTile
 
     fun getClosestCity(): City? = civ.cities.minByOrNull {
         it.getCenterTile().aerialDistanceTo(currentTile)
@@ -252,28 +254,30 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return turnsFortified
     }
 
-    fun isSleeping() = action?.startsWith(UnitActionType.Sleep.value) == true
-    fun isSleepingUntilHealed() = isSleeping() && isActionUntilHealed()
+    @Readonly fun isSleeping() = action?.startsWith(UnitActionType.Sleep.value) == true
+    @Readonly fun isSleepingUntilHealed() = isSleeping() && isActionUntilHealed()
 
-    fun isMoving() = action?.startsWith("moveTo") == true
+    @Readonly fun isMoving() = action?.startsWith("moveTo") == true
+    @Readonly
     fun getMovementDestination(): Tile {
         val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }
         val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
         return currentTile.tileMap[destinationVector]
     }
 
-    fun isAutomated() = automated
+    @Readonly fun isAutomated() = automated
 
-    fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
-    fun isExploring() = action == UnitActionType.Explore.value
-    fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
-    fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
-    fun isSetUpForSiege() = action == UnitActionType.SetUp.value
+    @Readonly fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
+    @Readonly fun isExploring() = action == UnitActionType.Explore.value
+    @Readonly fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
+    @Readonly fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
+    @Readonly fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
     /**
      * @param includeOtherEscortUnit determines whether this method will also check if it's other escort unit is idle if it has one
      * Leave it as default unless you know what [isIdle] does.
      */
+    @Readonly
     fun isIdle(includeOtherEscortUnit: Boolean = true): Boolean {
         if (!hasMovement()) return false
         val tile = getTile()
@@ -285,7 +289,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving() || isGuarding())
     }
 
-    fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
+    @Readonly fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
 
     @Readonly
     fun getMatchingUniques(
@@ -309,6 +313,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return getMatchingUniques(uniqueType, gameContext, checkCivInfoUniques).any()
     }
 
+    @Readonly
     fun getTriggeredUniques(
         trigger: UniqueType,
         gameContext: GameContext = cache.state,
@@ -320,14 +325,16 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * StateForConditionals is assumed to regarding this mapUnit*/
+    @Readonly
     fun getResourceRequirementsPerTurn(): Counter<String> {
-        val resourceRequirements = Counter<String>()
+        @LocalState val resourceRequirements = Counter<String>()
         if (baseUnit.requiredResource != null) resourceRequirements[baseUnit.requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, cache.state))
-            resourceRequirements[unique.params[1]] += unique.params[0].toInt()
+            resourceRequirements.add(unique.params[1], unique.params[0].toInt())
         return resourceRequirements
     }
 
+    @Readonly
     fun requiresResource(resource: String): Boolean {
         if (getResourceRequirementsPerTurn().contains(resource)) return true
         for (unique in getMatchingUniques(UniqueType.CostsResources, cache.state)) {
@@ -336,8 +343,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return false
     }
 
-    fun hasMovement() = currentMovement > 0
+    @Readonly fun hasMovement() = currentMovement > 0
 
+    @Readonly
     fun getMaxMovement(ignoreOtherUnit: Boolean = false): Int {
         var movement =
                 if (isEmbarked()) 2
@@ -364,6 +372,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return movement
     }
 
+    @Readonly
     fun hasUnitMovedThisTurn(): Boolean {
         val max = getMaxMovement().toFloat()
         return currentMovement < max - max.ulp
@@ -373,7 +382,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
      * @return Maximum distance of tiles this unit may possibly see
      */
-    private fun getVisibilityRange(): Int {
+    @Readonly
+    fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
         val conditionalState = cache.state
@@ -387,17 +397,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return visibilityRange
     }
 
+    @Readonly
     fun maxAttacksPerTurn(): Int {
         return 1 + getMatchingUniques(UniqueType.AdditionalAttacks, checkCivInfoUniques = true)
                 .sumOf { it.params[0].toInt() }
     }
 
+    @Readonly
     fun canAttack(): Boolean {
         if (!hasMovement()) return false
         if (isCivilian()) return false
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
+    @Readonly
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit.range
@@ -406,9 +419,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return range
     }
 
-    fun getMaxMovementForAirUnits(): Int {
-        return getRange() * 2
-    }
+    @Readonly fun getMaxMovementForAirUnits(): Int = getRange() * 2
 
     @Readonly
     fun isEmbarked(): Boolean {
@@ -428,7 +439,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return false
     }
 
-
+    @Readonly
     fun canFortify(ignoreAlreadyFortified: Boolean = false) = when {
         baseUnit.isWaterUnit -> false
         isCivilian() -> false
@@ -440,10 +451,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         else -> true
     }
 
+    @Readonly
     private fun adjacentHealingBonus(): Int {
         return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
-
+    
+    @Readonly
     fun getHealAmountForCurrentTile() = when {
         isEmbarked() -> 0 // embarked units can't heal
         health >= 100 -> 0 // No need to heal if at max health
@@ -451,9 +464,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         else -> rankTileForHealing(getTile())
     }
 
-    fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
+    @Readonly fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
 
     /** Returns the health points [MapUnit] will receive if healing on [tile] */
+    @Readonly
     fun rankTileForHealing(tile: Tile): Int {
         val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
 
@@ -499,20 +513,23 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly fun canGarrison() = isMilitary() && baseUnit.isLandUnit
 
     @Readonly fun isGreatPerson() = baseUnit.isGreatPerson
-    fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
+    @Readonly fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
+    @Readonly
     fun canIntercept(attackedTile: Tile): Boolean {
         if (!canIntercept()) return false
         if (currentTile.aerialDistanceTo(attackedTile) > getInterceptionRange()) return false
         return true
     }
 
+    @Readonly
     fun getInterceptionRange(): Int {
         val rangeFromUniques = getMatchingUniques(UniqueType.AirInterceptionRange, checkCivInfoUniques = true)
                 .sumOf { it.params[0].toInt() }
         return baseUnit.interceptRange + rangeFromUniques
     }
 
+    @Readonly
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
         // Air Units can only Intercept if they didn't move this turn
@@ -524,15 +541,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return true
     }
 
+    @Readonly
     fun interceptChance(): Int {
         return getMatchingUniques(UniqueType.ChanceInterceptAirAttacks).sumOf { it.params[0].toInt() }
     }
 
+    @Readonly
     fun interceptDamagePercentBonus(): Int {
         return getMatchingUniques(UniqueType.DamageWhenIntercepting)
                 .sumOf { it.params[0].toInt() }
     }
 
+    @Readonly
     fun receivedInterceptDamageFactor(): Float {
         var damageFactor = 1f
         for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
@@ -540,16 +560,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return damageFactor
     }
 
+    @Readonly
     fun getDamageFromTerrain(tile: Tile = currentTile): Int {
         return tile.allTerrains.sumOf { it.damagePerTurn }
     }
 
+    @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
         if (!mapUnit.baseUnit.movesLikeAirUnits) return false
         return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
+    @Readonly
     private fun carryCapacity(unit: MapUnit): Int {
         return (getMatchingUniques(UniqueType.CarryAirUnits)
                 + getMatchingUniques(UniqueType.CarryExtraAirUnits))
@@ -557,6 +580,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 .sumOf { it.params[0].toInt() }
     }
 
+    @Readonly
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
@@ -566,10 +590,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Gets a Nuke's blast radius from the BlastRadius unique, defaulting to 2. No check whether the unit actually is a Nuke. */
+    @Readonly
     fun getNukeBlastRadius() = getMatchingUniques(UniqueType.BlastRadius)
             // Don't check conditionals as these are not supported
             .firstOrNull()?.params?.get(0)?.toInt() ?: 2
 
+    @Readonly
     private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civ
                 || (otherCiv.isCityState && otherCiv.getAllyCivName() == civ.civName)
@@ -577,10 +603,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
+    @Readonly
     fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, ::matchesSingleFilter) else matchesSingleFilter(filter)
     }
 
+    @Readonly
     private fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
             Constants.wounded, "wounded units" -> health < 100
@@ -599,6 +627,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
         if (civ.isBarbarian) return false
         
@@ -617,6 +646,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 .any { improvement.matchesFilter(it.params[0], cache.state) || tile.matchesTerrainFilter(it.params[0], civ) }
     }
 
+    @Readonly
     fun getReligionDisplayName(): String? {
         if (religion == null) return null
         return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
@@ -631,6 +661,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return power
     }
 
+    @Readonly
     fun getOtherEscortUnit(): MapUnit? {
         if (!::currentTile.isInitialized) return null // In some cases we might not have the unit placed on the map yet
         if (isCivilian()) return getTile().militaryUnit
@@ -638,14 +669,16 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return null
     }
 
+    @Readonly @Suppress("purity") // Updates escorting state
     fun isEscorting(): Boolean {
-        if (escorting) {
+        if (escorting) { 
             if (getOtherEscortUnit() != null) return true
             escorting = false
         }
         return false
     }
 
+    @Readonly
     fun threatensCiv(civInfo: Civilization): Boolean {
         if (getTile().getOwner() == civInfo)
             return true
@@ -653,7 +686,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Deep clone an ArrayList of [UnitMovementMemory]s. */
-    private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
+    @Readonly private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
 
     //endregion
     //region state-changing functions
@@ -1050,9 +1083,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             movementMemories.removeAt(0)
         }
     }
-    
-    fun getStatus(name:String): UnitStatus? = statusMap[name]
-    fun hasStatus(name:String): Boolean = getStatus(name) != null
+
+    @Readonly fun getStatus(name:String): UnitStatus? = statusMap[name]
+    @Readonly fun hasStatus(name:String): Boolean = getStatus(name) != null
     
     fun setStatus(name:String, turns:Int){
         val existingStatus = getStatus(name)

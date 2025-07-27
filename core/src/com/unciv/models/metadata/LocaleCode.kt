@@ -1,5 +1,6 @@
 package com.unciv.models.metadata
 
+import yairm210.purity.annotations.Readonly
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -89,6 +90,7 @@ enum class LocaleCode(val languageTag: String, private val fastlaneFolder: Strin
         // NumberFormat cache, key: language, value: NumberFormat
         private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
 
+        @Readonly @Suppress("purity")
         fun getNumberFormatFromLanguage(language: String): NumberFormat =
             languageToNumberFormat.getOrPut(language) {
                 NumberFormat.getInstance(getLocale(language))

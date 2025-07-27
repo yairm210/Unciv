@@ -2,13 +2,16 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.Readonly
 
 /** Used to cache results of getMatchingUniques
  * Must only be used when we're sure the matching uniques will not change in the meantime */
 class LocalUniqueCache(val cache: Boolean = true) {
     // This stores sequences *that iterate directly on a list* - that is, pre-resolved
-    private val keyToUniques = HashMap<String, Sequence<Unique>>()
+    @Cache private val keyToUniques = HashMap<String, Sequence<Unique>>()
 
+    @Readonly
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
@@ -29,6 +32,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
         return citySpecificUniques + civUniques
     }
 
+    @Readonly
     fun forCivGetMatchingUniques(
         civ: Civilization,
         uniqueType: UniqueType,
@@ -48,6 +52,7 @@ class LocalUniqueCache(val cache: Boolean = true) {
     }
 
     /** Get cached results as a sequence */
+    @Readonly
     private fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
         if (!cache) return sequence
         val valueInMap = keyToUniques[key]

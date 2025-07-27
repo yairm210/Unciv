@@ -73,7 +73,9 @@ class Simulation(
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 repeat(simulationsPerThread) {
                     val step = SimulationStep(newGameInfo, statTurns)
-                    val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
+                    val gameSetupInfo = GameSetupInfo(newGameInfo)
+                    gameSetupInfo.mapParameters.seed = 0 // Creates a new random map seed
+                    val gameInfo = GameStarter.startNewGame(gameSetupInfo)
                     gameInfo.simulateUntilWin = true
                     for (turn in statTurns) {
                         gameInfo.simulateMaxTurns = turn

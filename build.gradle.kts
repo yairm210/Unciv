@@ -30,6 +30,7 @@ kotlin {
     jvm()
 }
 
+
 // Plugins used for serialization of JSON for networking
 plugins {
     id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
@@ -37,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.27" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.38" apply(false)
 }
 
 allprojects {
@@ -48,20 +49,15 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-            "com.unciv.logic.civilization.diplomacy.RelationshipLevel.compareTo",
-            "kotlin.math.max",
-            "kotlin.math.min",
-            "kotlin.math.abs",
-            "kotlin.internal.ir.noWhenBranchMatchedException",
         )
         wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
-            "java.util.AbstractCollection.contains",
-            "java.util.AbstractCollection.isEmpty",
-            "java.util.AbstractCollection.iterator",
-            "java.util.AbstractList.get",
+            "kotlin.collections.Collection.contains",
+            "kotlin.collections.dropLastWhile",
+            "kotlin.collections.MutableCollection.iterator",
+            "kotlin.collections.isNullOrEmpty",
         )
         wellKnownPureClasses = setOf(
         )
@@ -115,8 +111,11 @@ project(":server") {
         // For server-side
         "implementation"("io.ktor:ktor-server-core:$ktorVersion")
         "implementation"("io.ktor:ktor-server-netty:$ktorVersion")
+        "implementation"("io.ktor:ktor-server-auth:${ktorVersion}")
         "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+        "implementation"("io.ktor:ktor-server-websockets:${ktorVersion}")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
         "implementation"("ch.qos.logback:logback-classic:1.5.18")
         "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
 
@@ -171,7 +170,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
         
-        "implementation"("io.github.yairm210:purity-annotations:0.0.25")
+        "implementation"("io.github.yairm210:purity-annotations:0.0.38")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
@@ -181,6 +180,7 @@ project(":core") {
         "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         // JSON serialization and de-serialization
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     }
 
 
