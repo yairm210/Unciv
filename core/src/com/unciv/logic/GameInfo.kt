@@ -304,6 +304,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         it.setTransients()
     }
 
+    @Readonly
     fun isReligionEnabled(): Boolean {
         if (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)) return false
         if (ruleset.modOptions.hasUnique(UniqueType.DisableReligion)) return false

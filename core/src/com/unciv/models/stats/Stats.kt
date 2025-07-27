@@ -1,6 +1,7 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
+import yairm210.purity.annotations.Readonly
 
 /**
  * A container for the seven basic ["currencies"][Stat] in Unciv,
@@ -21,6 +22,7 @@ open class Stats(
 ): Iterable<Stats.StatValuePair> {
 
     /** Indexed read of a value for a given [Stat], e.g. `this.gold == this[Stat.Gold]` */
+    @Readonly
     operator fun get(stat: Stat): Float {
         return when(stat) {
             Stat.Production -> production
@@ -49,6 +51,7 @@ open class Stats(
     // This is an overload, not an override conforming to the kotlin conventions of `equals(Any?)`,
     // so do not rely on it to be called for the `==` operator! A tad more efficient, though.
     @Suppress("CovariantEquals", "WrongEqualsTypeParameter")    // historical reasons to keep this function signature
+    @Readonly
     fun equals(otherStats: Stats): Boolean {
         return production == otherStats.production
                 && food == otherStats.food
@@ -61,9 +64,10 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new instance containing the same values as `this` */
-    fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
+    @Readonly fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     /** @return `true` if all values are zero */
+    @Readonly
     fun isEmpty() = (
             production == 0f
             && food == 0f

@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 
 class BaseUnitCost(val baseUnit: BaseUnit) {
 
@@ -34,6 +35,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
 
 
     /** Contains only unit-specific uniques that allow purchasing with stat */
+    @Readonly
     fun canBePurchasedWithStat(city: City, stat: Stat): Boolean {
         val conditionalState = city.state
 

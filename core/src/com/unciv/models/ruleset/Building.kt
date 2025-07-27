@@ -14,6 +14,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
@@ -73,12 +74,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return name in startingEra.startingObsoleteWonders
     }
 
+    @Readonly
     fun getStats(city: City,
                  /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
                  * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
                  localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
-        val stats = cloneStats()
+        @LocalState val stats = cloneStats()
         
         val conditionalState = city.state
 
@@ -98,8 +100,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return stats
     }
 
+    @Readonly
     fun getStatPercentageBonuses(city: City?, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
-        val stats = percentStatBonus?.clone() ?: Stats()
+        @LocalState val stats = percentStatBonus?.clone() ?: Stats()
         if (city == null) return stats  // initial stats
 
         val conditionalState = city.state
@@ -474,9 +477,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
 
-    private val cachedMatchesFilterResult = HashMap<String, Boolean>()
+    @Cache private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BuildingFilter] */
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
@@ -484,6 +488,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 state == null && hasTagUnique(it)
         })
 
+    @Readonly
     private fun matchesSingleFilter(filter: String): Boolean {
         // all cases are constants for performance
         return when (filter) {
@@ -504,6 +509,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
     }
 
+    @Readonly
     fun isStatRelated(stat: Stat, city: City? = null): Boolean {
         if (city != null) {
             if (getStats(city)[stat] > 0) return true
@@ -525,7 +531,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private val _hasCreatesOneImprovementUnique by lazy {
         hasUnique(UniqueType.CreatesOneImprovement)
     }
-    fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
+    @Readonly fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
 
     private var _getImprovementToCreate: TileImprovement? = null
     private fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
