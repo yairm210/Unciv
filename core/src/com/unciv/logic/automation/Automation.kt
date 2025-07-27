@@ -41,7 +41,7 @@ object Automation {
             gpp = specialistInfo.greatPersonPoints.sumValues().toFloat()
         }
         gpp = gpp * (100 + city.currentGPPBonus) / 100
-        rank += gpp * 3 // GPP weight
+        rank += gpp // GPP weight
         return rank
     }
 
@@ -84,6 +84,8 @@ object Automation {
             for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
+            if (yieldStats.science == 3f || yieldStats.science >= 5f )
+                yieldStats.science *= 2f
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]
