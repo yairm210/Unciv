@@ -87,9 +87,21 @@ class UniqueValidator(val ruleset: Ruleset) {
             if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
                 continue
 
+            var text = "$prefix contains parameter \"${complianceError.parameterName}\", $whichDoesNotFitParameterType" +
+                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+            
+            val similarParameters = complianceError.acceptableParameterTypes
+                .flatMap { it.getKnownValuesForAutocomplete(ruleset) }.filter {
+                getRelativeTextDistance(
+                    it,
+                    complianceError.parameterName
+                ) <= RulesetCache.uniqueMisspellingThreshold
+            }
+            if (similarParameters.isNotEmpty())
+                text += " May be a misspelling of: " + similarParameters.joinToString(", ") { "\"$it\"" }
+            
             rulesetErrors.add(
-                "$prefix contains parameter \"${complianceError.parameterName}\", $whichDoesNotFitParameterType" +
-                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                text,
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
 
