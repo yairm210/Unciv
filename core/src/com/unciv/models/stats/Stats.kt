@@ -205,6 +205,7 @@ open class Stats(
     /** Enables iteration over the non-zero [Stat]/value [pairs][StatValuePair].
      * Explicit use unnecessary - [Stats] is [iterable][Iterable] directly.
      * @see iterator */
+    @Readonly
     fun asSequence() = sequence {
         if (production != 0f) yield(StatValuePair(Stat.Production, production))
         if (food != 0f) yield(StatValuePair(Stat.Food, food))

@@ -3,10 +3,11 @@ package com.unciv.models.ruleset.unique.expressions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
+import yairm210.purity.annotations.Readonly
 
 internal sealed interface Node {
-    fun eval(context: GameContext): Double
-    fun getErrors(ruleset: Ruleset): List<String>
+    @Readonly fun eval(context: GameContext): Double
+    @Readonly fun getErrors(ruleset: Ruleset): List<String>
 
     // All elements below are not members, they're nested for namespace notation and common visibility
     // All toString() are for debugging only
@@ -48,12 +49,14 @@ internal sealed interface Node {
             
             return countable.eval(parameterText, context)?.toDouble() ?: 0.0
         }
-        
+
+        @Readonly
         private fun getCountable(ruleset: Ruleset): Countables? {
             return rulesetInvariantCountable
                 ?: Countables.getMatching(parameterText, ruleset)
         }
 
+        @Readonly
         override fun getErrors(ruleset: Ruleset): List<String> {
             if (getCountable(ruleset) == null)
                 return listOf("Unknown countable: $parameterText")

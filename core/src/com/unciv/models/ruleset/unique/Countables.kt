@@ -229,7 +229,6 @@ enum class Countables(
         private val engine = Expressions()
         override val matchesWithRuleset: Boolean = true
 
-        @Suppress("purity")
         override fun matches(parameterText: String, ruleset: Ruleset) =
             engine.matches(parameterText, ruleset)
         override fun eval(parameterText: String, gameContext: GameContext): Int? =
@@ -269,7 +268,7 @@ enum class Countables(
      * E.g. "[fakeBuilding] Buildings" is obviously a countable of type "[buildingFilter] Buildings", therefore matches will return true.
      * But it has another problem, which is that the building filter is bad, so its getErrorSeverity will return "ruleset specific" */
     open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
-    abstract fun eval(parameterText: String, gameContext: GameContext): Int?
+    @Readonly @Suppress("purity") abstract fun eval(parameterText: String, gameContext: GameContext): Int?
 
     open val documentationHeader get() =
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")

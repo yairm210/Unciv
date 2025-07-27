@@ -7,6 +7,8 @@ import com.unciv.models.ruleset.unique.expressions.Tokenizer.Token
 import com.unciv.models.ruleset.unique.expressions.Tokenizer.toToken
 import com.unciv.models.ruleset.unique.expressions.Tokenizer.tokenize
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Parse and evaluate simple expressions
@@ -30,6 +32,7 @@ object Parser {
     fun eval(text: String, context: GameContext = GameContext.EmptyState): Double =
         parse(text).eval(context)
 
+    @Readonly
     internal fun parse(text: String): Node {
         val tokens = text.tokenize().map { it.toToken() }
         val engine = StateEngine(tokens)
@@ -161,6 +164,7 @@ object Parser {
             }
         }
 
+        @Pure @Suppress("purity")
         fun buildAST(): Node {
             val node = expression()
             expect(EndToken)

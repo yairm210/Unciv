@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset.unique.expressions
 
+import yairm210.purity.annotations.Immutable
+import yairm210.purity.annotations.Pure
 import kotlin.math.*
 
 internal sealed interface Operator : Tokenizer.Token {
@@ -86,7 +88,7 @@ internal sealed interface Operator : Tokenizer.Token {
             UnaryOrBinaryOperators.entries + // Will overwrite the previous entries in the map
             NamedConstants.entries +
             Parentheses.entries
-        private val cache = allEntries().associateBy { it.symbol }
-        fun of(symbol: String): Operator? = cache[symbol]
+        @Immutable private val cache = allEntries().associateBy { it.symbol }
+        @Pure fun of(symbol: String): Operator? = cache[symbol]
     }
 }
