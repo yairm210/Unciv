@@ -564,8 +564,8 @@ object UnitAutomation {
                 .asSequence()
                 .filter {
                     unit.civ == it.civ &&
-                            it.health < it.getMaxHealth() * 0.75
-                } //Weird health issues and making sure that not all forces move to good defenses
+                            it.health < it.getMaxHealth()
+                }
 
         if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 2 })
             return false
