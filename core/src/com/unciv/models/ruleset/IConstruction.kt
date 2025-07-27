@@ -22,8 +22,6 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     @Readonly fun isBuildable(cityConstructions: CityConstructions): Boolean
     @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
-    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext) = sequenceOf<Unique>()
     
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/
@@ -41,8 +39,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     override fun legacyRequiredTechs(): Sequence<String> = if (requiredTech == null) emptySequence() else sequenceOf(requiredTech!!)
 
-    fun getProductionCost(civInfo: Civilization, city: City?): Int
-    fun getStatBuyCost(city: City, stat: Stat): Int?
+    @Readonly fun getProductionCost(civInfo: Civilization, city: City?): Int
+    @Readonly fun getStatBuyCost(city: City, stat: Stat): Int?
     @Readonly fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
@@ -75,6 +73,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     }
 
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
+    @Readonly
     fun isPurchasable(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
@@ -85,16 +84,19 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return statsUsableToBuy.any { canBePurchasedWithStat(city, it) }
     }
 
+    @Readonly
     fun getCivilopediaGoldCost(): Int {
         // Same as getBaseGoldCost, but without game-specific modifiers
         return ((30.0 * cost.toFloat()).pow(0.75) * hurryCostModifier.toPercent() / 10).toInt() * 10
     }
 
+    @Readonly
     fun getBaseGoldCost(civInfo: Civilization, city: City?): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo, city)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
+    @Readonly
     fun getBaseBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = city.state
 
@@ -118,8 +120,9 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
 
+    /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
     @Readonly
-    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> =
+    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> =
             getMatchingUniques(uniqueType, gameContext)
 
     @Readonly

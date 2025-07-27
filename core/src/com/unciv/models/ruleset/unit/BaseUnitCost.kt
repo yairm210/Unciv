@@ -9,6 +9,7 @@ import yairm210.purity.annotations.Readonly
 
 class BaseUnitCost(val baseUnit: BaseUnit) {
 
+    @Readonly
     fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = baseUnit.cost.toFloat()
 
@@ -73,7 +74,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
         return false
     }
 
-
+    @Readonly
     fun getStatBuyCost(city: City, stat: Stat): Int? {
         var cost = baseUnit.getBaseBuyCost(city, stat)?.toDouble() ?: return null
         val conditionalState = city.state
@@ -90,6 +91,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
     }
 
 
+    @Readonly
     fun getBaseBuyCosts(city: City, stat: Stat): Sequence<Float> {
         val conditionalState = city.state
         return sequence {

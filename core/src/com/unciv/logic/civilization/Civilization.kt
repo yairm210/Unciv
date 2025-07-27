@@ -309,6 +309,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
 
     //region pure functions
+    @Readonly
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
         if (gameInfo.ruleset.difficulties.containsKey(gameInfo.getDifficulty().aiDifficultyLevel)) {
