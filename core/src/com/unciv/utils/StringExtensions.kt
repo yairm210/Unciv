@@ -1,15 +1,13 @@
 package com.unciv.utils
 
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
+import java.util.UUID
 
 
 /**
  * Checks if a [String] is a valid UUID
  */
-@OptIn(ExperimentalUuidApi::class)
 fun String.isUUID(): Boolean = try {
-    Uuid.parse(this)
+    UUID.fromString(this)
     true
 } catch (_: Throwable) {
     false
