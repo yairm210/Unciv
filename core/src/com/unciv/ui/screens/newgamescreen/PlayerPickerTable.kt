@@ -243,9 +243,9 @@ class PlayerPickerTable(
         fun onPlayerIdTextUpdated() {
             if (IdChecker.isValidPlayerUuid(playerIdTextField.text)) {
                 player.playerId = playerIdTextField.text.trim()
-                errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
+                errorLabel.apply { setText("✔"); setFontColor(Color.GREEN) }
             } else {
-                errorLabel.apply { setText("✘");setFontColor(Color.RED) }
+                errorLabel.apply { setText("✘"); setFontColor(Color.RED) }
             }
         }
         onPlayerIdTextUpdated()

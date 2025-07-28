@@ -166,6 +166,9 @@ music/
 SaveFiles/
 scenarios/
 
+# server artifacts
+server.auth
+MultiplayerFiles/
 
 /.kotlin/errors/*
 /.kotlin/sessions/*
