@@ -432,6 +432,15 @@ enum class UniqueType(
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
     IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit, UniqueTarget.Global),
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
+    
+    //Aoe Attacks
+    AoeFlatAttack("Attacks deal equal area damage to units in a [amount] tile radius", UniqueTarget.Unit, 
+        docDescription = "If both equal area damage and decreasing area damage is given to unit only the decreasing one will be used."),
+    AoeDegradeAttack("Attacks deal area damage to units in a [amount] tile radius, decreasing with distance", UniqueTarget.Unit, 
+        docDescription = "If both equal area damage and this is given to unit only this will be used." + 
+                "Damage is based on distance from the target unit and the set radius," + 
+                "meaning a unit takes more damage if the attacker has its radius set to 2 when it is 1 tile away compared to if the attacker has its radius set to 1." + 
+                "Damage is calculated as follows: Damage = (1 - (distance from center / radius of the attacker)) * baseDamage"),
 
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
@@ -440,7 +449,13 @@ enum class UniqueType(
     WithdrawsBeforeMeleeCombat("Withdraws before melee combat", UniqueTarget.Unit),
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit, UniqueTarget.Global),
     CannotPillage("Unable to pillage tiles", UniqueTarget.Unit, UniqueTarget.Global),
-
+    
+    // allow any unit to destory cities instead of capturing them, also allows non melee units to destroy cities
+    CanDestroyCities("Can destroy non capital cities", UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "The unit will destroy non capital cities instead of capturing them, also allows non-melee units to destroy cities." + "Disabled when \"Unable to capture cities\" is set on the unit."),
+    CanDestroyAllCities("Can destroy all cities", UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "The unit will destroy any city instead of capturing them, also allows non-melee units to destroy cities."  + "Disabled when the \"Unable to capture cities\" is set on the unit."),
+    
     // Movement
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
