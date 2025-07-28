@@ -154,16 +154,24 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
+                && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
             // Barbarians can't capture cities
-            if (attacker.unit.civ.isBarbarian) {
+            if (attacker.unit.civ.isBarbarian && attacker.isMelee()) {
                 defender.takeDamage(-1) // Back to 2 HP
                 val ransom = min(200, defender.city.civ.gold)
                 defender.city.civ.addGold(-ransom)
                 defender.city.civ.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
                 attacker.unit.destroy() // Remove the barbarian
-            } else
+            } else if (attacker.unit.hasUnique(UniqueType.CanDestroyCities)) {
+                if (defender.city.isCapital()) {
+                    conquerCity(defender.city, attacker) // Capital is captured
+                } else
+                    defender.city.destroyCity() // Non-capital city is destroyed
+            } else if (attacker.unit.hasUnique(UniqueType.CanDestroyAllCities)) {
+                    defender.city.destroyCity(overrideSafeties = true) // All city is destroyed
+            } else if (attacker.isMelee()) {
                 conquerCity(defender.city, attacker)
+            }
         }
 
         // Exploring units surviving an attack should "wake up"
@@ -215,6 +223,36 @@ object Battle {
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
 
+        if (attacker is MapUnitCombatant) {
+            val aoeDegrade = attacker.unit.getMatchingUniques(UniqueType.AoeDegradeAttack).firstOrNull()
+            val aoeFlat = attacker.unit.getMatchingUniques(UniqueType.AoeFlatAttack).firstOrNull()
+
+            val aoeUnique = aoeDegrade ?: aoeFlat //AoeDegradeAttack will be used as default if both are present
+            if (aoeUnique != null) {
+                val radius = aoeUnique.params[0].toIntOrNull() ?: 1
+                if (radius > 0) {
+                    val centerTile = defender.getTile()
+                    val affectedTiles = centerTile.getTilesInDistance(radius).toList()
+                    val attackerCiv = attacker.getCivInfo()
+                    for (tile in affectedTiles) {
+                        val distanceFactor = if (aoeDegrade != null) {
+                            val distance = centerTile.aerialDistanceTo(tile)
+                            (1.0 - distance.toDouble() / (radius + 1))
+                            } else {
+                                1.0 // full damage for all since uses flat damage unique
+                            }
+                        for (unit in tile.getUnits()) {
+                            if (unit != attacker.unit && unit != (defender as? MapUnitCombatant)?.unit && unit.civ.isAtWarWith(attackerCiv)) {
+                                val aoeDefender = MapUnitCombatant(unit)
+                                var damage = BattleDamage.calculateDamageToDefender(attacker, aoeDefender)
+                                damage = (damage * distanceFactor).toInt().coerceAtLeast(1)
+                                unit.takeDamage(damage)
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return damageDealt + interceptDamage
     }
     
