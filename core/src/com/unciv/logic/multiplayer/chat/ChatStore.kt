@@ -2,6 +2,7 @@ package com.unciv.logic.multiplayer.chat
 
 import com.badlogic.gdx.Gdx
 import com.unciv.ui.screens.worldscreen.chat.ChatPopup
+import com.unciv.utils.isUUID
 import java.util.LinkedList
 import java.util.Queue
 
@@ -22,7 +23,7 @@ data class Chat(
      */
     fun requestMessageSend(civName: String, message: String) {
         Gdx.app.postRunnable {
-            ChatWebSocket.requestMessageSend(Message.Chat(gameId, civName, message))
+            ChatWebSocket.requestMessageSend(Message.Chat(civName, message, gameId))
         }
     }
 
@@ -71,12 +72,17 @@ object ChatStore {
 
     fun relayChatMessage(chat: Response.Chat) {
         Gdx.app.postRunnable {
-            if (chat.gameId.isNotEmpty()) {
+            if (chat.gameId == null || chat.gameId.isBlank()) {
+                relayGlobalMessage(chat.message, chat.civName)
+            } else {
+                // Discard messages with invalid UUID
+                if (!chat.gameId.isUUID()) return@postRunnable
+
                 getChatByGameId(chat.gameId).addMessage(chat.civName, chat.message)
                 if (chatPopup?.chat?.gameId == chat.gameId) {
                     chatPopup?.addMessage(chat.civName, chat.message)
                 }
-            } else relayGlobalMessage(chat.message, chat.civName)
+            }
         }
     }
 

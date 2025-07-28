@@ -22,7 +22,11 @@ import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
@@ -34,12 +38,12 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
+import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withoutItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 import java.util.zip.Deflater
 
 class AdvancedTab(
@@ -345,25 +349,23 @@ class AdvancedTab(
 
     private fun addSetUserId() {
         val idSetLabel = "".toLabel()
-        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
-            .onClick {
-                try {
-                    val clipboardContents = Gdx.app.clipboard.contents.trim()
-                    UUID.fromString(clipboardContents)
-                    ConfirmPopup(
-                        stage,
-                        "Doing this will reset your current user ID to the clipboard contents - are you sure?",
-                        "Take user ID from clipboard"
-                    ) {
-                        settings.multiplayer.setUserId(clipboardContents)
-                        idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                    }.open(true)
-                    idSetLabel.isVisible = true
-                } catch (_: Exception) {
-                    idSetLabel.isVisible = true
-                    idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
-                }
+        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton().onClick {
+            val clipboardContents = Gdx.app.clipboard.contents.trim()
+            if (clipboardContents.isUUID()) {
+                ConfirmPopup(
+                    stage,
+                    "Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                    "Take user ID from clipboard"
+                ) {
+                    settings.multiplayer.setUserId(clipboardContents)
+                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
+                }.open(true)
+                idSetLabel.isVisible = true
+            } else {
+                idSetLabel.isVisible = true
+                idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
             }
+        }
         add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
         add(idSetLabel).colspan(2).row()
     }

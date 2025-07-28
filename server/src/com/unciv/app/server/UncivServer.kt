@@ -49,7 +49,7 @@ sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val gameId: String, val civName: String, val message: String
+        val civName: String, val message: String, val gameId: String? = null
     ) : Message()
 
     @Serializable
@@ -71,7 +71,7 @@ sealed class Response {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val gameId: String, val civName: String, val message: String
+        val civName: String, val message: String, val gameId: String? = null
     ) : Response()
 
     @Serializable
@@ -134,6 +134,19 @@ data class BasicAuthInfo(
     val password: String,
     val isValidUUID: Boolean = false
 ) : Principal
+
+/**
+ * Checks if a [String] is a valid UUID
+ */
+@OptIn(ExperimentalUuidApi::class)
+private fun String.isUUID(): Boolean {
+    return try {
+        Uuid.parse(this)
+        true
+    } catch (_: Throwable) {
+        false
+    }
+}
 
 private class UncivServerRunner : CliktCommand() {
     private val port by option(
@@ -235,12 +248,7 @@ private class UncivServerRunner : CliktCommand() {
 
                     @OptIn(ExperimentalUuidApi::class)
                     validate { creds ->
-                        val isValidUUID = try {
-                            Uuid.parse(creds.name)
-                            true
-                        } catch (_: Throwable) {
-                            false
-                        }
+                        val isValidUUID = creds.name.isUUID()
                         BasicAuthInfo(creds.name, creds.password, isValidUUID)
                     }
                 }
@@ -392,13 +400,33 @@ private class UncivServerRunner : CliktCommand() {
                                 val message = receiveDeserialized<Message>()
                                 when (message) {
                                     is Message.Chat -> {
+                                        if (message.gameId == null) {
+                                            sendSerialized(
+                                                Response.Chat(
+                                                    civName = "Server",
+                                                    message = "No gameId found. Cannot relay the message!",
+                                                )
+                                            )
+                                            continue
+                                        }
+
+                                        if (!message.gameId.isUUID()) {
+                                            sendSerialized(
+                                                Response.Chat(
+                                                    civName = "Server",
+                                                    message = "Invalid gameId: '${message.gameId}'. Cannot relay the message!",
+                                                )
+                                            )
+                                            continue
+                                        }
+
                                         if (wsSessionManager.hasGameId(userId, message.gameId)) {
                                             wsSessionManager.publish(
-                                                message.gameId,
-                                                Response.Chat(
-                                                    message.gameId,
-                                                    message.civName,
-                                                    message.message
+                                                gameId = message.gameId,
+                                                message = Response.Chat(
+                                                    civName = message.civName,
+                                                    message = message.message,
+                                                    gameId = message.gameId,
                                                 )
                                             )
                                         } else {
