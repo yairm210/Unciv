@@ -2,6 +2,7 @@ package com.unciv.logic.multiplayer.chat
 
 import com.badlogic.gdx.Gdx
 import com.unciv.ui.screens.worldscreen.chat.ChatPopup
+import java.util.Collections.synchronizedMap
 import java.util.LinkedList
 import java.util.Queue
 import java.util.UUID
@@ -51,15 +52,15 @@ object ChatStore {
      */
     var chatPopup: ChatPopup? = null
 
-    private var gameIdToChat = mutableMapOf<UUID, Chat>()
+    private var gameIdToChat: MutableMap<UUID, Chat> = synchronizedMap(mutableMapOf())
 
     /** When no [ChatPopup] is open to receive these oddities, we keep them here.
      * Certainly better than not knowing why the socket closed.
      */
     private var globalMessages: Queue<Pair<String, String>> = LinkedList()
 
-    fun getChatByGameId(gameId: UUID) = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
-    fun getChatByGameId(gameId: String) = getChatByGameId(UUID.fromString(gameId))
+    fun getChatByGameId(gameId: UUID): Chat = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
+    fun getChatByGameId(gameId: String): Chat = getChatByGameId(UUID.fromString(gameId))
 
     fun getGameIds() = gameIdToChat.keys.map { uuid -> uuid.toString() }
 
