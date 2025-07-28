@@ -92,21 +92,11 @@ private class WebSocketSessionManager {
     private val gameId2WSSessions = synchronizedMap(mutableMapOf<Uuid, MutableSet<DefaultWebSocketServerSession>>())
     private val wsSession2GameIds = synchronizedMap(mutableMapOf<DefaultWebSocketServerSession, MutableSet<Uuid>>())
 
-    fun isSubscribed(session: DefaultWebSocketServerSession, gameId: String): Boolean = try {
-        val gameId = Uuid.parse(gameId)
+    fun isSubscribed(session: DefaultWebSocketServerSession, gameId: Uuid): Boolean =
         gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }.contains(session)
-    } catch (_: Throwable) {
-        false
-    }
 
     fun subscribe(session: DefaultWebSocketServerSession, gameIds: List<String>): List<String> {
-        val uuids = gameIds.mapNotNull { gameId ->
-            return@mapNotNull try {
-                Uuid.parse(gameId)
-            } catch (_: Throwable) {
-                null
-            }
-        }
+        val uuids = gameIds.mapNotNull { it.toUuidOrNull() }
 
         wsSession2GameIds.getOrPut(session) { synchronizedSet(mutableSetOf()) }.addAll(uuids)
         for (uuid in uuids) {
@@ -117,27 +107,14 @@ private class WebSocketSessionManager {
     }
 
     fun unsubscribe(session: DefaultWebSocketServerSession, gameIds: List<String>) {
-        val uuids = gameIds.mapNotNull { gameId ->
-            return@mapNotNull try {
-                Uuid.parse(gameId)
-            } catch (_: Throwable) {
-                null
-            }
-        }
-
+        val uuids = gameIds.mapNotNull { it.toUuidOrNull() }
         wsSession2GameIds[session]?.removeAll(uuids)
         for (uuid in uuids) {
             gameId2WSSessions[uuid]?.remove(session)
         }
     }
 
-    suspend fun publish(gameId: String, message: Response) {
-        val gameId = try {
-            Uuid.parse(gameId)
-        } catch (_: Throwable) {
-            return
-        }
-
+    suspend fun publish(gameId: Uuid, message: Response) {
         val sessions = gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }
         for (session in sessions) {
             if (!session.isActive) {
@@ -169,13 +146,10 @@ data class BasicAuthInfo(
  * Checks if a [String] is a valid UUID
  */
 @OptIn(ExperimentalUuidApi::class)
-private fun String.isUUID(): Boolean {
-    return try {
-        Uuid.parse(this)
-        true
-    } catch (_: Throwable) {
-        false
-    }
+private fun String.toUuidOrNull() = try {
+    Uuid.parse(this)
+} catch (_: Throwable) {
+    null
 }
 
 private class UncivServerRunner : CliktCommand() {
@@ -279,9 +253,9 @@ private class UncivServerRunner : CliktCommand() {
                 basic {
                     realm = "Optional for /files and /auth, Mandatory for /chat"
 
-                    @OptIn(ExperimentalUuidApi::class) validate { creds ->
+                    @OptIn(ExperimentalUuidApi::class) validate {
                         return@validate try {
-                            BasicAuthInfo(userId = Uuid.parse(creds.name), password = creds.password)
+                            BasicAuthInfo(userId = Uuid.parse(it.name), password = it.password)
                         } catch (_: Throwable) {
                             null
                         }
@@ -415,7 +389,8 @@ private class UncivServerRunner : CliktCommand() {
                                 val message = receiveDeserialized<Message>()
                                 when (message) {
                                     is Message.Chat -> {
-                                        if (!message.gameId.isUUID()) {
+                                        val gameId = message.gameId.toUuidOrNull()
+                                        if (gameId == null) {
                                             sendSerialized(
                                                 Response.Chat(
                                                     civName = "Server",
@@ -425,9 +400,9 @@ private class UncivServerRunner : CliktCommand() {
                                             continue
                                         }
 
-                                        if (wsSessionManager.isSubscribed(this, message.gameId)) {
+                                        if (wsSessionManager.isSubscribed(this, gameId)) {
                                             wsSessionManager.publish(
-                                                gameId = message.gameId, message = Response.Chat(
+                                                gameId = gameId, message = Response.Chat(
                                                     civName = message.civName,
                                                     message = message.message,
                                                     gameId = message.gameId,
