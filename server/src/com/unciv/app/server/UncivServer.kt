@@ -49,7 +49,7 @@ sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val message: String, val gameId: String? = null
+        val civName: String, val message: String, val gameId: String
     ) : Message()
 
     @Serializable
@@ -400,16 +400,6 @@ private class UncivServerRunner : CliktCommand() {
                                 val message = receiveDeserialized<Message>()
                                 when (message) {
                                     is Message.Chat -> {
-                                        if (message.gameId == null) {
-                                            sendSerialized(
-                                                Response.Chat(
-                                                    civName = "Server",
-                                                    message = "No gameId found. Cannot relay the message!",
-                                                )
-                                            )
-                                            continue
-                                        }
-
                                         if (!message.gameId.isUUID()) {
                                             sendSerialized(
                                                 Response.Chat(

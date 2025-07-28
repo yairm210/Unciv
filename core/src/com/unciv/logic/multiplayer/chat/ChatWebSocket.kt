@@ -35,7 +35,7 @@ sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val message: String, val gameId: String? = null
+        val civName: String, val message: String, val gameId: String
     ) : Message()
 
     @Serializable
