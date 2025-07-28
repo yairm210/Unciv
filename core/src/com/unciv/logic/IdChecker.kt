@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.unciv.models.translations.tr
+import com.unciv.utils.isUUID
 import java.util.Locale
 import kotlin.math.abs
 
@@ -28,8 +29,22 @@ object IdChecker {
         return checkAndReturnUuiId(playerId, "P")
     }
 
+    fun isValidPlayerUuid(playerId: String): Boolean = try {
+        checkAndReturnPlayerUuid(playerId).isUUID()
+        true
+    } catch (_: Throwable) {
+        false
+    }
+
     fun checkAndReturnGameUuid(gameId: String): String {
         return checkAndReturnUuiId(gameId, "G")
+    }
+
+    fun isValidGameUuid(gameId: String): Boolean = try {
+        checkAndReturnGameUuid(gameId).isUUID()
+        true
+    } catch (_: Throwable) {
+        false
     }
 
     private fun checkAndReturnUuiId(id: String, prefix: String): String {

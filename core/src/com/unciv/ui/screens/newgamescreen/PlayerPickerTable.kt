@@ -36,7 +36,6 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.utils.isUUID
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
@@ -242,7 +241,7 @@ class PlayerPickerTable(
         add(errorLabel).pad(5f).row()
 
         fun onPlayerIdTextUpdated() {
-            if (IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text).isUUID()) {
+            if (IdChecker.isValidPlayerUuid(playerIdTextField.text)) {
                 player.playerId = playerIdTextField.text.trim()
                 errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
             } else {

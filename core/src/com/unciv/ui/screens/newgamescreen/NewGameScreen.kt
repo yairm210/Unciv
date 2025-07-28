@@ -40,7 +40,6 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
 import java.net.URI
@@ -156,7 +155,7 @@ class NewGameScreen(
                     else "Couldn't connect to Dropbox!"
 
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
-                if (!IdChecker.checkAndReturnPlayerUuid(player.playerId).isUUID()) {
+                if (!IdChecker.isValidPlayerUuid(player.playerId)) {
                     return "Invalid player ID!"
                 }
             }

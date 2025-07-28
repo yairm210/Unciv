@@ -18,7 +18,6 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
-import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 
 class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScreen() {
@@ -48,7 +47,7 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
         rightSideButton.enable()
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.onActivation {
-            if (!IdChecker.checkAndReturnGameUuid(gameIDTextField.text).isUUID()) {
+            if (!IdChecker.isValidGameUuid(gameIDTextField.text)) {
                 ToastPopup("Invalid game ID!", this)
                 return@onActivation
             }
