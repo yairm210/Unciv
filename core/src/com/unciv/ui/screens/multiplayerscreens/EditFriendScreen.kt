@@ -75,7 +75,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
                 ToastPopup("Player ID already used!", this)
                 return@onClick
             }
-            if (IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text).isUUID()) {
+            if (!IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text).isUUID()) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }

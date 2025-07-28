@@ -48,7 +48,7 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
         rightSideButton.enable()
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.onActivation {
-            if (IdChecker.checkAndReturnGameUuid(gameIDTextField.text).isUUID()) {
+            if (!IdChecker.checkAndReturnGameUuid(gameIDTextField.text).isUUID()) {
                 ToastPopup("Invalid game ID!", this)
                 return@onActivation
             }
