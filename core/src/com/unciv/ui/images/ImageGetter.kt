@@ -236,8 +236,8 @@ object ImageGetter {
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun ninePatchImageExists(fileName: String) = ninePatchDrawables.containsKey(fileName)
 
-    fun getStatIcon(statName: String): Image = getImage("StatIcons/$statName")
-            .apply { setSize(20f, 20f) }
+    fun getStatIcon(statName: String, size: Float = 20f): Image = getImage("StatIcons/$statName")
+            .apply { setSize(size, size) }
 
     fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
