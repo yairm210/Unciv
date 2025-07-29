@@ -59,8 +59,10 @@
         "neutralHello": "Peace be upon you.",
         "hateHello": "Oh, it's you.",
         "tradeRequest": "Come forth, let's do business.",
+        
         "outerColor": [43, 88, 46],
         "innerColor": [146, 221, 10],
+        
         "favoredReligion": "Islam",
         "uniqueName": "Trade Caravans",
         "uniques": ["[+1 Gold] from each Trade Route", "[+100]% [Oil] resource production"],
@@ -84,7 +86,6 @@
         "attacked": "What a fool ye are! Ye will end swiftly and miserably.",
         "defeated": "The world is pitiful! There's no beauty in it, no wisdom. I am almost glad to go.",
         "introduction": "The archduchess of Austria welcomes your Eminence to... Oh let's get this over with! I have a luncheon at four o'clock.",
-
         "neutralHello": "Hello!",
         "hateHello": "Oh, it's ye!",
         "tradeRequest": "I see you admire my new damask. Nobody should say that I am an unjust woman. Let's reach an agreement!",
@@ -117,7 +118,6 @@
         "attacked": "Excellent! Let the blood flow in raging torrents!",
         "defeated": "Monster! Who are you to destroy my greatness?",
         "introduction": "What do I see before me? Another beating heart for my sacrificial fire.",
-
         "neutralHello": "Welcome, friend.",
         "hateHello": "What do you want?",
         "tradeRequest": "Accept this agreement or suffer the consequences.",
@@ -150,14 +150,13 @@
 		"attacked": "Oh well, I presume you know what you're doing.",
 		"defeated": "It is over. Perhaps now I shall have peace, at last.",
 		"introduction": "Are you real or a phantom?",
-
 		"neutralHello": "Greetings.",
 		"hateHello": "What do YOU want?!",
-
 		"tradeRequest": "It appears that you do have a reason for existing – to make this deal with me.",
 
 		"outerColor": [27,53,63],
 		"innerColor": [213,249,255],
+        
 		"favoredReligion": "Islam",
 		"uniqueName": "Ingenuity",
 		"uniques": ["Free [Great Scientist] appears <upon discovering [Writing] technology>", "[Great Scientist] is earned [50]% faster"],
@@ -184,8 +183,10 @@
         "introduction": "My, isn't this a pleasant surprise - what may I call you, oh mysterious stranger? I am Theodora, beloved of Byzantium.",
         "neutralHello": "Hello again.",
         "tradeRequest": "I have heard that you adept at certain kinds of ... interactions. Show me.",
+        
         "outerColor": [114, 162, 233],
         "innerColor": [61, 0, 109],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "Patriarchate of Constantinople",
         "uniques": ["May choose [1] additional belief(s) of any type when [founding] a religion"],
@@ -215,8 +216,10 @@
         "neutralHello": "Greetings.",
         "hateHello": "What is it now?",
         "tradeRequest": "I just had the marvelous idea, and I think you'll appreciate it too.",
+        
         "outerColor": [205, 205, 205],
         "innerColor": [81, 0, 137],
+        
         "favoredReligion": "Islam",
         "uniqueName": "Phoenician Heritage",
         "uniques": ["Gain a free [Harbor] [in all coastal cities]","Land units may cross [Mountain] tiles after the first [Great General] is earned","Comment [Units ending their turn on [Mountain] tiles take [50] damage]"],
@@ -242,11 +245,10 @@
         "defeated": "Vile ruler, know you have won this war in name alone. Your cities lie buried and your troops defeated. I have my own victory.",
         "denounced": "Don't forget who you're dealing with. Arrogant moves can get you in danger.",
         "introduction": "I am Boudicca, Queen of the Celts. Let no-one underestimate me!",
-        "tradeRequest": "Let us join our forces together and reap the rewards.",
-
         "neutralHello": "God has given good to you.",
-
         "hateHello": "Well?",
+        "tradeRequest": "Let us join our forces together and reap the rewards.",
+        
         "outerColor": [12,75,25],
         "innerColor": [157,172,255],
 
@@ -340,14 +342,13 @@
         "attacked": "You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
         "defeated": "Strike me down and my soul will torment yours forever, you have won nothing.",
         "introduction": "Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
-
         "neutralHello": "Good day.",
         "hateHello": "Oh, it's you.",
-
         "tradeRequest": "Generous Egypt makes you this offer.",
 
         "outerColor": [255, 252, 3],
         "innerColor": [83, 0, 208],
+        
         "favoredReligion": "Islam",
         "uniqueName": "Monument Builders",
         "uniques": ["[+20]% Production when constructing [All] wonders [in all cities]"],
@@ -377,8 +378,10 @@
         "neutralHello": "Hello, again.",
         "hateHello": "Oh, it's you!",
         "tradeRequest": "Would you be interested in a trade agreement with England?",
+        
         "outerColor": [109, 2, 0],
         "innerColor": [255, 255, 255],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "Sun Never Sets",
         "uniques": ["[+2] Movement <for [Water] units>", "Gain an extra spy <upon entering the [Renaissance era]>"],
@@ -405,9 +408,7 @@
         "denounced": "What a waste of time.",
         "introduction": "A thousand welcomes to our fair nation. I am Selassie, the Ras Tafari Makonnen and Emperor of Ethiopia, your humble servant.",
         "tradeRequest": "I request that you consider this offer between our two peoples. I believe it will do us both good.",
-
         "neutralHello": "Welcome.",
-
         "hateHello": "What do you want?",
 
         "outerColor": [18, 66, 22],
@@ -470,8 +471,10 @@
         "neutralHello": "What now?",
         "hateHello": "So, out with it!",
         "tradeRequest": "It would be in your best interest, to carefully consider this proposal.",
+        
         "outerColor": [179, 178, 184],
         "innerColor": [37, 43, 33],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "Furor Teutonicus",
         "uniques": ["When conquering an encampment, earn [25] Gold and recruit a Barbarian unit <with [67]% chance>",
@@ -500,14 +503,13 @@
         "defeated": "You have somehow become my undoing! What kind of beast are you?",
         "denounced": "You'll regret this decision, fool. I swear it!",
         "introduction": "Hello stranger! I am Alexandros, son of kings and grandson of the gods!",
-
         "neutralHello": "Greetings!",
         "hateHello": "What?",
-
         "tradeRequest": "My friend, does this seem reasonable to you?",
 
         "outerColor": [255, 255, 255],
         "innerColor": [65, 141, 254],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "Hellenic League",
         "uniques": ["[-50]% City-State Influence degradation", "City-State Influence recovers at twice the normal rate", "City-State territory always counts as friendly territory"],
@@ -562,7 +564,6 @@
         "attacked": "Declare war on me?!? You can't, because I declare war on you first!",
         "defeated": "How did you darken the sun? I ruled with diligence and mercy—see that you do so as well.",
         "introduction": "How are you? You stand before Pachacuti Inca Yupanqui.",
-
         "neutralHello": "How are you doing?",
         "hateHello": "What do you want now?",
         "tradeRequest": "The Incan people offer this fair trade.",
@@ -663,8 +664,10 @@
         "neutralHello": "Hello.",
         "hateHello": "Oh, it's you...",
         "tradeRequest": "I would be grateful if you agreed on the following proposal.",
+        
         "outerColor": [255, 255, 255],
         "innerColor": [184, 0, 0],
+        
         "favoredReligion": "Shinto",
         "uniqueName": "Bushido",
         "uniques": ["No damage penalty for wounded units <for [non-[Air]] units>"],
@@ -690,12 +693,13 @@
         "defeated": "Now the question is who will protect my people. A dark age has come.",
         "denounced": "Such unpleasant conduct is typical of Yangpyeong, not someone like you.",
         "introduction": "Welcome to the palace of Choson, stranger. I am the learned King Sejong, who looks after his great people.",
-
         "neutralHello": "Hello.",
         "hateHello": "Oh, it's you",
         "tradeRequest": "We have many things to discuss and have much to benefit from each other.",
+        
         "outerColor": [27,33,96],
         "innerColor": [255,0,0],
+        
         "favoredReligion": "Confucianism",
         "uniqueName": "Scholars of the Jade Hall",
         "uniques": ["[+2 Science] from every specialist [in all cities]", "[+2 Science] from every [Great Improvement]","Receive a tech boost when scientific buildings/wonders are built in capital"],
@@ -707,7 +711,7 @@
     {
         "name": "The Maya",
         "leaderName": "Pacal",
-        "adjective": ["mayan"],
+        "adjective": ["Mayan"],
         "startBias": ["Jungle"],
         "preferredVictoryType": "Scientific",
         "personality": "Pacal",
@@ -719,11 +723,12 @@
         "attacked": "Muahahahahahaha!",
         "defeated": "Today comes a great searing pain. With you comes the path to the black storm.",
         "introduction": "Greetings, wayward one. I am known as Pacal.",
-        "tradeRequest": "Friend, I believe I may have found a way to save us all! Look, look and accept my offering!",
-
         "neutralHello": "A fine day, it helps you.",
+        "tradeRequest": "Friend, I believe I may have found a way to save us all! Look, look and accept my offering!",
+        
         "outerColor": [198, 141, 99],
         "innerColor": [24, 63, 66],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "The Long Count",
         "uniques": ["Receive a free Great Person at the end of every [Maya Long Count calendar cycle] (every 394 years), after researching [Theology]. Each bonus person can only be chosen once.",
@@ -754,8 +759,10 @@
         "neutralHello": "Hello.",
         "hateHello": "So what now?",
         "tradeRequest": "I am not always this generous, but we hope you take this rare opportunity we give you.",
+        
         "outerColor": [81,0,9],
         "innerColor": [255,120,0],
+        
         "favoredReligion": "Tengriism",
         "uniqueName": "Mongol Terror",
         "uniques": ["[+30]% Strength <vs [City-States]>", "[+1] Movement <for [Mounted] units>"],
@@ -783,8 +790,10 @@
         "neutralHello": "Once again, greetings.",
         "hateHello": "What do you want?",
         "tradeRequest": "I believe I have something that may be of some importance to you.",
+        
         "outerColor": [216, 120, 0],
         "innerColor": [255, 255, 255],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "Dutch East India Company",
         "uniques": ["Retain [50]% of the happiness from a luxury after the last copy has been traded away"],
@@ -875,8 +884,10 @@
         "neutralHello": "Welcome, friend!",
         "hateHello": "Oh, it's you.",
         "tradeRequest": "Come, let our people feast together!",
+        
         "outerColor": [217,89,0],
         "innerColor": [255,255,75],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "Wayfinding",
         "uniques": ["Enables embarkation for land units <starting from the [Ancient era]> <Suppress warning [*contains a conditional on a unit movement unique*]>",
@@ -896,7 +907,6 @@
         "preferredVictoryType": "Scientific",
         "personality": "Augustus Caesar",
 
-
         "startIntroPart1": "Ave Caesar Augustus, Emperor of Rome and Dominus of the Roman Empire! Your empire was the most powerful and feared of all in Western civilization. The Roman people crafted so brilliantly its culture, law, art, and warfare, that no one could contest the supremacy of Rome. Force and Honor led to glorious conquests, a domination of all the lands from Spain in the west to Syria in the east, even reaching the remote barbarian lands of England and Germany. Roman art and architecture have been praised for millenia and have been envied by all lesser civilizations who have followed.",
         "startIntroPart2": "O glorious Imperator, your people celebrate you and ask for the glory of Rome! In these times of darkness, the Pax Romana will be a beacon of light for all! Will your new empire shine through the ages of history?",
 
@@ -908,8 +918,10 @@
         "neutralHello": "Hail.",
         "hateHello": "What do you want?",
         "tradeRequest": "I offer this, for your consideration.",
+        
         "outerColor": [70, 0, 118],
         "innerColor": [240, 199, 0],
+        
         "favoredReligion": "Christianity",
         "uniqueName": "The Glory of Rome",
         "uniques": ["[+25]% Production towards any buildings that already exist in the Capital"],
@@ -927,7 +939,6 @@
 		"preferredVictoryType": "Scientific",
 		"personality": "Catherine",
 
-
         "startIntroPart1": "Hail to Imperial Majesty Catherine, Empress of all Russians. Living in the largest country in the world, from the Pacific Ocean in the east to the Baltic Sea in the west, your people endured wars, droughts, and many disasters, imbuing the Russian society with heroism and tenacity, and producing artists and scientists among the best in the world. Russia is a powerful empire which rightfully claims its place in the world concert of superpowers.",
         "startIntroPart2": "Empress Catherine, your people are eager for Russian glory, to revive the sacred light of the Motherland. Will your new empire shine through the ages of history?",
 
@@ -939,8 +950,10 @@
 		"neutralHello": "Hello!",
 		"hateHello": "What do you need?!",
 		"tradeRequest": "How would you like it if I propose this kind of exchange?",
+        
 		"outerColor": [239, 180, 0],
 		"innerColor": [0, 0, 0],
+        
 		"favoredReligion": "Christianity",
 		"uniqueName": "Siberian Riches",
 		"uniques": ["[+1 Production] from every [Strategic resource]","[+100]% [Horses] resource production",
@@ -969,8 +982,10 @@
 		"neutralHello": "Welcome.",
 		"hateHello": "Greetings.",
 		"tradeRequest": "Greetings. I believe this is a fair proposal for both parties. What do you think?",
+        
 		"outerColor": [245, 230, 55],
 		"innerColor": [177, 8, 3],
+        
 		"favoredReligion": "Buddhism",
 		"uniqueName": "Father Governs Children",
 		"uniques": ["[+50]% [Food] from City-States","[+50]% [Culture] from City-States","[+50]% [Faith] from City-States","Military Units gifted from City-States start with [+10] XP"],
@@ -999,8 +1014,10 @@
         "neutralHello": "Greetings.",
         "hateHello": "Oh, it's you.",
         "tradeRequest": "Can I interest you in this deal?",
+        
         "outerColor": [214, 145, 19],
         "innerColor": [90, 0, 10],
+        
         "favoredReligion": "Islam",
         "uniqueName": "River Warlord",
         "uniques": ["Receive triple Gold from Barbarian encampments and pillaging Cities", "[+100]% Strength <when defending> <for [Embarked] units>",
@@ -1028,8 +1045,10 @@
 		"neutralHello": "Greetings.",
 		"hateHello": "Well?",
 		"tradeRequest": "I hope this deal will receive your blessing.",
+        
 		"outerColor": [84,26,26],
 		"innerColor": [255,168,168],
+        
 		"favoredReligion": "Christianity",
 		"uniqueName": "Seven Cities of Gold",
 		"uniques": ["[+100 Gold] for discovering a Natural Wonder (bonus enhanced to [+500 Gold] if first to discover it)",
@@ -1056,12 +1075,13 @@
 		"defeated": "I am Sweden's king. You can take my lands, my people, my kingdom, but you will never reach the House of Vasa.",
 		"denounced": "You actually seem sharper than what I had originally thought.",
 		"introduction": "Stranger, welcome to the Snow King's kingdom! I am Gustavus Adolphus, member of the esteemed House of Vasa",
-
 		"neutralHello": "Oh, welcome!",
 		"hateHello": "Oh, it is you.",
 		"tradeRequest": "My friend, it is my belief that this settlement can benefit both our peoples.",
+        
         "outerColor": [8, 8, 166],
 		"innerColor": [249, 247, 3],
+        
 		"favoredReligion": "Christianity",
 		"uniqueName": "Nobel Prize",
 		"uniques": ["Gain [90] Influence with a [Great Person] gift to a City-State", "When declaring friendship, both parties gain a [10]% boost to great person generation"],
