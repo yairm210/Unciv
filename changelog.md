@@ -1,3 +1,30 @@
+## 4.17.10
+
+Fix crash when opening victory screen on the first turn
+
+modding(validation): Add misspelling corrections to incorrect unique parameters in mod checker
+
+chore(purity): Expression parsing
+
+chore(purity): IConstruction 2
+
+chore(purity): IConstruction, Building, etc
+
+Resolves  - Fix unit icon disappearing on right-click of unit's tile - by SomeTroglodyte
+
+4.17.9-patch1
+
+Fix improvement queue - hotfix 
+
+Fix autoplay+tutorials softlock - by SomeTroglodyte
+
+By EmperorPinguin:
+- AI: exclude great general from escort logic 
+- AI: better utilization of promoted units 
+- AI: lower treshold for minimum acceptable newcity tile 
+
+Add unit action icons for triggerables - By RobLoach
+
 ## 4.17.9
 
 Remove irrelevant counteroffer notifications when the trade request is invalid
