@@ -41,7 +41,7 @@ object IdChecker {
             val checkDigit = trimmedPlayerId.substring(trimmedPlayerId.lastIndex, trimmedPlayerId.lastIndex +1)
             // remember, the format is: P-9e37e983-a676-4ecc-800e-ef8ec721a9b9-5
             val shortenedPlayerId = trimmedPlayerId.substring(2, 38)
-            val calculatedCheckDigit = getCheckDigit(shortenedPlayerId).tr()
+            val calculatedCheckDigit = getCheckDigit(shortenedPlayerId).toString()
             require(calculatedCheckDigit == checkDigit) {
                 "Not a valid ID. Checkdigit invalid."
             }
