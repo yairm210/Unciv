@@ -305,7 +305,7 @@ object UnitAutomation {
         if (unit.isCivilian()) return false
         if (unit.baseUnit.isAirUnit()) return false
         // Better to do a more healing oriented move then
-        if (unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, true) > 4) return false
+        if (unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),4, true) > 3) return false
 
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
@@ -322,10 +322,10 @@ object UnitAutomation {
             unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { unit.civ.threatManager.getDistanceToClosestEnemyUnit(it, 3, false) }
         }
 
-        val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6, false)
+        val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),4, false)
         // Lets check all tiles and swap with the first one
         for (retreatTile in sortedTilesToRetreatTo) {
-            val tileDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(retreatTile,6,false)
+            val tileDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(retreatTile,4,false)
             if (ourDistanceToClosestEnemy >= tileDistanceToClosestEnemy) continue
 
             val otherUnit = retreatTile.militaryUnit
@@ -374,7 +374,7 @@ object UnitAutomation {
 
         val currentUnitTile = unit.getTile()
 
-        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 4)
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 3)
 
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
@@ -551,6 +551,7 @@ object UnitAutomation {
                 val tile = it.currentTile
                 it.isCivilian() &&
                         (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
+                        && !it.hasUnique(UniqueType.StrengthBonusInRadius) // Exlude great generals, as they move independently after all military units
                         && (tile == unit.currentTile || tile.militaryUnit == null && unit.movement.canMoveTo(tile))
                         && distanceToTiles.containsKey(tile)
             } ?: return false
@@ -562,9 +563,8 @@ object UnitAutomation {
         val siegedCities = unit.civ.cities
                 .asSequence()
                 .filter {
-                    unit.civ == it.civ &&
-                            it.health < it.getMaxHealth() * 0.75
-                } //Weird health issues and making sure that not all forces move to good defenses
+                    unit.civ == it.civ && it.health < it.getMaxHealth()
+                }
 
         if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 2 })
             return false
