@@ -13,6 +13,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.isUUID
 
 class AddFriendScreen : PickerScreen() {
     init {
@@ -44,7 +45,7 @@ class AddFriendScreen : PickerScreen() {
         rightSideButton.setText("Add friend".tr())
         rightSideButton.enable()
         rightSideButton.onClick {
-            if (!IdChecker.isValidPlayerUuid(playerIDTextField.text)) {
+            if (!(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text)?.isUUID() ?: false)) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }

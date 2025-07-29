@@ -15,6 +15,7 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.isUUID
 
 class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
     init {
@@ -74,7 +75,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
                 ToastPopup("Player ID already used!", this)
                 return@onClick
             }
-            if (!IdChecker.isValidPlayerUuid(playerIDTextField.text)) {
+            if (!(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text)?.isUUID() ?: false)) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }

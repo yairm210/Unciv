@@ -25,29 +25,15 @@ import kotlin.math.abs
  */
 object IdChecker {
 
-    fun checkAndReturnPlayerUuid(playerId: String): String {
+    fun checkAndReturnPlayerUuid(playerId: String): String? {
         return checkAndReturnUuiId(playerId, "P")
     }
 
-    fun isValidPlayerUuid(playerId: String): Boolean = try {
-        checkAndReturnPlayerUuid(playerId).isUUID()
-        true
-    } catch (_: Throwable) {
-        false
-    }
-
-    fun checkAndReturnGameUuid(gameId: String): String {
+    fun checkAndReturnGameUuid(gameId: String): String? {
         return checkAndReturnUuiId(gameId, "G")
     }
 
-    fun isValidGameUuid(gameId: String): Boolean = try {
-        checkAndReturnGameUuid(gameId).isUUID()
-        true
-    } catch (_: Throwable) {
-        false
-    }
-
-    private fun checkAndReturnUuiId(id: String, prefix: String): String {
+    private fun checkAndReturnUuiId(id: String, prefix: String): String? {
         val trimmedPlayerId = id.trim()
         if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
             require(trimmedPlayerId.startsWith(prefix, true)) { "Not a valid ID. Does not start with prefix $prefix" }
@@ -63,7 +49,7 @@ object IdChecker {
         } else if (trimmedPlayerId.length == 36) {
             return trimmedPlayerId
         }
-        throw IllegalArgumentException("Not a valid ID. Wrong length.")
+        return null
     }
 
 
