@@ -18,7 +18,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.widgets.TabbedPager
@@ -264,6 +263,7 @@ class VictoryScreenIllustrations(
             }
             points += milestonePoints
         }
+        if (total == 0) return 0  // no milestones, no points - e.g. game just started, there are no capitals
         return points * 100 / total
     }
 
