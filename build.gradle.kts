@@ -49,6 +49,8 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
+            "kotlin.assert",
+            
         )
         wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
@@ -58,6 +60,7 @@ allprojects {
             "kotlin.collections.dropLastWhile",
             "kotlin.collections.MutableCollection.iterator",
             "kotlin.collections.isNullOrEmpty",
+            "kotlin.collections.Iterable.iterator",
         )
         wellKnownPureClasses = setOf(
         )

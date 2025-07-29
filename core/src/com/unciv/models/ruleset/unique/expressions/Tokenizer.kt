@@ -7,6 +7,9 @@ import com.unciv.models.ruleset.unique.expressions.Parser.EmptyExpression
 import com.unciv.models.ruleset.unique.expressions.Parser.InvalidConstant
 import com.unciv.models.ruleset.unique.expressions.Parser.UnknownIdentifier
 import com.unciv.models.ruleset.unique.expressions.Parser.UnmatchedBraces
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 internal object Tokenizer {
     /**
@@ -17,14 +20,16 @@ internal object Tokenizer {
      *  - [Node.Countable]
      */
     internal sealed interface Token {
-        fun canBeUnary() = this is Operator.Unary || this is Operator.UnaryOrBinary
-        fun canBeBinary() = this is Operator.Binary || this is Operator.UnaryOrBinary
+        @Pure fun canBeUnary() = this is Operator.Unary || this is Operator.UnaryOrBinary
+        @Pure fun canBeBinary() = this is Operator.Binary || this is Operator.UnaryOrBinary
         // Note: not naming this `getUnaryOperator` because of kotlin's habit to interpret that as property accessor. Messes up debugging a bit.
+        @Pure
         fun fetchUnaryOperator() = when(this) {
             is Operator.Unary -> this
             is Operator.UnaryOrBinary -> unary
             else -> throw InternalError()
         }
+        @Pure
         fun fetchBinaryOperator() = when(this) {
             is Operator.Binary -> this
             is Operator.UnaryOrBinary -> binary
@@ -33,11 +38,12 @@ internal object Tokenizer {
     }
 
     // Define our own "Char is part of literal constant" and "Char is part of identifier" functions - decouple from Java CharacterData
-    private fun Char.isNumberLiteral() = this == '.' || this in '0'..'9' // NOT using library isDigit() here - potentially non-latin
-    private fun Char.isIdentifierStart() = isLetter() // Allow potentially non-latin script //TODO questionable
-    private fun Char.isIdentifierContinuation() = this == '_' || isLetterOrDigit()
+    @Pure private fun Char.isNumberLiteral() = this == '.' || this in '0'..'9' // NOT using library isDigit() here - potentially non-latin
+    @Pure private fun Char.isIdentifierStart() = isLetter() // Allow potentially non-latin script //TODO questionable
+    @Pure private fun Char.isIdentifierContinuation() = this == '_' || isLetterOrDigit()
 
     // Position in text, to token found
+    @Readonly
     fun Pair<Int,String>.toToken(): Pair<Int,Token> {
         val (position, text) = this
         if (text.isEmpty()) throw EmptyExpression()
@@ -58,20 +64,24 @@ internal object Tokenizer {
         return position to Node.Countable(countableText, rulesetInvariantCountable)
     }
 
+    @Readonly
     fun String.tokenize() = sequence<Pair<Int, String>> {
         /** If set, indicates we're in the middle of an identifier */
-        var firstIdentifierPosition = -1
+        @LocalState var firstIdentifierPosition = -1
         /** If set, indicates we're in the middle of a number */
-        var firstNumberPosition = -1
+        @LocalState var firstNumberPosition = -1
         /** If set, indicates we're in the middle of a countable */
-        var openingBracePosition = -1
-        var braceNestingLevel = 0
+        @LocalState var openingBracePosition = -1
+        @LocalState var braceNestingLevel = 0
 
+        @Readonly @Suppress("purity") // set localstate of parent
         suspend fun SequenceScope<Pair<Int, String>>.emitIdentifier(pos: Int) {
             assert(firstNumberPosition < 0)
             yield(firstIdentifierPosition to this@tokenize.substring(firstIdentifierPosition, pos))
             firstIdentifierPosition = -1
         }
+
+        @Readonly @Suppress("purity") // set localstate of parent
         suspend fun SequenceScope<Pair<Int, String>>.emitNumericLiteral(pos: Int) {
             assert(firstIdentifierPosition < 0)
             val token = this@tokenize.substring(firstNumberPosition, pos)

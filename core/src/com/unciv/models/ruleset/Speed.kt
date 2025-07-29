@@ -7,6 +7,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -37,7 +38,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
     val yearsPerTurn: ArrayList<YearsPerTurn> by lazy { turns.mapTo(ArrayList()) { YearsPerTurn(it) } }
 
     /** End of defined turn range, used for starting Era's `startPercent` calculation */
-    fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
+    @Readonly fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
 
     /** Calculate a Year from a turn number.
      *
@@ -47,6 +48,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
      *
      *  @param turn The logical turn number, any offset from starting in an advanced Era already added in
      */
+    @Readonly
     fun turnToYear(turn: Int): Float {
         var year = startYear
         var intervalStartTurn = 0

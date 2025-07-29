@@ -3,6 +3,8 @@ package com.unciv.models.ruleset.unique.expressions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 /** 
@@ -20,11 +22,13 @@ import kotlin.math.roundToInt
  * */
 
 class Expressions {
+    @Readonly
     fun matches(parameterText: String, ruleset: Ruleset): Boolean {
         val parseResult = parse(parameterText)
         return parseResult.node != null && parseResult.node.getErrors(ruleset).isEmpty()
     }
 
+    @Readonly
     fun eval(parameterText: String, gameContext: GameContext): Int? {
         val node = parse(parameterText).node ?: return null
         return node.eval(gameContext).roundToInt()
@@ -42,8 +46,9 @@ class Expressions {
     private data class ParseResult(/** null if there was a parse error */ val node: Node?, val exception: Parser.ParsingError?)
 
     companion object {
-        private val cache: MutableMap<String, ParseResult> = mutableMapOf()
+        @Cache private val cache: MutableMap<String, ParseResult> = mutableMapOf()
 
+        @Readonly
         private fun parse(parameterText: String): ParseResult = cache.getOrPut(parameterText) {
             try {
                 val node = Parser.parse(parameterText)

@@ -311,15 +311,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return true
     }
 
-    fun isEspionageEnabled(): Boolean = gameParameters.espionageEnabled
+    @Readonly fun isEspionageEnabled(): Boolean = gameParameters.espionageEnabled
 
+    @Readonly
     private fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
         val startPercent = ruleset.eras[gameParameters.startingEra]!!.startPercent
         return turns + (totalTurns * startPercent / 100)
     }
 
-    fun getYear(turnOffset: Int = 0) = speed.turnToYear(getEquivalentTurn() + turnOffset).toInt()
+    @Readonly fun getYear(turnOffset: Int = 0) = speed.turnToYear(getEquivalentTurn() + turnOffset).toInt()
 
     fun calculateChecksum(): String {
         val oldChecksum = checksum

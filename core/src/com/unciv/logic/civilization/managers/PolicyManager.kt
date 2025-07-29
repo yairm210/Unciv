@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -100,7 +101,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
+    @Readonly private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
@@ -172,6 +173,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     /** Uncached, use carefully */
+    @Readonly
     fun getAdoptedPoliciesMatching(policyFilter: String, gameContext: GameContext) =
         adoptedPolicies.asSequence()
             .mapNotNull { getRulesetPolicies()[it] }
