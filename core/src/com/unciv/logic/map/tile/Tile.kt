@@ -34,6 +34,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.ArrayList
@@ -193,7 +194,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Transient
     private var isAdjacentToRiver = false
-    @Transient
+    @Transient @Cache
     private var isAdjacentToRiverKnown = false
 
     val improvementInProgress get() = improvementQueue.firstOrNull()?.improvement
