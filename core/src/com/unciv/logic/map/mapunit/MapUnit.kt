@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.text.DecimalFormat
@@ -67,7 +68,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var automated: Boolean = false
 
     // We can infer who we are escorting based on our tile
-    var escorting: Boolean = false
+    @Cache private var escorting: Boolean = false
 
     var automatedRoadConnectionDestination: Vector2? = null
     // Temp disable, since this data broke saves

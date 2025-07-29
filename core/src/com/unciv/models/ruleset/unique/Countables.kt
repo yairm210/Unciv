@@ -258,7 +258,7 @@ enum class Countables(
     open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
+    @Readonly open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
         else parameterText.equalsPlaceholderText(placeholderText)
     
     /** Needs to return the ENTIRE countable, not just parameters. */
@@ -267,7 +267,7 @@ enum class Countables(
     /** This indicates whether a parameter *is of this countable type*, not *whether its parameters are correct*
      * E.g. "[fakeBuilding] Buildings" is obviously a countable of type "[buildingFilter] Buildings", therefore matches will return true.
      * But it has another problem, which is that the building filter is bad, so its getErrorSeverity will return "ruleset specific" */
-    open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
+    @Readonly open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
     @Readonly @Suppress("purity") abstract fun eval(parameterText: String, gameContext: GameContext): Int?
 
     open val documentationHeader get() =
@@ -290,7 +290,7 @@ enum class Countables(
         getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
 
     companion object {
-        @Readonly @Suppress("purity")
+        @Readonly
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .firstOrNull {
                 if (it.matchesWithRuleset)

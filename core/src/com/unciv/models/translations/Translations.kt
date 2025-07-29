@@ -476,17 +476,17 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
  */
-@Readonly
+@Pure @Suppress("purity") // IntRange.forEach should be recognized as pure
 fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
 
     val stringToParse = this.removeConditionals()
     
-    @LocalState
-    val parameters = ArrayList<String>()
+    @LocalState val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
-    for (i in stringToParse.indices) {
+    val stringIndices = stringToParse.indices 
+    stringIndices.forEach { i ->
         if (stringToParse[i] == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
             depthOfBraces++
@@ -499,16 +499,17 @@ fun String.getPlaceholderParameters(): List<String> {
     return parameters
 }
 
-@Readonly
+@Pure
 fun String.getPlaceholderText(): String {
     var stringToReturn = this.removeConditionals()
-    val placeholderParameters = stringToReturn.getPlaceholderParameters()
-    for (placeholderParameter in placeholderParameters)
+    @LocalState val placeholderParameters = stringToReturn.getPlaceholderParameters()
+    placeholderParameters.forEach { placeholderParameter ->
         stringToReturn = stringToReturn.replaceFirst("[$placeholderParameter]", "[]")
+    }
     return stringToReturn
 }
 
-@Readonly
+@Pure
 fun String.equalsPlaceholderText(str: String): Boolean {
     if (isEmpty()) return str.isEmpty()
     if (str.isEmpty()) return false // Empty strings have no .first()
