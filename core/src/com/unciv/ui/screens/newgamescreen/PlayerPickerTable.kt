@@ -17,26 +17,26 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UncivTextField
-import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.utils.isUUID
+import java.util.UUID
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
@@ -242,11 +242,12 @@ class PlayerPickerTable(
         add(errorLabel).pad(5f).row()
 
         fun onPlayerIdTextUpdated() {
-            if (IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text)?.isUUID() ?: false) {
+            try {
+                UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text))
                 player.playerId = playerIdTextField.text.trim()
-                errorLabel.apply { setText("✔"); setFontColor(Color.GREEN) }
-            } else {
-                errorLabel.apply { setText("✘"); setFontColor(Color.RED) }
+                errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
+            } catch (_: Exception) {
+                errorLabel.apply { setText("✘");setFontColor(Color.RED) }
             }
         }
         onPlayerIdTextUpdated()

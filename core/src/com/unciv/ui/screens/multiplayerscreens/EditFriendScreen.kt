@@ -7,15 +7,15 @@ import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.utils.isUUID
+import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
+import java.util.UUID
 
 class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
     init {
@@ -75,7 +75,9 @@ class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
                 ToastPopup("Player ID already used!", this)
                 return@onClick
             }
-            if (!(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text)?.isUUID() ?: false)) {
+            try {
+                UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text))
+            } catch (_: Exception) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }
