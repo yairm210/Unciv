@@ -154,24 +154,16 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
+                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
             // Barbarians can't capture cities
-            if (attacker.unit.civ.isBarbarian && attacker.isMelee()) {
+            if (attacker.unit.civ.isBarbarian) {
                 defender.takeDamage(-1) // Back to 2 HP
                 val ransom = min(200, defender.city.civ.gold)
                 defender.city.civ.addGold(-ransom)
                 defender.city.civ.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
                 attacker.unit.destroy() // Remove the barbarian
-            } else if (attacker.unit.hasUnique(UniqueType.CanDestroyCities)) {
-                if (defender.city.isCapital()) {
-                    conquerCity(defender.city, attacker) // Capital is captured
-                } else
-                    defender.city.destroyCity() // Non-capital city is destroyed
-            } else if (attacker.unit.hasUnique(UniqueType.CanDestroyAllCities)) {
-                    defender.city.destroyCity(overrideSafeties = true) // All city is destroyed
-            } else if (attacker.isMelee()) {
+            } else
                 conquerCity(defender.city, attacker)
-            }
         }
 
         // Exploring units surviving an attack should "wake up"
