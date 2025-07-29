@@ -1,7 +1,5 @@
 package com.unciv.logic
 
-import com.unciv.models.translations.tr
-import com.unciv.utils.isUUID
 import java.util.Locale
 import kotlin.math.abs
 
