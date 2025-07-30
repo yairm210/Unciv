@@ -61,6 +61,7 @@ allprojects {
             "kotlin.collections.reversed"
         )
         wellKnownPureClasses = setOf(
+            "java.util.Locale",
         )
     }
     

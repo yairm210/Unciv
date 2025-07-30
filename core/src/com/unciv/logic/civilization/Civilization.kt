@@ -55,6 +55,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
@@ -126,9 +127,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val cityStateFunctions = CityStateFunctions(this)
-
-    @Transient
-    var cachedMilitaryMight = -1
 
     @Transient
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
@@ -714,12 +712,17 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
-    @Readonly @Suppress("purity") // caches
+    @Transient @Cache
+    private var cachedMilitaryMight = -1
+    
+    @Readonly
     private fun getMilitaryMight(): Int {
         if (cachedMilitaryMight < 0)
             cachedMilitaryMight = calculateMilitaryMight()
         return  cachedMilitaryMight
     }
+    
+    fun resetMilitaryMightCache() { cachedMilitaryMight = -1 }
 
     @Readonly
     private fun calculateMilitaryMight(): Int {

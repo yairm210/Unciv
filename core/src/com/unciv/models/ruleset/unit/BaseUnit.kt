@@ -500,10 +500,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
 
 
-    @Transient
-    var cachedForceEvaluation: Int = -1
+    @Transient @Cache
+    private var cachedForceEvaluation: Int = -1
     
-    @Readonly @Suppress("purity") // caches
+    @Readonly
     fun getForceEvaluation(): Int {
         if (cachedForceEvaluation < 0) 
             cachedForceEvaluation = evaluateForce()

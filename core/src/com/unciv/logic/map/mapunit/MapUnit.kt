@@ -670,7 +670,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return null
     }
 
-    @Readonly @Suppress("purity") // Updates escorting state
+    @Readonly
     fun isEscorting(): Boolean {
         if (escorting) { 
             if (getOtherEscortUnit() != null) return true
