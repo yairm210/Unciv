@@ -155,12 +155,8 @@ object Battle {
         // Must come before normal conquest logic so units that cannot capture cities can still destroy them
         // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capitals
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true)) {
-            if (defender.city.isCapital() && attacker.isMelee()) {
-                conquerCity(defender.city, attacker) // Capital is captured by only melee units
-            } else if (!defender.city.isCapital()) {
-                defender.city.destroyCity()
-            }
+                && attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true) && !defender.city.isCapital()) {
+            defender.city.destroyCity()
         }
 
          // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
