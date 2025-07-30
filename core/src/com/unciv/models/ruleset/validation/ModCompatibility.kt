@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.ModCompatibility.meetsAllRequirements
 import com.unciv.models.ruleset.validation.ModCompatibility.meetsBaseRequirements
+import yairm210.purity.annotations.Pure
 
 /**
  *  Helper collection dealing with declarative Mod compatibility
@@ -64,6 +65,7 @@ object ModCompatibility {
         return jsonFolder.list().map { it.name() } == listOf("ModOptions.json")
     }
 
+    @Pure
     fun modNameFilter(modName: String, filter: String): Boolean {
         if (modName == filter) return true
         if (filter.length < 3 || !filter.startsWith('*') || !filter.endsWith('*')) return false

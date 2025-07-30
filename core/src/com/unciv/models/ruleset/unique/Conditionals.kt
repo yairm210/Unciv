@@ -13,6 +13,7 @@ import kotlin.random.Random
 
 object Conditionals {
 
+    @Readonly @Suppress("purity")
     private fun getStateBasedRandom(state: GameContext, unique: Unique?): Float {
         var seed = state.gameInfo?.turns?.hashCode() ?: 0
         seed = seed * 31 + (unique?.hashCode() ?: 0)
@@ -20,7 +21,7 @@ object Conditionals {
         return Random(seed).nextFloat()
     }
 
-    @Readonly @Suppress("purity")
+    @Readonly
     fun conditionalApplies(
         unique: Unique?,
         conditional: Unique,
@@ -31,24 +32,28 @@ object Conditionals {
             return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers
 
         /** Helper to simplify conditional tests requiring gameInfo */
-        fun checkOnGameInfo(predicate: (GameInfo.() -> Boolean)): Boolean {
+        @Readonly
+        fun checkOnGameInfo(@Readonly predicate: (GameInfo.() -> Boolean)): Boolean {
             if (state.gameInfo == null) return false
             return state.gameInfo.predicate()
         }
 
         /** Helper to simplify conditional tests requiring a Civilization */
-        fun checkOnCiv(predicate: (Civilization.() -> Boolean)): Boolean {
+        @Readonly
+        fun checkOnCiv(@Readonly predicate: (Civilization.() -> Boolean)): Boolean {
             if (state.relevantCiv == null) return false
             return state.relevantCiv!!.predicate()
         }
 
         /** Helper to simplify conditional tests requiring a City */
-        fun checkOnCity(predicate: (City.() -> Boolean)): Boolean {
+        @Readonly
+        fun checkOnCity(@Readonly predicate: (City.() -> Boolean)): Boolean {
             if (state.relevantCity == null) return false
             return state.relevantCity!!.predicate()
         }
 
         /** Helper to simplify the "compare civ's current era with named era" conditions */
+        @Readonly
         fun compareEra(eraParam: String, compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
             if (state.gameInfo == null) return false
             val era = state.gameInfo.ruleset.eras[eraParam] ?: return false
@@ -56,6 +61,7 @@ object Conditionals {
         }
 
         /** Helper for ConditionalWhenAboveAmountStatResource and its below counterpart */
+        @Readonly
         fun checkResourceOrStatAmount(
             resourceOrStatName: String,
             lowerLimit: Float,
@@ -76,7 +82,7 @@ object Conditionals {
             return compare(statReserve, lowerLimit * gameSpeedModifier, upperLimit * gameSpeedModifier)
         }
 
-
+        @Readonly
         fun compareCountables(
             first: String,
             second: String,
@@ -91,6 +97,7 @@ object Conditionals {
                 false
         }
 
+        @Readonly
         fun compareCountables(first: String, second: String, third: String,
                               compare: (first: Int, second: Int, third: Int) -> Boolean): Boolean {
 

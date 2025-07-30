@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
+import yairm210.purity.annotations.Readonly
 import java.lang.Integer.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -154,7 +155,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun greatProphetsEarned(): Int = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
+    @Readonly fun greatProphetsEarned(): Int =
+        civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()?.name ?: ""]
         // Counter.get never returns null, but it needs the correct key type, which is non-nullable
 
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
@@ -183,6 +185,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return true
     }
 
+    @Readonly
     fun getGreatProphetEquivalent(): BaseUnit? {
         val baseUnit = civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }
         return if (baseUnit == null) null else civInfo.getEquivalentUnit(baseUnit)

@@ -673,18 +673,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         else -> units.getCivUnitsSize() == 0
     }
 
-    @Readonly
-    fun getEra(): Era = tech.era
-
-    @Readonly
-    fun getEraNumber(): Int = getEra().eraNumber
-
-    @Readonly
-    fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
-
-    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
-
-    fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
+    @Readonly fun getEra(): Era = tech.era
+    @Readonly fun getEraNumber(): Int = getEra().eraNumber
+    @Readonly fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
+    @Readonly fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+    @Readonly fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
 
 
     /**

@@ -155,11 +155,9 @@ class TechManager : IsPartOfGameInfoSerialization {
             ).tr()
         }
     }
-    @Readonly
-    fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
-
-    @Readonly
-    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
+    
+    @Readonly fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
+    @Readonly fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
     /** resources which need no research count as researched */
     @Readonly
@@ -168,8 +166,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return isResearched(revealedBy)
     }
 
-    @Readonly
-    fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
+    @Readonly fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any { obsoleteTech -> isResearched(obsoleteTech) }
 
     @Readonly
     fun isUnresearchable(tech: Technology): Boolean {
