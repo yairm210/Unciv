@@ -627,8 +627,20 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.mods.add(newName)
         }
 
-        ruleset = RulesetCache.getComplexRuleset(gameParameters)
+        // Try to fix mods that are displayed in save with - but when downloaded it's replaced with a space
+        if (gameParameters.baseRuleset !in RulesetCache && gameParameters.baseRuleset.replace("-", " ") in RulesetCache) {
+            gameParameters.baseRuleset = gameParameters.baseRuleset.replace("-", " ")
+        }
 
+        for (mod in gameParameters.mods) {
+            if (mod !in RulesetCache && mod.replace("-", " ") in RulesetCache) {
+                gameParameters.mods.remove(mod)
+                gameParameters.mods.add(mod.replace("-", " "))
+            }
+        }
+        
+        ruleset = RulesetCache.getComplexRuleset(gameParameters)
+        
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
