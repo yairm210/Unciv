@@ -152,24 +152,29 @@ object Battle {
         if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
-        // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
+        // Must come before normal conquest logic so units that cannot capture cities can still destroy them
+        // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capitals
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
+                && attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true)) {
+            if (defender.city.isCapital() && attacker.isMelee()) {
+                conquerCity(defender.city, attacker) // Capital is captured by only melee units
+            } else if (!defender.city.isCapital()) {
+                defender.city.destroyCity()
+            }
+        }
+
+         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
+        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
+                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
             // Barbarians can't capture cities
-            if (attacker.unit.civ.isBarbarian && attacker.isMelee()) {
+            if (attacker.unit.civ.isBarbarian) {
                 defender.takeDamage(-1) // Back to 2 HP
                 val ransom = min(200, defender.city.civ.gold)
                 defender.city.civ.addGold(-ransom)
                 defender.city.civ.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
                 attacker.unit.destroy() // Remove the barbarian
-            } else if (attacker.unit.hasUnique(UniqueType.CanDestroyCities)) {
-                if (defender.city.isCapital()) {
-                    conquerCity(defender.city, attacker) // Capital is captured
-                } else
-                    defender.city.destroyCity() // Non-capital city is destroyed
-            } else if (attacker.isMelee()) {
+            } else
                 conquerCity(defender.city, attacker)
-            }
         }
 
         // Exploring units surviving an attack should "wake up"
