@@ -34,6 +34,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Log
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.ArrayList
@@ -191,10 +192,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             return tileResourceCache!!
         }
 
-    @Transient
-    private var isAdjacentToRiver = false
-    @Transient
-    private var isAdjacentToRiverKnown = false
 
     val improvementInProgress get() = improvementQueue.firstOrNull()?.improvement
     val turnsToImprovement get() = improvementQueue.firstOrNull()?.turnsToImprovement ?: 0
@@ -663,7 +660,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
-    @Readonly @Suppress("purity") // sets cached value
+    @Transient @Cache
+    private var isAdjacentToRiver = false
+    @Transient @Cache
+    private var isAdjacentToRiverKnown = false
+    
+    @Readonly
     fun isAdjacentToRiver(): Boolean {
         if (!isAdjacentToRiverKnown) {
             isAdjacentToRiver =
@@ -674,6 +676,15 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             isAdjacentToRiverKnown = true
         }
         return isAdjacentToRiver
+    }
+
+    /** Allows resetting the cached value [isAdjacentToRiver] will return
+     *  @param isKnownTrue Set this to indicate you need to update the cache due to **adding** a river edge
+     *         (removing would need to look at other edges, and that is what isAdjacentToRiver will do)
+     */
+    private fun resetAdjacentToRiverTransient(isKnownTrue: Boolean = false) {
+        isAdjacentToRiver = isKnownTrue
+        isAdjacentToRiverKnown = isKnownTrue
     }
 
     /**
@@ -1096,14 +1107,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     /** Clear continent ID, for map editor */
     fun clearContinent() { continent = -1 }
 
-    /** Allows resetting the cached value [isAdjacentToRiver] will return
-     *  @param isKnownTrue Set this to indicate you need to update the cache due to **adding** a river edge
-     *         (removing would need to look at other edges, and that is what isAdjacentToRiver will do)
-     */
-    private fun resetAdjacentToRiverTransient(isKnownTrue: Boolean = false) {
-        isAdjacentToRiver = isKnownTrue
-        isAdjacentToRiverKnown = isKnownTrue
-    }
 
     /**
      *  Sets the "has river" state of one edge of this Tile. Works for all six directions.

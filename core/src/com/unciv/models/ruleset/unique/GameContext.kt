@@ -102,6 +102,7 @@ data class GameContext(
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */
+    @Readonly
     override fun hashCode(): Int {
         fun Civilization?.hash() = this?.civName?.hashCode() ?: 0
         fun City?.hash() = this?.id?.hashCode() ?: 0

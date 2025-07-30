@@ -187,14 +187,10 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun getNumberOfFollowers(): Counter<String> {
-        return followers.clone()
-    }
+    @Readonly fun getNumberOfFollowers(): Counter<String> = followers.clone()
+    @Readonly fun getFollowersOf(religion: String): Int = followers[religion]
 
-    fun getFollowersOf(religion: String): Int {
-        return followers[religion]
-    }
-
+    @Readonly
     fun getFollowersOfMajorityReligion(): Int {
         val majorityReligion = getMajorityReligionName() ?: return 0
         return followers[majorityReligion]
@@ -205,6 +201,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return followers[ourReligion.name]
     }
 
+    @Readonly
     fun getFollowersOfOtherReligionsThan(religion: String): Int {
         return followers.filterNot { it.key == religion }.values.sum()
     }
