@@ -476,7 +476,7 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
  */
-@Pure @Suppress("purity") // IntRange.forEach should be recognized as pure
+@Pure
 fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
 
@@ -485,8 +485,7 @@ fun String.getPlaceholderParameters(): List<String> {
     @LocalState val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
-    val stringIndices = stringToParse.indices 
-    stringIndices.forEach { i ->
+    stringToParse.indices.forEach { i ->
         if (stringToParse[i] == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
             depthOfBraces++
@@ -524,7 +523,7 @@ fun String.hasPlaceholderParameters(): Boolean {
 }
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
-@Pure @Suppress("purity") // input varargs should be considered immutable
+@Pure
 fun String.fillPlaceholders(vararg strings: String): String {
     @Immutable val keys = this.getPlaceholderParameters()
     if (keys.size > strings.size)

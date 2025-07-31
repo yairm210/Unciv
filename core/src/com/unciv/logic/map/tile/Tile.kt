@@ -753,7 +753,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return out
     }
 
-    fun getContinent() = continent
+    @Readonly fun getContinent() = continent
 
     /** Checks if this tile is marked as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     @Readonly fun isMarkedForCreatesOneImprovement() =

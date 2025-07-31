@@ -13,7 +13,7 @@ import kotlin.random.Random
 
 object Conditionals {
 
-    @Readonly @Suppress("purity")
+    @Readonly @Suppress("purity") // hashcode... requires a think
     private fun getStateBasedRandom(state: GameContext, unique: Unique?): Float {
         var seed = state.gameInfo?.turns?.hashCode() ?: 0
         seed = seed * 31 + (unique?.hashCode() ?: 0)

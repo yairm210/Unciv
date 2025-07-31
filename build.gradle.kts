@@ -38,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.41" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.42" apply(false)
 }
 
 allprojects {
@@ -55,14 +55,16 @@ allprojects {
             // Looks like the Collection.contains is not considered overridden :thunk:
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
-            "kotlin.collections.Iterable.iterator",
-            "kotlin.collections.Collection.containsAll",
-            "kotlin.collections.filterKeys",
-            "kotlin.collections.reversed",
-            "kotlin.collections.minus",
+            "kotlin.collections.Iterable.iterator", // moved
+            "kotlin.collections.Collection.containsAll",  // moved
+            "kotlin.collections.filterKeys",  // moved
+            "kotlin.collections.reversed",  // moved
+            "kotlin.collections.minus",  // moved
+            "kotlin.Array.get",
+            "kotlin.collections.mutableSetOf",
         )
         wellKnownPureClasses = setOf(
-            "java.util.Locale",
+            "java.util.Locale",  // moved
         )
     }
     
