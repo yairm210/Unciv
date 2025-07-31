@@ -11,6 +11,7 @@ import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
+import yairm210.purity.annotations.Readonly
 
 data class GameContext(
     val civInfo: Civilization? = null,
@@ -74,6 +75,7 @@ data class GameContext(
         relevantUnit?.civ
     }
 
+    @Readonly
     fun getResourceAmount(resourceName: String): Int {
         return when {
             relevantCity != null -> relevantCity!!.getAvailableResourceAmount(resourceName)
@@ -82,6 +84,7 @@ data class GameContext(
         }
     }
 
+    @Readonly
     fun getStatAmount(stat: Stat) : Int {
         return when {
             relevantCity != null -> relevantCity!!.getStatReserve(stat)
@@ -99,6 +102,7 @@ data class GameContext(
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */
+    @Readonly
     override fun hashCode(): Int {
         fun Civilization?.hash() = this?.civName?.hashCode() ?: 0
         fun City?.hash() = this?.id?.hashCode() ?: 0

@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
@@ -12,6 +11,7 @@ import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
@@ -81,10 +81,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
     }
 
-    fun conditionalsApply(civInfo: Civilization? = null, city: City? = null): Boolean {
-        return conditionalsApply(GameContext(civInfo, city))
-    }
-
     @Readonly
     fun conditionalsApply(state: GameContext): Boolean {
         if (state.ignoreConditionals) return true
@@ -145,7 +141,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
     }
 
-    fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
+    @Readonly fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
     @Readonly
     fun getSourceNameForUser(): String {
@@ -161,6 +157,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
     
     /** Zero-based, so n=0 returns the first */
+    @Readonly
     private fun getNthIndex(string:String, list:List<String>, n: Int): Int {
         var count = 0
         for (i in list.indices) {
@@ -188,7 +185,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         for (possibleUnique in possibleUniques) {
             var resultingUnique = possibleUnique
             
-            val timesParameterWasSeen = Counter<String>()
+            @LocalState val timesParameterWasSeen = Counter<String>()
             for (parameter in possibleUnique.replace('<', ' ').getPlaceholderParameters()) {
                 val parameterHasSign = parameter.startsWith('-') || parameter.startsWith('+')
                 val parameterUnsigned = if (parameterHasSign) parameter.drop(1) else parameter

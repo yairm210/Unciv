@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
@@ -39,8 +40,9 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun getNumberOfSpecialists() = getNewSpecialists().values.sum()
+    @Readonly fun getNumberOfSpecialists() = getNewSpecialists().values.sum()
 
+    @Readonly
     fun getFreePopulation(): Int {
         val workingPopulation = city.workedTiles.size
         return population - workingPopulation - getNumberOfSpecialists()
@@ -80,6 +82,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     //endregion
 
     /** Implements [UniqueParameterType.PopulationFilter][com.unciv.models.ruleset.unique.UniqueParameterType.PopulationFilter] */
+    @Readonly
     fun getPopulationFilterAmount(filter: String): Int {
         return when (filter) {
             "Specialists" -> getNumberOfSpecialists()

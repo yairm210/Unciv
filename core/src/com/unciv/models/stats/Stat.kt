@@ -5,6 +5,8 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.extensions.colorFromHex
 import com.unciv.ui.components.fonts.Fonts
+import yairm210.purity.annotations.Immutable
+import yairm210.purity.annotations.Pure
 
 enum class Stat(
     val notificationIcon: String,
@@ -21,11 +23,11 @@ enum class Stat(
     Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith, colorFromHex(0xcbdfff));
 
     companion object {
-        val statsUsableToBuy = setOf(Gold, Food, Science, Culture, Faith)
-        private val valuesAsMap = entries.associateBy { it.name }
-        fun safeValueOf(name: String) = valuesAsMap[name]
-        fun isStat(name: String) = name in valuesAsMap
-        fun names() = valuesAsMap.keys
+        @Immutable val statsUsableToBuy = setOf(Gold, Food, Science, Culture, Faith)
+        @Immutable private val valuesAsMap = entries.associateBy { it.name }
+        @Pure fun safeValueOf(name: String) = valuesAsMap[name]
+        @Pure fun isStat(name: String) = name in valuesAsMap
+        @Pure fun names() = valuesAsMap.keys
         val statsWithCivWideField = setOf(Gold, Science, Culture, Faith, Happiness)
     }
 }

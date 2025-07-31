@@ -1,14 +1,12 @@
 package com.unciv.models.stats
 
+import yairm210.purity.annotations.Readonly
+
 
 open class NamedStats : Stats(), INamed {
     override lateinit var name: String
 
-    override fun toString(): String {
-        return name
-    }
+    @Readonly override fun toString(): String = name
 
-    fun cloneStats(): Stats {
-        return clone()
-    }
+    @Readonly fun cloneStats(): Stats = clone()
 }

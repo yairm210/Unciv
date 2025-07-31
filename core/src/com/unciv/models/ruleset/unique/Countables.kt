@@ -10,6 +10,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import yairm210.purity.annotations.Readonly
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Cache
 
 /**
  *  Contains all knowledge about how to check and evaluate [countable Unique parameters][UniqueParameterType.Countable].
@@ -106,7 +107,7 @@ enum class Countables(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
-            (ruleset.unitTypes.keys + ruleset.units.keys).mapTo(mutableSetOf()) { "[$it] Units" }
+            (ruleset.unitTypes.keys + ruleset.units.keys).map { "[$it] Units" }.toSet()
     },
 
     FilteredBuildings("[buildingFilter] Buildings") {
@@ -229,7 +230,6 @@ enum class Countables(
         private val engine = Expressions()
         override val matchesWithRuleset: Boolean = true
 
-        @Suppress("purity")
         override fun matches(parameterText: String, ruleset: Ruleset) =
             engine.matches(parameterText, ruleset)
         override fun eval(parameterText: String, gameContext: GameContext): Int? =
@@ -259,17 +259,17 @@ enum class Countables(
     open val noPlaceholders = !text.contains('[')
 
     // Leave these in place only for the really simple cases
-    open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
+    @Readonly open fun matches(parameterText: String) = if (noPlaceholders) parameterText == text
         else parameterText.equalsPlaceholderText(placeholderText)
     
     /** Needs to return the ENTIRE countable, not just parameters. */
-    open fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
+    @Readonly open fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
     
     /** This indicates whether a parameter *is of this countable type*, not *whether its parameters are correct*
      * E.g. "[fakeBuilding] Buildings" is obviously a countable of type "[buildingFilter] Buildings", therefore matches will return true.
      * But it has another problem, which is that the building filter is bad, so its getErrorSeverity will return "ruleset specific" */
-    open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
-    abstract fun eval(parameterText: String, gameContext: GameContext): Int?
+    @Readonly open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
+    @Readonly abstract fun eval(parameterText: String, gameContext: GameContext): Int?
 
     open val documentationHeader get() =
         "`$text`" + (if (shortDocumentation.isEmpty()) "" else " - $shortDocumentation")
@@ -291,7 +291,7 @@ enum class Countables(
         getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
 
     companion object {
-        @Readonly @Suppress("purity")
+        @Readonly
         fun getMatching(parameterText: String, ruleset: Ruleset?) = Countables.entries
             .firstOrNull {
                 if (it.matchesWithRuleset)
@@ -299,7 +299,7 @@ enum class Countables(
                 else it.matches(parameterText)
             }
 
-        @Readonly @Suppress("purity")
+        @Readonly
         fun getCountableAmount(parameterText: String, gameContext: GameContext): Int? {
             val ruleset = gameContext.gameInfo?.ruleset
             val countable = getMatching(parameterText, ruleset) ?: return null
@@ -307,10 +307,11 @@ enum class Countables(
             return potentialResult
         }
 
-        fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset) != null
+        @Readonly fun isKnownValue(parameterText: String, ruleset: Ruleset) = getMatching(parameterText, ruleset) != null
 
         // This will "leak memory" if game rulesets are changed over application lifetime, but it's a simple way to cache
-        private val autocompleteCache = mutableMapOf<Ruleset, Set<String>>()
+        @Cache private val autocompleteCache = mutableMapOf<Ruleset, Set<String>>()
+        @Readonly
         fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
             autocompleteCache.getOrPut(ruleset) {
                 Countables.entries.fold(setOf()) { acc, next ->
@@ -318,6 +319,7 @@ enum class Countables(
                 }
             }
 
+        @Readonly
         fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val countable = getMatching(parameterText, ruleset)
                 ?: return UniqueType.UniqueParameterErrorSeverity.RulesetSpecific

@@ -7,6 +7,8 @@ import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
 private val numberRegex = Regex("\\d+$") // Any number of trailing digits
@@ -1486,8 +1488,9 @@ enum class UniqueType(
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
+    @Readonly
     open fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
-        val map = ArrayList<List<UniqueParameterType>>()
+        @LocalState val map = ArrayList<List<UniqueParameterType>>()
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
                 .split('/')
@@ -1535,13 +1538,15 @@ enum class UniqueType(
          *  first pass that also runs for extension mods without a base mixed in; the complex check
          *  runs with [severityToReport]==[RulesetSpecific].
          */
-        abstract fun getRulesetErrorSeverity(): RulesetErrorSeverity
+        @Readonly abstract fun getRulesetErrorSeverity(): RulesetErrorSeverity
     }
 
+    @Readonly
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
         .getAnnotation(Deprecated::class.java)
 
     /** Checks whether a specific [uniqueTarget] as e.g. given by [IHasUniques.getUniqueTarget] works with `this` UniqueType */
+    @Readonly
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget) =
         targetTypes.any { uniqueTarget.canAcceptUniqueTarget(it) }
 

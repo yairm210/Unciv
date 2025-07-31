@@ -5,9 +5,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 
 class BaseUnitCost(val baseUnit: BaseUnit) {
 
+    @Readonly
     fun getProductionCost(civInfo: Civilization, city: City?): Int {
         var productionCost = baseUnit.cost.toFloat()
 
@@ -34,6 +36,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
 
 
     /** Contains only unit-specific uniques that allow purchasing with stat */
+    @Readonly
     fun canBePurchasedWithStat(city: City, stat: Stat): Boolean {
         val conditionalState = city.state
 
@@ -71,7 +74,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
         return false
     }
 
-
+    @Readonly
     fun getStatBuyCost(city: City, stat: Stat): Int? {
         var cost = baseUnit.getBaseBuyCost(city, stat)?.toDouble() ?: return null
         val conditionalState = city.state
@@ -88,6 +91,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
     }
 
 
+    @Readonly
     fun getBaseBuyCosts(city: City, stat: Stat): Sequence<Float> {
         val conditionalState = city.state
         return sequence {

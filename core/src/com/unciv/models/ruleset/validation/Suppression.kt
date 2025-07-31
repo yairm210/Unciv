@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
+import yairm210.purity.annotations.Pure
 
 /**
  *  All public methods dealing with how Mod authors can suppress RulesetValidator output.
@@ -49,6 +50,7 @@ object Suppression {
     private const val untypedWarningPattern = """unique "~" not found in Unciv's unique types, and is not used as a filtering unique"""
 
     /** Determine whether [parameterText] is a valid Suppression filter as implemented by [isErrorSuppressed] */
+    @Pure
     fun isValidFilter(parameterText: String) = when {
         // Cannot contain {} or <>
         '{' in parameterText || '<' in parameterText -> false
@@ -108,14 +110,14 @@ object Suppression {
         json().toJson(toModOptions, ruleset.folderLocation!!.child("jsons/ModOptions.json"))
     }
 
-    @Suppress("SameParameterValue")  // Yes we're using a constant up there, still reads clearer
+    @Pure @Suppress("SameParameterValue")  // Yes we're using a constant up there, still reads clearer
     private fun hasCommonSubstringLength(x: String, y: String, minCommonLength: Int): Boolean {
         // This is brute-force, but adapting a public "longest-common-substring" algorithm was complex and still slooow.
         // Using the knowledge that we're only interested in the common length exceeding a threshold saves time.
         // This uses the fact that Int.until will _not_ throw on upper < lower.
-        for (xIndex in 0 until x.length - minCommonLength) {
+        (0 until x.length - minCommonLength).forEach { xIndex ->
             val xSub = x.substring(xIndex)
-            for (yIndex in 0 until y.length - minCommonLength) {
+            (0 until y.length - minCommonLength).forEach { yIndex ->
                 if (xSub.commonPrefixWith(y.substring(yIndex), true).length >= minCommonLength)
                     return true
             }

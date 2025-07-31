@@ -9,6 +9,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 open class Policy : RulesetObject() {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics
@@ -33,10 +34,10 @@ open class Policy : RulesetObject() {
         /** Some tests to count policies by completion or not use only the String collection without instantiating them.
          *  To keep the hardcoding in one place, this is public and should be used instead of duplicating it.
          */
-        @Pure
-        fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
+        @Pure fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
     }
 
+    @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
@@ -47,6 +48,7 @@ open class Policy : RulesetObject() {
     // Remember policy branches are duplicated in `policies` (as subclass carrying more information),
     // so filtering by a policy branch name matches only the branch itself, filtering by "[name] branch"
     // will match all policies in that branch plus the branch itself (since the loader sets a branch's branch to itself).
+    @Readonly
     fun matchesSingleFilter(filter: String): Boolean {
         return when(filter) {
             in Constants.all -> true

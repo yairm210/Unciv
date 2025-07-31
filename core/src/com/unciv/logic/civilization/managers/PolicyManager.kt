@@ -2,8 +2,6 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
@@ -12,6 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -100,7 +99,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
+    @Readonly private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
@@ -139,9 +138,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5
-    fun getCultureNeededForNextPolicy(): Int {
-        return getPolicyCultureCost(numberOfAdoptedPolicies)
-    }
+    @Readonly fun getCultureNeededForNextPolicy(): Int = getPolicyCultureCost(numberOfAdoptedPolicies)
 
     fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
         var policyCostInput = numberOfAdoptedPolicies
@@ -156,6 +153,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return policyMap.toMap()
     }
 
+    @Readonly
     fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
         val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
@@ -172,13 +170,14 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     /** Uncached, use carefully */
+    @Readonly
     fun getAdoptedPoliciesMatching(policyFilter: String, gameContext: GameContext) =
         adoptedPolicies.asSequence()
             .mapNotNull { getRulesetPolicies()[it] }
             .filter { it.matchesFilter(policyFilter, gameContext) }
             .toList()
 
-    fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
+    @Readonly fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
     /**
      * Test whether a policy is adoptable according to the RuleSet (ignoring cost).
@@ -187,6 +186,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
      * @param checkEra Include era test (with false the function returns whether the policy is adoptable now or in the future)
      * @return `true` if the policy can be adopted, `false` if some rule prevents it (including when it's already adopted)
      */
+    @Readonly
     fun isAdoptable(policy: Policy, checkEra: Boolean = true): Boolean {
         if (isAdopted(policy.name)) return false
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
@@ -198,6 +198,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return true
     }
 
+    @Readonly
     fun canAdoptPolicy(): Boolean {
         if (civInfo.isSpectator()) return false
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy()) return false
@@ -288,11 +289,13 @@ class PolicyManager : IsPartOfGameInfoSerialization {
      * Return the highest priority ([Int]) among the given [Set] of [PolicyBranch]es.
      * Would return null if the given [Set] is empty.
      */
+    @Readonly
     fun getMaxPriority(branchesToCompare: Set<PolicyBranch>): Int? {
         val filteredMap = priorityMap.filterKeys { branch -> branch in branchesToCompare }
         return filteredMap.values.maxOrNull()
     }
 
+    @Readonly
     fun getCultureFromGreatWriter(): Int {
         return (cultureOfLast8Turns.sum() * civInfo.gameInfo.speed.cultureCostModifier).toInt()
     }
@@ -301,6 +304,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         cultureOfLast8Turns[civInfo.gameInfo.turns % 8] = culture
     }
 
+    @Readonly
     fun allPoliciesAdopted(checkEra: Boolean) =
         getRulesetPolicies().values.none { isAdoptable(it, checkEra) }
 }

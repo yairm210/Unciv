@@ -55,6 +55,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
@@ -126,9 +127,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val cityStateFunctions = CityStateFunctions(this)
-
-    @Transient
-    var cachedMilitaryMight = -1
 
     @Transient
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
@@ -309,6 +307,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
 
     //region pure functions
+    @Readonly
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
         if (gameInfo.ruleset.difficulties.containsKey(gameInfo.getDifficulty().aiDifficultyLevel)) {
@@ -385,7 +384,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
             otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
-    fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
+    @Readonly fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
     @Readonly
@@ -472,7 +471,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      * Stockpiled resources return the stockpiled amount
      */
-    @Readonly @Suppress("purity") // component1, component2
+    @Readonly
     fun getCivResourcesByName(): HashMap<String, Int> {
         @LocalState
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
@@ -672,18 +671,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         else -> units.getCivUnitsSize() == 0
     }
 
-    @Readonly
-    fun getEra(): Era = tech.era
-
-    @Readonly
-    fun getEraNumber(): Int = getEra().eraNumber
-
-    @Readonly
-    fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
-
-    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
-
-    fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
+    @Readonly fun getEra(): Era = tech.era
+    @Readonly fun getEraNumber(): Int = getEra().eraNumber
+    @Readonly fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
+    @Readonly fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+    @Readonly fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
 
 
     /**
@@ -720,12 +712,17 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
-    @Readonly @Suppress("purity") // caches
+    @Transient @Cache
+    private var cachedMilitaryMight = -1
+    
+    @Readonly
     private fun getMilitaryMight(): Int {
         if (cachedMilitaryMight < 0)
             cachedMilitaryMight = calculateMilitaryMight()
         return  cachedMilitaryMight
     }
+    
+    fun resetMilitaryMightCache() { cachedMilitaryMight = -1 }
 
     @Readonly
     private fun calculateMilitaryMight(): Int {
