@@ -87,7 +87,8 @@ object UniqueTriggerActivation {
         unit: MapUnit? = null,
         tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
         notification: String? = null,
-        triggerNotificationText: String? = null
+        triggerNotificationText: String? = null,
+        ignoreMultiModifiers: Boolean = false
     ): (()->Boolean)? {
 
         val relevantCity by lazy {
@@ -118,6 +119,27 @@ object UniqueTriggerActivation {
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
         val ruleset = civInfo.gameInfo.ruleset
+
+        // Modifier trigger to iterate through multiple units
+        if (unique.hasModifier(UniqueType.TargetingUnitsWithinTiles) && !ignoreMultiModifiers) {
+            val modifiers = unique.getModifiers(UniqueType.TargetingUnitsWithinTiles)
+            if (tile != null) {
+                val triggerFunctions = modifiers.flatMap {
+                    val mapUnitFilter = it.params[0]
+                    tile.getTilesInDistance(it.params[1].toInt())
+                        .flatMap { it.getUnits() }
+                        .filter { it.matchesFilter(mapUnitFilter) }
+                        .mapNotNull { getTriggerFunction(unique, civInfo, city, it, it.getTile(), notification, triggerNotificationText, true) }
+                }
+                if (triggerFunctions.none()) return null
+                return {
+                    for (triggerFunction in triggerFunctions) {
+                        triggerFunction.invoke()
+                    }
+                    true
+                }
+            } else return null
+        }
 
         when (unique.type) {
             UniqueType.TriggerEvent -> {

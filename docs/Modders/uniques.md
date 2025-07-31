@@ -3848,6 +3848,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Modifiers that can be added to other uniques changing user experience, not their behavior
 
+??? example  "&lt;targeting [mapUnitFilter] units within [positiveAmount] tiles&gt;"
+	Modifies this unique to activate on each of the given units within the certain amount of tiles
+
+	Example: "&lt;targeting [Wounded] units within [3] tiles&gt;"
+
+	Applicable to: MetaModifier
+
 ??? example  "&lt;for [nonNegativeAmount] turns&gt;"
 	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
 
