@@ -1,6 +1,7 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -248,6 +249,7 @@ open class Stats(
          * - Order is not important.
          * @see [parse]
          */
+        @Pure
         fun isStats(string: String): Boolean {
             if (string.isEmpty() || string[0] !in "+-") return false // very quick negative check before the heavy Regex
             return entireStringRegexPattern.matches(string)

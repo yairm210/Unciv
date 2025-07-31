@@ -6,6 +6,8 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
 
@@ -112,6 +114,7 @@ class RulesetErrorList(
     companion object {
         /** Helper factory for a single entry list (which can result in an empty list due to suppression)
          *  Note: Valid source for [addAll] since suppression is already taken care of. */
+        @Readonly
         fun of(
             text: String,
             severity: RulesetErrorSeverity = RulesetErrorSeverity.Error,
@@ -119,7 +122,7 @@ class RulesetErrorList(
             sourceObject: IHasUniques? = null,
             sourceUnique: Unique? = null
         ): RulesetErrorList {
-            val result = RulesetErrorList(ruleset)
+            @LocalState val result = RulesetErrorList(ruleset)
             result.add(text, severity, sourceObject, sourceUnique)
             return result
         }

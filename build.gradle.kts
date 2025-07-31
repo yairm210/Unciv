@@ -50,11 +50,17 @@ allprojects {
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
             "kotlin.assert",
+            "kotlin.lazy",
+            "kotlin.getValue",
+            "kotlin.error",
         )
         wellKnownReadonlyFunctions = setOf(
             // Looks like the Collection.contains is not considered overridden :thunk:
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
+            "java.lang.reflect.Field.getAnnotation", // not sure if generic enough to be useful globally
+            "java.lang.Class.getField",
+            
             "kotlin.collections.Iterable.iterator", // moved
             "kotlin.collections.Collection.containsAll",  // moved
             "kotlin.collections.filterKeys",  // moved
@@ -62,6 +68,7 @@ allprojects {
             "kotlin.collections.minus",  // moved
             "kotlin.Array.get",
             "kotlin.collections.mutableSetOf",
+            "kotlin.collections.withIndex", // applicable to sequence as well
         )
         wellKnownPureClasses = setOf(
             "java.util.Locale",  // moved
