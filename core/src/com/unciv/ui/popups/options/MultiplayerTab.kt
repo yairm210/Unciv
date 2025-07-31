@@ -138,16 +138,17 @@ private fun addMultiplayerServerOptions(
         }
 
         successfullyConnectedToServer { connectionSuccess, authSuccess ->
-            if (connectionSuccess && authSuccess) {
-                popup.reuseWith("Success!", true)
-            } else if (connectionSuccess) {
+            if (authSuccess == false) {
                 popup.close()
-                AuthPopup(optionsPopup.stageToShowOn) {
-                    success -> popup.apply{
+                AuthPopup(optionsPopup.stageToShowOn) { success ->
+                    popup.apply {
                         reuseWith(if (success) "Success!" else "Failed!", true)
                         open(true)
                     }
                 }.open(true)
+            } else if (connectionSuccess) {
+                if (authSuccess == true) popup.reuseWith("Success!", true)
+                else popup.reuseWith("Auth rejected for unknown reasons, please try again.", true)
             } else {
                 popup.reuseWith("Failed!", true)
             }
@@ -232,15 +233,17 @@ private fun addTurnCheckerOptions(
     return turnCheckerSelect
 }
 
-private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
+private fun successfullyConnectedToServer(action: (Boolean, Boolean?) -> Unit) {
     Concurrency.run("TestIsAlive") {
         try {
             val connectionSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.checkServerStatus()
-            var authSuccess = false
+            var authSuccess: Boolean? = null
             if (connectionSuccess) {
                 try {
                     authSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(null)
-                } catch (_: Exception) {
+                } catch (_: MultiplayerAuthException) {
+                    authSuccess = false
+                } catch (_: Throwable) {
                     // We ignore the exception here, because we handle the failed auth onGLThread
                 }
             }

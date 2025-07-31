@@ -613,7 +613,7 @@ class WorldScreen(
                             }
                         }
                         else -> {
-                            val message = "Could not upload game!"
+                            val message = "Could not upload game! Reason: [${ex.message ?: "Unknown"}]"
                             launchOnGLThread {
                                 val cantUploadNewGamePopup = Popup(this@WorldScreen)
                                 cantUploadNewGamePopup.addGoodSizedLabel(message).row()
