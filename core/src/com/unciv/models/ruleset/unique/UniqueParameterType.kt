@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
+import yairm210.purity.annotations.Readonly
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front of the rest.
 
@@ -663,7 +664,7 @@ enum class UniqueParameterType(
     /** This returns the known values *for autocomplete* -
      *  there may be 'known values' not in this set, for example uniques.
      *  If there aren't, you don't need to override isKnownValue at all, since it will compare to this */
-    open fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> = staticKnownValues
+    @Readonly open fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> = staticKnownValues
 
     open val staticKnownValues: Set<String> = emptySet()
 

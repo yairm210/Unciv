@@ -524,14 +524,16 @@ fun String.hasPlaceholderParameters(): Boolean {
 }
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
+@Pure @Suppress("purity") // input varargs should be considered immutable
 fun String.fillPlaceholders(vararg strings: String): String {
-    val keys = this.getPlaceholderParameters()
+    @Immutable val keys = this.getPlaceholderParameters()
     if (keys.size > strings.size)
         throw Exception("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
 
     var filledString = this.replace(squareBraceRegex, "[]")
-    for (i in keys.indices)
+    keys.indices.forEach { i ->
         filledString = filledString.replaceFirst("[]", "[${strings[i]}]")
+    }
     return filledString
 }
 

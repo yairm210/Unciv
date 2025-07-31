@@ -58,7 +58,8 @@ allprojects {
             "kotlin.collections.Iterable.iterator",
             "kotlin.collections.Collection.containsAll",
             "kotlin.collections.filterKeys",
-            "kotlin.collections.reversed"
+            "kotlin.collections.reversed",
+            "kotlin.collections.minus",
         )
         wellKnownPureClasses = setOf(
             "java.util.Locale",
