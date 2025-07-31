@@ -69,6 +69,7 @@ allprojects {
             "kotlin.Array.get",
             "kotlin.collections.mutableSetOf",
             "kotlin.collections.withIndex", // applicable to sequence as well
+            "kotlin.collections.intersect",
         )
         wellKnownPureClasses = setOf(
             "java.util.Locale",  // moved
