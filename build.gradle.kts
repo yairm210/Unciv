@@ -55,12 +55,13 @@ allprojects {
             "kotlin.error",
         )
         wellKnownReadonlyFunctions = setOf(
-            // Looks like the Collection.contains is not considered overridden :thunk:
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
+            "com.badlogic.gdx.math.Vector2.hashCode",
             "java.lang.reflect.Field.getAnnotation", // not sure if generic enough to be useful globally
             "java.lang.Class.getField",
             
+            // Looks like the Collection.contains is not considered overridden :thunk:
             "kotlin.collections.Iterable.iterator", // moved
             "kotlin.collections.Collection.containsAll",  // moved
             "kotlin.collections.filterKeys",  // moved

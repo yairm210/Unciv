@@ -318,6 +318,7 @@ object TranslationActiveModsCache {
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
+@Readonly @Suppress("purity")
 fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
     val language: String = UncivGame.Current.settings.language
 

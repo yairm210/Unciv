@@ -10,6 +10,7 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 class CityReligionManager : IsPartOfGameInfoSerialization {
@@ -65,7 +66,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
 
-    fun getPressures(): Counter<String> = pressures.clone()
+    @Readonly fun getPressures(): Counter<String> = pressures.clone()
 
     private fun clearAllPressures() {
         pressures.clear()
@@ -261,6 +262,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         updateNumberOfFollowers()
     }
 
+    @Readonly
     private fun getSpreadRange(): Int {
         var spreadRange = 10
 
@@ -278,8 +280,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     /** Doesn't update the pressures, only returns what they are if the update were to happen right now */
+    @Readonly
     fun getPressuresFromSurroundingCities(): Counter<String> {
-        val addedPressure = Counter<String>()
+        @LocalState val addedPressure = Counter<String>()
         if (city.isHolyCity()) {
             addedPressure[religionThisIsTheHolyCityOf!!] = 5 * pressureFromAdjacentCities
         }
@@ -299,6 +302,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return addedPressure
     }
 
+    @Readonly
     fun isProtectedByInquisitor(fromReligion: String? = null): Boolean {
         for (tile in city.getCenterTile().getTilesInDistance(1)) {
             for (unit in listOf(tile.civilianUnit, tile.militaryUnit)) {
@@ -311,6 +315,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return false
     }
 
+    @Readonly
     private fun pressureAmountToAdjacentCities(pressuredCity: City): Int {
         var pressure = pressureFromAdjacentCities.toFloat()
 
@@ -331,7 +336,10 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return pressure.toInt()
     }
 
+    /** Calculates how much pressure this religion is lacking compared to the majority religion */
+    @Readonly
     fun getPressureDeficit(otherReligion: String?): Int {
-        return (getPressures()[getMajorityReligionName()] ?: 0) - (getPressures()[otherReligion] ?: 0)
+        val pressures = getPressures()
+        return (pressures[getMajorityReligionName()] ?: 0) - (pressures[otherReligion] ?: 0)
     }
 }
