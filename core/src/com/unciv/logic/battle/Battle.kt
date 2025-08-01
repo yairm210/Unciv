@@ -154,9 +154,16 @@ object Battle {
 
         // Must come before normal conquest logic so units that cannot capture cities can still destroy them
         // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capitals
-        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true) && !defender.city.isCapital()) {
-            defender.city.destroyCity()
+        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant) {
+            if (!defender.city.isCapital()) {
+                val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).flatMap { unique ->
+                    unique.params[0]?.let { sequenceOf(it) } ?: emptySequence()
+                }
+
+                if (destroyFilters.any { filter: String -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                    defender.city.destroyCity()
+                }
+            }
         }
 
          // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
