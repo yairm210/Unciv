@@ -1,28 +1,10 @@
 ## 4.17.11
 
-chore(purity): TileImprovement
-
-chore(purity): Unique.kt
-
-chore(purity): Remove all possible suppressions
-
-chore(purity): Countables 2
-
-chore(purity): Remove more suppressions
-
-chore(purity): conditionalApplies
-
-chore(purity): eliminate suppressions
-
-chore(purity): eliminate suppressions
-
 Fix Ancient Ruin benefit on higher difficulties - By RobLoach
 
-By touhidurrr:
-- Only bring forth `AuthPopup` if server explicitly returns `401` 
-- Goodies before chat retention & `UncivServer.jar` Chat Session Management fixes 
+Multiplayer: Only bring forth `AuthPopup` if server explicitly returns `401` - By touhidurrr 
 
-Updated canBeSettled to be able to settle water mountain tiles - By Emandac
+Modding: "can settle" unique able accept tile filters for water and impassible tiles - By Emandac
 
 ## 4.17.10
 
