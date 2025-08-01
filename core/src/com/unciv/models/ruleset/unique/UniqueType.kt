@@ -441,9 +441,9 @@ enum class UniqueType(
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit, UniqueTarget.Global),
     CannotPillage("Unable to pillage tiles", UniqueTarget.Unit, UniqueTarget.Global),
     
-    // allow any unit to destory cities instead of capturing them unless its a Capital City, also allows non melee units to destroy cities but only melee can capture capital cities
-    CanDestroyCities("Can destroy non capital cities", UniqueTarget.Unit, UniqueTarget.Global,
-        docDescription = "The unit will destroy non capital cities instead of capturing them, also allows non-melee units to destroy cities." + "Disabled when \"Unable to capture cities\" is set on the unit."),
+    // allow any unit to destory cities instead of capturing them, also allows non melee units to destroy cities
+    CanDestroyCities("Can destroy [cityFilter] cities", UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "The unit will destroy cityFilter cities instead of capturing them, also allows non-melee units to destroy cities." + "Capital cities are immune to this effect."),
     
     // Movement
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
