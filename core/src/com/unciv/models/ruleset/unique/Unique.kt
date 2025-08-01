@@ -169,6 +169,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return -1 // Not found
     }
 
+    @Readonly
     fun getReplacementText(ruleset: Ruleset): String {
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
         val replacementUniqueText = deprecationAnnotation.replaceWith.expression
@@ -180,7 +181,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         //  note this is only done for the replacement, not the deprecated unique, thus parameters of
         //  conditionals on the deprecated unique are ignored
 
-        val finalPossibleUniques = ArrayList<String>()
+        @LocalState val finalPossibleUniques = ArrayList<String>()
 
         for (possibleUnique in possibleUniques) {
             var resultingUnique = possibleUnique

@@ -285,7 +285,7 @@ enum class Countables(
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
     open fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
-    fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+    @Readonly fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
     protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
         getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
