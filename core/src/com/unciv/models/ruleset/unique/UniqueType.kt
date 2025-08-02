@@ -434,13 +434,17 @@ enum class UniqueType(
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
     
     //Aoe Attacks
-    AoeFlatAttack("Attacks deal equal area damage to units in a [amount] tile radius", UniqueTarget.Unit, 
+    AoeFlatAttack("Attacks deal equal area damage to units in a [positiveAmount] tile radius", UniqueTarget.Unit, 
         docDescription = "If both equal area damage and decreasing area damage is given to unit only the decreasing one will be used."),
-    AoeDegradeAttack("Attacks deal area damage to units in a [amount] tile radius, decreasing with distance", UniqueTarget.Unit, 
+    AoeDegradeAttack("Attacks deal area damage to units in a [positiveAmount] tile radius, decreasing with distance", UniqueTarget.Unit, 
         docDescription = "If both equal area damage and this is given to unit only this will be used." + 
                 "Damage is based on distance from the target unit and the set radius," + 
                 "meaning a unit takes more damage if the attacker has its radius set to 2 when it is 1 tile away compared to if the attacker has its radius set to 1." + 
                 "Damage is calculated as follows: Damage = (1 - (distance from center / radius of the attacker)) * baseDamage"),
+    CanDamageSelfInAOE("Damages self with Aoe attacks", UniqueTarget.Unit, 
+        docDescription = "This unit takes damage from its own Aoe attacks, does not mean it will take damage from allied Aoe attacks"),
+    CanDamageAlliesInAOE("Damages allied units with Aoe attacks", UniqueTarget.Unit,
+        docDescription = "This unit damages allied units with Aoe attacks, does not mean it will take damage from its own Aoe attacks unless \"Damages self with Aoe attacks\" is also set"),
 
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
