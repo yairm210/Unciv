@@ -91,6 +91,7 @@ class AlertPopup(
             AlertType.DiplomaticMarriage -> addDiplomaticMarriage()
             // Demands and diplomacy
             AlertType.FirstContact -> addFirstContact()
+            AlertType.Denounced -> shouldOpen = addDenounced()
             AlertType.WarDeclaration -> shouldOpen = addWarDeclaration()
             AlertType.BorderConflict -> shouldOpen = addBorderConflict()
             AlertType.TilesStolen -> shouldOpen = addTilesStolen()
@@ -410,6 +411,23 @@ class AlertPopup(
         add(centerTable).row()
         addCloseButton()
         music.chooseTrack(tech.name, MusicMood.Researched, MusicTrackChooserFlags.setSpecific)
+    }
+
+    private fun addDenounced(): Boolean {
+        val civInfo = getCiv(popupAlert.value)
+        if (civInfo.isDefeated()) return false
+
+        add(LeaderIntroTable(civInfo, "Denouncing"))
+        addSeparator()
+        val centerTable = Table()
+        val denouncementMessage = "I've had enough of you. I've told the other leaders of the world that working with you is a mistake."
+        centerTable.add(denouncementMessage.toLabel().apply { wrap = true }).width(stageWidth / 3).pad(10f)
+        add(centerTable).row()
+
+        bottomTable.defaults().pad(0f, 5f)
+        addCloseButton("You'll pay for this!")
+        addCloseButton("Very well.")
+        return true
     }
 
     private fun addWarDeclaration(): Boolean {

@@ -6,6 +6,7 @@ enum class AlertType : IsPartOfGameInfoSerialization {
     Defeated,
     WonderBuilt,
     TechResearched,
+    Denounced,
     WarDeclaration,
     FirstContact,
     CityConquered,

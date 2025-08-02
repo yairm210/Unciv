@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.Countables
@@ -60,6 +61,25 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             else {
                 civ.policies.removePolicy(policy, assumeWasFree = true) // See UniqueType.OneTimeRemovePolicy
                 DevConsoleResponse.OK
+            }
+        },
+
+        "denounce" to ConsoleAction("civ denounce <civ> <otherCiv>") { console, params ->
+            val otherCiv = console.getCivByNameOrNull(params[0])
+                ?: throw ConsoleErrorException("Civ " + params[0] + " does not exist")
+            val thirdCiv = console.getCivByNameOrNull(params[1])
+                ?: throw ConsoleErrorException("Civ " + params[1] + " does not exist")
+            if (!otherCiv.isMajorCiv() || !thirdCiv.isMajorCiv())
+                DevConsoleResponse.error("Only major civs can denounce each other")
+            else {
+                val diploManager = otherCiv.getDiplomacyManager(thirdCiv)!!
+                if (diploManager.hasFlag(DiplomacyFlags.Denouncing)) {
+                    DevConsoleResponse.error(thirdCiv.civName + " is already denounced by " + otherCiv.civName)
+                }
+                else {
+                    diploManager.denounce()
+                    DevConsoleResponse.OK
+                }
             }
         },
 
