@@ -444,7 +444,7 @@ enum class UniqueType(
     CanDamageSelfInAOE("Damages self with Aoe attacks", UniqueTarget.Unit, 
         docDescription = "This unit takes damage from its own Aoe attacks, does not mean it will take damage from allied Aoe attacks"),
     CanDamageAlliesInAOE("Damages allied units with Aoe attacks", UniqueTarget.Unit,
-        docDescription = "This unit damages allied units with Aoe attacks, does not mean it will take damage from its own Aoe attacks unless \"Damages self with Aoe attacks\" is also set"),
+        docDescription = "This unit damages allied units with Aoe attacks, does not mean it will take damage from its own Aoe attacks unless Damages self with Aoe attacks is also set"),
 
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
