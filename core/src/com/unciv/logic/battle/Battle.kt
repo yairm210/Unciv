@@ -215,37 +215,47 @@ object Battle {
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
 
-        if (attacker is MapUnitCombatant) {
-            val aoeDegrade = attacker.unit.getMatchingUniques(UniqueType.AoeDegradeAttack).firstOrNull()
-            val aoeFlat = attacker.unit.getMatchingUniques(UniqueType.AoeFlatAttack).firstOrNull()
+        if (attacker is MapUnitCombatant && (attacker.unit.hasUnique(UniqueType.AoeDegradeAttack) || attacker.unit.hasUnique(UniqueType.AoeFlatAttack))) {
+            applyAoeAttack(attacker, defender)
+        }
+        
+        return damageDealt + interceptDamage
+    }
+    fun applyAoeAttack(attacker: MapUnitCombatant, defender: ICombatant) {
 
-            val aoeUnique = aoeDegrade ?: aoeFlat //AoeDegradeAttack will be used as default if both are present
-            if (aoeUnique != null) {
-                val radius = aoeUnique.params[0].toIntOrNull() ?: 1
-                if (radius > 0) {
-                    val centerTile = defender.getTile()
-                    val affectedTiles = centerTile.getTilesInDistance(radius).toList()
-                    val attackerCiv = attacker.getCivInfo()
-                    for (tile in affectedTiles) {
-                        val distanceFactor = if (aoeDegrade != null) {
-                            val distance = centerTile.aerialDistanceTo(tile)
-                            (1.0 - distance.toDouble() / (radius + 1))
-                            } else {
-                                1.0 // full damage for all since uses flat damage unique
-                            }
-                        for (unit in tile.getUnits()) {
-                            if (unit != attacker.unit && unit != (defender as? MapUnitCombatant)?.unit && unit.civ.isAtWarWith(attackerCiv)) {
-                                val aoeDefender = MapUnitCombatant(unit)
-                                var damage = BattleDamage.calculateDamageToDefender(attacker, aoeDefender)
-                                damage = (damage * distanceFactor).toInt().coerceAtLeast(1)
-                                unit.takeDamage(damage)
-                            }
-                        }
-                    }
-                }
+        //degrading AOE is used if both AoeDegradeAttack and AoeFlatAttack uniques are present
+        val degradeUnique = attacker.unit.getMatchingUniques(UniqueType.AoeDegradeAttack).firstOrNull()
+        val flatUnique = attacker.unit.getMatchingUniques(UniqueType.AoeFlatAttack).firstOrNull()
+        val aoeUnique = degradeUnique ?: flatUnique ?: return
+        val isDegrade = degradeUnique != null
+
+        val radius = aoeUnique.params.getOrNull(0)?.toIntOrNull() ?: return
+        if (radius <= 0) return
+
+        val includeAllies = attacker.unit.hasUnique(UniqueType.CanDamageAlliesInAOE)
+        val excludeSelf = !attacker.unit.hasUnique(UniqueType.CanDamageSelfInAOE)
+
+        val centerTile = defender.getTile()
+        val attackerCiv = attacker.getCivInfo()
+
+        for (tile in centerTile.getTilesInDistance(radius)) {
+            val distance = centerTile.aerialDistanceTo(tile)
+            val distanceFactor = if (isDegrade)
+                (1.0 - distance.toDouble() / (radius + 1)).coerceAtLeast(0.0)
+            else 1.0
+
+            for (unit in tile.getUnits()) {
+                if (excludeSelf && unit.getTile() == attacker.unit.getTile()) continue
+                if (unit == (defender as? MapUnitCombatant)?.unit) continue
+                
+                val isAlly = !unit.civ.isAtWarWith(attackerCiv)
+                if (!includeAllies && isAlly) continue
+
+                val aoeDefender = MapUnitCombatant(unit)
+                val damage = (BattleDamage.calculateDamageToDefender(attacker, aoeDefender) * distanceFactor).toInt().coerceAtLeast(1)
+                unit.takeDamage(damage)
             }
         }
-        return damageDealt + interceptDamage
     }
     
     private fun triggerCombatUniques(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
