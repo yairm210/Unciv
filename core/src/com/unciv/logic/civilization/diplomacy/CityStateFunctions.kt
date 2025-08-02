@@ -559,7 +559,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             .filter { !it.hasUnique(UniqueType.ResearchableMultipleTimes) && civInfo.tech.canBeResearched(it.name) }
         for (tech in researchableTechs) {
             val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
-            if (aliveMajorCivs.count { it.tech.isResearched(tech.name) } >= aliveMajorCivs.size / 2)
+            if (aliveMajorCivs.count { it.tech.isResearched(tech.name) } > aliveMajorCivs.size / 2)
                 civInfo.tech.addTechnology(tech.name)
         }
         return
