@@ -434,6 +434,19 @@ enum class UniqueType(
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
     IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit, UniqueTarget.Global),
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
+    
+    //Aoe Attacks
+    AoeFlatAttack("Attacks deal equal area damage to units in a [positiveAmount] tile radius", UniqueTarget.Unit, 
+        docDescription = "If both equal area damage and decreasing area damage is given to unit only the decreasing one will be used."),
+    AoeDegradeAttack("Attacks deal area damage to units in a [positiveAmount] tile radius, decreasing with distance", UniqueTarget.Unit, 
+        docDescription = "If both equal area damage and this is given to unit only this will be used." + 
+                "Damage is based on distance from the target unit and the set radius," + 
+                "meaning a unit takes more damage if the attacker has its radius set to 2 when it is 1 tile away compared to if the attacker has its radius set to 1." + 
+                "Damage is calculated as follows: Damage = (1 - (distance from center / radius of the attacker)) * baseDamage"),
+    CanDamageSelfInAOE("Damages self with Aoe attacks", UniqueTarget.Unit, 
+        docDescription = "This unit takes damage from its own Aoe attacks, does not mean it will take damage from allied Aoe attacks"),
+    CanDamageAlliesInAOE("Damages allied units with Aoe attacks", UniqueTarget.Unit,
+        docDescription = "This unit damages allied units with Aoe attacks, does not mean it will take damage from its own Aoe attacks unless Damages self with Aoe attacks is also set"),
 
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
@@ -442,7 +455,7 @@ enum class UniqueType(
     WithdrawsBeforeMeleeCombat("Withdraws before melee combat", UniqueTarget.Unit),
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit, UniqueTarget.Global),
     CannotPillage("Unable to pillage tiles", UniqueTarget.Unit, UniqueTarget.Global),
-
+    
     // Movement
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
