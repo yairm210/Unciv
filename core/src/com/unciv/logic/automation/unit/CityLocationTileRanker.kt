@@ -65,7 +65,7 @@ object CityLocationTileRanker {
 
     private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
-        if (!tile.isLand || tile.isImpassible()) return false
+        if (tile.isImpassible()) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
         for (city in nearbyCities) {
             val distance = city.getCenterTile().aerialDistanceTo(tile)
