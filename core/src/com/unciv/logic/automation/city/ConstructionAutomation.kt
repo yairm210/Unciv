@@ -288,8 +288,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 building.hasUnique(UniqueType.StatPercentBonusCities) -> civInfo.getPersonality().culture // Sistine Chapel in base game, but players seem to "expect" culture civs to build more wonders in general
                 else -> 0f
             }
-        } else { 
-            value += if (building.hasUnique(UniqueType.CreatesOneImprovement)) 5f else 0f //District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
+        } else value += when {
+            building.hasUnique(UniqueType.CreatesOneImprovement) -> 5f // District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
+            building.hasUnique(UniqueType.ProvidesResources) -> 2f // Should be weighed by how much we need the resources
+            else -> 0f
         }
         return value
     }
