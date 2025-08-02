@@ -442,7 +442,11 @@ enum class UniqueType(
     WithdrawsBeforeMeleeCombat("Withdraws before melee combat", UniqueTarget.Unit),
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit, UniqueTarget.Global),
     CannotPillage("Unable to pillage tiles", UniqueTarget.Unit, UniqueTarget.Global),
-
+    
+    // allow any unit to destory cities instead of capturing them, also allows non melee units to destroy cities
+    CanDestroyCities("Can destroy [cityFilter] cities", UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "The unit will destroy cityFilter cities instead of capturing them, also allows non-melee units to destroy cities." + "Capital cities are immune to this effect."),
+    
     // Movement
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
