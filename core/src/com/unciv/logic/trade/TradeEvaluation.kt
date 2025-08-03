@@ -144,9 +144,10 @@ class TradeEvaluation {
             TradeOfferType.Embassy -> return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt()
             TradeOfferType.Gold -> return offer.amount
             // GPT loses value for each 'future' turn, meaning: gold now is more valuable than gold in the future
-            // Empire-wide production tends to grow at roughly 2% per turn (quick speed), so let's take that as a base line
-            // Formula could be more sophisticated by taking into account game speed and estimated chance of the gpt-giver cancelling the trade after X amount of turns
-            TradeOfferType.Gold_Per_Turn -> return (1..offer.duration).sumOf { offer.amount * 0.98.pow(it) }.toInt()
+            // Empire-wide production tends to grow at roughly 2% per turn (quick speed), so let's take that as a base line,
+            // which results in an efficiency of (0.98 + 0.98^2 + ... + 0.98^25) / 25 = 0.7772 compared to instant gold, assume this scales similarly on different game speed
+            // Formula could be more sophisticated by taking into account estimated chance of the gpt-giver cancelling the trade after X amount of turns
+            TradeOfferType.Gold_Per_Turn -> return offer.amount * offer.duration * 4/5
             TradeOfferType.Treaty -> {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
@@ -348,7 +349,7 @@ class TradeEvaluation {
                 return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt() // 30 is Civ V default (on standard only?)
             }
             TradeOfferType.Gold -> return offer.amount
-            TradeOfferType.Gold_Per_Turn -> return offer.amount * offer.duration
+            TradeOfferType.Gold_Per_Turn -> return offer.amount * offer.duration * 4/5
             TradeOfferType.Treaty -> {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
