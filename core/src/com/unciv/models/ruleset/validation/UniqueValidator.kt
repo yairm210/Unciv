@@ -66,7 +66,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         UniqueType.ConditionalNotAdjacentTo
     )
 
-    @Readonly @Suppress("purity")
+    @Readonly
     fun checkUnique(
         unique: Unique,
         tryFixUnknownUniques: Boolean,
@@ -116,7 +116,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             rulesetErrors += getConditionalErrors(conditional, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
         }
 
-        addUniqueTypeSpecificErrors(rulesetErrors, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
+        rulesetErrors += getUniqueTypeSpecificErrors(prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
 
         val conditionals = unique.modifiers.filter { it.type?.canAcceptUniqueTarget(UniqueTarget.Conditional) == true }
         if (conditionals.size > 1){
@@ -145,7 +145,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (reportRulesetSpecificErrors)
         // If we don't filter these messages will be listed twice as this function is called twice on most objects
         // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
-            addDeprecationAnnotationErrors(unique, prefix, rulesetErrors, uniqueContainer)
+            rulesetErrors += getDeprecationAnnotationErrors(unique, prefix, uniqueContainer)
 
         return rulesetErrors
     }
@@ -191,6 +191,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         UniqueType.ConditionalWhenBelowAmountStatResource,
     )
 
+    @Readonly
     private fun getConditionalErrors(
         conditional: Unique,
         prefix: String,
@@ -279,31 +280,35 @@ class UniqueValidator(val ruleset: Ruleset) {
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
             )
 
-            getExpressionParseErrors(complianceError, uniqueContainer, unique)
+            rulesetErrors += getExpressionParseErrors(complianceError, uniqueContainer, unique)
         }
 
-        addDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", rulesetErrors, uniqueContainer)
+        rulesetErrors += getDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", uniqueContainer)
         return rulesetErrors
     }
 
-    private fun addUniqueTypeSpecificErrors(
-        rulesetErrors: RulesetErrorList, prefix: String, unique: Unique, uniqueContainer: IHasUniques?, reportRulesetSpecificErrors: Boolean
-    ) {
+    @Readonly
+    private fun getUniqueTypeSpecificErrors(
+        prefix: String, unique: Unique, uniqueContainer: IHasUniques?, reportRulesetSpecificErrors: Boolean
+    ): RulesetErrorList {
+        @LocalState val rulesetErrors = RulesetErrorList()
         when(unique.type) {
             UniqueType.RuinsUpgrade -> {
                 if (reportRulesetSpecificErrors && !anyAncientRuins)
                     rulesetErrors.add("$prefix is pointless - there are no ancient ruins", RulesetErrorSeverity.Warning, uniqueContainer, unique)
             }
-            else -> return
+            else -> {}
         }
+        return rulesetErrors
     }
 
-    private fun addDeprecationAnnotationErrors(
+    @Readonly
+    private fun getDeprecationAnnotationErrors(
         unique: Unique,
         prefix: String,
-        rulesetErrors: RulesetErrorList,
         uniqueContainer: IHasUniques?
-    ) {
+    ): RulesetErrorList {
+        @LocalState val rulesetErrors = RulesetErrorList()
         val deprecationAnnotation = unique.getDeprecationAnnotation()
         if (deprecationAnnotation != null) {
             val replacementUniqueText = unique.getReplacementText(ruleset)
@@ -318,7 +323,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         // Check for deprecated Countables
-        if (unique.type == null) return
+        if (unique.type == null) return rulesetErrors
         val countables =
             unique.type.parameterTypeMap.withIndex()
             .filter { UniqueParameterType.Countable in it.value }
@@ -335,6 +340,7 @@ class UniqueValidator(val ruleset: Ruleset) {
                 else RulesetErrorSeverity.ErrorOptionsOnly // User visible in new game and red in options
             rulesetErrors.add(text, severity, uniqueContainer, unique)
         }
+        return rulesetErrors
     }
 
     /** Maps uncompliant parameters to their required types */
