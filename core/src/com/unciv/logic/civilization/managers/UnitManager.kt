@@ -55,14 +55,14 @@ class UnitManager(val civInfo: Civilization) {
 
         val unit = civInfo.getEquivalentUnit(baseUnit)
         val citiesNotInResistance = civInfo.cities.filterNot { it.isInResistance() }
-        var canSpwanUnitOnWater = false
+        var canSpawnUnitOnWater = false
         if (city != null) {
-            canSpwanUnitOnWater = city.getCenterTile().matchesFilter("Water")
+            canSpawnUnitOnWater = city.getCenterTile().matchesFilter("Water")
         }
         
         
         val cityToAddTo = when {
-            unit.isWaterUnit && (city == null || !city.isCoastal()) && !canSpwanUnitOnWater ->
+            unit.isWaterUnit && (city == null || !city.isCoastal()) && !canSpawnUnitOnWater ->
                 citiesNotInResistance.filter { it.isCoastal() }.randomOrNull() ?:
                 civInfo.cities.filter { it.isCoastal() }.randomOrNull()
             city != null -> city
