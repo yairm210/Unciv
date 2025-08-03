@@ -23,6 +23,7 @@ theme:
 
 repo_name: yairm210/unciv
 repo_url: https://github.com/yairm210/unciv
+site_url: https://yairm210.github.io/Unciv
 
 markdown_extensions:
   # For adminitions
