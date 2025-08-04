@@ -198,6 +198,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     @Readonly fun isInResistance() = hasFlag(CityFlags.Resistance)
+    @Readonly
     fun isBlockaded(): Boolean {
         // Coastal cities are blocked if every adjacent water tile is blocked
         if (!isCoastal()) return false
@@ -255,19 +256,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
             Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
             Stat.Food -> population.foodStored
             else -> civ.getStatReserve(stat)
-        }
-    }
-
-    fun getReserve(stat: GameResource): Int {
-        if (stat is TileResource) {
-            if (!stat.isStockpiled) return 0
-            if (stat.isCityWide) return resourceStockpiles[stat.name]
-            return civ.resourceStockpiles[stat.name]
-        }
-        return when (stat) {
-            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
-            Stat.Food, SubStat.StoredFood -> population.foodStored
-            else -> civ.getReserve(stat)
         }
     }
 
@@ -460,7 +448,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         population.autoAssignPopulation() // also updates city stats
         civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
-
+    
+    @Readonly
     fun canPlaceNewUnit(construction: BaseUnit): Boolean {
         val tile = getCenterTile()
         return when {

@@ -36,7 +36,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var shouldOpenPolicyPicker = false
 
     /** Used by NextTurnAction.PickPolicy.isChoice */
-    fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
+    @Readonly fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
 
     /** A [Map] pairing each [PolicyBranch] to its priority ([Int]). */
     val priorityMap: Map<PolicyBranch, Int>

@@ -72,6 +72,7 @@ import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import yairm210.purity.annotations.Readonly
 import java.util.Timer
 import kotlin.concurrent.timer
 
@@ -555,6 +556,8 @@ class WorldScreen(
         val scrollX = mapHolder.scrollX
         val scrollY = mapHolder.scrollY
     }
+    
+    @Readonly
     fun getRestoreState(): RestoreState {
         return RestoreState(mapHolder, selectedCiv.civName, viewingCiv.civName, fogOfWar)
     }
@@ -668,7 +671,8 @@ class WorldScreen(
         }
         shouldUpdate = true
     }
-
+    
+    @Readonly
     internal fun isNextTurnUpdateRunning(): Boolean {
         val job = nextTurnUpdateJob
         return job != null && job.isActive

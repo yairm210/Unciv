@@ -582,6 +582,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun shouldOpenTechPicker(): Boolean {
         if (!tech.canResearchTech()) return false
         if (tech.freeTechs != 0) return true

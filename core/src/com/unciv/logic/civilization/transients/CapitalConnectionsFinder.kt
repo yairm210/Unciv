@@ -7,6 +7,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
 
 class CapitalConnectionsFinder(private val civInfo: Civilization) {
@@ -87,6 +88,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         )
     }
 
+    @Readonly
     private fun City.containsHarbor() = 
         this.containsBuildingUnique(UniqueType.ConnectTradeRoutes)
 
@@ -122,7 +124,8 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
             citiesReachedToMediums[reachedCity] = mutableSetOf()
         }
     }
-
+    
+    @Readonly
     private fun City.wasPreviouslyReached(transportType: String, overridingTransportType: String?): Boolean {
         val mediums = citiesReachedToMediums[this]!!
         return mediums.contains(transportType) || mediums.contains(overridingTransportType)
@@ -132,7 +135,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         citiesReachedToMediums[this]!!.add(transportType)
     }
 
-
+    @Readonly
     private fun canEnterBordersOf(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true // own borders are always open
         if (otherCiv.isBarbarian || civInfo.isBarbarian) return false // barbarians blocks the routes
