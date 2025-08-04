@@ -214,13 +214,15 @@ object Battle {
                 .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
-
+        //Aoe attack
         if (attacker is MapUnitCombatant && (attacker.unit.hasUnique(UniqueType.AoeDegradeAttack) || attacker.unit.hasUnique(UniqueType.AoeFlatAttack))) {
             applyAoeAttack(attacker, defender)
         }
         
         return damageDealt + interceptDamage
     }
+
+    //Aoe Logic function
     fun applyAoeAttack(attacker: MapUnitCombatant, defender: ICombatant) {
 
         //degrading AOE is used if both AoeDegradeAttack and AoeFlatAttack uniques are present
