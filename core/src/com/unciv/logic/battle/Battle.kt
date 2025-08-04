@@ -157,7 +157,6 @@ object Battle {
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant) {
             if (!defender.city.isCapital()) {
                 val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
-            }
                 if (destroyFilters.any { filter: String -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
                     defender.city.destroyCity()
                 }
