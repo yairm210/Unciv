@@ -21,7 +21,7 @@ object CityResources {
     /** Only for *city-wide* resources - civ-wide resources should use civ-level resources */
     @Readonly
     fun getCityResourcesAvailableToCity(city: City): ResourceSupplyList {
-        @LocalState val resourceModifers = HashMap<String, Float>()
+        val resourceModifers = HashMap<String, Float>()
         for (resource in city.civ.gameInfo.ruleset.tileResources.values)
             resourceModifers[resource.name] = city.civ.getResourceModifier(resource)
 

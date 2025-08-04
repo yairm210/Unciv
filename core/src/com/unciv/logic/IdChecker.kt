@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import yairm210.purity.annotations.Readonly
 import java.util.Locale
 import kotlin.math.abs
 

@@ -38,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.42" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.43" apply(false)
 }
 
 allprojects {
@@ -62,19 +62,14 @@ allprojects {
             "java.lang.Class.getField",
             
             // Looks like the Collection.contains is not considered overridden :thunk:
-            "kotlin.collections.Iterable.iterator", // moved
-            "kotlin.collections.Collection.containsAll",  // moved
-            "kotlin.collections.filterKeys",  // moved
-            "kotlin.collections.reversed",  // moved
-            "kotlin.collections.minus",  // moved
             "kotlin.Array.get",
             "kotlin.collections.mutableSetOf",
             "kotlin.collections.withIndex", // applicable to sequence as well
             "kotlin.collections.intersect",
         )
         wellKnownPureClasses = setOf(
-            "java.util.Locale",  // moved
         )
+        warnOnPossibleAnnotations = true
     }
     
     apply(plugin = "eclipse")

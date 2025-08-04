@@ -473,7 +473,6 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     @Readonly
     fun getCivResourcesByName(): HashMap<String, Int> {
-        @LocalState
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
         for (entry in getCivResourceSupply())
