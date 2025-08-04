@@ -255,16 +255,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelEQ(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelEQ(level: RelationshipLevel) =
             compareRelationshipLevel(level, 0)
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelLT(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelLT(level: RelationshipLevel) =
             compareRelationshipLevel(level, -1)
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelGT(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelGT(level: RelationshipLevel) =
             compareRelationshipLevel(level, 1)
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelLE(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelLE(level: RelationshipLevel) =
             if (level == RelationshipLevel.Ally) true
             else compareRelationshipLevel(level + 1, -1)
     /** @see compareRelationshipLevel */
@@ -468,9 +468,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
-    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().asIterable().intersect(otherCiv().getKnownCivs().toSet())
+    @Readonly fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().asIterable().intersect(otherCiv().getKnownCivs().toSet())
 
-    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().asIterable().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
+    @Readonly fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().asIterable().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */

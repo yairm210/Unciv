@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.unciv.models.translations.tr
+import yairm210.purity.annotations.Readonly
 
 /**
  * An [Exception] wrapper marking an Exception as suitable to be shown to the user.
@@ -27,6 +28,6 @@ class MissingModsException(
     val missingMods: Iterable<String>
 ) : UncivShowableException("Missing mods: [${shorten(missingMods)}]") {
     companion object {
-        private fun shorten(missingMods: Iterable<String>) = missingMods.joinToString(limit = 5) { it }
+        @Readonly private fun shorten(missingMods: Iterable<String>) = missingMods.joinToString(limit = 5) { it }
     }
 }

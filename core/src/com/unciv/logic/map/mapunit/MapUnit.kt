@@ -237,6 +237,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     
     @Readonly fun getTile(): Tile = currentTile
 
+    @Readonly
     fun getClosestCity(): City? = civ.cities.minByOrNull {
         it.getCenterTile().aerialDistanceTo(currentTile)
     }

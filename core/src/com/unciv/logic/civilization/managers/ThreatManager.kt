@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.screens.victoryscreen.RankingType
+import yairm210.purity.annotations.Readonly
 
 /**
  * Handles optimised operations related to finding threats or allies in an area.
@@ -83,6 +84,7 @@ class ThreatManager(val civInfo: Civilization) {
      * May be quicker than a manual search because of caching.
      * Also ends up calculating and caching [getDistanceToClosestEnemyUnit].
      */
+    @Readonly @Suppress("purity")
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
 
@@ -130,18 +132,14 @@ class ThreatManager(val civInfo: Civilization) {
     }
 
     /**
-     * Returns all enemy military units within maxDistance of the tile.
-     */
-    fun getEnemyMilitaryUnitsInDistance(tile: Tile, maxDist: Int): List<MapUnit> =
-        getEnemyUnitsOnTiles(getTilesWithEnemyUnitsInDistance(tile, maxDist))
-
-    /**
      * Returns all enemy military units on tiles
      */
+    @Readonly
     fun getEnemyUnitsOnTiles(tilesWithEnemyUnitsInDistance:List<Tile>): List<MapUnit> =
         tilesWithEnemyUnitsInDistance.flatMap { enemyTile -> enemyTile.getUnits()
             .filter { it.isMilitary() && civInfo.isAtWarWith(it.civ) } }
-    
+
+    @Readonly
     fun getDangerousTiles(unit: MapUnit, distance: Int = 3): HashSet<Tile> {
         val tilesWithEnemyUnits = getTilesWithEnemyUnitsInDistance(unit.getTile(), distance)
         val nearbyRangedEnemyUnits = getEnemyUnitsOnTiles(tilesWithEnemyUnits)
@@ -162,6 +160,7 @@ class ThreatManager(val civInfo: Civilization) {
     /**
      * Returns true if the tile has a visible enemy, otherwise returns false.
      */
+    @Readonly
     fun doesTileHaveMilitaryEnemy(tile: Tile): Boolean {
         if (!tile.isExplored(civInfo)) return false
         if (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo)) return true
@@ -174,13 +173,17 @@ class ThreatManager(val civInfo: Civilization) {
     }
 
     /** @return a sequence of pairs of cities, the first city is our city and the second city is a nearby city that is not from our civ. */
+    @Readonly
     fun getNeighboringCitiesOfOtherCivs(): Sequence<Pair<City,City>> = civInfo.cities.flatMap {
         ourCity -> ourCity.neighboringCities.filter { it.civ != civInfo }.map { Pair(ourCity, it) } 
     }.asSequence()
 
-    fun getNeighboringCivilizations(): Set<Civilization> = civInfo.cities.flatMap { it.neighboringCities }.filter { it.civ != civInfo && civInfo.knows(it.civ) }.map { it.civ }.toSet()
+    @Readonly fun getNeighboringCivilizations(): Set<Civilization> = civInfo.cities
+        .flatMap { it.neighboringCities }
+        .filter { it.civ != civInfo && civInfo.knows(it.civ) }
+        .map { it.civ }.toSet()
 
-    fun getCombinedForceOfWarringCivs(): Int = civInfo.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) } 
+    @Readonly fun getCombinedForceOfWarringCivs(): Int = civInfo.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) } 
 
     fun clear() {
         distanceToClosestEnemyTiles.clear()

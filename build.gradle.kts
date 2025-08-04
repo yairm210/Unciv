@@ -66,6 +66,9 @@ allprojects {
             "kotlin.collections.mutableSetOf",
             "kotlin.collections.withIndex", // applicable to sequence as well
             "kotlin.collections.intersect",
+            "kotlin.collections.maxOfOrNull",
+            "kotlin.collections.minOfOrNull",
+            "kotlin.reflect.KMutableProperty0.get", // also 1 and 2
         )
         wellKnownPureClasses = setOf(
         )

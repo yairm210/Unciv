@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.unciv.logic.map.tile.Tile
+import yairm210.purity.annotations.Readonly
 import kotlin.collections.ArrayDeque
 
 /**
@@ -67,6 +68,7 @@ class BFS(
     /**
      * @return a Sequence from the [destination] back to the [startingPoint], including both, or empty if [destination] has not been reached
      */
+    @Readonly
     fun getPathTo(destination: Tile): Sequence<Tile> = sequence {
         var currentNode = destination
         while (true) {

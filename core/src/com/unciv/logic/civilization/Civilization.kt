@@ -868,6 +868,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun hasStatToBuy(stat: Stat, price: Int): Boolean {
         return when {
             gameInfo.gameParameters.godMode -> true
@@ -926,22 +927,6 @@ class Civilization : IsPartOfGameInfoSerialization {
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
             Stat.Happiness -> stats.happiness
-            else -> 0
-        }
-    }
-
-    fun getReserve(stat: GameResource): Int {
-        if (stat is TileResource && !stat.isCityWide && stat.isStockpiled)
-            return resourceStockpiles[stat.name]
-        return when (stat) {
-            Stat.Culture -> policies.storedCulture
-            Stat.Science -> {
-                if (tech.currentTechnology() == null) 0
-                else tech.researchOfTech(tech.currentTechnology()!!.name)
-            }
-            Stat.Gold -> gold
-            Stat.Faith -> religionManager.storedFaith
-            SubStat.GoldenAgePoints -> goldenAges.storedHappiness
             else -> 0
         }
     }
