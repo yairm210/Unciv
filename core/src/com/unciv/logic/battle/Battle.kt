@@ -156,10 +156,8 @@ object Battle {
         // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capitals
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant) {
             if (!defender.city.isCapital()) {
-                val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).flatMap { unique ->
-                    unique.params[0]?.let { sequenceOf(it) } ?: emptySequence()
-                }
-
+                val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
+            }
                 if (destroyFilters.any { filter: String -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
                     defender.city.destroyCity()
                 }
