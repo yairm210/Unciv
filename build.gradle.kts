@@ -58,7 +58,8 @@ allprojects {
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
             
-            "java.util.BitSet.get"
+            "java.util.BitSet.get",  // moved
+            "kotlin.collections.getValue", // moved
         )
         wellKnownPureClasses = setOf<String>(
         )
@@ -71,6 +72,7 @@ allprojects {
             "kotlin.collections.Set",
             "kotlin.collections.Map",
             "kotlin.collections.ArrayDequeue",
+            "java.util.BitSet",
             
             "com.unciv.models.stats.Stats",
             "com.unciv.models.Counter",

@@ -201,7 +201,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     // Limit camera within explored region
     var exploredRegion = ExploredRegion()
 
-    fun hasExplored(tile: Tile) = tile.isExplored(this)
+    @Readonly fun hasExplored(tile: Tile) = tile.isExplored(this)
 
     val lastSeenImprovement = LastSeenImprovement()
 

@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.expressions.Expressions
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 class UniqueValidator(val ruleset: Ruleset) {
@@ -76,7 +77,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         val prefix by lazy { getUniqueContainerPrefix(uniqueContainer) + "\"${unique.text}\"" }
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix, reportRulesetSpecificErrors)
 
-        @LocalState val rulesetErrors = RulesetErrorList(ruleset)
+        val rulesetErrors = RulesetErrorList(ruleset)
 
         if (uniqueContainer != null &&
             !(unique.type.canAcceptUniqueTarget(uniqueContainer.getUniqueTarget()) ||
@@ -156,7 +157,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         uniqueContainer: IHasUniques?,
         unique: Unique
     ): RulesetErrorList {
-        @LocalState val rulesetErrors = RulesetErrorList()
+        val rulesetErrors = RulesetErrorList()
         if (!complianceError.acceptableParameterTypes.contains(UniqueParameterType.Countable)) return rulesetErrors
 
         val parseError = Expressions.getParsingError(complianceError.parameterName)
@@ -199,7 +200,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         uniqueContainer: IHasUniques?,
         reportRulesetSpecificErrors: Boolean
     ): RulesetErrorList {
-        @LocalState val rulesetErrors = RulesetErrorList()
+        val rulesetErrors = RulesetErrorList()
         if (unique.hasFlag(UniqueFlag.NoConditionals)) {
             rulesetErrors.add(
                 "$prefix contains the conditional \"${conditional.text}\"," +
@@ -287,11 +288,11 @@ class UniqueValidator(val ruleset: Ruleset) {
         return rulesetErrors
     }
 
-    @Readonly
+    @Pure
     private fun getUniqueTypeSpecificErrors(
         prefix: String, unique: Unique, uniqueContainer: IHasUniques?, reportRulesetSpecificErrors: Boolean
     ): RulesetErrorList {
-        @LocalState val rulesetErrors = RulesetErrorList()
+        val rulesetErrors = RulesetErrorList()
         when(unique.type) {
             UniqueType.RuinsUpgrade -> {
                 if (reportRulesetSpecificErrors && !anyAncientRuins)
@@ -308,7 +309,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         prefix: String,
         uniqueContainer: IHasUniques?
     ): RulesetErrorList {
-        @LocalState val rulesetErrors = RulesetErrorList()
+        val rulesetErrors = RulesetErrorList()
         val deprecationAnnotation = unique.getDeprecationAnnotation()
         if (deprecationAnnotation != null) {
             val replacementUniqueText = unique.getReplacementText(ruleset)
