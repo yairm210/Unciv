@@ -19,6 +19,7 @@ object DeclareWarPlanEvaluator {
      * This style of declaring war favors fighting stronger civilizations.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
+    @Readonly
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Float?): Float {
         val teamCivDiplo = civInfo.getDiplomacyManager(teamCiv)!!
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f
@@ -71,6 +72,7 @@ object DeclareWarPlanEvaluator {
      * Favors protecting allies.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
+    @Readonly
     fun evaluateJoinWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Float?): Float {
         val thirdCivDiplo = civInfo.getDiplomacyManager(civToJoin)!!
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f

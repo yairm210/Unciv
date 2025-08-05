@@ -31,6 +31,7 @@ enum class PersonalityValue {
     Expansion; // Founding/capturing new cities, oposite of a cultural victory
 
     companion object  {
+        @Pure
         operator fun get(stat: Stat): PersonalityValue {
             return when (stat) {
                 Stat.Production -> Production
@@ -138,9 +139,8 @@ class Personality: RulesetObject() {
         return stats
     }
 
-    operator fun get(value: PersonalityValue): Float {
-        return nameToVariable(value).get()
-    }
+    @Readonly
+    operator fun get(value: PersonalityValue): Float = nameToVariable(value).get()
 
     operator fun set(personalityValue: PersonalityValue, value: Float){
         nameToVariable(personalityValue).set(value)
