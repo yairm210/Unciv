@@ -58,6 +58,7 @@ allprojects {
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
             
+            "java.util.BitSet.get"
         )
         wellKnownPureClasses = setOf<String>(
         )

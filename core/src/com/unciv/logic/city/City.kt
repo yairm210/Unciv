@@ -276,7 +276,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Transient
     private val maxAirUnits = 6
     /** Gets max air units that can remain in the city untransported */
-    fun getMaxAirUnits() = maxAirUnits
+    @Readonly fun getMaxAirUnits() = maxAirUnits
 
     override fun toString() = name // for debug
 

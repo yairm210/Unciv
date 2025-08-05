@@ -12,12 +12,15 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.utils.getOrPut
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 import java.util.BitSet
 
 
 class UnitMovement(val unit: MapUnit) {
 
-    private val pathfindingCache = PathfindingCache(unit)
+    @Cache private val pathfindingCache = PathfindingCache(unit)
 
     class ParentTileAndTotalMovement(val tile: Tile, val parentTile: Tile, val totalMovement: Float)
 
@@ -29,6 +32,7 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
+    @Readonly @Suppress("purity") // mutates passed parameter
     fun getMovementToTilesAtPosition(
         position: Vector2,
         unitMovement: Float,
@@ -38,7 +42,7 @@ class UnitMovement(val unit: MapUnit) {
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
-        val distanceToTiles = PathsToTilesWithinTurn()
+        @LocalState val distanceToTiles = PathsToTilesWithinTurn()
 
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
@@ -622,6 +626,7 @@ class UnitMovement(val unit: MapUnit) {
                 && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
     }
 
+    @Readonly
     private fun canAirUnitMoveTo(tile: Tile, unit: MapUnit): Boolean {
         // landing in the city
         if (tile.isCityCenter()) {
@@ -637,6 +642,7 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     // Can a paratrooper land at this tile?
+    @Readonly
     private fun canParadropOn(destination: Tile, distance: Int): Boolean {
         if (unit.cache.cannotMove) return false
 
@@ -663,6 +669,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canPassThrough] if it has one.
      * Leave it as default unless you know what [canPassThrough] does.
      */
+    @Readonly
     fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
@@ -722,6 +729,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort units [getDistanceToTiles] if it has one.
      * Leave it as default unless you know what [getDistanceToTiles] does.
      */
+    @Readonly
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCacheNew: ArrayList<Boolean?> = ArrayList(),
