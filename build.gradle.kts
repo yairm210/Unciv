@@ -75,6 +75,7 @@ allprojects {
             "com.unciv.models.Counter",
             "com.unciv.models.ruleset.tile.ResourceSupplyList",
             "com.badlogic.gdx.math.Vector2",
+            "com.unciv.models.ruleset.validation.RulesetErrorList"
         )
         warnOnPossibleAnnotations = true
     }

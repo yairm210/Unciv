@@ -122,7 +122,7 @@ class RulesetErrorList(
             sourceObject: IHasUniques? = null,
             sourceUnique: Unique? = null
         ): RulesetErrorList {
-            @LocalState val result = RulesetErrorList(ruleset)
+            val result = RulesetErrorList(ruleset)
             result.add(text, severity, sourceObject, sourceUnique)
             return result
         }
