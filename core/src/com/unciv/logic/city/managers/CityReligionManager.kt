@@ -10,7 +10,6 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 class CityReligionManager : IsPartOfGameInfoSerialization {
@@ -282,7 +281,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     /** Doesn't update the pressures, only returns what they are if the update were to happen right now */
     @Readonly
     fun getPressuresFromSurroundingCities(): Counter<String> {
-        @LocalState val addedPressure = Counter<String>()
+        val addedPressure = Counter<String>()
         if (city.isHolyCity()) {
             addedPressure[religionThisIsTheHolyCityOf!!] = 5 * pressureFromAdjacentCities
         }

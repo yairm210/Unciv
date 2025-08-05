@@ -125,6 +125,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
+    @Readonly
     operator fun times(number: Float) = Stats(
         production * number,
         food * number,

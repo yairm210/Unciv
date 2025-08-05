@@ -56,7 +56,6 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -750,7 +749,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun calculateScoreBreakdown(): HashMap<String,Double> {
-        @LocalState
         val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps

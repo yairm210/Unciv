@@ -26,7 +26,6 @@ import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
@@ -478,7 +477,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
-        @LocalState val resourceRequirements = Counter<String>()
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: GameContext.EmptyState))
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())

@@ -1489,7 +1489,7 @@ enum class UniqueType(
      *  For 95% of cases, auto-matching is fine. */
     @Readonly
     open fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
-        @LocalState val map = ArrayList<List<UniqueParameterType>>()
+        val map = ArrayList<List<UniqueParameterType>>()
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
                 .split('/')

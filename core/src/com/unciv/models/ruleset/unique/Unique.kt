@@ -11,7 +11,6 @@ import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
@@ -181,12 +180,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         //  note this is only done for the replacement, not the deprecated unique, thus parameters of
         //  conditionals on the deprecated unique are ignored
 
-        @LocalState val finalPossibleUniques = ArrayList<String>()
+        val finalPossibleUniques = ArrayList<String>()
 
         for (possibleUnique in possibleUniques) {
             var resultingUnique = possibleUnique
             
-            @LocalState val timesParameterWasSeen = Counter<String>()
+            val timesParameterWasSeen = Counter<String>()
             for (parameter in possibleUnique.replace('<', ' ').getPlaceholderParameters()) {
                 val parameterHasSign = parameter.startsWith('-') || parameter.startsWith('+')
                 val parameterUnsigned = if (parameterHasSign) parameter.drop(1) else parameter

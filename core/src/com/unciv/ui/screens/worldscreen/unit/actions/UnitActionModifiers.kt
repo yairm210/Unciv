@@ -9,7 +9,6 @@ import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.fonts.Fonts
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 
@@ -180,7 +179,7 @@ object UnitActionModifiers {
         if (maxUsages!=null) effects += "${usagesLeft(unit, actionUnique)}/$maxUsages"
 
         if (actionUnique.hasModifier(UniqueType.UnitActionStatsCost)) {
-            @LocalState val statCost = Stats()
+            val statCost = Stats()
             for (conditional in actionUnique.getModifiers(UniqueType.UnitActionStatsCost))
                 statCost.add(conditional.stats)
             effects += statCost.toStringOnlyIcons(false)

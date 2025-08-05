@@ -483,7 +483,7 @@ fun String.getPlaceholderParameters(): List<String> {
 
     val stringToParse = this.removeConditionals()
     
-    @LocalState val parameters = ArrayList<String>()
+    val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
     stringToParse.indices.forEach { i ->

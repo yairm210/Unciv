@@ -42,8 +42,7 @@ object MultiFilter {
     fun getAllSingleFilters(input: String): Sequence<String> = when {
         input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator) -> {
             // Resolve "AND" filters
-            @LocalState
-            val filters = input.removeSurrounding(andPrefix, andSuffix)
+            @LocalState val filters = input.removeSurrounding(andPrefix, andSuffix)
                 .splitToSequence(andSeparator)
             filters.flatMap { getAllSingleFilters(it) }
         }

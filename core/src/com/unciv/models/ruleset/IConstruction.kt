@@ -13,7 +13,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stat.Companion.statsUsableToBuy
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
@@ -133,7 +132,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     
     @Readonly
     override fun getStockpiledResourceRequirements(state: GameContext): Counter<String> {
-        @LocalState val counter = Counter<String>()
+        val counter = Counter<String>()
         for (unique in getMatchingUniquesNotConflicting(UniqueType.CostsResources, state)){
             var amount = unique.params[0].toInt()
             if (unique.isModifiedByGameSpeed()) amount = (amount * state.gameInfo!!.speed.modifier).toInt()

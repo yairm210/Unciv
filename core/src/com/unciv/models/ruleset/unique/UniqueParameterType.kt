@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -714,7 +713,7 @@ enum class UniqueParameterType(
         }
         @Readonly
         private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset): Set<String> {
-            @LocalState val result = mutableSetOf<String>()
+            val result = mutableSetOf<String>()
             for (unique in ruleset.allUniques()) {
                 val parameterMap = unique.type?.parameterTypeMap ?: continue
                 for ((index, param) in unique.params.withIndex()) {

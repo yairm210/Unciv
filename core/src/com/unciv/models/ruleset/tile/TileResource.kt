@@ -14,7 +14,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 class TileResource : RulesetStatsObject(), GameResource {
@@ -61,7 +60,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         val ruleset = this.ruleset
             ?: throw IllegalStateException("No ruleset on TileResource when initializing improvements")
         
-        @LocalState val allImprovementsLocal = mutableSetOf<String>()
+        val allImprovementsLocal = mutableSetOf<String>()
         
         if (improvement != null) allImprovementsLocal += improvement!!
         allImprovementsLocal.addAll(improvedBy)

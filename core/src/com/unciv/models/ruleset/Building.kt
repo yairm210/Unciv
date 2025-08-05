@@ -556,7 +556,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             state ?: GameContext.EmptyState)
         if (uniques.none() && requiredResource == null) return Counter.ZERO
         
-        @LocalState val resourceRequirements = Counter<String>()
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniques)
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())

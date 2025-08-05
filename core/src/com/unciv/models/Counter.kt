@@ -52,7 +52,6 @@ open class Counter<K>(
     @Readonly
     /** Creates a new instance (does not modify) */
     operator fun times(amount: Int): Counter<K> {
-        @LocalState
         val newCounter = Counter<K>()
         for (key in keys) newCounter[key] = this[key] * amount
         return newCounter

@@ -38,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.43" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.45" apply(false)
 }
 
 allprojects {
@@ -49,28 +49,32 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-            "kotlin.assert",
-            "kotlin.lazy",
-            "kotlin.getValue",
-            "kotlin.error",
+            "kotlin.lazy", // moved
+            "kotlin.getValue", // moved
+            "kotlin.error", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
-            "java.lang.reflect.Field.getAnnotation", // not sure if generic enough to be useful globally
-            "java.lang.Class.getField",
             
-            // Looks like the Collection.contains is not considered overridden :thunk:
-            "kotlin.Array.get",
-            "kotlin.collections.mutableSetOf",
-            "kotlin.collections.withIndex", // applicable to sequence as well
-            "kotlin.collections.intersect",
-            "kotlin.collections.maxOfOrNull",
-            "kotlin.collections.minOfOrNull",
-            "kotlin.reflect.KMutableProperty0.get", // also 1 and 2
         )
-        wellKnownPureClasses = setOf(
+        wellKnownPureClasses = setOf<String>(
+        )
+        wellKnownInternalStateClasses = setOf<String>(
+            // Moved all
+            "kotlin.collections.MutableList",
+            "kotlin.collections.MutableSet",
+            "kotlin.collections.MutableMap",
+            "kotlin.collections.List",
+            "kotlin.collections.Set",
+            "kotlin.collections.Map",
+            "kotlin.collections.ArrayDequeue",
+            
+            "com.unciv.models.stats.Stats",
+            "com.unciv.models.Counter",
+            "com.unciv.models.ruleset.tile.ResourceSupplyList",
+            "com.badlogic.gdx.math.Vector2",
         )
         warnOnPossibleAnnotations = true
     }

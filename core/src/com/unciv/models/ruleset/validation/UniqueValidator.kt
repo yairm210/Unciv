@@ -349,7 +349,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         unique: Unique,
     ): List<UniqueComplianceError> {
         if (unique.type == null) return emptyList()
-        @LocalState val errorList = ArrayList<UniqueComplianceError>()
+        val errorList = ArrayList<UniqueComplianceError>()
         for ((index, param) in unique.params.withIndex()) {
             // Trying to catch the error at #11404
             if (unique.type.parameterTypeMap.size != unique.params.size) {
