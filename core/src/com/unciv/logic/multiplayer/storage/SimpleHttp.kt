@@ -4,6 +4,7 @@ import com.badlogic.gdx.Net
 import com.unciv.UncivGame
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import io.ktor.http.*
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
@@ -12,7 +13,6 @@ import java.net.HttpURLConnection
 import java.net.InetAddress
 import java.net.URI
 import java.net.URL
-import java.nio.charset.Charset
 
 private typealias SendRequestCallback = (success: Boolean, result: String, code: Int?)->Unit
 
@@ -38,11 +38,8 @@ object SimpleHttp {
             requestMethod = method  // default is GET
             connectTimeout = timeout
             instanceFollowRedirects = true
-            if (UncivGame.isCurrentInitialized())
-                setRequestProperty("User-Agent", "Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
-            else
-                setRequestProperty("User-Agent", "Unciv/Turn-Checker-GNU-Terry-Pratchett")
-            setRequestProperty("Content-Type", "text/plain")
+            setRequestProperty(HttpHeaders.UserAgent, UncivGame.getUserAgent())
+            setRequestProperty(HttpHeaders.ContentType, "text/plain")
 
             for ((key, value) in header.orEmpty()) {
                 setRequestProperty(key, value)

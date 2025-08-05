@@ -168,6 +168,7 @@ object ChatWebSocket {
             session?.close()
             session = client.webSocketSession {
                 url(getChatUrl())
+                header(HttpHeaders.UserAgent, UncivGame.getUserAgent())
                 header(
                     HttpHeaders.Authorization,
                     UncivGame.Current.settings.multiplayer.getAuthHeader()
@@ -191,8 +192,7 @@ object ChatWebSocket {
                         is Response.Chat -> ChatStore.relayChatMessage(response)
 
                         is Response.Error -> ChatStore.relayGlobalMessage(
-                            "Error: [${response.message}]",
-                            "Server"
+                            "Error: [${response.message}]", "Server"
                         )
 
                         is Response.JoinSuccess -> Unit // TODO
