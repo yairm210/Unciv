@@ -72,7 +72,7 @@ open class ApiV2Wrapper(baseUrl: String) {
 
     init {
         client.plugin(HttpSend).intercept { request ->
-            request.userAgent(UncivGame.getUserAgent())
+            request.userAgent(UncivGame.getUserAgent("Multiplayer-v2"))
             val clientCall = try {
                 execute(request)
             } catch (t: Throwable) {

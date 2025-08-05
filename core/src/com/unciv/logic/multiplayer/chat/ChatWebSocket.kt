@@ -168,7 +168,7 @@ object ChatWebSocket {
             session?.close()
             session = client.webSocketSession {
                 url(getChatUrl())
-                userAgent(UncivGame.getUserAgent())
+                userAgent(UncivGame.getUserAgent("Chat"))
                 header(
                     HttpHeaders.Authorization,
                     UncivGame.Current.settings.multiplayer.getAuthHeader()

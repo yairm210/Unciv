@@ -38,7 +38,7 @@ object SimpleHttp {
             requestMethod = method  // default is GET
             connectTimeout = timeout
             instanceFollowRedirects = true
-            setRequestProperty(HttpHeaders.UserAgent, UncivGame.getUserAgent())
+            setRequestProperty(HttpHeaders.UserAgent, UncivGame.getUserAgent("Turn-Checker"))
             setRequestProperty(HttpHeaders.ContentType, "text/plain")
 
             for ((key, value) in header.orEmpty()) {

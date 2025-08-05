@@ -508,9 +508,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         @Readonly fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
 
         @Readonly
-        fun getUserAgent(): String = if (isCurrentInitialized()) {
+        fun getUserAgent(fallbackStr: String = "Unknown"): String = if (isCurrentInitialized()) {
             "Unciv/${VERSION.toNiceString()}-GNU-Terry-Pratchett"
-        } else "Unciv/Background-Tasks-GNU-Terry-Pratchett"
+        } else "Unciv/$fallbackStr-GNU-Terry-Pratchett"
     }
 
     data class Version(
