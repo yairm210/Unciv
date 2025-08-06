@@ -342,6 +342,62 @@ object DiplomacyAutomation {
         return motivation > 0
     }
 
+    /**
+     * Denounce civs that behaved bad in our opinion
+     * @param civInfo Civilization which denounces
+     */
+    internal fun denounceMisbehavingCivs(civInfo: Civilization) {
+        if (!civInfo.isMajorCiv()) return
+        // You cannot denounce human players or AIs you are currently at war with.
+        val civsWeMayDenounce = civInfo.getKnownCivs().filter {
+            it.isMajorCiv() && !civInfo.isAtWarWith(it)
+        }
+        
+        // For default civs range is 3-8
+        val denounceWillingness = civInfo.getPersonality().denounceWillingness
+
+        loop@ for (otherCiv in civsWeMayDenounce) {
+            val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
+            val weAreFriends = ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+
+            if (ourDiploManager.hasFlag(DiplomacyFlags.Denouncing))
+                continue // We already denounced you
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.UsedNuclearWeapons)) {
+                ourDiploManager.denounce() // You nuked us
+                continue
+            }
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.AttackedAlliedMinor)
+                && ourDiploManager.hasModifier(DiplomaticModifiers.AttackedProtectedMinor)) {
+                // You attacked our ally CS that we also pledged to protect
+                if (!weAreFriends || denounceWillingness > 4) {
+                    ourDiploManager.denounce()
+                    continue
+                }
+            }
+            if (ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedDefensivePact)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedPromiseToNotSendingSpiesToUs)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs)
+                || ourDiploManager.hasModifier(DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs)) {
+                // You betrayed your promise
+                if (!weAreFriends || denounceWillingness > 5) {
+                    ourDiploManager.denounce()
+                    continue
+                }
+            }
+
+            val ourFriendsWeBothKnow = ourDiploManager.getCommonKnownCivs().filter {
+                civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            }
+            for (thirdCiv in ourFriendsWeBothKnow) {
+                if (thirdCiv.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.UsedNuclearWeapons)) {
+                    ourDiploManager.denounce() // You nuked our friends
+                    continue@loop
+                }
+            }
+        }
+    }
+
     internal fun declareWar(civInfo: Civilization) {
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return
