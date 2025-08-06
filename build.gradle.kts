@@ -52,6 +52,7 @@ allprojects {
             "kotlin.lazy", // moved
             "kotlin.getValue", // moved
             "kotlin.error", // moved
+            "kotlin.collections.mutableMapOf",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",

@@ -84,7 +84,7 @@ class ThreatManager(val civInfo: Civilization) {
      * May be quicker than a manual search because of caching.
      * Also ends up calculating and caching [getDistanceToClosestEnemyUnit].
      */
-    @Readonly @Suppress("purity")
+    @Readonly @Suppress("purity") // actually mutates cached data :think:
     fun getTilesWithEnemyUnitsInDistance(tile: Tile, maxDist: Int): MutableList<Tile> {
         val tileData = distanceToClosestEnemyTiles[tile]
 

@@ -140,6 +140,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     // round down to nearest 5
     @Readonly fun getCultureNeededForNextPolicy(): Int = getPolicyCultureCost(numberOfAdoptedPolicies)
 
+    @Readonly
     fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
         var policyCostInput = numberOfAdoptedPolicies
 

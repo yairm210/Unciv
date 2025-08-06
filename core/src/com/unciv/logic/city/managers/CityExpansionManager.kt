@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -28,6 +29,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+    @Readonly
     fun tilesClaimed(): Int {
         val tilesAroundCity = city.getCenterTile().neighbors
                 .map { it.position }
@@ -40,6 +42,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     //   (per game XML files) at 6*(t+0.4813)^1.3
     // The second seems to be more based, so I'll go with that
     // -- Note (added later) that this last link is specific to civ VI and not civ V
+    @Readonly
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
 
@@ -55,6 +58,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         return cultureToNextTile.roundToInt()
     }
 
+    @Readonly
     fun canBuyTile(tile: Tile): Boolean {
         return when {
             city.isPuppet || city.isBeingRazed -> false
@@ -83,6 +87,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         city.reassignPopulationDeferred()
     }
 
+    @Readonly
     fun getGoldCostOfTile(tile: Tile): Int {
         val baseCost = 50
         val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
@@ -98,9 +103,11 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         return cost.roundToInt()
     }
 
+    @Readonly
     fun getChoosableTiles() = city.getCenterTile().getTilesInDistance(city.getExpandRange())
         .filter { it.getOwner() == null }
 
+    @Readonly
     fun chooseNewTileToOwn(): Tile? {
         // Technically, in the original a random tile with the lowest score was selected
         // However, doing this requires either caching it, which is way more work,

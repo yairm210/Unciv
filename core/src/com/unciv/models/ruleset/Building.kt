@@ -27,7 +27,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var maintenance = 0
     private var percentStatBonus: Stats? = null
     var specialistSlots: Counter<String> = Counter()
-    fun newSpecialists(): Counter<String>  = specialistSlots
+    @Readonly fun newSpecialists(): Counter<String>  = specialistSlots
 
     var greatPersonPoints = Counter<String>()
 
@@ -528,12 +528,17 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return false
     }
 
+    // This can be 'by lazy' across all rulesets because it only checks building uniques
     private val _hasCreatesOneImprovementUnique by lazy {
         hasUnique(UniqueType.CreatesOneImprovement)
     }
     @Readonly fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
 
-    private var _getImprovementToCreate: TileImprovement? = null
+    @Cache private var _getImprovementToCreate: TileImprovement? = null
+    
+    @Readonly
+    // This CANNOT be cached across rulesets, because the improvement itself is retrieved. Currently a bug!
+    // TODO: Clean up - retrieve only the *name* of the improvement
     private fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
         if (!hasCreateOneImprovementUnique()) return null
         if (_getImprovementToCreate == null) {
@@ -543,12 +548,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         return _getImprovementToCreate
     }
+    
+    @Readonly
     fun getImprovementToCreate(ruleset: Ruleset, civInfo: Civilization): TileImprovement? {
         val improvement = getImprovementToCreate(ruleset) ?: return null
         return civInfo.getEquivalentTileImprovement(improvement)
     }
 
-    fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
+    @Readonly fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
     @Readonly
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {

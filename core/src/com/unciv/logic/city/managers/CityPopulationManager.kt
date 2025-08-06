@@ -47,7 +47,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         val workingPopulation = city.workedTiles.size
         return population - workingPopulation - getNumberOfSpecialists()
     }
-
+    
+    @Readonly
     fun getFoodToNextPopulation(): Int {
         // civ v math, civilization.wikia
         var foodRequired = 15 + 8 * (population - 1) + floor((population - 1).toDouble().pow(1.5))
@@ -62,6 +63,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     }
 
     /** Take null to mean infinity. */
+    @Readonly
     fun getNumTurnsToStarvation(): Int? {
         if (!city.isStarving()) return null
         return foodStored / -city.foodForNextTurn() + 1
@@ -276,6 +278,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun getMaxSpecialists(): Counter<String> {
         val counter = Counter<String>()
         for (building in city.cityConstructions.getBuiltBuildings())
