@@ -266,6 +266,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             else 0
     }
 
+    @Readonly
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
         val constr = getConstruction(constructionName)
         return when {

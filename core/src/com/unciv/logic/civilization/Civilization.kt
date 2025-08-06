@@ -380,11 +380,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
-
-    fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
+    
+    @Readonly fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
             otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
     @Readonly fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
-    private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
+    @Readonly private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
     @Readonly
     fun getPreferredVictoryTypes(): List<String> {
@@ -463,7 +463,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return newResourceSupplyList
     }
 
-    fun isCapitalConnectedToCity(city: City): Boolean = cache.citiesConnectedToCapitalToMediums.keys.contains(city)
+    @Readonly fun isCapitalConnectedToCity(city: City): Boolean = cache.citiesConnectedToCapitalToMediums.keys.contains(city)
 
 
     /**

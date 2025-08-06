@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 /**
  *  All public methods dealing with how Mod authors can suppress RulesetValidator output.
@@ -65,6 +66,7 @@ object Suppression {
         else -> true
     }
 
+    @Pure
     private fun matchesFilter(error: RulesetError, filter: String): Boolean {
         if (error.text == filter) return true
         if (!filter.endsWith('*') || !filter.startsWith('*')) return false
@@ -72,6 +74,7 @@ object Suppression {
     }
 
     /** Determine if [error] matches any suppression Unique in [ModOptions] or the [sourceObject], or any suppression modifier in [sourceUnique] */
+    @Readonly
     internal fun isErrorSuppressed(
         globalSuppressionFilters: Collection<String>,
         sourceObject: IHasUniques?,
@@ -81,6 +84,7 @@ object Suppression {
         if (error.errorSeverityToReport >= RulesetErrorSeverity.Error) return false
         if (sourceObject == null && globalSuppressionFilters.isEmpty()) return false
 
+        @Readonly
         fun getWildcardFilter(unique: Unique) = unique.params[0].let {
             if (it.startsWith('*')) it else "*$it*"
         }

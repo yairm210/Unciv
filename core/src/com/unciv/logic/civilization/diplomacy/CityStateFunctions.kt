@@ -187,6 +187,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         )
     }
 
+    @Readonly
     fun influenceGainedByGift(donorCiv: Civilization, giftAmount: Int): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp
         // line 8681 and below

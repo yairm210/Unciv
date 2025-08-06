@@ -62,6 +62,8 @@ allprojects {
             "java.util.BitSet.get",  // moved
             "kotlin.collections.getValue", // moved
             "kotlin.collections.randomOrNull",
+            "kotlin.collections.Collection.isEmpty",
+            "kotlin.collections.subtract"
         )
         wellKnownPureClasses = setOf<String>(
         )
