@@ -26,6 +26,8 @@ import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 
@@ -77,17 +79,17 @@ class ChatRestartException : CancellationException("Chat restart requested")
 class ChatStopException : CancellationException("Chat stop requested")
 
 object ChatWebSocket {
+    private const val MAX_RECONNECTION_ATTEMPTS = 100
+    private val INITIAL_RECONNECT_TIME = 1.seconds
+    private val MAX_RECONNECT_TIME = 64.seconds
+    private val INITIAL_SESSION_WAIT_FOR_TIME = 5.seconds
+
     private var isStarted = false
 
     @OptIn(ExperimentalTime::class)
     private var lastRetry = Clock.System.now()
     private var reconnectionAttempts = 0
-    private var reconnectTimeSeconds = INITIAL_RECONNECT_TIME_SECONDS
-
-    private const val INITIAL_RECONNECT_TIME_SECONDS = 1
-    private const val MAX_RECONNECTION_ATTEMPTS = 100
-    private const val MAX_RECONNECT_TIME_SECONDS = 64
-    private const val INITIAL_SESSION_WAIT_FOR_MS = 5_000L
+    private var reconnectTime = INITIAL_RECONNECT_TIME
 
     private var job: Job? = null
     private var session: DefaultClientWebSocketSession? = null
@@ -95,7 +97,7 @@ object ChatWebSocket {
     @OptIn(ExperimentalSerializationApi::class)
     private val client = HttpClient(CIO) {
         install(WebSockets) {
-            pingInterval = 30_000
+            pingInterval = 30.seconds
             contentConverter = KotlinxWebsocketSerializationConverter(Json {
                 classDiscriminator = "type"
                 // DO NOT OMIT
@@ -110,7 +112,7 @@ object ChatWebSocket {
         lastRetry = Clock.System.now()
 
         reconnectionAttempts = 0
-        reconnectionAttempts = INITIAL_RECONNECT_TIME_SECONDS
+        reconnectTime = INITIAL_RECONNECT_TIME
     }
 
     private fun getChatUrl(): Url = URLBuilder(
@@ -132,9 +134,9 @@ object ChatWebSocket {
     fun requestMessageSend(message: Message) {
         start()
         Concurrency.run("MultiplayerChatSendMessage") {
-            withTimeoutOrNull(INITIAL_SESSION_WAIT_FOR_MS) {
+            withTimeoutOrNull(INITIAL_SESSION_WAIT_FOR_TIME) {
                 while (session == null) {
-                    delay(100)
+                    delay(100.milliseconds)
                 }
             }
             session?.runCatching {
@@ -241,9 +243,8 @@ object ChatWebSocket {
         GlobalScope.launch {
             if (!force) {
                 // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
-                delay(Random.nextLong(1000) + 1000L * reconnectTimeSeconds)
-                reconnectTimeSeconds =
-                    (reconnectTimeSeconds * 2).coerceAtMost(MAX_RECONNECT_TIME_SECONDS)
+                delay(Random.nextLong(1000).milliseconds + reconnectTime)
+                reconnectTime = (reconnectTime * 2).coerceAtMost(MAX_RECONNECT_TIME)
                 if (job?.isActive == true) return@launch
             }
 

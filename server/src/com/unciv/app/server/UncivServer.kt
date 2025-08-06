@@ -33,6 +33,7 @@ import java.io.File
 import java.util.Collections.synchronizedMap
 import java.util.Collections.synchronizedSet
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -264,8 +265,8 @@ private class UncivServerRunner : CliktCommand() {
             }
 
             if (chatV1Enabled) install(WebSockets) {
-                pingPeriodMillis = 30_000
-                timeoutMillis = 60_000
+                pingPeriod = 30.seconds
+                timeout = 60.seconds
                 maxFrameSize = Long.MAX_VALUE
                 @OptIn(ExperimentalSerializationApi::class)
                 contentConverter = KotlinxWebsocketSerializationConverter(Json {
