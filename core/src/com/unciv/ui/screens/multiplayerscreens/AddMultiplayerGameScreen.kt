@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -13,13 +12,14 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
-import java.util.UUID
 
 class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScreen() {
     init {
@@ -48,9 +48,7 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
         rightSideButton.enable()
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.onActivation {
-            try {
-                UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
-            } catch (_: Exception) {
+            if (!(IdChecker.checkAndReturnGameUuid(gameIDTextField.text)?.isUUID() ?: false)) {
                 ToastPopup("Invalid game ID!", this)
                 return@onActivation
             }

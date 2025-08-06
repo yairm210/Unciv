@@ -235,7 +235,7 @@ object UnitAutomation {
         if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
         // If there are no enemies nearby and we can heal here, wait until we are at full health
-        if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 4)) return
+        if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 3)) return
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 

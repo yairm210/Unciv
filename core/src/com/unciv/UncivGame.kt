@@ -6,6 +6,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.UncivGame.Companion.Current
+import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
@@ -504,6 +506,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         @Readonly fun getGameInfoOrNull() = if (isCurrentInitialized()) Current.gameInfo else null
         @Readonly fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         @Readonly fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
+
+        @Readonly
+        fun getUserAgent(fallbackStr: String = "Unknown"): String = if (isCurrentInitialized()) {
+            "Unciv/${VERSION.toNiceString()}-GNU-Terry-Pratchett"
+        } else "Unciv/$fallbackStr-GNU-Terry-Pratchett"
     }
 
     data class Version(

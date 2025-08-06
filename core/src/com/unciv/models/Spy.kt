@@ -112,22 +112,20 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
             SpyAction.Surveillance -> {
                 if (!getCity().civ.isMajorCiv()) return
-
-                val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
-                if (stealableTechs.isEmpty() || getTurnsRemainingToStealTech() < 0) return
+                if (canStealTech() != CanStealTech.Yes) return // nope
                 setAction(SpyAction.StealingTech) // There are new techs to steal!
             }
             SpyAction.StealingTech -> {
-                turnsRemainingForAction = getTurnsRemainingToStealTech()
-
-                if (turnsRemainingForAction < 0) {
-                    // Either we have no technologies to steam (-1) or the city produces no science (-1)
+                val canStealTechResult = canStealTech()
+                if (canStealTechResult != CanStealTech.Yes){
                     setAction(SpyAction.Surveillance)
-                    if (turnsRemainingForAction == -1)
+                    if (canStealTechResult == CanStealTech.NoTechsToSteal)
                         addNotification("Your spy [$name] cannot steal any more techs from [${getCity().civ}] as we've already researched all the technology they know!")
-                } else if (turnsRemainingForAction == 0) {
-                    stealTech()
+                    return
                 }
+                
+                turnsRemainingForAction = incrementTechStealingProgress()
+                if (turnsRemainingForAction == 0) stealTech()
             }
             SpyAction.RiggingElections -> {
                 // No action done here
@@ -161,36 +159,51 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         setAction(SpyAction.StealingTech)
     }
 
+    enum class CanStealTech {
+        Yes,
+        NoTechsToSteal,
+        NoScienceInCity
+    }
+    
+    @Readonly
+    private fun canStealTech(): CanStealTech {
+        val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
+        if (stealableTechs.isEmpty()) return CanStealTech.NoTechsToSteal
+        
+        val cityScience = getCity().cityStats.currentCityStats.science
+        if (cityScience <= 0f) return CanStealTech.NoScienceInCity
+        
+        return CanStealTech.Yes
+    }
+    
     /**
      * @return The number of turns left to steal the technology, note that this is a guess and may change.
      * A 0 means that we are ready to steal the technology. 
-     * A -1 means we have no techonologies to steal.
-     * A -2 means we the city produces no science
      */
-    @Readonly @Suppress("purity") // something here is wrong, it's actually mutating?!
-    private fun getTurnsRemainingToStealTech(): Int {
-        val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
-        if (stealableTechs.isEmpty()) return -1
-
-        var techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!.toFloat()
-        val techStealCostModifier = civInfo.gameInfo.ruleset.modOptions.constants.spyTechStealCostModifier //1.25f in Civ5 GlobalDefines.XML
-        val techSpeedModifier = civInfo.gameInfo.speed.scienceCostModifier //Modify steal cost according to game speed
-        techStealCost *= techStealCostModifier * techSpeedModifier
+    private fun incrementTechStealingProgress(): Int {
+        assert(canStealTech() == CanStealTech.Yes)
+        
         var progressThisTurn = getCity().cityStats.currentCityStats.science
-        if (progressThisTurn <= 0f) return -2 // The city has no science
-
         // 25% spy bonus for each level
         val rankTechStealModifier = rank * civInfo.gameInfo.ruleset.modOptions.constants.spyRankStealPercentBonus
         progressThisTurn *= (rankTechStealModifier + 75f) / 100f
         progressThisTurn *= getEfficiencyModifier().toFloat()
         progressTowardsStealingTech += progressThisTurn.toInt()
+        
+        val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
+        var techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!.toFloat()
+        val techStealCostModifier = civInfo.gameInfo.ruleset.modOptions.constants.spyTechStealCostModifier //1.25f in Civ5 GlobalDefines.XML
+        val techSpeedModifier = civInfo.gameInfo.speed.scienceCostModifier //Modify steal cost according to game speed
+        techStealCost *= techStealCostModifier * techSpeedModifier
+        
+        val remainingCost = techStealCost - progressTowardsStealingTech
 
-        if (progressTowardsStealingTech >= techStealCost) {
-            return 0
-        } else {
-            return ceil((techStealCost - progressTowardsStealingTech) / progressThisTurn).toInt()
-        }
+        if (remainingCost <= 0) return 0
+        return ceil(remainingCost / progressThisTurn).toInt()
     }
+
+
+
 
     /**
      * With the defult spy leveling:
@@ -240,21 +253,19 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             defendingSpy?.levelUpSpy()
             killSpy()
             // if they kill your spy they should know that you are spying on them and able to demande to not be speid on.
-            demandeToNotBeSpiedOn(otherCiv)
+            demandToNotBeSpiedOn(otherCiv)
         } else startStealingTech()  // reset progress
 
-        if (spyResult >= 100) {
-            demandeToNotBeSpiedOn(otherCiv)
-        }
+        if (spyResult >= 100) demandToNotBeSpiedOn(otherCiv)
     }
     
-    private fun demandeToNotBeSpiedOn(otherCiv: Civilization) {
+    private fun demandToNotBeSpiedOn(otherCiv: Civilization) {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
         otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
         otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
     }
 
-    fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
+    @Readonly fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
             && getCity().civ.getAllyCivName() != civInfo.civName
 
     /**
