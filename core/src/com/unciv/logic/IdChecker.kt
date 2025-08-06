@@ -56,6 +56,7 @@ object IdChecker {
     /**
      * Adapted from https://wiki.openmrs.org/display/docs/Check+Digit+Algorithm
      */
+    @Readonly
     fun getCheckDigit(uuid: String): Int? {
         // allowable characters within identifier
         @Suppress("SpellCheckingInspection")

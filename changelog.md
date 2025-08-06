@@ -1,3 +1,15 @@
+## 4.17.12
+
+Fixed spy surveillance progressing tech stealing when no techs are available to steal
+
+Bugfix: Building 'improvement to create' no longer cached across rulesets
+
+Fixed city states getting all techs when only 1 major civ remains
+
+Many small automation improvements - By EmperorPinguin
+
+"Upon entering war" uniques - By PLynx01
+
 ## 4.17.11
 
 Fix Ancient Ruin benefit on higher difficulties - By RobLoach

@@ -3632,21 +3632,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
-??? example  "&lt;upon declaring war with a major Civilization&gt;"
-	Applicable to: TriggerCondition
-
-??? example  "&lt;upon declaring war with a [civFilter] Civilization&gt;"
-	Example: "&lt;upon declaring war with a [City-States] Civilization&gt;"
+??? example  "&lt;upon declaring war on [civFilter] Civilizations&gt;"
+	Example: "&lt;upon declaring war on [City-States] Civilizations&gt;"
 
 	Applicable to: TriggerCondition
 
-??? example  "&lt;upon being declared war upon [civFilter] Civilization&gt;"
-	Example: "&lt;upon being declared war upon [City-States] Civilization&gt;"
+??? example  "&lt;upon being declared war on by [civFilter] Civilizations&gt;"
+	Example: "&lt;upon being declared war on by [City-States] Civilizations&gt;"
 
 	Applicable to: TriggerCondition
 
-??? example  "&lt;upon entering a war with [civFilter] Civilization&gt;"
-	Example: "&lt;upon entering a war with [City-States] Civilization&gt;"
+??? example  "&lt;upon entering a war with [civFilter] Civilizations&gt;"
+	Example: "&lt;upon entering a war with [City-States] Civilizations&gt;"
 
 	Applicable to: TriggerCondition
 

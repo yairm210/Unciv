@@ -40,21 +40,25 @@ object DeclareWar {
 
         breakTreaties(diplomacyManager)
 
+        triggerUniques(otherCiv, civInfo)
+    }
+
+    private fun triggerUniques(otherCiv: Civilization, civInfo: Civilization) {
         if (otherCiv.isMajorCiv()) {
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
         }
-        
+
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWarFiltered)) {
             if (otherCiv.matchesFilter(unique.params[0]))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
         }
-        
+
         for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponBeingDeclaredWarUpon)) {
             if (civInfo.matchesFilter(unique.params[0]))
                 UniqueTriggerActivation.triggerUnique(unique, otherCiv)
         }
-    
+
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringWar))
             if (otherCiv.matchesFilter(unique.params[0]))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
