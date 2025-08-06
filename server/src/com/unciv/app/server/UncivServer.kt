@@ -141,7 +141,7 @@ private class WebSocketSessionManager {
 data class BasicAuthInfo(
     val userId: Uuid,
     val password: String,
-) : Principal
+)
 
 /**
  * Checks if a [String] is a valid UUID
@@ -387,8 +387,7 @@ private class UncivServerRunner : CliktCommand() {
 
                         try {
                             while (isActive) {
-                                val message = receiveDeserialized<Message>()
-                                when (message) {
+                                when (val message = receiveDeserialized<Message>()) {
                                     is Message.Chat -> {
                                         val gameId = message.gameId.toUuidOrNull()
                                         if (gameId == null) {
