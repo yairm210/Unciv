@@ -1,48 +1,9 @@
-
-
 Fixed spy surveillance progressing tech stealing when no techs are available to steal
-
-chore(purity): Espionage
 
 Bugfix: Building 'improvement to create' no longer cached across rulesets
 
-chore(purity): Managers 1
-
-chore(purity): Autosuggested, removed more localstate
-
-chore(purity): MovementCost
-
-chore(purity): DeclareWarPlanEvaluator
-
-chore(purity): More @LocalState removals
-
-chore(purity): Replace extra @LocalState with declaring that the classes are well known local state classes
-
-chore(purity): Many autodetected functions and friends 2
-
-chore(purity): Many autodetected functions and friends
-
-chore(purity): Many autodetected functions
-
-chore(purity): UniqueValidator 2
-
-chore(purity): UniqueValidator 1
-
-Mkdocs: include site url
-
-4.17.11-patch1
-
-Revert "can settle" changes 
-
 Fixed city states getting all techs when only 1 major civ remains
 
-chore(purity): UniqueValidator
+Many small automation improvements - By EmperorPinguin
 
-chore(purity): BattleDamage
-
-Upon entering war uniques - By PLynx01
-
-By touhidurrr:
-- refactor user agent 
-- refactor `IDChecker` methods to return null instead of exceptions 
-- fix errors in gradle 9 
+"Upon entering war" uniques - By PLynx01
