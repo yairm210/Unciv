@@ -1,8 +1,8 @@
 
 import com.unciv.build.AndroidImagePacker
 import com.unciv.build.BuildConfig
-import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -86,7 +86,7 @@ android {
     }
 }
 
-task("texturePacker") {
+tasks.register("texturePacker") {
     doFirst {
         logger.info("Calling TexturePacker")
         AndroidImagePacker.packImages(projectDir.path)
@@ -96,7 +96,7 @@ task("texturePacker") {
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
 // so they get packed with the APK.
-task("copyAndroidNatives") {
+tasks.register("copyAndroidNatives") {
     val natives: Configuration by configurations
 
     doFirst {
@@ -135,16 +135,15 @@ private fun getSdkPath(): String? {
     }
 }
 
-tasks.register<JavaExec>("run") {
+tasks.register<Exec>("run") {
+    standardOutput = System.out
+    errorOutput = System.err
+    isIgnoreExitValue = false
 
     val path = getSdkPath()
     val adb = "$path/platform-tools/adb"
 
-    doFirst {
-        project.exec {
-            commandLine(adb, "shell", "am", "start", "-n", "com.unciv.app/AndroidLauncher")
-        }
-    }
+    commandLine(adb, "shell", "am", "start", "-n", "com.unciv.app/AndroidLauncher")
 }
 
 dependencies {
