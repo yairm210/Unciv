@@ -517,19 +517,9 @@ object NextTurnAutomation {
 
         if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first
 
-        val workersBuildableForThisCiv = civInfo.gameInfo.ruleset.units.values.any {
-            it.hasUnique(UniqueType.BuildImprovements)
-                && it.isBuildable(civInfo)
-        }
-
-        val bestCity = civInfo.cities.filterNot { it.isPuppet || it.population.population < 2 }
-            // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
-            // Otherwise, AI tries to produce settlers when it can hardly sustain itself
-            .filter { city ->
-                !workersBuildableForThisCiv
-                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange - 1 ).count { it.improvement != null } > 1
-                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements) == true }
-            }.maxByOrNull { it.cityStats.currentCityStats.production }
+        val bestCity = civInfo.cities
+            .filterNot { it.isPuppet || it.population.population < 3 }
+            .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
         if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
             bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
