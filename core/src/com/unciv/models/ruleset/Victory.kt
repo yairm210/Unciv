@@ -11,6 +11,8 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toTextButton
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 
 
 enum class MilestoneType(val text: String) {
@@ -63,7 +65,7 @@ class Victory : INamed {
     val victoryString = "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
     val defeatString = "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
 
-    fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
+    @Readonly fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
 }
 
 class Milestone(val uniqueDescription: String, private val parentVictory: Victory) {
@@ -71,15 +73,18 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     val type: MilestoneType? = MilestoneType.entries.firstOrNull { uniqueDescription.getPlaceholderText() == it.text.getPlaceholderText() }
     val params = uniqueDescription.getPlaceholderParameters()
 
+    @Readonly
     private fun getIncompleteSpaceshipParts(civInfo: Civilization): Counter<String> {
-        val incompleteSpaceshipParts = parentVictory.requiredSpaceshipPartsAsCounter.clone()
+        @LocalState val incompleteSpaceshipParts = parentVictory.requiredSpaceshipPartsAsCounter.clone()
         incompleteSpaceshipParts.remove(civInfo.victoryManager.currentsSpaceshipParts)
         return incompleteSpaceshipParts
     }
 
+    @Readonly
     private fun originalMajorCapitalsOwned(civInfo: Civilization): Int = civInfo.cities
         .count { it.isOriginalCapital && it.foundingCiv != "" && civInfo.gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
 
+    @Readonly
     private fun civsWithPotentialCapitalsToOwn(gameInfo: GameInfo): Set<Civilization> {
         // Capitals that still exist, even if the civ is dead
         val civsWithCapitals = gameInfo.getCities().filter { it.isOriginalCapital }
@@ -90,6 +95,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         return civsWithCapitals.union(livingCivs)
     }
 
+    @Readonly
     fun hasBeenCompletedBy(civInfo: Civilization): Boolean {
         return when (type!!) {
             MilestoneType.BuiltBuilding ->
@@ -123,6 +129,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         }
     }
 
+    // Todo remove from here, this is models, not UI
     private fun getMilestoneButton(text: String, achieved: Boolean): TextButton {
         val textButton = text.toTextButton(hideIcons = true)
         if (achieved) textButton.color = Color.GREEN
@@ -130,6 +137,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         return textButton
     }
 
+    @Readonly
     fun getVictoryScreenButtonHeaderText(completed: Boolean, civInfo: Civilization): String {
         return when (type!!) {
             MilestoneType.BuildingBuiltGlobally, MilestoneType.WinDiplomaticVote,
@@ -164,7 +172,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
             MilestoneType.AddedSSPartsInCapital -> {
                 val completeSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
-                val incompleteSpaceshipParts = parentVictory.requiredSpaceshipPartsAsCounter.clone()
+                @LocalState val incompleteSpaceshipParts = parentVictory.requiredSpaceshipPartsAsCounter.clone()
                 val amountToDo = incompleteSpaceshipParts.sumValues()
                 incompleteSpaceshipParts.remove(completeSpaceshipParts)
 

@@ -64,7 +64,7 @@ open class Counter<K>(
         return clone
     }
 
-    fun sumValues() = values.sum()
+    @Readonly fun sumValues() = values.sum()
 
     @Readonly override fun clone() = Counter(this)
 

@@ -63,9 +63,13 @@ allprojects {
             "kotlin.collections.getValue", // moved
             "kotlin.collections.randomOrNull",
             "kotlin.collections.Collection.isEmpty",
-            "kotlin.collections.subtract"
+            "kotlin.collections.subtract",
+            "kotlin.collections.union",
+            "kotlin.collections.intersect",
+            
         )
         wellKnownPureClasses = setOf<String>(
+            "java.lang.Integer"
         )
         wellKnownInternalStateClasses = setOf<String>(
             // Moved all
