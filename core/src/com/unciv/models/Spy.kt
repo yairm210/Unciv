@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.random.Random
 
@@ -166,6 +167,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
      * A -1 means we have no techonologies to steal.
      * A -2 means we the city produces no science
      */
+    @Readonly @Suppress("purity") // something here is wrong, it's actually mutating?!
     private fun getTurnsRemainingToStealTech(): Int {
         val stealableTechs = espionageManager.getTechsToSteal(getCity().civ)
         if (stealableTechs.isEmpty()) return -1
@@ -314,6 +316,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     /**
      * Calculates the success chance of a coup in this city state.
      */
+    @Readonly
     fun getCoupChanceOfSuccess(includeunknownFactors: Boolean): Float {
         val cityState = getCity().civ
         var successPercentage = 50f
@@ -348,7 +351,8 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         this.city = city
         setAction(SpyAction.Moving, 1)
     }
-    
+
+    @Readonly
     private fun canDismissAgreementToNotSendSpies(city: City): Boolean {
         val otherCivDiplomacyManager = city.civ.getDiplomacyManager(civInfo) ?: return false
         val otherCiv = otherCivDiplomacyManager.civInfo
@@ -370,6 +374,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         return false
     }
 
+    @Readonly
     fun canMoveTo(city: City): Boolean {
         if (canDismissAgreementToNotSendSpies(city)) return false
         if (getCityOrNull() == city) return true
@@ -377,13 +382,14 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         return espionageManager.getSpyAssignedToCity(city) == null
     }
 
-    fun isSetUp() = action.isSetUp
+    @Readonly fun isSetUp() = action.isSetUp
 
-    fun isIdle() = action == SpyAction.None
+    @Readonly fun isIdle() = action == SpyAction.None
 
-    fun isDoingWork() = action.isDoingWork(this)
+    @Readonly fun isDoingWork() = action.isDoingWork(this)
 
     /** Returns the City this Spy is in, or `null` if it is in the hideout. */
+    @Readonly @Suppress("purity") // this also appears to be NOT readonly. Something is fishy.
     fun getCityOrNull(): City? {
         if (location == null) return null
         if (city == null) city = civInfo.gameInfo.tileMap[location!!].getCity()
@@ -392,9 +398,9 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /** Non-null version of [getCityOrNull] for the frequent case it is known the spy cannot be in the hideout.
      *  @throws NullPointerException if the spy is in the hideout */
-    fun getCity(): City = getCityOrNull()!!
+    @Readonly fun getCity(): City = getCityOrNull()!!
 
-    fun getLocationName() = getCityOrNull()?.name ?: Constants.spyHideout
+    @Readonly fun getLocationName() = getCityOrNull()?.name ?: Constants.spyHideout
 
     fun levelUpSpy(amount: Int = 1) {
         if (rank >= civInfo.gameInfo.ruleset.modOptions.constants.maxSpyRank) return
@@ -406,12 +412,13 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     /** Modifier of the skill bonus of the spy by percent */
-    fun getSkillModifierPercent() = rank * civInfo.gameInfo.ruleset.modOptions.constants.spyRankSkillPercentBonus
+    @Readonly fun getSkillModifierPercent() = rank * civInfo.gameInfo.ruleset.modOptions.constants.spyRankSkillPercentBonus
 
     /**
      * Gets a friendly and enemy efficiency uniques for the spy at the location
      * @return a value centered around 1.0 for the work efficiency of the spy, won't be negative
      */
+    @Readonly
     fun getEfficiencyModifier(): Double {
         val friendlyUniques: Sequence<Unique>
         val enemyUniques: Sequence<Unique>
@@ -446,7 +453,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         rank = 1
     }
 
-    fun isAlive(): Boolean = action != SpyAction.Dead
+    @Readonly fun isAlive(): Boolean = action != SpyAction.Dead
 
     /** Shorthand for [Civilization.addNotification] specialized for espionage - action, category and icon are always the same */
     fun addNotification(text: String) =
@@ -454,5 +461,5 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /** Anti-save-scum: Deterministic random from city and turn
      *  @throws NullPointerException for spies in the hideout */
-    private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt() + name.hashCode()
+    @Readonly private fun randomSeed() = (getCity().run { location.x * location.y } + 123f * civInfo.gameInfo.turns).toInt() + name.hashCode()
 }

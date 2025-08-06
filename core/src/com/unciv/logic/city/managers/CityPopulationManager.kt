@@ -71,6 +71,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
 
     /** Take null to mean infinity. */
+    @Readonly
     fun getNumTurnsToNewPopulation(): Int? {
         if (!city.isGrowing()) return null
         val roundedFoodPerTurn = city.foodForNextTurn().toFloat()
