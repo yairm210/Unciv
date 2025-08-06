@@ -247,7 +247,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
         val base = ruleset.modOptions.constants.religionLimitBase
         val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
-        val hideCivCount = civInfo.hideCivCount()
+        val hideCivCount = civInfo.shouldHideCivCount()
         if (hideCivCount) {
             val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv() }
             val estimatedCivCount = (

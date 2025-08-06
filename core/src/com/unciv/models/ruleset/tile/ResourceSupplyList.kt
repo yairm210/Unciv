@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.tile
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.IConstruction  // Kdoc only
+import yairm210.purity.annotations.Readonly
 
 /** Container helps aggregating supply and demand of [resources][ResourceSupply.resource], categorized by [origin][ResourceSupply.origin].
  *
@@ -19,12 +20,12 @@ class ResourceSupplyList(
      * [ResourceSupplyList.add] will update the value in existing instances, and should remain the only place.
      */
     data class ResourceSupply(val resource: TileResource, val origin: String, var amount: Int) {
-        fun isCityStateOrTradeOrigin() = (origin == Constants.cityStates || origin == "Trade") && amount > 0
+        @Readonly fun isCityStateOrTradeOrigin() = (origin == Constants.cityStates || origin == "Trade") && amount > 0
         override fun toString() = "$amount ${resource.name} from $origin"
     }
 
     /** Fetch a [ResourceSupply] entry or `null` if no match found */
-    fun get(resource: TileResource, origin: String) =
+    @Readonly fun get(resource: TileResource, origin: String) =
         firstOrNull { it.resource.name == resource.name && it.origin == origin }
 
     /** Get the total amount for a resource by [resourceName] */
