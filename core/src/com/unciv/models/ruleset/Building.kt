@@ -529,24 +529,20 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     // This can be 'by lazy' across all rulesets because it only checks building uniques
-    private val _hasCreatesOneImprovementUnique by lazy {
-        hasUnique(UniqueType.CreatesOneImprovement)
+    private val improvementToCreate: String? by lazy { 
+        val unique = getMatchingUniques(UniqueType.CreatesOneImprovement).firstOrNull()
+        if (unique == null) null
+        else unique.params[0]
     }
-    @Readonly fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
-
-    @Cache private var _getImprovementToCreate: TileImprovement? = null
     
+    @Readonly fun hasCreateOneImprovementUnique() = improvementToCreate != null
+
     @Readonly
-    // This CANNOT be cached across rulesets, because the improvement itself is retrieved. Currently a bug!
-    // TODO: Clean up - retrieve only the *name* of the improvement
+    // Only the name can be cached across rulesets.
+    // The improvement itself CANNOT be cached because it's ruleset-dependent.
     private fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
-        if (!hasCreateOneImprovementUnique()) return null
-        if (_getImprovementToCreate == null) {
-            val improvementUnique = getMatchingUniques(UniqueType.CreatesOneImprovement)
-                .firstOrNull() ?: return null
-            _getImprovementToCreate = ruleset.tileImprovements[improvementUnique.params[0]]
-        }
-        return _getImprovementToCreate
+        if (improvementToCreate == null) return null
+        return ruleset.tileImprovements[improvementToCreate]
     }
     
     @Readonly

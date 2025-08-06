@@ -360,7 +360,8 @@ enum class UniqueType(
 
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building,
         docDescription = "When choosing to construct this building, the player must select a tile where the improvement can be built." +
-                " Upon building completion, the tile will gain this improvement."),
+                " Upon building completion, the tile will gain this improvement." + 
+                " Limited to one per building."),
     //endregion
 
     ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
