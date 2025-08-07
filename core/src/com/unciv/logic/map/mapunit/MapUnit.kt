@@ -605,7 +605,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
-    @Readonly
+    @Readonly @Suppress("purity") // allow passing functions like this
     fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, ::matchesSingleFilter) else matchesSingleFilter(filter)
     }

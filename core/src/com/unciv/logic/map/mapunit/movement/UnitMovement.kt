@@ -292,7 +292,7 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     @Readonly
-    private inline fun canReachCommon(destination: Tile, specificFunction: (Tile) -> Boolean) = when {
+    private inline fun canReachCommon(destination: Tile, @Readonly specificFunction: (Tile) -> Boolean) = when {
         unit.cache.cannotMove ->
             destination == unit.getTile()
         unit.baseUnit.movesLikeAirUnits ->

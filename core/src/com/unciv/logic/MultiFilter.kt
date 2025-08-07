@@ -24,7 +24,7 @@ object MultiFilter {
     @Readonly
     fun multiFilter(
         input: String,
-        filterFunction: (String) -> Boolean,
+        @Readonly filterFunction: (String) -> Boolean,
         forUniqueValidityTests: Boolean = false
     ): Boolean {
         if (input.hasSurrounding(andPrefix, andSuffix) && input.contains(andSeparator))

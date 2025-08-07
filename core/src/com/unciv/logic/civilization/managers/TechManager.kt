@@ -359,7 +359,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     /** A variant of kotlin's [associateBy] that omits null values */
     @Readonly
-    private inline fun <T, K, V> Iterable<T>.associateByNotNull(keySelector: (T) -> K, valueTransform: (T) -> V?): Map<K, V> {
+    private inline fun <T, K, V> Iterable<T>.associateByNotNull(@Readonly keySelector: (T) -> K, @Readonly valueTransform: (T) -> V?): Map<K, V> {
         val destination = LinkedHashMap<K, V>()
         for (element in this) {
             val value = valueTransform(element) ?: continue
@@ -370,6 +370,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     private fun obsoleteOldUnits(techName: String) {
         // First build a map with obsoleted units to their (nation-specific) upgrade
+        @Readonly 
         fun BaseUnit.getEquivalentUpgradeOrNull(techName: String): BaseUnit? {
             val unitUpgradesTo = automaticallyUpgradedInProductionToUnitByTech(techName)
                 ?: return null

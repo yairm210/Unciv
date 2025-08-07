@@ -38,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.45" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.46" apply(false)
 }
 
 allprojects {
@@ -49,39 +49,40 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-            "kotlin.lazy", // moved
-            "kotlin.getValue", // moved
-            "kotlin.error", // moved
-            "kotlin.collections.mutableMapOf",
+//            "kotlin.lazy", // moved
+//            "kotlin.getValue", // moved
+//            "kotlin.error", // moved
+//            "kotlin.collections.mutableMapOf", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
-            
-            "java.util.BitSet.get",  // moved
-            "kotlin.collections.getValue", // moved
-            "kotlin.collections.randomOrNull",
-            "kotlin.collections.Collection.isEmpty",
-            "kotlin.collections.subtract",
-            "kotlin.collections.union",
-            "kotlin.collections.intersect",
-            "kotlin.collections.List.indexOf",
+
+            // all moved
+//            "kotlin.collections.getValue",
+//            "java.util.BitSet.get",
+//            "kotlin.collections.randomOrNull",
+//            "kotlin.collections.Collection.isEmpty",
+//            "kotlin.collections.subtract",
+//            "kotlin.collections.union",
+//            "kotlin.collections.intersect",
+//            "kotlin.collections.List.indexOf",
             
         )
         wellKnownPureClasses = setOf<String>(
-            "java.lang.Integer"
+//            "java.lang.Integer" // moved
         )
         wellKnownInternalStateClasses = setOf<String>(
             // Moved all
-            "kotlin.collections.MutableList",
-            "kotlin.collections.MutableSet",
-            "kotlin.collections.MutableMap",
-            "kotlin.collections.List",
-            "kotlin.collections.Set",
-            "kotlin.collections.Map",
-            "kotlin.collections.ArrayDequeue",
-            "java.util.BitSet",
+//            "kotlin.collections.MutableList",
+//            "kotlin.collections.MutableSet",
+//            "kotlin.collections.MutableMap",
+//            "kotlin.collections.List",
+//            "kotlin.collections.Set",
+//            "kotlin.collections.Map",
+//            "kotlin.collections.ArrayDequeue",
+//            "java.util.BitSet",
             
             "com.unciv.models.stats.Stats",
             "com.unciv.models.Counter",
