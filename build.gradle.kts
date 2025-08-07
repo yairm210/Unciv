@@ -66,6 +66,7 @@ allprojects {
             "kotlin.collections.subtract",
             "kotlin.collections.union",
             "kotlin.collections.intersect",
+            "kotlin.collections.List.indexOf",
             
         )
         wellKnownPureClasses = setOf<String>(

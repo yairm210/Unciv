@@ -120,6 +120,7 @@ class CityStats(val city: City) {
         return stats
     }
 
+    @Readonly
     fun getStatConversionRate(stat: Stat): Float {
         var conversionRate = 1 / 4f
         val conversionUnique = city.civ.getMatchingUniques(UniqueType.ProductionToCivWideStatConversionBonus).firstOrNull { it.params[0] == stat.name }

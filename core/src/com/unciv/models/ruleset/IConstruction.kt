@@ -293,7 +293,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
     IConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
-    open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
+    @Readonly open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
     override fun getStockpiledResourceRequirements(state: GameContext) = Counter.ZERO
 
     companion object {
@@ -325,7 +325,7 @@ open class PerpetualStatConversion(val stat: Stat) :
 
     override fun getProductionTooltip(city: City, withIcon: Boolean) : String
             = "\r\n${(city.cityStats.currentCityStats.production / getConversionRate(city)).roundToInt()}${if (withIcon) stat.character else ""}/${Fonts.turn}"
-    fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
+    @Readonly fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         val city = cityConstructions.city

@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 object SpecificUnitAutomation {
@@ -347,6 +348,7 @@ object SpecificUnitAutomation {
         return tileBeforeMoving != unit.currentTile
     }
 
+    @Readonly
     private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
         return city.cityConstructions.getBuildableBuildings().filter { building ->
             building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)
