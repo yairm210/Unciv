@@ -72,8 +72,8 @@ tasks.register<Jar>("dist") { // Compiles the jar file
 }
 
 
-enum class Platform(val desc: String) {
-    Windows32("windows32"), Windows64("windows64"), Linux32("linux32"), Linux64("linux64"), MacOS("mac");
+enum class Platform() {
+    Windows32, Windows64, Linux32, Linux64, MacOS;
 }
 
 class PackrConfig(
@@ -93,10 +93,8 @@ class PackrConfig(
     var bundleIdentifier: String? = null
 )
 
-for (platform in Platform.values()) {
-    val platformName = platform.toString()
-
-    tasks.create("packr${platformName}") {
+for (platform in Platform.entries) {
+    tasks.register("packr${platform.name}") {
         // This task assumes that 'dist' has already been called - does not 'gradle depend' on it
         // so we can run 'dist' from one job and then run the packr builds from a different job
 
@@ -139,16 +137,16 @@ for (platform in Platform.values()) {
 
             // Requires that both packr and the jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
 
-            val jdkFile =
-                    when (platform) {
-                        Platform.Linux64 -> "jre-linux-64.tar.gz"
-                        Platform.Windows64 -> "jdk-windows-64.zip"
-                        else -> "jre-macOS.tar.gz"
-                    }
+            val jdkFile = when (platform) {
+                Platform.Linux64 -> "jre-linux-64.tar.gz"
+                Platform.Windows64 -> "jdk-windows-64.zip"
+                else -> "jre-macOS.tar.gz"
+            }
 
-            val platformNameForPackrCmd =
-                    if (platform == Platform.MacOS) "mac"
-                    else platform.name.lowercase()
+            val platformNameForPackrCmd = when (platform) {
+                Platform.MacOS -> "mac"
+                else -> platform.name.lowercase()
+            }
 
             val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
                     " --platform $platformNameForPackrCmd" +
@@ -162,13 +160,13 @@ for (platform in Platform.values()) {
             Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(config.outDir, "Unciv.ico"))
         }
 
-        tasks.register<Zip>("zip${platformName}") {
-            archiveFileName.set("${BuildConfig.appName}-${platformName}.zip")
+        tasks.register<Zip>("zip${platform.name}") {
+            archiveFileName.set("${BuildConfig.appName}-${platform.name}.zip")
             from(config.outDir)
             destinationDirectory.set(deployFolder)
         }
 
-        finalizedBy("zip${platformName}")
+        finalizedBy("zip${platform.name}")
     }
 }
 
