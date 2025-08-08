@@ -38,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.46" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.49" apply(false)
 }
 
 allprojects {
@@ -74,21 +74,12 @@ allprojects {
 //            "java.lang.Integer" // moved
         )
         wellKnownInternalStateClasses = setOf<String>(
-            // Moved all
-//            "kotlin.collections.MutableList",
-//            "kotlin.collections.MutableSet",
-//            "kotlin.collections.MutableMap",
-//            "kotlin.collections.List",
-//            "kotlin.collections.Set",
-//            "kotlin.collections.Map",
-//            "kotlin.collections.ArrayDequeue",
-//            "java.util.BitSet",
-            
+            "com.badlogic.gdx.math.Vector2",
             "com.unciv.models.stats.Stats",
             "com.unciv.models.Counter",
             "com.unciv.models.ruleset.tile.ResourceSupplyList",
-            "com.badlogic.gdx.math.Vector2",
-            "com.unciv.models.ruleset.validation.RulesetErrorList"
+            "com.unciv.models.ruleset.validation.RulesetErrorList",
+            "com.unciv.logic.map.BFS",
         )
         warnOnPossibleAnnotations = true
     }

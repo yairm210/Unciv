@@ -4,6 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
+import yairm210.purity.annotations.Readonly
 
 //TODO: Eventually, all path generation in the game should be moved into here.
 object MapPathing {
@@ -103,6 +104,7 @@ object MapPathing {
      * Gets the connection to the end tile. This does not take into account tile movement costs.
      * Takes in a civilization instead of a specific unit.
      */
+    @Readonly @Suppress("purity") // todo continue
     fun getConnection(civ: Civilization,
         startTile: Tile,
         endTile: Tile,

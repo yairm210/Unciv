@@ -138,6 +138,7 @@ object MotivationToAttackAutomation {
         return motivationSoFar
     }
 
+    @Readonly
     private fun calculateCombatStrengthWithProtectors(otherCiv: Civilization, baseForce: Float, civInfo: Civilization): Float {
         var theirCombatStrength = calculateSelfCombatStrength(otherCiv, baseForce)
 
@@ -149,6 +150,7 @@ object MotivationToAttackAutomation {
         return theirCombatStrength
     }
 
+    @Readonly
     private fun calculateSelfCombatStrength(civInfo: Civilization, baseForce: Float): Float {
         var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
         if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
@@ -173,6 +175,7 @@ object MotivationToAttackAutomation {
     }
 
     /** If they are at war with our allies, then we should join in */
+    @Readonly
     private fun getAlliedWarMotivation(civInfo: Civilization, otherCiv: Civilization): Float {
         var alliedWarMotivation = 0f
         for (thirdCiv in civInfo.getDiplomacyManager(otherCiv)!!.getCommonKnownCivs()) {
@@ -191,6 +194,7 @@ object MotivationToAttackAutomation {
         return alliedWarMotivation * civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .5f)
     }
 
+    @Readonly
     private fun getRelationshipModifier(diplomacyManager: DiplomacyManager): Float {
         val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
             RelationshipLevel.Unforgivable -> 10f
@@ -205,6 +209,7 @@ object MotivationToAttackAutomation {
         return relationshipModifier * diplomacyManager.civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f)
     }
 
+    @Readonly
     private fun getProductionRatioModifier(civInfo: Civilization, otherCiv: Civilization): Float {
         // If either of our Civs are suffering from a supply deficit, our army must be too large
         // There is no easy way to check the raw production if a civ has a supply deficit
@@ -224,6 +229,7 @@ object MotivationToAttackAutomation {
         return productionRatioModifier
     }
 
+    @Readonly
     private fun getScoreRatioModifier(otherCiv: Civilization, civInfo: Civilization): Float {
         // Civs with more score are more threatening to our victory
         // Bias towards attacking civs with a high score and low military
@@ -243,6 +249,7 @@ object MotivationToAttackAutomation {
         return scoreRatioModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Culture, .3f)
     }
 
+    @Readonly
     private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Float {
         var theirAlliesValue = 0f
         for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
@@ -259,6 +266,7 @@ object MotivationToAttackAutomation {
         return theirAlliesValue
     }
 
+    @Readonly
     private fun getCombatStrengthModifier(civInfo: Civilization, targetCiv: Civilization, ourCombatStrength: Float, theirCombatStrength: Float): Float {
         var combatStrengthRatio = ourCombatStrength / theirCombatStrength
 
@@ -287,6 +295,7 @@ object MotivationToAttackAutomation {
         return combatStrengthModifier
     }
 
+    @Readonly
     private fun hasNoUnitsThatCanAttackCityWithoutDying(civInfo: Civilization, theirCity: City) = civInfo.units.getCivUnits().filter { it.isMilitary() }.none {
         val damageReceivedWhenAttacking =
             BattleDamage.calculateDamageToAttacker(
@@ -304,6 +313,7 @@ object MotivationToAttackAutomation {
      *
      * @return The motivation ranging from -30 to around +10
      */
+    @Readonly
     private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Float {
 
         fun isTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {

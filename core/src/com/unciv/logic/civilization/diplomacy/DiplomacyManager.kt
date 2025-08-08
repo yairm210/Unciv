@@ -447,8 +447,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
         return goldPerTurnForUs
     }
-
-
+    
+    @Readonly
     fun resourcesFromTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
         val resourcesMap = civInfo.gameInfo.ruleset.tileResources

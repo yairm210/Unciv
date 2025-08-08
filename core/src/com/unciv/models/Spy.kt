@@ -400,7 +400,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     @Readonly fun isDoingWork() = action.isDoingWork(this)
 
     /** Returns the City this Spy is in, or `null` if it is in the hideout. */
-    @Readonly @Suppress("purity") // this also appears to be NOT readonly. Something is fishy.
+    @Readonly @Suppress("purity") // it seems this also *updates*, hooray.
     fun getCityOrNull(): City? {
         if (location == null) return null
         if (city == null) city = civInfo.gameInfo.tileMap[location!!].getCity()
