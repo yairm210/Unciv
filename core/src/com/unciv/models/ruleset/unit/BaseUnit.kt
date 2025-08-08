@@ -26,7 +26,6 @@ import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
@@ -373,6 +372,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     // This returns the name of the unit this tech upgrades this unit to,
     // or null if there is no automatic upgrade at that tech.
+    @Readonly
     fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
         for (obsoleteTech: String in techsAtWhichAutoUpgradeInProduction())
             if (obsoleteTech == techName)
@@ -407,6 +407,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    @Readonly
     fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
         return if (replaces == null) this
         else ruleset.units[replaces!!]!!
@@ -479,7 +480,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
-        @LocalState val resourceRequirements = Counter<String>()
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: GameContext.EmptyState))
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())

@@ -38,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.42" apply(false)
+    id("io.github.yairm210.purity-plugin") version "0.0.51" apply(false)
 }
 
 allprojects {
@@ -49,32 +49,31 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-            "kotlin.assert",
-            "kotlin.lazy",
-            "kotlin.getValue",
-            "kotlin.error",
+            "java.util.regex.Pattern.matcher",
+            "java.util.regex.Matcher.find",
+            "java.util.regex.Matcher.replaceAll",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
-            "java.lang.reflect.Field.getAnnotation", // not sure if generic enough to be useful globally
-            "java.lang.Class.getField",
-            
-            // Looks like the Collection.contains is not considered overridden :thunk:
-            "kotlin.collections.Iterable.iterator", // moved
-            "kotlin.collections.Collection.containsAll",  // moved
-            "kotlin.collections.filterKeys",  // moved
-            "kotlin.collections.reversed",  // moved
-            "kotlin.collections.minus",  // moved
-            "kotlin.Array.get",
-            "kotlin.collections.mutableSetOf",
-            "kotlin.collections.withIndex", // applicable to sequence as well
-            "kotlin.collections.intersect",
+
+            "com.badlogic.gdx.files.FileHandle.child",
+            "com.badlogic.gdx.files.FileHandle.list",
+            "com.badlogic.gdx.files.FileHandle.exists",
+            "com.badlogic.gdx.files.FileHandle.isDirectory",
+            "com.badlogic.gdx.files.FileHandle.isFile",
+            "com.badlogic.gdx.files.FileHandle.name",
+
+            "kotlin.Throwable.getStackTrace",
+            "java.lang.StackTraceElement.getClassName",
         )
         wellKnownPureClasses = setOf(
-            "java.util.Locale",  // moved
         )
+        wellKnownInternalStateClasses = setOf(
+            "com.badlogic.gdx.math.Vector2",
+        )
+        warnOnPossibleAnnotations = true
     }
     
     apply(plugin = "eclipse")
@@ -184,7 +183,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
         
-        "implementation"("io.github.yairm210:purity-annotations:0.0.40")
+        "implementation"("io.github.yairm210:purity-annotations:0.0.51")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")

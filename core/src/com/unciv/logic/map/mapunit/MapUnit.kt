@@ -237,6 +237,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     
     @Readonly fun getTile(): Tile = currentTile
 
+    @Readonly
     fun getClosestCity(): City? = civ.cities.minByOrNull {
         it.getCenterTile().aerialDistanceTo(currentTile)
     }
@@ -328,7 +329,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * StateForConditionals is assumed to regarding this mapUnit*/
     @Readonly
     fun getResourceRequirementsPerTurn(): Counter<String> {
-        @LocalState val resourceRequirements = Counter<String>()
+        val resourceRequirements = Counter<String>()
         if (baseUnit.requiredResource != null) resourceRequirements[baseUnit.requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, cache.state))
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())

@@ -70,7 +70,7 @@ class ReligionOverviewTab(
         val minWidth = max(religionButtonLabel.prefWidth, overviewScreen.stage.width / 3)
         val manager = viewingPlayer.religionManager
         val headerText =
-            if (viewingPlayer.hideCivCount()) "Religions to be founded: [?]"
+            if (viewingPlayer.shouldHideCivCount()) "Religions to be founded: [?]"
             else "Religions to be founded: [${manager.remainingFoundableReligions()}]"
         val religionCountExpander = ExpanderTab(
             headerText, fontSize = 18, headerPad =  5f,

@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import yairm210.purity.annotations.Readonly
 import java.util.Locale
 import kotlin.math.abs
 
@@ -23,38 +24,40 @@ import kotlin.math.abs
  */
 object IdChecker {
 
-    fun checkAndReturnPlayerUuid(playerId: String): String {
+    fun checkAndReturnPlayerUuid(playerId: String): String? {
         return checkAndReturnUuiId(playerId, "P")
     }
 
-    fun checkAndReturnGameUuid(gameId: String): String {
+    fun checkAndReturnGameUuid(gameId: String): String? {
         return checkAndReturnUuiId(gameId, "G")
     }
 
-    private fun checkAndReturnUuiId(id: String, prefix: String): String {
+    private fun checkAndReturnUuiId(id: String, prefix: String): String? {
         val trimmedPlayerId = id.trim()
         if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
-            require(trimmedPlayerId.startsWith(prefix, true)) { "Not a valid ID. Does not start with prefix $prefix" }
+            if (!trimmedPlayerId.startsWith(prefix, true))
+                return null
 
-            val checkDigit = trimmedPlayerId.substring(trimmedPlayerId.lastIndex, trimmedPlayerId.lastIndex +1)
+            val checkDigit = trimmedPlayerId.substring(trimmedPlayerId.lastIndex, trimmedPlayerId.lastIndex + 1)
             // remember, the format is: P-9e37e983-a676-4ecc-800e-ef8ec721a9b9-5
             val shortenedPlayerId = trimmedPlayerId.substring(2, 38)
-            val calculatedCheckDigit = getCheckDigit(shortenedPlayerId).toString()
-            require(calculatedCheckDigit == checkDigit) {
-                "Not a valid ID. Checkdigit invalid."
-            }
+            val calculatedCheckDigit = getCheckDigit(shortenedPlayerId)
+            if (calculatedCheckDigit == null || calculatedCheckDigit.toString() != checkDigit)
+                return null
+
             return shortenedPlayerId
         } else if (trimmedPlayerId.length == 36) {
             return trimmedPlayerId
         }
-        throw IllegalArgumentException("Not a valid ID. Wrong length.")
+        return null
     }
 
 
     /**
      * Adapted from https://wiki.openmrs.org/display/docs/Check+Digit+Algorithm
      */
-    fun getCheckDigit(uuid: String): Int {
+    @Readonly
+    fun getCheckDigit(uuid: String): Int? {
         // allowable characters within identifier
         @Suppress("SpellCheckingInspection")
         val validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ-"
@@ -72,9 +75,7 @@ object IdChecker {
             val ch = idWithoutCheckdigit[idWithoutCheckdigit.length - i - 1]
 
             // throw exception for invalid characters
-            require(validChars.indexOf(ch) != -1) {
-                "$ch is an invalid character"
-            }
+            if(!validChars.contains(ch)) return null
 
             // our "digit" is calculated using ASCII value - 48
             val digit = ch.code - 48

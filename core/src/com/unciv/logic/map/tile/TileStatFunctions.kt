@@ -11,8 +11,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 import java.util.EnumMap
 
+@Readonly
 fun List<Pair<String, Stats>>.toStats(): Stats {
     val stats = Stats()
     for ((_, statsToAdd) in this)
@@ -28,6 +31,7 @@ class TileStatFunctions(val tile: Tile) {
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats = getTileStats(tile.getCity(), observingCiv, localUniqueCache)
 
+    @Readonly @Suppress("purity") // requires "for @LocalState X"
     fun getTileStats(
         city: City?, observingCiv: Civilization?,
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
@@ -51,21 +55,22 @@ class TileStatFunctions(val tile: Tile) {
         return statsBreakdown.toStats()
     }
 
+    @Readonly
     fun getTileStatsBreakdown(city: City?, observingCiv: Civilization?,
                               localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): List<Pair<String, Stats>> {
         val gameContext = GameContext(civInfo = observingCiv, city = city, tile = tile)
-        val listOfStats = getTerrainStatsBreakdown(gameContext)
+        @LocalState val listOfStats = getTerrainStatsBreakdown(gameContext)
         
         val otherYieldsIgnored = tile.allTerrains.any { it.hasUnique(UniqueType.NullifyYields, gameContext) }
 
         val improvement = if (otherYieldsIgnored) null // Treat it as if there is no improvement
             else tile.getUnpillagedTileImprovement()
-        val improvementStats = improvement?.cloneStats() ?: Stats.ZERO // If improvement==null, will never be added to
+        @LocalState val improvementStats = improvement?.cloneStats() ?: Stats.ZERO // If improvement==null, will never be added to
 
         val road = if (otherYieldsIgnored) null
             else tile.getUnpillagedRoadImprovement()
-        val roadStats = road?.cloneStats() ?: Stats.ZERO
+        @LocalState val roadStats = road?.cloneStats() ?: Stats.ZERO
 
         if (city != null) {
             val statsFromTilesUniques =
@@ -135,6 +140,7 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     /** Ensures each stat is >= [minimumStats].stat - modifies in place */
+    @Readonly
     private fun missingFromMinimum(current: Stats, minimumStats: Stats): Stats {
         // Note: Not `for ((stat, value) in other)` - that would skip zero values
         val missingStats = Stats()
@@ -148,6 +154,7 @@ class TileStatFunctions(val tile: Tile) {
     /** Gets stats of a single Terrain, unifying the Stats class a Terrain inherits and the Stats Unique
      *  @return A Stats reference, must not be mutated
      */
+    @Readonly
     private fun getSingleTerrainStats(terrain: Terrain, gameContext: GameContext): ArrayList<Pair<String, Stats>> {
         val list = arrayListOf(terrain.name to (terrain as Stats))
 
@@ -158,8 +165,10 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
+    @Readonly
     fun getTerrainStatsBreakdown(gameContext: GameContext = GameContext()): ArrayList<Pair<String, Stats>> {
-        var list = ArrayList<Pair<String, Stats>>()
+        // needs to be marked, because it's a var
+        @LocalState var list = ArrayList<Pair<String, Stats>>()
 
         // allTerrains iterates over base, natural wonder, then features
         for (terrain in tile.allTerrains) {
@@ -183,7 +192,8 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus
-    @Suppress("MemberVisibilityCanBePrivate")
+    @Suppress("MemberVisibilityCanBePrivate", "purity")
+    @Readonly
     fun getTilePercentageStats(observingCiv: Civilization?, city: City?, uniqueCache: LocalUniqueCache): EnumMap<TilePercentageCategory, Stats> {
         val terrainStats = Stats()
         val gameContext = GameContext(civInfo = observingCiv, city = city, tile = tile)
@@ -274,6 +284,7 @@ class TileStatFunctions(val tile: Tile) {
 
     /** Returns the extra stats that we would get if we switched to this improvement
      * Can be negative if we're switching to a worse improvement */
+    @Readonly
     fun getStatDiffForImprovement(
         improvement: TileImprovement,
         observingCiv: Civilization,
@@ -285,16 +296,17 @@ class TileStatFunctions(val tile: Tile) {
         val currentStats = currentTileStats
             ?: getTileStats(city, observingCiv, cityUniqueCache)
 
-        val tileClone = tile.clone(addUnits = false)
+        @LocalState val tileClone = tile.clone(addUnits = false)
         tileClone.setTerrainTransients()
 
         tileClone.setImprovement(improvement.name)
-        val futureStats = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
+        @LocalState val futureStats = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
 
         return futureStats.minus(currentStats)
     }
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
+    @Readonly
     private fun getExtraImprovementStats(
         improvement: TileImprovement,
         observingCiv: Civilization,

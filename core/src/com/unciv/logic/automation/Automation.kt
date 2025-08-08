@@ -11,7 +11,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -21,6 +20,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.victoryscreen.RankingType
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
 
@@ -183,11 +183,13 @@ object Automation {
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
+    @Readonly
     fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: Civilization): Boolean {
         // Simplified, will not work for crazy mods with more than one carrying filter for a unit
         val carryUnique = baseUnit.getMatchingUniques(UniqueType.CarryAirUnits).first()
         val carryFilter = carryUnique.params[1]
 
+        @Readonly
         fun getCarryAmount(mapUnit: MapUnit): Int {
             val mapUnitCarryUnique =
                 mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).firstOrNull() ?: return 0
@@ -338,6 +340,7 @@ object Automation {
 
     /** Determines whether the AI should be willing to spend strategic resources to build
      *  [construction] for [civInfo], assumes that we are actually able to do so. */
+    @Readonly
     fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
         // City states do whatever they want
         if (civInfo.isCityState)
@@ -406,6 +409,7 @@ object Automation {
         return true
     }
 
+    @Readonly
     fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {
         val powerLevelComparison =
             assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
@@ -417,13 +421,14 @@ object Automation {
             else -> ThreatLevel.Medium
         }
     }
-
+    @Readonly
     private fun improvementIsRemovable(city: City, tile: Tile): Boolean {
         val gameContext = GameContext(city.civ, city, tile = tile)
         return (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, gameContext) == false  && tile.getTileImprovement()?.hasUnique(UniqueType.Irremovable, gameContext) == false)
     }
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
+    @Readonly
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
         val localUniqueCache = LocalUniqueCache()
         val civ = city.civ
@@ -440,6 +445,7 @@ object Automation {
     }
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
+    @Readonly
     internal fun rankTile(tile: Tile?, civInfo: Civilization,
                           localUniqueCache: LocalUniqueCache): Float {
         if (tile == null) return 0f
@@ -459,6 +465,7 @@ object Automation {
     }
 
     // Ranks a tile for the expansion algorithm of cities
+    @Readonly
     internal fun rankTileForExpansion(tile: Tile, city: City,
                                       localUniqueCache: LocalUniqueCache): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
@@ -512,6 +519,7 @@ object Automation {
         return score
     }
 
+    @Readonly
     fun rankStatsValue(stats: Stats, civInfo: Civilization): Float {
         var rank = 0.0f
         rank += stats.food * 1.2f //food get more value to keep city growing

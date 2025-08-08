@@ -23,6 +23,7 @@ internal sealed interface Node {
     }
 
     class UnaryOperation(private val operator: Operator.Unary, private val operand: Node): Node {
+        @Suppress("purity") // cannot mark class val as @Read
         override fun eval(context: GameContext): Double = operator.implementation(operand.eval(context))
         override fun toString() = "($operator $operand)"
         override fun getErrors(ruleset: Ruleset) = operand.getErrors(ruleset)

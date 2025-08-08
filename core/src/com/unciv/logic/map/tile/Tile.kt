@@ -758,7 +758,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     
     @Readonly
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
-        @LocalState
         val out = HashSet<String>()
         if (!ruleset.terrains.containsKey(baseTerrain))
             out.add("Base terrain [$baseTerrain] does not exist in ruleset!")

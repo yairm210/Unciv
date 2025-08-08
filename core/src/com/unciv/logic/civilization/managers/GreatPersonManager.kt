@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.MayaCalendar
+import yairm210.purity.annotations.Readonly
 
 
 // todo: Great Admiral?
@@ -46,11 +47,12 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+    @Readonly
     private fun getPoolKey(greatPerson: String) = civInfo.getEquivalentUnit(greatPerson)
         .getMatchingUniques(UniqueType.GPPointPool)
         // An empty string is used to indicate the Unique wasn't found
         .firstOrNull()?.params?.get(0) ?: ""
-
+    
     fun getPointsRequiredForGreatPerson(greatPerson: String): Int {
         val key = getPoolKey(greatPerson)
         if (pointsForNextGreatPersonCounter[key] == 0) {
@@ -102,12 +104,14 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     }
 
     /** Get Great People specific to this manager's Civilization, already filtered by `isHiddenBySettings` */
+    @Readonly
     fun getGreatPeople() = civInfo.gameInfo.ruleset.units.values.asSequence()
         .filter { it.isGreatPerson }
         .map { civInfo.getEquivalentUnit(it.name) }
         .filterNot { it.isUnavailableBySettings(civInfo.gameInfo) }
         .toHashSet()
 
+    @Readonly
     fun getGreatPersonPointsForNextTurn(): Counter<String> {
         val greatPersonPoints = Counter<String>()
         for (city in civInfo.cities) greatPersonPoints.add(city.getGreatPersonPoints())

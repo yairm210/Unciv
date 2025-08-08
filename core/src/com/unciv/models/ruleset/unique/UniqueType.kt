@@ -360,7 +360,8 @@ enum class UniqueType(
 
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building,
         docDescription = "When choosing to construct this building, the player must select a tile where the improvement can be built." +
-                " Upon building completion, the tile will gain this improvement."),
+                " Upon building completion, the tile will gain this improvement." + 
+                " Limited to one per building."),
     //endregion
 
     ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
@@ -922,7 +923,11 @@ enum class UniqueType(
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEraUnfiltered("upon entering a new era", UniqueTarget.TriggerCondition),
     TriggerUponAdoptingPolicyOrBelief("upon adopting [policy/belief]", UniqueTarget.TriggerCondition),
+    @Deprecated("As of 4.17.12", ReplaceWith("upon declaring war on [Major] Civilizations"), DeprecationLevel.WARNING)
     TriggerUponDeclaringWar("upon declaring war with a major Civilization", UniqueTarget.TriggerCondition),
+    TriggerUponDeclaringWarFiltered("upon declaring war on [civFilter] Civilizations", UniqueTarget.TriggerCondition),
+    TriggerUponBeingDeclaredWarUpon("upon being declared war on by [civFilter] Civilizations", UniqueTarget.TriggerCondition),
+    TriggerUponEnteringWar("upon entering a war with [civFilter] Civilizations", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringFriendship("upon declaring friendship", UniqueTarget.TriggerCondition),
     TriggerUponSigningDefensivePact("upon declaring a defensive pact", UniqueTarget.TriggerCondition),
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
@@ -1489,7 +1494,7 @@ enum class UniqueType(
      *  For 95% of cases, auto-matching is fine. */
     @Readonly
     open fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
-        @LocalState val map = ArrayList<List<UniqueParameterType>>()
+        val map = ArrayList<List<UniqueParameterType>>()
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
                 .split('/')

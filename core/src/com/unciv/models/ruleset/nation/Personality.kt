@@ -1,11 +1,12 @@
 package com.unciv.models.ruleset.nation
 
 import com.unciv.Constants
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -30,6 +31,7 @@ enum class PersonalityValue {
     Expansion; // Founding/capturing new cities, oposite of a cultural victory
 
     companion object  {
+        @Pure
         operator fun get(stat: Stat): PersonalityValue {
             return when (stat) {
                 Stat.Production -> Production
@@ -65,6 +67,7 @@ class Personality: RulesetObject() {
     var preferredVictoryType: String = Constants.neutralVictoryType
     var isNeutralPersonality: Boolean = false
 
+    @Pure
     private fun nameToVariable(value: PersonalityValue): KMutableProperty0<Float> {
         return when(value) {
             PersonalityValue.Production -> ::production
@@ -95,6 +98,7 @@ class Personality: RulesetObject() {
     /**
      * Scales the value to a more meaningful range, where 10 is 2, and 5 is 1, and 0 is 0
      */
+    @Readonly
     fun scaledFocus(value: PersonalityValue): Float {
         return nameToVariable(value).get() / 5
     }
@@ -102,6 +106,7 @@ class Personality: RulesetObject() {
     /**
      * Inverse scales the value to a more meaningful range, where 0 is 2, and 5 is 1 and 10 is 0
      */
+    @Readonly
     fun inverseScaledFocus(value: PersonalityValue): Float {
         return  (10 - nameToVariable(value).get()) / 5
     }
@@ -110,6 +115,7 @@ class Personality: RulesetObject() {
      * @param weight a value between 0 and 1 that determines how much the modifier deviates from 1
      * @return a modifier between 0 and 2 centered around 1 based off of the personality value and the weight given 
      */
+    @Readonly
     fun modifierFocus(value: PersonalityValue, weight: Float): Float {
         return 1f + (scaledFocus(value) - 1) * weight
     }
@@ -119,6 +125,7 @@ class Personality: RulesetObject() {
      * @param weight a value between 0 and 1 that determines how much the modifier deviates from 1
      * @return a modifier between 0 and 2 centered around 1 based off of the personality value and the weight given
      */
+    @Readonly
     fun inverseModifierFocus(value: PersonalityValue, weight: Float): Float {
         return 1f - (inverseScaledFocus(value) - 2) * weight
     }
@@ -128,13 +135,12 @@ class Personality: RulesetObject() {
      * @param weight a positive value that determines how much the personality should impact the stats given 
      */
     fun scaleStats(stats: Stats, weight: Float): Stats {
-        Stat.values().forEach { stats[it] *= modifierFocus(PersonalityValue[it], weight) }
+        Stat.entries.forEach { stats[it] *= modifierFocus(PersonalityValue[it], weight) }
         return stats
     }
 
-    operator fun get(value: PersonalityValue): Float {
-        return nameToVariable(value).get()
-    }
+    @Readonly
+    operator fun get(value: PersonalityValue): Float = nameToVariable(value).get()
 
     operator fun set(personalityValue: PersonalityValue, value: Float){
         nameToVariable(personalityValue).set(value)

@@ -35,7 +35,7 @@ object BattleDamage {
 
     @Readonly
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction, tileToAttackFrom: Tile): Counter<String> {
-        @LocalState val modifiers = Counter<String>()
+        val modifiers = Counter<String>()
 
         val conditionalState = getStateForConditionals(combatAction, combatant, enemy)
         val civInfo = combatant.getCivInfo()
@@ -101,7 +101,7 @@ object BattleDamage {
     private fun getUnitUniqueModifiers(combatant: MapUnitCombatant, enemy: ICombatant, conditionalState: GameContext,
                                        tileToAttackFrom: Tile): Counter<String> {
         val civInfo = combatant.getCivInfo()
-        @LocalState val modifiers = Counter<String>()
+        val modifiers = Counter<String>()
 
         for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
             modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
@@ -179,7 +179,7 @@ object BattleDamage {
 
     @Readonly
     private fun getTerrainAttackModifiers(attacker: MapUnitCombatant, defender: ICombatant, tileToAttackFrom: Tile): Counter<String> {
-        @LocalState val modifiers = Counter<String>()
+        val modifiers = Counter<String>()
         if (attacker.unit.isEmbarked() && defender.getTile().isLand
             && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)
         )
@@ -219,7 +219,7 @@ object BattleDamage {
     fun getAirSweepAttackModifiers(
         attacker: ICombatant
     ): Counter<String> {
-        @LocalState val modifiers = Counter<String>()
+        val modifiers = Counter<String>()
 
         if (attacker is MapUnitCombatant) {
             for (unique in attacker.unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)) {

@@ -8,9 +8,11 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 object MovementCost {
 
+    @Readonly
     fun getMovementCostBetweenAdjacentTilesEscort(
         unit: MapUnit,
         from: Tile,
@@ -33,6 +35,7 @@ object MovementCost {
      * Does not include escort unit
      * @return The cost of movment for the unit between two tiles
      */
+    @Readonly
     fun getMovementCostBetweenAdjacentTiles(
         unit: MapUnit,
         from: Tile,
@@ -120,7 +123,7 @@ object MovementCost {
         return terrainCost + extraCost // no road or other movement cost reduction
     }
 
-
+    @Readonly
     private fun hasDoubleMovement(
         doubleMovement: MapUnitCache.DoubleMovement,
         target: MapUnitCache.DoubleMovementTerrainTarget,
@@ -133,6 +136,7 @@ object MovementCost {
         return true
     }
 
+    @Readonly
     private fun hasDoubleMovement(
         unit: MapUnit,
         terrainName: String,
@@ -143,6 +147,7 @@ object MovementCost {
         return hasDoubleMovement(doubleMovement, target, gameContext)
     }
 
+    @Readonly
     private fun getEnemyMovementPenalty(civInfo: Civilization, enemyUnit: MapUnit): Float {
         if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
             return civInfo.enemyMovementPenaltyUniques!!.sumOf {
@@ -157,6 +162,7 @@ object MovementCost {
 
 
     /** Returns whether the movement between the adjacent tiles [from] and [to] is affected by Zone of Control */
+    @Readonly
     private fun isMovementAffectedByZoneOfControl(unit: MapUnit, from: Tile, to: Tile): Boolean {
         // Sources:
         // - https://civilization.fandom.com/wiki/Zone_of_control_(Civ5)
@@ -186,6 +192,7 @@ object MovementCost {
         return true
     }
 
+    @Readonly
     private fun anyTilesExertingZoneOfControl(unit: MapUnit, from: Tile, to:Tile): Boolean {
         for (neighbor in from.neighbors) {
             if (neighbor.isCityCenter()) {

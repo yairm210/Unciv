@@ -36,7 +36,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var shouldOpenPolicyPicker = false
 
     /** Used by NextTurnAction.PickPolicy.isChoice */
-    fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
+    @Readonly fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
 
     /** A [Map] pairing each [PolicyBranch] to its priority ([Int]). */
     val priorityMap: Map<PolicyBranch, Int>
@@ -140,6 +140,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     // round down to nearest 5
     @Readonly fun getCultureNeededForNextPolicy(): Int = getPolicyCultureCost(numberOfAdoptedPolicies)
 
+    @Readonly
     fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
         var policyCostInput = numberOfAdoptedPolicies
 

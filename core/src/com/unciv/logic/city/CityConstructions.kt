@@ -37,6 +37,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.min
@@ -101,17 +102,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     // Why is one of these called 'buildable' and the other 'constructable'?
+    @Readonly 
     internal fun getBuildableBuildings(): Sequence<Building> = city.getRuleset().buildings.values
         .asSequence().filter { it.isBuildable(this) }
 
+    @Readonly
     fun getConstructableUnits() = city.getRuleset().units.values
         .asSequence().filter { it.isBuildable(this) }
 
     /**
-     * @return [Stats] provided by all built buildings in city plus the bonus from Library
+     * @return [Stats] provided by all built buildings in city
      */
+    @Readonly
     fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode {
-        val stats = StatTreeNode()
+        @LocalState val stats = StatTreeNode()
         for (building in getBuiltBuildings())
             stats.addStats(building.getStats(city, localUniqueCache), building.name)
         return stats
@@ -120,6 +124,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /**
      * @return Maintenance cost of all built buildings
      */
+    @Readonly
     fun getMaintenanceCosts(): Float {
         var maintenanceCost = 0f
         val freeBuildings = city.civ.civConstructions.getFreeBuildingNames(city)
@@ -144,6 +149,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return maintenanceCost
     }
 
+    @Readonly
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstructionFromQueue // See below
         var result = currentConstructionSnapshot.tr(true)
@@ -156,10 +162,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** @param constructionName needs to be a non-perpetual construction, else an empty string is returned */
+    @Readonly
     internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction: Boolean = true) =
         getTurnsToConstructionString(getConstruction(constructionName), useStoredProduction)
 
     /** @param construction needs to be a non-perpetual construction, else an empty string is returned */
+    @Readonly
     internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction: Boolean = true): String {
         if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
         val cost = construction.getProductionCost(city.civ, city)
@@ -179,6 +187,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return lines.joinToString("\n", "\n")
     }
 
+    @Readonly
     fun getProductionMarkup(ruleset: Ruleset): FormattedLine {
         val currentConstructionSnapshot = currentConstructionFromQueue
         if (currentConstructionSnapshot.isEmpty()) return FormattedLine()
@@ -219,19 +228,22 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /** @return `true` if [constructionName] is anywhere in the construction queue - [isBeingConstructed] **or** [isEnqueuedForLater] */
     @Readonly fun isBeingConstructedOrEnqueued(constructionName: String) = constructionQueue.contains(constructionName)
 
-    fun isQueueFull(): Boolean = constructionQueue.size >= queueMaxSize
+    @Readonly fun isQueueFull(): Boolean = constructionQueue.size >= queueMaxSize
 
+    @Readonly
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
         return currentConstruction is Building && currentConstruction.isWonder
     }
 
+    @Readonly
     fun canBeHurried(): Boolean {
         val currentConstruction = getCurrentConstruction()
         return currentConstruction is INonPerpetualConstruction && !currentConstruction.hasUnique(UniqueType.CannotBeHurried)
     }
 
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */
+    @Readonly
     fun isFirstConstructionOfItsKind(constructionQueueIndex: Int, name: String): Boolean {
         // Simply compare index of first found [name] with given index
         return constructionQueueIndex == constructionQueue.indexOf(name)
@@ -266,6 +278,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             else 0
     }
 
+    @Readonly
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
         val constr = getConstruction(constructionName)
         return when {
@@ -275,6 +288,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
         if (workLeft <= 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
@@ -286,6 +300,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return ceil((workLeft-productionOverflow) / productionForConstruction(constructionName).toDouble()).toInt()
     }
 
+    @Readonly
     fun productionForConstruction(constructionName: String): Int {
         val cityStatsForConstruction: Stats
         if (currentConstructionFromQueue == constructionName) cityStatsForConstruction = city.cityStats.currentCityStats
@@ -301,7 +316,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
               we get all sorts of fun concurrency problems when accessing various parts of the cityStats.
             SO, we create an entirely new CityStats and iterate there - problem solve!
             */
-            val cityStats = CityStats(city)
+            @LocalState val cityStats = CityStats(city)
             cityStats.statsFromTiles = city.cityStats.statsFromTiles // take as-is
             val construction = city.cityConstructions.getConstruction(constructionName)
             cityStats.update(construction, false, false)
@@ -311,6 +326,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return cityStatsForConstruction.production.roundToInt()
     }
 
+    @Readonly
     fun cheapestStatBuilding(stat: Stat): Building? {
         return city.getRuleset().buildings.values.asSequence()
             .filter { !it.isAnyWonder() && it.isStatRelated(stat, city) &&

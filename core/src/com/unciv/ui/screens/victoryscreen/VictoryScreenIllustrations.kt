@@ -228,14 +228,14 @@ class VictoryScreenIllustrations(
                     civ.victoryManager.currentsSpaceshipParts.sumValues()
                 }
                 MilestoneType.DestroyAllPlayers -> {
-                    total += if (selectedCiv.hideCivCount()) game.gameParameters.maxNumberOfPlayers
+                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers
                         else game.civilizations.count { it.isMajorCiv() }
                     game.civilizations.count {
                         it != civ && it.isMajorCiv() && civ.knows(it) && it.isDefeated()
                     }
                 }
                 MilestoneType.CaptureAllCapitals -> {
-                    total += if (selectedCiv.hideCivCount()) game.gameParameters.maxNumberOfPlayers
+                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers
                         else game.getCities().count { it.isOriginalCapital }
                     civ.cities.count { it.isOriginalCapital }
                 }
