@@ -7,7 +7,6 @@ import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
 import java.util.Properties
 
-
 buildscript {
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
@@ -36,8 +35,8 @@ plugins {
     id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
     // well, we have reference it this way for some unknown reasons
     // or gradle fails to recognise it
-    kotlin("multiplatform") version "${com.unciv.build.BuildConfig.kotlinVersion}"
-    kotlin("plugin.serialization") version "${com.unciv.build.BuildConfig.kotlinVersion}"
+    kotlin("multiplatform") version com.unciv.build.BuildConfig.kotlinVersion
+    kotlin("plugin.serialization") version com.unciv.build.BuildConfig.kotlinVersion
     id("io.github.yairm210.purity-plugin") version "0.0.51" apply(false)
 }
 
