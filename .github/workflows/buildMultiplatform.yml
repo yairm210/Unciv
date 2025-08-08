@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         java_version:
-          - 17
+          - 21
     runs-on: ubuntu-latest
     name: Build Android (Java ${{ matrix.java_version }})
     steps:
@@ -68,7 +68,7 @@ jobs:
           - macos-latest
           - windows-latest
         java_version:
-          - 17
+          - 21
 
     runs-on: ${{ matrix.os }}
     steps:
