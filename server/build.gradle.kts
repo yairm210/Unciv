@@ -81,7 +81,7 @@ class PackrConfig(
     var bundleIdentifier: String? = null
 )
 
-for (platform in Platform.values()) {
+for (platform in Platform.entries) {
     tasks.create("packr${platform.name}") {
         dependsOn(tasks.getByName("dist"))
 
