@@ -1,5 +1,4 @@
 
-import Platform
 import com.google.common.io.Files
 import com.unciv.build.BuildConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
