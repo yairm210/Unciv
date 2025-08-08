@@ -128,7 +128,6 @@ project(":server") {
         "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
         "implementation"("io.ktor:ktor-server-websockets:${ktorVersion}")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
         "implementation"("ch.qos.logback:logback-classic:1.5.18")
         "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
 
@@ -193,7 +192,6 @@ project(":core") {
         "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         // JSON serialization and de-serialization
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     }
 
 
