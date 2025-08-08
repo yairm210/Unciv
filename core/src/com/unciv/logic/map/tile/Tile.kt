@@ -19,6 +19,7 @@ import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.mapunit.movement.UnitMovement
+import com.unciv.models.UnitAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -630,13 +631,32 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
         return min(distance, wrappedDistance).toInt()
     }
-
-    @Readonly
-    fun canBeSettled(): Boolean {
+    
+    fun canBeSettled(unitCanFoundUnique: Unique?=null): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
+        var addedDistanceBeweenContinents: Int
+        var canSettleInTileWithUnique = false
+        if (unitCanFoundUnique != null) {
+            canSettleInTileWithUnique = (isWater || isImpassible()) &&
+                unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).none{
+                    matchesFilter(it.params[0]) 
+                }
+        }
+        /*
+        Putting the ! to make sure the player/Ai doesn't place cities too near each other.
+        Because when .none return False when one element has a match.
+        */ 
+        
+        addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
+        
         return when {
-            isWater || isImpassible() -> false
-            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+            canSettleInTileWithUnique -> false
+            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents+
+                /*
+                 Make sure, settler unit has the unique with condition <in [tileFilter] tiles>.
+                 Because this can crash the game in automateSettlerActions in SpecificUnitAutomation.kt.
+                 */
+                if (unitCanFoundUnique != null) addedDistanceBeweenContinents else 0)  
                 .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
