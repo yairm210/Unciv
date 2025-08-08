@@ -771,6 +771,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /**
      * @return the total value of the gold gifts the other civilization has given us
      */
+    @Readonly
     fun getGoldGifts(): Int {
         // The inverse of howe we calculate GaveUsGifts in TradeLogic.acceptTrade gives us how much gold it is worth
         val giftAmount = getModifier(DiplomaticModifiers.GaveUsGifts)

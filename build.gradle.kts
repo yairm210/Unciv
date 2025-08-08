@@ -49,37 +49,22 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-//            "kotlin.lazy", // moved
-//            "kotlin.getValue", // moved
-//            "kotlin.error", // moved
-//            "kotlin.collections.mutableMapOf", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
-
-            // all moved
-//            "kotlin.collections.getValue",
-//            "java.util.BitSet.get",
-//            "kotlin.collections.randomOrNull",
-//            "kotlin.collections.Collection.isEmpty",
-//            "kotlin.collections.subtract",
-//            "kotlin.collections.union",
-//            "kotlin.collections.intersect",
-//            "kotlin.collections.List.indexOf",
-            
         )
-        wellKnownPureClasses = setOf<String>(
-//            "java.lang.Integer" // moved
+        wellKnownPureClasses = setOf(
         )
-        wellKnownInternalStateClasses = setOf<String>(
+        wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
             "com.unciv.models.stats.Stats",
             "com.unciv.models.Counter",
             "com.unciv.models.ruleset.tile.ResourceSupplyList",
             "com.unciv.models.ruleset.validation.RulesetErrorList",
             "com.unciv.logic.map.BFS",
+            "com.unciv.logic.trade.TradeOffersList",
         )
         warnOnPossibleAnnotations = true
     }
