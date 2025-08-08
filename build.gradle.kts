@@ -36,8 +36,8 @@ plugins {
     id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
     // For some weird reason, the *docker build* fails to recognize linking to the shared kotlinVersion in plugins
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
-    kotlin("multiplatform") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
+    kotlin("multiplatform") version "1.9.25"
+    kotlin("plugin.serialization") version "1.9.25"
     id("io.github.yairm210.purity-plugin") version "0.0.46" apply(false)
 }
 
