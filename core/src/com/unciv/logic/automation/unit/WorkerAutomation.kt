@@ -25,6 +25,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 
 /**
@@ -679,6 +680,7 @@ class WorkerAutomation(
          *  Can return `true` if there is an improvement that does not match the resource (for future modding abilities).
          *  Does not check tile ownership - caller [automateWorkBoats] already did, other callers need to ensure this explicitly.
          */
+        @Readonly
         fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization) = when {
             !tile.isWater -> false
             tile.resource == null -> false
@@ -695,6 +697,7 @@ class WorkerAutomation(
          *  Only tests resource type and city range, not any improvement requirements.
          *  @throws NullPointerException on tiles without a resource
          */
+        @Readonly
         fun isNotBonusResourceOrWorkable(tile: Tile, civInfo: Civilization): Boolean =
             tile.tileResource.resourceType != ResourceType.Bonus // Improve Oil even if no City reaps the yields
                 || civInfo.cities.any { it.tilesInRange.contains(tile) } // Improve Fish only if any of our Cities reaps the yields
