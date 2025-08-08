@@ -10,14 +10,7 @@ RUN  apt update && \
 WORKDIR /src
 # Get dependencies
 RUN wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar && \
-          wget -q -O jre-linux-64.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jre_x64_linux_hotspot_11.0.19_7.tar.gz
-
-
-# Gradle is dumb (https://github.com/gradle/gradle/issues/22921) and doesn't recognize the JDK location
-# Solution from https://www.linux.org.ru/forum/desktop/17285826 ¯\_(ツ)_/¯
-RUN rm -rf /usr/lib/jvm/openjdk-17
-RUN ln -s /usr/lib/jvm/java-17-openjdk-amd64 /usr/lib/jvm/openjdk-17
-
+          wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/eclipse
 
 # https://nieldw.medium.com/caching-gradle-binaries-in-a-docker-build-when-using-the-gradle-wrapper-277c17e7dd22
 # Get gradle distribution
