@@ -30,7 +30,6 @@ internal sealed interface Node {
     }
 
     class BinaryOperation(private val operator: Operator.Binary, private val left: Node, private val right: Node): Node {
-        @Suppress("purity") 
         override fun eval(context: GameContext): Double = operator.implementation(left.eval(context), right.eval(context))
         override fun toString() = "($left $operator $right)"
         override fun getErrors(ruleset: Ruleset): List<String> {

@@ -23,11 +23,12 @@ import kotlin.math.pow
 
 class Nation : RulesetObject() {
     var leaderName = ""
+    @Readonly
     fun getLeaderDisplayName() = if (isCityState || isSpectator) name
         else "[$leaderName] of [$name]"
 
     val style = ""
-    fun getStyleOrCivName() = style.ifEmpty { name }
+    @Readonly fun getStyleOrCivName() = style.ifEmpty { name }
 
     var cityStateType: String? = null
     var preferredVictoryType: String = Constants.neutralVictoryType

@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
@@ -21,6 +22,7 @@ import kotlin.math.sqrt
 
 class TradeEvaluation {
 
+    @Readonly
     fun isTradeValid(trade: Trade, offerer: Civilization, tradePartner: Civilization): Boolean {
 
         // Edge case time! Guess what happens if you offer a peace agreement to the AI for all their cities except for the capital,
@@ -61,8 +63,10 @@ class TradeEvaluation {
         return true
     }
 
+    @Readonly
     private fun isOfferValid(tradeOffer: TradeOffer, offerer: Civilization, tradePartner: Civilization): Boolean {
 
+        @Readonly
         fun hasResource(tradeOffer: TradeOffer): Boolean {
             val resourcesByName = offerer.getCivResourcesByName()
             return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= tradeOffer.amount
@@ -95,10 +99,12 @@ class TradeEvaluation {
         }
     }
 
+    @Readonly
     fun isTradeAcceptable(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Boolean {
         return getTradeAcceptability(trade, evaluator, tradePartner, true) >= 0
     }
 
+    @Readonly
     fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization, includeDiplomaticGifts:Boolean = false): Int {
         val citiesAskedToSurrender = trade.ourOffers.count { it.type == TradeOfferType.City }
         val maxCitiesToSurrender = ceil(evaluator.cities.size.toFloat() / 5).toInt()
@@ -130,6 +136,7 @@ class TradeEvaluation {
         return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
     }
 
+    @Readonly
     fun evaluateBuyCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         if (offer.type != TradeOfferType.Gold && offer.type != TradeOfferType.Gold_Per_Turn)
             return (evaluateBuyCost(offer, civInfo, tradePartner, trade) / getGoldInflation(civInfo)).toInt()
@@ -139,6 +146,7 @@ class TradeEvaluation {
     /**
      * How much their offer is worth to us in gold
      */
+    @Readonly
     private fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
             TradeOfferType.Embassy -> return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt()
@@ -278,6 +286,7 @@ class TradeEvaluation {
      * @param thirdCiv Civilization for which peace proposal can be traded (mediated)
      * @param civInfo Civilization at war with thirdCiv which trades peace proposal
      */
+    @Readonly @Suppress("purity") // Changing trade offer nested items
     fun isPeaceProposalEnabled(thirdCiv: Civilization, civInfo: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(thirdCiv)!!
 
@@ -307,6 +316,7 @@ class TradeEvaluation {
         return TradeEvaluation().isTradeAcceptable(trade, thirdCiv, civInfo)
     }
 
+    @Readonly
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
         val borderingCivs: Set<String> = getNeighbouringCivs(city)
         if (borderingCivs.contains(civInfo.civName))
@@ -314,6 +324,7 @@ class TradeEvaluation {
         return 0
     }
 
+    @Readonly
     private fun getNeighbouringCivs(city: City): Set<String> {
         val tilesList: HashSet<Tile> = city.getTiles().toHashSet()
         val cityPositionList: ArrayList<Tile> = arrayListOf()
@@ -330,6 +341,7 @@ class TradeEvaluation {
     }
 
 
+    @Readonly
     fun evaluateSellCostWithInflation(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         if (offer.type != TradeOfferType.Gold && offer.type != TradeOfferType.Gold_Per_Turn)
             return (evaluateSellCost(offer, civInfo, tradePartner, trade) / getGoldInflation(civInfo)).toInt()
@@ -339,6 +351,7 @@ class TradeEvaluation {
     /**
      * How much our offer is worth to us in gold
      */
+    @Readonly
     private fun evaluateSellCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization, trade: Trade): Int {
         when (offer.type) {
             TradeOfferType.Embassy -> {
@@ -469,6 +482,7 @@ class TradeEvaluation {
      * This returns how much one gold is worth now in comparison to starting out the game
      * Gold is worth less as the civilization has a higher income
      */
+    @Readonly
     fun getGoldInflation(civInfo: Civilization): Double {
         val modifier = 1000.0
         val goldPerTurn = civInfo.stats.statsForNextTurn.gold.toDouble()
@@ -483,6 +497,7 @@ class TradeEvaluation {
      * and given how this method is used this ends up making such cities more expensive. That's how
      * I found it. I'm not sure it makes sense. One might also find arguments why cities closer to
      * the capital are more expensive. */
+    @Readonly
     private fun distanceCityTradeModifier(civInfo: Civilization, city: City): Int{
         val distanceToCapital = civInfo.getCapital()!!.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
@@ -490,6 +505,7 @@ class TradeEvaluation {
         return (distanceToCapital - 500) * civInfo.getEraNumber()
     }
 
+    @Readonly
     fun evaluatePeaceCostForThem(ourCiv: Civilization, otherCiv: Civilization): Int {
         val ourCombatStrength = ourCiv.getStatForRanking(RankingType.Force)
         val theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force)
@@ -533,6 +549,7 @@ class TradeEvaluation {
         }
     }
 
+    @Readonly
     private fun introductionValue(ruleSet: Ruleset): Int {
         val unique = ruleSet.modOptions.getMatchingUniques(UniqueType.TradeCivIntroductions).firstOrNull()
             ?: return 0
