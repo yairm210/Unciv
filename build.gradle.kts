@@ -49,6 +49,9 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
+            "java.util.regex.Pattern.matcher",
+            "java.util.regex.Matcher.find",
+            "java.util.regex.Matcher.replaceAll",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
@@ -61,6 +64,9 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
+
+            "kotlin.Throwable.getStackTrace",
+            "java.lang.StackTraceElement.getClassName",
         )
         wellKnownPureClasses = setOf(
         )

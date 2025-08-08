@@ -15,6 +15,7 @@ object MapPathing {
      * Otherwise, we set every tile to have equal value since building a road on any of them makes the original movement cost irrelevant.
      */
     @Suppress("UNUSED_PARAMETER") // While `from` is unused, this function should stay close to the signatures expected by the AStar and getPath `heuristic` parameter.
+    @Readonly
     private fun roadPreferredMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
         // hasRoadConnection accounts for civs that treat jungle/forest as roads
         // Ignore road over river penalties.
@@ -24,6 +25,7 @@ object MapPathing {
         return 1f
     }
 
+    @Readonly
     fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
         val roadImprovement = tile.ruleset.roadImprovement
         val railRoadImprovement = tile.ruleset.railroadImprovement
@@ -49,6 +51,7 @@ object MapPathing {
      * @param endTile The destination tile of the path.
      * @return A sequence of tiles representing the path from startTile to endTile, or null if no valid path is found.
      */
+    @Readonly
     fun getRoadPath(unit: MapUnit, startTile: Tile, endTile: Tile): List<Tile>?{
         return getPath(unit,
             startTile,
@@ -73,6 +76,7 @@ object MapPathing {
      * It takes a MapUnit, a 'from' Tile, and a 'to' Tile, returning a Float value representing the heuristic cost estimate.
      * @return A list of tiles representing the path from the startTile to the endTile. Returns null if no valid path is found.
      */
+    @Readonly
     private fun getPath(unit: MapUnit,
                 startTile: Tile,
                 endTile: Tile,
@@ -104,7 +108,7 @@ object MapPathing {
      * Gets the connection to the end tile. This does not take into account tile movement costs.
      * Takes in a civilization instead of a specific unit.
      */
-    @Readonly @Suppress("purity") // todo continue
+    @Readonly
     fun getConnection(civ: Civilization,
         startTile: Tile,
         endTile: Tile,
