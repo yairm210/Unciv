@@ -346,11 +346,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
 
         for (stat in Stat.entries) {
-
-            buildingStats[stat] *= personality.modifierFocus(PersonalityValue[stat], .5f)
+            buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
         }
 
-        return Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)
+        return Automation.rankStatsValue(buildingStats.clone(), civInfo)
     }
 
     private fun getStatDifferenceFromBuilding(building: String, localUniqueCache: LocalUniqueCache): Stats {
