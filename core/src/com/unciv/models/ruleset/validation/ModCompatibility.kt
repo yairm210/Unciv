@@ -40,9 +40,10 @@ object ModCompatibility {
     }
 
     // If there's media (audio folders or any atlas), show the PAV choice...
-    @Readonly @Suppress("purity") // requies marking file functions
+    @Readonly
     private fun isAudioVisualGuessed(mod: Ruleset): Boolean {
         val folder = mod.folderLocation ?: return false  // Also catches isBuiltin
+        @Readonly
         fun isSubFolderNotEmpty(modFolder: FileHandle, name: String): Boolean {
             val file = modFolder.child(name)
             if (!file.exists()) return false
@@ -62,7 +63,6 @@ object ModCompatibility {
             && !mod.modOptions.hasUnique(UniqueType.ModIsAudioVisualOnly)
 
     @Readonly
-    @Suppress("purity") // requies marking file functions
     fun isConstantsOnly(mod: Ruleset): Boolean {
         val folder = mod.folderLocation ?: return false
         if (folder.list("atlas").isNotEmpty()) return false

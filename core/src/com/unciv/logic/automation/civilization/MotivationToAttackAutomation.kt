@@ -16,13 +16,14 @@ import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.victoryscreen.RankingType
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 object MotivationToAttackAutomation {
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
-    @Readonly @Suppress("purity")
+    @Readonly @Suppress("purity") // requires changing dependents from mutating to readonly
     fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCiv: Civilization, atLeast: Float): Float {
         val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)!!
         val personality = civInfo.getPersonality()
@@ -155,6 +156,19 @@ object MotivationToAttackAutomation {
         var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
         if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
         return ourCombatStrength
+    }
+    
+    @Pure
+    fun addHelloWorld(@Pure add: (String) -> Unit){
+        add("Hello")
+        add("World")
+    }
+    
+    @Pure
+    fun a(): MutableList<String> {
+        val myList = mutableListOf<String>()
+        addHelloWorld{myList.add(it)}
+        return myList
     }
 
     private fun addWonderBasedMotivations(otherCiv: Civilization, modifiers: MutableList<Pair<String, Float>>) {

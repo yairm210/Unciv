@@ -54,6 +54,13 @@ allprojects {
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
+
+            "com.badlogic.gdx.files.FileHandle.child",
+            "com.badlogic.gdx.files.FileHandle.list",
+            "com.badlogic.gdx.files.FileHandle.exists",
+            "com.badlogic.gdx.files.FileHandle.isDirectory",
+            "com.badlogic.gdx.files.FileHandle.isFile",
+            "com.badlogic.gdx.files.FileHandle.name",
         )
         wellKnownPureClasses = setOf(
         )
