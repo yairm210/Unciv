@@ -5,7 +5,7 @@ FROM $ARG_COMPILE_BASE_IMAGE as build
 USER root 
 RUN  apt update && \
         apt upgrade -y && \
-        apt install --fix-broken -y wget curl openjdk-17-jdk openjdk-11-jdk unzip
+        apt install --fix-broken -y wget curl openjdk-21-jdk unzip
 
 WORKDIR /src
 # Get dependencies
