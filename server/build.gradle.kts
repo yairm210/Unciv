@@ -82,7 +82,7 @@ class PackrConfig(
 )
 
 for (platform in Platform.values()) {
-    tasks.register("packr${platform.name}") {
+    tasks.create("packr${platform.name}") {
         dependsOn(tasks.getByName("dist"))
 
         // Needs to be here and not in doLast because the zip task depends on the outDir
@@ -143,10 +143,10 @@ for (platform in Platform.values()) {
                     " --classpath $jarFile" +
                     " --mainclass $mainClassName" +
                     " --vmargs Xmx1G " +
-                    (if (platform == Platform.MacOS) jvmArgsForMac.joinToString(" ") {
-                        it.removePrefix("-")
-                    }
-                    else "") +
+                    when (platform) {
+                        Platform.MacOS -> jvmArgsForMac.joinToString(" ") { it.removePrefix("-") }
+                        else -> ""
+                    } +
                     " --output ${config.outDir}"
 
             command.runCommand(rootDir)

@@ -94,7 +94,7 @@ class PackrConfig(
 )
 
 for (platform in Platform.values()) {
-    tasks.register("packr${platform.name}") {
+    tasks.create("packr${platform.name}") {
         // This task assumes that 'dist' has already been called - does not 'gradle depend' on it
         // so we can run 'dist' from one job and then run the packr builds from a different job
 
