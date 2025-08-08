@@ -685,6 +685,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
      * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
      */
+    @Readonly
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
