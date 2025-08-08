@@ -45,7 +45,7 @@ object UnitActionsFromUniques {
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
 
-        if (tile.isWater || tile.isImpassible()) return null
+
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
 
