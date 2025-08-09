@@ -1,8 +1,13 @@
-@file:Suppress("InvalidPackageDeclaration")
 package com.unciv.build
 
+import com.unciv.build.BuildConfig.kotlinVersion
+
 object BuildConfig {
-    const val kotlinVersion = "2.1.20"
+    /**
+     * Updating [kotlinVersion] here is inadequeate.
+     * Please update hardcoded Kotlin versions in projects `build.gradle.kts` -> `plugins` block also.
+     */
+    const val kotlinVersion = "2.1.21"
     const val appName = "Unciv"
     const val appCodeNumber = 1153
     const val appVersion = "4.17.12"
