@@ -112,14 +112,13 @@ object CityLocationTileRanker {
         // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
 
         var tiles = 0
-        val cityWorkRange = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange 
-        for (i in 0..cityWorkRange) {
-            //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
-            for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
-                tiles++
-                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache) * (3 / (i + 1))
-                //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
-            }
+        for (i in 0..2) {
+                //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
+                for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
+                    tiles++
+                    tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache) * (3 / (i + 1))
+                    //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
+                }
         }
 
         // Placing cities on the edge of the map is bad, we can't even build improvements on them!
@@ -159,7 +158,7 @@ object CityLocationTileRanker {
         if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
-        if (rankTile.isCoastalTile() && !onCoast) locationSpecificTileValue -= 2
+        if (rankTile.isWater && !onCoast) locationSpecificTileValue -= 1
         // Check if there are any new unique luxury resources
         if (rankTile.hasViewableResource(civ) && rankTile.tileResource.resourceType == ResourceType.Luxury
             && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
@@ -175,14 +174,14 @@ object CityLocationTileRanker {
 
         if (rankTile.hasViewableResource(civ)) {
             rankTileValue += when (rankTile.tileResource.resourceType) {
-                ResourceType.Bonus -> 2f
-                ResourceType.Strategic -> 1.2f * rankTile.resourceAmount
-                ResourceType.Luxury -> 10f * rankTile.resourceAmount //very important for humans who might want to conquer the AI
+                ResourceType.Bonus -> 1f
+                ResourceType.Strategic -> 2f
+                ResourceType.Luxury -> 10f //very important for humans who might want to conquer the AI
             }
         }
         if (rankTile.terrainHasUnique(UniqueType.FreshWater)) rankTileValue += 0.5f 
         //Taking into account freshwater farm food, maybe less important in baseruleset mods
-        if (rankTile.terrainFeatures.isNotEmpty() && rankTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) rankTileValue += 0.5f
+        if (rankTile.terrainFeatures.isNotEmpty() && rankTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) rankTileValue += 0.7f
         //Taking into account yields from forest chopping
 
         if (rankTile.isNaturalWonder()) rankTileValue += 10
