@@ -1,9 +1,11 @@
 package com.unciv.build
 
+import com.unciv.build.BuildConfig.kotlinVersion
+
 object BuildConfig {
     /**
-     * Updating kotlinVersion is inadequeate.
-     * Please update hardcoded kotlinVersion in projects `build.gradle.kts` also
+     * Updating [kotlinVersion] here is inadequeate.
+     * Please update hardcoded Kotlin versions in projects `build.gradle.kts` -> `plugins` block also.
      */
     const val kotlinVersion = "2.1.21"
     const val appName = "Unciv"
