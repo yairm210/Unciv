@@ -3,14 +3,13 @@ ARG ARG_COMPILE_BASE_IMAGE=accetto/ubuntu-vnc-xfce-opengl-g3
 FROM $ARG_COMPILE_BASE_IMAGE as build
 
 USER root 
-RUN  apt update && \
-        apt upgrade -y && \
-        apt install --fix-broken -y wget curl openjdk-21-jdk unzip
+RUN  apt update && apt upgrade -y && \
+     apt install --fix-broken -y wget curl openjdk-21-jdk unzip
 
 WORKDIR /src
 # Get dependencies
-RUN wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar && \
-          wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/eclipse
+RUN wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
+RUN wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/11/ga/linux/x64/jre/hotspot/normal/eclipse
 
 # https://nieldw.medium.com/caching-gradle-binaries-in-a-docker-build-when-using-the-gradle-wrapper-277c17e7dd22
 # Get gradle distribution
@@ -21,13 +20,14 @@ RUN chmod +x ./gradlew && ./gradlew --version
 
 # Build unciv
 COPY . /src/
-RUN chmod +x ./gradlew && \
- ./gradlew buildSrc:clean && \
- ./gradlew buildSrc:build desktop:classes && \
- ./gradlew desktop:dist && \
- ./gradlew desktop:zipLinuxFilesForJar && \
- ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan && \
- cd /src/deploy && unzip Unciv-Linux64.zip
+RUN chmod +x ./gradlew
+RUN ./gradlew desktop:classes
+RUN ./gradlew desktop:dist
+RUN ./gradlew desktop:zipLinuxFilesForJar
+RUN ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan
+
+WORKDIR /src/deploy
+RUN unzip Unciv-Linux64.zip
 
 FROM accetto/ubuntu-vnc-xfce-opengl-g3 as run
 WORKDIR /home/headless/Desktop/
