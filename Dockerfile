@@ -21,7 +21,9 @@ RUN chmod +x ./gradlew && ./gradlew --version
 
 # Build unciv
 COPY . /src/
-RUN chmod +x ./gradlew && ./gradlew buildSrc:clean buildSrc:build desktop:classes && \
+RUN chmod +x ./gradlew && \
+ ./gradlew buildSrc:clean buildSrc:build && \
+ ./gradlew desktop:classes && \
  ./gradlew desktop:dist && \
  ./gradlew desktop:zipLinuxFilesForJar && \
  ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan && \
