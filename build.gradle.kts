@@ -32,7 +32,7 @@ kotlin {
 
 // Plugins used for serialization of JSON for networking
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
+    id("io.gitlab.arturbosch.detekt").version("1.23.8")
     // For some weird reason, the *docker build* fails to recognize linking to the shared kotlinVersion in plugins
     // This is *with* gradle 9.0.0 downloaded, no idea what that's about
     kotlin("multiplatform") version "2.1.21"
