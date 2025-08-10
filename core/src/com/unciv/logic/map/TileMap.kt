@@ -588,7 +588,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             civInfo: Civilization,
             unitId: Int? = null
     ): MapUnit? {
-        val unit = baseUnit.getMapUnit(civInfo, unitId)
+        val unit = baseUnit.newMapUnit(civInfo, unitId)
 
         fun getPassableNeighbours(tile: Tile): Set<Tile> =
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()

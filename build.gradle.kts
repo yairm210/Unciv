@@ -65,6 +65,7 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
 
+            "kotlin.collections.sortBy",
             "kotlin.Throwable.getStackTrace",
             "java.lang.StackTraceElement.getClassName",
         )

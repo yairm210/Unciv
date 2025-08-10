@@ -15,10 +15,11 @@ import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
-
+@InternalState
 class StatTreeNode {
     val children = LinkedHashMap<String, StatTreeNode>()
     private var innerStats: Stats? = null
@@ -245,11 +246,14 @@ class CityStats(val city: City) {
         return stats
     }
 
+    @Readonly
     private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction): StatTreeNode {
         val sourceToStats = StatTreeNode()
 
         fun addUniqueStats(unique: Unique, stat: Stat, amount: Float) {
-            sourceToStats.addStats(Stats().add(stat, amount), unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
+            val stats = Stats()
+            stats.add(stat, amount)
+            sourceToStats.addStats(stats, unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
         for (unique in city.getMatchingUniques(UniqueType.StatPercentBonus)) {
@@ -298,6 +302,7 @@ class CityStats(val city: City) {
         return sourceToStats
     }
 
+    @Readonly
     private fun getStatPercentBonusesFromUnitSupply(): Stats {
         val stats = Stats()
         val supplyDeficit = city.civ.stats.getUnitSupplyDeficit()
@@ -306,6 +311,7 @@ class CityStats(val city: City) {
         return stats
     }
 
+    @Readonly
     private fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
         val state = city.state
         if (construction is Building) return construction.matchesFilter(filter, state)
@@ -313,6 +319,7 @@ class CityStats(val city: City) {
         return false
     }
 
+    @Readonly
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (city.civ.cities.size < 2) return false// first city!
 
@@ -325,12 +332,14 @@ class CityStats(val city: City) {
             else city.isConnectedToCapital()
     }
 
+    @Readonly
     fun getRoadTypeOfConnectionToCapital(): RoadStatus {
         return if (isConnectedToCapital(RoadStatus.Railroad)) RoadStatus.Railroad
         else if (isConnectedToCapital(RoadStatus.Road)) RoadStatus.Road
         else RoadStatus.None
     }
 
+    @Readonly
     private fun getBuildingMaintenanceCosts(): Float {
         // Same here - will have a different UI display.
         var buildingsMaintenance = city.cityConstructions.getMaintenanceCosts() // this is AFTER the bonus calculation!
