@@ -123,7 +123,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
-    operator fun times(number: Int) = times(number.toFloat())
+    @Readonly operator fun times(number: Int) = times(number.toFloat())
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
