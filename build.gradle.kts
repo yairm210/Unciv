@@ -52,6 +52,7 @@ allprojects {
             "java.util.regex.Pattern.matcher",
             "java.util.regex.Matcher.find",
             "java.util.regex.Matcher.replaceAll",
+            "kotlin.collections.linkedMapOf",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",

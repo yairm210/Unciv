@@ -58,6 +58,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
      *
      * @return the translation entry or null when not available
      */
+    @Readonly
     fun get(text: String, language: String, activeMods: HashSet<String>? = null): TranslationEntry? {
         if (activeMods != null)
             for (activeMod in activeMods) {
@@ -73,6 +74,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     /**
      * @see get
      */
+    @Readonly
     fun getText(text: String, language: String, activeMods: HashSet<String>? = null): String {
         return get(text, language, activeMods)?.get(language) ?: text
     }
@@ -207,26 +209,30 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         debug("Loading percent complete of languages - %sms", System.currentTimeMillis() - startTime)
     }
-
+    @Readonly
     fun getConditionalOrder(language: String): String {
         return getText(englishConditionalOrderingString, language, null)
     }
 
+    @Readonly
     fun placeConditionalsAfterUnique(language: String) =
         get(conditionalUniqueOrderString, language, null)?.get(language) != "before"
 
     /** Returns the equivalent of a space in the given language
      * Defaults to a space if no translation is provided
      */
+    @Readonly
     fun getSpaceEquivalent(language: String): String {
         val translation = getText("\" \"", language, null)
         return translation.substring(1, translation.length-1)
     }
 
+    @Readonly
     fun shouldCapitalize(language: String): Boolean {
         return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
     }
 
+    @Readonly
     fun triggerNotificationEffectBeforeCause(language: String): Boolean{
         return get(effectBeforeCause, language, null)?.get(language)?.toBoolean() ?: true
     }
@@ -318,7 +324,7 @@ object TranslationActiveModsCache {
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-@Readonly @Suppress("purity")
+@Readonly
 fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
     val language: String = UncivGame.Current.settings.language
 
@@ -345,6 +351,7 @@ fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
 }
 
 
+@Readonly
 private fun String.translateConditionals(hideIcons: Boolean, language: String): String {
     /**
      * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
@@ -404,6 +411,7 @@ private fun String.translateConditionals(hideIcons: Boolean, language: String): 
     return fullyTranslatedString
 }
 
+@Readonly
 private fun String.translatePlaceholders(language: String, hideIcons: Boolean): String {
     /**
      * I'm SURE there's an easier way to do this but I can't think of it =\
@@ -453,6 +461,7 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 
 
 /** No brackets of any kind, just a single word */
+@Readonly
 private fun String.translateIndividualWord(language: String, hideIcons: Boolean, hideStats: Boolean): String {
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
@@ -577,6 +586,7 @@ fun Number.tr(): String {
  *
  *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
  */
+@Readonly
 fun Number.tr(language: String): String {
     return LocaleCode.getNumberFormatFromLanguage(language).format(this)
 }
