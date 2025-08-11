@@ -60,8 +60,9 @@ class RuinsManager(
             var atLeastOneUniqueHadEffect = false
             for (unique in possibleReward.uniqueObjects) {
                 atLeastOneUniqueHadEffect =
-                    atLeastOneUniqueHadEffect
-                    || UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
+                    unique.conditionalsApply(triggeringUnit.cache.state) && 
+                        UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
+                if (atLeastOneUniqueHadEffect) break
             }
             if (atLeastOneUniqueHadEffect) {
                 rememberReward(possibleReward.name)
