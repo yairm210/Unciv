@@ -2,8 +2,6 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
@@ -38,7 +36,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var shouldOpenPolicyPicker = false
 
     /** Used by NextTurnAction.PickPolicy.isChoice */
-    fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
+    @Readonly fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
 
     /** A [Map] pairing each [PolicyBranch] to its priority ([Int]). */
     val priorityMap: Map<PolicyBranch, Int>
@@ -140,10 +138,9 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5
-    fun getCultureNeededForNextPolicy(): Int {
-        return getPolicyCultureCost(numberOfAdoptedPolicies)
-    }
+    @Readonly fun getCultureNeededForNextPolicy(): Int = getPolicyCultureCost(numberOfAdoptedPolicies)
 
+    @Readonly
     fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
         var policyCostInput = numberOfAdoptedPolicies
 
@@ -157,6 +154,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return policyMap.toMap()
     }
 
+    @Readonly
     fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
         val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
@@ -180,7 +178,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             .filter { it.matchesFilter(policyFilter, gameContext) }
             .toList()
 
-    fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
+    @Readonly fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
     /**
      * Test whether a policy is adoptable according to the RuleSet (ignoring cost).
@@ -189,6 +187,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
      * @param checkEra Include era test (with false the function returns whether the policy is adoptable now or in the future)
      * @return `true` if the policy can be adopted, `false` if some rule prevents it (including when it's already adopted)
      */
+    @Readonly
     fun isAdoptable(policy: Policy, checkEra: Boolean = true): Boolean {
         if (isAdopted(policy.name)) return false
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
@@ -200,6 +199,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return true
     }
 
+    @Readonly
     fun canAdoptPolicy(): Boolean {
         if (civInfo.isSpectator()) return false
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy()) return false
@@ -290,11 +290,13 @@ class PolicyManager : IsPartOfGameInfoSerialization {
      * Return the highest priority ([Int]) among the given [Set] of [PolicyBranch]es.
      * Would return null if the given [Set] is empty.
      */
+    @Readonly
     fun getMaxPriority(branchesToCompare: Set<PolicyBranch>): Int? {
         val filteredMap = priorityMap.filterKeys { branch -> branch in branchesToCompare }
         return filteredMap.values.maxOrNull()
     }
 
+    @Readonly
     fun getCultureFromGreatWriter(): Int {
         return (cultureOfLast8Turns.sum() * civInfo.gameInfo.speed.cultureCostModifier).toInt()
     }
@@ -303,6 +305,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         cultureOfLast8Turns[civInfo.gameInfo.turns % 8] = culture
     }
 
+    @Readonly
     fun allPoliciesAdopted(checkEra: Boolean) =
         getRulesetPolicies().values.none { isAdoptable(it, checkEra) }
 }

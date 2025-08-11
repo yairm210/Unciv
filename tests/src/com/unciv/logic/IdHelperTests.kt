@@ -39,38 +39,41 @@ class IdHelperTests {
     }
 
     @Test
-    fun testIdsSuccess()  {
+    fun testIdsSuccess() {
         val correctString = "2ddb3a34-0699-4126-b7a5-38603e665928"
 
         Assert.assertEquals(correctString, IdChecker.checkAndReturnPlayerUuid(correctString))
-        Assert.assertEquals("c872b8e0-f274-47d4-b761-ce684c5d224c", IdChecker.checkAndReturnGameUuid("c872b8e0-f274-47d4-b761-ce684c5d224c"))
+        Assert.assertEquals(
+            "c872b8e0-f274-47d4-b761-ce684c5d224c",
+            IdChecker.checkAndReturnGameUuid("c872b8e0-f274-47d4-b761-ce684c5d224c")
+        )
 
-        Assert.assertEquals(correctString, IdChecker.checkAndReturnGameUuid("G-" + correctString + "-2"))
-        Assert.assertEquals(correctString, IdChecker.checkAndReturnPlayerUuid("P-" + correctString + "-2"))
+        Assert.assertEquals(correctString, IdChecker.checkAndReturnGameUuid("G-$correctString-2"))
+        Assert.assertEquals(correctString, IdChecker.checkAndReturnPlayerUuid("P-$correctString-2"))
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test // too short
     fun testIdFailure1() {
-        IdChecker.checkAndReturnGameUuid("2ddb3a34-0699-4126-b7a5-38603e66592") // too short
+        Assert.assertNull(IdChecker.checkAndReturnGameUuid("2ddb3a34-0699-4126-b7a5-38603e66592"))
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test // wrong prefix
     fun testIdFailure2() {
-        IdChecker.checkAndReturnGameUuid("P-2ddb3a34-0699-4126-b7a5-38603e665928-2") // wrong prefix
+        Assert.assertNull(IdChecker.checkAndReturnGameUuid("P-2ddb3a34-0699-4126-b7a5-38603e665928-2"))
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test // wrong prefix
     fun testIdFailure3() {
-        IdChecker.checkAndReturnPlayerUuid("G-2ddb3a34-0699-4126-b7a5-38603e665928-2") // wrong prefix
+        Assert.assertNull(IdChecker.checkAndReturnPlayerUuid("G-2ddb3a34-0699-4126-b7a5-38603e665928-2"))
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test // changed checkDigit
     fun testIdFailure4() {
-        IdChecker.checkAndReturnGameUuid("G-2ddb3a34-0699-4126-b7a5-38603e665928-3") // changed checkDigit
+        Assert.assertNull(IdChecker.checkAndReturnGameUuid("G-2ddb3a34-0699-4126-b7a5-38603e665928-3"))
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test // changed uuid without changing checkdigit
     fun testIdFailure5() {
-        IdChecker.checkAndReturnGameUuid("G-2ddb3a34-0699-4126-b7a5-48603e665928-2") // changed uuid without changing checkdigit
+        Assert.assertNull(IdChecker.checkAndReturnGameUuid("G-2ddb3a34-0699-4126-b7a5-48603e665928-2"))
     }
 }

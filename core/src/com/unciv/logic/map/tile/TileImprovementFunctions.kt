@@ -52,7 +52,7 @@ class TileImprovementFunctions(val tile: Tile) {
     /** Without regards to what CivInfo it is (so no tech requirement check), a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
-    @Readonly @Suppress("purity")
+    @Readonly
     internal fun canImprovementBeBuiltHere(
         improvement: TileImprovement,
         resourceIsVisible: Boolean = tile.resource != null,

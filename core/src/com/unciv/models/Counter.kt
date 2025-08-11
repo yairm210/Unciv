@@ -3,6 +3,7 @@ package com.unciv.models
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
@@ -14,6 +15,7 @@ import yairm210.purity.annotations.Readonly
  *  - Therefore, Deserialization works properly ***only*** with [K] === String.
  *    (ignoring this will return a deserialized map, but the keys will violate the compile-time type and BE strings)
  */
+@InternalState
 open class Counter<K>(
     fromMap: Map<K, Int>? = null
 ) : LinkedHashMap<K, Int>(fromMap?.size ?: 10), IsPartOfGameInfoSerialization, Json.Serializable {
@@ -52,7 +54,6 @@ open class Counter<K>(
     @Readonly
     /** Creates a new instance (does not modify) */
     operator fun times(amount: Int): Counter<K> {
-        @LocalState
         val newCounter = Counter<K>()
         for (key in keys) newCounter[key] = this[key] * amount
         return newCounter
@@ -65,7 +66,7 @@ open class Counter<K>(
         return clone
     }
 
-    fun sumValues() = values.sum()
+    @Readonly fun sumValues() = values.sum()
 
     @Readonly override fun clone() = Counter(this)
 

@@ -55,7 +55,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
-import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -126,9 +126,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val cityStateFunctions = CityStateFunctions(this)
-
-    @Transient
-    var cachedMilitaryMight = -1
 
     @Transient
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
@@ -204,7 +201,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     // Limit camera within explored region
     var exploredRegion = ExploredRegion()
 
-    fun hasExplored(tile: Tile) = tile.isExplored(this)
+    @Readonly fun hasExplored(tile: Tile) = tile.isExplored(this)
 
     val lastSeenImprovement = LastSeenImprovement()
 
@@ -236,10 +233,10 @@ class Civilization : IsPartOfGameInfoSerialization {
         var attackingUnit: String? = null
         lateinit var source: Vector2
         lateinit var target: Vector2
-        fun clone() = HistoricalAttackMemory(attackingUnit, Vector2(source), Vector2(target))
+        @Readonly fun clone() = HistoricalAttackMemory(attackingUnit, Vector2(source), Vector2(target))
     }
     /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
-    private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
+    @Readonly private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
     /**
      * List of attacks that this civilization has performed since the start of its most recent turn. Does not include attacks already tracked in [MapUnit.attacksSinceTurnStart] of living units. Used in movement arrow overlay.
      * @see [MapUnit.attacksSinceTurnStart]
@@ -328,9 +325,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly fun getDiplomacyManager(civInfo: Civilization): DiplomacyManager? = getDiplomacyManager(civInfo.civName)
     @Readonly fun getDiplomacyManager(civName: String): DiplomacyManager? = diplomacy[civName]
 
-    fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
+    @Readonly fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
-    fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
+    @Readonly fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about
      *
@@ -383,11 +380,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
-
-    fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
+    
+    @Readonly fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
             otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
     @Readonly fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
-    private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
+    @Readonly private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
     @Readonly
     fun getPreferredVictoryTypes(): List<String> {
@@ -435,6 +432,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Preserves some origins for resources so we can separate them for trades
      * Stockpiled uniques cannot be traded currently
      */
+    @Readonly
     fun getPerTurnResourcesWithOriginsForTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
 
@@ -451,7 +449,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
         return newResourceSupplyList
     }
-    
+
+    @Readonly
     fun getStockpiledResourcesForTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = false)
 
@@ -466,16 +465,15 @@ class Civilization : IsPartOfGameInfoSerialization {
         return newResourceSupplyList
     }
 
-    fun isCapitalConnectedToCity(city: City): Boolean = cache.citiesConnectedToCapitalToMediums.keys.contains(city)
+    @Readonly fun isCapitalConnectedToCity(city: City): Boolean = cache.citiesConnectedToCapitalToMediums.keys.contains(city)
 
 
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      * Stockpiled resources return the stockpiled amount
      */
-    @Readonly @Suppress("purity") // component1, component2
+    @Readonly
     fun getCivResourcesByName(): HashMap<String, Int> {
-        @LocalState
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
         for (entry in getCivResourceSupply())
@@ -553,6 +551,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, gameContext))
     }
 
+    @Readonly
     fun getTriggeredUniques(
         trigger: UniqueType,
         gameContext: GameContext = state,
@@ -585,6 +584,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun shouldOpenTechPicker(): Boolean {
         if (!tech.canResearchTech()) return false
         if (tech.freeTechs != 0) return true
@@ -673,18 +673,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         else -> units.getCivUnitsSize() == 0
     }
 
-    @Readonly
-    fun getEra(): Era = tech.era
-
-    @Readonly
-    fun getEraNumber(): Int = getEra().eraNumber
-
-    @Readonly
-    fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
-
-    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
-
-    fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
+    @Readonly fun getEra(): Era = tech.era
+    @Readonly fun getEraNumber(): Int = getEra().eraNumber
+    @Readonly fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
+    @Readonly fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+    @Readonly fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
 
 
     /**
@@ -692,6 +685,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
      * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
      */
+    @Readonly
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
@@ -721,12 +715,17 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
-    @Readonly @Suppress("purity") // caches
+    @Transient @Cache
+    private var cachedMilitaryMight = -1
+    
+    @Readonly
     private fun getMilitaryMight(): Int {
         if (cachedMilitaryMight < 0)
             cachedMilitaryMight = calculateMilitaryMight()
         return  cachedMilitaryMight
     }
+    
+    fun resetMilitaryMightCache() { cachedMilitaryMight = -1 }
 
     @Readonly
     private fun calculateMilitaryMight(): Int {
@@ -742,19 +741,19 @@ class Civilization : IsPartOfGameInfoSerialization {
         return sum
     }
 
-    fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
-    fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
+    @Readonly fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
+    @Readonly fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
 
+    @Readonly
     fun isLongCountActive(): Boolean {
         val unique = getMatchingUniques(UniqueType.MayanGainGreatPerson).firstOrNull()
             ?: return false
         return tech.isResearched(unique.params[1])
     }
-    fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
+    @Readonly fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     @Readonly
     fun calculateScoreBreakdown(): HashMap<String,Double> {
-        @LocalState
         val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
@@ -776,8 +775,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return scoreBreakdown
     }
 
-    @Readonly
-    fun calculateTotalScore() = calculateScoreBreakdown().values.sum()
+    @Readonly fun calculateTotalScore() = calculateScoreBreakdown().values.sum()
 
     //endregion
 
@@ -834,14 +832,15 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun addFlag(flag: String, count: Int) = flagsCountdown.set(flag, count)
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
-    fun hasFlag(flag: String) = flagsCountdown.contains(flag)
+    @Readonly fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
-    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.speed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
-    fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
+    @Readonly fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.speed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    @Readonly fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
     @Readonly fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
-    fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
+    @Readonly fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
 
+    @Readonly
     fun mayVoteForDiplomaticVictory() =
         // Does not need checks for Barbarians or dead civs because the callers already ensure that
         // (NextTurnAutomation.tryVoteForDiplomaticVictory and NextTurnAction.WorldCongressVote)
@@ -855,6 +854,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
     }
 
+    @Readonly
     fun shouldShowDiplomaticVotingResults() =
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
          && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
@@ -872,6 +872,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun hasStatToBuy(stat: Stat, price: Int): Boolean {
         return when {
             gameInfo.gameParameters.godMode -> true
@@ -930,22 +931,6 @@ class Civilization : IsPartOfGameInfoSerialization {
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
             Stat.Happiness -> stats.happiness
-            else -> 0
-        }
-    }
-
-    fun getReserve(stat: GameResource): Int {
-        if (stat is TileResource && !stat.isCityWide && stat.isStockpiled)
-            return resourceStockpiles[stat.name]
-        return when (stat) {
-            Stat.Culture -> policies.storedCulture
-            Stat.Science -> {
-                if (tech.currentTechnology() == null) 0
-                else tech.researchOfTech(tech.currentTechnology()!!.name)
-            }
-            Stat.Gold -> gold
-            Stat.Faith -> religionManager.storedFaith
-            SubStat.GoldenAgePoints -> goldenAges.storedHappiness
             else -> 0
         }
     }
@@ -1060,7 +1045,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital, oldCapital)
     }
 
-    fun getAllyCiv(): Civilization? = if (allyCivName == null) null
+    @Readonly fun getAllyCiv(): Civilization? = if (allyCivName == null) null
         else gameInfo.getCivilization(allyCivName!!)
     @Readonly fun getAllyCivName() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
@@ -1070,7 +1055,8 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  Can only be `true` if [GameParameters.randomNumberOfPlayers] is `true`, but in that case
      *  we try to see if the player _could_ be certain with a modicum of cleverness...
      */
-    fun hideCivCount(): Boolean {
+    @Readonly
+    fun shouldHideCivCount(): Boolean {
         if (!gameInfo.gameParameters.randomNumberOfPlayers) return false
         val knownCivs = 1 + getKnownCivs().count { it.isMajorCiv() }
         if (knownCivs >= gameInfo.gameParameters.maxNumberOfPlayers) return false
@@ -1086,6 +1072,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (isAI() || isSpectator()) return null
         return lastSeenImprovement[position]
     }
+    
     fun setLastSeenImprovement(position: Vector2, improvement: String?) {
         if (isAI() || isSpectator()) return
         if (improvement == null)
@@ -1102,7 +1089,7 @@ class CivilizationInfoPreview() {
     var civName = ""
     var playerType = PlayerType.AI
     var playerId = ""
-    fun isPlayerCivilization() = playerType == PlayerType.Human
+    @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
      * Converts a CivilizationInfo object (can be uninitialized) into a CivilizationInfoPreview object.

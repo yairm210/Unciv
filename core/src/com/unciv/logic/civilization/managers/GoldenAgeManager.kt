@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 
 class GoldenAgeManager : IsPartOfGameInfoSerialization {
     @Transient
@@ -26,12 +27,13 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun isGoldenAge(): Boolean = turnsLeftForCurrentGoldenAge > 0
+    @Readonly fun isGoldenAge(): Boolean = turnsLeftForCurrentGoldenAge > 0
     
     fun addHappiness(amount: Int) {
         storedHappiness += amount
     }
 
+    @Readonly
     fun happinessRequiredForNextGoldenAge(): Int {
         var cost = (500 + numberOfGoldenAges * 250).toFloat()
         cost *= civInfo.cities.size.toPercent()  //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
@@ -39,6 +41,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         return cost.toInt()
     }
 
+    @Readonly
     fun calculateGoldenAgeLength(unmodifiedNumberOfTurns: Int): Int {
         var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
         for (unique in civInfo.getMatchingUniques(UniqueType.GoldenAgeLength))

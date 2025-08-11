@@ -155,11 +155,9 @@ class TechManager : IsPartOfGameInfoSerialization {
             ).tr()
         }
     }
-    @Readonly
-    fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
-
-    @Readonly
-    fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
+    
+    @Readonly fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
+    @Readonly fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
     /** resources which need no research count as researched */
     @Readonly
@@ -168,8 +166,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return isResearched(revealedBy)
     }
 
-    @Readonly
-    fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any{ obsoleteTech -> isResearched(obsoleteTech) }
+    @Readonly fun isObsolete(unit: BaseUnit): Boolean = unit.techsThatObsoleteThis().any { obsoleteTech -> isResearched(obsoleteTech) }
 
     @Readonly
     fun isUnresearchable(tech: Technology): Boolean {
@@ -217,6 +214,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return prerequisites.sortedBy { it.column!!.columnNumber }
     }
 
+    @Readonly
     fun getScienceFromGreatScientist(): Int {
         // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
         return (scienceOfLast8Turns.sum() * civInfo.gameInfo.speed.scienceCostModifier).toInt()
@@ -226,6 +224,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = science
     }
 
+    @Readonly
     private fun limitOverflowScience(overflowScience: Int): Int {
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         // Apparently yes, we care about the absolute tech cost, not the actual calculated-for-this-player tech cost,
@@ -234,6 +233,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 getRuleset().technologies[currentTechnologyName()]!!.cost))
     }
 
+    @Readonly
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
@@ -358,7 +358,8 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     /** A variant of kotlin's [associateBy] that omits null values */
-    private inline fun <T, K, V> Iterable<T>.associateByNotNull(keySelector: (T) -> K, valueTransform: (T) -> V?): Map<K, V> {
+    @Readonly
+    private inline fun <T, K, V> Iterable<T>.associateByNotNull(@Readonly keySelector: (T) -> K, @Readonly valueTransform: (T) -> V?): Map<K, V> {
         val destination = LinkedHashMap<K, V>()
         for (element in this) {
             val value = valueTransform(element) ?: continue
@@ -369,6 +370,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     private fun obsoleteOldUnits(techName: String) {
         // First build a map with obsoleted units to their (nation-specific) upgrade
+        @Readonly 
         fun BaseUnit.getEquivalentUpgradeOrNull(techName: String): BaseUnit? {
             val unitUpgradesTo = automaticallyUpgradedInProductionToUnitByTech(techName)
                 ?: return null
@@ -543,6 +545,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             .all { isResearched(it.name) || !canBeResearched(it.name)}
     }
 
+    @Readonly
     fun getBestRoadAvailable(): RoadStatus {
         val railroadImprovement = getRuleset().railroadImprovement  // May not exist in mods
         if (railroadImprovement != null && (railroadImprovement.techRequired == null || isResearched(railroadImprovement.techRequired!!))
@@ -557,7 +560,5 @@ class TechManager : IsPartOfGameInfoSerialization {
         return RoadStatus.None
     }
 
-    fun canResearchTech(): Boolean {
-        return getRuleset().technologies.values.any { canBeResearched(it.name) }
-    }
+    @Readonly fun canResearchTech(): Boolean = getRuleset().technologies.values.any { canBeResearched(it.name) }
 }

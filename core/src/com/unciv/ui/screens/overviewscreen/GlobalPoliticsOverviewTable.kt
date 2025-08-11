@@ -287,7 +287,7 @@ class GlobalPoliticsOverviewTable(
             add(civTableScroll.addBorder(2f, Color.WHITE)).pad(10f)
         }
 
-        val hideCivsCount = viewingPlayer.hideCivCount() ||
+        val hideCivsCount = viewingPlayer.shouldHideCivCount() ||
             persistableData.includeCityStates && viewingPlayer.hideCityStateCount()
         relevantCivsCount = if (hideCivsCount) "?"
             else gameInfo.civilizations.count {
@@ -334,7 +334,7 @@ class GlobalPoliticsOverviewTable(
         civTableScroll.setScrollingDisabled(portraitMode, portraitMode)
     }
 
-    /** Same as [Civilization.hideCivCount] but for City-States instead of Major Civs */
+    /** Same as [Civilization.shouldHideCivCount] but for City-States instead of Major Civs */
     private fun Civilization.hideCityStateCount(): Boolean {
         if (!gameInfo.gameParameters.randomNumberOfCityStates) return false
         val knownCivs = 1 + getKnownCivs().count { it.isCityState }

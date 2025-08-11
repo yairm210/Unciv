@@ -6,6 +6,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 
 object GreatGeneralImplementation {
@@ -26,6 +27,7 @@ object GreatGeneralImplementation {
      *
      * @return A pair of unit's name and bonus (percentage) as Int (typically 15), or 0 if no applicable Great General equivalents found
      */
+    @Readonly
     fun getGreatGeneralBonus(
         ourUnitCombatant: MapUnitCombatant,
         enemy: ICombatant,

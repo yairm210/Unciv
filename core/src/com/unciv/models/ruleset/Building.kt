@@ -27,7 +27,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var maintenance = 0
     private var percentStatBonus: Stats? = null
     var specialistSlots: Counter<String> = Counter()
-    fun newSpecialists(): Counter<String>  = specialistSlots
+    @Readonly fun newSpecialists(): Counter<String>  = specialistSlots
 
     var greatPersonPoints = Counter<String>()
 
@@ -528,27 +528,30 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return false
     }
 
-    private val _hasCreatesOneImprovementUnique by lazy {
-        hasUnique(UniqueType.CreatesOneImprovement)
+    // This can be 'by lazy' across all rulesets because it only checks building uniques
+    private val improvementToCreate: String? by lazy { 
+        val unique = getMatchingUniques(UniqueType.CreatesOneImprovement).firstOrNull()
+        if (unique == null) null
+        else unique.params[0]
     }
-    @Readonly fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
+    
+    @Readonly fun hasCreateOneImprovementUnique() = improvementToCreate != null
 
-    private var _getImprovementToCreate: TileImprovement? = null
+    @Readonly
+    // Only the name can be cached across rulesets.
+    // The improvement itself CANNOT be cached because it's ruleset-dependent.
     private fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
-        if (!hasCreateOneImprovementUnique()) return null
-        if (_getImprovementToCreate == null) {
-            val improvementUnique = getMatchingUniques(UniqueType.CreatesOneImprovement)
-                .firstOrNull() ?: return null
-            _getImprovementToCreate = ruleset.tileImprovements[improvementUnique.params[0]]
-        }
-        return _getImprovementToCreate
+        if (improvementToCreate == null) return null
+        return ruleset.tileImprovements[improvementToCreate]
     }
+    
+    @Readonly
     fun getImprovementToCreate(ruleset: Ruleset, civInfo: Civilization): TileImprovement? {
         val improvement = getImprovementToCreate(ruleset) ?: return null
         return civInfo.getEquivalentTileImprovement(improvement)
     }
 
-    fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
+    @Readonly fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
     @Readonly
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
@@ -556,7 +559,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             state ?: GameContext.EmptyState)
         if (uniques.none() && requiredResource == null) return Counter.ZERO
         
-        @LocalState val resourceRequirements = Counter<String>()
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniques)
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())

@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
@@ -81,10 +80,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
     }
 
-    fun conditionalsApply(civInfo: Civilization? = null, city: City? = null): Boolean {
-        return conditionalsApply(GameContext(civInfo, city))
-    }
-
     @Readonly
     fun conditionalsApply(state: GameContext): Boolean {
         if (state.ignoreConditionals) return true
@@ -145,7 +140,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
     }
 
-    fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
+    @Readonly fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
     @Readonly
     fun getSourceNameForUser(): String {
@@ -161,6 +156,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
     
     /** Zero-based, so n=0 returns the first */
+    @Readonly
     private fun getNthIndex(string:String, list:List<String>, n: Int): Int {
         var count = 0
         for (i in list.indices) {
@@ -172,6 +168,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return -1 // Not found
     }
 
+    @Readonly
     fun getReplacementText(ruleset: Ruleset): String {
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
         val replacementUniqueText = deprecationAnnotation.replaceWith.expression

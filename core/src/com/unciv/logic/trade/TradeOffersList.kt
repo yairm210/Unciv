@@ -1,7 +1,9 @@
 package com.unciv.logic.trade
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import yairm210.purity.annotations.InternalState
 
+@InternalState
 class TradeOffersList: ArrayList<TradeOffer>(), IsPartOfGameInfoSerialization {
     override fun add(element: TradeOffer): Boolean {
         val equivalentOffer = firstOrNull { it.name == element.name && it.type == element.type }

@@ -4,6 +4,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Spy
+import yairm210.purity.annotations.Readonly
 
 enum class SpyFleeReason {
     CityDestroyed,
@@ -25,13 +26,11 @@ class CityEspionageManager : IsPartOfGameInfoSerialization {
         this.city = city
     }
 
-    fun hasSpyOf(civInfo: Civilization): Boolean {
-        return civInfo.espionageManager.spyList.any { it.getCityOrNull() == city }
-    }
+    
+    @Readonly fun hasSpyOf(civInfo: Civilization): Boolean = civInfo.espionageManager.spyList.any { it.getCityOrNull() == city }
 
-    fun getAllStationedSpies(): List<Spy> {
-        return city.civ.gameInfo.civilizations.flatMap { it.espionageManager.getSpiesInCity(city) }
-    }
+    @Readonly fun getAllStationedSpies(): List<Spy> =
+        city.civ.gameInfo.civilizations.flatMap { it.espionageManager.getSpiesInCity(city) }
 
     fun removeAllPresentSpies(reason: SpyFleeReason) {
         for (spy in getAllStationedSpies()) {

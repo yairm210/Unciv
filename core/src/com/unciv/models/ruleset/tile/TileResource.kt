@@ -13,6 +13,7 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 class TileResource : RulesetStatsObject(), GameResource {
@@ -42,9 +43,8 @@ class TileResource : RulesetStatsObject(), GameResource {
 
     val isStockpiled by lazy { hasUnique(UniqueType.Stockpiled, GameContext.IgnoreConditionals) }
 
-    private var improvementsInitialized = false
     /** Cache collecting [improvement], [improvedBy] and [UniqueType.ImprovesResources] uniques on the improvements themselves. */
-    private val allImprovements = mutableSetOf<String>()
+    @Cache private var allImprovements: Set<String>? = null
     private var ruleset: Ruleset? = null
 
     /** Collects which improvements "unlock" this resource, caches and returns the Set.
@@ -53,19 +53,23 @@ class TileResource : RulesetStatsObject(), GameResource {
      *  @see improvedBy
      *  @see UniqueType.ImprovesResources
      */
-    @Readonly @Suppress("purity") // requires some plumbing
+    @Readonly
     fun getImprovements(): Set<String> {
-        if (improvementsInitialized) return allImprovements
+        if (allImprovements != null) return allImprovements!!
+        
         val ruleset = this.ruleset
             ?: throw IllegalStateException("No ruleset on TileResource when initializing improvements")
-        if (improvement != null) allImprovements += improvement!!
-        allImprovements.addAll(improvedBy)
+        
+        val allImprovementsLocal = mutableSetOf<String>()
+        
+        if (improvement != null) allImprovementsLocal += improvement!!
+        allImprovementsLocal.addAll(improvedBy)
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.getMatchingUniques(UniqueType.ImprovesResources).none { matchesFilter(it.params[0]) }) continue
-            allImprovements += improvement.name
+            allImprovementsLocal += improvement.name
         }
-        improvementsInitialized = true
-        return allImprovements
+        allImprovements = allImprovementsLocal
+        return allImprovementsLocal
     }
 
     /** Clears the cache for [getImprovements] and saves the Ruleset the cache update will need.
@@ -73,8 +77,7 @@ class TileResource : RulesetStatsObject(), GameResource {
      *  - called from [Ruleset.updateResourceTransients]
      */
     fun setTransients(ruleset: Ruleset) {
-        allImprovements.clear()
-        improvementsInitialized = false
+        allImprovements = null
         this.ruleset = ruleset
     }
 

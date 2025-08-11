@@ -17,6 +17,8 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Immutable
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.max
@@ -35,7 +37,7 @@ enum class RelationshipLevel(val color: Color) {
     Friend(Color.ROYAL),
     Ally(Color.CYAN)
     ;
-    @Readonly
+    @Pure
     operator fun plus(delta: Int): RelationshipLevel {
         val newOrdinal = (ordinal + delta).coerceIn(0, entries.size - 1)
         return entries[newOrdinal]
@@ -140,8 +142,8 @@ enum class DiplomaticModifiers(val text: String) {
     BelieveSameReligion("We believe in the same religion");
 
     companion object{
-        private val valuesAsMap = entries.associateBy { it.name }
-        fun safeValueOf(name: String) = valuesAsMap[name]
+        @Immutable private val valuesAsMap = entries.associateBy { it.name }
+        @Pure fun safeValueOf(name: String) = valuesAsMap[name]
     }
 }
 
@@ -206,6 +208,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     @Readonly fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
     @Readonly fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
 
+    @Readonly
     fun turnsToPeaceTreaty(): Int {
         for (trade in trades)
             for (offer in trade.ourOffers)
@@ -255,16 +258,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelEQ(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelEQ(level: RelationshipLevel) =
             compareRelationshipLevel(level, 0)
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelLT(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelLT(level: RelationshipLevel) =
             compareRelationshipLevel(level, -1)
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelGT(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelGT(level: RelationshipLevel) =
             compareRelationshipLevel(level, 1)
     /** @see compareRelationshipLevel */
-    fun isRelationshipLevelLE(level: RelationshipLevel) =
+    @Readonly fun isRelationshipLevelLE(level: RelationshipLevel) =
             if (level == RelationshipLevel.Ally) true
             else compareRelationshipLevel(level + 1, -1)
     /** @see compareRelationshipLevel */
@@ -321,6 +324,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     private fun believesSameReligion(): Boolean {
         // what is the majorityReligion of civInfo? If it is null, we immediately return false
         val civMajorityReligion = civInfo.religionManager.getMajorityReligion() ?: return false
@@ -330,6 +334,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /** Returns the number of turns to degrade from Ally or from Friend */
+    @Readonly
     fun getTurnsToRelationshipChange(): Int {
         if (otherCiv().isCityState)
             return otherCivDiplomacy().getTurnsToRelationshipChange()
@@ -344,19 +349,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             }
         }
         return 0
-    }
-
-    @Suppress("unused")  //todo Finish original intent (usage in uniques) or remove
-    fun matchesCityStateRelationshipFilter(filter: String): Boolean {
-        val relationshipLevel = relationshipIgnoreAfraid()
-        return when (filter) {
-            "Allied" -> relationshipLevel == RelationshipLevel.Ally
-            "Friendly" -> relationshipLevel == RelationshipLevel.Friend
-            "Enemy" -> relationshipLevel == RelationshipLevel.Enemy
-            "Unforgiving" -> relationshipLevel == RelationshipLevel.Unforgivable
-            "Neutral" -> isRelationshipLevelEQ(RelationshipLevel.Neutral)
-            else -> false
-        }
     }
 
     fun addInfluence(amount: Float) {
@@ -381,6 +373,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun getInfluence() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else influence
 
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
+    @Readonly
     internal fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
 
@@ -399,6 +392,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return restingPoint
     }
 
+    @Readonly
     internal fun getCityStateInfluenceDegrade(): Float {
         if (getInfluence() <= getCityStateInfluenceRestingPoint())
             return 0f
@@ -428,6 +422,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
 
+    @Readonly
     fun canDeclareWar() = !civInfo.isDefeated() && !otherCiv().isDefeated()
             && turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
@@ -435,8 +430,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         DeclareWar.declareWar(this, declareWarReason)
 
     //Used for nuke
-    fun canAttack() = turnsToPeaceTreaty() == 0
+    @Readonly fun canAttack() = turnsToPeaceTreaty() == 0
 
+    @Readonly
     fun goldPerTurn(): Int {
         var goldPerTurnForUs = 0
         for (trade in trades) {
@@ -447,8 +443,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
         return goldPerTurnForUs
     }
-
-
+    
+    @Readonly
     fun resourcesFromTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
         val resourcesMap = civInfo.gameInfo.ruleset.tileResources
@@ -468,9 +464,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
-    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().asIterable().intersect(otherCiv().getKnownCivs().toSet())
+    @Readonly fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().asIterable().intersect(otherCiv().getKnownCivs().toSet())
 
-    fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().asIterable().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
+    @Readonly fun getCommonKnownCivsWithSpectators(): Set<Civilization> = civInfo.getKnownCivsWithSpectators().asIterable().intersect(otherCiv().getKnownCivsWithSpectators().toSet())
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
      */
@@ -775,6 +771,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /**
      * @return the total value of the gold gifts the other civilization has given us
      */
+    @Readonly
     fun getGoldGifts(): Int {
         // The inverse of howe we calculate GaveUsGifts in TradeLogic.acceptTrade gives us how much gold it is worth
         val giftAmount = getModifier(DiplomaticModifiers.GaveUsGifts)

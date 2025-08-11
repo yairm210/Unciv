@@ -180,8 +180,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
-    @Readonly
-    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
+    @Readonly @Suppress("purity") // the readonly connection type not respected for some reason for default value
+    fun isConnectedToCapital(@Readonly connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
@@ -198,6 +198,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     @Readonly fun isInResistance() = hasFlag(CityFlags.Resistance)
+    @Readonly
     fun isBlockaded(): Boolean {
         // Coastal cities are blocked if every adjacent water tile is blocked
         if (!isCoastal()) return false
@@ -258,19 +259,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
     }
 
-    fun getReserve(stat: GameResource): Int {
-        if (stat is TileResource) {
-            if (!stat.isStockpiled) return 0
-            if (stat.isCityWide) return resourceStockpiles[stat.name]
-            return civ.resourceStockpiles[stat.name]
-        }
-        return when (stat) {
-            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
-            Stat.Food, SubStat.StoredFood -> population.foodStored
-            else -> civ.getReserve(stat)
-        }
-    }
-
     @Readonly
     fun hasStatToBuy(stat: Stat, price: Int): Boolean {
         return when {
@@ -288,7 +276,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Transient
     private val maxAirUnits = 6
     /** Gets max air units that can remain in the city untransported */
-    fun getMaxAirUnits() = maxAirUnits
+    @Readonly fun getMaxAirUnits() = maxAirUnits
 
     override fun toString() = name // for debug
 
@@ -460,7 +448,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         population.autoAssignPopulation() // also updates city stats
         civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
-
+    
+    @Readonly
     fun canPlaceNewUnit(construction: BaseUnit): Boolean {
         val tile = getCenterTile()
         return when {

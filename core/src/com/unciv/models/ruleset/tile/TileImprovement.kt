@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
@@ -30,6 +31,7 @@ class TileImprovement : RulesetStatsObject() {
 
     override fun legacyRequiredTechs() = if (techRequired == null) emptySequence() else sequenceOf(techRequired!!)
 
+    @Readonly
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = GameContext(civInfo, unit = unit)
         
@@ -103,6 +105,7 @@ class TileImprovement : RulesetStatsObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
         ImprovementDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    @Readonly
     fun getConstructorUnits(ruleset: Ruleset): List<BaseUnit> {
         //todo Why does this have to be so complicated? A unit's "Can build [Land] improvements on tiles"
         //     creates the _justified_ expectation that an improvement it can build _will_ have
@@ -112,10 +115,11 @@ class TileImprovement : RulesetStatsObject() {
 
         val canOnlyFilters = getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile)
             .map { it.params[0].run { if (this == "Coastal") "Land" else this } }.toSet()
+        
         val cannotFilters = getMatchingUniques(UniqueType.CannotBuildOnTile).map { it.params[0] }.toSet()
         val resourcesImprovedByThis = ruleset.tileResources.values.filter { it.isImprovedBy(name) }
 
-        val expandedTerrainsCanBeBuiltOn = sequence {
+        @LocalState val expandedTerrainsCanBeBuiltOn = sequence {
             yieldAll(terrainsCanBeBuiltOn)
             yieldAll(terrainsCanBeBuiltOn.asSequence().mapNotNull { ruleset.terrains[it] }.flatMap { it.occursOn.asSequence() })
             if (hasUnique(UniqueType.CanOnlyImproveResource))
@@ -127,7 +131,7 @@ class TileImprovement : RulesetStatsObject() {
             }
         }.filter { it !in cannotFilters }.toMutableSet()
 
-        val terrainsCanBeBuiltOnTypes = sequence {
+        @LocalState val terrainsCanBeBuiltOnTypes = sequence {
             yieldAll(expandedTerrainsCanBeBuiltOn.asSequence()
                 .mapNotNull { ruleset.terrains[it]?.type })
             yieldAll(
@@ -135,12 +139,14 @@ class TileImprovement : RulesetStatsObject() {
                 .filter { it.name in expandedTerrainsCanBeBuiltOn })
         }.filter { it.name !in cannotFilters }.toMutableSet()
 
+        
         if (canOnlyFilters.isNotEmpty() && canOnlyFilters.intersect(expandedTerrainsCanBeBuiltOn).isEmpty()) {
             expandedTerrainsCanBeBuiltOn.clear()
             if (terrainsCanBeBuiltOnTypes.none { it.name in canOnlyFilters })
                 terrainsCanBeBuiltOnTypes.clear()
         }
 
+        @Readonly
         fun matchesBuildImprovementsFilter(filter: String) =
             matchesFilter(filter) ||
             filter in expandedTerrainsCanBeBuiltOn ||
@@ -156,6 +162,7 @@ class TileImprovement : RulesetStatsObject() {
             }.toList()
     }
 
+    @Readonly
     fun getCreatingUnits(ruleset: Ruleset): List<BaseUnit> {
         return ruleset.units.values.asSequence()
             .filter { unit ->

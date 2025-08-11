@@ -1,0 +1,5 @@
+Fix Ancient Ruin benefit on higher difficulties - By RobLoach
+
+Multiplayer: Only bring forth `AuthPopup` if server explicitly returns `401` - By touhidurrr 
+
+Modding: "can settle" unique able accept tile filters for water and impassible tiles - By Emandac

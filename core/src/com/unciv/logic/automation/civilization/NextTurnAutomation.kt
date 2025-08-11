@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 object NextTurnAutomation {
@@ -454,7 +455,7 @@ object NextTurnAutomation {
         }
         val distance = if (!isAtWar) 0 else unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),6)
         // Lower health units should move earlier to swap with higher health units
-        return distance + (unit.health / 10) + when {
+        return distance + (unit.health / 10) - unit.promotions.numberOfPromotions + when {
             unit.baseUnit.isRanged() -> 10
             unit.baseUnit.isMelee() -> 30
             unit.isGreatPersonOfType("War") -> 100 // Generals move after military units
@@ -517,19 +518,9 @@ object NextTurnAutomation {
 
         if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first
 
-        val workersBuildableForThisCiv = civInfo.gameInfo.ruleset.units.values.any {
-            it.hasUnique(UniqueType.BuildImprovements)
-                && it.isBuildable(civInfo)
-        }
-
-        val bestCity = civInfo.cities.filterNot { it.isPuppet || it.population.population < 2 }
-            // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
-            // Otherwise, AI tries to produce settlers when it can hardly sustain itself
-            .filter { city ->
-                !workersBuildableForThisCiv
-                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange - 1 ).count { it.improvement != null } > 1
-                    || city.getCenterTile().getTilesInDistance(civInfo.modConstants.cityWorkRange).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements) == true }
-            }.maxByOrNull { it.cityStats.currentCityStats.production }
+        val bestCity = civInfo.cities
+            .filterNot { it.isPuppet || it.population.population < 3 }
+            .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
         if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
             bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
@@ -592,13 +583,14 @@ object NextTurnAutomation {
         diplomacyManager.removeFlag(demand.violationOccurred)
     }
     
-
+    @Readonly
     fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {
         return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
     }
 
     data class CityDistance(val city1: City, val city2: City, val aerialDistance: Int)
 
+    @Readonly
     fun getClosestCities(civ1: Civilization, civ2: Civilization): CityDistance? {
         if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
             return null
