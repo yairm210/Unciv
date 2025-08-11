@@ -109,8 +109,6 @@ object UniqueTriggerActivation {
 
         val gameContext = GameContext(civInfo, city, unit, tile)
 
-        if (!unique.conditionalsApply(gameContext)) return null
-
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
 
