@@ -1,37 +1,5 @@
-
-
-chore(purity): IdChecker
-
-chore(purity): Translations
-
-chore(purity): CityStats 1
-
-chore(purity): RoadBetweenCitiesAutomation
-
-chore(purity): MapPathing
-
-chore(purity): Removed suppressions
-
-chore(purity): Converted internal state classes to use annotations
-
-chore(purity): minor
-
-chore(purity): TradeEvaluation, TradeLogic
-
-chore(purity): Trade, TradeOffer
-
-chore(purity): Update version, remove most well-knowns, fix function invokes
-
-chore(purity): Update version, remove most well-knowns, fix function invokes
-
-chore(purity): CityConstructions
-
-chore(purity): Victory, ReligionManager
-
-chore(purity): Civilization
-
-chore(purity): QuestManager
-
-AI: build more workers - By EmperorPinguin
+By EmperorPinguin:
+- AI: build more workers
+- AI: Better settler automation
 
 Fix combat conditionals not working correctly - By SeventhM
