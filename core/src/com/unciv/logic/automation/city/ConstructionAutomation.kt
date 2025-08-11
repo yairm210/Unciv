@@ -233,7 +233,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (workerEquivalents.none()) return // for mods with no worker units
 
         // Dedicate 1 worker for the first city (CS), then 1.5 workers for the first 5 cities, from then on build one more worker for every city.
-        val numberOfWorkersWeWant = if (cities <= 1) 1f else if (cities <= 5) (cities * 1.5f) else 7.5f + ((cities - 5))
+        val numberOfWorkersWeWant = if (cities <= 1) 1f else if  (cities <= 5) (cities * 1.8f) else 9f + 1.3f * (cities - 5)
 
         if (workers < numberOfWorkersWeWant) {
             val modifier = numberOfWorkersWeWant / (workers + 0.17f) // The worse our worker to city ratio is, the more desperate we are
@@ -346,11 +346,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         }
 
         for (stat in Stat.entries) {
-
-            buildingStats[stat] *= personality.modifierFocus(PersonalityValue[stat], .5f)
+            buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
         }
 
-        return Automation.rankStatsValue(civInfo.getPersonality().scaleStats(buildingStats.clone(), .3f), civInfo)
+        return Automation.rankStatsValue(buildingStats.clone(), civInfo)
     }
 
     private fun getStatDifferenceFromBuilding(building: String, localUniqueCache: LocalUniqueCache): Stats {
