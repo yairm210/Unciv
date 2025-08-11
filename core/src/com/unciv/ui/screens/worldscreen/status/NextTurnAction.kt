@@ -20,6 +20,7 @@ import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import yairm210.purity.annotations.Readonly
 
 enum class NextTurnAction(protected val text: String, val color: Color) {
     Default("", ImageGetter.CHARCOAL) {
@@ -126,7 +127,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     MoveAutomatedUnits("Move automated units", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.isMoveAutomatedUnits()
+            worldScreen.canMoveAutomatedUnits()
         override fun action(worldScreen: WorldScreen) =
             moveAutomatedUnits(worldScreen)
     },
@@ -148,6 +149,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
 
     companion object {
         // Readability helpers to allow concise enum instances
+        @Readonly
         private fun getCityWithNoProductionSet(worldScreen: WorldScreen) =
             worldScreen.viewingCiv.cities
             .firstOrNull {
@@ -167,7 +169,8 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
                 )
             )
 
-        private fun WorldScreen.isMoveAutomatedUnits(): Boolean {
+        @Readonly
+        private fun WorldScreen.canMoveAutomatedUnits(): Boolean {
             if (game.settings.automatedUnitsMoveOnTurnStart || viewingCiv.hasMovedAutomatedUnits)
                 return false
             return viewingCiv.units.getCivUnits()

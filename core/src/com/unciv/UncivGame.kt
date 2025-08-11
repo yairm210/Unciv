@@ -6,6 +6,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.UncivGame.Companion.Current
+import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
@@ -47,6 +49,8 @@ import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
 import kotlinx.coroutines.CancellationException
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.io.PrintWriter
 import java.util.EnumSet
 import java.util.UUID
@@ -346,7 +350,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     /** Get all currently existing screens of type [clazz]
      *  - Not a generic to allow screenStack to be private
      */
-    fun getScreensOfType(clazz: KClass<out BaseScreen>): Sequence<BaseScreen> = screenStack.asSequence().filter { it::class == clazz }
+    @Readonly
+    fun getScreensOfType(clazz: KClass<out BaseScreen>): Sequence<BaseScreen> = 
+        screenStack.asSequence().filter { it::class == clazz }
 
     /** Dispose and remove all currently existing screens of type [clazz]
      *  - Not a generic to allow screenStack to be private
@@ -471,6 +477,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 
     /** Returns the [worldScreen] if it is the currently active screen of the game */
+    @Readonly
     fun getWorldScreenIfActive(): WorldScreen? {
         return if (screen == worldScreen) worldScreen else null
     }
@@ -487,18 +494,23 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.17.9-patch1", 1149)
+        val VERSION = Version("4.17.12", 1153)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
         // Set by Gdx Game.create callback, or the special cases ConsoleLauncher and unit tests make do with out Gdx and set this themselves.
         lateinit var Current: UncivGame
         /** @return `true` if [Current] has been set yet and can be accessed */
-        fun isCurrentInitialized() = this::Current.isInitialized
+        @Readonly fun isCurrentInitialized() = this::Current.isInitialized
         /** Get the game currently in progress safely - null either if [Current] has not yet been set or if its gameInfo field has no game */
-        fun getGameInfoOrNull() = if (isCurrentInitialized()) Current.gameInfo else null
-        fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
-        fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
+        @Readonly fun getGameInfoOrNull() = if (isCurrentInitialized()) Current.gameInfo else null
+        @Readonly fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
+        @Readonly fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
+
+        @Readonly
+        fun getUserAgent(fallbackStr: String = "Unknown"): String = if (isCurrentInitialized()) {
+            "Unciv/${VERSION.toNiceString()}-GNU-Terry-Pratchett"
+        } else "Unciv/$fallbackStr-GNU-Terry-Pratchett"
     }
 
     data class Version(
@@ -507,7 +519,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // used by json serialization
         constructor() : this("", -1)
-        fun toNiceString() = "$text (Build ${number.tr()})"
+        @Pure fun toNiceString() = "$text (Build ${number.tr()})"
     }
 }
 

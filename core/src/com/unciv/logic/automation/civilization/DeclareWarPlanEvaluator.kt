@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.ui.screens.victoryscreen.RankingType
+import yairm210.purity.annotations.Readonly
 
 /**
  * Contains the logic for evaluating how we want to declare war on another civ.
@@ -18,6 +19,7 @@ object DeclareWarPlanEvaluator {
      * This style of declaring war favors fighting stronger civilizations.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
+    @Readonly
     fun evaluateTeamWarPlan(civInfo: Civilization, target: Civilization, teamCiv: Civilization, givenMotivation: Float?): Float {
         val teamCivDiplo = civInfo.getDiplomacyManager(teamCiv)!!
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f
@@ -70,6 +72,7 @@ object DeclareWarPlanEvaluator {
      * Favors protecting allies.
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
+    @Readonly
     fun evaluateJoinWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Float?): Float {
         val thirdCivDiplo = civInfo.getDiplomacyManager(civToJoin)!!
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f
@@ -116,6 +119,7 @@ object DeclareWarPlanEvaluator {
      *
      * @return The movtivation of the plan. If it is >= 0 then we can accept their war offer.
      */
+    @Readonly
     fun evaluateJoinOurWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Float?): Float {
         if (civInfo.getDiplomacyManager(civToJoin)!!.isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000f
         var motivation = givenMotivation ?: 0f
@@ -145,6 +149,7 @@ object DeclareWarPlanEvaluator {
      *
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
+    @Readonly
     fun evaluateDeclareWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f
         val motivation = givenMotivation
@@ -166,6 +171,7 @@ object DeclareWarPlanEvaluator {
      *
      * @return The motivation of the plan. If it is > 0 then we can start planning the war.
      */
+    @Readonly
     fun evaluateStartPreparingWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
         val motivation = givenMotivation
             ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)

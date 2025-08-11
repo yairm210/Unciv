@@ -4,29 +4,17 @@ import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.HttpSend
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.plugin
-import io.ktor.client.plugins.websocket.ClientWebSocketSession
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.client.plugins.websocket.cio.webSocketRawSession
-import io.ktor.client.request.get
-import io.ktor.http.DEFAULT_PORT
-import io.ktor.http.ParametersBuilder
-import io.ktor.http.URLBuilder
-import io.ktor.http.URLProtocol
-import io.ktor.http.Url
-import io.ktor.http.appendPathSegments
-import io.ktor.http.encodedPath
-import io.ktor.http.isSecure
-import io.ktor.http.userAgent
-import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.client.plugins.websocket.cio.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.SerializationException
@@ -84,7 +72,7 @@ open class ApiV2Wrapper(baseUrl: String) {
 
     init {
         client.plugin(HttpSend).intercept { request ->
-            request.userAgent("Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
+            request.userAgent(UncivGame.getUserAgent("Multiplayer-v2"))
             val clientCall = try {
                 execute(request)
             } catch (t: Throwable) {

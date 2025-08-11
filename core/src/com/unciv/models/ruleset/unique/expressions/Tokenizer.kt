@@ -74,14 +74,12 @@ internal object Tokenizer {
         @LocalState var openingBracePosition = -1
         @LocalState var braceNestingLevel = 0
 
-        @Readonly @Suppress("purity") // set localstate of parent
         suspend fun SequenceScope<Pair<Int, String>>.emitIdentifier(pos: Int) {
             assert(firstNumberPosition < 0)
             yield(firstIdentifierPosition to this@tokenize.substring(firstIdentifierPosition, pos))
             firstIdentifierPosition = -1
         }
 
-        @Readonly @Suppress("purity") // set localstate of parent
         suspend fun SequenceScope<Pair<Int, String>>.emitNumericLiteral(pos: Int) {
             assert(firstIdentifierPosition < 0)
             val token = this@tokenize.substring(firstNumberPosition, pos)

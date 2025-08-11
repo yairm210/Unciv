@@ -9,19 +9,23 @@ import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.fonts.Fonts
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 
 object UnitActionModifiers {
+    @Readonly
     fun canUse(unit: MapUnit, actionUnique: Unique): Boolean {
         val usagesLeft = usagesLeft(unit, actionUnique)
         return usagesLeft == null || usagesLeft > 0
     }
 
+    @Readonly
     fun getUsableUnitActionUniques(unit: MapUnit, actionUniqueType: UniqueType) =
         unit.getMatchingUniques(actionUniqueType)
             .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
             .filter { canUse(unit, it) }
 
+    @Readonly
     private fun getMovementPointsToUse(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false): Int {
         if (actionUnique.hasModifier(UniqueType.UnitActionMovementCostAll))
             return unit.getMaxMovement()
@@ -34,6 +38,7 @@ object UnitActionModifiers {
         return if (defaultAllMovement) unit.getMaxMovement() else 1
     }
 
+    @Readonly
     private fun getMovementPointsRequired(actionUnique: Unique): Int {
         if (actionUnique.hasModifier(UniqueType.UnitActionMovementCostAll))
             return 1
@@ -46,6 +51,7 @@ object UnitActionModifiers {
      * going into the negatives
      * @return Boolean
      */
+    @Readonly
     private fun canSpendStatsCost(unit: MapUnit, actionUnique: Unique): Boolean {
         for (conditional in actionUnique.getModifiers(UniqueType.UnitActionStatsCost)) {
             for ((stat, value) in conditional.stats) {
@@ -63,6 +69,7 @@ object UnitActionModifiers {
         return true
     }
 
+    @Readonly
     private fun canSpendStockpileCost(unit: MapUnit, actionUnique: Unique): Boolean {
         for (conditional in actionUnique.getModifiers(UniqueType.UnitActionStockpileCost)) {
             val amount = conditional.params[0].toInt()
@@ -79,6 +86,7 @@ object UnitActionModifiers {
      * @param actionUnique: Unique that defines the Action
      * @return Boolean
      */
+    @Readonly
     fun canActivateSideEffects(unit: MapUnit, actionUnique: Unique): Boolean {
         if (!canUse(unit, actionUnique)) return false
         if (getMovementPointsRequired(actionUnique) > ceil(unit.currentMovement).toInt()) return false
@@ -134,12 +142,14 @@ object UnitActionModifiers {
     }
 
     /** Returns 'null' if usages are not limited */
+    @Readonly
     private fun usagesLeft(unit: MapUnit, actionUnique: Unique): Int?{
         val usagesTotal = getMaxUsages(unit, actionUnique) ?: return null
         val usagesSoFar = unit.abilityToTimesUsed[actionUnique.text.removeConditionals()] ?: 0
         return usagesTotal - usagesSoFar
     }
 
+    @Readonly
     private fun getMaxUsages(unit: MapUnit, actionUnique: Unique): Int? {
         val extraTimes = unit.getMatchingUniques(actionUnique.type!!)
             .filter { it.text.removeConditionals() == actionUnique.text.removeConditionals() }
@@ -154,12 +164,14 @@ object UnitActionModifiers {
         return null
     }
 
+    @Readonly
     fun actionTextWithSideEffects(originalText: String, actionUnique: Unique, unit: MapUnit): String {
         val sideEffectString = getSideEffectString(unit, actionUnique)
         if (sideEffectString == "") return originalText
         else return "{$originalText} $sideEffectString"
     }
 
+    @Readonly
     fun getSideEffectString(unit: MapUnit, actionUnique: Unique, defaultAllMovement: Boolean = false): String {
         val effects = ArrayList<String>()
 

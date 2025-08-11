@@ -18,6 +18,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.status.NextTurnAction.Default
 import com.unciv.utils.Concurrency
+import yairm210.purity.annotations.Readonly
 
 class NextTurnButton(
     private val worldScreen: WorldScreen
@@ -78,7 +79,7 @@ class NextTurnButton(
     private fun getNextTurnAction(worldScreen: WorldScreen) =
         // Guaranteed to return a non-null NextTurnAction because the last isChoice always returns true
         NextTurnAction.entries.first { it.isChoice(worldScreen) }
-    
-    fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit
+
+    @Readonly fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit
     
 }

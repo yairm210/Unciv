@@ -41,7 +41,7 @@ interface IHasUniques : INamed {
     /** Technically not currently needed, since the unique target can be retrieved from every unique in the uniqueObjects,
      * But making this a function is relevant for future "unify Unciv object" plans ;)
      * */
-    fun getUniqueTarget(): UniqueTarget
+    @Readonly fun getUniqueTarget(): UniqueTarget
 
     @Readonly
     fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =

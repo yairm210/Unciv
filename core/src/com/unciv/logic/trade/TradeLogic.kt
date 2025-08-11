@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.WarType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civilization) {
 
@@ -34,6 +35,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         theirAvailableOffers += getAvailableOffers(otherCivilization, ourCivilization)
     }
     
+    @Readonly
     private fun getAvailableOffers(civInfo: Civilization, otherCiv: Civilization): TradeOffersList {
         val offers = TradeOffersList()
         if (civInfo.isCityState || otherCiv.isCityState) return offers

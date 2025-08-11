@@ -47,6 +47,7 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
 import java.util.UUID
@@ -83,8 +84,7 @@ data class CompatibilityVersion(
     @Suppress("unused") // used by json serialization
     constructor() : this(-1, Version())
 
-    operator fun compareTo(other: CompatibilityVersion) = number.compareTo(other.number)
-
+    @Pure operator fun compareTo(other: CompatibilityVersion) = number.compareTo(other.number)
 }
 
 data class VictoryData(val winningCiv: String, val victoryType: String, val victoryTurn: Int) {
@@ -371,6 +371,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // Skip the player if we are playing hotseat
         // If all hotseat players are defeated then skip all but the first one
+        @Readonly
         fun shouldAutoProcessHotseatPlayer(): Boolean =
             !isOnline &&
             player.isDefeated() && (civilizations.any { it.isHuman() && it.isAlive() }
@@ -378,6 +379,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // Skip all spectators and defeated players
         // If all players are defeated then let the first player control next turn
+        @Readonly
         fun shouldAutoProcessOnlinePlayer(): Boolean =
             isOnline && (player.isSpectator() || player.isDefeated() &&
                 (civilizations.any { it.isHuman() && it.isAlive() }
@@ -474,7 +476,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         )
     }
 
-    fun getEnabledVictories() = ruleset.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
+    @Readonly fun getEnabledVictories() = ruleset.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
     fun processDiplomaticVictory() {
         if (diplomaticVictoryVotesProcessed) return
@@ -627,8 +629,20 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.mods.add(newName)
         }
 
-        ruleset = RulesetCache.getComplexRuleset(gameParameters)
+        // Try to fix mods that are displayed in save with - but when downloaded it's replaced with a space
+        if (gameParameters.baseRuleset !in RulesetCache && gameParameters.baseRuleset.replace("-", " ") in RulesetCache) {
+            gameParameters.baseRuleset = gameParameters.baseRuleset.replace("-", " ")
+        }
 
+        for (mod in gameParameters.mods) {
+            if (mod !in RulesetCache && mod.replace("-", " ") in RulesetCache) {
+                gameParameters.mods.remove(mod)
+                gameParameters.mods.add(mod.replace("-", " "))
+            }
+        }
+        
+        ruleset = RulesetCache.getComplexRuleset(gameParameters)
+        
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
@@ -766,7 +780,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     //endregion
 
-    fun asPreview() = GameInfoPreview(this)
+    @Readonly fun asPreview() = GameInfoPreview(this)
 
 }
 
@@ -797,9 +811,9 @@ class GameInfoPreview() {
         currentTurnStartTime = gameInfo.currentTurnStartTime
     }
 
-    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
-    fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
-    fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
+    @Readonly fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    @Readonly fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
+    @Readonly fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
 }
 
 /** Class to use when parsing jsons if you only want the serialization [version]. */

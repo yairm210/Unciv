@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
+import yairm210.purity.annotations.Readonly
 
 /**
  * Container for all temporarily used code managing transitions from deprecated elements to their replacements.
@@ -98,6 +99,7 @@ object BackwardCompatibility {
                     city.cityConstructions.builtBuildings.remove(building)
             }
 
+            @Readonly
             fun isInvalidConstruction(construction: String) =
                 !ruleset.buildings.containsKey(construction)
                     && !ruleset.units.containsKey(construction)

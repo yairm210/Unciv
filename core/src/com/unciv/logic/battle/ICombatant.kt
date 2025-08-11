@@ -4,43 +4,46 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
+import yairm210.purity.annotations.Readonly
 
 interface ICombatant {
-    fun getName(): String
-    fun getHealth(): Int
-    fun getMaxHealth(): Int
-    fun getUnitType(): UnitType
-    fun getAttackingStrength(): Int
-    fun getDefendingStrength(attackedByRanged: Boolean = false): Int
+    @Readonly fun getName(): String
+    @Readonly fun getHealth(): Int
+    @Readonly fun getMaxHealth(): Int
+    @Readonly fun getUnitType(): UnitType
+    @Readonly fun getAttackingStrength(): Int
+    @Readonly fun getDefendingStrength(attackedByRanged: Boolean = false): Int
     fun takeDamage(damage: Int)
-    fun isDefeated(): Boolean
-    fun getCivInfo(): Civilization
-    fun getTile(): Tile
-    fun isInvisible(to: Civilization): Boolean
-    fun canAttack(): Boolean
+    @Readonly fun isDefeated(): Boolean
+    @Readonly fun getCivInfo(): Civilization
+    @Readonly fun getTile(): Tile
+    @Readonly fun isInvisible(to: Civilization): Boolean
+    @Readonly fun canAttack(): Boolean
     /** Implements [UniqueParameterType.CombatantFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CombatantFilter] */
-    fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean
+    @Readonly fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean
     fun getAttackSound(): UncivSound
 
-    fun isMelee(): Boolean = !isRanged()
+    @Readonly fun isMelee(): Boolean = !isRanged()
+    @Readonly 
     fun isRanged(): Boolean {
         if (this is CityCombatant) return true
         return (this as MapUnitCombatant).unit.baseUnit.isRanged()
     }
+    @Readonly
     fun isAirUnit(): Boolean {
         if (this is CityCombatant) return false
         return (this as MapUnitCombatant).unit.baseUnit.isAirUnit()
     }
+    @Readonly
     fun isWaterUnit(): Boolean {
         if (this is CityCombatant) return false
         return (this as MapUnitCombatant).unit.baseUnit.isWaterUnit
     }
+    @Readonly
     fun isLandUnit(): Boolean {
         if (this is CityCombatant) return false
         return (this as MapUnitCombatant).unit.baseUnit.isLandUnit
     }
-    fun isCity(): Boolean {
-        return this is CityCombatant
-    }
-    fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
+    @Readonly fun isCity(): Boolean = this is CityCombatant
+    @Readonly fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
 }

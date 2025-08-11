@@ -128,11 +128,9 @@ object HexMath {
     @Readonly
     fun hex2WorldCoords(hexCoord: Vector2): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
-        @LocalState
         val xVector = getVectorByClockHour(10)
         xVector.scl(sqrt(3.0).toFloat() * hexCoord.x)
         
-        @LocalState
         val yVector = getVectorByClockHour(2)
         yVector.scl(sqrt(3.0).toFloat() * hexCoord.y)
         
@@ -143,10 +141,8 @@ object HexMath {
     @Readonly
     fun world2HexCoords(worldCoord: Vector2): Vector2 {
         // D: diagonal, A: antidiagonal versors
-        @LocalState
         val D = getVectorByClockHour(10)
         D.scl(sqrt(3.0).toFloat())
-        @LocalState
         val A = getVectorByClockHour(2)
         A.scl(sqrt(3.0).toFloat())
         val den = D.x * A.y - D.y * A.x
@@ -219,7 +215,6 @@ object HexMath {
 
     @Readonly
     fun getVectorsAtDistance(origin: Vector2, distance: Int, maxDistance: Int, worldWrap: Boolean): List<Vector2> {
-        @LocalState
         val vectors = mutableListOf<Vector2>()
         if (distance == 0) {
             return listOf(origin.cpy())
@@ -259,7 +254,6 @@ object HexMath {
 
     @Readonly
     fun getVectorsInDistance(origin: Vector2, distance: Int, worldWrap: Boolean): List<Vector2> {
-        @LocalState
         val hexesToReturn = mutableListOf<Vector2>()
         for (i in 0..distance) {
             hexesToReturn += getVectorsAtDistance(origin, i, distance, worldWrap)

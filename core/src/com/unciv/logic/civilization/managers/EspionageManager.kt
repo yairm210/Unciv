@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 
 class EspionageManager : IsPartOfGameInfoSerialization {
@@ -42,6 +43,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
             spy.endTurn()
     }
 
+    @Readonly
     fun getSpyName(): String {
         val usedSpyNames = spyList.map { it.name }.toHashSet()
         val validSpyNames = civInfo.nation.spyNames.filter { it !in usedSpyNames }
@@ -57,6 +59,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return newSpy
     }
 
+    @Readonly
     fun getTilesVisibleViaSpies(): Sequence<Tile> {
         return spyList.asSequence()
             .filter { it.isSetUp() }
@@ -64,6 +67,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
             .flatMap { it.getCenterTile().getTilesInDistance(1) }
     }
 
+    @Readonly
     fun getTechsToSteal(otherCiv: Civilization): Set<String> {
         val techsToSteal = mutableSetOf<String>()
         for (tech in otherCiv.tech.techsResearched) {
@@ -74,30 +78,26 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return techsToSteal
     }
 
-    fun getSpiesInCity(city: City): List<Spy> {
-        return spyList.filterTo(mutableListOf()) { it.getCityOrNull() == city }
-    }
+    @Readonly fun getSpiesInCity(city: City): List<Spy> = spyList.filter { it.getCityOrNull() == city }
 
-    fun getStartingSpyRank(): Int = 1 + civInfo.getMatchingUniques(UniqueType.SpyStartingLevel).sumOf { it.params[0].toInt() }
+    @Readonly fun getStartingSpyRank(): Int = 1 + civInfo.getMatchingUniques(UniqueType.SpyStartingLevel).sumOf { it.params[0].toInt() }
 
     /**
      * Returns a list of all cities with our spies in them.
      * The list needs to be stable across calls on the same turn.
      */
-    fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getCityOrNull() }
+    @Readonly fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getCityOrNull() }
 
-    fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull { it.getCityOrNull() == city }
+    @Readonly fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull { it.getCityOrNull() == city }
 
     /**
      * Determines whether the NextTurnAction MoveSpies should be shown or not
      * @return true if there are spies waiting to be moved
      */
-    fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && spyList.any { it.isIdle() }
+    @Readonly fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && spyList.any { it.isIdle() }
             && civInfo.gameInfo.getCities().any { civInfo.hasExplored(it.getCenterTile()) && getSpyAssignedToCity(it) == null }
 
-    fun getIdleSpies(): List<Spy> {
-        return spyList.filterTo(mutableListOf()) { it.isIdle() }
-    }
+    @Readonly fun getIdleSpies(): List<Spy> = spyList.filter { it.isIdle() }
 
     /**
      * Takes all spies away from their cities.

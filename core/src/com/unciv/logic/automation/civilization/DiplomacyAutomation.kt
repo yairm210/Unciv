@@ -19,6 +19,7 @@ import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -40,6 +41,7 @@ object DiplomacyAutomation {
         }
     }
 
+    @Readonly
     internal fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
         if (diploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)) return false
@@ -187,6 +189,7 @@ object DiplomacyAutomation {
     /**
      * Test if [otherCiv] wants to accept our embassy in their capital
      */
+    @Readonly
     fun wantsToAcceptEmbassy(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val theirDiploManager = otherCiv.getDiplomacyManager(civInfo)!!
         if (civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.DeclinedEmbassy)) return false
@@ -211,6 +214,7 @@ object DiplomacyAutomation {
         return true // Relationship is Afraid or greater
     }
 
+    @Readonly
     fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         if (ourDiploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)) return false
@@ -278,6 +282,7 @@ object DiplomacyAutomation {
         }
     }
 
+    @Readonly
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         if (ourDiploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)) return false
@@ -450,6 +455,7 @@ object DiplomacyAutomation {
         }
     }
 
+    @Readonly
     private fun areWeOfferingTrade(civInfo: Civilization, otherCiv: Civilization, offerName: String): Boolean {
         return otherCiv.tradeRequests.filter { request -> request.requestingCiv == civInfo.civName }
             .any { trade -> trade.trade.ourOffers.any { offer -> offer.name == offerName }

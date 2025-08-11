@@ -12,16 +12,19 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.utils.getOrPut
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 import java.util.BitSet
 
 
 class UnitMovement(val unit: MapUnit) {
 
-    private val pathfindingCache = PathfindingCache(unit)
+    @Cache private val pathfindingCache = PathfindingCache(unit)
 
     class ParentTileAndTotalMovement(val tile: Tile, val parentTile: Tile, val totalMovement: Float)
 
-    fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
+    @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
     
     
     /**
@@ -29,6 +32,7 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
+    @Readonly @Suppress("purity") // mutates passed parameter
     fun getMovementToTilesAtPosition(
         position: Vector2,
         unitMovement: Float,
@@ -38,7 +42,7 @@ class UnitMovement(val unit: MapUnit) {
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
-        val distanceToTiles = PathsToTilesWithinTurn()
+        @LocalState val distanceToTiles = PathsToTilesWithinTurn()
 
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
@@ -105,6 +109,7 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
      */
+    @Readonly
     fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> {
         if (unit.cache.cannotMove) return listOf()
 
@@ -138,7 +143,8 @@ class UnitMovement(val unit: MapUnit) {
         var distance = 1
         val unitMaxMovement = unit.getMaxMovement().toFloat()
         val newTilesToCheck = ArrayList<Tile>()
-        val visitedTilesBitset = BitSet().apply { set(currentTile.zeroBasedIndex) }
+        val visitedTilesBitset = BitSet()
+        visitedTilesBitset.set(currentTile.zeroBasedIndex)
         val civilization = unit.civ
 
         val passThroughCacheNew = ArrayList<Boolean?>()
@@ -222,6 +228,7 @@ class UnitMovement(val unit: MapUnit) {
 
     class UnreachableDestinationException(msg: String) : Exception(msg)
 
+    @Readonly
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {
 
         val currentTile = unit.getTile()
@@ -279,11 +286,13 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     /** Cached and thus not as performance-heavy as [canReach] */
+    @Readonly
     fun canReachInCurrentTurn(destination: Tile) = canReachCommon(destination) {
         getDistanceToTiles().containsKey(it)
     }
 
-    private inline fun canReachCommon(destination: Tile, specificFunction: (Tile) -> Boolean) = when {
+    @Readonly
+    private inline fun canReachCommon(destination: Tile, @Readonly specificFunction: (Tile) -> Boolean) = when {
         unit.cache.cannotMove ->
             destination == unit.getTile()
         unit.baseUnit.movesLikeAirUnits ->
@@ -298,6 +307,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check its the other escort unit if it has one
      * Leave it as default unless you know what [getReachableTilesInCurrentTurn] does.
      */
+    @Readonly
     fun getReachableTilesInCurrentTurn(includeOtherEscortUnit: Boolean = true): Sequence<Tile> {
         return when {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
@@ -316,11 +326,13 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     /** Returns whether we can perform a swap move to the specified tile */
+    @Readonly
     fun canUnitSwapTo(destination: Tile): Boolean {
         return canReachInCurrentTurn(destination) && canUnitSwapToReachableTile(destination)
     }
 
     /** Returns the tiles to which we can perform a swap move */
+    @Readonly
     fun getUnitSwappableTiles(): Sequence<Tile> {
         return getReachableTilesInCurrentTurn().filter { canUnitSwapToReachableTile(it) }
     }
@@ -329,6 +341,7 @@ class UnitMovement(val unit: MapUnit) {
      * Returns whether we can perform a unit swap move to the specified tile, given that it is
      * reachable in the current turn
      */
+    @Readonly
     private fun canUnitSwapToReachableTile(reachableTile: Tile): Boolean {
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits) return false
@@ -588,6 +601,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
     }
 
+    @Readonly
     private fun isCityCenterCannotEnter(tile: Tile) = tile.isCityCenter()
         && tile.getOwner() != unit.civ
         && !tile.getCity()!!.hasJustBeenConquered
@@ -598,6 +612,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canMoveTo] if it has one.
      * Leave it as default unless you know what [canMoveTo] does.
      */
+    @Readonly
     fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
         if (unit.baseUnit.movesLikeAirUnits)
             return canAirUnitMoveTo(tile, unit)
@@ -622,6 +637,7 @@ class UnitMovement(val unit: MapUnit) {
                 && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
     }
 
+    @Readonly
     private fun canAirUnitMoveTo(tile: Tile, unit: MapUnit): Boolean {
         // landing in the city
         if (tile.isCityCenter()) {
@@ -637,6 +653,7 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     // Can a paratrooper land at this tile?
+    @Readonly
     private fun canParadropOn(destination: Tile, distance: Int): Boolean {
         if (unit.cache.cannotMove) return false
 
@@ -663,6 +680,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canPassThrough] if it has one.
      * Leave it as default unless you know what [canPassThrough] does.
      */
+    @Readonly
     fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
@@ -722,6 +740,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort units [getDistanceToTiles] if it has one.
      * Leave it as default unless you know what [getDistanceToTiles] does.
      */
+    @Readonly
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCacheNew: ArrayList<Boolean?> = ArrayList(),

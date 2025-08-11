@@ -29,6 +29,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import yairm210.purity.annotations.Pure
 
 /** Screen used for moving spies between cities */
 class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
@@ -167,6 +168,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         add(ImageGetter.getImage("OtherIcons/Spy_White").apply {
             color = Color.WHITE
         }).size(30f)
+        @Pure
         fun getColor(rank: Int): Color = when (rank) {
             1 -> Color.BROWN
             2 -> Color.LIGHT_GRAY

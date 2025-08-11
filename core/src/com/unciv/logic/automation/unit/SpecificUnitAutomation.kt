@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 object SpecificUnitAutomation {
@@ -113,7 +114,7 @@ object SpecificUnitAutomation {
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch, 50f)
+        val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch, 30f)
         var bestCityLocation: Tile? = null
 
         if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesInfo.tileRankMap.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
@@ -347,6 +348,7 @@ object SpecificUnitAutomation {
         return tileBeforeMoving != unit.currentTile
     }
 
+    @Readonly
     private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
         return city.cityConstructions.getBuildableBuildings().filter { building ->
             building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)

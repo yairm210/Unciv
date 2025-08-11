@@ -86,7 +86,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
 
-        for (target in otherCiv.getKnownCivs().filter { otherCiv.questManager.warWithMajorActive(it) && viewingCiv != it }) {
+        for (target in otherCiv.getKnownCivs().filter { otherCiv.questManager.isWarWithMajorActive(it) && viewingCiv != it }) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getWarWithMajorTable(target, otherCiv)).row()
         }

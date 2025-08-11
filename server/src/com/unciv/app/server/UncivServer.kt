@@ -33,6 +33,7 @@ import java.io.File
 import java.util.Collections.synchronizedMap
 import java.util.Collections.synchronizedSet
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -49,7 +50,7 @@ sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val gameId: String, val civName: String, val message: String
+        val civName: String, val message: String, val gameId: String
     ) : Message()
 
     @Serializable
@@ -71,7 +72,7 @@ sealed class Response {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val gameId: String, val civName: String, val message: String
+        val civName: String, val message: String, val gameId: String? = null
     ) : Response()
 
     @Serializable
@@ -87,37 +88,34 @@ sealed class Response {
     ) : Response()
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private class WebSocketSessionManager {
-    private val userId2GameIds = synchronizedMap(mutableMapOf<String, MutableSet<String>>())
+    private val gameId2WSSessions = synchronizedMap(mutableMapOf<Uuid, MutableSet<DefaultWebSocketServerSession>>())
+    private val wsSession2GameIds = synchronizedMap(mutableMapOf<DefaultWebSocketServerSession, MutableSet<Uuid>>())
 
-    private val gameId2WSSessions =
-        synchronizedMap(mutableMapOf<String, MutableSet<DefaultWebSocketServerSession>>())
+    fun isSubscribed(session: DefaultWebSocketServerSession, gameId: Uuid): Boolean =
+        gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }.contains(session)
 
-    fun removeSession(userId: String, session: DefaultWebSocketServerSession) {
-        val gameIds = userId2GameIds.remove(userId)
-        for (gameId in gameIds ?: emptyList()) {
-            gameId2WSSessions[gameId]?.remove(session)
+    fun subscribe(session: DefaultWebSocketServerSession, gameIds: List<String>): List<String> {
+        val uuids = gameIds.mapNotNull { it.toUuidOrNull() }
+
+        wsSession2GameIds.getOrPut(session) { synchronizedSet(mutableSetOf()) }.addAll(uuids)
+        for (uuid in uuids) {
+            gameId2WSSessions.getOrPut(uuid) { synchronizedSet(mutableSetOf()) }.add(session)
+        }
+
+        return uuids.map { it.toString() }
+    }
+
+    fun unsubscribe(session: DefaultWebSocketServerSession, gameIds: List<String>) {
+        val uuids = gameIds.mapNotNull { it.toUuidOrNull() }
+        wsSession2GameIds[session]?.removeAll(uuids)
+        for (uuid in uuids) {
+            gameId2WSSessions[uuid]?.remove(session)
         }
     }
 
-    fun subscribe(userId: String, gameIds: List<String>, session: DefaultWebSocketServerSession) {
-        userId2GameIds.getOrPut(userId) { synchronizedSet(mutableSetOf()) }.addAll(gameIds)
-        for (gameId in gameIds) {
-            gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }.add(session)
-        }
-    }
-
-    fun unsubscribe(userId: String, gameIds: List<String>, session: DefaultWebSocketServerSession) {
-        userId2GameIds[userId]?.removeAll(gameIds)
-        for (gameId in gameIds) {
-            gameId2WSSessions[gameId]?.remove(session)
-        }
-    }
-
-    fun hasGameId(userId: String, gameId: String) =
-        userId2GameIds.getOrPut(userId) { synchronizedSet(mutableSetOf()) }.contains(gameId)
-
-    suspend fun publish(gameId: String, message: Response) {
+    suspend fun publish(gameId: Uuid, message: Response) {
         val sessions = gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }
         for (session in sessions) {
             if (!session.isActive) {
@@ -127,13 +125,33 @@ private class WebSocketSessionManager {
             session.sendSerialized(message)
         }
     }
+
+    fun cleanupSession(session: DefaultWebSocketServerSession) {
+        for (gameId in wsSession2GameIds.remove(session) ?: emptyList()) {
+            val gameIds = gameId2WSSessions[gameId] ?: continue
+            gameIds.remove(session)
+            if (gameIds.isEmpty()) {
+                gameId2WSSessions.remove(gameId)
+            }
+        }
+    }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 data class BasicAuthInfo(
-    val userId: String,
+    val userId: Uuid,
     val password: String,
-    val isValidUUID: Boolean = false
-) : Principal
+)
+
+/**
+ * Checks if a [String] is a valid UUID
+ */
+@OptIn(ExperimentalUuidApi::class)
+private fun String.toUuidOrNull() = try {
+    Uuid.parse(this)
+} catch (_: Throwable) {
+    null
+}
 
 private class UncivServerRunner : CliktCommand() {
     private val port by option(
@@ -177,10 +195,12 @@ private class UncivServerRunner : CliktCommand() {
     }
 
     // region Auth
-    private val authMap: MutableMap<String, String> = mutableMapOf()
+    @OptIn(ExperimentalUuidApi::class)
+    private val authMap: MutableMap<Uuid, String> = mutableMapOf()
 
     private val wsSessionManager = WebSocketSessionManager()
 
+    @OptIn(ExperimentalUuidApi::class)
     private fun loadAuthFile() {
         val authFile = File("server.auth")
         if (!authFile.exists()) {
@@ -188,11 +208,13 @@ private class UncivServerRunner : CliktCommand() {
             authFile.createNewFile()
         } else {
             authMap.putAll(
-                authFile.readLines().map { it.split(":") }.associate { it[0] to it[1] }
+                authFile.readLines().map { it.split(":") }
+                    .associate { Uuid.parse(it[0]) to it[1] }
             )
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private fun saveAuthFile() {
         val authFile = File("server.auth")
         authFile.writeText(authMap.map { "${it.key}:${it.value}" }.joinToString("\n"))
@@ -212,10 +234,9 @@ private class UncivServerRunner : CliktCommand() {
     }
 
     private fun validateAuth(authInfo: BasicAuthInfo): Boolean {
-        if (!authV1Enabled)
-            return true
+        if (!authV1Enabled) return true
 
-        val password = authMap[authInfo.userId]
+        @OptIn(ExperimentalUuidApi::class) val password = authMap[authInfo.userId]
         return password == null || password == authInfo.password
     }
     // endregion Auth
@@ -233,22 +254,19 @@ private class UncivServerRunner : CliktCommand() {
                 basic {
                     realm = "Optional for /files and /auth, Mandatory for /chat"
 
-                    @OptIn(ExperimentalUuidApi::class)
-                    validate { creds ->
-                        val isValidUUID = try {
-                            Uuid.parse(creds.name)
-                            true
+                    @OptIn(ExperimentalUuidApi::class) validate {
+                        return@validate try {
+                            BasicAuthInfo(userId = Uuid.parse(it.name), password = it.password)
                         } catch (_: Throwable) {
-                            false
+                            null
                         }
-                        BasicAuthInfo(creds.name, creds.password, isValidUUID)
                     }
                 }
             }
 
             if (chatV1Enabled) install(WebSockets) {
-                pingPeriodMillis = 30_000
-                timeoutMillis = 60_000
+                pingPeriod = 30.seconds
+                timeout = 60.seconds
                 maxFrameSize = Long.MAX_VALUE
                 @OptIn(ExperimentalSerializationApi::class)
                 contentConverter = KotlinxWebsocketSerializationConverter(Json {
@@ -265,20 +283,15 @@ private class UncivServerRunner : CliktCommand() {
                     call.respond(isAliveInfo)
                 }
 
-                authenticate {
+                @OptIn(ExperimentalUuidApi::class) authenticate {
                     put("/files/{fileName}") {
                         val fileName = call.parameters["fileName"] ?: return@put call.respond(
-                            HttpStatusCode.BadRequest,
-                            "Missing filename!"
+                            HttpStatusCode.BadRequest, "Missing filename!"
                         )
 
                         val authInfo = call.principal<BasicAuthInfo>() ?: return@put call.respond(
-                            HttpStatusCode.BadRequest,
-                            "Possibly malformed authentication header!"
+                            HttpStatusCode.BadRequest, "Possibly malformed authentication header!"
                         )
-
-                        if (!authInfo.isValidUUID)
-                            return@put call.respond(HttpStatusCode.BadRequest, "Bad userId")
 
                         // If IdentifyOperators is enabled an Operator IP is displayed
                         if (identifyOperators) {
@@ -288,8 +301,7 @@ private class UncivServerRunner : CliktCommand() {
                         }
 
                         val file = File(fileFolderName, fileName)
-                        if (!validateGameAccess(file, authInfo))
-                            return@put call.respond(HttpStatusCode.Unauthorized)
+                        if (!validateGameAccess(file, authInfo)) return@put call.respond(HttpStatusCode.Unauthorized)
 
                         withContext(Dispatchers.IO) {
                             file.outputStream().use {
@@ -300,8 +312,7 @@ private class UncivServerRunner : CliktCommand() {
                     }
                     get("/files/{fileName}") {
                         val fileName = call.parameters["fileName"] ?: return@get call.respond(
-                            HttpStatusCode.BadRequest,
-                            "Missing filename!"
+                            HttpStatusCode.BadRequest, "Missing filename!"
                         )
 
                         // If IdentifyOperators is enabled an Operator IP is displayed
@@ -330,14 +341,9 @@ private class UncivServerRunner : CliktCommand() {
                         get("/auth") {
                             call.application.log.info("Received auth request from ${call.request.local.remoteHost}")
 
-                            val authInfo =
-                                call.principal<BasicAuthInfo>() ?: return@get call.respond(
-                                    HttpStatusCode.BadRequest,
-                                    "Possibly malformed authentication header!"
-                                )
-
-                            if (!authInfo.isValidUUID)
-                                return@get call.respond(HttpStatusCode.BadRequest, "Bad userId")
+                            val authInfo = call.principal<BasicAuthInfo>() ?: return@get call.respond(
+                                HttpStatusCode.BadRequest, "Possibly malformed authentication header!"
+                            )
 
                             when (authMap[authInfo.userId]) {
                                 null -> call.respond(HttpStatusCode.NoContent)
@@ -348,23 +354,16 @@ private class UncivServerRunner : CliktCommand() {
                         put("/auth") {
                             call.application.log.info("Received auth password set from ${call.request.local.remoteHost}")
 
-                            val authInfo =
-                                call.principal<BasicAuthInfo>() ?: return@put call.respond(
-                                    HttpStatusCode.BadRequest,
-                                    "Possibly malformed authentication header!"
-                                )
-
-                            if (!authInfo.isValidUUID)
-                                return@put call.respond(HttpStatusCode.BadRequest, "Bad userId")
+                            val authInfo = call.principal<BasicAuthInfo>() ?: return@put call.respond(
+                                HttpStatusCode.BadRequest, "Possibly malformed authentication header!"
+                            )
 
                             val password = authMap[authInfo.userId]
                             if (password == null || password == authInfo.password) {
                                 val newPassword = call.receiveText()
-                                if (newPassword.length < 6)
-                                    return@put call.respond(
-                                        HttpStatusCode.BadRequest,
-                                        "Password should be at least 6 characters long"
-                                    )
+                                if (newPassword.length < 6) return@put call.respond(
+                                    HttpStatusCode.BadRequest, "Password should be at least 6 characters long"
+                                )
                                 authMap[authInfo.userId] = newPassword
                                 call.respond(HttpStatusCode.OK)
                             } else {
@@ -386,19 +385,27 @@ private class UncivServerRunner : CliktCommand() {
                             return@webSocket close()
                         }
 
-                        val userId = authInfo.userId
                         try {
-                            while (true) {
-                                val message = receiveDeserialized<Message>()
-                                when (message) {
+                            while (isActive) {
+                                when (val message = receiveDeserialized<Message>()) {
                                     is Message.Chat -> {
-                                        if (wsSessionManager.hasGameId(userId, message.gameId)) {
-                                            wsSessionManager.publish(
-                                                message.gameId,
+                                        val gameId = message.gameId.toUuidOrNull()
+                                        if (gameId == null) {
+                                            sendSerialized(
                                                 Response.Chat(
-                                                    message.gameId,
-                                                    message.civName,
-                                                    message.message
+                                                    civName = "Server",
+                                                    message = "Invalid gameId: '${message.gameId}'. Cannot relay the message!",
+                                                )
+                                            )
+                                            continue
+                                        }
+
+                                        if (wsSessionManager.isSubscribed(this, gameId)) {
+                                            wsSessionManager.publish(
+                                                gameId = gameId, message = Response.Chat(
+                                                    civName = message.civName,
+                                                    message = message.message,
+                                                    gameId = message.gameId,
                                                 )
                                             )
                                         } else {
@@ -407,21 +414,25 @@ private class UncivServerRunner : CliktCommand() {
                                     }
 
                                     is Message.Join -> {
-                                        wsSessionManager.subscribe(userId, message.gameIds, this)
-                                        sendSerialized(Response.JoinSuccess(gameIds = message.gameIds))
+                                        sendSerialized(
+                                            Response.JoinSuccess(
+                                                gameIds = wsSessionManager.subscribe(
+                                                    this, message.gameIds
+                                                )
+                                            )
+                                        )
                                     }
 
-                                    is Message.Leave ->
-                                        wsSessionManager.unsubscribe(userId, message.gameIds, this)
+                                    is Message.Leave -> wsSessionManager.unsubscribe(this, message.gameIds)
                                 }
                                 yield()
                             }
                         } catch (err: Throwable) {
                             println("An WebSocket session closed due to ${err.message}")
-                            wsSessionManager.removeSession(userId, this)
+                            wsSessionManager.cleanupSession(this)
                         } finally {
                             println("An WebSocket session closed normally.")
-                            wsSessionManager.removeSession(userId, this)
+                            wsSessionManager.cleanupSession(this)
                         }
                     }
                 }

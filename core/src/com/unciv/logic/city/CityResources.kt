@@ -21,7 +21,7 @@ object CityResources {
     /** Only for *city-wide* resources - civ-wide resources should use civ-level resources */
     @Readonly
     fun getCityResourcesAvailableToCity(city: City): ResourceSupplyList {
-        @LocalState val resourceModifers = HashMap<String, Float>()
+        val resourceModifers = HashMap<String, Float>()
         for (resource in city.civ.gameInfo.ruleset.tileResources.values)
             resourceModifers[resource.name] = city.civ.getResourceModifier(resource)
 
@@ -39,7 +39,7 @@ object CityResources {
 
     @Readonly
     private fun getResourcesGeneratedByCityNotIncludingBuildings(city: City, resourceModifers: Map<String, Float>): ResourceSupplyList {
-        @LocalState val cityResources = ResourceSupplyList()
+        val cityResources = ResourceSupplyList()
         
         cityResources.add(getResourcesFromTiles(city, resourceModifers))
         cityResources.add(getResourceFromUniqueImprovedTiles(city, resourceModifers))
@@ -79,7 +79,7 @@ object CityResources {
 
     @Readonly
     private fun getResourcesFromTiles(city: City, resourceModifer: Map<String, Float>): ResourceSupplyList {
-        @LocalState val resourceSupplyList = ResourceSupplyList()
+        val resourceSupplyList = ResourceSupplyList()
         for (tileInfo in city.getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(city, tileInfo) * resourceModifer[resource.name]!!
@@ -90,7 +90,7 @@ object CityResources {
 
     @Readonly
     private fun getResourceFromUniqueImprovedTiles(city: City, resourceModifer: Map<String, Float>): ResourceSupplyList {
-        @LocalState val resourceSupplyList = ResourceSupplyList()
+        val resourceSupplyList = ResourceSupplyList()
         for (tileInfo in city.getTiles().filter { it.getUnpillagedImprovement() != null }) {
             val gameContext = GameContext(city.civ, city, tile = tileInfo)
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
@@ -114,7 +114,7 @@ object CityResources {
 
     @Readonly
     private fun getNegativeCityResourcesRequiredByBuildings(city: City): ResourceSupplyList {
-        @LocalState val resourceSupplyList = ResourceSupplyList()
+        val resourceSupplyList = ResourceSupplyList()
         val freeBuildings = city.civ.civConstructions.getFreeBuildingNames(city)
         for (building in city.cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
@@ -126,7 +126,7 @@ object CityResources {
 
     @Readonly
     private fun getCityResourcesFromCiv(city: City, resourceModifers: HashMap<String, Float>): ResourceSupplyList {
-        @LocalState val resourceSupplyList = ResourceSupplyList()
+        val resourceSupplyList = ResourceSupplyList()
         // This includes the uniques from buildings, from this and all other cities
         for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, city.state)) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]

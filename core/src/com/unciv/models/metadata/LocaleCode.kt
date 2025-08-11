@@ -1,5 +1,6 @@
 package com.unciv.models.metadata
 
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import java.text.NumberFormat
 import java.util.Locale
@@ -67,19 +68,21 @@ enum class LocaleCode(val languageTag: String, private val fastlaneFolder: Strin
     Zulu("zu-ZA")
     ;
 
-    fun locale(): Locale = Locale.forLanguageTag(languageTag)
+    @Readonly fun locale(): Locale = Locale.forLanguageTag(languageTag)
     fun fastlaneFolder(): String = this.fastlaneFolder ?: locale().language
 
     companion object {
         private val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
 
         /** Find a LocaleCode for a [language] as stored in GameSettings */
+        @Readonly
         fun find(language: String): LocaleCode? {
             val languageName = language.filterNot { it in bannedCharacters }
             return LocaleCode.entries.firstOrNull { it.name == languageName }
         }
 
         /** Get a Java Locale for a [language] as stored in GameSettings */
+        @Readonly
         fun getLocale(language: String): Locale =
             find(language)?.locale() ?: Locale.getDefault()
 
@@ -88,9 +91,9 @@ enum class LocaleCode(val languageTag: String, private val fastlaneFolder: Strin
             find(language)?.fastlaneFolder() ?: "en"
 
         // NumberFormat cache, key: language, value: NumberFormat
-        private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+        @Cache private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
 
-        @Readonly @Suppress("purity")
+        @Readonly
         fun getNumberFormatFromLanguage(language: String): NumberFormat =
             languageToNumberFormat.getOrPut(language) {
                 NumberFormat.getInstance(getLocale(language))

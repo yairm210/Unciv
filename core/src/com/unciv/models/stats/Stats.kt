@@ -1,6 +1,8 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
+import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -11,6 +13,7 @@ import yairm210.purity.annotations.Readonly
  *
  * Also possible: `<Stats>`.[values].sum() and similar aggregates over a Sequence<Float>.
  */
+@InternalState
 open class Stats(
     var production: Float = 0f,
     var food: Float = 0f,
@@ -124,6 +127,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
+    @Readonly
     operator fun times(number: Float) = Stats(
         production * number,
         food * number,
@@ -248,6 +252,7 @@ open class Stats(
          * - Order is not important.
          * @see [parse]
          */
+        @Pure
         fun isStats(string: String): Boolean {
             if (string.isEmpty() || string[0] !in "+-") return false // very quick negative check before the heavy Regex
             return entireStringRegexPattern.matches(string)

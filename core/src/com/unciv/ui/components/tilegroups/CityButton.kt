@@ -35,6 +35,7 @@ import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 
@@ -516,7 +517,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         listOfHiddenUnitMarkers.add(indicator)
     }
 
-    private fun belongsToViewingCiv() = city.civ == viewingPlayer
+    @Readonly private fun belongsToViewingCiv() = city.civ == viewingPlayer
 
     private fun setButtonActions() {
 

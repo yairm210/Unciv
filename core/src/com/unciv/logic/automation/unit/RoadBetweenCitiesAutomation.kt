@@ -14,6 +14,10 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
 private object WorkerAutomationConst {
@@ -41,7 +45,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      * value: The [BFS] searching from that city, whether successful or not
      */
     // TODO: If BFS were to deal in vectors instead of Tiles, we could copy this on cloning
-    private val bfsCache = HashMap<Vector2, BFS>()
+    @Cache private val bfsCache = HashMap<Vector2, BFS>()
 
     /** Caches road type to build for connecting cities, unless option is off or ruleset removed all roads */
     internal val bestRoadAvailable: RoadStatus =
@@ -98,17 +102,19 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 	 * @param city The [City] for which to obtain road plans
      * @return Every [RoadPlan] that we want to try and connect associated with [city].
      */
-    fun getRoadsToBuildFromCity(city: City): List<RoadPlan> {
+    @Readonly @Suppress("purity") 
+    private fun getRoadsToBuildFromCity(city: City): List<RoadPlan> {
         if (roadsToBuildByCitiesCache.containsKey(city))
             return roadsToBuildByCitiesCache[city]!!
 
         // TODO: some better worker representative needs to be used here
         val workerUnit = civInfo.gameInfo.ruleset.units.map { it.value }.firstOrNull { it.hasUnique(UniqueType.BuildImprovements) }
             // This is a temporary unit only for AI purposes so it doesn't get a unique ID
-            ?.getMapUnit(civInfo, Constants.NO_ID) ?: return listOf()
+            ?.newMapUnit(civInfo, Constants.NO_ID) ?: return listOf()
         val roadToCapitalStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
 
         /** @return Rank 0, 1 or 2 of how important it is to build best available road to capital */
+        @Pure
         fun rankRoadCapitalPriority(roadStatus: RoadStatus): Float {
             return when(roadStatus) {
                 RoadStatus.None -> if (bestRoadAvailable != RoadStatus.None) 2f else 0f
@@ -194,6 +200,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      *
      * @return The shortest road plan and drop other plans
      */
+    @Readonly
     private fun chooseBestPlan(planList: MutableList<RoadPlan>): RoadPlan? {
         if (planList.size < 2)
             return planList.firstOrNull()
@@ -216,6 +223,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
     }
 
     /** @return Lowest road level (aka. road type) in road path */
+    @Readonly
     private fun getWorstRoadTypeInPath(path: List<Tile>): RoadStatus {
         var worstRoadTile = RoadStatus.Railroad
         for (tile in path) {
@@ -234,18 +242,20 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      * So it should only be used if it is the only road that a city wants to build.
      * @return a pair containing a list of tiles that resemble the road to build and the city that the road will connect to
      */
+    @Readonly
     private fun getRoadToConnectCityToCapital(unit: MapUnit, city: City): Pair<City, List<Tile>>? {
         if (tilesOfConnectedCities.isEmpty()) return null // In mods with no capital city indicator, there are no connected cities
 
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
         val toConnectTile = city.getCenterTile()
-        val bfs: BFS = bfsCache[toConnectTile.position] ?:
-        BFS(toConnectTile, isCandidateTilePredicate).apply {
-            maxSize = HexMath.getNumberOfTilesInHexagon(
+        @LocalState val bfs: BFS = bfsCache[toConnectTile.position] ?: run {
+            val bfs = BFS(toConnectTile, isCandidateTilePredicate)
+            bfs.maxSize = HexMath.getNumberOfTilesInHexagon(
                 WorkerAutomationConst.maxBfsReachPadding +
-                    tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
+                        tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
             )
-            bfsCache[toConnectTile.position] = this@apply
+            bfsCache[toConnectTile.position] = bfs
+            bfs
         }
         val cityTilesToSeek = HashSet(tilesOfConnectedCities)
 
@@ -269,6 +279,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      * @param unit Civilian unit which may want to connect cities
      * @return A list of all cities the [unit] will try to connect if in its vicinity
      */
+    @Readonly
     internal fun getNearbyCitiesToConnect(unit: MapUnit): List<City> {
         if (bestRoadAvailable == RoadStatus.None) return listOf()
         val candidateCities = civInfo.cities.filter {

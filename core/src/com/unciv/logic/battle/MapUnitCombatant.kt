@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
+import yairm210.purity.annotations.Readonly
 
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getHealth(): Int = unit.health
@@ -46,9 +47,11 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.name+" of "+unit.civ.civName
     }
 
+    @Readonly 
     fun getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext, checkCivUniques: Boolean): Sequence<Unique> =
         unit.getMatchingUniques(uniqueType, gameContext, checkCivUniques)
 
+    @Readonly
     fun hasUnique(uniqueType: UniqueType, conditionalState: GameContext? = null): Boolean =
         if (conditionalState == null) unit.hasUnique(uniqueType)
         else unit.hasUnique(uniqueType, conditionalState)

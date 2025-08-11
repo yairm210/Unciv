@@ -6,6 +6,9 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
 
@@ -29,6 +32,7 @@ enum class RulesetErrorSeverity(val color: Color, val iconName: String) {
  *
  *  @param ruleset The ruleset being validated (needed to check modOptions for suppression uniques). Leave `null` only for validation results that need no suppression checks.
  */
+@InternalState
 class RulesetErrorList(
     ruleset: Ruleset? = null
 ) : ArrayList<RulesetError>() {
@@ -85,20 +89,23 @@ class RulesetErrorList(
         return true
     }
 
+    @Readonly
     fun getFinalSeverity(): RulesetErrorSeverity {
         if (isEmpty()) return RulesetErrorSeverity.OK
         return this.maxOf { it.errorSeverityToReport }
     }
 
     /** @return `true` means severe errors make the mod unplayable */
-    fun isError() = getFinalSeverity() == RulesetErrorSeverity.Error
+    @Readonly fun isError() = getFinalSeverity() == RulesetErrorSeverity.Error
     /** @return `true` means problems exist, Options screen mod checker or unit tests for vanilla ruleset should complain */
-    fun isNotOK() = getFinalSeverity() != RulesetErrorSeverity.OK
+    @Readonly fun isNotOK() = getFinalSeverity() != RulesetErrorSeverity.OK
     /** @return `true` means at least errors impacting gameplay exist, new game screen should warn or block */
-    fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
+    @Readonly fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
 
-    fun getErrorText(unfiltered: Boolean = false) =
+    @Readonly fun getErrorText(unfiltered: Boolean = false) =
             getErrorText { unfiltered || it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly }
+
+    @Readonly
     fun getErrorText(filter: (RulesetError)->Boolean) =
             filter(filter)
                 .sortedByDescending { it.errorSeverityToReport }
@@ -112,6 +119,7 @@ class RulesetErrorList(
     companion object {
         /** Helper factory for a single entry list (which can result in an empty list due to suppression)
          *  Note: Valid source for [addAll] since suppression is already taken care of. */
+        @Pure
         fun of(
             text: String,
             severity: RulesetErrorSeverity = RulesetErrorSeverity.Error,

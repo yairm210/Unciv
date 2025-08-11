@@ -110,7 +110,7 @@ for (platform in Platform.values()) {
             classpath = listOf(jarFile)
             removePlatformLibs = config.classpath
             mainClass = mainClassName
-            vmArgs = listOf("Xmx1G")
+            vmArgs = listOf("Xmx2G")
             minimizeJre = "desktop/packrConfig.json"
             outDir = file("packr")
         }

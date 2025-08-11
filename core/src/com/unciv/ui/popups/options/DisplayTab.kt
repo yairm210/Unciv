@@ -175,7 +175,7 @@ private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectB
 }
 
 private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
-    table.add("Screen Size".toLabel()).left().fillX()
+    table.add("UI Scale".toLabel()).left().fillX()
 
     val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.entries.map { it.name }, settings.screenSize.name)
     table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()

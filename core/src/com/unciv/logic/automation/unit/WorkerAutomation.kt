@@ -25,6 +25,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 
 /**
@@ -217,7 +218,7 @@ class WorkerAutomation(
             && (currentTile.isPillaged() || currentTile.hasFalloutEquivalent() || tileHasWorkToDo(currentTile, unit, localUniqueCache)))
             return currentTile
         
-        val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
+        val workableTilesCenterFirst = currentTile.getTilesInDistance(3)
             .filter {
                 isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
                         && getBasePriority(it, unit) > 1
@@ -273,7 +274,7 @@ class WorkerAutomation(
      * This is a cheap guess on how helpful it might be to do work on this tile
      */
     fun getBasePriority(tile: Tile, unit: MapUnit): Float {
-        val unitSpecificPriority = 2 - (tile.aerialDistanceTo(unit.getTile()) / 2.0f).coerceIn(0f, 2f)
+        val unitSpecificPriority = 2 - (tile.aerialDistanceTo(unit.getTile()) / 2.0f).coerceIn(0f, 2f) * 3
         if (tileRankings.containsKey(tile))
             return tileRankings[tile]!!.tilePriority + unitSpecificPriority
 
@@ -283,7 +284,7 @@ class WorkerAutomation(
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.hasFalloutEquivalent()) priority += 1
-            if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) priority += 1 // removing our forests is good for tempo
+            if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) priority += 0.5f// removing our forests is good for tempo
             if (tile.terrainHasUnique(UniqueType.FreshWater)) priority += 1 // we want our farms up when unlocking Civil Service
         }
         // give a minor priority to tiles that we could expand onto
@@ -679,6 +680,7 @@ class WorkerAutomation(
          *  Can return `true` if there is an improvement that does not match the resource (for future modding abilities).
          *  Does not check tile ownership - caller [automateWorkBoats] already did, other callers need to ensure this explicitly.
          */
+        @Readonly
         fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization) = when {
             !tile.isWater -> false
             tile.resource == null -> false
@@ -695,6 +697,7 @@ class WorkerAutomation(
          *  Only tests resource type and city range, not any improvement requirements.
          *  @throws NullPointerException on tiles without a resource
          */
+        @Readonly
         fun isNotBonusResourceOrWorkable(tile: Tile, civInfo: Civilization): Boolean =
             tile.tileResource.resourceType != ResourceType.Bonus // Improve Oil even if no City reaps the yields
                 || civInfo.cities.any { it.tilesInRange.contains(tile) } // Improve Fish only if any of our Cities reaps the yields

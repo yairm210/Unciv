@@ -164,7 +164,7 @@ object Parser {
             }
         }
 
-        @Pure @Suppress("purity")
+        @Pure @Suppress("purity") // Literally state engine - correct suppression
         fun buildAST(): Node {
             val node = expression()
             expect(EndToken)

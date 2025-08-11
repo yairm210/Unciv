@@ -27,7 +27,7 @@ enum class Stat(
         @Immutable private val valuesAsMap = entries.associateBy { it.name }
         @Pure fun safeValueOf(name: String) = valuesAsMap[name]
         @Pure fun isStat(name: String) = name in valuesAsMap
-        fun names() = valuesAsMap.keys
+        @Pure fun names() = valuesAsMap.keys
         val statsWithCivWideField = setOf(Gold, Science, Culture, Faith, Happiness)
     }
 }

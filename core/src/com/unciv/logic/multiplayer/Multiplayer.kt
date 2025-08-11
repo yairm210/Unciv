@@ -19,6 +19,7 @@ import com.unciv.utils.debug
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import yairm210.purity.annotations.Readonly
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
@@ -78,6 +79,7 @@ class Multiplayer {
         }.launchIn(CoroutineScope(Dispatcher.DAEMON))
     }
 
+    @Readonly
     private fun getCurrentGame(): MultiplayerGamePreview? {
         val gameInfo = UncivGame.Current.gameInfo
         return if (gameInfo != null && gameInfo.gameParameters.isOnlineMultiplayer) {
@@ -271,6 +273,7 @@ class Multiplayer {
     /**
      * Checks if [gameInfo] and [preview] are up-to-date with each other.
      */
+    @Readonly
     fun hasLatestGameState(gameInfo: GameInfo, preview: GameInfoPreview): Boolean {
         // TODO look into how to maybe extract interfaces to not make this take two different methods
         return gameInfo.currentPlayer == preview.currentPlayer
@@ -281,6 +284,7 @@ class Multiplayer {
     /**
      * Checks if [preview1] has a more recent game state than [preview2]
      */
+    @Readonly
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
     }

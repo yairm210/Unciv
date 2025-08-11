@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 import java.time.Instant
 import java.util.*
 
@@ -60,10 +61,12 @@ class MultiplayerFiles {
         savedGames[fileHandle] = game
     }
 
+    @Readonly
     fun getGameByName(name: String): MultiplayerGamePreview? {
         return savedGames.values.firstOrNull { it.name == name }
     }
 
+    @Readonly
     fun getGameByGameId(gameId: String): MultiplayerGamePreview? {
         return savedGames.values.firstOrNull { it.preview?.gameId == gameId }
     }

@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.stats.INamed
+import yairm210.purity.annotations.Readonly
 
 enum class QuestName(val value: String) {
     Route("Route"),
@@ -24,7 +25,7 @@ enum class QuestName(val value: String) {
     None("")
     ;
     companion object {
-        fun find(value: String) = values().firstOrNull { it.value == value } ?: None
+        fun find(value: String) = entries.firstOrNull { it.value == value } ?: None
     }
 }
 
@@ -67,6 +68,6 @@ class Quest : INamed {
     var weightForCityStateType = HashMap<String, Float>()
 
     /** Checks if `this` is a Global quest */
-    fun isGlobal(): Boolean = type == QuestType.Global
-    fun isIndividual(): Boolean = !isGlobal()
+    @Readonly fun isGlobal(): Boolean = type == QuestType.Global
+    @Readonly fun isIndividual(): Boolean = !isGlobal()
 }

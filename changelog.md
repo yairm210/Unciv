@@ -1,3 +1,40 @@
+## 4.17.12
+
+Fixed spy surveillance progressing tech stealing when no techs are available to steal
+
+Bugfix: Building 'improvement to create' no longer cached across rulesets
+
+Fixed city states getting all techs when only 1 major civ remains
+
+Many small automation improvements - By EmperorPinguin
+
+"Upon entering war" uniques - By PLynx01
+
+## 4.17.11
+
+Fix Ancient Ruin benefit on higher difficulties - By RobLoach
+
+Multiplayer: Only bring forth `AuthPopup` if server explicitly returns `401` - By touhidurrr 
+
+Modding: "can settle" unique able accept tile filters for water and impassible tiles - By Emandac
+
+## 4.17.10
+
+Fix crash when opening victory screen on the first turn
+
+modding: Add misspelling corrections to unique parameters in mod checker
+
+By SomeTroglodyte:
+- Fix unit icon disappearing on right-click of unit's tile 
+- Fix autoplay+tutorials softlock
+
+By EmperorPinguin:
+- AI: exclude great general from escort logic 
+- AI: better utilization of promoted units 
+- AI: lower threshold for minimum acceptable newcity tile 
+
+Add unit action icons for triggerables - By RobLoach
+
 ## 4.17.9
 
 Remove irrelevant counteroffer notifications when the trade request is invalid

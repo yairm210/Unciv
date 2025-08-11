@@ -123,9 +123,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    
-    fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
-        val unit = MapUnit()
+    @Readonly @Suppress("purity") // technically DOES increase gameInfo.lastUnitId...
+    fun newMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
+        @LocalState val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civName
@@ -301,7 +301,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     
     @Readonly @Suppress("purity") // Good suppression - we cheat by creating a unit
     fun canUnitEnterTile(city: City): Boolean {
-        val fakeUnit = getMapUnit(city.civ, Constants.NO_ID)
+        val fakeUnit = newMapUnit(city.civ, Constants.NO_ID)
         return fakeUnit.movement.canMoveTo(city.getCenterTile())
     }
 
@@ -372,6 +372,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     // This returns the name of the unit this tech upgrades this unit to,
     // or null if there is no automatic upgrade at that tech.
+    @Readonly
     fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
         for (obsoleteTech: String in techsAtWhichAutoUpgradeInProduction())
             if (obsoleteTech == techName)
@@ -406,6 +407,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    @Readonly
     fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
         return if (replaces == null) this
         else ruleset.units[replaces!!]!!
@@ -478,7 +480,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
-        @LocalState val resourceRequirements = Counter<String>()
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: GameContext.EmptyState))
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())
@@ -500,10 +502,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
 
 
-    @Transient
-    var cachedForceEvaluation: Int = -1
+    @Transient @Cache
+    private var cachedForceEvaluation: Int = -1
     
-    @Readonly @Suppress("purity") // caches
+    @Readonly
     fun getForceEvaluation(): Int {
         if (cachedForceEvaluation < 0) 
             cachedForceEvaluation = evaluateForce()

@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.ui.components.extensions.toPrettyString
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Dedicated HashMap with [Vector2] keys for [Civilization.lastSeenImprovement].
@@ -37,6 +39,7 @@ open class LastSeenImprovement(
         }
     }
 
+    @Pure
     private fun String.toVector2(): Vector2 {
         val (x, y) = removeSurrounding("(", ")").split(',')
         return Vector2(x.toFloat(), y.toFloat())

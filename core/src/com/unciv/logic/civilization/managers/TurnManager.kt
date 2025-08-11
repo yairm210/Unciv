@@ -317,7 +317,7 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         civInfo.cache.updateHasActiveEnemyMovementPenalty()
 
-        civInfo.cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
+        civInfo.resetMilitaryMightCache()
 
         updateWinningCiv() // Maybe we did something this turn to win
     }
