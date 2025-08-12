@@ -26,6 +26,7 @@ import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
@@ -122,9 +123,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    
-    fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
-        val unit = MapUnit()
+    @Readonly @Suppress("purity") // technically DOES increase gameInfo.lastUnitId...
+    fun newMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
+        @LocalState val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civName
@@ -300,7 +301,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     
     @Readonly @Suppress("purity") // Good suppression - we cheat by creating a unit
     fun canUnitEnterTile(city: City): Boolean {
-        val fakeUnit = getMapUnit(city.civ, Constants.NO_ID)
+        val fakeUnit = newMapUnit(city.civ, Constants.NO_ID)
         return fakeUnit.movement.canMoveTo(city.getCenterTile())
     }
 
@@ -496,6 +497,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     val isWaterUnit by lazy { type.isWaterUnit() }
     @Readonly fun isAirUnit() = type.isAirUnit()
 
+    @Readonly
     fun isProbablySiegeUnit() = isRanged()
             && getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }

@@ -10,6 +10,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 object BattleHelper {
 
@@ -71,6 +72,7 @@ object BattleHelper {
     /**
      * Choses the best target in attackableEnemies, this could be a city or a unit.
      */
+    @Readonly
     private fun chooseAttackTarget(unit: MapUnit, attackableEnemies: List<AttackableTile>): AttackableTile? {
         // Get the highest valued attackableEnemy
         var highestAttackValue = 0
@@ -95,6 +97,7 @@ object BattleHelper {
      * Siege units will almost always attack cities.
      * Base value is 100(Mele) 110(Ranged) standard deviation is around 80 to 130
      */
+    @Readonly
     private fun getCityAttackValue(attacker: MapUnit, city: City): Int {
         val attackerUnit = MapUnitCombatant(attacker)
         val cityUnit = CityCombatant(city)
@@ -144,6 +147,7 @@ object BattleHelper {
      * Returns a value which represents the attacker's motivation to attack a unit.
      * Base value is 100 and standard deviation is around 80 to 130
      */
+    @Readonly
     private fun getUnitAttackValue(attacker: MapUnit, attackTile: AttackableTile): Int {
         // Base attack value, there is nothing there...
         var attackValue = Int.MIN_VALUE

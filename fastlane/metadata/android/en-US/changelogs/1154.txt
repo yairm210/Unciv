@@ -1,0 +1,5 @@
+By EmperorPinguin:
+- AI: build more workers
+- AI: Better settler automation
+
+Fix combat conditionals not working correctly - By SeventhM

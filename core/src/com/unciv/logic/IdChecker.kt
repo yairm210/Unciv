@@ -1,6 +1,6 @@
 package com.unciv.logic
 
-import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.Pure
 import java.util.Locale
 import kotlin.math.abs
 
@@ -24,14 +24,17 @@ import kotlin.math.abs
  */
 object IdChecker {
 
+    @Pure
     fun checkAndReturnPlayerUuid(playerId: String): String? {
         return checkAndReturnUuiId(playerId, "P")
     }
 
+    @Pure
     fun checkAndReturnGameUuid(gameId: String): String? {
         return checkAndReturnUuiId(gameId, "G")
     }
 
+    @Pure
     private fun checkAndReturnUuiId(id: String, prefix: String): String? {
         val trimmedPlayerId = id.trim()
         if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
@@ -56,7 +59,7 @@ object IdChecker {
     /**
      * Adapted from https://wiki.openmrs.org/display/docs/Check+Digit+Algorithm
      */
-    @Readonly
+    @Pure
     fun getCheckDigit(uuid: String): Int? {
         // allowable characters within identifier
         @Suppress("SpellCheckingInspection")
@@ -69,8 +72,7 @@ object IdChecker {
         var sum = 0
 
         // loop through digits from right to left
-        for (i in idWithoutCheckdigit.indices) {
-
+        idWithoutCheckdigit.indices.forEach { i ->
             //set ch to "current" character to be processed
             val ch = idWithoutCheckdigit[idWithoutCheckdigit.length - i - 1]
 
@@ -82,7 +84,7 @@ object IdChecker {
 
             // weight will be the current digit's contribution to
             // the running total
-            var weight: Int
+            val weight: Int
             if (i % 2 == 0) {
 
                 // for alternating digits starting with the rightmost, we
@@ -102,7 +104,6 @@ object IdChecker {
             }
             // keep a running total of weights
             sum += weight
-
         }
         // avoid sum less than 10 (if characters below "0" allowed,
         // this could happen)
