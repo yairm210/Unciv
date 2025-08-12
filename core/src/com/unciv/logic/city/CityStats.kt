@@ -155,6 +155,7 @@ class CityStats(val city: City) {
         return Stats(science = -25f, culture = -25f)
     }
 
+    @Readonly
     fun getGrowthBonus(totalFood: Float): StatMap {
         val growthSources = StatMap()
         val stateForConditionals = city.state

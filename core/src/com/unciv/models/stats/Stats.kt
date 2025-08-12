@@ -283,6 +283,7 @@ open class Stats(
     }
 }
 
+@InternalState
 class StatMap : LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
         // We always clone to avoid touching the mutable stats of uniques
