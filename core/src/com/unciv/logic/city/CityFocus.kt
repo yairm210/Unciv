@@ -69,17 +69,8 @@ enum class CityFocus(
         else -> 1f
     }
 
-    private val statValuesForFocus: List<Stat> by lazy {
+    val statValuesForFocus: List<Stat> by lazy {
         Stat.entries.filter { getStatMultiplier(it) != 1f }
-    }
-
-    fun applyWeightTo(stats: Stats) {
-        for (stat in statValuesForFocus) {
-            val currentStat = stats[stat]
-            if (currentStat == 0f) continue
-            val statMultiplier = getStatMultiplier(stat)
-            stats[stat] = currentStat * statMultiplier
-        }
     }
 
     companion object {
