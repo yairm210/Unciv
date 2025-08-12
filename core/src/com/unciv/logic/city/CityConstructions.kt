@@ -141,11 +141,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             maintenanceCost += maintenanceForThisBuilding
         }
 
-        for (unique in city.getMatchingUniques(UniqueType.BuildingMaintenanceOld)) {
-            maintenanceCost = (maintenanceCost * unique.params[0].toPercent())
-        }
-
-
         return maintenanceCost
     }
 

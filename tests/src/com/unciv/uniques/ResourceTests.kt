@@ -3,8 +3,6 @@ package com.unciv.uniques
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -51,24 +49,16 @@ class ResourceTests {
     fun testResourceProductionAndConsumptionModifierDoesNotAffectConsumption() {
         val consumesCoal = game.createBuilding("Consumes [1] [Coal]")
         val providesCoal = game.createBuilding("Provides [1] [Coal]")
-        val doubleCoal = game.createBuilding("Double quantity of [Coal] produced")
-        val doubleStrategic = game.createBuilding("Quantity of strategic resources produced by the empire +[100]%")
         val doubleStrategicProduction = game.createBuilding("[+100]% [Strategic] resource production")
 
         city.cityConstructions.addBuilding(providesCoal)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
-
-        city.cityConstructions.addBuilding(doubleCoal)
+        
+        city.cityConstructions.addBuilding(doubleStrategicProduction)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 2)
 
-        city.cityConstructions.addBuilding(doubleStrategic)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3)
-
-        city.cityConstructions.addBuilding(doubleStrategicProduction)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
-
         city.cityConstructions.addBuilding(consumesCoal)
-        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3) // Produce 4 (1 + 1 + 1 + 1), consume 1
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1) // Produce 2, consume 1
     }
 
     @Test
@@ -128,11 +118,11 @@ class ResourceTests {
         tile.setImprovement(improvement.name, civInfo)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
 
-        val doubleCoal = game.createBuilding("Double quantity of [Coal] produced")
+        val doubleCoal = game.createBuilding("[+100]% [Coal] resource production")
         city.cityConstructions.addBuilding(doubleCoal)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 2)
 
-        val doubleStrategic = game.createBuilding("Quantity of strategic resources produced by the empire +[100]%")
+        val doubleStrategic = game.createBuilding("[+100]% [Strategic] resource production")
         city.cityConstructions.addBuilding(doubleStrategic)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3)
 
