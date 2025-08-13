@@ -28,7 +28,7 @@ object HeadTowardsEnemyCityAutomation {
         )
     }
 
-    private fun getEnemyCitiesByPriority(unit: MapUnit): Sequence<City> {
+    fun getEnemyCitiesByPriority(unit: MapUnit): Sequence<City> {
         val enemies = unit.civ.getKnownCivs()
             .filter { unit.civ.isAtWarWith(it) && it.cities.isNotEmpty() }
 
