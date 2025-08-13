@@ -1,3 +1,11 @@
+## 4.17.13
+
+By EmperorPinguin:
+- AI: build more workers
+- AI: Better settler automation
+
+Fix combat conditionals not working correctly - By SeventhM
+
 ## 4.17.12
 
 Fixed spy surveillance progressing tech stealing when no techs are available to steal

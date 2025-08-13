@@ -497,6 +497,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     val isWaterUnit by lazy { type.isWaterUnit() }
     @Readonly fun isAirUnit() = type.isAirUnit()
 
+    @Readonly
     fun isProbablySiegeUnit() = isRanged()
             && getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
