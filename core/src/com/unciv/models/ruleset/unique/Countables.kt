@@ -83,6 +83,31 @@ enum class Countables(
         }
     },
 
+    StatPerTurn("[stat] Per Turn", shortDocumentation = "The amount of a stat gained per turn") {
+        override val documentationHeader = "Stat name (${Stat.names().niceJoin()}) Per Turn"
+        override val documentationStrings = listOf(
+            "Gets the amount of a stat gained per turn."
+        )
+        override fun matches(parameterText: String) = Stat.isStat(parameterText.getPlaceholderParameters().firstOrNull() ?: "")
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val statName = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
+            val relevantStat = Stat.safeValueOf(statName) ?: return null
+            val civ = gameContext.civInfo
+            if (civ != null) {
+                val nextTurnStats = civ.stats.getStatMapForNextTurn()
+                return nextTurnStats.values.map { it[relevantStat] }.sum().toInt()
+            }
+            return null
+        }
+        override val example: String = "[Culture] Per Turn"
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names().map { "[$it] Per Turn" }.toSet()
+
+        private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
+            val index = lastIndexOf("`, `")
+            substring(0, index) + "` or `" + substring(index + 4)
+        }
+    },
+
     PolicyBranches("Completed Policy branches") {
         override fun eval(parameterText: String, gameContext: GameContext) =
             gameContext.civInfo?.getCompletedPolicyBranchesCount()
