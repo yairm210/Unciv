@@ -77,7 +77,7 @@ enum class Countables(
 
         override val example = "Science"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names()
-        private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
+        @Readonly private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
             val index = lastIndexOf("`, `")
             substring(0, index) + "` or `" + substring(index + 4)
         }
@@ -86,18 +86,22 @@ enum class Countables(
     StatPerTurn("[stat] Per Turn", shortDocumentation = "The amount of a stat gained per turn") {
         override val documentationHeader = "Stat name Per Turn (${Stat.names().niceJoin()})"
         override val documentationStrings = listOf("Gets the amount of a stat the civilization gains per turn")
-        override fun matches(parameterText: String) = Stat.isStat(parameterText.getPlaceholderParameters().firstOrNull() ?: "")
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val statName = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
             val relevantStat = Stat.safeValueOf(statName) ?: return null
             val civ = gameContext.civInfo ?: return null
             return civ.stats.getStatMapForNextTurn().values.map { it[relevantStat] }.sum().toInt()
         }
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names().map { "[$it] Per Turn" }.toSet()
-        private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.StatName.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.StatName.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
+        @Readonly private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
             val index = lastIndexOf("`, `")
             substring(0, index) + "` or `" + substring(index + 4)
         }
+        override val example: String = "[Culture] Per Turn"
     },
 
     PolicyBranches("Completed Policy branches") {
@@ -304,7 +308,7 @@ enum class Countables(
 
     @Readonly fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
-    protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+    @Readonly protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
         getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
 
     companion object {
