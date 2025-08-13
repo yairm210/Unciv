@@ -91,8 +91,7 @@ enum class Countables(
             val statName = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
             val relevantStat = Stat.safeValueOf(statName) ?: return null
             val civ = gameContext.civInfo ?: return null
-            val nextTurnStats = civ.stats.getStatMapForNextTurn()
-            return nextTurnStats.values.map { it[relevantStat] }.sum().toInt()
+            return civ.stats.getStatMapForNextTurn().values.map { it[relevantStat] }.sum().toInt()
         }
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names().map { "[$it] Per Turn" }.toSet()
         private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
