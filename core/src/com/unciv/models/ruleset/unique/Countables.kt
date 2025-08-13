@@ -64,7 +64,7 @@ enum class Countables(
     },
 
     Stats {
-        override val documentationHeader = "Stat name (${Stat.names().niceJoin()})"
+        override val documentationHeader = "Stat name (${niceJoinList(Stat.names())})"
         override val documentationStrings = listOf("Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
@@ -77,14 +77,10 @@ enum class Countables(
 
         override val example = "Science"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names()
-        @Readonly private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
-            val index = lastIndexOf("`, `")
-            substring(0, index) + "` or `" + substring(index + 4)
-        }
     },
 
     StatPerTurn("[stat] Per Turn", shortDocumentation = "The amount of a stat gained per turn") {
-        override val documentationHeader = "Stat name Per Turn (${Stat.names().niceJoin()})"
+        override val documentationHeader = "Stat name Per Turn (${niceJoinList(Stat.names())})"
         override val documentationStrings = listOf("Gets the amount of a stat the civilization gains per turn")
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val statName = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
@@ -97,10 +93,6 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             UniqueParameterType.StatName.getKnownValuesForAutocomplete(ruleset)
                 .map { text.fillPlaceholders(it) }.toSet()
-        @Readonly private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
-            val index = lastIndexOf("`, `")
-            substring(0, index) + "` or `" + substring(index + 4)
-        }
         override val example: String = "[Culture] Per Turn"
     },
 
@@ -302,6 +294,14 @@ enum class Countables(
                 .mapNotNull { UniqueParameterType.safeValueOf(it)?.docExample }
             return text.fillPlaceholders(*placeholderParams.toTypedArray())
         }
+
+    /**
+     * Joins a list with `,` while having an or for the last entry. Useful for the documentation headers.
+     */
+    @Readonly fun niceJoinList(list: Iterable<String>) = list.joinToString("`, `", "`", "`").run {
+        val index = lastIndexOf("`, `")
+        substring(0, index) + "` or `" + substring(index + 4)
+    }
 
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
     open fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
