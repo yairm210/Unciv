@@ -92,12 +92,9 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val statName = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
             val relevantStat = Stat.safeValueOf(statName) ?: return null
-            val civ = gameContext.civInfo
-            if (civ != null) {
-                val nextTurnStats = civ.stats.getStatMapForNextTurn()
-                return nextTurnStats.values.map { it[relevantStat] }.sum().toInt()
-            }
-            return null
+            val civ = gameContext.civInfo ?: return null
+            val nextTurnStats = civ.stats.getStatMapForNextTurn()
+            return nextTurnStats.values.map { it[relevantStat] }.sum().toInt()
         }
         override val example: String = "[Culture] Per Turn"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names().map { "[$it] Per Turn" }.toSet()
