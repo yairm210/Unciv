@@ -150,7 +150,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance */
-    operator fun div(number: Float) = times(1/number)
+    @Readonly operator fun div(number: Float) = times(1/number)
 
     /** **Mutating function**
      * Apply weighting for Production Ranking */

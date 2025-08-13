@@ -197,7 +197,6 @@ class RejectionReason(val type: RejectionReasonType,
             RejectionReasonType.RequiresBuildingInSomeCity,
             RejectionReasonType.RequiresBuildingInSomeCities,
             RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
-            RejectionReasonType.CannotBeBuiltUnhappiness,
             RejectionReasonType.PopulationRequirement,
             RejectionReasonType.ConsumesResources,
             RejectionReasonType.CanOnlyBePurchased,
@@ -207,7 +206,6 @@ class RejectionReason(val type: RejectionReasonType,
         // Exceptions. Used for units spawned/upgrade path, not built
         private val constructionRejectionReasonType = listOf(
             RejectionReasonType.Unbuildable,
-            RejectionReasonType.CannotBeBuiltUnhappiness,
             RejectionReasonType.CannotBeBuilt,
             RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
         )
@@ -249,12 +247,10 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
     CannotBeBuilt(false, "Cannot be built by this nation"),
-    CannotBeBuiltUnhappiness(true, "Unhappiness"),
 
     Obsoleted(false, "Obsolete"),
     RequiresTech(false, "Required tech not researched"),
     RequiresPolicy(false, "Requires a specific policy!"),
-    UnlockedWithEra(false, "Unlocked when reaching a specific era"),
     MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
 
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
