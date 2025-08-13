@@ -33,15 +33,12 @@
 	{
 		"name": "Warrior",
 		"unitType": "Sword",
-		"movement": 1,
+		"movement": 2,
 		"strength": 8,
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
 		"upgradesTo": "Swordsman",
-		"uniques" : [
-            "May upgrade to [Spearman] through ruins-like effects",
-            "[1] Movement <for every [[Culture] Per Turn]>"
-        ],
+		"uniques": ["May upgrade to [Spearman] through ruins-like effects"],
 		"attackSound": "nonmetalhit",
         "civilopediaText": [
 			{"text": "This is your basic, club-swinging fighter."}
