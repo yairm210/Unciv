@@ -168,7 +168,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return cost - (cost % 5)
     }
 
-    fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
+    @Readonly fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     /** Uncached, use carefully */
     @Readonly
