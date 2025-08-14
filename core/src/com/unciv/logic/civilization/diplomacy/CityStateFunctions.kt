@@ -521,6 +521,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
     }
 
+    @Readonly
     fun canProvideStat(statType: Stat): Boolean {
         if (!civInfo.isCityState)
             return false
