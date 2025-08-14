@@ -246,9 +246,10 @@ class VictoryScreenIllustrations(
                     civ.policies.completedBranches.size
                 }
                 MilestoneType.MoreCountableThanEachPlayer -> {
-                    total += game.civilizations.count { it.isMajorCiv() && it.isAlive() }
+                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers
+                        else game.civilizations.count { it != civ && it.isMajorCiv() && it.isAlive() }
                     game.civilizations.count {
-                        it != civ && it.isMajorCiv() && it.isAlive() && civ.knows(it) &&
+                        it != civ && it.isMajorCiv() && it.isAlive() &&
                         (Countables.getCountableAmount(milestone.params[0], GameContext(civ)) ?: 0) > (Countables.getCountableAmount(milestone.params[1], GameContext(it)) ?: 0)
                     }
                 }

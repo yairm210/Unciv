@@ -28,7 +28,7 @@ enum class MilestoneType(val text: String) {
     WorldReligion("Become the world religion"),
     WinDiplomaticVote("Win diplomatic vote"),
     ScoreAfterTimeOut("Have highest score after max turns"),
-    MoreCountableThanEachPlayer("Have more [countable] than the [countable] of each player"),
+    MoreCountableThanEachPlayer("Have more [countable] than each player's [countable]"),
 }
 
 class Victory : INamed {
@@ -115,7 +115,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 civInfo.policies.completedBranches.size >= params[0].toInt()
             MilestoneType.MoreCountableThanEachPlayer ->
                 civInfo.gameInfo.civilizations.count {
-                    it != civInfo && it.isMajorCiv() && it.isAlive() && civInfo.knows(it) &&
+                    it != civInfo && it.isMajorCiv() && it.isAlive() &&
                     (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(it)) ?: 0)
                 } >= civInfo.gameInfo.civilizations.count {
                     it != civInfo && it.isMajorCiv() && it.isAlive()
