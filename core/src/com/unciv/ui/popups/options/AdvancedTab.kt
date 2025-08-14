@@ -104,7 +104,8 @@ class AdvancedTab(
         
         val maxAutosavesStoredSelectBox = SelectBox<Int>(skin)
         val maxAutosavesStoredArray = Array<Int>()
-        maxAutosavesStoredArray.addAll(1,2,5,10,15,20,35,50,100,150,200,250)
+        maxAutosavesStoredArray.addAll(1,2,5,10,15,20,35,50,100,150,200,250,
+            500,1000,2500,5000,10000)
         maxAutosavesStoredSelectBox.items = maxAutosavesStoredArray
         maxAutosavesStoredSelectBox.selected = settings.maxAutosavesStored
         
