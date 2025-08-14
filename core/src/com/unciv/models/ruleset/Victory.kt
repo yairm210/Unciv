@@ -99,6 +99,23 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         return civsWithCapitals.union(livingCivs)
     }
 
+    /**
+     * Gets the percentage progress of one civilization's countable against another's countable.
+     *
+     * @return The progress percentage (0-100).
+     */
+    @Readonly
+    private fun getMoreCountableThanOtherCivPercent(civ: Civilization, otherCiv: Civilization): Float {
+        if (type != MilestoneType.MoreCountableThanEachPlayer) return 0f
+        val firstCountable = Countables.getCountableAmount(params[0], GameContext(civ)) ?: 0
+        val secondCountable = Countables.getCountableAmount(params[1], GameContext(otherCiv)) ?: 0
+        return if (secondCountable <= 0) { // Protect against zero division and negative resulting percent
+            if (firstCountable > secondCountable) 100.1f else 0f // Extra .1 so that it qualifies as >100%
+        } else {
+            firstCountable.toFloat() / secondCountable.toFloat() * 100f
+        }
+    }
+
     @Readonly
     fun hasBeenCompletedBy(civInfo: Civilization): Boolean {
         return when (type!!) {
@@ -114,12 +131,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
             MilestoneType.MoreCountableThanEachPlayer ->
-                civInfo.gameInfo.civilizations.count {
-                    it != civInfo && it.isMajorCiv() && it.isAlive() &&
-                    (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(it)) ?: 0)
-                } >= civInfo.gameInfo.civilizations.count {
-                    it != civInfo && it.isMajorCiv() && it.isAlive()
-                }
+                civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() && it.isAlive() }.all { getMoreCountableThanOtherCivPercent(civInfo, it) > 100f }
             MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
                 it.cityConstructions.isBuilt(params[0])
             }
@@ -182,13 +194,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
             }
             MilestoneType.MoreCountableThanEachPlayer -> {
-                val amountDone = civInfo.gameInfo.civilizations.count {
-                    it != civInfo && it.isMajorCiv() && it.isAlive() &&
-                    (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(it)) ?: 0)
-                }
-                val amountToDo = civInfo.gameInfo.civilizations.count {
-                    it != civInfo && it.isMajorCiv() && it.isAlive()
-                }
+                val relevantCivs = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() && it.isAlive() }
+                val amountToDo = relevantCivs.size
+                val amountDone = relevantCivs.count { getMoreCountableThanOtherCivPercent(civInfo, it) > 100f }
                 if (civInfo.shouldHideCivCount())
                     "{$uniqueDescription} (${amountDone.tr()}/?)"
                 else
@@ -304,14 +312,13 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 for (civ in civInfo.gameInfo.civilizations) {
                     if (civ == civInfo || !civ.isMajorCiv()) continue
                     if (hideCivCount && !civInfo.knows(civ)) continue
-
-                    val completed = (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(civ)) ?: 0)
-                    val percent = (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0).toFloat() / (Countables.getCountableAmount(params[1], GameContext(civ)) ?: 0).toFloat() * 100f
                     val civName = if (civInfo.knows(civ)) civ.civName else Constants.unknownNationName
-                    val milestoneText = if (completed) "[${civName}]" else "[${civName}] [${percent.toInt()}]%"
-                    buttons.add(getMilestoneButton(milestoneText, completed))
+                    val percent = getMoreCountableThanOtherCivPercent(civInfo, civ)
+                    // Hide the percent if it's double. For example: "Dominant" cultural influence in BNW.
+                    val milestoneText = if (percent >= 200f) "[${civName}]" else "[${civName}] [${percent.toInt()}]%"
+                    buttons.add(getMilestoneButton(milestoneText, percent > 100f))
                 }
-                if (hideCivCount) buttons.add(getMilestoneButton("More [${params[0]}] than [${Constants.unknownNationName}]'s [${params[1]}]", false))
+                if (hideCivCount) buttons.add(getMilestoneButton("[${Constants.unknownNationName}]", false))
             }
 
             MilestoneType.WorldReligion -> {
@@ -363,17 +370,22 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.DestroyAllPlayers, MilestoneType.CaptureAllCapitals -> Victory.Focus.Military
             MilestoneType.CompletePolicyBranches -> Victory.Focus.Culture
             MilestoneType.MoreCountableThanEachPlayer -> {
-                // TODO: Try to interpret what the countable is targetting
-                val stat = Stat.safeValueOf(params[0])
-                when (stat) {
-                    Stat.Production -> return Victory.Focus.Production
-                    Stat.Food -> return Victory.Focus.Production
-                    Stat.Gold -> return Victory.Focus.Gold
-                    Stat.Science -> return Victory.Focus.Science
-                    Stat.Culture -> return Victory.Focus.Culture
-                    Stat.Happiness -> return Victory.Focus.Culture
-                    Stat.Faith -> return Victory.Focus.Faith
-                    else -> return Victory.Focus.Production
+                when (Countables.getMatching(params[0], ruleset)) {
+                    Countables.Stats -> when (Stat.safeValueOf(params[0])) {
+                        Stat.Production -> Victory.Focus.Production
+                        Stat.Food -> Victory.Focus.Production
+                        Stat.Gold -> Victory.Focus.Gold
+                        Stat.Science -> Victory.Focus.Science
+                        Stat.Culture -> Victory.Focus.Culture
+                        Stat.Happiness -> Victory.Focus.Gold
+                        Stat.Faith -> Victory.Focus.Faith
+                        else -> Victory.Focus.Production
+                    }
+                    Countables.Cities, Countables.FilteredCities, Countables.FilteredBuildings, Countables.OwnedTiles -> Victory.Focus.Production
+                    Countables.Units, Countables.FilteredUnits -> Victory.Focus.Military
+                    Countables.PolicyBranches, Countables.FilteredPolicies -> Victory.Focus.Culture
+                    Countables.TileResources, Countables.TileFilterTiles -> Victory.Focus.Production
+                    else -> Victory.Focus.Score
                 }
             }
             MilestoneType.WinDiplomaticVote -> Victory.Focus.CityStates
