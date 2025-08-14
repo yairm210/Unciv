@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.unique.Countables
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
@@ -242,6 +244,13 @@ class VictoryScreenIllustrations(
                 MilestoneType.CompletePolicyBranches -> {
                     total += milestone.params[0].toInt()
                     civ.policies.completedBranches.size
+                }
+                MilestoneType.MoreCountableThanEachPlayer -> {
+                    total += game.civilizations.count { it.isMajorCiv() && it.isAlive() }
+                    game.civilizations.count {
+                        it != civ && it.isMajorCiv() && it.isAlive() && civ.knows(it) &&
+                        (Countables.getCountableAmount(milestone.params[0], GameContext(civ)) ?: 0) > (Countables.getCountableAmount(milestone.params[1], GameContext(it)) ?: 0)
+                    }
                 }
                 MilestoneType.WorldReligion -> {
                     total += game.civilizations.count { it.isMajorCiv() && it.isAlive() }

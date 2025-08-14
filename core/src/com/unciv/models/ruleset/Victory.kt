@@ -6,6 +6,9 @@ import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.unique.Countables
+import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
@@ -25,6 +28,7 @@ enum class MilestoneType(val text: String) {
     WorldReligion("Become the world religion"),
     WinDiplomaticVote("Win diplomatic vote"),
     ScoreAfterTimeOut("Have highest score after max turns"),
+    MoreCountableThanEachPlayer("Have more [countable] than the [countable] of each player"),
 }
 
 class Victory : INamed {
@@ -109,6 +113,13 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 originalMajorCapitalsOwned(civInfo) == civsWithPotentialCapitalsToOwn(civInfo.gameInfo).size
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
+            MilestoneType.MoreCountableThanEachPlayer ->
+                civInfo.gameInfo.civilizations.count {
+                    it != civInfo && it.isMajorCiv() && it.isAlive() && civInfo.knows(it) &&
+                    (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(it)) ?: 0)
+                } >= civInfo.gameInfo.civilizations.count {
+                    it != civInfo && it.isMajorCiv() && it.isAlive()
+                }
             MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
                 it.cityConstructions.isBuilt(params[0])
             }
@@ -165,6 +176,19 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 val amountDone =
                     if (completed) amountToDo
                     else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().count { it != civInfo })
+                if (civInfo.shouldHideCivCount())
+                    "{$uniqueDescription} (${amountDone.tr()}/?)"
+                else
+                    "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
+            }
+            MilestoneType.MoreCountableThanEachPlayer -> {
+                val amountDone = civInfo.gameInfo.civilizations.count {
+                    it != civInfo && it.isMajorCiv() && it.isAlive() &&
+                    (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(it)) ?: 0)
+                }
+                val amountToDo = civInfo.gameInfo.civilizations.count {
+                    it != civInfo && it.isMajorCiv() && it.isAlive()
+                }
                 if (civInfo.shouldHideCivCount())
                     "{$uniqueDescription} (${amountDone.tr()}/?)"
                 else
@@ -275,6 +299,21 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 }
             }
 
+            MilestoneType.MoreCountableThanEachPlayer -> {
+                val hideCivCount = civInfo.shouldHideCivCount()
+                for (civ in civInfo.gameInfo.civilizations) {
+                    if (civ == civInfo || !civ.isMajorCiv()) continue
+                    if (hideCivCount && !civInfo.knows(civ)) continue
+
+                    val completed = (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(civ)) ?: 0)
+                    val milestoneText =
+                        if (civInfo.knows(civ) || completed) "More [${params[0]}] than [${civ.civName}]'s [${params[1]}]"
+                        else "More [${params[0]}] than [${Constants.unknownNationName}]'s [${params[1]}]"
+                    buttons.add(getMilestoneButton(milestoneText, completed))
+                }
+                if (hideCivCount) buttons.add(getMilestoneButton("More [${params[0]}] than [${Constants.unknownNationName}]'s [${params[1]}]", false))
+            }
+
             MilestoneType.WorldReligion -> {
                 val hideCivCount = civInfo.shouldHideCivCount()
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it.isAlive() }
@@ -323,6 +362,20 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
             MilestoneType.DestroyAllPlayers, MilestoneType.CaptureAllCapitals -> Victory.Focus.Military
             MilestoneType.CompletePolicyBranches -> Victory.Focus.Culture
+            MilestoneType.MoreCountableThanEachPlayer -> {
+                // TODO: Try to interpret what the countable is targetting
+                val stat = Stat.safeValueOf(params[0])
+                when (stat) {
+                    Stat.Production -> return Victory.Focus.Production
+                    Stat.Food -> return Victory.Focus.Production
+                    Stat.Gold -> return Victory.Focus.Gold
+                    Stat.Science -> return Victory.Focus.Science
+                    Stat.Culture -> return Victory.Focus.Culture
+                    Stat.Happiness -> return Victory.Focus.Culture
+                    Stat.Faith -> return Victory.Focus.Faith
+                    else -> return Victory.Focus.Production
+                }
+            }
             MilestoneType.WinDiplomaticVote -> Victory.Focus.CityStates
             MilestoneType.ScoreAfterTimeOut -> Victory.Focus.Score
             MilestoneType.WorldReligion -> Victory.Focus.Faith
