@@ -365,7 +365,7 @@ object Battle {
                 }
             }
         }
-        
+
         val defenderDamageDealt = attackerHealthBefore - attacker.getHealth()
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
 
