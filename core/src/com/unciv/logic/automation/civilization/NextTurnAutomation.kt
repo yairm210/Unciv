@@ -106,6 +106,7 @@ object NextTurnAutomation {
             else -> ((projectedGold - pissPoor) * maxPercent / stinkingRich).coerceAtMost(maxPercent)
         }
     }
+    
     private fun respondToPopupAlerts(civInfo: Civilization) {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
             
@@ -137,29 +138,36 @@ object NextTurnAutomation {
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
+    @Readonly
     internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization, includeQuests: Boolean = false): Int {
         var value = 0
         val civPersonality = civInfo.getPersonality()
 
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
+        val bonuses = cityState.cityStateFunctions
+            .getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally).toList()
+        
+        // Optimized version of canProvideStat so we don't need to fetch bonuses multiple times
+        @Readonly fun canProvideStat(stat: Stat) = bonuses.any { it.stats[stat] > 0 }
+        
+        if (canProvideStat(Stat.Culture)) {
             value += civPersonality[PersonalityValue.Culture].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
+        if (canProvideStat(Stat.Faith)) {
             value += civPersonality[PersonalityValue.Faith].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
+        if (canProvideStat(Stat.Production)) {
             value += civPersonality[PersonalityValue.Production].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
+        if (canProvideStat(Stat.Science)) {
             // In case someone mods this in
             value += civPersonality[PersonalityValue.Science].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
+        if (canProvideStat(Stat.Happiness)) {
             if (civInfo.getHappiness() < 10)
                 value += 10 - civInfo.getHappiness()
             value += civPersonality[PersonalityValue.Happiness].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
+        if (canProvideStat(Stat.Food)) {
             value += 5
             value += civPersonality[PersonalityValue.Food].toInt() - 5
         }
@@ -400,7 +408,7 @@ object NextTurnAutomation {
     
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
     fun automateCityConquer(civInfo: Civilization, city: City){
-        fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
+        @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
             .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo }.toList()
         
         
