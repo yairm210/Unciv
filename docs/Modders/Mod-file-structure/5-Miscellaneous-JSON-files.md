@@ -374,7 +374,7 @@ Currently the following milestones are supported:
 | Win diplomatic vote                | At any point in the game win a diplomatic vote (UN). You may lose afterwards and still retain this milestone |
 | Become the world religion          | Have your religion be the majority religion in a majority of cities of all major civs                        |
 | Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached       |
-| Have more [countable] than the [countable] of each player | Have more [countable] than each other player's [countable].                           |
+| Have more [countable] than each player's [countable] | Have more [countable] than each other player's [countable].                           |
 
 ## Civilopedia text
 
