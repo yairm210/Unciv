@@ -370,6 +370,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.DestroyAllPlayers, MilestoneType.CaptureAllCapitals -> Victory.Focus.Military
             MilestoneType.CompletePolicyBranches -> Victory.Focus.Culture
             MilestoneType.MoreCountableThanEachPlayer -> {
+                // Attempt to interpret the focus from the Countable type
                 when (Countables.getMatching(params[0], ruleset)) {
                     Countables.Stats -> when (Stat.safeValueOf(params[0])) {
                         Stat.Production -> Victory.Focus.Production
