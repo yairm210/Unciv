@@ -217,7 +217,7 @@ object Battle {
 
         return damageDealt + interceptDamage
     }
-    
+
     private fun triggerCombatUniques(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
         val attackerContext = GameContext(attacker.getCivInfo(),
             ourCombatant = attacker, theirCombatant = defender, tile = attackedTile, combatAction = CombatAction.Attack)
