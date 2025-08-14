@@ -223,9 +223,7 @@ object Battle {
             ourCombatant = attacker, theirCombatant = defender, tile = attackedTile, combatAction = CombatAction.Attack)
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerContext)) {
-                val unit = if (unique.params[0] != Constants.targetUnit)
-                    attacker.unit
-                else if (defender is MapUnitCombatant)
+                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
                     defender.unit
                 else attacker.unit
                 UniqueTriggerActivation.triggerUnique(unique, unit)
@@ -234,10 +232,8 @@ object Battle {
             ourCombatant = defender, theirCombatant = attacker, tile = attackedTile, combatAction = CombatAction.Defend)
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, defenderContext)) {
-                val unit = if (unique.params[0] != Constants.targetUnit)
-                    defender.unit
-                else if (attacker is MapUnitCombatant)
-                    defender.unit
+                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
+                attacker.unit
                 else defender.unit
                 UniqueTriggerActivation.triggerUnique(unique, unit)
             }
@@ -376,9 +372,7 @@ object Battle {
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
                     { it.params[0].toInt() <= defenderDamageDealt }) {
-                val unit = if (unique.params[0] != Constants.targetUnit) 
-                    attacker.unit
-                else if (defender is MapUnitCombatant)
+                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
                     defender.unit
                 else attacker.unit
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
@@ -387,10 +381,8 @@ object Battle {
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
                     { it.params[0].toInt() <= attackerDamageDealt }) {
-                val unit = if (unique.params[0] != Constants.targetUnit)
-                    defender.unit
-                else if (attacker is MapUnitCombatant)
-                    attacker.unit
+                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
+                attacker.unit
                 else defender.unit
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
             }
