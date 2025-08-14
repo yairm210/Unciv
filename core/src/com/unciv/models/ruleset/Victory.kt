@@ -105,7 +105,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
      * @return The progress percentage (0-100).
      */
     @Readonly
-    private fun getMoreCountableThanOtherCivPercent(civ: Civilization, otherCiv: Civilization): Float {
+    fun getMoreCountableThanOtherCivPercent(civ: Civilization, otherCiv: Civilization): Float {
         if (type != MilestoneType.MoreCountableThanEachPlayer) return 0f
         val firstCountable = Countables.getCountableAmount(params[0], GameContext(civ)) ?: 0
         val secondCountable = Countables.getCountableAmount(params[1], GameContext(otherCiv)) ?: 0
