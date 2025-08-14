@@ -314,8 +314,8 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     if (hideCivCount && !civInfo.knows(civ)) continue
                     val civName = if (civInfo.knows(civ)) civ.civName else Constants.unknownNationName
                     val percent = getMoreCountableThanOtherCivPercent(civInfo, civ)
-                    // Hide the percent if it's double. For example: "Dominant" cultural influence in BNW.
-                    val milestoneText = if (percent >= 200f) "[${civName}]" else "[${civName}] [${percent.toInt()}]%"
+                    // Hide the percent if it's zero, or double. Similar to "Dominant" cultural influence in BNW.
+                    val milestoneText = if (percent < 1f || percent >= 200f) "[${civName}]" else "[${civName}] [${percent.toInt()}]%"
                     buttons.add(getMilestoneButton(milestoneText, percent > 100f))
                 }
                 if (hideCivCount) buttons.add(getMilestoneButton("[${Constants.unknownNationName}]", false))
