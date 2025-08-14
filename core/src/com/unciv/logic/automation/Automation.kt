@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.victoryscreen.RankingType
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
@@ -46,6 +47,7 @@ object Automation {
     }
 
     // More complicated logic to properly weigh Food vs other Stats (esp Production)
+    @Readonly
     private fun getFoodModWeight(city: City, surplusFood: Float): Float {
         val speed = city.civ.gameInfo.speed.modifier
         // Zero out Growth if close to Unhappiness limit
@@ -66,11 +68,11 @@ object Automation {
 
         return 1f
     }
-    
+
+    @Readonly
     fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.getCityFocus()
-        val yieldStats = stats.clone()
-        val civPersonality = city.civ.getPersonality()
+        @LocalState val yieldStats = stats.clone()
         val cityStatsObj = city.cityStats
         val civInfo = city.civ
         val allTechsAreResearched = civInfo.tech.allTechsAreResearched()
@@ -168,7 +170,12 @@ object Automation {
         }
 
         // Apply City focus
-        cityAIFocus.applyWeightTo(yieldStats)
+        for (stat in cityAIFocus.statValuesForFocus) {
+            val currentStat = yieldStats[stat]
+            if (currentStat == 0f) continue
+            val statMultiplier = cityAIFocus.getStatMultiplier(stat)
+            yieldStats[stat] = currentStat * statMultiplier
+        }
 
         return yieldStats.values.sum()
     }
@@ -206,6 +213,7 @@ object Automation {
         return totalCarriableUnits < totalCarryingSlots
     }
 
+    @Readonly
     fun chooseMilitaryUnit(city: City, availableUnits: Sequence<BaseUnit>): String? {
         val currentChoice = city.cityConstructions.getCurrentConstruction()
         if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return city.cityConstructions.currentConstructionFromQueue
@@ -313,6 +321,7 @@ object Automation {
     /** Checks both feasibility of Buildings with a CreatesOneImprovement unique
      *  and resource scarcity making a construction undesirable.
      */
+    @Readonly
     fun allowAutomatedConstruction(
         civInfo: Civilization,
         city: City,
@@ -325,6 +334,7 @@ object Automation {
     @Suppress("MemberVisibilityCanBePrivate")
     /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
      *  Constructions without pass uncontested. */
+    @Readonly
     fun allowCreateImprovementBuildings(
         civInfo: Civilization,
         city: City,

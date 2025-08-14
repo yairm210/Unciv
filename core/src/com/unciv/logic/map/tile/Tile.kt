@@ -454,6 +454,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Readonly
     fun isWorked(): Boolean = getWorkingCity() != null
+    @Readonly 
     fun providesYield(): Boolean {
         if (getCity() == null) return false
         return isCityCenter()

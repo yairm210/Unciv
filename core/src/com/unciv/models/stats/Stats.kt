@@ -1,9 +1,7 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
-import yairm210.purity.annotations.InternalState
-import yairm210.purity.annotations.Pure
-import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.*
 
 /**
  * A container for the seven basic ["currencies"][Stat] in Unciv,
@@ -123,7 +121,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
-    operator fun times(number: Int) = times(number.toFloat())
+    @Readonly operator fun times(number: Int) = times(number.toFloat())
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
@@ -152,7 +150,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance */
-    operator fun div(number: Float) = times(1/number)
+    @Readonly operator fun div(number: Float) = times(1/number)
 
     /** **Mutating function**
      * Apply weighting for Production Ranking */
@@ -170,6 +168,7 @@ open class Stats(
      *
      * Example output: `+1 Production, -1 Food`.
      */
+    @Readonly
     override fun toString(): String {
         return this.joinToString {
             (if (it.value > 0) "+" else "") + it.value.toInt().tr() + " " + it.key.toString().tr()
@@ -265,13 +264,15 @@ open class Stats(
          * - Order is not important.
          * @see [isStats]
          */
+        @Pure
         fun parse(string: String): Stats {
             val toReturn = Stats()
             val statsWithBonuses = string.split(", ")
-            for(statWithBonuses in statsWithBonuses) {
+            statsWithBonuses.forEach { statWithBonuses ->
                 val match = statRegex.matchEntire(statWithBonuses)!!
-                val statName = match.groupValues[3]
-                val statAmount = match.groupValues[2].toFloat() * (if (match.groupValues[1] == "-") -1 else 1)
+                @Immutable val groupValues = match.groupValues
+                val statName = groupValues[3]
+                val statAmount = groupValues[2].toFloat() * (if (groupValues[1] == "-") -1 else 1)
                 toReturn.add(Stat.valueOf(statName), statAmount)
             }
             return toReturn
@@ -282,6 +283,7 @@ open class Stats(
     }
 }
 
+@InternalState
 class StatMap : LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
         // We always clone to avoid touching the mutable stats of uniques

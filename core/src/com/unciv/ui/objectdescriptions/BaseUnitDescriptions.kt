@@ -269,7 +269,7 @@ object BaseUnitDescriptions {
             yield("[Lost] ${Fonts.rangedStrength} [${originalUnit.rangedStrength}] ${Fonts.range} [${originalUnit.range}]" to null)
         else {
             if (betterUnit.rangedStrength != originalUnit.rangedStrength)
-                yield("${Fonts.rangedStrength} " + "[${betterUnit.rangedStrength}] vs [${originalUnit.rangedStrength}]" to null)
+                yield("${Fonts.rangedStrength} " + "{[${betterUnit.rangedStrength}] vs [${originalUnit.rangedStrength}]}" to null)
             if (betterUnit.range != originalUnit.range)
                 yield("${Fonts.range} {[${betterUnit.range}] vs [${originalUnit.range}]}" to null)
         }

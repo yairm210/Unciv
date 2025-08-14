@@ -59,7 +59,7 @@ object Log {
      *
      * The [params] can contain value-producing lambdas, which will be called and their value used as parameter for the message instead.
      */
-    @Pure @Suppress("purity") // log considered pure everywhere
+    @Pure @Suppress("purity") // good suppression - log considered pure everywhere
     fun debug(msg: String, vararg params: Any?) {
         if (backend.isRelease()) return
         debug(getTag(), msg, *params)

@@ -25,6 +25,8 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 
@@ -66,7 +68,7 @@ class WorkerAutomation(
                                    var bestImprovement: TileImprovement? = null,
                                    var repairImprovment: Boolean? = null)
 
-    private val tileRankings = HashMap<Tile, TileImprovementRank>()
+    @Cache private val tileRankings = HashMap<Tile, TileImprovementRank>()
 
     ///////////////////////////////////////// Methods /////////////////////////////////////////
 
@@ -210,6 +212,7 @@ class WorkerAutomation(
      * Looks for a worthwhile tile to improve
      * @return Null if no tile to work was found
      */
+    @Readonly
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>, localUniqueCache: LocalUniqueCache): Tile? {
         val currentTile = unit.getTile()
         
@@ -248,6 +251,7 @@ class WorkerAutomation(
         return null
     }
 
+    @Readonly
     private fun isAutomationWorkableTile(
         tile: Tile,
         tilesToAvoid: Set<Tile>,
@@ -273,6 +277,7 @@ class WorkerAutomation(
      * Calculate a priority for the tile without accounting for the improvement it'self
      * This is a cheap guess on how helpful it might be to do work on this tile
      */
+    @Readonly
     fun getBasePriority(tile: Tile, unit: MapUnit): Float {
         val unitSpecificPriority = 2 - (tile.aerialDistanceTo(unit.getTile()) / 2.0f).coerceIn(0f, 2f) * 3
         if (tileRankings.containsKey(tile))
@@ -306,9 +311,10 @@ class WorkerAutomation(
     /**
      * Calculates the priority building the improvement on the tile
      */
+    @Readonly
     private fun getImprovementPriority(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Float {
         getBasePriority(tile, unit)
-        val rank = tileRankings[tile]
+        @LocalState val rank = tileRankings[tile]
         if (rank!!.improvementPriority == null) {
             // All values of rank have to be initialized
             rank.improvementPriority = -100f
@@ -347,6 +353,7 @@ class WorkerAutomation(
     /**
      * Calculates the full priority of the tile
      */
+    @Readonly
     private fun getFullPriority(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Float {
         return getBasePriority(tile, unit) + getImprovementPriority(tile, unit, localUniqueCache)
     }
@@ -354,6 +361,7 @@ class WorkerAutomation(
     /**
      * Returns the best improvement
      */
+    @Readonly
     private fun tileHasWorkToDo(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Boolean {
         if (getImprovementPriority(tile, unit, localUniqueCache) <= 0) return false
         if (!(tileRankings[tile]!!.bestImprovement != null || tileRankings[tile]!!.repairImprovment!!))
@@ -365,6 +373,7 @@ class WorkerAutomation(
      * Determine the improvement appropriate to a given tile and worker
      * Returns null if none is worth it
      * */
+    @Readonly
     private fun chooseImprovement(unit: MapUnit, tile: Tile, localUniqueCache: LocalUniqueCache): TileImprovement? {
         // You can keep working on half-built improvements, even if they're unique to another civ
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress!!]
@@ -436,6 +445,7 @@ class WorkerAutomation(
         return ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
     }
 
+    @Readonly
     private fun getImprovementRanking(tile: Tile, unit: MapUnit, improvementName: String,
                                       localUniqueCache: LocalUniqueCache,
                                       /** Provide for performance */ currentTileStats: Stats? = null): Float {
@@ -457,7 +467,7 @@ class WorkerAutomation(
             && tile.aerialDistanceTo(it.owningCity!!.getCenterTile()) <= civInfo.modConstants.cityWorkRange } ))
             return 0f
 
-        val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
+        @LocalState val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
 
         var isResourceImprovedByNewImprovement = tile.hasViewableResource(civInfo) && tile.tileResource.isImprovedBy(improvementName)
 
@@ -468,7 +478,7 @@ class WorkerAutomation(
             val removedImprovement = if (removedObject == tile.improvement) removedObject else null
 
             if (removedFeature != null || removedImprovement != null) {
-                val newTile = tile.clone(addUnits = false)
+                @LocalState val newTile = tile.clone(addUnits = false)
                 newTile.setTerrainTransients()
                 if (removedFeature != null)
                     newTile.removeTerrainFeature(removedFeature)
@@ -517,6 +527,7 @@ class WorkerAutomation(
      *
      * Assumes the caller ensured that terrainFeature and resource are both present!
      */
+    @Readonly
     private fun isResourceImprovementAllowedOnFeature(
         tile: Tile,
         potentialTileImprovements: Map<String, TileImprovement>
@@ -534,6 +545,7 @@ class WorkerAutomation(
      * -> Checks: city, already built, resource, great improvements.
      * Used only in [evaluateFortPlacement].
      */
+    @Readonly
     private fun isAcceptableTileForFort(tile: Tile): Boolean {
         //todo Should this not also check impassable and the fort improvement's terrainsCanBeBuiltOn/uniques?
         if (tile.isCityCenter() // don't build fort in the city
@@ -553,6 +565,7 @@ class WorkerAutomation(
      * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
      * @return Yes the location is good for a Fort here
      */
+    @Readonly
     private fun evaluateFortSurroundings(tile: Tile, isCitadel: Boolean): Float {
         
         // build on our land only
@@ -645,8 +658,8 @@ class WorkerAutomation(
             && evaluateFortSurroundings(tile, isCitadel) > 0
     }
 
-    fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
-    fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
+    @Readonly fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
+    @Readonly fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
 
 
     /** Try improving a Water Resource

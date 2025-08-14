@@ -109,8 +109,6 @@ object UniqueTriggerActivation {
 
         val gameContext = GameContext(civInfo, city, unit, tile)
 
-        if (!unique.conditionalsApply(gameContext)) return null
-
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
 
@@ -500,19 +498,6 @@ object UniqueTriggerActivation {
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, TechAction(techName), NotificationCategory.General, NotificationIcon.Science)
-                    true
-                }
-            }
-
-            UniqueType.StrategicResourcesIncrease -> {
-                return {
-                    civInfo.cache.updateCivResources()
-                    if (notification != null)
-                        civInfo.addNotification(
-                            notification,
-                            NotificationCategory.General,
-                            NotificationIcon.Construction
-                        )
                     true
                 }
             }
