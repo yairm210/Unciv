@@ -306,9 +306,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     if (hideCivCount && !civInfo.knows(civ)) continue
 
                     val completed = (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0) > (Countables.getCountableAmount(params[1], GameContext(civ)) ?: 0)
-                    val milestoneText =
-                        if (civInfo.knows(civ) || completed) "More [${params[0]}] than [${civ.civName}]'s [${params[1]}]"
-                        else "More [${params[0]}] than [${Constants.unknownNationName}]'s [${params[1]}]"
+                    val percent = (Countables.getCountableAmount(params[0], GameContext(civInfo)) ?: 0).toFloat() / (Countables.getCountableAmount(params[1], GameContext(civ)) ?: 0).toFloat() * 100f
+                    val civName = if (civInfo.knows(civ)) civ.civName else Constants.unknownNationName
+                    val milestoneText = if (completed) "[${civName}]" else "[${civName}] [${percent.toInt()}]%"
                     buttons.add(getMilestoneButton(milestoneText, completed))
                 }
                 if (hideCivCount) buttons.add(getMilestoneButton("More [${params[0]}] than [${Constants.unknownNationName}]'s [${params[1]}]", false))
