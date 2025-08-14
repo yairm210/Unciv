@@ -310,7 +310,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.MoreCountableThanEachPlayer -> {
                 val hideCivCount = civInfo.shouldHideCivCount()
                 for (civ in civInfo.gameInfo.civilizations) {
-                    if (civ == civInfo || !civ.isMajorCiv()) continue
+                    if (civ == civInfo || !civ.isMajorCiv() || !civ.isAlive()) continue
                     if (hideCivCount && !civInfo.knows(civ)) continue
                     val civName = if (civInfo.knows(civ)) civ.civName else Constants.unknownNationName
                     val percent = getMoreCountableThanOtherCivPercent(civInfo, civ)
