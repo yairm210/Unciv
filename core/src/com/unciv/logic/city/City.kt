@@ -209,7 +209,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
+    @Readonly fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     @Readonly fun isGrowing() = foodForNextTurn() > 0

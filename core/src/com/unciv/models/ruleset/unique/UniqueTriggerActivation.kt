@@ -502,19 +502,6 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.StrategicResourcesIncrease -> {
-                return {
-                    civInfo.cache.updateCivResources()
-                    if (notification != null)
-                        civInfo.addNotification(
-                            notification,
-                            NotificationCategory.General,
-                            NotificationIcon.Construction
-                        )
-                    true
-                }
-            }
-
             UniqueType.OneTimeProvideResources -> {
                 val resourceName = unique.params[1]
                 val resource = ruleset.tileResources[resourceName] ?: return null

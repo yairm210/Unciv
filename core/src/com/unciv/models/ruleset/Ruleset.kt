@@ -137,8 +137,12 @@ class Ruleset {
         sequence {
             for (unique in this@Ruleset.allUniques())
                 for (conditional in unique.modifiers){
-                    if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
-                    if (conditional.type == UniqueType.ConditionalBetweenHappiness){
+                    if (conditional.type == UniqueType.ConditionalWhenBelowAmountStatResource
+                        && conditional.params[1] == "Happiness") yield(conditional.params[0].toInt())
+                    if (conditional.type == UniqueType.ConditionalWhenAboveAmountStatResource
+                        && conditional.params[1] == "Happiness") yield(conditional.params[0].toInt())
+                    if (conditional.type == UniqueType.ConditionalWhenBetweenStatResource
+                        && conditional.params[2] == "Happiness"){
                         yield(conditional.params[0].toInt())
                         yield(conditional.params[1].toInt() + 1)
                     }

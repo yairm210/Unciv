@@ -48,10 +48,6 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-            "java.util.regex.Pattern.matcher",  // moved
-            "java.util.regex.Matcher.find",  // moved
-            "java.util.regex.Matcher.replaceAll",  // moved
-            "kotlin.collections.linkedMapOf", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
@@ -69,12 +65,15 @@ allprojects {
             "kotlin.Throwable.getStackTrace", // moved
 
             "kotlin.collections.random",
+            "kotlin.hashCode",
         )
         wellKnownPureClasses = setOf(
             "java.lang.StackTraceElement" // moved
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
+            
+            "java.util.TreeMap",
         )
         warnOnPossibleAnnotations = true
     }

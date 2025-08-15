@@ -194,7 +194,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? = costFunctions.getStatBuyCost(city, stat)
 
-    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
+    @Readonly fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
@@ -286,11 +286,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
             if (this@BaseUnit.matchesFilter(unique.params[0], stateForConditionals)) {
-                val hasHappinessCondition = unique.hasModifier(UniqueType.ConditionalBelowHappiness)
-                        || unique.hasModifier(UniqueType.ConditionalBetweenHappiness)
-                if (hasHappinessCondition)
-                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.getDisplayText()))
-                else yield(RejectionReasonType.CannotBeBuilt.toInstance())
+                yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
 
         if (city != null && isAirUnit() && !canUnitEnterTile(city)) {

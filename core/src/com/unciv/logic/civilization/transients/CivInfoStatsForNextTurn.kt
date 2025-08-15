@@ -30,6 +30,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     @Transient
     var statsForNextTurn = Stats()
 
+    @Readonly
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
@@ -84,6 +85,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         return cost.toInt()
     }
 
+    @Readonly
     private fun getTransportationUpkeep(): Stats {
         val transportationUpkeep = Stats()
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
@@ -165,6 +167,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     /** Per each supply missing, a player gets -10% production. Capped at -70%. */
     @Readonly fun getUnitSupplyProductionPenalty(): Float = -min(getUnitSupplyDeficit() * 10f, 70f)
 
+    @Readonly
     fun getStatMapForNextTurn(): StatMap {
         val statMap = StatMap()
         for (city in civInfo.cities) {
@@ -178,12 +181,14 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             if (otherCiv.getDiplomacyManager(civInfo.civName)!!.relationshipIgnoreAfraid() != RelationshipLevel.Ally)
                 continue
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
+                val stats = Stats()
+                stats.add(
+                    Stat.valueOf(unique.params[0]),
+                    otherCiv.stats.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
+                )
                 statMap.add(
                     Constants.cityStates,
-                    Stats().add(
-                        Stat.valueOf(unique.params[0]),
-                        otherCiv.stats.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
-                    )
+                    stats
                 )
             }
         }
@@ -287,6 +292,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         return statMap
     }
 
+    @Readonly
     private fun getGlobalStatsFromUniques():StatMap {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
