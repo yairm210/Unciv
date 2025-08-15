@@ -11,9 +11,10 @@ import yairm210.purity.annotations.Readonly
 object CityResources {
 
     /** Returns ALL resources, city-wide and civ-wide */
+    @Readonly
     fun getResourcesGeneratedByCity(city: City, resourceModifiers: Map<String, Float>): ResourceSupplyList {
-        val cityResources = getResourcesGeneratedByCityNotIncludingBuildings(city, resourceModifiers)
-        addCityResourcesGeneratedFromUniqueBuildings(city, cityResources, resourceModifiers)
+        @LocalState val cityResources = getResourcesGeneratedByCityNotIncludingBuildings(city, resourceModifiers)
+        cityResources += getCityResourcesGeneratedFromUniqueBuildings(city, resourceModifiers)
         return cityResources
     }
 
@@ -55,15 +56,18 @@ object CityResources {
         return cityResources
     }
 
-    private fun addCityResourcesGeneratedFromUniqueBuildings(city: City, cityResources: ResourceSupplyList, resourceModifer: Map<String, Float>) {
+    @Readonly
+    private fun getCityResourcesGeneratedFromUniqueBuildings(city: City, resourceModifer: Map<String, Float>): ResourceSupplyList {
+        val buildingResources = ResourceSupplyList()
         for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, city.state, false)) { // E.G "Provides [1] [Iron]"
             val resource = city.getRuleset().tileResources[unique.params[1]]
                 ?: continue
-            cityResources.add(
+            buildingResources.add(
                 resource, unique.getSourceNameForUser(),
                 (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
             )
         }
+        return buildingResources
     }
 
     /** Gets the number of resources available to this city

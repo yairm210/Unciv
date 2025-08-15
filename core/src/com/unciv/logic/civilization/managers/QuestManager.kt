@@ -33,6 +33,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
@@ -197,7 +198,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     // Readability helper - No asSequence(): call frequency * data size is small
-    private fun getQuests(predicate: (Quest) -> Boolean) = ruleset.quests.values.filter(predicate)
+    @Readonly private fun getQuests(predicate: (Quest) -> Boolean) = ruleset.quests.values.filter(predicate)
 
     private fun tryStartNewGlobalQuest() {
         if (globalQuestCountdown != 0)
@@ -206,7 +207,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             return
 
         val majorCivs = civ.getKnownCivs().filter { it.isMajorCiv() && !it.isAtWarWith(civ) } // A Sequence - fine because the count below can be different for each Quest
-        fun Quest.isAssignable() = majorCivs.count { civ -> isQuestValid(this, civ) } >= minimumCivs
+        @Readonly fun Quest.isAssignable() = majorCivs.count { civ -> isQuestValid(this, civ) } >= minimumCivs
         val assignableQuests = getQuests {
             it.isGlobal() && it.isAssignable()
         }
@@ -574,7 +575,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             return ""
 
         val listOfLeadersAsTranslatedString = evaluation.winners.joinToString(separator = ", ") { it.assignee.tr() }
-        fun getScoreString(name: String, score: Int) = "[$name] with [$score] [$scoreDescriptor]".tr()
+        @Pure fun getScoreString(name: String, score: Int) = "[$name] with [$score] [$scoreDescriptor]".tr()
         val leadersString = getScoreString(listOfLeadersAsTranslatedString, evaluation.maxScore)
 
         if (inquiringAssignedQuest in evaluation.winners)
