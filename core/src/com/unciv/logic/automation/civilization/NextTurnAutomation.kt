@@ -140,6 +140,7 @@ object NextTurnAutomation {
 
     @Readonly
     internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization, includeQuests: Boolean = false): Int {
+        if (!cityState.isCityState) return 0
         var value = 0
         val civPersonality = civInfo.getPersonality()
 
