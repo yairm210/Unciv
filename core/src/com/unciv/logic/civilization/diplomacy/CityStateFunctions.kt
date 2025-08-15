@@ -815,15 +815,20 @@ class CityStateFunctions(val civInfo: Civilization) {
             .flatMap { it.getMultiplied(gameContext) }
     }
 
-
-    @Readonly
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType: UniqueType? = null): Sequence<Unique> {
-        val cityStateUniqueMap = when (relationshipLevel) {
-            RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
-            RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap
-            else -> return emptySequence()
+    companion object {
+        @Readonly
+        fun getCityStateBonuses(
+            cityStateType: CityStateType,
+            relationshipLevel: RelationshipLevel,
+            uniqueType: UniqueType? = null
+        ): Sequence<Unique> {
+            val cityStateUniqueMap = when (relationshipLevel) {
+                RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
+                RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap
+                else -> return emptySequence()
+            }
+            return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
+            else cityStateUniqueMap.getUniques(uniqueType)
         }
-        return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
-        else cityStateUniqueMap.getUniques(uniqueType)
     }
 }

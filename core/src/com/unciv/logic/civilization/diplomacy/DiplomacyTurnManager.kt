@@ -340,7 +340,7 @@ object DiplomacyTurnManager {
 
         val variance = listOf(-1, 0, 1).random()
 
-        val provideMilitaryUnitUniques = civInfo.cityStateFunctions
+        val provideMilitaryUnitUniques = CityStateFunctions
             .getCityStateBonuses(otherCiv().cityStateType, relationshipIgnoreAfraid(), UniqueType.CityStateMilitaryUnits)
             .filter { it.conditionalsApply(civInfo.state) }.toList()
         if (provideMilitaryUnitUniques.isEmpty()) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)

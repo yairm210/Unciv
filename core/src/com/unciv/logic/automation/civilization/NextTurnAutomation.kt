@@ -143,8 +143,7 @@ object NextTurnAutomation {
         var value = 0
         val civPersonality = civInfo.getPersonality()
 
-        val bonuses = cityState.cityStateFunctions
-            .getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally).toList()
+        val bonuses = CityStateFunctions.getCityStateBonuses(cityState.cityStateType, RelationshipLevel.Ally).toList()
         
         // Optimized version of canProvideStat so we don't need to fetch bonuses multiple times
         @Readonly fun canProvideStat(stat: Stat) = bonuses.any { it.stats[stat] > 0 }
