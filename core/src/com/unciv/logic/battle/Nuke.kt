@@ -15,6 +15,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ulp
 import kotlin.random.Random
 
@@ -28,6 +29,7 @@ object Nuke {
      *
      *  Both [BattleTable.simulateNuke] and [AirUnitAutomation.automateNukes] check range, so that check is omitted here.
      */
+    @Readonly
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         val attackerCiv = nuke.getCivInfo()
         val launchTile = nuke.getTile()

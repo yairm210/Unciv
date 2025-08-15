@@ -8,6 +8,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
+import yairm210.purity.annotations.Readonly
 
 object HeadTowardsEnemyCityAutomation {
 
@@ -28,7 +29,8 @@ object HeadTowardsEnemyCityAutomation {
         )
     }
 
-    private fun getEnemyCitiesByPriority(unit: MapUnit): Sequence<City> {
+    @Readonly
+    fun getEnemyCitiesByPriority(unit: MapUnit): Sequence<City> {
         val enemies = unit.civ.getKnownCivs()
             .filter { unit.civ.isAtWarWith(it) && it.cities.isNotEmpty() }
 
@@ -94,6 +96,7 @@ object HeadTowardsEnemyCityAutomation {
     }
 
     /** Cannot take within 5 turns */
+    @Readonly
     private fun cannotTakeCitySoon(
         ourUnitsAroundEnemyCity: Sequence<MapUnit>,
         city: City

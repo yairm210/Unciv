@@ -25,6 +25,7 @@ import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -242,7 +243,6 @@ object Battle {
         val attackerCiv = attacker.getCivInfo()
         
         for (tile in centerTile.getTilesInDistance(radius)) {
-            println("DEBUG: Tile ${tile.position} units: ${tile.getUnits().toList().map { it.displayName() }}")
             val distance = centerTile.aerialDistanceTo(tile)
             val distanceFactor = if (isDegrade)
                 (1.0 - distance.toDouble() / (radius + 1)).coerceAtLeast(0.0)
@@ -269,13 +269,19 @@ object Battle {
             ourCombatant = attacker, theirCombatant = defender, tile = attackedTile, combatAction = CombatAction.Attack)
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerContext)) {
-                UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
+                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
+                    defender.unit
+                else attacker.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit)
             }
         val defenderContext = GameContext(defender.getCivInfo(),
             ourCombatant = defender, theirCombatant = attacker, tile = attackedTile, combatAction = CombatAction.Defend)
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, defenderContext)) {
-                UniqueTriggerActivation.triggerUnique(unique, defender.unit)
+                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
+                attacker.unit
+                else defender.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit)
             }
     }
 
@@ -411,13 +417,21 @@ object Battle {
 
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= defenderDamageDealt })
-                UniqueTriggerActivation.triggerUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
+                    { it.params[0].toInt() <= defenderDamageDealt }) {
+                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
+                    defender.unit
+                else attacker.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
+            }
 
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= attackerDamageDealt })
-                UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
+                    { it.params[0].toInt() <= attackerDamageDealt }) {
+                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
+                attacker.unit
+                else defender.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
+            }
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
@@ -710,7 +724,8 @@ object Battle {
             city.isBeingRazed = true
         }
     }
-
+    
+    @Readonly
     fun getMapCombatantOfTile(tile: Tile): ICombatant? {
         if (tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
         if (tile.militaryUnit != null) return MapUnitCombatant(tile.militaryUnit!!)

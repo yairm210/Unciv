@@ -26,6 +26,7 @@ fun List<Pair<String, Stats>>.toStats(): Stats {
 class TileStatFunctions(val tile: Tile) {
     private val riverTerrain by lazy { tile.ruleset.terrains[Constants.river] }
 
+    @Readonly
     fun getTileStats(
         observingCiv: Civilization?,
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)

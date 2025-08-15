@@ -11,9 +11,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.canUse
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import yairm210.purity.annotations.Readonly
 
 object CivilianUnitAutomation {
 
+    @Readonly
     fun shouldClearTileForAddInCapitalUnits(unit: MapUnit, tile: Tile) =
         tile.isCityCenter() && tile.getCity()!!.isCapital()
         && !unit.hasUnique(UniqueType.AddInCapital)
@@ -23,6 +25,7 @@ object CivilianUnitAutomation {
         // To allow "found city" actions that can only trigger a limited number of times
         
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
+        @Readonly
         fun hasSettlerAction(uniqueType: UniqueType) =
             unit.getMatchingUniques(uniqueType, GameContext.IgnoreConditionals)
                 .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
@@ -172,6 +175,7 @@ object CivilianUnitAutomation {
         return // The AI doesn't know how to handle unknown civilian units
     }
 
+    @Readonly
     private fun isLateGame(civ: Civilization): Boolean {
         val researchCompletePercent =
             (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size

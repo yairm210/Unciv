@@ -59,10 +59,10 @@ class RuinsManager(
         for (possibleReward in getShuffledPossibleRewards(triggeringUnit)) {
             var atLeastOneUniqueHadEffect = false
             for (unique in possibleReward.uniqueObjects) {
-                atLeastOneUniqueHadEffect =
+                val uniqueTriggered =
                     unique.conditionalsApply(triggeringUnit.cache.state) && 
                         UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
-                if (atLeastOneUniqueHadEffect) break
+                atLeastOneUniqueHadEffect = atLeastOneUniqueHadEffect || uniqueTriggered
             }
             if (atLeastOneUniqueHadEffect) {
                 rememberReward(possibleReward.name)

@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -80,6 +81,7 @@ object LuxuryResourcePlacementLogic {
         return Pair(cityStateLuxuries, randomLuxuries)
     }
 
+    @Readonly
     private fun getLuxuriesForRandomPlacement(
         assignableLuxuries: List<TileResource>,
         amountRegionsWithLuxury: HashMap<String, Int>,
@@ -97,6 +99,7 @@ object LuxuryResourcePlacementLogic {
         return remainingLuxuries.drop(targetDisabledLuxuries)
     }
 
+    @Readonly
     private fun getCandidateLuxuries(
         assignableLuxuries: List<TileResource>,
         amountRegionsWithLuxury: HashMap<String, Int>,

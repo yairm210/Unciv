@@ -83,6 +83,7 @@ fun <T> Sequence<T>.toGdxArray(): Array<T> {
 }
 
 /** [yield][SequenceScope.yield]s [element] if it's not null */
+@Pure
 suspend fun <T> SequenceScope<T>.yieldIfNotNull(element: T?) {
     if (element != null) yield(element)
 }

@@ -9,6 +9,8 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
 import java.util.*
 
 object UseGoldAutomation {
@@ -113,6 +115,7 @@ object UseGoldAutomation {
         }
     }
 
+    @Readonly
     private fun getHighlyDesirableTilesToCityMap(civInfo: Civilization): SortedMap<Tile, MutableSet<City>> {
         val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = TreeMap(
             compareByDescending<Tile?> { it?.naturalWonder != null }
@@ -129,27 +132,30 @@ object UseGoldAutomation {
                 isHighlyDesirableTile(it, civInfo, city)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
-                highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
-                    .add(city)
+                @LocalState val desirableTiles = highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
+                desirableTiles.add(city)
             }
         }
         return highlyDesirableTiles
     }
 
+    @Readonly
     private fun isHighlyDesirableTile(it: Tile, civInfo: Civilization, city: City): Boolean {
         if (!it.isVisible(civInfo)) return false
         if (it.getOwner() != null) return false
         if (it.neighbors.none { neighbor -> neighbor.getCity() == city }) return false
 
-        fun hasNaturalWonder() = it.naturalWonder != null
+        @Readonly fun hasNaturalWonder() = it.naturalWonder != null
 
-        fun hasLuxury() =
+        @Readonly  fun hasLuxury() =
             it.hasViewableResource(civInfo)
                 && it.tileResource.resourceType == ResourceType.Luxury
                 && civInfo.getResourceAmount(it.resource!!) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
 
-        fun hasHighYields() =
-            it.stats.getTileStats(civInfo).food + it.stats.getTileStats(civInfo).production >= 3
+        @Readonly fun hasHighYields(): Boolean {
+            val tileStats = it.stats.getTileStats(civInfo)
+            return tileStats.food + tileStats.production >= 3
+        }
 
         return (hasNaturalWonder() || hasLuxury() || hasHighYields())
     }

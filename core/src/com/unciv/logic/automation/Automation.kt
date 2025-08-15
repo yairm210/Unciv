@@ -27,11 +27,13 @@ import kotlin.math.min
 
 object Automation {
 
+    @Readonly
     fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
         return rankStatsForCityWork(stats, city, false, localUniqueCache)
     }
 
+    @Readonly
     fun rankSpecialist(specialist: String, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = city.cityStats.getStatsOfSpecialist(specialist, localUniqueCache)
         var rank = rankStatsForCityWork(stats, city, true, localUniqueCache)
@@ -222,7 +224,7 @@ object Automation {
         var removeShips = true
         var isMissingNavalUnitsForCityDefence = false
 
-        fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
+        @Readonly fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
         if (city.isCoastal()) {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID

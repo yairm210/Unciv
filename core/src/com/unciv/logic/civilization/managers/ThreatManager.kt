@@ -30,6 +30,7 @@ class ThreatManager(val civInfo: Civilization) {
      * The result value is cached and since it is called each turn in NextTurnAutomation.getUnitPriority 
      * each subsequent calls are likely to be free.
      */
+    @Readonly @Suppress("purity") //tilesWithEnemies is implicit cache
     fun getDistanceToClosestEnemyUnit(tile: Tile, maxDist: Int, takeLargerValues: Boolean = true): Int {
         val tileData = distanceToClosestEnemyTiles[tile]
         // Needs to be a high value, but not the max value so we can still add to it. Example: nextTurnAutomation sorting

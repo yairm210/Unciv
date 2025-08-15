@@ -20,7 +20,7 @@ jobs:
         with:
           cache: 'gradle'
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3

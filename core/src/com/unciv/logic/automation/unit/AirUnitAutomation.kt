@@ -9,6 +9,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 object AirUnitAutomation {
 
@@ -29,7 +31,7 @@ object AirUnitAutomation {
         if (friendlyUnusedFighterCount < enemyFighters) return
 
         if (friendlyUsedFighterCount <= enemyFighters) {
-            fun airSweepDamagePercentBonus(): Int {
+            @Readonly fun airSweepDamagePercentBonus(): Int {
                 return unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)
                     .sumOf { it.params[0].toInt() }
             }
@@ -149,6 +151,7 @@ object AirUnitAutomation {
      * Ranks the tile to nuke based off of all tiles in it's blast radius
      * By default the value is -500 to prevent inefficient nuking.
      */
+    @Readonly
     private fun getNukeLocationValue(nuke: MapUnit, tile: Tile): Int {
         val civ = nuke.civ
         if (!Nuke.mayUseNuke(MapUnitCombatant(nuke), tile)) return Int.MIN_VALUE
@@ -166,6 +169,7 @@ object AirUnitAutomation {
         var explosionValue = -500
 
         // Returns either ourValue or thierValue depending on if the input Civ matches the Nuke's Civ
+        @Pure
         fun evaluateCivValue(targetCiv: Civilization, ourValue: Int, theirValue: Int): Int {
             if (targetCiv == civ) // We are nuking something that we own!
                 return ourValue
