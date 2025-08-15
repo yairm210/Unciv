@@ -66,12 +66,15 @@ allprojects {
             "kotlin.Throwable.getStackTrace", // moved
 
             "kotlin.collections.random",
+            "kotlin.hashCode",
         )
         wellKnownPureClasses = setOf(
             "java.lang.StackTraceElement" // moved
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
+            
+            "java.util.TreeMap",
         )
         warnOnPossibleAnnotations = true
     }
