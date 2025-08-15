@@ -153,7 +153,18 @@ object Battle {
         if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
-        // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
+        // Must come before normal conquest logic so units that cannot capture cities can still destroy them
+        // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capitals
+        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant) {
+            if (!defender.city.isCapital()) {
+                val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
+                if (destroyFilters.any { filter: String -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                    defender.city.destroyCity()
+                }
+            }
+        }
+
+         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
                 && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
             // Barbarians can't capture cities
