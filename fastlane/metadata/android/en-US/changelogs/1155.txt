@@ -1,30 +1,6 @@
-
-
-Safe parts of 
-
-Fix tests
-
-chore(purity): UseGoldAutomation
-
-chore(purity): CityStateFunctions
-
-Resolved  - Fixed city state alliance valuation
-
-chore(purity): Automation
-
 Fixed map editor tile click not displaying tile stats
 
-chore(purity): WorkerAutomation
-
-chore(purity): Added readonlys required for 
-
-Resolved  - Ranged strength comparison for unique units correctly translated
-
-chore: deprecated old uniques
-
-chore(purity): Automation
-
-chore(purity): BattleHelper
+Ranged strength comparison for unique units correctly translated
 
 By SeventhM:
 - Fix Ruin rewards with multiple triggerables only giving the first effect 
