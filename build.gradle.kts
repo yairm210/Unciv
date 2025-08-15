@@ -21,7 +21,7 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
-        classpath("com.android.tools.build:gradle:8.9.1")
+        classpath("com.android.tools.build:gradle:8.9.3")
     }
 }
 
@@ -33,7 +33,7 @@ kotlin {
 
 // Plugins used for serialization of JSON for networking
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
+    id("io.gitlab.arturbosch.detekt").version("1.23.8")
     // For some weird reason, the *docker build* fails to recognize linking to the shared kotlinVersion in plugins
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
