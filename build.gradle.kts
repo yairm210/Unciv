@@ -126,10 +126,10 @@ project(":server") {
         // For server-side
         "implementation"("io.ktor:ktor-server-core:$ktorVersion")
         "implementation"("io.ktor:ktor-server-netty:$ktorVersion")
-        "implementation"("io.ktor:ktor-server-auth:${ktorVersion}")
+        "implementation"("io.ktor:ktor-server-auth:$ktorVersion")
         "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        "implementation"("io.ktor:ktor-server-websockets:${ktorVersion}")
+        "implementation"("io.ktor:ktor-server-websockets:$ktorVersion")
         "implementation"("ch.qos.logback:logback-classic:1.5.18")
         "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
 
