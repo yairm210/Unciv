@@ -24,12 +24,14 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 
 object UnitAutomation {
 
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
+    @Readonly
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
         return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
                 && tile.getTilesInDistance(unit.getVisibilityRange()).any { !unit.civ.hasExplored(it) }
@@ -103,6 +105,7 @@ object UnitAutomation {
         return false
     }
 
+    @Readonly
     private fun isGoodTileForFogBusting(unit: MapUnit, tile: Tile): Boolean {
         return unit.movement.canMoveTo(tile)
                 && tile.getOwner() == null
@@ -153,8 +156,10 @@ object UnitAutomation {
     /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
      *  Note that if the unit can't upgrade, the current BaseUnit is returned.
      */
+    @Readonly
     private fun getUnitsToUpgradeTo(unit: MapUnit): Sequence<BaseUnit> {
 
+        @Readonly
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean {
             if (!unit.civ.tech.isResearched(baseUnit))
                 return true
@@ -423,6 +428,7 @@ object UnitAutomation {
     /**
      * @return true if the tile is safe and the unit can heal to full within [turns]
      */
+    @Readonly
     private fun canUnitHealInTurnsOnCurrentTile(unit: MapUnit, turns: Int, noEnemyDistance: Int = 3): Boolean {
         if (unit.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
         // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
@@ -433,6 +439,7 @@ object UnitAutomation {
         return healthRequiredPerTurn <= unit.rankTileForHealing(unit.getTile())
     }
 
+    @Readonly
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
         val nearbyEnemyUnits = unit.currentTile.getTilesInDistance(3)
             .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
@@ -517,6 +524,7 @@ object UnitAutomation {
     private fun tryPrepare(unit: MapUnit): Boolean {
         val civInfo = unit.civ
 
+        @Readonly
         fun hasPreparationFlag(targetCiv: Civilization): Boolean {
             val diploManager = civInfo.getDiplomacyManager(targetCiv)!!
             if (diploManager.hasFlag(DiplomacyFlags.Denunciation)
@@ -685,7 +693,7 @@ object UnitAutomation {
         unit.movement.headTowards(closestReachableCityNeedsDefending.getCenterTile())
         return true
     }
-
+    @Readonly
     private fun isCityThatNeedsDefendingInWartime(city: City): Boolean {
         if (city.health < city.getMaxHealth()) return true // this city is under attack!
         for (enemyCivCity in city.civ.diplomacy.values
@@ -696,7 +704,7 @@ object UnitAutomation {
     }
 
     private fun tryStationingMeleeNavalUnit(unit: MapUnit): Boolean {
-        fun isMeleeNaval(mapUnit: MapUnit) = mapUnit.baseUnit.isMelee() && mapUnit.type.isWaterUnit()
+        @Readonly fun isMeleeNaval(mapUnit: MapUnit) = mapUnit.baseUnit.isMelee() && mapUnit.type.isWaterUnit()
 
         if (!isMeleeNaval(unit)) return false
         val closeCity = unit.getTile().getTilesInDistance(3)

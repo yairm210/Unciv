@@ -58,6 +58,7 @@ class MapEditorViewTab(
         nation.name = "Test"
         gameInfo = GameInfo()
         gameInfo.ruleset = ruleset
+        gameInfo.setGlobalTransients()
         cache.updateState()
         
         // show yields of strategic resources too
