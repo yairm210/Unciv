@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -24,6 +25,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.getAscendant
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -34,6 +36,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
@@ -59,6 +62,7 @@ class AdvancedTab(
         addMaxAutosavesStored()
 
         addAutosaveTurnsSelectBox()
+        addAutosaveField()
         addSeparator()
 
         if (Display.hasCutout())
@@ -114,6 +118,8 @@ class AdvancedTab(
         maxAutosavesStoredSelectBox.onChange {
             settings.maxAutosavesStored = maxAutosavesStoredSelectBox.selected
         }
+        
+        //val maxAutosavesI = Inp
     }
 
     private fun addAutosaveTurnsSelectBox() {
@@ -130,6 +136,56 @@ class AdvancedTab(
         autosaveTurnsSelectBox.onChange {
             settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
         }
+
+    }
+    
+    private fun addAutosaveField() {
+        add("Turns between autosaves input".toLabel()).left().fillX()
+        val autosaveFieldTable = Table()
+        val autoSaveTrunsTextField = UncivTextField("","20")
+        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in " 1234567890" }
+        autosaveFieldTable.add(autoSaveTrunsTextField)
+        val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
+
+        val errorAndWaringTable = Table()
+        
+        val autosaveZeroFieldError = "autosave turn must be bigger than 0!".toLabel(fontColor = Color.RED)
+        //errorAndWaringTable.add(autosaveZeroFieldError).row()
+        val autosaveTurnSpaceWaring = "autosave turn bigger than 200 might take a lot of spcae.".toLabel(fontColor = Color.ORANGE)
+        //errorAndWaringTable.add(autosaveTurnSpaceWaring).row()
+        
+
+        autosaveFieldTable.add(
+            autoSaveTrunsTextFieldButton.onClick {
+                errorAndWaringTable.removeActor(autosaveZeroFieldError)
+                //autosaveFieldTable.removeActor(autosaveZeroFieldError)
+                if (!autoSaveTrunsTextField.text.isEmpty()) {
+
+                    val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
+                    println(numberAutosaveTurns)
+                    //autosaveFieldTable.add(autosaveZeroFieldError).row()
+//                 autosaveTurnSpaceWaring.setText("")
+//                 autosaveZeroFieldError.setText("autosave turn must be bigger than 0!")
+
+                    if (numberAutosaveTurns == 0) {
+                        errorAndWaringTable.add(autosaveZeroFieldError).center()
+                        
+                    } else if (numberAutosaveTurns >= 200) {
+//                     autosaveZeroFieldError.setText("")
+//                     autosaveTurnSpaceWaring.setText("autosave turn bigger than 200 might take a lot of spcae.")
+
+                    }
+                }
+
+            }
+        ).row()
+
+
+        
+        add(autosaveFieldTable).row()
+        add(errorAndWaringTable).row()
+        
+
     }
 
     private fun addFontFamilySelect(onFontChange: () -> Unit) {
