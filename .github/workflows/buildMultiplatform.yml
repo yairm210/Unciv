@@ -68,7 +68,7 @@ jobs:
           - macos-latest
           - windows-latest
         java_version:
-          - 17
+          - 21
 
     runs-on: ${{ matrix.os }}
     steps:

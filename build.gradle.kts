@@ -7,7 +7,6 @@ import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
 import java.util.Properties
 
-
 buildscript {
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
@@ -35,9 +34,9 @@ kotlin {
 plugins {
     id("io.gitlab.arturbosch.detekt").version("1.23.8")
     // For some weird reason, the *docker build* fails to recognize linking to the shared kotlinVersion in plugins
-    // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
-    kotlin("multiplatform") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
+    // This is *with* gradle 9.0.0 downloaded, no idea what that's about
+    kotlin("multiplatform") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
     id("io.github.yairm210.purity-plugin") version "1.1.1" apply(false)
 }
 
@@ -132,7 +131,6 @@ project(":server") {
         "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
         "implementation"("io.ktor:ktor-server-websockets:${ktorVersion}")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
         "implementation"("ch.qos.logback:logback-classic:1.5.18")
         "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
 
@@ -197,7 +195,6 @@ project(":core") {
         "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         // JSON serialization and de-serialization
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     }
 
 
