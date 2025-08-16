@@ -25,6 +25,7 @@ import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -678,7 +679,8 @@ object Battle {
             city.isBeingRazed = true
         }
     }
-
+    
+    @Readonly
     fun getMapCombatantOfTile(tile: Tile): ICombatant? {
         if (tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
         if (tile.militaryUnit != null) return MapUnitCombatant(tile.militaryUnit!!)

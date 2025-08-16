@@ -66,6 +66,7 @@ allprojects {
 
             "kotlin.collections.random",
             "kotlin.hashCode",
+            "kotlin.collections.shuffled",
         )
         wellKnownPureClasses = setOf(
             "java.lang.StackTraceElement" // moved
