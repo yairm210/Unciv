@@ -38,7 +38,7 @@ plugins {
     // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
     kotlin("multiplatform") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "1.1.1" apply(false)
+    id("io.github.yairm210.purity-plugin") version "1.2.2" apply(false)
 }
 
 allprojects {
@@ -49,6 +49,7 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
+            "kotlin.with", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
@@ -61,9 +62,6 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
-
-            "kotlin.collections.sortBy", // moved
-            "kotlin.Throwable.getStackTrace", // moved
 
             "kotlin.collections.random",
             "kotlin.hashCode",
