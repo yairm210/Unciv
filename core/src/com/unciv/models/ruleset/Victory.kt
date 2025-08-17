@@ -11,6 +11,8 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
@@ -27,7 +29,7 @@ enum class MilestoneType(val text: String) {
     ScoreAfterTimeOut("Have highest score after max turns"),
 }
 
-class Victory : INamed {
+class Victory : INamed, ICivilopediaText {
 
     enum class CompletionStatus {
         Completed,
@@ -66,6 +68,26 @@ class Victory : INamed {
     val defeatString = "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
 
     @Readonly fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
+
+    override var civilopediaText = listOf<FormattedLine>()
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        return listOf(
+            FormattedLine(victoryScreenHeader.lines().joinToString(" ")), // Remove newlines
+            FormattedLine(extraImage="VictoryIllustrations/$name/Won", centered = true),
+            FormattedLine(),
+        ) + milestones.map { FormattedLine(it, starred = true) }
+    }
+    override fun makeLink() = "Victory/$name"
+    override fun getIconName() = when (name) {
+        "Cultural" -> "Culture"
+        "Scientific" -> "Science"
+        "Domination" -> "Production"
+        "Diplomatic" -> "Happiness"
+        "Religious" -> "Faith"
+        "Time" -> "Gold"
+        else -> name
+    }
+    override fun getCivilopediaTextHeader(): FormattedLine? = FormattedLine(name, header = 2)
 }
 
 class Milestone(val uniqueDescription: String, private val parentVictory: Victory) {

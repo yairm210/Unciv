@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.UnitMovementType
+import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -94,6 +95,10 @@ internal object CivilopediaImageGetters {
     }
     val belief = { name: String, size: Float ->
         ImageGetter.getReligionPortrait(name, size)
+    }
+    val victory = { name: String, size: Float ->
+        if (Stat.isStat(name)) ImageGetter.getStatIcon(name, size)
+        else null
     }
     val unitType = { name: String, size: Float ->
         val path = UnitMovementType.entries.firstOrNull { "Domain: [${it.name}]" == name }

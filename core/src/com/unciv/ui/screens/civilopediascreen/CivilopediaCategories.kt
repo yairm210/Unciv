@@ -94,6 +94,12 @@ enum class CivilopediaCategories (
         { ruleset, _ -> (ruleset.beliefs.values.asSequence() +
             BaseBelief.getCivilopediaReligionEntry(ruleset)).toList() }
     ),
+    Victory ("Victory Types",
+        CivilopediaImageGetters.victory,
+        KeyboardBinding.PediaVictoryTypes,
+        "OtherIcons/Score",
+        { ruleset, _ -> ruleset.victories.values }
+    ),
     Tutorial ("Tutorials",
         getImage = null,
         KeyboardBinding.PediaTutorials,
