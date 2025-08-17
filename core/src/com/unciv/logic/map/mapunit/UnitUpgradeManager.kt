@@ -45,6 +45,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
      */
     // Only one use from getUpgradeAction at the moment, so AI-specific rules omitted
     //todo Does the AI never buy upgrades???
+    @Readonly
     fun getCostOfUpgrade(unitToUpgradeTo: BaseUnit): Int {
         // Source rounds to int every step, we don't
         //TODO From the source, this should apply _Production_ modifiers (Temple of Artemis? GameSpeed! StartEra!), at the moment it doesn't
