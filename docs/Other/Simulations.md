@@ -11,7 +11,7 @@ Set the working directory to android/assets, just like when running desktop. And
 
 ## Running Sims
 
-Execute the Build Configuration
+Execute the ConsoleLauncher Build Configuration set up above. Results should appear in the Console of the IDE.
 
 ## Configuring Sims
 
@@ -19,11 +19,11 @@ Within the `desktop\src\ConsoleLauncher.kt` file, you can adjust the number of s
 
 Recommend using generic civs with no Uniques. You can see the code add a generic `Nation` to the `ruleset` object, and you can key different behavior throughout the code using the Nation Name constant as the control switch.
 
-You can also adjust the game parameters and map parameters. To get more consistent results, turning off Wonders and Barbarians can help.
+You can also adjust the game parameters and map parameters. To get more consistent results, turning off Natural Wonders and Barbarians can help.
 
 By default the order of players is randomized to make it more fair.
 
-The `statTurns` parameter allows the system to save certain stats at particular turns so you can track it over the course of the games.
+The `statTurns` list parameter allows the system to save certain stats at particular turns so you can track it over the course of the games.
 
 ## Understanding Results
 
