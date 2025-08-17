@@ -131,7 +131,7 @@ class TileImprovement : RulesetStatsObject() {
             }
         }.filter { it !in cannotFilters }.toMutableSet()
 
-        @LocalState val terrainsCanBeBuiltOnTypes = sequence {
+        val terrainsCanBeBuiltOnTypes = sequence {
             yieldAll(expandedTerrainsCanBeBuiltOn.asSequence()
                 .mapNotNull { ruleset.terrains[it]?.type })
             yieldAll(

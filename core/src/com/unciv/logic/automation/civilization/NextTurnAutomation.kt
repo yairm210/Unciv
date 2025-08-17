@@ -230,6 +230,7 @@ object NextTurnAutomation {
     }
 
     private fun chooseTechToResearch(civInfo: Civilization) {
+        @Readonly
         fun getGroupedResearchableTechs(): List<List<Technology>> {
             val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
                 .asSequence()
@@ -407,7 +408,7 @@ object NextTurnAutomation {
     }
     
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
-    fun automateCityConquer(civInfo: Civilization, city: City){
+    private fun automateCityConquer(civInfo: Civilization, city: City){
         @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
             .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo }.toList()
         

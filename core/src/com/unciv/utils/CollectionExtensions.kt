@@ -2,12 +2,14 @@ package com.unciv.utils
 
 import com.badlogic.gdx.utils.Array
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 /** Get one random element of a given List.
  *
  * The probability for each element is proportional to the value of its corresponding element in the [weights] List.
  */
+@Readonly 
 fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T {
     if (this.isEmpty()) throw NoSuchElementException("Empty list.")
     if (this.size != weights.size) throw UnsupportedOperationException("Weights size does not match this list size.")
@@ -28,6 +30,7 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
  *
  * The probability for each element is proportional to the result of [getWeight] (evaluated only once).
  */
+@Readonly
 fun <T> List<T>.randomWeighted(random: Random = Random, getWeight: (T) -> Float): T =
     randomWeighted(map(getWeight), random)
 
@@ -35,6 +38,7 @@ fun <T> List<T>.randomWeighted(random: Random = Random, getWeight: (T) -> Float)
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
+@Readonly
 fun <T> ArrayList<T>.withItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.add(item)
@@ -45,6 +49,7 @@ fun <T> ArrayList<T>.withItem(item: T): ArrayList<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
+@Readonly
 fun <T> HashSet<T>.withItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.add(item)
@@ -55,6 +60,7 @@ fun <T> HashSet<T>.withItem(item: T): HashSet<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
+@Readonly
 fun <T> ArrayList<T>.withoutItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.remove(item)
@@ -65,6 +71,7 @@ fun <T> ArrayList<T>.withoutItem(item: T): ArrayList<T> {
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
+@Readonly
 fun <T> HashSet<T>.withoutItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.remove(item)
@@ -105,6 +112,7 @@ fun <KT, ET> HashMap<KT, HashSet<ET>>.addToMapOfSets(key: KT, element: ET) =
     getOrPut(key) { hashSetOf() }.add(element)
 
 /** Simplifies testing whether in a sparse map of sets the [element] exists for [key]. */
+@Readonly
 fun <KT, ET> HashMap<KT, HashSet<ET>>.contains(key: KT, element: ET) =
     get(key)?.contains(element) == true
 
