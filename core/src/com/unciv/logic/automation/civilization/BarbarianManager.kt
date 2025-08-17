@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -241,20 +242,26 @@ class Encampment() : IsPartOfGameInfoSerialization {
 
     /** Attempts to spawn a barbarian on [position], returns true if successful and false if unsuccessful. */
     private fun spawnUnit(naval: Boolean): Boolean {
+        updateBarbarianTech()
         val unitToSpawn = chooseBarbarianUnit(naval) ?: return false // return false if we didn't find a unit
         val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position, unitToSpawn, gameInfo.getBarbarianCivilization())
         return (spawnedUnit != null)
     }
-
-    private fun chooseBarbarianUnit(naval: Boolean): BaseUnit? {
-        // if we don't make this into a separate list then the retain() will happen on the Tech keys,
-        // which effectively removes those techs from the game and causes all sorts of problems
+    
+    private fun updateBarbarianTech(){
+        val barbarianCiv = gameInfo.getBarbarianCivilization()
         val allResearchedTechs = gameInfo.ruleset.technologies.keys.toMutableList()
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
-        val barbarianCiv = gameInfo.getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
+    }
+
+    @Readonly
+    private fun chooseBarbarianUnit(naval: Boolean): BaseUnit? {
+        // if we don't make this into a separate list then the retain() will happen on the Tech keys,
+        // which effectively removes those techs from the game and causes all sorts of problems
+        val barbarianCiv = gameInfo.getBarbarianCivilization()
         val unitList = gameInfo.ruleset.units.values
             .filter { it.isMilitary &&
                     !(it.hasUnique(UniqueType.CannotAttack) ||
