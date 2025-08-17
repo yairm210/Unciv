@@ -646,7 +646,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         /*
         Putting the ! to make sure the player/Ai doesn't place cities too near each other.
         Because when .none return False when one element has a match.
-        */ 
+        */
         
         addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
         

@@ -45,12 +45,16 @@ object UnitActionsFromUniques {
             UniqueType.FoundCity).firstOrNull() ?: 
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
-
-
+        
+        val uniqueModifier = unit.getMatchingUniques(UniqueType.ConditionalInTiles).firstOrNull()
+        
+        // do this check like that settler unique that don't have ConditionalInTiles does not show the grayed out button on water/moutain
+        if (!unique.hasModifier(UniqueType.ConditionalInTiles) && (tile.isWater  || tile.isImpassible())) return null
+        
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
 
-        if (!unit.hasMovement() || !tile.canBeSettled())
+        if (!unit.hasMovement() || !tile.canBeSettled(uniqueModifier))
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
