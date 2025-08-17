@@ -201,8 +201,7 @@ object SpecificUnitAutomation {
         if (tryRunAwayIfNeccessary(unit)) return 
         unit.movement.headTowards(bestCityLocation)
         val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
-        if (shouldSettle) foundCityAction.action.invoke() 
-        //TODO: evaluate 1-tile move with settle on same turn as "safe"
+        if (shouldSettleNow) foundCityAction.action.invoke() 
     }
 
     /** @return whether there was any progress in placing the improvement. A return value of `false`
