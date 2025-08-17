@@ -16,14 +16,13 @@ import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.victoryscreen.RankingType
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 object MotivationToAttackAutomation {
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
-    @Readonly @Suppress("purity") // requires changing dependents from mutating to readonly
+    @Readonly
     fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCiv: Civilization, atLeast: Float): Float {
         val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)!!
         val personality = civInfo.getPersonality()
@@ -123,7 +122,7 @@ object MotivationToAttackAutomation {
                 modifiers.add(Pair("Allied City-state", -20 * personality.modifierFocus(PersonalityValue.Diplomacy, .8f))) // There had better be a DAMN good reason
         }
 
-        addWonderBasedMotivations(targetCiv, modifiers)
+        modifiers += getWonderBasedMotivations(targetCiv)
 
         modifiers.add(Pair("War with allies", getAlliedWarMotivation(civInfo, targetCiv)))
 
@@ -157,22 +156,11 @@ object MotivationToAttackAutomation {
         if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
         return ourCombatStrength
     }
-    
-    @Pure
-    fun addHelloWorld(@Pure add: (String) -> Unit){
-        add("Hello")
-        add("World")
-    }
-    
-    @Pure
-    fun a(): MutableList<String> {
-        val myList = mutableListOf<String>()
-        addHelloWorld{myList.add(it)}
-        return myList
-    }
 
-    private fun addWonderBasedMotivations(otherCiv: Civilization, modifiers: MutableList<Pair<String, Float>>) {
+    @Readonly
+    private fun getWonderBasedMotivations(otherCiv: Civilization): MutableList<Pair<String, Float>> {
         var wonderCount = 0
+        val modifiers = mutableListOf<Pair<String, Float>>()
         for (city in otherCiv.cities) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
@@ -186,6 +174,7 @@ object MotivationToAttackAutomation {
         // Civs need an army to protect thier wonders which give the most score
         if (wonderCount > 0)
             modifiers.add(Pair("Owned Wonders", wonderCount.toFloat()))
+        return modifiers
     }
 
     /** If they are at war with our allies, then we should join in */
@@ -330,12 +319,14 @@ object MotivationToAttackAutomation {
     @Readonly
     private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Float {
 
+        @Readonly
         fun isTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
             val owner = tile.getOwner()
             return !tile.isImpassible()
                     && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 
+        @Readonly
         fun isLandTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
             return tile.isLand && isTileCanMoveThrough(civInfo, tile)
         }

@@ -151,6 +151,7 @@ object SpecificUnitAutomation {
 
         if (bestCityLocation == null) {
             // Find the best tile that is within
+            @Readonly
             fun isTileRankOK(it: Map.Entry<Tile, Float>): Boolean {
                 if (it.key in dangerousTiles && it.key != unit.getTile()) return false
                 val pathSize = unit.movement.getShortestPath(it.key).size
@@ -174,6 +175,7 @@ object SpecificUnitAutomation {
             // Try to move towards the frontier
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
+            @Readonly
             fun getFrontierScore(city: City) = city.getCenterTile()
                 .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
                 .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
@@ -198,8 +200,8 @@ object SpecificUnitAutomation {
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
         if (tryRunAwayIfNeccessary(unit)) return 
         unit.movement.headTowards(bestCityLocation)
-        if (shouldSettle) foundCityAction.action.invoke() 
-        //TODO: evaluate 1-tile move with settle on same turn as "safe"
+        val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
+        if (shouldSettleNow) foundCityAction.action.invoke() 
     }
 
     /** @return whether there was any progress in placing the improvement. A return value of `false`
