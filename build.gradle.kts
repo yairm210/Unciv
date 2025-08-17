@@ -49,7 +49,7 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration>{
         wellKnownPureFunctions = setOf(
-            "kotlin.with",
+            "kotlin.with", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
@@ -62,9 +62,6 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
-
-            "kotlin.collections.sortBy", // moved
-            "kotlin.Throwable.getStackTrace", // moved
 
             "kotlin.collections.random",
             "kotlin.hashCode",

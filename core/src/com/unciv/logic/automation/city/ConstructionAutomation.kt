@@ -192,7 +192,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         // Is there already a Workboat nearby?
         // todo Still ignores whether that boat can reach the not-yet-found tile to improve
         val twoTurnsMovement = buildableWorkboatUnits.maxOf { it.movement } * 2
-        fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements && this.civ == this@ConstructionAutomation.civInfo
+        @Readonly fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements
+                && this.civ == this@ConstructionAutomation.civInfo
         val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistance(twoTurnsMovement)
             .any { it.civilianUnit?.isOurWorkBoat() == true }
         if (alreadyHasWorkBoat) return

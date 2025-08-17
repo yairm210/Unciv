@@ -25,6 +25,7 @@ import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -306,6 +307,7 @@ object Battle {
     }
 
     /** See [UniqueType.KillUnitPlunder] for params */
+    @Readonly
     private fun getKillUnitPlunderUniques(civUnit: ICombatant, defeatedUnit: MapUnitCombatant): ArrayList<Unique> {
         val bonusUniques = ArrayList<Unique>()
 
@@ -332,7 +334,7 @@ object Battle {
      *  @param defenderDealt Damage done by defender to attacker
      */
     data class DamageDealt(val attackerDealt: Int, val defenderDealt: Int) {
-        operator fun plus(other: DamageDealt) =
+        @Pure operator fun plus(other: DamageDealt) =
             DamageDealt(attackerDealt + other.attackerDealt, defenderDealt + other.defenderDealt)
         companion object {
             val None = DamageDealt(0, 0)
@@ -707,6 +709,7 @@ object Battle {
         val fromTile = defender.getTile()
         val attackerTile = attacker.getTile()
 
+        @Readonly
         fun canNotWithdrawTo(tile: Tile): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
            return !defender.unit.movement.canMoveTo(tile)
                    || defender.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
