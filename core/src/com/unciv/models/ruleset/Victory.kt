@@ -102,19 +102,28 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     /**
      * Gets the percentage progress of one civilization's countable against another's countable.
      *
-     * @return The progress percentage (0-100).
+     * @return The progress percentage (0-100). When the result is >100, it qualifies as "more than".
+     * @see getMoreCountableThanOtherCivRelevent()
      */
     @Readonly
     fun getMoreCountableThanOtherCivPercent(civ: Civilization, otherCiv: Civilization): Float {
-        if (type != MilestoneType.MoreCountableThanEachPlayer) return 0f
-        val firstCountable = Countables.getCountableAmount(params[0], GameContext(civ)) ?: 0
-        val secondCountable = Countables.getCountableAmount(params[1], GameContext(otherCiv)) ?: 0
-        return if (secondCountable <= 0) { // Protect against zero division and negative resulting percent
-            if (firstCountable > secondCountable) 100.1f else 0f // Extra .1 so that it qualifies as >100%
+        val countable1 = Countables.getCountableAmount(params[0], GameContext(civ)) ?: 0
+        val countable2 = Countables.getCountableAmount(params[1], GameContext(otherCiv)) ?: 0
+        return if (countable2 <= 0) { // Protect against zero division and negative resulting percent
+            if (countable1 > countable2) 100.1f else 0f // Extra .1 so that it qualifies as >100%
         } else {
-            firstCountable.toFloat() / secondCountable.toFloat() * 100f
+            countable1.toFloat() / countable2.toFloat() * 100f
         }
     }
+
+    /**
+     * Determines whether or not the given Civilization is relevent for the More Countable Victory Type.
+     *
+     * @see getMoreCountableThanOtherCivPercent()
+     */
+    @Readonly
+    fun getMoreCountableThanOtherCivRelevent(civ: Civilization, otherCiv: Civilization): Boolean =
+        civ != otherCiv && otherCiv.isMajorCiv() && otherCiv.isAlive()
 
     @Readonly
     fun hasBeenCompletedBy(civInfo: Civilization): Boolean {
@@ -130,8 +139,13 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 originalMajorCapitalsOwned(civInfo) == civsWithPotentialCapitalsToOwn(civInfo.gameInfo).size
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
-            MilestoneType.MoreCountableThanEachPlayer ->
-                civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() && it.isAlive() }.all { getMoreCountableThanOtherCivPercent(civInfo, it) > 100f }
+            MilestoneType.MoreCountableThanEachPlayer -> {
+                for (otherCiv in civInfo.gameInfo.civilizations) {
+                    if (!getMoreCountableThanOtherCivRelevent(civInfo, otherCiv)) continue
+                    if (getMoreCountableThanOtherCivPercent(civInfo, otherCiv) <= 100f) return false
+                }
+                return true
+            }
             MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
                 it.cityConstructions.isBuilt(params[0])
             }
@@ -194,9 +208,12 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
             }
             MilestoneType.MoreCountableThanEachPlayer -> {
-                val relevantCivs = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() && it.isAlive() }
-                val amountToDo = relevantCivs.size
-                val amountDone = relevantCivs.count { getMoreCountableThanOtherCivPercent(civInfo, it) > 100f }
+                var amountToDo = 0; var amountDone = 0;
+                for (otherCiv in civInfo.gameInfo.civilizations) {
+                    if (!getMoreCountableThanOtherCivRelevent(civInfo, otherCiv)) continue
+                    amountToDo++
+                    if (getMoreCountableThanOtherCivPercent(civInfo, otherCiv) > 100f) amountDone++
+                }
                 if (civInfo.shouldHideCivCount())
                     "{$uniqueDescription} (${amountDone.tr()}/?)"
                 else
@@ -309,11 +326,11 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
 
             MilestoneType.MoreCountableThanEachPlayer -> {
                 val hideCivCount = civInfo.shouldHideCivCount()
-                for (civ in civInfo.gameInfo.civilizations) {
-                    if (civ == civInfo || !civ.isMajorCiv() || !civ.isAlive()) continue
-                    if (hideCivCount && !civInfo.knows(civ)) continue
-                    val civName = if (civInfo.knows(civ)) civ.civName else Constants.unknownNationName
-                    val percent = getMoreCountableThanOtherCivPercent(civInfo, civ)
+                for (otherCiv in civInfo.gameInfo.civilizations) {
+                    if (!getMoreCountableThanOtherCivRelevent(civInfo, otherCiv)) continue
+                    if (hideCivCount && !civInfo.knows(otherCiv)) continue
+                    val civName = if (civInfo.knows(otherCiv)) otherCiv.civName else Constants.unknownNationName
+                    val percent = getMoreCountableThanOtherCivPercent(civInfo, otherCiv)
                     // Hide the percent if it's zero, or double. Similar to "Dominant" cultural influence in BNW.
                     val milestoneText = if (percent < 1f || percent >= 200f) "[${civName}]" else "[${civName}] [${percent.toInt()}]%"
                     buttons.add(getMilestoneButton(milestoneText, percent > 100f))
