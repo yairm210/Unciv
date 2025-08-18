@@ -358,6 +358,7 @@ Each victory have the following structure:
 | hiddenInVictoryScreen  | Boolean         | false    | Whether progress of this victory is hidden in the victory screen                           |
 | requiredSpaceshipParts | List of Strings | empty    | What spaceship parts must be added to the capital for the corresponding milestone          |
 | Milestones             | List of Strings | Required | List of milestones that must be accomplished to win, [see below](#milestones)              |
+| civilopediaText        | List            | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)              |
 
 ### Milestones
 
