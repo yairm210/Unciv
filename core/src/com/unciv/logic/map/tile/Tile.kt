@@ -638,8 +638,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         var addedDistanceBeweenContinents: Int
         var canSettleInTileWithUnique = false
         if (unitCanFoundUnique != null) {
-            canSettleInTileWithUnique = (isWater || isImpassible()) &&
-                unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).none{
+            canSettleInTileWithUnique = !unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).none{
                     matchesFilter(it.params[0]) 
                 }
         }
@@ -647,6 +646,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         Putting the ! to make sure the player/Ai doesn't place cities too near each other.
         Because when .none return False when one element has a match.
         */
+        println(canSettleInTileWithUnique)
         
         addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
         
@@ -658,7 +658,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                  Because this can crash the game in automateSettlerActions in SpecificUnitAutomation.kt.
                  */
                 if (unitCanFoundUnique != null) addedDistanceBeweenContinents else 0)  
-                .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
+                .any { it.isCityCenter() && it.getContinent() != getContinent() && unitCanFoundUnique != null } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
             else -> true

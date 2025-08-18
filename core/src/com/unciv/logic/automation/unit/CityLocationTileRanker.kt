@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 
 object CityLocationTileRanker {
 
@@ -66,8 +67,9 @@ object CityLocationTileRanker {
     private fun canSettleTile(tile: Tile, unit: MapUnit, nearbyCities: Sequence<City>): Boolean {
         val civ = unit.civ
         val unitCanFoundUnique = unit.getMatchingUniques(UniqueType.ConditionalInTiles).firstOrNull()
+        println(unitCanFoundUnique)
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
-       if ( (!tile.isLand || tile.isImpassible())) return false
+       if (unitCanFoundUnique == null && (!tile.isLand || tile.isImpassible())) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
         for (city in nearbyCities) {
             var addedDistanceBeweenContinents: Int
