@@ -29,7 +29,10 @@ class Simulation(
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
-    private var summaryStats = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
+    private var summaryStatsPop = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
+    private var summaryStatsProd = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
+    private var summaryStatsCities = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
+    private var summaryStatsAvgPop = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
     private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var winTurnByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var avgSpeed = 0f
@@ -47,12 +50,24 @@ class Simulation(
         for (civ in civilizations) {
             this.numWins[civ] = MutableInt(0)
             for (turn in statTurns) {
-                this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
-                this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+                this.summaryStatsPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+                this.summaryStatsPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+                this.summaryStatsProd.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+                this.summaryStatsProd.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+                this.summaryStatsCities.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+                this.summaryStatsCities.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+                this.summaryStatsAvgPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+                this.summaryStatsAvgPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
             }
             val turn = -1 // end of game
-            this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
-            this.summaryStats.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+            this.summaryStatsPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+            this.summaryStatsPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+            this.summaryStatsProd.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+            this.summaryStatsProd.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+            this.summaryStatsCities.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+            this.summaryStatsCities.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
+            this.summaryStatsAvgPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
+            this.summaryStatsAvgPop.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
                 winRateByVictory[civ]!![victory] = MutableInt(0)
@@ -133,7 +148,16 @@ class Simulation(
         numWins.values.forEach { it.value = 0 }
         winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
         winTurnByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
-        summaryStats.flatMap { it.value.values }.forEach {
+        summaryStatsPop.flatMap { it.value.values }.forEach {
+            it.values.forEach { it.value = 0 }
+        }
+        summaryStatsProd.flatMap { it.value.values }.forEach {
+            it.values.forEach { it.value = 0 }
+        }
+        summaryStatsCities.flatMap { it.value.values }.forEach {
+            it.values.forEach { it.value = 0 }
+        }
+        summaryStatsAvgPop.flatMap { it.value.values }.forEach {
             it.values.forEach { it.value = 0 }
         }
         steps.forEach {
@@ -144,15 +168,33 @@ class Simulation(
             }
             for (civ in civilizations) {
                 for (turn in statTurns) {
-                    if (it.turnStats[civ]!![turn]!!.value != -1) {
-                        summaryStats[civ]!![turn]!![Stat.SUM]!!.add(it.turnStats[civ]!![turn]!!.value)
-                        summaryStats[civ]!![turn]!![Stat.NUM]!!.inc()
+                    if (it.turnStatsPop[civ]!![turn]!!.value != -1) {
+                        summaryStatsPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value)
+                        summaryStatsPop[civ]!![turn]!![Stat.NUM]!!.inc()
                         //println("civ ${civ} @ ${turn} value ${it.turnStats[civ]!![turn]!!.value} avg ${summaryStats[civ]!![turn]!!["avg"]!!.value} numAvg ${summaryStats[civ]!![turn]!!["numAvg"]!!.value}")
+                    }
+                    if (it.turnStatsProd[civ]!![turn]!!.value != -1) {
+                        summaryStatsProd[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsProd[civ]!![turn]!!.value)
+                        summaryStatsProd[civ]!![turn]!![Stat.NUM]!!.inc()
+                    }
+                    if (it.turnStatsCities[civ]!![turn]!!.value != -1) {
+                        summaryStatsCities[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsCities[civ]!![turn]!!.value)
+                        summaryStatsCities[civ]!![turn]!![Stat.NUM]!!.inc()
+                    }
+                    if (it.turnStatsPop[civ]!![turn]!!.value != -1 && it.turnStatsCities[civ]!![turn]!!.value != -1) {
+                        summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
+                        summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
                     }
                 }
                 val turn = -1 // end of game
-                summaryStats[civ]!![turn]!![Stat.SUM]!!.add(it.turnStats[civ]!![turn]!!.value)
-                summaryStats[civ]!![turn]!![Stat.NUM]!!.inc()
+                summaryStatsPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value)
+                summaryStatsPop[civ]!![turn]!![Stat.NUM]!!.inc()
+                summaryStatsProd[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsProd[civ]!![turn]!!.value)
+                summaryStatsProd[civ]!![turn]!![Stat.NUM]!!.inc()
+                summaryStatsCities[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsCities[civ]!![turn]!!.value)
+                summaryStatsCities[civ]!![turn]!![Stat.NUM]!!.inc()
+                summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
+                summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
             }
         }
         totalTurns = steps.sumOf { it.turns }
@@ -195,12 +237,24 @@ class Simulation(
             }
             outString += "avg turns\n"
             for (turn in statTurns) {
-                val turnStats = summaryStats[civ]!![turn]!!
-                outString += "@$turn: popsum avg=${turnStats[Stat.SUM]!!.value.toFloat() / turnStats[Stat.NUM]!!.value.toFloat()} cnt=${turnStats[Stat.NUM]!!.value}\n"
+                val turnStatsPop = summaryStatsPop[civ]!![turn]!!
+                outString += "@$turn: popSum avg=${turnStatsPop[Stat.SUM]!!.value.toFloat() / turnStatsPop[Stat.NUM]!!.value.toFloat()} cnt=${turnStatsPop[Stat.NUM]!!.value}\n"
+                val turnStatsProd = summaryStatsProd[civ]!![turn]!!
+                outString += "@$turn: prodSum avg=${turnStatsProd[Stat.SUM]!!.value.toFloat() / turnStatsProd[Stat.NUM]!!.value.toFloat()} cnt=${turnStatsProd[Stat.NUM]!!.value}\n"
+                val turnStatsCities = summaryStatsCities[civ]!![turn]!!
+                outString += "@$turn: cityCount avg=${turnStatsCities[Stat.SUM]!!.value.toFloat() / turnStatsCities[Stat.NUM]!!.value.toFloat()} cnt=${turnStatsCities[Stat.NUM]!!.value}\n"
+                val avgCityPop = summaryStatsAvgPop[civ]!![turn]!!
+                outString += "@$turn: avgCityPop avg=${avgCityPop[Stat.SUM]!!.value.toFloat() / avgCityPop[Stat.NUM]!!.value.toFloat()} cnt=${avgCityPop[Stat.NUM]!!.value}\n"
             }
             val turn = -1 // end of match
-            val turnStats = summaryStats[civ]!![turn]!!
-            outString += "@END: popsum avg=${turnStats[Stat.SUM]!!.value.toFloat()/turnStats[Stat.NUM]!!.value.toFloat()} cnt=${turnStats[Stat.NUM]!!.value}\n"
+            val turnStatsPop = summaryStatsPop[civ]!![turn]!!
+            outString += "@END: popSum avg=${turnStatsPop[Stat.SUM]!!.value.toFloat()/turnStatsPop[Stat.NUM]!!.value.toFloat()} cnt=${turnStatsPop[Stat.NUM]!!.value}\n"
+            val turnStatsProd = summaryStatsProd[civ]!![turn]!!
+            outString += "@END: prodSum avg=${turnStatsProd[Stat.SUM]!!.value.toFloat()/turnStatsProd[Stat.NUM]!!.value.toFloat()} cnt=${turnStatsProd[Stat.NUM]!!.value}\n"
+            val turnStatsCities = summaryStatsCities[civ]!![turn]!!
+            outString += "@END: cityCount avg=${turnStatsCities[Stat.SUM]!!.value.toFloat()/turnStatsCities[Stat.NUM]!!.value.toFloat()} cnt=${turnStatsCities[Stat.NUM]!!.value}\n"
+            val avgCityPop = summaryStatsAvgPop[civ]!![turn]!!
+            outString += "@END: avgCityPop avg=${avgCityPop[Stat.SUM]!!.value.toFloat()/avgCityPop[Stat.NUM]!!.value.toFloat()} cnt=${avgCityPop[Stat.NUM]!!.value}\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
         outString += "Average game duration: $avgDuration\n"
