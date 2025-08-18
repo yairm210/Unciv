@@ -60,9 +60,9 @@ class AdvancedTab(
         defaults().pad(5f)
         
         addMaxAutosavesStored()
-
-        addAutosaveTurnsSelectBox()
         addAutosaveField()
+        addAutosaveTurnsSelectBox()
+        
         addSeparator()
 
         if (Display.hasCutout())
@@ -127,7 +127,7 @@ class AdvancedTab(
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
-        autosaveTurnsArray.addAll(1, 2, 5, 10)
+        autosaveTurnsArray.addAll(1, 2, 5, 10,15,20,50,100,1000)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
 
@@ -144,48 +144,38 @@ class AdvancedTab(
         val autosaveFieldTable = Table()
         val autoSaveTrunsTextField = UncivTextField("","20")
         autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in " 1234567890" }
-        autosaveFieldTable.add(autoSaveTrunsTextField)
+        autosaveFieldTable.add(autoSaveTrunsTextField).row()
         val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
-
-        val errorAndWaringTable = Table()
         
-        val autosaveZeroFieldError = "autosave turn must be bigger than 0!".toLabel(fontColor = Color.RED)
-        //errorAndWaringTable.add(autosaveZeroFieldError).row()
-        val autosaveTurnSpaceWaring = "autosave turn bigger than 200 might take a lot of spcae.".toLabel(fontColor = Color.ORANGE)
-        //errorAndWaringTable.add(autosaveTurnSpaceWaring).row()
+        val autosaveZeroFieldError = "Autosave turns must be bigger than 0!".toLabel(fontColor = Color.RED)
+        val autosaveTurnSpaceWaring = ("Autosave turns that are bigger than 200 might take a lot of spcae\n " +
+            "on your device.").toLabel(fontColor = Color.ORANGE)
         
 
         autosaveFieldTable.add(
             autoSaveTrunsTextFieldButton.onClick {
-                errorAndWaringTable.removeActor(autosaveZeroFieldError)
+                autosaveFieldTable.removeActor(autosaveZeroFieldError)
+                autosaveFieldTable.removeActor(autosaveTurnSpaceWaring)
                 //autosaveFieldTable.removeActor(autosaveZeroFieldError)
                 if (!autoSaveTrunsTextField.text.isEmpty()) {
 
                     val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
                     println(numberAutosaveTurns)
-                    //autosaveFieldTable.add(autosaveZeroFieldError).row()
-//                 autosaveTurnSpaceWaring.setText("")
-//                 autosaveZeroFieldError.setText("autosave turn must be bigger than 0!")
 
                     if (numberAutosaveTurns == 0) {
-                        errorAndWaringTable.add(autosaveZeroFieldError).center()
+                        autosaveFieldTable.add(autosaveZeroFieldError).row()
                         
                     } else if (numberAutosaveTurns >= 200) {
-//                     autosaveZeroFieldError.setText("")
-//                     autosaveTurnSpaceWaring.setText("autosave turn bigger than 200 might take a lot of spcae.")
-
+                        autosaveFieldTable.add(autosaveTurnSpaceWaring).row()
+                        settings.maxAutosavesStored = numberAutosaveTurns
+                    } else {
+                        settings.maxAutosavesStored = numberAutosaveTurns
                     }
                 }
-
             }
         ).row()
-
-
         
         add(autosaveFieldTable).row()
-        add(errorAndWaringTable).row()
-        
-
     }
 
     private fun addFontFamilySelect(onFontChange: () -> Unit) {
