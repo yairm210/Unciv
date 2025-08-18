@@ -75,7 +75,7 @@ class Victory : INamed, ICivilopediaText {
             FormattedLine(victoryScreenHeader.lines().joinToString(" ")), // Remove newlines
             FormattedLine(extraImage="VictoryIllustrations/$name/Won", centered = true),
             FormattedLine(),
-        ) + milestones.map { FormattedLine(it, starred = true) }
+        ) + milestoneObjects.map { it.getFormattedLine() }
     }
     override fun makeLink() = "Victory/$name"
     override fun getIconName() = when (name) {
@@ -349,5 +349,14 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.ScoreAfterTimeOut -> Victory.Focus.Score
             MilestoneType.WorldReligion -> Victory.Focus.Faith
         }
+    }
+
+    @Readonly fun getFormattedLine(): FormattedLine = when (type!!) {
+        // TODO: Links should be Building/params[0], but then wonder links don't work
+        MilestoneType.BuiltBuilding -> FormattedLine(uniqueDescription, link = "Wonder/${params[0]}")
+        MilestoneType.BuildingBuiltGlobally -> FormattedLine(uniqueDescription, link = "Wonder/${params[0]}")
+        MilestoneType.WorldReligion -> FormattedLine(uniqueDescription, link = "Tutorials/Religion")
+        MilestoneType.CompletePolicyBranches -> FormattedLine(uniqueDescription, link = "Policies")
+        else -> FormattedLine(uniqueDescription, starred = true)
     }
 }
