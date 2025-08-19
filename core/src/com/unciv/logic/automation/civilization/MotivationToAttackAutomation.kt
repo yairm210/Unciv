@@ -277,8 +277,8 @@ object MotivationToAttackAutomation {
         // At higher difficulty levels the AI gets a unit production boost.
         // In that case while we may have more units than them, we don't nessesarily want to be more aggressive.
         // This is to reduce the amount that the AI targets players at these higher levels somewhat.
-        if (civInfo.isAI() && targetCiv.isHuman() && combatStrengthRatio > 1) {
-            combatStrengthRatio *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier.pow(2) // Scale non-linearly, as AI is still considered too warmongery on high difficulties, but fine on Prince
+        if (civInfo.isAI() && targetCiv.isHuman()) {
+            combatStrengthRatio *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier.pow(1.5f)
         }
         val combatStrengthModifier = when {
             combatStrengthRatio > 5f -> 20f
