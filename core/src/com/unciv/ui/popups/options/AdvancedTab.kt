@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -25,7 +24,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.getAscendant
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -38,6 +36,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
@@ -59,7 +58,6 @@ class AdvancedTab(
         pad(10f)
         defaults().pad(5f)
         
-        addMaxAutosavesStored()
         addAutosaveField()
         addAutosaveTurnsSelectBox()
         
@@ -102,26 +100,44 @@ class AdvancedTab(
             optionsPopup.reopenAfterDisplayLayoutChange()
         }
     }
-    
-    private fun addMaxAutosavesStored() {
-        add("Number of autosave files stored".toLabel()).left().fillX()
-        
-        val maxAutosavesStoredSelectBox = SelectBox<Int>(skin)
-        val maxAutosavesStoredArray = Array<Int>()
-        maxAutosavesStoredArray.addAll(1,2,5,10,15,20,35,50,100,150,200,250,
-            500,1000,2500,5000,10000)
-        maxAutosavesStoredSelectBox.items = maxAutosavesStoredArray
-        maxAutosavesStoredSelectBox.selected = settings.maxAutosavesStored
-        
-        add(maxAutosavesStoredSelectBox).pad(10f).row()
-        
-        maxAutosavesStoredSelectBox.onChange {
-            settings.maxAutosavesStored = maxAutosavesStoredSelectBox.selected
-        }
-        
-        //val maxAutosavesI = Inp
-    }
 
+    private fun addAutosaveField() {
+        add("Number of autosave files stored".toLabel()).left().fillX()
+        val autosaveFieldTable = Table()
+        val autoSaveTrunsTextField = UncivTextField("",settings.maxAutosavesStored.toString())
+        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in " 1234567890" }
+        autosaveFieldTable.add(autoSaveTrunsTextField)
+        val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
+
+        autosaveFieldTable.add(
+            autoSaveTrunsTextFieldButton.onClick {
+                if (!autoSaveTrunsTextField.text.isEmpty()) {
+                    val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
+
+                    if (numberAutosaveTurns == 0) {
+                        val popup = Popup(stage)
+                        popup.addGoodSizedLabel("Autosave turns must be bigger than 0!", color = Color.RED)
+                        popup.addCloseButton()
+                        popup.open(true)
+
+                    } else if (numberAutosaveTurns >= 200) {
+                        val popup = Popup(stage)
+                        popup.addGoodSizedLabel(
+                            "Autosave turns that are bigger than 200 might take a lot of spcae\n" +
+                                "on your device.", color = Color.ORANGE)
+                        popup.addCloseButton()
+                        popup.open(true)
+                        settings.maxAutosavesStored = numberAutosaveTurns
+
+                    } else {
+                        settings.maxAutosavesStored = numberAutosaveTurns
+                    }
+                }
+            }
+        ).row()
+        add(autosaveFieldTable).row()
+    }
+    
     private fun addAutosaveTurnsSelectBox() {
         add("Turns between autosaves".toLabel()).left().fillX()
 
@@ -137,45 +153,6 @@ class AdvancedTab(
             settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
         }
 
-    }
-    
-    private fun addAutosaveField() {
-        add("Turns between autosaves input".toLabel()).left().fillX()
-        val autosaveFieldTable = Table()
-        val autoSaveTrunsTextField = UncivTextField("","20")
-        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in " 1234567890" }
-        autosaveFieldTable.add(autoSaveTrunsTextField).row()
-        val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
-        
-        val autosaveZeroFieldError = "Autosave turns must be bigger than 0!".toLabel(fontColor = Color.RED)
-        val autosaveTurnSpaceWaring = ("Autosave turns that are bigger than 200 might take a lot of spcae\n " +
-            "on your device.").toLabel(fontColor = Color.ORANGE)
-        
-
-        autosaveFieldTable.add(
-            autoSaveTrunsTextFieldButton.onClick {
-                autosaveFieldTable.removeActor(autosaveZeroFieldError)
-                autosaveFieldTable.removeActor(autosaveTurnSpaceWaring)
-                //autosaveFieldTable.removeActor(autosaveZeroFieldError)
-                if (!autoSaveTrunsTextField.text.isEmpty()) {
-
-                    val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
-                    println(numberAutosaveTurns)
-
-                    if (numberAutosaveTurns == 0) {
-                        autosaveFieldTable.add(autosaveZeroFieldError).row()
-                        
-                    } else if (numberAutosaveTurns >= 200) {
-                        autosaveFieldTable.add(autosaveTurnSpaceWaring).row()
-                        settings.maxAutosavesStored = numberAutosaveTurns
-                    } else {
-                        settings.maxAutosavesStored = numberAutosaveTurns
-                    }
-                }
-            }
-        ).row()
-        
-        add(autosaveFieldTable).row()
     }
 
     private fun addFontFamilySelect(onFontChange: () -> Unit) {
