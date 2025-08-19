@@ -342,7 +342,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     }
 
     @Readonly fun getFormattedLine(): FormattedLine = when (type!!) {
-        // TODO: Links should be Building/params[0], but then wonder links don't work
+        // TODO: Links should be `Building/params[0]`, but then the Wonder links don't resolve correctly
         MilestoneType.BuiltBuilding -> FormattedLine(uniqueDescription, link = "Wonder/${params[0]}")
         MilestoneType.BuildingBuiltGlobally -> FormattedLine(uniqueDescription, link = "Wonder/${params[0]}")
         MilestoneType.WorldReligion -> FormattedLine(uniqueDescription, link = "Tutorials/Religion")
