@@ -108,6 +108,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
+    @Readonly
     fun getUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<String> {
         return sequence {
             yieldIfNotNull(upgradesTo)
@@ -116,6 +117,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    @Readonly
     fun getRulesetUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<BaseUnit> {
         return sequence {
             for (unit in getUpgradeUnits(gameContext))
@@ -194,7 +196,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? = costFunctions.getStatBuyCost(city, stat)
 
-    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
+    @Readonly fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)

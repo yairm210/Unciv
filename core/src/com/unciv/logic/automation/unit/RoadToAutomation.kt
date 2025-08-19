@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 
 
 /** Responsible for automation the "build road to" action
@@ -140,6 +141,7 @@ class RoadToAutomation(val civInfo: Civilization) {
 
 
     /** Conditions for whether it is acceptable to build a road on this tile */
+    @Readonly
     fun shouldBuildRoadOnTile(tile: Tile): Boolean {
         if (tile.roadIsPillaged) return true
         return !tile.isCityCenter() // Can't build road on city tiles

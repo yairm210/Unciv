@@ -1,6 +1,6 @@
 ARG ARG_COMPILE_BASE_IMAGE=accetto/ubuntu-vnc-xfce-opengl-g3
 
-FROM $ARG_COMPILE_BASE_IMAGE as build
+FROM $ARG_COMPILE_BASE_IMAGE AS build
 
 USER root 
 RUN  apt update && \
@@ -34,7 +34,7 @@ RUN chmod +x ./gradlew && ./gradlew desktop:classes && \
  ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan && \
  cd /src/deploy && unzip Unciv-Linux64.zip
 
-FROM accetto/ubuntu-vnc-xfce-opengl-g3 as run
+FROM accetto/ubuntu-vnc-xfce-opengl-g3 AS run
 WORKDIR /home/headless/Desktop/
 COPY --chown=1001:1001 --from=build /src/deploy/* /usr/
 COPY --chown=1001:1001 --from=build /src/desktop/build/libs/Unciv.jar /usr/share/Unciv/Unciv.jar

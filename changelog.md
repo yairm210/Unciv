@@ -1,3 +1,15 @@
+## 4.17.14
+
+Fixed map editor tile click not displaying tile stats
+
+Ranged strength comparison for unique units correctly translated
+
+By SeventhM:
+- Fix Ruin rewards with multiple triggerables only giving the first effect 
+- Add in Target Unit check for uniques when entering combat 
+
+Add countable for `[stat] Per Turn` - By RobLoach
+
 ## 4.17.13
 
 By EmperorPinguin:

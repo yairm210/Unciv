@@ -26,12 +26,13 @@ fun List<Pair<String, Stats>>.toStats(): Stats {
 class TileStatFunctions(val tile: Tile) {
     private val riverTerrain by lazy { tile.ruleset.terrains[Constants.river] }
 
+    @Readonly
     fun getTileStats(
         observingCiv: Civilization?,
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats = getTileStats(tile.getCity(), observingCiv, localUniqueCache)
 
-    @Readonly @Suppress("purity") // requires "for @LocalState X"
+    @Readonly
     fun getTileStats(
         city: City?, observingCiv: Civilization?,
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
@@ -42,14 +43,14 @@ class TileStatFunctions(val tile: Tile) {
         val road = tile.getUnpillagedRoad()
 
         val percentageStats = getTilePercentageStats(observingCiv, city, localUniqueCache)
-        for (stats in statsBreakdown) {
-            val tileType = when (stats.first) {
+        for ((cause, @LocalState stats) in statsBreakdown) {
+            val tileType = when (cause) {
                 improvement -> TilePercentageCategory.Improvement
                 road.name -> TilePercentageCategory.Road
                 else -> TilePercentageCategory.Terrain
             }
             for ((stat, value) in percentageStats[tileType]!!)
-                stats.second[stat] *= value.toPercent()
+                stats[stat] *= value.toPercent()
         }
 
         return statsBreakdown.toStats()
@@ -192,7 +193,7 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus
-    @Suppress("MemberVisibilityCanBePrivate", "purity")
+    @Suppress("MemberVisibilityCanBePrivate")
     @Readonly
     fun getTilePercentageStats(observingCiv: Civilization?, city: City?, uniqueCache: LocalUniqueCache): EnumMap<TilePercentageCategory, Stats> {
         val terrainStats = Stats()
@@ -243,11 +244,11 @@ class TileStatFunctions(val tile: Tile) {
             }
         }
         
-        return EnumMap<TilePercentageCategory, Stats>(TilePercentageCategory::class.java).apply {
-            put(TilePercentageCategory.Terrain, terrainStats)
-            put(TilePercentageCategory.Improvement, improvementStats)
-            put(TilePercentageCategory.Road, roadStats)
-        }
+        val enumMap = EnumMap<TilePercentageCategory, Stats>(TilePercentageCategory::class.java)
+        enumMap[TilePercentageCategory.Terrain] = terrainStats
+        enumMap[TilePercentageCategory.Improvement] = improvementStats
+        enumMap[TilePercentageCategory.Road] = roadStats
+        return enumMap
     }
 
     fun getTileStartScore(cityCenterMinStats: Stats): Float {
