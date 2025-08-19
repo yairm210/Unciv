@@ -46,9 +46,10 @@ class Simulation(
         NUM
     }
     // print flags
-    private val printProd = true
-    private val printCityCnt = true
-    private val printAvgCityPop = true
+    private val printPop = true
+    private val printProd = false
+    private val printCityCnt = false
+    private val printAvgCityPop = false
 
     init{
         for (civ in civilizations) {
@@ -244,7 +245,8 @@ class Simulation(
             }
             outString += "avg turns\n"
             for (turn in statTurns) {
-                outString += summaryStatsText(summaryStatsPop[civ]!![turn]!!, turn, "popSum")
+                if(printPop)
+                    outString += summaryStatsText(summaryStatsPop[civ]!![turn]!!, turn, "popSum")
                 if(printProd)
                     outString += summaryStatsText(summaryStatsProd[civ]!![turn]!!, turn, "prodSum")
                 if(printCityCnt)
@@ -253,7 +255,8 @@ class Simulation(
                     outString += summaryStatsText(summaryStatsAvgPop[civ]!![turn]!!, turn, "avgCityPop")
             }
             val turn = -1 // end of match
-            outString += summaryStatsText(summaryStatsPop[civ]!![turn]!!, turn, "popSum")
+            if(printPop)
+                outString += summaryStatsText(summaryStatsPop[civ]!![turn]!!, turn, "popSum")
             if(printProd)
                 outString += summaryStatsText(summaryStatsProd[civ]!![turn]!!, turn, "prodSum")
             if(printCityCnt)
