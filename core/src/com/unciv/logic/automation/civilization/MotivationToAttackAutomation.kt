@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.victoryscreen.RankingType
 import yairm210.purity.annotations.Readonly
+import kotlin.math.pow
 
 object MotivationToAttackAutomation {
 
@@ -277,9 +278,7 @@ object MotivationToAttackAutomation {
         // In that case while we may have more units than them, we don't nessesarily want to be more aggressive.
         // This is to reduce the amount that the AI targets players at these higher levels somewhat.
         if (civInfo.isAI() && targetCiv.isHuman() && combatStrengthRatio > 1) {
-            val ourCombatModifiers = civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-            val theirCombatModifiers = civInfo.gameInfo.getDifficulty().unitCostModifier
-            combatStrengthRatio *= ourCombatModifiers / theirCombatModifiers
+            combatStrengthRatio *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier.pow(1.5f) // Scale non-linearly, as AI is still considered too warmongery on high difficulties but fine on Prince
         }
         val combatStrengthModifier = when {
             combatStrengthRatio > 5f -> 20f
