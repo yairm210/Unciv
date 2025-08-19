@@ -78,16 +78,6 @@ class Victory : INamed, ICivilopediaText {
         ) + milestoneObjects.map { it.getFormattedLine() }
     }
     override fun makeLink() = "Victory/$name"
-    override fun getIconName() = when (name) {
-        "Cultural" -> "Culture"
-        "Scientific" -> "Science"
-        "Domination" -> "Production"
-        "Diplomatic" -> "Happiness"
-        "Religious" -> "Faith"
-        "Time" -> "Gold"
-        else -> name
-    }
-    override fun getCivilopediaTextHeader(): FormattedLine? = FormattedLine(name, header = 2)
 }
 
 class Milestone(val uniqueDescription: String, private val parentVictory: Victory) {

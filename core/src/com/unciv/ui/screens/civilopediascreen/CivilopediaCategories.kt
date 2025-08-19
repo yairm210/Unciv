@@ -101,7 +101,7 @@ enum class CivilopediaCategories (
         { _, tutorialController -> tutorialController.getCivilopediaTutorials() }
     ),
     Victory ("Victory Types",
-        CivilopediaImageGetters.victory,
+        CivilopediaImageGetters.victoryType,
         KeyboardBinding.PediaVictoryTypes,
         "OtherIcons/Score",
         { ruleset, _ -> ruleset.victories.values }

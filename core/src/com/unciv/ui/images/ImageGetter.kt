@@ -290,6 +290,9 @@ object ImageGetter {
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
 
+    fun getVictoryTypeIcon(iconName: String, size: Float): Image =
+        getImage("VictoryTypeIcon/$iconName").apply { setSize(size, size) }
+
     fun getCircleDrawable() = getDrawable(circleLocation)
     fun getCircle() = getImage(circleLocation)
     fun getCircle(color: Color = Color.WHITE, size: Float? = null) = getCircle().apply {

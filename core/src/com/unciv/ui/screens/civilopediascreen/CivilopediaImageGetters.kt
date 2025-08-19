@@ -96,9 +96,8 @@ internal object CivilopediaImageGetters {
     val belief = { name: String, size: Float ->
         ImageGetter.getReligionPortrait(name, size)
     }
-    val victory = { name: String, size: Float ->
-        if (Stat.isStat(name)) ImageGetter.getStatIcon(name, size)
-        else null
+    val victoryType = { name: String, size: Float ->
+        ImageGetter.getVictoryTypeIcon(name, size)
     }
     val unitType = { name: String, size: Float ->
         val path = UnitMovementType.entries.firstOrNull { "Domain: [${it.name}]" == name }
