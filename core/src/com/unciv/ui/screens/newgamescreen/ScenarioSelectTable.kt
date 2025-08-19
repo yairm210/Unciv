@@ -19,7 +19,7 @@ internal class ScenarioSelectTable(private val newGameScreen: NewGameScreen) : T
     }
 
     val scenarios = HashMap<String, ScenarioData>()
-    lateinit var selectedScenario: ScenarioData
+    var selectedScenario: ScenarioData? = null
     private var scenarioSelectBox: TranslatedSelectBox? = null
 
     init {
@@ -48,7 +48,7 @@ internal class ScenarioSelectTable(private val newGameScreen: NewGameScreen) : T
 
     fun selectScenario() {
         val scenario = scenarios[scenarioSelectBox!!.selected.value]!!
-        val preload = scenario.getCachedPreview()
+        val preload = scenario.getCachedPreview() ?: return
         newGameScreen.gameSetupInfo.gameParameters.players = preload.gameParameters.players
             .apply { removeAll { it.chosenCiv == Constants.spectator } }
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = preload.gameParameters.baseRuleset
@@ -58,9 +58,14 @@ internal class ScenarioSelectTable(private val newGameScreen: NewGameScreen) : T
         selectedScenario = scenario
     }
 
-    private fun ScenarioData.getCachedPreview(): GameInfoPreview {
-        if (preview == null)
-            preview = newGameScreen.game.files.loadGamePreviewFromFile(file)
-        return preview!!
+    private fun ScenarioData.getCachedPreview(): GameInfoPreview? {
+        if (preview == null) {
+            try {
+                preview = newGameScreen.game.files.loadGamePreviewFromFile(file)
+            } catch (_: SerializationException) {
+                ToastPopup("Scenario file [${file.name()}] is invalid.", newGameScreen)
+            }
+        }
+        return preview
     }
 }
