@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.victoryscreen.RankingType
 import yairm210.purity.annotations.Readonly
+import kotlin.math.pow
 
 object MotivationToAttackAutomation {
 
@@ -276,10 +277,8 @@ object MotivationToAttackAutomation {
         // At higher difficulty levels the AI gets a unit production boost.
         // In that case while we may have more units than them, we don't nessesarily want to be more aggressive.
         // This is to reduce the amount that the AI targets players at these higher levels somewhat.
-        if (civInfo.isAI() && targetCiv.isHuman() && combatStrengthRatio > 1) {
-            val ourCombatModifiers = civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-            val theirCombatModifiers = civInfo.gameInfo.getDifficulty().unitCostModifier
-            combatStrengthRatio *= ourCombatModifiers / theirCombatModifiers
+        if (civInfo.isAI() && targetCiv.isHuman()) {
+            combatStrengthRatio *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier.pow(1.5f)
         }
         val combatStrengthModifier = when {
             combatStrengthRatio > 5f -> 20f

@@ -163,6 +163,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         theirDiploManager.removeModifier(DiplomaticModifiers.SharedEmbassies)
     }
 
+    @Readonly
     fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
         return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
             && !civInfo.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation)

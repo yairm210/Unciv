@@ -16,12 +16,13 @@ By the end of this guide, you will have Unciv running locally from code, so you 
 -   Gradle will attempt the initial sync. If this is your first time with Android Studio, this may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
     -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Languages & Frameworks > Android SDK
         - Click "SDK Platforms"
-        - Click "Android 14 ("UpsideDownCake")"
-        ![image](../assets/Android_SDK_Platforms.png)
+        - Click "Android 16.0 ("Baklava")"
+          ![image](../assets/Android_SDK_Platforms.png)
           (Optionally, you can save some space by selecting 'Show Package Details' and choosing the Platform SDK only, without Sources or system Images)
         - Click "SDK Tools"
         - Select "Show Package Details" in the bottom right
-        - Choose version 34.0.0 under "Android SDK Build-Tools"
+        - Choose version 35.0.0 under "Android SDK Build-Tools"
+          ![image](../assets/Android_SDK_Tools.png)
         - Click "Apply"
         - Restart Android Studio
 -   In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
