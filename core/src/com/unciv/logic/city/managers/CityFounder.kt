@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 class CityFounder {
     fun foundCity(civInfo: Civilization, cityLocation: Vector2, unit: MapUnit? = null): City {
@@ -116,6 +117,7 @@ class CityFounder {
      * @param aliveCivs Every civilization currently alive.
      * @return A new city name in [String]. Null if failed to generate a name.
      */
+    @Readonly
     private fun generateNewCityName(
         foundingCiv: Civilization,
         aliveCivs: Set<Civilization>
@@ -162,6 +164,7 @@ class CityFounder {
      * @param usedCityNames Every city name that have already been taken.
      * @return A new city named in [String]. Null if failed to generate a name.
      */
+    @Readonly
     private fun borrowCityName(
         foundingCiv: Civilization,
         aliveCivs: Set<Civilization>,

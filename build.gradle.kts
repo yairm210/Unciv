@@ -49,6 +49,7 @@ allprojects {
     configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
             "kotlin.with", // moved
+            "kotlin.sequences.generateSequence",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
