@@ -2,25 +2,13 @@
 
 Allow AI to move-and-settle
 
-chore(purity) - Etc
-
-chore(purity) - IHasUniques
-
-chore(purity) - removed suppressions
-
-chore(purity)
-
-chore(purity)
-
 AI: declare less war against humans on higher difficulties - By EmperorPinguin
 
 Harden new game screen against bad scenarios - By SomeTroglodyte
 
 By RobLoach:
 - Add Victory Type for Brave New World 
-- Civilopedia: Add Victory Types 
-
-Add documentation on Simulations - By itanasi
+- Civilopedia: Add Victory Types
 
 ## 4.17.14
 
