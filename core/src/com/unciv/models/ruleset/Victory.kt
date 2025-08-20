@@ -11,6 +11,8 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
@@ -27,7 +29,7 @@ enum class MilestoneType(val text: String) {
     ScoreAfterTimeOut("Have highest score after max turns"),
 }
 
-class Victory : INamed {
+class Victory : INamed, ICivilopediaText {
 
     enum class CompletionStatus {
         Completed,
@@ -66,6 +68,16 @@ class Victory : INamed {
     val defeatString = "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
 
     @Readonly fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
+
+    override var civilopediaText = listOf<FormattedLine>()
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        return listOf(
+            FormattedLine(victoryScreenHeader.lines().joinToString(" ")), // Remove newlines
+            FormattedLine(extraImage="VictoryIllustrations/$name/Won", centered = true),
+            FormattedLine(),
+        ) + milestoneObjects.map { it.getFormattedLine() }
+    }
+    override fun makeLink() = "Victory/$name"
 }
 
 class Milestone(val uniqueDescription: String, private val parentVictory: Victory) {
@@ -327,5 +339,14 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.ScoreAfterTimeOut -> Victory.Focus.Score
             MilestoneType.WorldReligion -> Victory.Focus.Faith
         }
+    }
+
+    @Readonly fun getFormattedLine(): FormattedLine = when (type!!) {
+        // TODO: Links should be `Building/params[0]`, but then the Wonder links don't resolve correctly
+        MilestoneType.BuiltBuilding -> FormattedLine(uniqueDescription, link = "Wonder/${params[0]}")
+        MilestoneType.BuildingBuiltGlobally -> FormattedLine(uniqueDescription, link = "Wonder/${params[0]}")
+        MilestoneType.WorldReligion -> FormattedLine(uniqueDescription, link = "Tutorials/Religion")
+        MilestoneType.CompletePolicyBranches -> FormattedLine(uniqueDescription, link = "Policies")
+        else -> FormattedLine(uniqueDescription, starred = true)
     }
 }

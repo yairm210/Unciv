@@ -290,6 +290,20 @@ object ImageGetter {
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
 
+    /**
+     * Gets the icon associated with the given Victory Type.
+     *
+     * @return The icon, or the Score icon as a fallback.
+     */
+    fun getVictoryTypeIcon(victoryType: String, size: Float, tint: Color = CHARCOAL): Image =
+        if (imageExists("VictoryTypeIcons/$victoryType"))
+            getImage("VictoryTypeIcons/$victoryType").apply { setSize(size, size) }
+        else
+            getImage("OtherIcons/Score").apply {
+                setSize(size, size)
+                this.color = tint
+            }
+
     fun getCircleDrawable() = getDrawable(circleLocation)
     fun getCircle() = getImage(circleLocation)
     fun getCircle(color: Color = Color.WHITE, size: Float? = null) = getCircle().apply {
