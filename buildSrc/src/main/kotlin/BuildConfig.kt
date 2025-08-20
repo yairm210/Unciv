@@ -1,7 +1,5 @@
 package com.unciv.build
 
-import com.unciv.build.BuildConfig.kotlinVersion
-
 object BuildConfig {
     const val appName = "Unciv"
     const val appCodeNumber = 1156
