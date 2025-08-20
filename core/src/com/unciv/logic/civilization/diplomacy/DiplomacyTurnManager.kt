@@ -9,6 +9,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -114,7 +115,7 @@ object DiplomacyTurnManager {
         }
     }
 
-
+    @Readonly
     private fun DiplomacyManager.getCityStateInfluenceRecovery(): Float {
         if (getInfluence() >= getCityStateInfluenceRestingPoint())
             return 0f

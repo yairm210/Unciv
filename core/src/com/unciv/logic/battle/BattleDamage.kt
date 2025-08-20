@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
 import kotlin.math.max
@@ -313,7 +314,7 @@ object BattleDamage {
         return (damageModifier(ratio, false, randomnessFactor) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
-    @Readonly
+    @Pure
     private fun damageModifier(
         attackerToDefenderRatio: Float,
         damageToAttacker: Boolean,
