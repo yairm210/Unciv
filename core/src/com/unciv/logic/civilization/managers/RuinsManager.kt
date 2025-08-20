@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.RuinReward
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 class RuinsManager(
@@ -30,6 +31,7 @@ class RuinsManager(
         lastChosenRewards[1] = reward
     }
 
+    @Readonly
     private fun getShuffledPossibleRewards(triggeringUnit: MapUnit): Iterable<RuinReward> {
         val candidates =
             validRewards.asSequence().filter { isPossibleReward(it, triggeringUnit) }
@@ -45,6 +47,7 @@ class RuinsManager(
         return candidates
     }
 
+    @Readonly
     private fun isPossibleReward(ruinReward: RuinReward, unit: MapUnit): Boolean {
         if (ruinReward.name in lastChosenRewards) return false
         if (ruinReward.isUnavailableBySettings(civInfo.gameInfo)) return false

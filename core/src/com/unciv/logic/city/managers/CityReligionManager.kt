@@ -196,11 +196,6 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return followers[majorityReligion]
     }
 
-    fun getFollowersOfOurReligion(): Int {
-        val ourReligion = city.civ.religionManager.religion ?: return 0
-        return followers[ourReligion.name]
-    }
-
     @Readonly
     fun getFollowersOfOtherReligionsThan(religion: String): Int {
         return followers.filterNot { it.key == religion }.values.sum()

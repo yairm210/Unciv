@@ -98,7 +98,7 @@ object CityLocationTileRanker {
 
         if (onCoast) tileValue += 3
         // Hills are free production and defence
-        if (onHill) tileValue += 7
+        if (onHill) tileValue += 14
         // Observatories are good, but current implementation not mod-friendly
         if (isNextToMountain) tileValue += 5
         // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
@@ -184,7 +184,7 @@ object CityLocationTileRanker {
         if (rankTile.terrainFeatures.isNotEmpty() && rankTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) rankTileValue += 0.7f
         //Taking into account yields from forest chopping
 
-        if (rankTile.isNaturalWonder()) rankTileValue += 10
+        if (rankTile.isNaturalWonder()) rankTileValue += 4
 
         baseTileMap[rankTile] = rankTileValue
 

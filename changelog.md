@@ -1,3 +1,15 @@
+## 4.17.15
+
+Allow AI to move-and-settle
+
+AI: declare less war against humans on higher difficulties - By EmperorPinguin
+
+Harden new game screen against bad scenarios - By SomeTroglodyte
+
+By RobLoach:
+- Add Victory Type for Brave New World 
+- Civilopedia: Add Victory Types
+
 ## 4.17.14
 
 Fixed map editor tile click not displaying tile stats

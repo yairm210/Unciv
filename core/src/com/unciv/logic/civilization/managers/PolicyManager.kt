@@ -102,7 +102,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Readonly private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
+    @Readonly fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
