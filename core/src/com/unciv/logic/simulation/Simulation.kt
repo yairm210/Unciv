@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.security.KeyStore.TrustedCertificateEntry
 import kotlin.math.max
 import kotlin.math.sqrt
 import kotlin.time.Duration
@@ -25,8 +24,9 @@ class Simulation(
     private val statTurns: List<Int> = listOf()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
-    val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
-    private val majorCivs = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.size
+    //val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
+    private val majorCivs = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.map { it.civName }
+    private val numMajorCivs = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.size
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
@@ -52,7 +52,7 @@ class Simulation(
     private val printAvgCityPop = false
 
     init{
-        for (civ in civilizations) {
+        for (civ in majorCivs) {
             this.numWins[civ] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
             for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
@@ -70,7 +70,7 @@ class Simulation(
     // Need to initialize the values
     // Later will iterate with flatMap
     private fun initHash(summary: HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>) {
-        for (civ in civilizations) {
+        for (civ in majorCivs) {
             for (turn in statTurns) {
                 summary.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.SUM] = MutableInt(0)
                 summary.getOrPut(civ) { hashMapOf() }.getOrPut(turn){hashMapOf()}[Stat.NUM] = MutableInt(0)
@@ -156,7 +156,7 @@ class Simulation(
         }
     }
 
-    fun getStats() {
+    private fun getStats() {
         // win Rate
         numWins.values.forEach { it.value = 0 }
         winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
@@ -180,7 +180,7 @@ class Simulation(
                 winRateByVictory[it.winner!!]!![it.victoryType]!!.inc()
                 winTurnByVictory[it.winner!!]!![it.victoryType]!!.add(it.turns)
             }
-            for (civ in civilizations) {
+            for (civ in majorCivs) {
                 for (turn in statTurns) {
                     summaryStatSet(summaryStatsPop, civ, turn, it.turnStatsPop)
                     summaryStatSet(summaryStatsProd, civ, turn, it.turnStatsProd)
@@ -213,10 +213,10 @@ class Simulation(
 
     fun text(): String {
         var outString = ""
-        for (civ in civilizations) {
+        for (civ in majorCivs) {
 
             val numSteps = max(steps.size, 1)
-            val expWinRate = 1f / majorCivs
+            val expWinRate = 1f / numMajorCivs
             if (numWins[civ]!!.value == 0) continue
             val winRate = String.format("%.1f", numWins[civ]!!.value * 100f / numSteps)
 
