@@ -11,6 +11,8 @@ import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.input.KeyboardBinding
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 //todo Check move/top/end for "place one improvement" buildings
 //todo Check add/remove-all for "place one improvement" buildings
@@ -41,14 +43,14 @@ class CityScreenConstructionMenu(
     /** Cities (including this one) where changing the construction queue makes sense
      *  (excludes isBeingRazed even though technically that would be allowed) */
     // Can't use CityScreen.canChangeState for other cities
-    private fun candidateCities() = city.civ.cities.asSequence()
+    @Readonly private fun candidateCities() = city.civ.cities.asSequence()
         .filterNot { it.isPuppet || it.isInResistance() || it.isBeingRazed }
     /** Check whether an "All cities" menu makes sense: `true` if there's more than one city, it's not a Wonder, and any city's queue matches [predicate]. */
-    private fun allCitiesEntryValid(predicate: (CityConstructions) -> Boolean) =
+    @Readonly private fun allCitiesEntryValid(predicate: (CityConstructions) -> Boolean) =
         city.civ.cities.size > 1 &&  // Yes any 2 cities, not candidateCities.drop(1).any()
         (construction as? Building)?.isAnyWonder() != true &&
         candidateCities().map { it.cityConstructions }.any(predicate)
-    private fun forAllCities(action: (CityConstructions) -> Unit) =
+    @Readonly private fun forAllCities(action: (CityConstructions) -> Unit) =
         candidateCities().map { it.cityConstructions }.forEach(action)
 
     private val settings = GUI.getSettings()
@@ -81,6 +83,7 @@ class CityScreenConstructionMenu(
         return table.takeUnless { it.cells.isEmpty }
     }
 
+    @Pure
     private fun canMoveQueueTop(): Boolean {
         if (construction is PerpetualConstruction)
             return false
@@ -88,6 +91,7 @@ class CityScreenConstructionMenu(
     }
     private fun moveQueueTop() = cityConstructions.moveEntryToTop(myIndex)
 
+    @Pure
     private fun canMoveQueueEnd(): Boolean {
         if (construction is PerpetualConstruction)
             return false
@@ -95,19 +99,31 @@ class CityScreenConstructionMenu(
     }
     private fun moveQueueEnd() = cityConstructions.moveEntryToEnd(myIndex)
 
+    @Readonly private fun isConstructionImprovementCreationBuilding() =
+        construction is Building && construction.hasCreateOneImprovementUnique()
+
+    @Readonly
     private fun canAddQueueTop() = construction !is PerpetualConstruction &&
         cityConstructions.canAddToQueue(construction)
+            && !isConstructionImprovementCreationBuilding()
+    
     private fun addQueueTop() = cityConstructions.addToQueue(construction, addToTop = true)
 
+    @Readonly
     private fun canAddAllQueues() = allCitiesEntryValid {
-        it.canAddToQueue(construction) &&
+        it.canAddToQueue(construction)
+                && !isConstructionImprovementCreationBuilding() 
         // A Perpetual that is already queued can still be added says canAddToQueue, but here we don't want to count that
-        !(construction is PerpetualConstruction && it.isBeingConstructedOrEnqueued(constructionName))
+                && !(construction is PerpetualConstruction && it.isBeingConstructedOrEnqueued(constructionName))
     }
     private fun addAllQueues() = forAllCities { it.addToQueue(construction) }
 
+    @Readonly
     private fun canAddAllQueuesTop() = construction !is PerpetualConstruction &&
-        allCitiesEntryValid { it.canAddToQueue(construction) || it.isEnqueuedForLater(constructionName) }
+        allCitiesEntryValid {
+            (it.canAddToQueue(construction) && !isConstructionImprovementCreationBuilding())
+                    || it.isEnqueuedForLater(constructionName) }
+    
     private fun addAllQueuesTop() = forAllCities {
         val index = it.constructionQueue.indexOf(constructionName)
         if (index > 0)
@@ -116,17 +132,17 @@ class CityScreenConstructionMenu(
             it.addToQueue(construction, true)
     }
 
-    private fun canRemoveAllQueues() = allCitiesEntryValid { it.isBeingConstructedOrEnqueued(constructionName) }
+    @Readonly private fun canRemoveAllQueues() = allCitiesEntryValid { it.isBeingConstructedOrEnqueued(constructionName) }
     private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
 
-    private fun canDisable() = constructionName !in disabledAutoAssignConstructions &&
+    @Readonly private fun canDisable() = constructionName !in disabledAutoAssignConstructions &&
         construction != PerpetualConstruction.idle
     private fun disableEntry() {
         disabledAutoAssignConstructions.add(constructionName)
         settings.save()
     }
 
-    private fun canEnable() = constructionName in disabledAutoAssignConstructions
+    @Readonly private fun canEnable() = constructionName in disabledAutoAssignConstructions
     private fun enableEntry() {
         disabledAutoAssignConstructions.remove(constructionName)
         settings.save()
