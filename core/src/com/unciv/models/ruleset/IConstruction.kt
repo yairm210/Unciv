@@ -260,6 +260,9 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
     RequiresBuildingInSomeCities(true, "Requires a specific building in more cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
+    
+    NoSuchImprovement(false, "No such improvement exists in the ruleset"),
+    NoTileCanContainImprovement(false, "No tile can contain this improvement"),
 
     WonderAlreadyBuilt(false, "Wonder already built"),
     NationalWonderAlreadyBuilt(false, "National Wonder already built"),

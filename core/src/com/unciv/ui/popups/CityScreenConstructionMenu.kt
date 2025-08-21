@@ -9,12 +9,10 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.input.KeyboardBinding
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
-//todo Check move/top/end for "place one improvement" buildings
 //todo Check add/remove-all for "place one improvement" buildings
 
 /**
