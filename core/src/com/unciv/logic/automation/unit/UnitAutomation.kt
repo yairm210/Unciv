@@ -366,7 +366,7 @@ object UnitAutomation {
             return false // will heal anyway, and attacks don't hurt
 
         // Try pillage improvements until healed
-        while(tryPillageImprovement(unit, false)) {
+        while (tryPillageImprovement(unit, false)) {
             // If we are fully healed and can still do things, lets keep on going by returning false
             if (!unit.hasMovement() || unit.health == 100) return !unit.hasMovement()
         }
@@ -374,12 +374,14 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 3)
+        
         // If the unit can heal on this tile in two turns, just heal here
-        if (canUnitHealInTurnsOnCurrentTile(unit,3)) return true
+        if (unit.currentTile !in dangerousTiles 
+            && canUnitHealInTurnsOnCurrentTile(unit,3)) return true
 
         val currentUnitTile = unit.getTile()
 
-        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 3)
 
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
