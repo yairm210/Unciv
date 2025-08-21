@@ -320,9 +320,7 @@ object Automation {
         return true
     }
 
-    /** Checks both feasibility of Buildings with a CreatesOneImprovement unique
-     *  and resource scarcity making a construction undesirable.
-     */
+    /** Checks resource scarcity making a construction undesirable. */
     @Readonly
     fun allowAutomatedConstruction(
         civInfo: Civilization,
