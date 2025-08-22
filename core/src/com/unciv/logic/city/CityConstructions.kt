@@ -217,9 +217,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     @Suppress("unused", "MemberVisibilityCanBePrivate")  // kept for illustration
     /** @return `true` if [constructionName] is the top queue entry, the one receiving production points */
-    fun isBeingConstructed(constructionName: String) = currentConstructionFromQueue == constructionName
+    @Readonly fun isBeingConstructed(constructionName: String) = currentConstructionFromQueue == constructionName
     /** @return `true` if [constructionName] is queued but not the top queue entry */
-    fun isEnqueuedForLater(constructionName: String) = constructionQueue.indexOf(constructionName) > 0
+    @Readonly fun isEnqueuedForLater(constructionName: String) = constructionQueue.indexOf(constructionName) > 0
     /** @return `true` if [constructionName] is anywhere in the construction queue - [isBeingConstructed] **or** [isEnqueuedForLater] */
     @Readonly fun isBeingConstructedOrEnqueued(constructionName: String) = constructionQueue.contains(constructionName)
 
@@ -773,6 +773,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     /** This is the *one true test* of "can we buty this construction"
      * This tests whether the buy button should be _enabled_ */
+    @Readonly 
     fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
         return when {
             city.isPuppet && !city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any() -> false
@@ -786,6 +787,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     fun isConstructionPurchaseBlockedByUnit(construction: INonPerpetualConstruction): Boolean {
         return !city.isPuppet && !city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets)
             .any() &&
@@ -818,6 +820,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
     }
 
+    @Readonly
     fun canAddToQueue(construction: IConstruction) =
         !isQueueFull() &&
         construction.isBuildable(this) &&
@@ -827,7 +830,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         PerpetualConstruction.isNamePerpetual(constructionQueue.last())
         // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
 
-    fun isQueueEmptyOrIdle() = currentConstructionFromQueue.isEmpty()
+    @Readonly fun isQueueEmptyOrIdle() = currentConstructionFromQueue.isEmpty()
         || currentConstructionFromQueue == PerpetualConstruction.idle.name
 
     /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)
@@ -979,6 +982,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *
      *  Find the selected tile for a specific improvement being constructed via a building, if any.
      */
+    @Readonly
     fun getTileForImprovement(improvementName: String) = city.getTiles()
         .firstOrNull {
             it.isMarkedForCreatesOneImprovement(improvementName)

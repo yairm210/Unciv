@@ -344,6 +344,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!civ.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         yield(RejectionReasonType.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
                 }
+                
+                UniqueType.CreatesOneImprovement -> {
+                    val improvement = ruleset.tileImprovements[unique.params[0]]
+                    if (improvement == null) {
+                        yield(RejectionReasonType.NoSuchImprovement.toInstance("Unknown improvement: ${unique.params[0]}"))
+                    } else if (city.getTiles().none { !it.improvementFunctions.canBuildImprovement(improvement, city.state) }) {
+                        yield(RejectionReasonType.NoTileCanContainImprovement.toInstance())
+                    }
+                }
 
                 else -> {}
             }

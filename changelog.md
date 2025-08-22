@@ -1,3 +1,29 @@
+## 4.17.16
+
+AI spy city selection greatly improved
+
+Changing mods while images load no longer displays multiple images on the last mod
+
+Removed city-state icons for cities in unit overview
+
+Replacement improvements also provide resources that require the original improvement
+
+Only heal on current tile if it's not a dangerous tile
+
+Fixed several problems with improvement-creating buildings
+
+## 4.17.15
+
+Allow AI to move-and-settle
+
+AI: declare less war against humans on higher difficulties - By EmperorPinguin
+
+Harden new game screen against bad scenarios - By SomeTroglodyte
+
+By RobLoach:
+- Add Victory Type for Brave New World 
+- Civilopedia: Add Victory Types
+
 ## 4.17.14
 
 Fixed map editor tile click not displaying tile stats

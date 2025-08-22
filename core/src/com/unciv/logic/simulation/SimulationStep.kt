@@ -2,6 +2,7 @@ package com.unciv.logic.simulation
 
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
+import kotlin.math.roundToInt
 
 class SimulationStep (gameInfo: GameInfo, statTurns: List<Int> = listOf()) {
     val civilizations = gameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
@@ -9,13 +10,20 @@ class SimulationStep (gameInfo: GameInfo, statTurns: List<Int> = listOf()) {
     var victoryType = gameInfo.getCurrentPlayerCivilization().victoryManager.getVictoryTypeAchieved()
     var winner: String? = null
     var currentPlayer = gameInfo.currentPlayer
-    val turnStats = mutableMapOf<String, MutableMap<Int, MutableInt>>() // [civ][turn][stat]
+    val turnStatsPop = mutableMapOf<String, MutableMap<Int, MutableInt>>() // [civ][turn][stat]
+    val turnStatsProd = mutableMapOf<String, MutableMap<Int, MutableInt>>() // [civ][turn][stat]
+    val turnStatsCities = mutableMapOf<String, MutableMap<Int, MutableInt>>() // [civ][turn][stat]
     
     init {
         for (civ in civilizations) {
-            for (turn in statTurns)
-                this.turnStats.getOrPut(civ) { mutableMapOf() }[turn] = MutableInt(-1)
-            this.turnStats.getOrPut(civ) { mutableMapOf() }[-1] = MutableInt(-1) // end of game
+            for (turn in statTurns) {
+                this.turnStatsPop.getOrPut(civ) { mutableMapOf() }[turn] = MutableInt(-1)
+                this.turnStatsProd.getOrPut(civ) { mutableMapOf() }[turn] = MutableInt(-1)
+                this.turnStatsCities.getOrPut(civ) { mutableMapOf() }[turn] = MutableInt(-1)
+            }
+            this.turnStatsPop.getOrPut(civ) { mutableMapOf() }[-1] = MutableInt(-1) // end of game
+            this.turnStatsProd.getOrPut(civ) { mutableMapOf() }[-1] = MutableInt(-1) // end of game
+            this.turnStatsCities.getOrPut(civ) { mutableMapOf() }[-1] = MutableInt(-1) // end of game
         }
         
     }
@@ -26,7 +34,13 @@ class SimulationStep (gameInfo: GameInfo, statTurns: List<Int> = listOf()) {
         for (civ in gameInfo.civilizations.filter { it.civName != Constants.spectator }) {
             val popsum = civ.cities.sumOf { it.population.population }
             //println("$civ $popsum")
-            turnStats[civ.civName]!![turn]!!.set(popsum)
+            turnStatsPop[civ.civName]!![turn]!!.set(popsum)
+            val prodsum = civ.cities.sumOf { it.cityStats.currentCityStats.production.roundToInt() }
+            //println("$civ $prodsum")
+            turnStatsProd[civ.civName]!![turn]!!.set(prodsum)
+            val cityCnt = civ.cities.count()
+            //println("$civ $cityCnt")
+            turnStatsCities[civ.civName]!![turn]!!.set(cityCnt)
         }
     }
     

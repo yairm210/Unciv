@@ -66,6 +66,7 @@ object GreatGeneralImplementation {
      *
      * Used by [SpecificUnitAutomation.automateGreatGeneral].
      */
+    @Readonly
     fun getBestAffectedTroopsTile(general: MapUnit): Tile? {
         // Normally we have only one Unique here. But a mix is not forbidden,
         // (imagine several GreatGeneralAura uniques - +50% at radius 1, +25% at radius 2, +5% at radius 3 - possibly learnable from promotions via buildings or natural wonders?)

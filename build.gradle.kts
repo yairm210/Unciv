@@ -1,12 +1,11 @@
-
 import com.unciv.build.BuildConfig.appVersion
-import com.unciv.build.BuildConfig.coroutinesVersion
-import com.unciv.build.BuildConfig.gdxVersion
-import com.unciv.build.BuildConfig.jnaVersion
-import com.unciv.build.BuildConfig.kotlinVersion
-import com.unciv.build.BuildConfig.ktorVersion
 import java.util.Properties
 
+val kotlinVersion: String by project
+val gdxVersion: String by project
+val coroutinesVersion: String by project
+val ktorVersion: String by project
+val jnaVersion: String by project
 
 buildscript {
     repositories {
@@ -20,7 +19,8 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
+        val kotlinVersion: String by project
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.android.tools.build:gradle:8.9.3")
     }
 }
@@ -33,23 +33,23 @@ kotlin {
 
 // Plugins used for serialization of JSON for networking
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.23.8")
-    // For some weird reason, the *docker build* fails to recognize linking to the shared kotlinVersion in plugins
-    // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
-    kotlin("multiplatform") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "1.2.2" apply(false)
+    val kotlinVersion: String by project
+    kotlin("multiplatform") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("io.github.yairm210.purity-plugin") version "1.2.2" apply false
 }
 
 allprojects {
 //    repositories{ // for local purity
 //        mavenLocal()
 //    }
-    
+
     apply(plugin = "io.github.yairm210.purity-plugin")
-    configure<yairm210.purity.PurityConfiguration>{
+    configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
             "kotlin.with", // moved
+            "kotlin.sequences.generateSequence",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
@@ -68,19 +68,20 @@ allprojects {
             "kotlin.collections.shuffled",
         )
         wellKnownPureClasses = setOf(
-            "java.lang.StackTraceElement" // moved
+            "java.lang.StackTraceElement", // moved
+            "java.text.DecimalFormat",
+            "java.lang.Math",
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
-            
             "java.util.TreeMap",
         )
         warnOnPossibleAnnotations = true
     }
-    
+
     apply(plugin = "eclipse")
     apply(plugin = "idea")
-    
+
     version = appVersion
 
     repositories {
@@ -126,11 +127,10 @@ project(":server") {
         // For server-side
         "implementation"("io.ktor:ktor-server-core:$ktorVersion")
         "implementation"("io.ktor:ktor-server-netty:$ktorVersion")
-        "implementation"("io.ktor:ktor-server-auth:${ktorVersion}")
+        "implementation"("io.ktor:ktor-server-auth:$ktorVersion")
         "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        "implementation"("io.ktor:ktor-server-websockets:${ktorVersion}")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+        "implementation"("io.ktor:ktor-server-websockets:$ktorVersion")
         "implementation"("ch.qos.logback:logback-classic:1.5.18")
         "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
 
@@ -138,7 +138,6 @@ project(":server") {
         "implementation"("net.java.dev.jna:jna:$jnaVersion")
         "implementation"("net.java.dev.jna:jna-platform:$jnaVersion")
     }
-
 }
 
 private fun getSdkPath(): String? {
@@ -184,7 +183,7 @@ project(":core") {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-        
+
         "implementation"("io.github.yairm210:purity-annotations:0.0.51")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
@@ -195,7 +194,6 @@ project(":core") {
         "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         // JSON serialization and de-serialization
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     }
 
 

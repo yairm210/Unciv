@@ -20,6 +20,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Helper library for [UnitOverviewTabColumn]
@@ -43,6 +44,7 @@ open class UnitOverviewTabHelpers {
     protected fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
     protected fun showWorldScreenAt(tile: Tile) = showWorldScreenAt(tile.position, null)
 
+    @Readonly
     private fun getWorkerActionText(unit: MapUnit): String? = when {
         // See UnitTurnManager.endTurn, if..workOnImprovement or UnitGroup.getActionImage: similar logic
         !unit.cache.hasUniqueToBuildImprovements -> null
@@ -52,6 +54,7 @@ open class UnitOverviewTabHelpers {
         else -> unit.currentTile.improvementInProgress
     }
 
+    @Readonly
     protected fun getActionText(unit: MapUnit): String? {
         val workerText by lazy { getWorkerActionText(unit) }
         return when {
@@ -88,6 +91,7 @@ open class UnitOverviewTabHelpers {
         return table
     }
 
+    @Readonly @Suppress("purity") // Calls action
     protected fun getUpgradeSortString(unit: MapUnit): String? {
         val upgrade = UnitActionsUpgrade.getUpgradeActionAnywhere(unit).firstOrNull()
             ?: return null

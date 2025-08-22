@@ -100,6 +100,12 @@ enum class CivilopediaCategories (
         "OtherIcons/ExclamationMark",
         { _, tutorialController -> tutorialController.getCivilopediaTutorials() }
     ),
+    Victory ("Victory Types",
+        CivilopediaImageGetters.victoryType,
+        KeyboardBinding.PediaVictoryTypes,
+        "OtherIcons/Score",
+        { ruleset, _ -> ruleset.victories.values }
+    ),
     Difficulty ("Difficulty levels",
         getImage = null,
         KeyboardBinding.PediaDifficulties,
