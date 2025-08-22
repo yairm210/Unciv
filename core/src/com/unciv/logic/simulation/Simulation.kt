@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.metadata.GameSetupInfo
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -63,52 +64,60 @@ class Simulation(
     }
 
     fun start() = runBlocking {
-
         startTime = System.currentTimeMillis()
-        val jobs: ArrayList<Job> = ArrayList()
-        println("Starting new game with major civs: "+newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName }
-        + " and minor civs: "+newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName })
+
+        println(
+            "Starting new game with major civs: " +
+                newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName } +
+                " and minor civs: " +
+                newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName }
+        )
+
         newGameInfo.gameParameters.shufflePlayerOrder = true
-        for (threadId in 1..threadsNumber) {
-            jobs.add(launch(CoroutineName("simulation-${threadId}")) {
+
+        val jobs = (1..threadsNumber).map { threadId ->
+            launch(Dispatchers.Default + CoroutineName("simulation-$threadId")) {
                 repeat(simulationsPerThread) {
                     val step = SimulationStep(newGameInfo, statTurns)
                     val gameSetupInfo = GameSetupInfo(newGameInfo)
-                    gameSetupInfo.mapParameters.seed = 0 // Creates a new random map seed
+                    gameSetupInfo.mapParameters.seed = 0
                     val gameInfo = GameStarter.startNewGame(gameSetupInfo)
+
                     gameInfo.simulateUntilWin = true
+
                     for (turn in statTurns) {
                         gameInfo.simulateMaxTurns = turn
                         gameInfo.nextTurn()
                         step.update(gameInfo)
-                        if (step.victoryType != null)
-                            break
+                        if (step.victoryType != null) break
                         step.saveTurnStats(gameInfo)
                     }
-                    // check if Victory
+
                     step.update(gameInfo)
+
                     if (step.victoryType == null) {
                         gameInfo.simulateMaxTurns = maxTurns
                         gameInfo.nextTurn()
+                        step.update(gameInfo)
                     }
-
-                    step.update(gameInfo)  // final game state
 
                     if (step.victoryType != null) {
                         step.saveTurnStats(gameInfo)
                         step.winner = step.currentPlayer
                         println("${step.winner} won ${step.victoryType} victory on turn ${step.turns}")
+                    } else {
+                        println("Max simulation ${step.turns} turns reached: Draw")
                     }
-                    else println("Max simulation ${step.turns} turns reached: Draw")
 
+                    // ⚠️ these need to be thread-safe
                     updateCounter(threadId)
                     add(step)
                     print()
                 }
-            })
+            }
         }
-        // wait for all to finish
-        for (job in jobs) job.join()
+
+        jobs.forEach { it.join() }
     }
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
