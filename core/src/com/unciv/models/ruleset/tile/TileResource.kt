@@ -65,9 +65,14 @@ class TileResource : RulesetStatsObject(), GameResource {
         if (improvement != null) allImprovementsLocal += improvement!!
         allImprovementsLocal.addAll(improvedBy)
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.getMatchingUniques(UniqueType.ImprovesResources).none { matchesFilter(it.params[0]) }) continue
-            allImprovementsLocal += improvement.name
+            // Explicitly stated by the improvement, or this is a replacement improvement
+            if (improvement.getMatchingUniques(UniqueType.ImprovesResources).any { matchesFilter(it.params[0]) }
+                || allImprovementsLocal.contains(improvement.replaces)) {
+                allImprovementsLocal += improvement.name
+            }
         }
+        
+        
         allImprovements = allImprovementsLocal
         return allImprovementsLocal
     }
