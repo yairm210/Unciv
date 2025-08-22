@@ -143,7 +143,7 @@ class AdvancedTab(
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
-        autosaveTurnsArray.addAll(1, 2, 5, 10,15,20,50,100,1000)
+        autosaveTurnsArray.addAll(1, 2, 5, 10 ,20,50,100,1000)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
 
