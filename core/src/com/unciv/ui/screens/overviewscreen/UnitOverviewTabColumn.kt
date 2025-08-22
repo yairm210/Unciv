@@ -17,6 +17,7 @@ import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
+import yairm210.purity.annotations.Readonly
 
 //todo Extending getEntryValue here to have a second String-based "channel" - could go into SortableGrid, possibly by defining a DataType per column???
 
@@ -91,6 +92,7 @@ enum class UnitOverviewTabColumn(
             label.onClick { showWorldScreenAt(closestCityTile) }
             return label
         }
+        @Readonly
         private fun getClosestCityTile(item: MapUnit) = item.getTile()
             .getTilesInDistance(3).firstOrNull { it.isCityCenter() }
     },
@@ -134,11 +136,11 @@ enum class UnitOverviewTabColumn(
     override val defaultSort get() = SortableGrid.SortDirection.Ascending
     //endregion
 
-    open fun getEntryString(item: MapUnit): String? = getEntryValue(item).takeIf { it > 0 }?.tr()
+    @Readonly open fun getEntryString(item: MapUnit): String? = getEntryValue(item).takeIf { it > 0 }?.tr()
 
     //region Overridden superclass methods
     override fun getHeaderActor(iconSize: Float) = (headerLabel ?: name).toLabel()
-    override fun getEntryValue(item: MapUnit) = 0
+    @Readonly override fun getEntryValue(item: MapUnit) = 0
     override fun getEntryActor(item: MapUnit, iconSize: Float, actionContext: UnitOverviewTab): Actor? =
         getEntryString(item)?.toLabel(alignment = Align.center)
     override fun getComparator() = if (isNumeric) super.getComparator()

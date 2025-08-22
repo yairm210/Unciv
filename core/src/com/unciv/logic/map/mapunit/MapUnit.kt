@@ -183,6 +183,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * Note this is translated after being returned from this function, so let's pay
      * attention to combined names (renamed units, religion).
      */
+    @Readonly
     fun displayName(): String {
         val baseName =
                 if (instanceName == null) "[$name]"
@@ -231,7 +232,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     val type: UnitType
         get() = baseUnit.type
 
-    fun getMovementString(): String =
+    @Readonly fun getMovementString(): String =
         (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
     

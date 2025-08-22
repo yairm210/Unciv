@@ -59,7 +59,7 @@ class UnitOverviewTab(
 
     //todo the comments and todo below are copied verbatim from CityOverviewTab - synergies?
     private val grid = SortableGrid(
-        columns = UnitOverviewTabColumn.values().asIterable(),
+        columns = UnitOverviewTabColumn.entries.asIterable(),
         data = viewingPlayer.units.getCivUnits().asIterable(),
         actionContext = this,
         sortState = persistableData,

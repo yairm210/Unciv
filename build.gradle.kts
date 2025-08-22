@@ -68,7 +68,9 @@ allprojects {
             "kotlin.collections.shuffled",
         )
         wellKnownPureClasses = setOf(
-            "java.lang.StackTraceElement" // moved
+            "java.lang.StackTraceElement", // moved
+            "java.text.DecimalFormat",
+            "java.lang.Math",
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
