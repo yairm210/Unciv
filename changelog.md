@@ -1,30 +1,16 @@
 ## 4.17.16
 
-Resolved  - AI spy city selection greatly improved
+AI spy city selection greatly improved
 
-Resolved  - Changing mods while images load no longer displays multiple images on the last mod
+Changing mods while images load no longer displays multiple images on the last mod
 
-Resolved  - Removed city icons in unit overview
+Removed city-state icons for cities in unit overview
 
-chore(purity): UnitOverview and UnitPromotions
+Replacement improvements also provide resources that require the original improvement
 
-Resolved  - Replacement improvements also provide resources that require the original improvement
+Only heal on current tile if it's not a dangerous tile
 
-Resolved  - Only heal on current tile if it's not a dangerous tile
-
-Partially fixed  - disallow repicking the same tile for multiple improvement-buildings
-
-Since improvement buildings with no relevant tiles are unbuildable, we don't need to explicitly check for this in allowAutomatedConstruction
-
-Partially fix  - improvement buildings where the improvement cannot be built on any tile are considered unbuildable - do not appear in construction menu
-
-Partially fix  - city construction menu cannot add improvement-construction buildings, as they require picking a tile for the improvement
-
-chore(purity)
-
-Simulation: New Stats - By itanasi
-
-move dependency versions to `gradle.properties` - By touhidurrr
+Fixed several problems with improvement-creating buildings
 
 ## 4.17.15
 
