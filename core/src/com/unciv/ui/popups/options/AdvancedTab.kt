@@ -105,36 +105,35 @@ class AdvancedTab(
         add("Number of autosave files stored".toLabel()).left().fillX()
         val autosaveFieldTable = Table()
         val autoSaveTrunsTextField = UncivTextField("",settings.maxAutosavesStored.toString())
-        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in " 1234567890" }
+        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in "1234567890" }
         autosaveFieldTable.add(autoSaveTrunsTextField)
         val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
 
-        autosaveFieldTable.add(
-            autoSaveTrunsTextFieldButton.onClick {
-                if (!autoSaveTrunsTextField.text.isEmpty()) {
-                    val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
+        autoSaveTrunsTextFieldButton.onClick {
+            if (!autoSaveTrunsTextField.text.isEmpty()) {
+                val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
 
-                    if (numberAutosaveTurns <= 0) {
-                        val popup = Popup(stage)
-                        popup.addGoodSizedLabel("Autosave turns must be bigger than 0!", color = Color.RED)
-                        popup.addCloseButton()
-                        popup.open(true)
+                if (numberAutosaveTurns <= 0) {
+                    val popup = Popup(stage)
+                    popup.addGoodSizedLabel("Autosave turns must be larger than 0!", color = Color.RED)
+                    popup.addCloseButton()
+                    popup.open(true)
 
-                    } else if (numberAutosaveTurns >= 200) {
-                        val popup = Popup(stage)
-                        popup.addGoodSizedLabel(
-                            "Autosave turns that are bigger than 200 might take a lot of spcae\n" +
-                                "on your device.", color = Color.ORANGE)
-                        popup.addCloseButton()
-                        popup.open(true)
-                        settings.maxAutosavesStored = numberAutosaveTurns
+                } else if (numberAutosaveTurns >= 200) {
+                    val popup = Popup(stage)
+                    popup.addGoodSizedLabel(
+                        "Autosave turns that are larger than 200 might take a lot of space on your device.",
+                        color = Color.ORANGE)
+                    popup.addCloseButton()
+                    popup.open(true)
+                    settings.maxAutosavesStored = numberAutosaveTurns
 
-                    } else {
-                        settings.maxAutosavesStored = numberAutosaveTurns
-                    }
+                } else {
+                    settings.maxAutosavesStored = numberAutosaveTurns
                 }
             }
-        ).row()
+        }
+        autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
         add(autosaveFieldTable).row()
     }
     
@@ -143,7 +142,7 @@ class AdvancedTab(
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
-        autosaveTurnsArray.addAll(1, 2, 5, 10 ,20,50,100,1000)
+        autosaveTurnsArray.addAll(1,2,5,10,20,50,100,1000)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
 
