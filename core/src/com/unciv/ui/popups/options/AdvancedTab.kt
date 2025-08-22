@@ -114,7 +114,7 @@ class AdvancedTab(
                 if (!autoSaveTrunsTextField.text.isEmpty()) {
                     val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
 
-                    if (numberAutosaveTurns == 0) {
+                    if (numberAutosaveTurns <= 0) {
                         val popup = Popup(stage)
                         popup.addGoodSizedLabel("Autosave turns must be bigger than 0!", color = Color.RED)
                         popup.addCloseButton()
