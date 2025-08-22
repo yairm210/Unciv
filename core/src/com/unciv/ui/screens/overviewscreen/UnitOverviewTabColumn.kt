@@ -64,7 +64,7 @@ enum class UnitOverviewTabColumn(
     },
 
     Action {
-        override fun getEntryString(item: MapUnit): String? = getActionText(item)
+        override fun getEntryString(item: MapUnit): String? = getActionText(item)?.tr() // to retain the icon for e.g. unit action
     },
 
     Strength(Fonts.strength.toString(), "Strength", true) {
@@ -83,7 +83,7 @@ enum class UnitOverviewTabColumn(
 
     ClosestCity("Closest city") {
         //todo these overrides call a getTilesInDistance(3).firstOrNull loop independently and possibly repeatedly - caching?
-        override fun getEntryString(item: MapUnit) = getClosestCityTile(item)?.getCity()?.name
+        override fun getEntryString(item: MapUnit) = getClosestCityTile(item)?.getCity()?.name?.tr(hideIcons = true)
 
         override fun getEntryActor(item: MapUnit, iconSize: Float, actionContext: UnitOverviewTab): Actor? {
             val closestCityTile = getClosestCityTile(item) ?: return null
@@ -142,7 +142,7 @@ enum class UnitOverviewTabColumn(
     override fun getHeaderActor(iconSize: Float) = (headerLabel ?: name).toLabel()
     @Readonly override fun getEntryValue(item: MapUnit) = 0
     override fun getEntryActor(item: MapUnit, iconSize: Float, actionContext: UnitOverviewTab): Actor? =
-        getEntryString(item)?.toLabel(alignment = Align.center)
+        getEntryString(item)?.toLabel(alignment = Align.center, hideIcons = true)
     override fun getComparator() = if (isNumeric) super.getComparator()
         // Sort empty cells to the end by faking a `String.MAX_VALUE` - to do it properly would be a far more verbose Comparator subclass
         else compareBy(ISortableGridContentProvider.collator) { getEntryString(it)?.tr(hideIcons = true) ?: "\uD83D\uDE00zzz" }
