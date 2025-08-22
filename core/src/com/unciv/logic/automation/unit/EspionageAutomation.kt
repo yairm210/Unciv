@@ -4,6 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
+import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.random.Random
 
 class EspionageAutomation(val civInfo: Civilization) {
@@ -26,23 +27,23 @@ class EspionageAutomation(val civInfo: Civilization) {
         val spies = civInfo.espionageManager.spyList
         val spiesToMove = spies.filter { it.isAlive() && !it.isDoingWork() }
         for (spy in spiesToMove) {
-            val randomSeed = spies.size + spies.indexOf(spy) + civInfo.gameInfo.turns
-            val randomAction = Random(randomSeed).nextInt(10)
+            val spyIsMaxPromoted = spy.rank == civInfo.gameInfo.ruleset.modOptions.constants.maxSpyRank
+            val techRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo)
 
             // Try each operation based on the random value and the success rate
             // If an operation was not successfull try the next one
             val capital = civInfo.getCapital()
             when {
+                spyIsMaxPromoted && automateSpyRigElection(spy) -> continue // Other spies can still be ranked up via stealing or counterspying
+                techRank != 0 && automateSpyStealTech(spy) -> continue // If we're tech leadeer, we'll soon run out of stealable techs, if we haven't already
                 capital != null && spies.none { it.getCityOrNull() == capital } -> {
-                    spy.moveTo(capital)
+                    spy.moveTo(capital) // Place in capital before choosing based on science output, as capital is visible via embassies
                     continue
                 }
-                randomAction <= 7 && automateSpyStealTech(spy) -> continue
-                randomAction <= 9 && automateSpyRigElection(spy) -> continue
-                automateSpyCounterInteligence(spy) -> continue
+                automateSpyCounterIntelligence(spy) -> continue
                 // We might have been doing counter intelligence and wanted to look for something better
                 spy.isDoingWork() -> continue
-                // Retry initial operations one more time, without the randomAction check
+                // Retry initial operations one more time, without the check
                 automateSpyStealTech(spy) -> continue
                 automateSpyRigElection(spy) -> continue
             }
@@ -78,13 +79,11 @@ class EspionageAutomation(val civInfo: Civilization) {
         spy.moveTo(cityToMoveTo)
         return cityToMoveTo != null
     }
-    
-    
 
     /**
      * Moves the spy to a random city of ours
      */
-    private fun automateSpyCounterInteligence(spy: Spy): Boolean {
+    private fun automateSpyCounterIntelligence(spy: Spy): Boolean {
         val cityToMoveTo = civInfo.cities.filter { spy.canMoveTo(it) }
             .maxByOrNull { it.cityStats.currentCityStats.science }
         if (cityToMoveTo == null) return false
