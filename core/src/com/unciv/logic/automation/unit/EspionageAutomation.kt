@@ -35,7 +35,7 @@ class EspionageAutomation(val civInfo: Civilization) {
             val capital = civInfo.getCapital()
             when {
                 spyIsMaxPromoted && automateSpyRigElection(spy) -> continue // Other spies can still be ranked up via stealing or counterspying
-                techRank != 0 && automateSpyStealTech(spy) -> continue // If we're tech leadeer, we'll soon run out of stealable techs, if we haven't already
+                techRank != 0 && automateSpyStealTech(spy) -> continue // If we're tech leader, we'll soon run out of stealable techs, if we haven't already
                 capital != null && spies.none { it.getCityOrNull() == capital } -> {
                     spy.moveTo(capital) // Place in capital before choosing based on science output, as capital is visible via embassies
                     continue
