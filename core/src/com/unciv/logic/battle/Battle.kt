@@ -498,17 +498,19 @@ object Battle {
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
         if (!attacker.isMelee()) return
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
-        if (attacker is MapUnitCombatant && attacker.unit.cache.cannotMove) return
-
+        if (attacker !is MapUnitCombatant) return
+        if (attacker.unit.cache.cannotMove) return
+        // Example: If the unit we attacked made us lose movement points
+        if (!attacker.unit.movement.canReachInCurrentTurn(attackedTile)) return
         // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
-        if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
-            // Units that can move after attacking are not affected by zone of control if the
-            // movement is caused by killing a unit. Effectively, this means that attack movements
-            // are exempt from zone of control, since units that cannot move after attacking already
-            // lose all remaining movement points anyway.
-            attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
-            attacker.unit.mostRecentMoveType = UnitMovementMemoryType.UnitAttacked
-        }
+        if (!attacker.unit.movement.canMoveTo(attackedTile)) return
+
+        // Units that can move after attacking are not affected by zone of control if the
+        // movement is caused by killing a unit. Effectively, this means that attack movements
+        // are exempt from zone of control, since units that cannot move after attacking already
+        // lose all remaining movement points anyway.
+        attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+        attacker.unit.mostRecentMoveType = UnitMovementMemoryType.UnitAttacked
     }
 
     private fun postBattleAddXp(attacker: ICombatant, defender: ICombatant) {

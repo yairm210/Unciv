@@ -53,7 +53,8 @@ class EventChoice : ICivilopediaText, RulesetObject() {
     fun triggerChoice(civ: Civilization, unit: MapUnit? = null): Boolean {
         var success = false
         val gameContext = GameContext(civ, unit = unit)
-        val triggerUniques = uniqueObjects.filter { it.isTriggerable }
+        val triggerUniques = uniqueObjects
+            .filter { it.isTriggerable && it.conditionalsApply(gameContext) }
         for (unique in triggerUniques.flatMap { it.getMultiplied(gameContext) })
             if (UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit)) success = true
         return success

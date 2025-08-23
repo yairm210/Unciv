@@ -62,7 +62,8 @@ object UniqueTriggerActivation {
             notification = notification, triggerNotificationText = triggerNotificationText)
     }
 
-    /** @return whether an action was successfully performed */
+    /** @return whether an action was successfully performed
+     * Assumes that conditional check has already been performed */
     fun triggerUnique(
         unique: Unique,
         civInfo: Civilization,
