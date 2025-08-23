@@ -89,8 +89,6 @@ object CivilianUnitAutomation {
             return
         if (unit.cache.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
             return
-        if (unit.cache.hasCitadelPlacementUnique || unit.cache.hasStrengthBonusInRadiusUnique)
-            return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
         if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
             return ReligiousUnitAutomation.automateMissionary(unit)
