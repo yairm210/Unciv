@@ -110,27 +110,28 @@ class AdvancedTab(
         val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
 
         autoSaveTrunsTextFieldButton.onClick {
-            if (!autoSaveTrunsTextField.text.isEmpty()) {
-                val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
+            if (autoSaveTrunsTextField.text.isEmpty()) return@onClick
+            
+            val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
 
-                if (numberAutosaveTurns <= 0) {
-                    val popup = Popup(stage)
-                    popup.addGoodSizedLabel("Autosave turns must be larger than 0!", color = Color.RED)
-                    popup.addCloseButton()
-                    popup.open(true)
+            if (numberAutosaveTurns <= 0) {
+                val popup = Popup(stage)
+                popup.addGoodSizedLabel("Autosave turns must be larger than 0!", color = Color.RED)
+                popup.addCloseButton()
+                popup.open(true)
 
-                } else if (numberAutosaveTurns >= 200) {
-                    val popup = Popup(stage)
-                    popup.addGoodSizedLabel(
-                        "Autosave turns that are larger than 200 might take a lot of space on your device.",
-                        color = Color.ORANGE)
-                    popup.addCloseButton()
-                    popup.open(true)
-                    settings.maxAutosavesStored = numberAutosaveTurns
+            } else if (numberAutosaveTurns >= 200) {
+                val popup = Popup(stage)
+                popup.addGoodSizedLabel(
+                    "Autosave turns over 200 may take a lot of space on your device.",
+                    color = Color.ORANGE)
+                popup.addCloseButton()
+                popup.open(true)
+                settings.maxAutosavesStored = numberAutosaveTurns
 
-                } else {
-                    settings.maxAutosavesStored = numberAutosaveTurns
-                }
+            } else {
+                settings.maxAutosavesStored = numberAutosaveTurns
+            
             }
         }
         autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
