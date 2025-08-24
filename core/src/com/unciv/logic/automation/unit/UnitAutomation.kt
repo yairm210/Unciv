@@ -611,6 +611,7 @@ object UnitAutomation {
         return true
     }
 
+    @Readonly
     private fun chooseBombardTarget(city: City): ICombatant? {
         var targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
             .filterNot { it is MapUnitCombatant &&

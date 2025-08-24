@@ -38,6 +38,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimationDeferred
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
 import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -97,6 +98,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
     }
 
+    @Readonly
     private fun tryGetAttacker(): ICombatant? {
         val unitTable = worldScreen.bottomUnitTable
         return if (unitTable.selectedUnit != null
@@ -108,11 +110,13 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         else null // no attacker
     }
 
+    @Readonly
     private fun tryGetDefender(): ICombatant? {
         val selectedTile = worldScreen.mapHolder.selectedTile ?: return null // no selected tile
         return tryGetDefenderAtTile(selectedTile, false)
     }
 
+    @Readonly
     private fun tryGetDefenderAtTile(selectedTile: Tile, includeFriendly: Boolean): ICombatant? {
         val attackerCiv = worldScreen.viewingCiv
         val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
