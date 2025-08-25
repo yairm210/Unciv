@@ -1,3 +1,27 @@
+## 4.17.17
+
+Resolved  - Force rankings doesn't evaluate all unit conditionals as multiplicative
+
+Resolved  - Include IDEA configurations, by @SomeTroglodyte
+
+Handle mods removing techs - remove from techsToResearch list
+
+Handle mods adding/removing eras
+
+chore(purity): TargetHelper
+
+chore(purity)
+
+Resolved  - Post-battle movement doesn't occur if during the battle the unit lost movement points
+
+Fixed  - conditionals in event choices work again
+
+update - By EmperorPinguin
+
+By itanasi:
+- Fix div-by-0 crash when no cities 
+- Fix crash with minor Civs 
+
 ## 4.17.16
 
 AI spy city selection greatly improved
