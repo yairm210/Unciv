@@ -1,23 +1,9 @@
+Force rankings doesn't evaluate all unit conditionals as multiplicative
 
+Handle mods removing techs, adding/removing eras
 
-Resolved  - Force rankings doesn't evaluate all unit conditionals as multiplicative
+Post-battle movement doesn't occur if during the battle the unit lost movement points
 
-Resolved  - Include IDEA configurations, by @SomeTroglodyte
+conditionals in event choices work again
 
-Handle mods removing techs - remove from techsToResearch list
-
-Handle mods adding/removing eras
-
-chore(purity): TargetHelper
-
-chore(purity)
-
-Resolved  - Post-battle movement doesn't occur if during the battle the unit lost movement points
-
-Fixed  - conditionals in event choices work again
-
-update - By EmperorPinguin
-
-By itanasi:
-- Fix div-by-0 crash when no cities 
-- Fix crash with minor Civs 
+AI updates - By EmperorPinguin
