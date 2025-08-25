@@ -578,8 +578,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     -> power *= (unique.params[0].toInt() * 20f).toPercent()
                 else -> {}
             }
-            power *= highestConditionalPowerBonus
         }
+        power *= highestConditionalPowerBonus
 
         return power.toInt()
     }
