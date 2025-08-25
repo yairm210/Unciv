@@ -100,10 +100,6 @@ class WorkerAutomation(
         // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
         if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unit)) return
 
-        // Priotirize connecting grown cities without connection to capital over undeveloped cities (for gold income)
-        val grownCities: List<City> = citiesToConnect.filter { it.population.population > 6 }
-        if (roadBetweenCitiesAutomation.tryConnectingCities(unit, grownCities)) return
-        
         if (tryHeadTowardsUndevelopedCity(unit, localUniqueCache, currentTile)) return
 
         // Nothing to do, try again to connect cities
@@ -298,12 +294,9 @@ class WorkerAutomation(
 
         if (tile.hasViewableResource(civInfo)) {
             priority += 1
-            if (tile.tileResource.resourceType == ResourceType.Luxury) priority += 3
+            if (tile.tileResource.resourceType == ResourceType.Luxury) priority += 5
             //luxuries are more important than other types of resources
         }
-    
-        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap)
-            priority += 3
             
         tileRankings[tile] = TileImprovementRank(priority)
         return priority + unitSpecificPriority
@@ -400,7 +393,8 @@ class WorkerAutomation(
 
         val lastTerrain = tile.lastTerrain
 
-        fun isRemovable(terrain: Terrain): Boolean = potentialTileImprovements.containsKey(Constants.remove + terrain.name)
+        @Readonly fun isRemovable(terrain: Terrain): Boolean =
+            potentialTileImprovements.containsKey(Constants.remove + terrain.name)
 
         val improvementStringForResource: String? = when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
@@ -455,7 +449,7 @@ class WorkerAutomation(
         if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
             && tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
             val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile]!!
-            val value = (roadPlan.priority - 5) // We want some forest chopping and farm building first if the road doesn't have high priority
+            val value = (roadPlan.priority - 9) // We want some forest chopping and farm building first if the road doesn't have high priority
             return value
         }
 
@@ -653,6 +647,7 @@ class WorkerAutomation(
      * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
      * @return Yes the location is good for a Fort here
      */
+    @Readonly
     fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
         return tile.improvement != Constants.fort // don't build fort if it is already here
             && evaluateFortSurroundings(tile, isCitadel) > 0

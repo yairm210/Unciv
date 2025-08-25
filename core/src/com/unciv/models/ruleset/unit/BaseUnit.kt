@@ -108,6 +108,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
+    @Readonly
     fun getUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<String> {
         return sequence {
             yieldIfNotNull(upgradesTo)
@@ -116,6 +117,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    @Readonly
     fun getRulesetUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<BaseUnit> {
         return sequence {
             for (unit in getUpgradeUnits(gameContext))
@@ -194,7 +196,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? = costFunctions.getStatBuyCost(city, stat)
 
-    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
+    @Readonly fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
@@ -538,13 +540,18 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             promotions.asSequence()
                 .mapNotNull { ruleset.unitPromotions[it] }
                 .flatMap { it.uniqueObjects }
+        
+        // When we have multiple conditional strength bonuses, only the highest one counts
+        // Otherwise we get massive overvaluation of units with many conflicting conditionals
+        var highestConditionalPowerBonus = 1f
 
         for (unique in allUniques) {
             when (unique.type) {
                 UniqueType.Strength -> {
                     if (unique.params[0].toInt() <= 0) continue
+                    
                     if (unique.hasModifier(UniqueType.ConditionalVsUnits)) { // Bonus vs some units - a quarter of the bonus
-                        power *= (unique.params[0].toInt() / 4f).toPercent()
+                        highestConditionalPowerBonus = (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
                         unique.modifiers.any {
                             it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
@@ -553,9 +560,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                                 || it.type == UniqueType.ConditionalFightingInTiles
                         } // Bonus in terrain or feature - half the bonus
                     ) {
-                        power *= (unique.params[0].toInt() / 2f).toPercent()
+                        highestConditionalPowerBonus = (unique.params[0].toInt() / 2f).toPercent()
                     } else {
-                        power *= (unique.params[0].toInt()).toPercent() // Static bonus
+                        highestConditionalPowerBonus = (unique.params[0].toInt()).toPercent() // Static bonus
                     }
                 }
                 UniqueType.StrengthNearCapital ->
@@ -563,16 +570,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
                 UniqueType.MayParadrop // Paradrop - 25% bonus
-                    -> power += power / 4
+                    -> power *= 1.25f
                 UniqueType.MayParadropOld // ParadropOld - 25% bonus
-                    -> power += power / 4
+                    -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
-                    -> power -= power / 5
+                    -> power /= 1.20f
                 UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
-                    -> power += (power * unique.params[0].toInt()) / 5
+                    -> power *= (unique.params[0].toInt() * 20f).toPercent()
                 else -> {}
             }
         }
+        power *= highestConditionalPowerBonus
 
         return power.toInt()
     }

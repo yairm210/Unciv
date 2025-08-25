@@ -27,6 +27,7 @@ internal class ModInfoAndActionPane : Table() {
     private val imageHolder = Table()
     private val sizeLabel = "".toLabel()
     private var isBuiltin = false
+    private var currentRepoName = ""
 
     /** controls "Permanent audiovisual mod" checkbox existence */
     private var enableVisualCheckBox = false
@@ -73,12 +74,13 @@ internal class ModInfoAndActionPane : Table() {
     ) {
         // Display metadata
         clear()
+        currentRepoName = modName
 
         imageHolder.clear()
         when {
-            isBuiltin -> addUncivLogo()
+            isBuiltin -> addUncivLogo(modName)
             repoUrl.isEmpty() -> addLocalPreviewImage(modName)
-            else -> addPreviewImage(repoUrl, defaultBranch, avatarUrl)
+            else -> addPreviewImage(modName, repoUrl, defaultBranch, avatarUrl)
         }
         add(imageHolder).row()
 
@@ -133,12 +135,12 @@ internal class ModInfoAndActionPane : Table() {
         add(updateModTextbutton).row()
     }
 
-    private fun addPreviewImage(repoUrl: String, defaultBranch: String, avatarUrl: String?) {
+    private fun addPreviewImage(modName: String, repoUrl: String, defaultBranch: String, avatarUrl: String?) {
         if (!repoUrl.startsWith("http")) return // invalid url
 
         if (repoUrlToPreviewImage.containsKey(repoUrl)) {
             val texture = repoUrlToPreviewImage[repoUrl]
-            if (texture != null) setTextureAsPreview(texture)
+            if (texture != null) setTextureAsPreview(texture, modName)
             return
         }
 
@@ -153,7 +155,7 @@ internal class ModInfoAndActionPane : Table() {
                 val texture = Texture(imagePixmap)
                 imagePixmap.dispose()
                 repoUrlToPreviewImage[repoUrl] = texture
-                setTextureAsPreview(texture)
+                setTextureAsPreview(texture, modName)
             }
         }
     }
@@ -164,15 +166,17 @@ internal class ModInfoAndActionPane : Table() {
         val previewFile = modFolder.child("preview.jpg").takeIf { it.exists() }
             ?: modFolder.child("preview.png").takeIf { it.exists() }
             ?: return
-        setTextureAsPreview(Texture(previewFile))
+        setTextureAsPreview(Texture(previewFile), modName)
     }
 
-    private fun addUncivLogo() {
-        setTextureAsPreview(Texture(Gdx.files.internal("ExtraImages/banner.png")))
+    private fun addUncivLogo(modName: String) {
+        setTextureAsPreview(Texture(Gdx.files.internal("ExtraImages/banner.png")), modName)
     }
 
-    private fun setTextureAsPreview(texture: Texture) {
-        val cell = imageHolder.add(Image(texture))
+    private fun setTextureAsPreview(texture: Texture, modName: String) {
+        val image = Image(texture)
+        if (modName != currentRepoName) return // user has selected another mod in the meantime
+        val cell = imageHolder.add(image)
         val largestImageSize = max(texture.width, texture.height)
         if (largestImageSize > ModManagementScreen.maxAllowedPreviewImageSize) {
             val resizeRatio = ModManagementScreen.maxAllowedPreviewImageSize / largestImageSize

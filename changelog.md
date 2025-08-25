@@ -1,3 +1,53 @@
+## 4.17.17
+
+Force rankings doesn't evaluate all unit conditionals as multiplicative
+
+Handle mods removing techs, adding/removing eras
+
+Post-battle movement doesn't occur if during the battle the unit lost movement points
+
+conditionals in event choices work again
+
+AI updates - By EmperorPinguin
+
+## 4.17.16
+
+AI spy city selection greatly improved
+
+Changing mods while images load no longer displays multiple images on the last mod
+
+Removed city-state icons for cities in unit overview
+
+Replacement improvements also provide resources that require the original improvement
+
+Only heal on current tile if it's not a dangerous tile
+
+Fixed several problems with improvement-creating buildings
+
+## 4.17.15
+
+Allow AI to move-and-settle
+
+AI: declare less war against humans on higher difficulties - By EmperorPinguin
+
+Harden new game screen against bad scenarios - By SomeTroglodyte
+
+By RobLoach:
+- Add Victory Type for Brave New World 
+- Civilopedia: Add Victory Types
+
+## 4.17.14
+
+Fixed map editor tile click not displaying tile stats
+
+Ranged strength comparison for unique units correctly translated
+
+By SeventhM:
+- Fix Ruin rewards with multiple triggerables only giving the first effect 
+- Add in Target Unit check for uniques when entering combat 
+
+Add countable for `[stat] Per Turn` - By RobLoach
+
 ## 4.17.13
 
 By EmperorPinguin:

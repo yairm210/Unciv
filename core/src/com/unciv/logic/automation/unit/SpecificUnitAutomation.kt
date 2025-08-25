@@ -72,38 +72,6 @@ object SpecificUnitAutomation {
         return false
     }
 
-    fun automateGreatGeneralFallback(unit: MapUnit) {
-        // if no unit to follow, take refuge in city or build citadel there.
-        val reachableTest: (Tile) -> Boolean = {
-            it.civilianUnit == null &&
-                    unit.movement.canMoveTo(it)
-                    && unit.movement.canReach(it)
-        }
-        val cityToGarrison = unit.civ.cities.asSequence().map { it.getCenterTile() }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { reachableTest(it) }
-            ?: return
-        if (!unit.cache.hasCitadelPlacementUnique) {
-            unit.movement.headTowards(cityToGarrison)
-            return
-        }
-
-        // try to find a good place for citadel nearby
-        val tileForCitadel = cityToGarrison.getTilesInDistanceRange(3..4)
-            .firstOrNull {
-                reachableTest(it) &&
-                    unit.civ.getWorkerAutomation().evaluateFortPlacement(it, true)
-            }
-        if (tileForCitadel == null) {
-            unit.movement.headTowards(cityToGarrison)
-            return
-        }
-        unit.movement.headTowards(tileForCitadel)
-        if (unit.hasMovement() && unit.currentTile == tileForCitadel)
-            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile)
-                .firstOrNull()?.action?.invoke()
-    }
-
     fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         // If we don't have any cities, we are probably at the start of the game with only one settler
         // If we are at the start of the game lets spend a maximum of 3 turns to settle our first city
@@ -151,6 +119,7 @@ object SpecificUnitAutomation {
 
         if (bestCityLocation == null) {
             // Find the best tile that is within
+            @Readonly
             fun isTileRankOK(it: Map.Entry<Tile, Float>): Boolean {
                 if (it.key in dangerousTiles && it.key != unit.getTile()) return false
                 val pathSize = unit.movement.getShortestPath(it.key).size
@@ -174,6 +143,7 @@ object SpecificUnitAutomation {
             // Try to move towards the frontier
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
+            @Readonly
             fun getFrontierScore(city: City) = city.getCenterTile()
                 .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
                 .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
@@ -198,8 +168,8 @@ object SpecificUnitAutomation {
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
         if (tryRunAwayIfNeccessary(unit)) return 
         unit.movement.headTowards(bestCityLocation)
-        if (shouldSettle) foundCityAction.action.invoke() 
-        //TODO: evaluate 1-tile move with settle on same turn as "safe"
+        val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
+        if (shouldSettleNow) foundCityAction.action.invoke() 
     }
 
     /** @return whether there was any progress in placing the improvement. A return value of `false`

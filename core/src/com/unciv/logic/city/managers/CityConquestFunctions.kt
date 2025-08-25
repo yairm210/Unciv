@@ -18,6 +18,7 @@ import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -27,6 +28,7 @@ import kotlin.random.Random
 class CityConquestFunctions(val city: City) {
     private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
 
+    @Readonly
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f

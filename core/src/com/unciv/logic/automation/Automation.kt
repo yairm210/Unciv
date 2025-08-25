@@ -27,11 +27,13 @@ import kotlin.math.min
 
 object Automation {
 
+    @Readonly
     fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
         return rankStatsForCityWork(stats, city, false, localUniqueCache)
     }
 
+    @Readonly
     fun rankSpecialist(specialist: String, city: City, localUniqueCache: LocalUniqueCache): Float {
         val stats = city.cityStats.getStatsOfSpecialist(specialist, localUniqueCache)
         var rank = rankStatsForCityWork(stats, city, true, localUniqueCache)
@@ -222,7 +224,7 @@ object Automation {
         var removeShips = true
         var isMissingNavalUnitsForCityDefence = false
 
-        fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
+        @Readonly fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
         if (city.isCoastal()) {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID
@@ -318,35 +320,16 @@ object Automation {
         return true
     }
 
-    /** Checks both feasibility of Buildings with a CreatesOneImprovement unique
-     *  and resource scarcity making a construction undesirable.
-     */
+    /** Checks resource scarcity making a construction undesirable. */
     @Readonly
     fun allowAutomatedConstruction(
         civInfo: Civilization,
         city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
-        return allowCreateImprovementBuildings(civInfo, city, construction)
-            && allowSpendingResource(civInfo, construction, city)
+        return allowSpendingResource(civInfo, construction, city)
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
-     *  Constructions without pass uncontested. */
-    @Readonly
-    fun allowCreateImprovementBuildings(
-        civInfo: Civilization,
-        city: City,
-        construction: INonPerpetualConstruction
-    ): Boolean {
-        if (construction !is Building) return true
-        if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
-        val improvement = construction.getImprovementToCreate(city.getRuleset(), civInfo) ?: return true
-        return city.getTiles().any {
-            it.improvementFunctions.canBuildImprovement(improvement, city.state)
-        }
-    }
 
     /** Determines whether the AI should be willing to spend strategic resources to build
      *  [construction] for [civInfo], assumes that we are actually able to do so. */

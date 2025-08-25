@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Readonly
 
 object UnitActionsReligion {
 
@@ -70,6 +71,7 @@ object UnitActionsReligion {
         ))
     }
 
+    @Readonly
     private fun getPressureAddedFromSpread(unit: MapUnit): Int {
         var pressureAdded = unit.baseUnit.religiousStrength.toFloat()
 

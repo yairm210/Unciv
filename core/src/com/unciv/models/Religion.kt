@@ -102,7 +102,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             .filter { it.type == beliefType }
     }
 
-    fun getAllBeliefsOrdered(): Sequence<Belief> {
+    @Readonly fun getAllBeliefsOrdered(): Sequence<Belief> {
         return mapToExistingBeliefs(followerBeliefs).filter { it.type == BeliefType.Pantheon } +
             mapToExistingBeliefs(founderBeliefs).filter { it.type == BeliefType.Founder } +
             mapToExistingBeliefs(followerBeliefs).filter { it.type == BeliefType.Follower } +

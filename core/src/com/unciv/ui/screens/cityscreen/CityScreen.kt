@@ -476,7 +476,9 @@ class CityScreen(
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.state)) {
+            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.state)
+                && !tileInfo.isMarkedForCreatesOneImprovement()) {
+                
                 if (pickTileData.isBuying) {
                     BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {

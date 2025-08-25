@@ -16,14 +16,14 @@ import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.victoryscreen.RankingType
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import kotlin.math.pow
 
 object MotivationToAttackAutomation {
 
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
-    @Readonly @Suppress("purity") // requires changing dependents from mutating to readonly
+    @Readonly
     fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCiv: Civilization, atLeast: Float): Float {
         val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)!!
         val personality = civInfo.getPersonality()
@@ -123,7 +123,7 @@ object MotivationToAttackAutomation {
                 modifiers.add(Pair("Allied City-state", -20 * personality.modifierFocus(PersonalityValue.Diplomacy, .8f))) // There had better be a DAMN good reason
         }
 
-        addWonderBasedMotivations(targetCiv, modifiers)
+        modifiers += getWonderBasedMotivations(targetCiv)
 
         modifiers.add(Pair("War with allies", getAlliedWarMotivation(civInfo, targetCiv)))
 
@@ -157,22 +157,11 @@ object MotivationToAttackAutomation {
         if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
         return ourCombatStrength
     }
-    
-    @Pure
-    fun addHelloWorld(@Pure add: (String) -> Unit){
-        add("Hello")
-        add("World")
-    }
-    
-    @Pure
-    fun a(): MutableList<String> {
-        val myList = mutableListOf<String>()
-        addHelloWorld{myList.add(it)}
-        return myList
-    }
 
-    private fun addWonderBasedMotivations(otherCiv: Civilization, modifiers: MutableList<Pair<String, Float>>) {
+    @Readonly
+    private fun getWonderBasedMotivations(otherCiv: Civilization): MutableList<Pair<String, Float>> {
         var wonderCount = 0
+        val modifiers = mutableListOf<Pair<String, Float>>()
         for (city in otherCiv.cities) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
@@ -186,6 +175,7 @@ object MotivationToAttackAutomation {
         // Civs need an army to protect thier wonders which give the most score
         if (wonderCount > 0)
             modifiers.add(Pair("Owned Wonders", wonderCount.toFloat()))
+        return modifiers
     }
 
     /** If they are at war with our allies, then we should join in */
@@ -267,7 +257,7 @@ object MotivationToAttackAutomation {
     private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Float {
         var theirAlliesValue = 0f
         for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
-            val thirdCivCombatStrengthRatio = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce / ourCombatStrength
+            val thirdCivCombatStrengthRatio = (otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce) / ourCombatStrength
             theirAlliesValue += when {
                 thirdCivCombatStrengthRatio > 5 -> -15f
                 thirdCivCombatStrengthRatio > 2.5 -> -10f
@@ -287,10 +277,8 @@ object MotivationToAttackAutomation {
         // At higher difficulty levels the AI gets a unit production boost.
         // In that case while we may have more units than them, we don't nessesarily want to be more aggressive.
         // This is to reduce the amount that the AI targets players at these higher levels somewhat.
-        if (civInfo.isAI() && targetCiv.isHuman() && combatStrengthRatio > 1) {
-            val ourCombatModifiers = civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-            val theirCombatModifiers = civInfo.gameInfo.getDifficulty().unitCostModifier
-            combatStrengthRatio *= ourCombatModifiers / theirCombatModifiers
+        if (civInfo.isAI() && targetCiv.isHuman()) {
+            combatStrengthRatio *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier.pow(1.5f)
         }
         val combatStrengthModifier = when {
             combatStrengthRatio > 5f -> 20f
@@ -330,12 +318,14 @@ object MotivationToAttackAutomation {
     @Readonly
     private fun getAttackPathsModifier(civInfo: Civilization, otherCiv: Civilization, targetCitiesWithOurCity: List<Pair<City, City>>): Float {
 
+        @Readonly
         fun isTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
             val owner = tile.getOwner()
             return !tile.isImpassible()
                     && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 
+        @Readonly
         fun isLandTileCanMoveThrough(civInfo: Civilization, tile: Tile): Boolean {
             return tile.isLand && isTileCanMoveThrough(civInfo, tile)
         }
