@@ -167,6 +167,20 @@ class ResourceTests {
     }
 
     @Test
+    fun `should get a percent of stat as a resource`() {
+        // given
+        city.cityConstructions.addBuilding("Monument")
+        var building = game.createBuilding("[200]% of [Culture] output from every [Monument] in the city added to [Iron]")
+        city.cityConstructions.addBuilding(building)
+
+        // when
+        val amount = city.getAvailableResourceAmount("Iron")
+
+        // then
+        assertEquals(4, amount) // 2 Culture * 2
+    }
+
+    @Test
     fun `should reduce resources due to buildings`() {
         // given
         city.cityConstructions.addBuilding("Factory")

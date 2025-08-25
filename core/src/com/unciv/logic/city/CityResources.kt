@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.stats.Stat
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.GameContext
@@ -67,6 +68,23 @@ object CityResources {
                 (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
             )
         }
+
+        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] output from every [tileFilter/buildingFilter] in the city added to [Iron]"
+        for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state, false)) {
+            val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
+            val stat = Stat.safeValueOf(unique.params[1]) ?: continue
+            val percent = unique.params[0].toFloat() / 100f
+            val buildings = city.cityConstructions.getBuiltBuildings()
+                .filter { it.isStatRelated(stat) && it.matchesFilter(unique.params[2], city.state) }
+            for (building in buildings) {
+                val statValue = building.getStats(city)[stat] ?: 0f
+                val amount = (statValue * percent * resourceModifer[resource.name]!!).toInt()
+                if (amount != 0) {
+                    buildingResources.add(resource, unique.getSourceNameForUser(), amount)
+                }
+            }
+        }
+
         return buildingResources
     }
 
@@ -112,6 +130,18 @@ object CityResources {
                     -1 * unique.params[0].toInt()
                 )
             }
+
+            // StatPercentFromObjectToResource - Example: "[50]% of [Culture] output from every [tileFilter/buildingFilter] in the city added to [Iron]"
+            for (unique in tileImprovement!!.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, gameContext)) {
+                val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
+                val stat = Stat.safeValueOf(unique.params[1]) ?: continue
+                val percent = unique.params[0].toFloat() / 100f
+                val statValue = tileImprovement[stat] ?: 0f
+                val amount = (statValue * percent * resourceModifer[resource.name]!!).toInt()
+                if (amount != 0) {
+                    resourceSupplyList.add(resource, "Improvements", amount)
+                }
+            }
         }
         return resourceSupplyList
     }
@@ -139,6 +169,22 @@ object CityResources {
                 resource, unique.getSourceNameForUser(),
                 (unique.params[0].toFloat() * resourceModifers[resource.name]!!).toInt()
             )
+        }
+
+        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] output from every [tileFilter/buildingFilter] in the city added to [Iron]"
+        for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state)) {
+            val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
+            val stat = Stat.safeValueOf(unique.params[1]) ?: continue
+            val percent = unique.params[0].toFloat() / 100f
+            val buildings = city.cityConstructions.getBuiltBuildings()
+                .filter { it.isStatRelated(stat) && it.matchesFilter(unique.params[2], city.state) }
+            for (building in buildings) {
+                val statValue = building.getStats(city)[stat] ?: 0f
+                val amount = (statValue * percent * resourceModifers[resource.name]!!).toInt()
+                if (amount != 0) {
+                    resourceSupplyList.add(resource, unique.getSourceNameForUser(), amount)
+                }
+            }
         }
         return resourceSupplyList
     }
