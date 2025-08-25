@@ -633,6 +633,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         return min(distance, wrappedDistance).toInt()
     }
     
+    @Readonly
     fun canBeSettled(unitCanFoundUnique: Unique?=null): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
         var addedDistanceBeweenContinents: Int
@@ -646,7 +647,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         Putting the ! to make sure the player/Ai doesn't place cities too near each other.
         Because when .none return False when one element has a match.
         */
-        println(canSettleInTileWithUnique)
         
         addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
         

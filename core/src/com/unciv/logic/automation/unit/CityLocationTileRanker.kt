@@ -66,17 +66,21 @@ object CityLocationTileRanker {
 
     private fun canSettleTile(tile: Tile, unit: MapUnit, nearbyCities: Sequence<City>): Boolean {
         val civ = unit.civ
-        val unitCanFoundUnique = unit.getMatchingUniques(UniqueType.ConditionalInTiles).firstOrNull()
-        println(unitCanFoundUnique)
+        
+        val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
+        val unique = uniques.firstOrNull()!!
+        
+        val uniqueModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
+        
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
-       if (unitCanFoundUnique == null && (!tile.isLand || tile.isImpassible())) return false
+        if (!unique.hasModifier(UniqueType.ConditionalInTiles) && (!tile.isLand || tile.isImpassible())) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
         for (city in nearbyCities) {
             var addedDistanceBeweenContinents: Int
             var canSettleInTileWithUnique = false
-            if (unitCanFoundUnique != null) {
+            if (uniqueModifier != null) {
                 canSettleInTileWithUnique = (tile.isWater || tile.isImpassible()) &&
-                    unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).none{
+                    uniqueModifier.getModifiers(UniqueType.ConditionalInTiles).none{
                         tile.matchesFilter(it.params[0])
                     }
             }
@@ -99,7 +103,7 @@ object CityLocationTileRanker {
                 if (distance <= modConstants.minimalCityDistance) return false
             } else {
                 if (distance <= modConstants.minimalCityDistanceOnDifferentContinents+
-                    if (unitCanFoundUnique != null) addedDistanceBeweenContinents else 0) return false
+                    if (uniqueModifier != null) addedDistanceBeweenContinents else 0) return false
             }
         }
         return true

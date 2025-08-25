@@ -47,7 +47,6 @@ object UnitActionsFromUniques {
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
         
         val uniqueModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
-        println(uniqueModifier)
         
         // do this check like that settler unique that don't have ConditionalInTiles does not show the grayed out button on water/moutain
         if (!unique.hasModifier(UniqueType.ConditionalInTiles) && (tile.isWater  || tile.isImpassible())) return null

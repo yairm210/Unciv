@@ -32,7 +32,6 @@ object CivilianUnitAutomation {
                 .any { canUse(unit, it) }
         
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
-        
         if (hasSettlerUnique)
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
