@@ -37,6 +37,12 @@ object BackwardCompatibility {
         handleMissingReferencesForEachCity()
 
         removeTechAndPolicies()
+        updateMissingStartingEra()
+    }
+
+    private fun GameInfo.updateMissingStartingEra() {
+        if (gameParameters.startingEra in ruleset.eras) return
+        gameParameters.startingEra = ruleset.eras.keys.first()
     }
 
     fun GameInfo.migrateGreatGeneralPools() {
