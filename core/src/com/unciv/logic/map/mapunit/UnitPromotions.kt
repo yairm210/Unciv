@@ -34,6 +34,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
      *  @param sorted if `true` return the promotions in json order (`false` gives hashset order) for display.
      *  @return a Sequence of this unit's promotions
      */
+    @Readonly
     fun getPromotions(sorted: Boolean = false): Sequence<Promotion> = sequence {
         if (promotions.isEmpty()) return@sequence
         val unitPromotions = unit.civ.gameInfo.ruleset.unitPromotions
@@ -51,14 +52,17 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    fun xpForNextPromotion(): Int = Math.round(baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier())
+    @Readonly fun xpForNextPromotion(): Int = Math.round(baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier())
     
     /** @return the XP points needed to "buy" the next [count] promotions. */
+    @Readonly
     fun xpForNextNPromotions(count: Int) = (1..count).sumOf { 
-        baseXpForPromotionNumber(numberOfPromotions+it)} * promotionCostModifier() 
+        baseXpForPromotionNumber(numberOfPromotions+it)} * promotionCostModifier()
 
+    @Readonly
     private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions) * 10
-    
+
+    @Readonly
     private fun promotionCostModifier(): Float {
         var totalPromotionCostModifier = 1f
         for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
@@ -69,8 +73,9 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
     
     /** @return Total XP including that already "spent" on promotions */
-    fun totalXpProduced() = XP + (numberOfPromotions * (numberOfPromotions + 1)) * 5
+    @Readonly fun totalXpProduced() = XP + (numberOfPromotions * (numberOfPromotions + 1)) * 5
 
+    @Readonly
     fun canBePromoted(): Boolean {
         if (XP < xpForNextPromotion()) return false
         if (getAvailablePromotions().none()) return false
@@ -134,10 +139,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     /** Gets all promotions this unit could currently "buy" with enough [XP]
      *  Checks unit type, already acquired promotions, prerequisites and incompatibility uniques.
      */
+    @Readonly
     fun getAvailablePromotions(): Sequence<Promotion> {
         return unit.civ.gameInfo.ruleset.unitPromotions.values.asSequence().filter { isAvailable(it) }
     }
 
+    @Readonly
     private fun isAvailable(promotion: Promotion): Boolean {
         if (promotion.name in promotions) return false
         if (unit.type.name !in promotion.unitTypes) return false

@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.ModCompatibility.meetsAllRequirements
 import com.unciv.models.ruleset.validation.ModCompatibility.meetsBaseRequirements
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Helper collection dealing with declarative Mod compatibility
@@ -28,8 +29,9 @@ object ModCompatibility {
      *
      *  Note: The guessing part may potentially be deprecated and removed if we get our Modders to complete declarative coverage.
      */
-    fun isAudioVisualMod(mod: Ruleset) = isAudioVisualDeclared(mod) ?: isAudioVisualGuessed(mod)
+    @Readonly fun isAudioVisualMod(mod: Ruleset) = isAudioVisualDeclared(mod) ?: isAudioVisualGuessed(mod)
 
+    @Readonly
     private fun isAudioVisualDeclared(mod: Ruleset): Boolean? {
         if (mod.modOptions.hasUnique(UniqueType.ModIsAudioVisualOnly)) return true
         if (mod.modOptions.hasUnique(UniqueType.ModIsAudioVisual)) return true
@@ -38,8 +40,10 @@ object ModCompatibility {
     }
 
     // If there's media (audio folders or any atlas), show the PAV choice...
+    @Readonly
     private fun isAudioVisualGuessed(mod: Ruleset): Boolean {
         val folder = mod.folderLocation ?: return false  // Also catches isBuiltin
+        @Readonly
         fun isSubFolderNotEmpty(modFolder: FileHandle, name: String): Boolean {
             val file = modFolder.child(name)
             if (!file.exists()) return false
@@ -52,11 +56,13 @@ object ModCompatibility {
         return folder.list("atlas").isNotEmpty()
     }
 
+    @Readonly
     fun isExtensionMod(mod: Ruleset) =
         !mod.modOptions.isBaseRuleset
             && mod.name.isNotBlank()
             && !mod.modOptions.hasUnique(UniqueType.ModIsAudioVisualOnly)
 
+    @Readonly
     fun isConstantsOnly(mod: Ruleset): Boolean {
         val folder = mod.folderLocation ?: return false
         if (folder.list("atlas").isNotEmpty()) return false
@@ -73,10 +79,12 @@ object ModCompatibility {
         return partialName in modName.lowercase()
     }
 
+    @Readonly
     private fun isIncompatibleWith(mod: Ruleset, otherMod: Ruleset) =
         mod.modOptions.getMatchingUniques(UniqueType.ModIncompatibleWith)
             .any { modNameFilter(otherMod.name, it.params[0]) }
 
+    @Readonly
     private fun isIncompatible(mod: Ruleset, otherMod: Ruleset) =
         isIncompatibleWith(mod, otherMod) || isIncompatibleWith(otherMod, mod)
 
@@ -88,6 +96,7 @@ object ModCompatibility {
      *  - For each ModRequires: Not ([baseRuleset] meets filter OR any other cached _extension_ mod meets filter) -> Nope
      *  - All ModRequires tested -> OK
      */
+    @Readonly
     fun meetsBaseRequirements(mod: Ruleset, baseRuleset: Ruleset): Boolean {
         if (isIncompatible(mod, baseRuleset)) return false
 
@@ -115,6 +124,7 @@ object ModCompatibility {
      *  - For each ModRequires: Not([baseRuleset] meets filter OR any other **selected** extension mod meets filter) -> Nope
      *  - All ModRequires tested -> OK
      */
+    @Readonly
     fun meetsAllRequirements(mod: Ruleset, baseRuleset: Ruleset, selectedExtensionMods: Iterable<Ruleset>): Boolean {
         val otherSelectedExtensionMods = selectedExtensionMods.filterNot { it == mod }.toList()
         if (otherSelectedExtensionMods.any { isIncompatible(mod, it) }) return false

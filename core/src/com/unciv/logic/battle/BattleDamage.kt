@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
 import kotlin.math.max
@@ -54,14 +55,6 @@ object BattleDamage {
             if (greatGeneralBonus != 0)
                 modifiers[greatGeneralName] = greatGeneralBonus
 
-            for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthWhenStacked)) {
-                var stackedUnitsBonus = 0
-                if (combatant.unit.getTile().getUnits().any { it.matchesFilter(unique.params[1]) })
-                    stackedUnitsBonus += unique.params[0].toInt()
-
-                if (stackedUnitsBonus > 0)
-                    modifiers["Stacked with [${unique.params[1]}]"] = stackedUnitsBonus
-            }
         } else if (combatant is CityCombatant) {
             for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
@@ -321,7 +314,7 @@ object BattleDamage {
         return (damageModifier(ratio, false, randomnessFactor) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
-    @Readonly
+    @Pure
     private fun damageModifier(
         attackerToDefenderRatio: Float,
         damageToAttacker: Boolean,

@@ -10,6 +10,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import yairm210.purity.annotations.Readonly
 
 object ReligiousUnitAutomation {
 
@@ -21,6 +22,7 @@ object ReligiousUnitAutomation {
             it.religion.getMajorityReligion() != unit.civ.religionManager.religion
         }
         
+        @Readonly
         fun isValidSpreadReligionTarget(city: City): Boolean {
             val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
             if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
@@ -33,6 +35,7 @@ object ReligiousUnitAutomation {
         }
 
         /** Lowest value will be chosen */
+        @Readonly
         fun rankCityForReligionSpread(city: City): Int {
             var rank = city.getCenterTile().aerialDistanceTo(unit.getTile())
             
@@ -43,6 +46,7 @@ object ReligiousUnitAutomation {
                 
             return rank
         }
+        
         
         val city =
             if (ourCitiesWithoutReligion.any())
@@ -118,6 +122,7 @@ object ReligiousUnitAutomation {
         }
     }
 
+    @Readonly
     private fun determineBestInquisitorCityToConvert(
         unit: MapUnit,
     ): City? {

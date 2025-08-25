@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.unciv.logic.map.tile.Tile
+import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.ArrayDeque
 
@@ -10,6 +11,7 @@ import kotlin.collections.ArrayDeque
  * @param startingPoint Starting [Tile] from which to start the search
  * @param predicate A condition for subsequent neighboring tiles to be considered in search
  */
+@InternalState
 class BFS(
     val startingPoint: Tile,
     private val predicate : (Tile) -> Boolean

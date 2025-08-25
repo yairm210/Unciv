@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 object NextTurnAutomation {
@@ -105,6 +106,7 @@ object NextTurnAutomation {
             else -> ((projectedGold - pissPoor) * maxPercent / stinkingRich).coerceAtMost(maxPercent)
         }
     }
+    
     private fun respondToPopupAlerts(civInfo: Civilization) {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
             
@@ -136,29 +138,36 @@ object NextTurnAutomation {
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
+    @Readonly
     internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization, includeQuests: Boolean = false): Int {
+        if (!cityState.isCityState) return 0
         var value = 0
         val civPersonality = civInfo.getPersonality()
 
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
+        val bonuses = CityStateFunctions.getCityStateBonuses(cityState.cityStateType, RelationshipLevel.Ally).toList()
+        
+        // Optimized version of canProvideStat so we don't need to fetch bonuses multiple times
+        @Readonly fun canProvideStat(stat: Stat) = bonuses.any { it.stats[stat] > 0 }
+        
+        if (canProvideStat(Stat.Culture)) {
             value += civPersonality[PersonalityValue.Culture].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Faith)) {
+        if (canProvideStat(Stat.Faith)) {
             value += civPersonality[PersonalityValue.Faith].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Production)) {
+        if (canProvideStat(Stat.Production)) {
             value += civPersonality[PersonalityValue.Production].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
+        if (canProvideStat(Stat.Science)) {
             // In case someone mods this in
             value += civPersonality[PersonalityValue.Science].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
+        if (canProvideStat(Stat.Happiness)) {
             if (civInfo.getHappiness() < 10)
                 value += 10 - civInfo.getHappiness()
             value += civPersonality[PersonalityValue.Happiness].toInt() - 5
         }
-        if (cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
+        if (canProvideStat(Stat.Food)) {
             value += 5
             value += civPersonality[PersonalityValue.Food].toInt() - 5
         }
@@ -221,6 +230,7 @@ object NextTurnAutomation {
     }
 
     private fun chooseTechToResearch(civInfo: Civilization) {
+        @Readonly
         fun getGroupedResearchableTechs(): List<List<Technology>> {
             val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
                 .asSequence()
@@ -398,8 +408,8 @@ object NextTurnAutomation {
     }
     
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
-    fun automateCityConquer(civInfo: Civilization, city: City){
-        fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
+    private fun automateCityConquer(civInfo: Civilization, city: City){
+        @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
             .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo }.toList()
         
         
@@ -582,13 +592,14 @@ object NextTurnAutomation {
         diplomacyManager.removeFlag(demand.violationOccurred)
     }
     
-
+    @Readonly
     fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {
         return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
     }
 
     data class CityDistance(val city1: City, val city2: City, val aerialDistance: Int)
 
+    @Readonly
     fun getClosestCities(civ1: Civilization, civ2: Civilization): CityDistance? {
         if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
             return null

@@ -281,6 +281,7 @@ class UnitMovement(val unit: MapUnit) {
      *  Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER
      *  @see canReachInCurrentTurn
      */
+    @Readonly
     fun canReach(destination: Tile) = canReachCommon(destination) {
         getShortestPath(it).any()
     }
@@ -292,7 +293,7 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     @Readonly
-    private inline fun canReachCommon(destination: Tile, specificFunction: (Tile) -> Boolean) = when {
+    private inline fun canReachCommon(destination: Tile, @Readonly specificFunction: (Tile) -> Boolean) = when {
         unit.cache.cannotMove ->
             destination == unit.getTile()
         unit.baseUnit.movesLikeAirUnits ->

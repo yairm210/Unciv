@@ -54,7 +54,7 @@ object Conditionals {
 
         /** Helper to simplify the "compare civ's current era with named era" conditions */
         @Readonly
-        fun compareEra(eraParam: String, compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
+        fun compareEra(eraParam: String, @Readonly compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
             if (state.gameInfo == null) return false
             val era = state.gameInfo.ruleset.eras[eraParam] ?: return false
             return compare(state.relevantCiv!!.getEraNumber(), era.eraNumber)
@@ -67,7 +67,7 @@ object Conditionals {
             lowerLimit: Float,
             upperLimit: Float,
             modifyByGameSpeed: Boolean = false,
-            compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
+            @Readonly compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
         ): Boolean {
             if (state.gameInfo == null) return false
             var gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo.speed.modifier else 1f
@@ -86,7 +86,7 @@ object Conditionals {
         fun compareCountables(
             first: String,
             second: String,
-            compare: (first: Int, second: Int) -> Boolean): Boolean {
+            @Readonly compare: (first: Int, second: Int) -> Boolean): Boolean {
 
             val firstNumber = Countables.getCountableAmount(first, state)
             val secondNumber = Countables.getCountableAmount(second, state)
@@ -99,7 +99,7 @@ object Conditionals {
 
         @Readonly
         fun compareCountables(first: String, second: String, third: String,
-                              compare: (first: Int, second: Int, third: Int) -> Boolean): Boolean {
+                              @Readonly compare: (first: Int, second: Int, third: Int) -> Boolean): Boolean {
 
             val firstNumber = Countables.getCountableAmount(first, state)
             val secondNumber = Countables.getCountableAmount(second, state)
@@ -136,10 +136,6 @@ object Conditionals {
                     { current, lowerLimit, upperLimit -> current >= lowerLimit && current <= upperLimit }
 
             UniqueType.ConditionalHappy -> checkOnCiv { stats.happiness >= 0 }
-            UniqueType.ConditionalBetweenHappiness ->
-                checkOnCiv { stats.happiness in conditional.params[0].toInt() .. conditional.params[1].toInt() }
-            UniqueType.ConditionalAboveHappiness -> checkOnCiv { stats.happiness > conditional.params[0].toInt() }
-            UniqueType.ConditionalBelowHappiness -> checkOnCiv { stats.happiness < conditional.params[0].toInt() }
             UniqueType.ConditionalGoldenAge -> checkOnCiv { goldenAges.isGoldenAge() }
             UniqueType.ConditionalNotGoldenAge -> checkOnCiv { !goldenAges.isGoldenAge() }
 

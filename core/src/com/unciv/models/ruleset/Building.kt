@@ -344,6 +344,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!civ.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         yield(RejectionReasonType.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
                 }
+                
+                UniqueType.CreatesOneImprovement -> {
+                    val improvement = ruleset.tileImprovements[unique.params[0]]
+                    if (improvement == null) {
+                        yield(RejectionReasonType.NoSuchImprovement.toInstance("Unknown improvement: ${unique.params[0]}"))
+                    } else if (city.getTiles().none { !it.improvementFunctions.canBuildImprovement(improvement, city.state) }) {
+                        yield(RejectionReasonType.NoTileCanContainImprovement.toInstance())
+                    }
+                }
 
                 else -> {}
             }
@@ -522,9 +531,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
-        if (stat == Stat.Happiness &&
-            (hasUnique(UniqueType.RemoveAnnexUnhappiness) || hasUnique(UniqueType.RemovesAnnexUnhappiness))
-            ) return true
+        if (stat == Stat.Happiness && hasUnique(UniqueType.RemovesAnnexUnhappiness)) return true
         return false
     }
 

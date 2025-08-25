@@ -2,6 +2,7 @@ package com.unciv.logic.map.tile
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Ruleset
+import yairm210.purity.annotations.Readonly
 
 /**
  * You can use RoadStatus.name to identify [Road] and [Railroad]
@@ -21,6 +22,6 @@ enum class RoadStatus(
     Railroad (2, 0.1f, 0.1f, "Remove Railroad");
 
     /** returns null for [None] */
-    fun improvement(ruleset: Ruleset) = ruleset.tileImprovements[this.name]
+    @Readonly fun improvement(ruleset: Ruleset) = ruleset.tileImprovements[this.name]
 
 }

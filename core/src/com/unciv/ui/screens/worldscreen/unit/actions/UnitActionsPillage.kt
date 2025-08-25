@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.popups.ConfirmPopup
+import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 object UnitActionsPillage {
@@ -140,6 +141,7 @@ object UnitActionsPillage {
     }
 
     // Public - used in UnitAutomation
+    @Readonly
     fun canPillage(unit: MapUnit, tile: Tile): Boolean {
         if (unit.isTransported) return false
         if (!tile.canPillageTile()) return false
