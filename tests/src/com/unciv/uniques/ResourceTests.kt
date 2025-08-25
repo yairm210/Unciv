@@ -170,7 +170,7 @@ class ResourceTests {
     fun `should get a percent of stat as a resource`() {
         // given
         city.cityConstructions.addBuilding("Monument")
-        var building = game.createBuilding("[200]% of [Culture] output from every [Monument] in the city added to [Iron]")
+        var building = game.createBuilding("[200]% of [Culture] from every [Monument] in the city added to [Iron]")
         city.cityConstructions.addBuilding(building)
 
         // when

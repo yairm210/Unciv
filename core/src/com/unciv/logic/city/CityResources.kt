@@ -69,7 +69,7 @@ object CityResources {
             )
         }
 
-        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] output from every [tileFilter/buildingFilter] in the city added to [Iron]"
+        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] from every [tileFilter/buildingFilter] in the city added to [Iron]"
         for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state, false)) {
             val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
             val stat = Stat.safeValueOf(unique.params[1]) ?: continue
@@ -131,7 +131,7 @@ object CityResources {
                 )
             }
 
-            // StatPercentFromObjectToResource - Example: "[50]% of [Culture] output from every [tileFilter/buildingFilter] in the city added to [Iron]"
+            // StatPercentFromObjectToResource - Example: "[50]% of [Culture] from every [tileFilter/buildingFilter] in the city added to [Iron]"
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, gameContext)) {
                 val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
                 val stat = Stat.safeValueOf(unique.params[1]) ?: continue
@@ -171,7 +171,7 @@ object CityResources {
             )
         }
 
-        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] output from every [tileFilter/buildingFilter] in the city added to [Iron]"
+        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] from every [tileFilter/buildingFilter] in the city added to [Iron]"
         for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state)) {
             val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
             val stat = Stat.safeValueOf(unique.params[1]) ?: continue

@@ -392,8 +392,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[positiveAmount]% of [stat] output from every [tileFilter/buildingFilter] in the city added to [resource]"
-	Example: "[3]% of [Culture] output from every [Farm] in the city added to [Iron]"
+??? example  "[positiveAmount]% of [stat] from every [tileFilter/buildingFilter] in the city added to [resource]"
+	Example: "[3]% of [Culture] from every [Farm] in the city added to [Iron]"
 
 	Applicable to: Global
 
