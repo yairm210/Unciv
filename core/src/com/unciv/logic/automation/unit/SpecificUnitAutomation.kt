@@ -72,38 +72,6 @@ object SpecificUnitAutomation {
         return false
     }
 
-    fun automateGreatGeneralFallback(unit: MapUnit) {
-        // if no unit to follow, take refuge in city or build citadel there.
-        val reachableTest: (Tile) -> Boolean = {
-            it.civilianUnit == null &&
-                    unit.movement.canMoveTo(it)
-                    && unit.movement.canReach(it)
-        }
-        val cityToGarrison = unit.civ.cities.asSequence().map { it.getCenterTile() }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { reachableTest(it) }
-            ?: return
-        if (!unit.cache.hasCitadelPlacementUnique) {
-            unit.movement.headTowards(cityToGarrison)
-            return
-        }
-
-        // try to find a good place for citadel nearby
-        val tileForCitadel = cityToGarrison.getTilesInDistanceRange(3..4)
-            .firstOrNull {
-                reachableTest(it) &&
-                    unit.civ.getWorkerAutomation().evaluateFortPlacement(it, true)
-            }
-        if (tileForCitadel == null) {
-            unit.movement.headTowards(cityToGarrison)
-            return
-        }
-        unit.movement.headTowards(tileForCitadel)
-        if (unit.hasMovement() && unit.currentTile == tileForCitadel)
-            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile)
-                .firstOrNull()?.action?.invoke()
-    }
-
     fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
         // If we don't have any cities, we are probably at the start of the game with only one settler
         // If we are at the start of the game lets spend a maximum of 3 turns to settle our first city

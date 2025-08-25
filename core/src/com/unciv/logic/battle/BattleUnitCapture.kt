@@ -13,6 +13,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -46,8 +47,8 @@ object BattleUnitCapture {
         return spawnCapturedUnit(defender, attacker)
     }
 
-
-
+    
+    @Readonly
     private fun unitCapturedPrizeShipsUnique(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
         if (attacker.unit.getMatchingUniques(UniqueType.KillUnitCapture)
                 .none { defender.matchesFilter(it.params[0]) }

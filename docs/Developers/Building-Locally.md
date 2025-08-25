@@ -25,28 +25,34 @@ By the end of this guide, you will have Unciv running locally from code, so you 
           ![image](../assets/Android_SDK_Tools.png)
         - Click "Apply"
         - Restart Android Studio
--   In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
-    -   Click "+" to add a new configuration
-    -   Choose "Application"
-    -   Give the configuration a name, we recommend "Desktop"
-    -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `$ProjectFileDir$/android/assets` as the Working directory, OK to close the window
-        - It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
-        - If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
-        ![image](../assets/Desktop_Build.png)
+-   Have patience and let the initial Gradle sync finish. The subsequent ones won't take as long. Watch the status bar or the "Build" toolpane. 
+-   If everything went well, you will now have three "Run configurations" (look for green in the top bar): "android", "Desktop" and "Run unit tests".
+    -   If the "android" one is missing, it's likely your Android SDK setup did not set the ANDROID_HOME environment variable. Do so, restart Studio and re-sync Gradle (the button with the elephant and arrow in the top bar).
+    -   If the "Desktop" one is missing, here's how to create one manually:
+        -   Select Run > Edit configurations (from main menu or the configurations dropdown)
+        -   Click "+" to add a new configuration
+        -   Choose "Application"
+        -   Give the configuration a name, we recommend "Desktop"
+        -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `$ProjectFileDir$/android/assets` as the Working directory, OK to close the window
+            - It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
+            - If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
+            ![image](/Unciv/assets/Desktop_Build.png)
+    -   If the "Run unit tests" is missing - look for the top-level "tests" folder, right-klick -> Modify Run Configuration...
 -   Select the Desktop configuration (or however you chose to name it) and click the green arrow button to run! Or you can use the next button -the green critter with six legs and two feelers - to start debugging.
 -   A few Android Studio settings that are recommended:
     - Going to Settings > Version Control > Commit and turning off 'Before Commit - Analyze code'
+    - On the same page, we recommend turning off "Use non-modal commit interface". This puts the "Local Changes and "Console" Tabs back into the Git toolpane (and the Shelf once you have shelved diffs). These can be hard to find otherwise - feel free to ignore if you don't think you need them.
     - Settings > Editor > Code Style > Kotlin > Tabs and Indents > Continuation Indent: 4
-    ![image](https://user-images.githubusercontent.com/44038014/169315352-9ba0c4cf-307c-44d1-b3bc-2a58752c6854.png)
+      ![image](https://user-images.githubusercontent.com/44038014/169315352-9ba0c4cf-307c-44d1-b3bc-2a58752c6854.png)
     - Settings > Editor > General > On Save > Uncheck Remove trailing spaces on: [...] to prevent it from removing necessary trailing whitespace in template.properties for translation files
-    ![image](https://user-images.githubusercontent.com/44038014/169316243-07e36b8e-4c9e-44c4-941c-47e634c68b4c.png)
-    - Right-click the `android/assets/SaveFiles` folder, "Mark directory as" > Excluded
+      ![image](https://user-images.githubusercontent.com/44038014/169316243-07e36b8e-4c9e-44c4-941c-47e634c68b4c.png)
+    - Right-click the `android/assets/SaveFiles` folder once you have one, "Mark directory as" > Excluded
       - If you download mods do the same for the `android/assets/mods` folder and any other files you may create while testing that do not belong in the public project.
       - This [disables indexing](https://www.jetbrains.com/help/idea/indexing.html#exclude) for performance.
 
 Unciv uses Gradle to specify dependencies and how to run. In the background, the Gradle gnomes will be off fetching the packages (a one-time effort) and, once that's done, will build the project!
 
-Unciv uses Gradle 8.7 and the Android Gradle Plugin 8.5. Can check in File > Project Structure > Project
+Unciv uses Gradle 8.11.1 and the Android Gradle Plugin 8.9.1. Can check in File > Project Structure > Project
 
 > Note: advanced build commands (as described in the next paragraph), specifically `gradlew desktop:dist` to build a jar, run just fine in Android Studio's terminal (Alt+F12), with most dependencies already taken care of.
 

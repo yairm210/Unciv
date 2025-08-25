@@ -37,6 +37,12 @@ object BackwardCompatibility {
         handleMissingReferencesForEachCity()
 
         removeTechAndPolicies()
+        updateMissingStartingEra()
+    }
+
+    private fun GameInfo.updateMissingStartingEra() {
+        if (gameParameters.startingEra in ruleset.eras) return
+        gameParameters.startingEra = ruleset.eras.keys.first()
     }
 
     fun GameInfo.migrateGreatGeneralPools() {
@@ -122,6 +128,11 @@ object BackwardCompatibility {
             for (tech in civInfo.tech.techsResearched.toList())
                 if (!ruleset.technologies.containsKey(tech))
                     civInfo.tech.techsResearched.remove(tech)
+            
+            for (tech in civInfo.tech.techsToResearch.toList())
+                if (!ruleset.technologies.containsKey(tech))
+                    civInfo.tech.techsToResearch.remove(tech)
+            
             for (policy in civInfo.policies.adoptedPolicies.toList())
                 if (!ruleset.policies.containsKey(policy))
                     civInfo.policies.adoptedPolicies.remove(policy)

@@ -195,7 +195,8 @@ class Simulation(
                     summaryStatSet(summaryStatsProd, civ, turn, it.turnStatsProd)
                     summaryStatSet(summaryStatsCities, civ, turn, it.turnStatsCities)
                     if (it.turnStatsPop[civ]!![turn]!!.value != -1 && it.turnStatsCities[civ]!![turn]!!.value != -1) {
-                        summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
+                        if (it.turnStatsCities[civ]!![turn]!!.value != 0) // if no cities, avgpop=0
+                            summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
                         summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
                     }
                 }
@@ -203,7 +204,8 @@ class Simulation(
                 summaryStatSet(summaryStatsPop, civ, turn, it.turnStatsPop)
                 summaryStatSet(summaryStatsProd, civ, turn, it.turnStatsProd)
                 summaryStatSet(summaryStatsCities, civ, turn, it.turnStatsCities)
-                summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
+                if (it.turnStatsCities[civ]!![turn]!!.value != 0) // if no cities, avgpop=0
+                    summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
                 summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
             }
         }

@@ -189,6 +189,7 @@ open class Stats(
 
     // function that removes the icon from the Stats object since the circular icons all appear the same
     // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed (e.g., in notification text)
+    @Readonly
     fun toStringWithoutIcons(): String {
         return this.joinToString {
             it.value.toInt().tr() + " " + it.key.name.tr().substring(startIndex = 1)
@@ -196,6 +197,7 @@ open class Stats(
     }
 
     /** Return a string of just +/- value and Stat symbol*/
+    @Readonly
     fun toStringOnlyIcons(addPlusSign: Boolean = true): String {
         return this.joinToString {
             (if (addPlusSign && it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character

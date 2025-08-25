@@ -1,3 +1,15 @@
+## 4.17.17
+
+Force rankings doesn't evaluate all unit conditionals as multiplicative
+
+Handle mods removing techs, adding/removing eras
+
+Post-battle movement doesn't occur if during the battle the unit lost movement points
+
+conditionals in event choices work again
+
+AI updates - By EmperorPinguin
+
 ## 4.17.16
 
 AI spy city selection greatly improved
