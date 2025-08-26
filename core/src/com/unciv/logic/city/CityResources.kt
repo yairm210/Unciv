@@ -150,7 +150,7 @@ object CityResources {
             if (UniqueParameterType.TileFilter.isKnownValue(filter, city.getRuleset())) {
                 val amount = city.getTiles()
                     .mapNotNull { it.getUnpillagedTileImprovement() }
-                    .filter { it.matchesFilter(unique.params[2], city.state) }
+                    .filter { it.matchesFilter(filter, city.state) }
                     .sumOf { it[stat].toDouble() }
                 val result = (amount.toFloat() * modifier).toInt()
                 if (result != 0) {
