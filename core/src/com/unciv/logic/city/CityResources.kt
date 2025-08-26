@@ -145,8 +145,8 @@ object CityResources {
 
             // Improvement Filter
             if (UniqueParameterType.ImprovementFilter.isKnownValue(filter, city.getRuleset())) {
-                amount += city.getTiles()
-                    .mapNotNull { if (it.isWorked()) it.getUnpillagedTileImprovement() else null }
+                amount += city.getWorkedTiles()
+                    .mapNotNull { it.getUnpillagedTileImprovement() }
                     .filter { it[stat] > 0f && it.matchesFilter(filter, city.state) }
                     .sumOf { it[stat].toDouble() }.toFloat()
             }
