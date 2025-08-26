@@ -180,6 +180,7 @@ class ResourceTests {
         tile.resource = "Wheat"
         tile.resourceAmount = 1
         tile.setImprovement("Farm")
+        city.population.addPopulation(5) // Add population, since the tile needs to be worked
         var building = game.createBuilding("[300]% of [Food] from every [Farm] in the city added to [Iron]")
         city.cityConstructions.addBuilding(building)
         assertEquals(3, city.getAvailableResourceAmount("Iron"))

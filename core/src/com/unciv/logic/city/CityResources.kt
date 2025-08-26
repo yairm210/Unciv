@@ -128,34 +128,32 @@ object CityResources {
             )
         }
 
-        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] from every [tileFilter/buildingFilter] in the city added to [Iron]"
+        // StatPercentFromObjectToResource - Example: "[50]% of [Culture] from every [improvementFilter/buildingFilter] in the city added to [Iron]"
         for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state, includeCivUniques)) {
             val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
             val stat = Stat.safeValueOf(unique.params[1]) ?: continue
             val modifier = unique.params[0].toFloat() / 100f * (resourceModifers[resource.name] ?: 1f)
             val filter = unique.params[2]
+            var amount = 0f
 
             // Building Filter
             if (UniqueParameterType.BuildingFilter.isKnownValue(filter, city.getRuleset())) {
-                val amount = city.cityConstructions.getBuiltBuildings()
+                amount += city.cityConstructions.getBuiltBuildings()
                     .filter { it.isStatRelated(stat) && it.matchesFilter(filter, city.state) }
-                    .sumOf { it.getStats(city)[stat].toDouble() }
-                val result = (amount.toFloat() * modifier).toInt()
-                if (result != 0) {
-                    buildingResources.add(resource, unique.getSourceNameForUser(), result)
-                }
+                    .sumOf { it.getStats(city)[stat].toDouble() }.toFloat()
             }
 
             // Improvement Filter
             if (UniqueParameterType.ImprovementFilter.isKnownValue(filter, city.getRuleset())) {
-                val amount = city.getTiles()
-                    .mapNotNull { it.getUnpillagedTileImprovement() }
-                    .filter { it.matchesFilter(filter, city.state) }
-                    .sumOf { it[stat].toDouble() }
-                val result = (amount.toFloat() * modifier).toInt()
-                if (result != 0) {
-                    buildingResources.add(resource, unique.getSourceNameForUser(), result)
-                }
+                amount += city.getTiles()
+                    .mapNotNull { if (it.isWorked()) it.getUnpillagedTileImprovement() else null }
+                    .filter { it[stat] > 0f && it.matchesFilter(filter, city.state) }
+                    .sumOf { it[stat].toDouble() }.toFloat()
+            }
+
+            val result = (amount * modifier).toInt()
+            if (result != 0) {
+                buildingResources.add(resource, unique.getSourceNameForUser(), result)
             }
         }
 
