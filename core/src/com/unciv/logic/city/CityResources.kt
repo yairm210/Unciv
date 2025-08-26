@@ -152,7 +152,7 @@ object CityResources {
             }
 
             val result = (amount * modifier).toInt()
-            if (result != 0) {
+            if (result > 0) {
                 buildingResources.add(resource, unique.getSourceNameForUser(), result)
             }
         }
