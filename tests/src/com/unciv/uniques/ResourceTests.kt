@@ -175,7 +175,7 @@ class ResourceTests {
     }
 
     @Test
-    fun `should handle StatPercentFromObjectToResource with a tileFilter`() {
+    fun `should handle StatPercentFromObjectToResource with a improvementFilter`() {
         val tile = game.tileMap[1,1]
         tile.resource = "Wheat"
         tile.resourceAmount = 1

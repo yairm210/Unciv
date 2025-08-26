@@ -47,7 +47,7 @@ enum class UniqueType(
     StatPercentBonus("[relativeAmount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentBonusCities("[relativeAmount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromObject("[relativeAmount]% [stat] from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatPercentFromObjectToResource("[positiveAmount]% of [stat] from every [tileFilter/buildingFilter] in the city added to [resource]", UniqueTarget.Building),
+    StatPercentFromObjectToResource("[positiveAmount]% of [stat] from every [improvementFilter/buildingFilter] in the city added to [resource]", UniqueTarget.Building),
     AllStatsPercentFromObject("[relativeAmount]% Yield from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[relativeAmount]% [stat] from every follower, up to [relativeAmount]%", UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief),
     BonusStatsFromCityStates("[relativeAmount]% [stat] from City-States", UniqueTarget.Global),

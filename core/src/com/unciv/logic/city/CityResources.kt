@@ -146,8 +146,8 @@ object CityResources {
                 }
             }
 
-            // Tile Filter
-            if (UniqueParameterType.TileFilter.isKnownValue(filter, city.getRuleset())) {
+            // Improvement Filter
+            if (UniqueParameterType.ImprovementFilter.isKnownValue(filter, city.getRuleset())) {
                 val amount = city.getTiles()
                     .mapNotNull { it.getUnpillagedTileImprovement() }
                     .filter { it.matchesFilter(filter, city.state) }
