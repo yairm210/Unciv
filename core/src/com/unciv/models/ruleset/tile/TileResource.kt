@@ -129,11 +129,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         val improvementsThatProvideThis = ruleset.tileImprovements.values
             .filter { improvement ->
                 improvement.uniqueObjects.any { unique ->
-                    when (unique.type) {
-                        UniqueType.ProvidesResources -> unique.params[1] == name
-                        UniqueType.StatPercentFromObjectToResource -> unique.params[3] == name
-                        else -> false
-                    }
+                    unique.type == UniqueType.ProvidesResources && unique.params[1] == name
                 }
             }
         if (improvementsThatProvideThis.isNotEmpty()) {
