@@ -167,17 +167,22 @@ class ResourceTests {
     }
 
     @Test
-    fun `should get a percent of stat as a resource`() {
-        // given
+    fun `should handle StatPercentFromObjectToResource with a buildingFilter`() {
         city.cityConstructions.addBuilding("Monument")
-        var building = game.createBuilding("[200]% of [Culture] from every [Monument] in the city added to [Iron]")
+        var building = game.createBuilding("[300]% of [Culture] from every [Monument] in the city added to [Iron]")
         city.cityConstructions.addBuilding(building)
+        assertEquals(6, city.getAvailableResourceAmount("Iron")) // 2 Culture * 3
+    }
 
-        // when
-        val amount = city.getAvailableResourceAmount("Iron")
-
-        // then
-        assertEquals(4, amount) // 2 Culture * 2
+    @Test
+    fun `should handle StatPercentFromObjectToResource with a tileFilter`() {
+        val tile = game.tileMap[1,1]
+        tile.resource = "Wheat"
+        tile.resourceAmount = 1
+        tile.setImprovement("Farm")
+        var building = game.createBuilding("[300]% of [Food] from every [Farm] in the city added to [Iron]")
+        city.cityConstructions.addBuilding(building)
+        assertEquals(3, city.getAvailableResourceAmount("Iron"))
     }
 
     @Test
