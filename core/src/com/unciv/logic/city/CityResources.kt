@@ -132,15 +132,14 @@ object CityResources {
         for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state, includeCivUniques)) {
             val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
             val stat = Stat.safeValueOf(unique.params[1]) ?: continue
-            val modifier = unique.params[0].toFloat() / 100f * (resourceModifers[resource.name] ?: 1f)
             val filter = unique.params[2]
-            var amount = 0f
+            var amount = 0.0
 
             // Building Filter
             if (UniqueParameterType.BuildingFilter.isKnownValue(filter, city.getRuleset())) {
                 amount += city.cityConstructions.getBuiltBuildings()
                     .filter { it.isStatRelated(stat) && it.matchesFilter(filter, city.state) }
-                    .sumOf { it.getStats(city)[stat].toDouble() }.toFloat()
+                    .sumOf { it.getStats(city)[stat].toDouble() }
             }
 
             // Improvement Filter
@@ -148,11 +147,11 @@ object CityResources {
                 amount += city.getWorkedTiles()
                     .mapNotNull { it.getUnpillagedTileImprovement() }
                     .filter { it[stat] > 0f && it.matchesFilter(filter, city.state) }
-                    .sumOf { it[stat].toDouble() }.toFloat()
+                    .sumOf { it[stat].toDouble() }
             }
 
-            amount *= modifier
-            if (amount >= 1f) {
+            if (amount > 0.0) {
+                amount *= unique.params[0].toDouble() / 100.0 * (resourceModifers[resource.name] ?: 1f).toDouble()
                 buildingResources.add(resource, unique.getSourceNameForUser(), amount.toInt())
             }
         }
