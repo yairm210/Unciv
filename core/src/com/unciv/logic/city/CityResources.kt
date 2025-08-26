@@ -151,9 +151,9 @@ object CityResources {
                     .sumOf { it[stat].toDouble() }.toFloat()
             }
 
-            val result = (amount * modifier).toInt()
-            if (result > 0) {
-                buildingResources.add(resource, unique.getSourceNameForUser(), result)
+            amount *= modifier
+            if (amount >= 1f) {
+                buildingResources.add(resource, unique.getSourceNameForUser(), amount.toInt())
             }
         }
 
