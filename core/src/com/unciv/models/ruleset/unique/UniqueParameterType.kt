@@ -506,7 +506,7 @@ enum class UniqueParameterType(
     
     /**Used by [UniqueType.ConditionalCityReligion]*/
     ReligionFilter("religionFilter", "major") {
-        override val staticKnownValues = setOf("any", "major", "enhanced", "your", "foreign","enemy")
+        override val staticKnownValues = setOf("any", "major", "enhanced", "your", "foreign", "enemy")
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             return when (parameterText) {
                 in staticKnownValues -> true

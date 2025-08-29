@@ -183,7 +183,7 @@ class UniqueValidator(val ruleset: Ruleset) {
     }
 
     private val resourceUniques = setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources,
-        UniqueType.PercentResourceProduction)
+        UniqueType.PercentResourceProduction, UniqueType.StatPercentFromObjectToResource)
     private val resourceConditionals = setOf(
         UniqueType.ConditionalWithResource,
         UniqueType.ConditionalWithoutResource,
