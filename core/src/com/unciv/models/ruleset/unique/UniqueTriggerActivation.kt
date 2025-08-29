@@ -31,10 +31,12 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.UncivSound
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
 import kotlin.math.roundToInt
@@ -141,6 +143,17 @@ object UniqueTriggerActivation {
             UniqueType.MarkTutorialComplete -> return {
                 UncivGame.Current.settings.addCompletedTutorialTask(unique.params[0])
                 true
+            }
+
+            UniqueType.PlaySound -> {
+                val soundName = unique.params[0]
+                if (soundName.isEmpty()) return null
+                var sound = UncivSound(soundName)
+                SoundPlayer.get(sound) ?: return null
+                return {
+                    SoundPlayer.play(sound)
+                    true
+                }
             }
 
             UniqueType.OneTimeFreeUnit -> {
