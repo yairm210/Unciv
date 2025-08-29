@@ -297,6 +297,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         } else value += when {
             building.hasUnique(UniqueType.CreatesOneImprovement) -> 5f // District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
             building.hasUnique(UniqueType.ProvidesResources) -> 2f // Should be weighed by how much we need the resources
+            building.hasUnique(UniqueType.StatPercentFromObjectToResource) -> 1.5f // Should be weighed by the amount of active improvementFilter/buildingFilter in the city
             else -> 0f
         }
         return value

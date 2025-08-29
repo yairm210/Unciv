@@ -170,8 +170,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     @Readonly fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
+    @Readonly fun getWorkedTiles(): Sequence<Tile> = workedTiles.asSequence().map { tileMap[it] }
     @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
-
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()

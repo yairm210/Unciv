@@ -167,6 +167,26 @@ class ResourceTests {
     }
 
     @Test
+    fun `should handle StatPercentFromObjectToResource with a buildingFilter`() {
+        city.cityConstructions.addBuilding("Monument")
+        var building = game.createBuilding("[300]% of [Culture] from every [Monument] in the city added to [Iron]")
+        city.cityConstructions.addBuilding(building)
+        assertEquals(6, city.getAvailableResourceAmount("Iron")) // 2 Culture * 3
+    }
+
+    @Test
+    fun `should handle StatPercentFromObjectToResource with a improvementFilter`() {
+        val tile = game.tileMap[1,1]
+        tile.resource = "Wheat"
+        tile.resourceAmount = 1
+        tile.setImprovement("Farm")
+        city.population.addPopulation(5) // Add population, since the tile needs to be worked
+        var building = game.createBuilding("[300]% of [Food] from every [Farm] in the city added to [Iron]")
+        city.cityConstructions.addBuilding(building)
+        assertEquals(3, city.getAvailableResourceAmount("Iron"))
+    }
+
+    @Test
     fun `should reduce resources due to buildings`() {
         // given
         city.cityConstructions.addBuilding("Factory")
