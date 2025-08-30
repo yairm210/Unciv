@@ -1,0 +1,2724 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://yairm210.github.io/Unciv/Modders/Images-and-Audio/">
+      
+      
+        <link rel="prev" href="../Making-a-new-Civilization/">
+      
+      
+        <link rel="next" href="../Mod-file-structure/1-Overview/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Images and Audio - Unciv</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#images-and-audio" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Unciv" class="md-header__button md-logo" aria-label="Unciv" data-md-component="logo">
+      
+  <img src="../../assets/Icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Unciv
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Images and Audio
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yairm210/unciv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yairm210/unciv
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Unciv" class="md-nav__button md-logo" aria-label="Unciv" data-md-component="logo">
+      
+  <img src="../../assets/Icon.png" alt="logo">
+
+    </a>
+    Unciv
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yairm210/unciv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yairm210/unciv
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Welcome to Unciv!
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Credits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Credits
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Guiding-Principles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Guiding Principles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Privacy-Policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Privacy Policy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Developers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Developers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Building-Locally/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Building Locally
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Coding standards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/From-code-to-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    From code to deployment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Game-Making-Tips/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Game Making Tips
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Map-rendering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map rendering
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Project-structure-and-major-classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Saved-games-and-transients/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Saved games and transients
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Testing-Android-Builds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Building for and testing on Android
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Translations, mods, and modding freedom in Open Source
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/UI-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    UI Development
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Unique-replacement-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Unique replacement process
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Developers/Uniques/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Uniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Modders
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Modders
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction to Mods
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Making-a-new-Civilization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    'My first mod' - Making a new Civilization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Images and Audio
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Images and Audio
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#images-and-the-texture-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Images and the texture atlas
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Images and the texture atlas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ways-to-pack-texture-atlases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ways to pack texture atlases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendering-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rendering performance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multiple-texture-atlases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multiple texture atlases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#smaller-icons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Smaller icons
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circle-icons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Circle icons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#texture-packer-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Texture packer settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#texture-atlas-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Texture atlas encoding
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permanent-audiovisual-mods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permanent audiovisual mods
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-built-in-graphics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Override built-in graphics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supply-additional-graphics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply additional graphics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supply additional graphics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-fonts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding custom Fonts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overriding-special-characters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overriding special characters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-wonder-splash-screens" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Wonder Splash Screens
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-leader-portraits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Leader Portraits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-portraits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Portraits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-icons-for-unit-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding icons for Unit Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-icons-for-beliefs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding icons for Beliefs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-victory-illustrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Victory illustrations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sounds
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-built-in-sounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      Override built-in sounds
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supply-additional-music" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply additional music
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supply additional music">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context-sensitive-music-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context-sensitive music: Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-sensitive-music-list-of-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context-sensitive music: List of Triggers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supply-leader-voices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply Leader Voices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modding-easter-eggs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modding Easter eggs
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Mod file structure
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            Mod file structure
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mod-file-structure/1-Overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mod file structure Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mod-file-structure/2-Civilization-related-JSON-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Civilization-related JSON files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mod-file-structure/3-Map-related-JSON-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map-related JSON files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mod-file-structure/4-Unit-related-JSON-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Unit-related JSON files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mod-file-structure/5-Miscellaneous-JSON-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous JSON files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Special Mods
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            Special Mods
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Creating-a-custom-tileset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a custom tileset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Creating-a-UI-skin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a UI skin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Unique-parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Unique parameters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uniques/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Uniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Type-checking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Type checking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Autoupdates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Autoupdates
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Other
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Other
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Other/Force-rating-calculation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Force rating calculation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Other/Installing-on-macOS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installing on MacOS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Other/Intentional-departures-from-Civ-V/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intentional departures from Civ V
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Other/Multiplayer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiplayer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Other/Regions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Regions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Other/Simulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Simulations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Other/Translating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Translating
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#images-and-the-texture-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Images and the texture atlas
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Images and the texture atlas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ways-to-pack-texture-atlases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ways to pack texture atlases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendering-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rendering performance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multiple-texture-atlases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multiple texture atlases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#smaller-icons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Smaller icons
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circle-icons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Circle icons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#texture-packer-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Texture packer settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#texture-atlas-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Texture atlas encoding
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permanent-audiovisual-mods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permanent audiovisual mods
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-built-in-graphics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Override built-in graphics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supply-additional-graphics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply additional graphics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supply additional graphics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-fonts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding custom Fonts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overriding-special-characters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overriding special characters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-wonder-splash-screens" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Wonder Splash Screens
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-leader-portraits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Leader Portraits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-portraits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Portraits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-icons-for-unit-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding icons for Unit Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-icons-for-beliefs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding icons for Beliefs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-victory-illustrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Victory illustrations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sounds
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-built-in-sounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      Override built-in sounds
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supply-additional-music" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply additional music
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supply additional music">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context-sensitive-music-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context-sensitive music: Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-sensitive-music-list-of-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context-sensitive music: List of Triggers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supply-leader-voices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply Leader Voices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modding-easter-eggs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modding Easter eggs
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="images-and-audio">Images and Audio</h1>
+<h2 id="images-and-the-texture-atlas">Images and the texture atlas</h2>
+<p>Images need to be 'packed' before the game can use them. This preparation step needs to happen only once (as long as the original graphics are not changed).
+The result one ore more a pairs of files - a texture in <a href="https://en.wikipedia.org/wiki/PNG">png format</a> and a corresponding <a href="https://en.wikipedia.org/wiki/Texture_atlas">atlas</a> file.
+If you have a single <code>Images</code>folder, the default such pair is named <code>game.png</code>/<code>game.atlas</code>.
+For your players, the individual images aren't important - only the combined images actually register to the game, so you need to include them in your repository and keep them up to date.
+We still recommend including the originals in a mod, so other developers running from source can access them.
+With original images included, you can use a development environment using git, have it linked to your repository, while using a symlink to allow Unciv to see the mod - and pack your atlas for you on every launch.
+If you're developing your mod on an Android version of Unciv (not recommended!) you won't be able to generate these packed files directly.</p>
+<h3 id="ways-to-pack-texture-atlases">Ways to pack texture atlases</h3>
+<ul>
+<li>Texture atlases <em>CANNOT BE PACKED</em> on Android (technical reason: TexturePacker uses <code>java.awt</code> to do heavy lifting, which is unavailable on Android 0_0)</li>
+<li>Launch the desktop version with your mod (your mod's main folder is a subfolder of the game's "mods" folder, or symlinked there). This uses the packing methods <a href="https://libgdx.com/wiki/tools/texture-packer">documented here</a>.</li>
+<li>You can ask someone in the Discord server to help you out.</li>
+<li>You can use external tools, <a href="https://github.com/crashinvaders/gdx-texture-packer-gui">e.g. gdx-texture-packer-gui</a>. Utmost care needs to be taken that the files can be discovered by Unciv and internal relative paths are correct.</li>
+<li>You can add <a href="https://github.com/ravignir/RekMOD/blob/master/.github/workflows/autoupdate.yml">a copy of this workflow</a> to your mod to automatically pack the atlas on every commit to your repository. It should be placed in the same place (<code>.github/workflows/autoupdate.yml</code>) as the example.</li>
+</ul>
+<h3 id="rendering-performance">Rendering performance</h3>
+<h4 id="multiple-texture-atlases">Multiple texture atlases</h4>
+<p>If your mod has lots of images (or large ones), the textures might 'spill' into additional texture files - 2048x2048 is the limit for a single texture pack. You will see a <code>game2.png</code>, possibly a <code>game3.png</code> or more appear.
+This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas).
+This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works.
+To minimize texture swaps, try to group them by the situation where in the game they are needed. You can distibute by folder, but having the same subfolders under several "Images.xyz" and distributing the images between them will also work.</p>
+<p>For an example, you can see the <a href="https://github.com/carriontrooper/Alpha-Frontier">Alpha Frontier mod</a>.</p>
+<p>A file <code>Atlases.json</code> (uppercase 'A') in the mod root (not in <code>Images</code> or in <code>jsons</code>) controls which atlases to load, which in turn control which texture (<code>.png</code>) files are read.
+This file is automatically created by the built-in packer. Only the <code>game.atlas</code> file is read by default for backward compatibility.
+If you use external tools and multiple atlases, you will need to maintain this file yourself - it is a simple json array of strings, each a file name without the <code>.atlas</code> extension (saved as UTF-8 without byte order mark).</p>
+<h4 id="smaller-icons">Smaller icons</h4>
+<p>A large number of atlases may be the result of having very large icons.
+We find that 100x100 pixels is good enough for most icons.</p>
+<h4 id="circle-icons">Circle icons</h4>
+<p>To allow for faster rendering for icons, which has a major performance effect, you can copy the <a href="https://github.com/yairm210/Unciv/blob/master/android/Images.Icons/OtherIcons/Circle.png">"OtherIcons/circle.png"</a> to:</p>
+<ul>
+<li>"ImprovementIcons/Circle.png" for improvements</li>
+<li>"ResourceIcons/Circle.png" for resources</li>
+<li>"TechIcons/Circle.png" for technologies</li>
+<li>"ConstructionIcons/Circle.png" for buildings and units</li>
+<li>"StatIcons/Circle.png" for stats</li>
+</ul>
+<h3 id="texture-packer-settings">Texture packer settings</h3>
+<p>The texture packers built into Unciv will look for a <code>TexturePacker.settings</code> file in each <code>Images</code> directory (<em>not</em> under <code>jsons</code>).
+With this file you can tune the packer - e.g. control pixel interpolation filters.
+It is a json of a <a href="https://libgdx.com/wiki/tools/texture-packer#settings">Gdx TexturePacker.Settings</a> instance.
+The default settings are as shown in the Gdx documentation linked above if you do supply a settings file, but without such a file, some fields have different defaults.
+To get these changed defaults, start with the following as base for your custom <code>TexturePacker.settings</code> file:</p>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;fast&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;combineSubdirectories&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;maxWidth&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2048</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;maxHeight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2048</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;paddingX&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;paddingY&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;duplicatePadding&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;filterMin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MipMapLinearLinear&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;filterMag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MipMapLinearLinear&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+(change "filterMag" to "Linear" if your atlas name will end in "Icons".)</p>
+<h3 id="texture-atlas-encoding">Texture atlas encoding</h3>
+<p>Due to certain circumstances, please make sure names and paths that will be mapped in an atlas use <strong>only ascii</strong>. Not all parts of the loader enforce strict UTF-8 usage, sorry.
+Symptoms if you fail to heed this: mod works on a Chinese Windows box but not on a western one or vice-versa, or mod works on a Chinese Windows box but not a Chinese Linux box or vice-versa, or mod works on a Chinese Windows box with default settings but not on the same box with "Use unicode UTF-8 for worldwide language support" turned on.
+This does not technically apply to the atlas name itself when multiple atlases are used (the xyz part in "Images.xyz"), but we nevertheless recommend the same rule for consistency.</p>
+<h2 id="permanent-audiovisual-mods">Permanent audiovisual mods</h2>
+<p>The following chapters describe possibilities that will work while a mod is <strong><em>active</em></strong>.
+It is either selected for the current game (during new game creation, cannot be changed after that for saved games), meaning all its rules and resources will be used.
+<em>Or</em> it is marked as 'Permanent audiovisual mod' in the mod manager (you must select it in the 'installed' column to get the checkbox).
+In that case only graphics and audio will be active, the rule changes will be ignored (if it contains any) unless the first way is <em>also</em> used.
+Note that this feature includes graphics or sounds from the selected mod in <em>all</em> games, even those started before installing the mod.
+Repeat: In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.</p>
+<p>Note that the Mod author can (and often should) control whether the checkbox appears using <a href="../Mod-file-structure/5-Miscellaneous-JSON-files/#modoptionsjson">ModOptions</a> <a href="../uniques/#modoptions-uniques">uniques</a>.</p>
+<h2 id="override-built-in-graphics">Override built-in graphics</h2>
+<p>If a mod supplies an image with the same name and path as one included in the base game (and its atlas is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.</p>
+<p>For example, if you include a file named "Images/OtherIcons/Link.png" in your mod, you will be overriding the little chain links icon denoting linked lines in Civilopedia. The first part of the path is not relevant for overriding, it controls which of a set of atlas files will carry the image, but for selection in the game only the rest of the path is relevant. So, to override "Images.Tech/TechIcons/Archery.png" you could place your image as "Images/TechIcons/Archery.png" and it would work because the "TechIcons/Archery" part is the key.</p>
+<p>Please note, as for adding items, your graphics should keep the size and color choices of the original, or the result may be surprising, e.g. when the game tries to tint such an image.</p>
+<h2 id="supply-additional-graphics">Supply additional graphics</h2>
+<p>You will need to supply the graphics for new elements - a new unit needs its icon just as a new nation does. The rules are:</p>
+<ul>
+<li>The path and name of the image file need to conform to the rule: <code>Image[.AtlasName]/Type-specific/Objectname.png</code> (Type-specific means "TechIcons" for a Technology, "NationIcons" for a Nation and so on. See vanilla game folders. Objectname is the exact name as defined in json, before translation.)</li>
+<li>All path parts are case sensitive.</li>
+<li>Unit Pixel sprites and <a href="../Creating-a-custom-tileset/">Tilesets</a> follow special rules.</li>
+<li>If <code>UnitIcons/&lt;UnitName&gt;.png</code> does not exist, we fall back to <code>UnitTypeIcons/&lt;UnitType&gt;.png</code> - this allows setting a single image for an entire type of units without fiddling with each one </li>
+<li>Promotions can be named "<code>[Unitname] ability</code>". In such a case, if <code>UnitIcons/Unitname.png</code> exists it will fall back to that unit icon when <code>UnitPromotionIcons/Unitname ability.png</code> is missing.</li>
+<li>Promotions can be named "Something I" (or " II" or " III"). The suffix will be removed and painted as little stars, only the base <code>UnitPromotionIcons/Something.png</code> will be loaded.</li>
+<li>The special rules for promotions can be combined, e.g. "<code>[Warrior] ability III</code>" will fall back to the Warrior unit icon and paint 3 Stars on it.</li>
+</ul>
+<p>Additionally, there there are some kinds of images where the game has display capability but does not supply graphics itself, as described in the next paragraphs:</p>
+<h3 id="adding-custom-fonts">Adding custom Fonts</h3>
+<p>You can add custom <code>.ttf</code> fonts into the game: place <code>.ttf</code> file inside of <code>/fonts/</code> directory of your mod. The font you have added will be visible and choosable in <code>Options-Advanced</code> tab at the top of font list as <code>&lt;fontname&gt; (&lt;modname&gt;)</code>.</p>
+<p>All fonts are rendered by default at 50 pixel size and rescaled later for the game's needs. Currently fonts are NOT mipmapped on minification.</p>
+<h3 id="overriding-special-characters">Overriding special characters</h3>
+<p>The textures in the EmojiIcons subfolder and some others are mapped into the font at specific codepoints. They are used by the game, can be used in any text of a mod, and can be overridden by mod textures.
+Additionally, some code points are normally provided by the chosen system font, but have EmojiIcons names that will override the font glyph if a mod supplies them (marked 'optional' in the table below).
+Note textures provided for such codepoints <em>do</em> respect aspect ratio, they do <em>not</em> need to be square like many built-in icons are!</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Symbol</th>
+<th style="text-align: center;">Codepoint</th>
+<th style="text-align: left;">Unicode name</th>
+<th style="text-align: left;">Texture path</th>
+<th style="text-align: center;">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">⛏</td>
+<td style="text-align: center;">U+26CF</td>
+<td style="text-align: left;">pick</td>
+<td style="text-align: left;">EmojiIcons/Automate</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">♪</td>
+<td style="text-align: center;">U+266A</td>
+<td style="text-align: left;">eighth note</td>
+<td style="text-align: left;">EmojiIcons/Culture</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">☠</td>
+<td style="text-align: center;">U+2620</td>
+<td style="text-align: left;">skull and crossbones</td>
+<td style="text-align: left;">EmojiIcons/Death</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">☮</td>
+<td style="text-align: center;">U+262E</td>
+<td style="text-align: left;">peace symbol</td>
+<td style="text-align: left;">EmojiIcons/Faith</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">⁂</td>
+<td style="text-align: center;">U+2042</td>
+<td style="text-align: left;">asterism</td>
+<td style="text-align: left;">EmojiIcons/Food</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">¤</td>
+<td style="text-align: center;">U+00A4</td>
+<td style="text-align: left;">currency sign</td>
+<td style="text-align: left;">EmojiIcons/Gold</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">♬</td>
+<td style="text-align: center;">U+266C</td>
+<td style="text-align: left;">sixteenth note</td>
+<td style="text-align: left;">EmojiIcons/Great Artist</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">⚒</td>
+<td style="text-align: center;">U+2692</td>
+<td style="text-align: left;">hammer</td>
+<td style="text-align: left;">EmojiIcons/Great Engineer</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">⛤</td>
+<td style="text-align: center;">U+26E4</td>
+<td style="text-align: left;">pentagram</td>
+<td style="text-align: left;">EmojiIcons/Great General</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">⚖</td>
+<td style="text-align: center;">U+2696</td>
+<td style="text-align: left;">scale</td>
+<td style="text-align: left;">EmojiIcons/Great Merchant</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">⚛</td>
+<td style="text-align: center;">U+269B</td>
+<td style="text-align: left;">atom</td>
+<td style="text-align: left;">EmojiIcons/Great Scientist</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">⌣</td>
+<td style="text-align: center;">U+2323</td>
+<td style="text-align: left;">smile</td>
+<td style="text-align: left;">EmojiIcons/Happiness</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">∞</td>
+<td style="text-align: center;">U+221E</td>
+<td style="text-align: left;">infinity</td>
+<td style="text-align: left;">EmojiIcons/Infinity</td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td style="text-align: center;">⚙</td>
+<td style="text-align: center;">U+2699</td>
+<td style="text-align: left;">gear</td>
+<td style="text-align: left;">EmojiIcons/Production</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">⍾</td>
+<td style="text-align: center;">U+237E</td>
+<td style="text-align: left;">bell symbol</td>
+<td style="text-align: left;">EmojiIcons/Science</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">￪</td>
+<td style="text-align: center;">U+FFEA</td>
+<td style="text-align: left;">halfwidth upwards arrow</td>
+<td style="text-align: left;">EmojiIcons/SortedAscending</td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td style="text-align: center;">◉</td>
+<td style="text-align: center;">U+25C9</td>
+<td style="text-align: left;">fisheye</td>
+<td style="text-align: left;">EmojiIcons/SortedByStatus</td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td style="text-align: center;">⌚</td>
+<td style="text-align: center;">U+231A</td>
+<td style="text-align: left;">watch</td>
+<td style="text-align: left;">EmojiIcons/SortedByTime</td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td style="text-align: center;">￬</td>
+<td style="text-align: center;">U+FFEC</td>
+<td style="text-align: left;">halfwidth upwards arrow</td>
+<td style="text-align: left;">EmojiIcons/SortedDescending</td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td style="text-align: center;">✯</td>
+<td style="text-align: center;">U+272F</td>
+<td style="text-align: left;">pinwheel star</td>
+<td style="text-align: left;">EmojiIcons/Star</td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td style="text-align: center;">⏳</td>
+<td style="text-align: center;">U+23F3</td>
+<td style="text-align: left;">hourglass</td>
+<td style="text-align: left;">EmojiIcons/Turn</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅰ</td>
+<td style="text-align: center;">U+2170</td>
+<td style="text-align: left;">small roman numeral one</td>
+<td style="text-align: left;">MayaCalendar/0</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅱ</td>
+<td style="text-align: center;">U+2171</td>
+<td style="text-align: left;">small roman numeral two</td>
+<td style="text-align: left;">MayaCalendar/1</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅲ</td>
+<td style="text-align: center;">U+2172</td>
+<td style="text-align: left;">small roman numeral three</td>
+<td style="text-align: left;">MayaCalendar/2</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅳ</td>
+<td style="text-align: center;">U+2173</td>
+<td style="text-align: left;">small roman numeral four</td>
+<td style="text-align: left;">MayaCalendar/3</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅴ</td>
+<td style="text-align: center;">U+2174</td>
+<td style="text-align: left;">small roman numeral five</td>
+<td style="text-align: left;">MayaCalendar/4</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅵ</td>
+<td style="text-align: center;">U+2175</td>
+<td style="text-align: left;">small roman numeral six</td>
+<td style="text-align: left;">MayaCalendar/5</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅶ</td>
+<td style="text-align: center;">U+2176</td>
+<td style="text-align: left;">small roman numeral seven</td>
+<td style="text-align: left;">MayaCalendar/6</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅷ</td>
+<td style="text-align: center;">U+2177</td>
+<td style="text-align: left;">small roman numeral eight</td>
+<td style="text-align: left;">MayaCalendar/7</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅸ</td>
+<td style="text-align: center;">U+2178</td>
+<td style="text-align: left;">small roman numeral nine</td>
+<td style="text-align: left;">MayaCalendar/8</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅹ</td>
+<td style="text-align: center;">U+2179</td>
+<td style="text-align: left;">small roman numeral ten</td>
+<td style="text-align: left;">MayaCalendar/9</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅺ</td>
+<td style="text-align: center;">U+217A</td>
+<td style="text-align: left;">small roman numeral eleven</td>
+<td style="text-align: left;">MayaCalendar/10</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅻ</td>
+<td style="text-align: center;">U+217B</td>
+<td style="text-align: left;">small roman numeral twelve</td>
+<td style="text-align: left;">MayaCalendar/11</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅼ</td>
+<td style="text-align: center;">U+217C</td>
+<td style="text-align: left;">small roman numeral fifty</td>
+<td style="text-align: left;">MayaCalendar/12</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅽ</td>
+<td style="text-align: center;">U+217D</td>
+<td style="text-align: left;">small roman numeral one hundred</td>
+<td style="text-align: left;">MayaCalendar/13</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅾ</td>
+<td style="text-align: center;">U+217E</td>
+<td style="text-align: left;">small roman numeral five hundred</td>
+<td style="text-align: left;">MayaCalendar/14</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ⅿ</td>
+<td style="text-align: center;">U+217F</td>
+<td style="text-align: left;">small roman numeral one thousand</td>
+<td style="text-align: left;">MayaCalendar/15</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ↀ</td>
+<td style="text-align: center;">U+2180</td>
+<td style="text-align: left;">roman numeral one thousand cd</td>
+<td style="text-align: left;">MayaCalendar/16</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ↁ</td>
+<td style="text-align: center;">U+2181</td>
+<td style="text-align: left;">roman numeral five thousand</td>
+<td style="text-align: left;">MayaCalendar/17</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ↂ</td>
+<td style="text-align: center;">U+2182</td>
+<td style="text-align: left;">roman numeral ten thousand</td>
+<td style="text-align: left;">MayaCalendar/18</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">Ↄ</td>
+<td style="text-align: center;">U+2183</td>
+<td style="text-align: left;">roman numeral reversed one hundred</td>
+<td style="text-align: left;">MayaCalendar/19</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ය</td>
+<td style="text-align: center;">U+0DBA</td>
+<td style="text-align: left;">sinhala letter yayanna</td>
+<td style="text-align: left;">MayaCalendar/Baktun</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ඹ</td>
+<td style="text-align: center;">U+0DB9</td>
+<td style="text-align: left;">sinhala letter amba bayanna</td>
+<td style="text-align: left;">MayaCalendar/Katun</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">ම</td>
+<td style="text-align: center;">U+0DB8</td>
+<td style="text-align: left;">sinhala letter mayanna</td>
+<td style="text-align: left;">MayaCalendar/Tun</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">➡</td>
+<td style="text-align: center;">U+27A1</td>
+<td style="text-align: left;">black rightwards arrow</td>
+<td style="text-align: left;">StatIcons/Movement</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">U+2026</td>
+<td style="text-align: left;">horizontal ellipsis</td>
+<td style="text-align: left;">StatIcons/Range</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">‡</td>
+<td style="text-align: center;">U+2021</td>
+<td style="text-align: left;">double dagger</td>
+<td style="text-align: left;">StatIcons/RangedStrength</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">†</td>
+<td style="text-align: center;">U+2020</td>
+<td style="text-align: left;">dagger</td>
+<td style="text-align: left;">StatIcons/Strength</td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="adding-wonder-splash-screens">Adding Wonder Splash Screens</h3>
+<p>You can add wonder images to mods and they'll be displayed instead of the standard icon when a wonder is finished. The image needs to be a .png and 2:1 ratio so for example 200x100 px.</p>
+<p>Add the images to <code>/Images/WonderImages/</code>. They need to be named according to the name field in <code>Buildings.json</code>, so for example "Temple of Artemis.png" or "Stonehenge.png"</p>
+<p>Remember, to be compatible with mobile devices, a fresh atlas needs to be generated including these.</p>
+<h3 id="adding-leader-portraits">Adding Leader Portraits</h3>
+<p>The base game comes without Leader Portraits, but is able to display them in greetings, Civilopedia, diplomacy screens, or the nation picker. A mod can supply these, by adding their images to <code>/Images/LeaderIcons/</code>. The file name must correspond exactly with the leader name of a nation as defined in Nations.json, or they will be ignored.</p>
+<p>These work best if they are square, between 100x100 and 256x256 pixels, and include some transparent border within that area.</p>
+<p>For example, <a href="https://github.com/yairm210/Unciv-leader-portrait-mod-example">here</a> is mod showing how to add leader portraits, which can complement the base game.</p>
+<h3 id="adding-portraits">Adding Portraits</h3>
+<p>The base game uses flat icons, surrounded with colored circles as backgrounds (e.g. for units to fit the civilization's flag colors), to denote entities such as: units, buildings, techs, resources, improvements, religions, promotions, uniques, unit actions and nations in the UI. A mod can supply "Portraits" - static images that will remain uncolored - by adding images to <code>/Images/&lt;entityType&gt;Portraits/</code> (e.g. <code>/Images/BuildingPortraits/</code>, <code>/Images/ResourcePortraits/</code>, etc), which will be used in all UI elements (except for unit icons in the world map). The file name must correspond exactly with the unit/building/tech/resource/etc name  defined in corresponding JSONs (e.g. Units.json, Buildings.json, TileResources.json, etc) or have the same name as the file they suppose to replace, or they will be ignored.</p>
+<p>If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle. Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.</p>
+<p>For example, <a href="https://github.com/vegeta1k95/Civ-5-Icons">here</a> is mod showing how to add custom portraits, which can complement the base game.</p>
+<p>Available <code>&lt;entityType&gt;Portraits/</code> include:</p>
+<ul>
+<li>UnitPortraits</li>
+<li>BuildingPortraits</li>
+<li>TechPortraits</li>
+<li>ResourcePortraits</li>
+<li>ImprovementPortraits</li>
+<li>UnitPromotionPortraits</li>
+<li>UniquePortraits</li>
+<li>NationPortraits</li>
+<li>ReligionPortraits</li>
+<li>UnitActionPortraits</li>
+</ul>
+<h3 id="adding-icons-for-unit-types">Adding icons for Unit Types</h3>
+<p>The Unit Types as defined in <a href="../Mod-file-structure/4-Unit-related-JSON-files/#unittypesjson">UnitTypes.json</a> have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/UnitTypeIcons/<UnitType>.png'.
+(while you're at it, you may override the default icon for the Unit Type <em>category header</em> - it's 'UnitTypes.png' in the same folder, or the icons used for the movement domains - 'DomainLand', 'DomainWater', 'DomainAir')</p>
+<h3 id="adding-icons-for-beliefs">Adding icons for Beliefs</h3>
+<p>The individual Beliefs - as opposed to Belief types, as defined in <a href="../Mod-file-structure/2-Civilization-related-JSON-files/#beliefsjson">Beliefs.json</a> have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/ReligionIcons/<Belief>.png'.
+Civilopedia falls back to the icon for the Belief type - as you can see in the base game, but individual icons have precedence if they exist.</p>
+<h3 id="adding-victory-illustrations">Adding Victory illustrations</h3>
+<p>You can enable pictures for each of the Victories, illustrating their progress. That could be a Spaceship under construction, showing the parts you've added, or cultural progress as you complete Policy branches. They will be shown on a new tab of the Victory Screen.</p>
+<p>For this, you need to create a number of images. In the following, <code>&lt;&gt;</code> denote names as they appear in <a href="../Mod-file-structure/5-Miscellaneous-JSON-files/#victorytypesjson">VictoryTypes.json</a>, untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:</p>
+<ul>
+<li><code>VictoryIllustrations/&lt;name&gt;/Background.png</code> - this determines overall dimensions, the others must not exceed its size and should ideally have identical size. Mandatory, if this file is missing, no illustrations will be shown for this Victory Type.</li>
+<li><code>VictoryIllustrations/&lt;name&gt;/Won.png</code> - shown if <em>you</em> (the viewing player) won this Victory.</li>
+<li><code>VictoryIllustrations/&lt;name&gt;/Lost.png</code> - shown if a competitor won this Victory - or you have completed this Victory, but have won a different one before.</li>
+<li><code>VictoryIllustrations/&lt;name&gt;/&lt;milestone&gt;.png</code> - One image for each entry in the <code>milestones</code> field without an <code>[amount]</code>, name taken verbatim but <em>without</em> square brackets, spaces preserved.</li>
+<li><code>VictoryIllustrations/&lt;name&gt;/&lt;milestone&gt; &lt;index&gt;.png</code> - For entries in the <code>milestones</code> field with an <code>[amount]</code>, one image per step, starting at index 1.</li>
+<li><code>VictoryIllustrations/&lt;name&gt;/&lt;component&gt;.png</code> - One image for each unique entry in the <code>requiredSpaceshipParts</code> field, that is, for parts that can only be built once. Spaces in unit names must be preserved.</li>
+<li><code>VictoryIllustrations/&lt;name&gt;/&lt;component&gt; &lt;index&gt;.png</code> - For parts in the <code>requiredSpaceshipParts</code> field that must be built several times, one per instance. Spaces in unit names must be preserved, and there must be one space between the name and the index. Indexes start at 1.</li>
+</ul>
+<p>Remember - these are logical names as they are indexed in your atlas file, if you let Unciv pack for you, the <code>VictoryIllustrations</code> folder should be placed under <code>&lt;mod&gt;/Images</code> - or maybe <code>&lt;mod&gt;/Images.Victories</code> if you want these images to occupy a separate <code>Victories.atlas</code> (Do not omit the <code>Images</code> folder even if left empty, the texture packer needs it as marker to do its task).</p>
+<p>That's almost all there is - no json needed, and works as <a href="#permanent-audiovisual-mods">'Permanent audiovisual mod'</a>. The Background image is the trigger, and if it's present all part images must be present too, or your spaceship crashes before takeoff, taking Unciv along with it. That was a joke, all other images are optional, it could just look boring if you omit the wrong ones.</p>
+<p>As for "almost" - all images are overlaid one by one over the Background one, so they must all be the same size. Except for Won and Lost - those, if their condition is met, <em>replace</em> the entire rest, so they can be different sizes than the background. The part images are overlaid over the background image in no guaranteed order, therefore they should use <em>transparency</em> to avoid hiding parts of each other.</p>
+<p>One way to create a set is to take one final image, select all parts that should be the centerpiece itself not background (use lasso, magic wand or similar tools, use antialiasing and feathering as you see fit), copy and paste as new layer. Then apply desaturation and/or curves to the selection on the background layer to only leave a hint of how the completed victory will look like. Now take apart the centerpiece - do a selection fitting one part name, copy and paste as new layer (in place), then delete the selected part from the original centerpiece layer. Rinse and repeat, then export each layer separately as png with the appropriate filenames.
+There's no suggested size, but keep in mind textures are a maximum of 2048x2048 pixels, and if you want your images packed properly, several should fit into one texture. They will be scaled down if needed to no more than 80% screen size, preserving aspect ratio.</p>
+<h2 id="sounds">Sounds</h2>
+<p>Standard values are below. The sounds themselves can be found <a href="https://github.com/yairm210/Unciv/tree/master/android/assets/sounds">here</a>.</p>
+<ul>
+<li><em>arrow, artillery, bombard, bombing, cannon, chimes, choir, click, coin, construction, elephant, fortify, gdrAttack, horse, jetgun, machinegun, metalhit, missile, nonmetalhit, nuke, paper, policy, promote, setup, shipguns, shot, slider, swap, tankshot, throw, torpedo, upgrade, whoosh</em>.</li>
+</ul>
+<p>Mods can add their own sounds, as long as any new value in attackSound has a corresponding sound file in the mod's sound folder, using one of the formats mp3, ogg or wav (file name extension must match codec used). Remember, names are case sensitive. Small sizes strongly recommended, Unciv's own sounds use 24kHz joint stereo 8-bit VBR at about 50-100kBps.</p>
+<h2 id="override-built-in-sounds">Override built-in sounds</h2>
+<p>This works like graphics, except no atlas is involved. E.g. you include a sounds/Click.mp3, it will play instead of the normal click sound. These files must stay short and small. A sound larger than 1MB when uncompressed may break or not play at all on mobile devices. Unciv tries to standardize on 24kHz sample rate, joint stereo, low-bitrate VBR (-128kbps) mp3. Only mp3 and ogg formats will be recognized (but an existing mp3 can be overridden with an ogg file).</p>
+<h2 id="supply-additional-music">Supply additional music</h2>
+<p>Sound files (mp3 or ogg) in a mod /music folder will be recognized and used when the mod is active. Except for context-specific music as described in the following paragraphs, tracks will play randomly from all available tracks (with a little bias to avoid close repetition of tracks). There is no overriding - a "thatched-villagers.mp3" in a mod will play in addition to and with the same likelihood as the file that the base game offers to download for you. There is no hard technical limit on bitrate or length, but large bandwidth requirements may lead to stuttering (The end of a "next turn", right before the world map is updated, and with very large maps, is the most likely to cause this).</p>
+<h3 id="context-sensitive-music-overview">Context-sensitive music: Overview</h3>
+<p>The Music Controller will generally play one track after another, with a pause (can be changed in options) between. While the "Leave game?" confirmation dialog is opened playback will fade out and pause and can resume when it is closed.</p>
+<p>There are various 'triggers' in the game code initiating a choice for a new track. The new track will, if necessary, fade out the currently playing track quickly before it starts playing. Track choice involves context provided by the trigger and a random factor, and an attempt is made to not repeat any track until at least eight others have played.</p>
+<p>Mods can provide their own music folder, and if they are active its contents will be treated exactly the same as those in the main music folder. Mods should control usage of their tracks by careful choice of file name. Mod developers can watch console output for messages logging track choice with trigger parameters or loading errors.</p>
+<p>One track is special: The Thatched Villagers (see also credits.md). The game is able to download it if the music folder is empty, and it is played when the music volume slider is used. It is also a fallback track should certain problems occur (a broken file, however, will shut down the player until another trigger happens).</p>
+<h3 id="context-sensitive-music-list-of-triggers">Context-sensitive music: List of Triggers</h3>
+<p>Triggers indicate context (call it intent, mood, whatever, it doesn't matter) by optionally providing a prefix and/or suffix to match against the file name. There are a few flags as well influencing choice or behaviour - one flag function is to make prefix or suffix mandatory, meaning if no available file matches the track chooser will do nothing. Otherwise, a next track will always be chosen from the available list by sorting and then picking the first entry. Sorting is done by in order of precedence: Prefix match, Suffix match, Recently played, and a random number. Therefore, as currently no triggers have an empty prefix, files matching none of the prefixes will never play unless there are less than eight files matching the requested prefix.</p>
+<p>The current list of triggers is as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Description</th>
+<th style="text-align: left;">Prefix</th>
+<th style="text-align: center;">[^M]</th>
+<th style="text-align: right;">Suffix</th>
+<th style="text-align: center;">[^X]</th>
+<th style="text-align: center;">Flags</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automatic next-track[^0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;">Ambient</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Launch game[^1]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;">Menu</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Every 10th turn</td>
+<td style="text-align: left;">(player civ name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Peace or War[^2]</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">[^F]</td>
+</tr>
+<tr>
+<td>New game: Select a mod</td>
+<td style="text-align: left;">(mod name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Theme</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">[^S]</td>
+</tr>
+<tr>
+<td>New game: Pick a nation for a player</td>
+<td style="text-align: left;">(nation name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Theme or Peace</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">[^S]</td>
+</tr>
+<tr>
+<td>Diplomacy: Select player</td>
+<td style="text-align: left;">(nation name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Peace or War[^3]</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">[^S]</td>
+</tr>
+<tr>
+<td>First contact[^4]</td>
+<td style="text-align: left;">(civ name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Theme or Peace</td>
+<td style="text-align: center;">[^X]</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>War declaration[^5]</td>
+<td style="text-align: left;">(civ name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">War</td>
+<td style="text-align: center;">[^X]</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Civ defeated</td>
+<td style="text-align: left;">(civ name)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;">Defeat</td>
+<td style="text-align: center;">[^X]</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Player wins</td>
+<td style="text-align: left;">(civ name)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;">Victory</td>
+<td style="text-align: center;">[^X]</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Golden Age</td>
+<td style="text-align: left;">(civ name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Golden</td>
+<td style="text-align: center;">[^X]</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Wonder built</td>
+<td style="text-align: left;">(wonder name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Wonder</td>
+<td style="text-align: center;">[^X]</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Tech researched</td>
+<td style="text-align: left;">(tech name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Researched</td>
+<td style="text-align: center;">[^X]</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>Map editor: Select nation start location</td>
+<td style="text-align: left;">(nation name)</td>
+<td style="text-align: center;">[^M]</td>
+<td style="text-align: right;">Theme</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">[^S]</td>
+</tr>
+<tr>
+<td>Options: Volume slider or Default track downloaded</td>
+<td style="text-align: left;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">[^D]</td>
+</tr>
+<tr>
+<td>Music controls (Options or from Menu) Next track</td>
+<td style="text-align: left;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;">Ambient</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<p>Legend:</p>
+<ul>
+<li>[^N]: <strong>Not implemented</strong></li>
+<li>[^M]: Prefix must match. If no matching file is found, the trigger will do nothing.</li>
+<li>[^X]: Suffix must match. If no matching file is found, the trigger will do nothing.</li>
+<li>[^S]: Stop after playback. No automatic next choice.</li>
+<li>[^F]: Slow fadeout of replaced track.</li>
+<li>[^D]: Always plays the default file.</li>
+<li>[^0]: Whenever a track finishes and the configured silence has elapsed, an 'Ambient' track without any context is chosen. Also triggered by 'resume' (e.g. switching to another app and back on Android)</li>
+<li>[^1]: First opening of the Main Menu (or the initial language picker).</li>
+<li>[^2]: Whether the active player is at war with anybody.</li>
+<li>[^3]: According to your relation to the picked player.</li>
+<li>[^4]: Excluding City States.</li>
+<li>[^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.</li>
+</ul>
+<h2 id="supply-leader-voices">Supply Leader Voices</h2>
+<p>Sound files named from a Nation name and the corresponding text message's <a href="../Mod-file-structure/2-Civilization-related-JSON-files/#nationsjson">field name</a>,
+placed in a mod's <code>voices</code> folder, will play whenever that message is displayed. Nation name and message name must be joined with a dot '.', for example <code>voices/Zulu.defeated.ogg</code>.</p>
+<p>Leader voice audio clips will be streamed, not cached, so they are allowed to be long - however, if another Leader voice or a city ambient sound needs to be played, they will be cut off without fade-out
+Also note that voices for City-State leaders work only for those messages a City-state can actually use: <code>attacked</code>, <code>defeated</code>, and <code>introduction</code>.</p>
+<h2 id="modding-easter-eggs">Modding Easter eggs</h2>
+<p>Here's a list of special dates (or date ranges) Unciv will recognize:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AprilFoolsDay</td>
+<td>Friday13th</td>
+<td>Qingming</td>
+<td>UncivBirthday</td>
+</tr>
+<tr>
+<td>DiaDeLosMuertos</td>
+<td>LunarNewYear</td>
+<td>Samhain</td>
+<td>Xmas</td>
+</tr>
+<tr>
+<td>Diwali</td>
+<td>Passover</td>
+<td>StarWarsDay</td>
+<td>YuleGoat</td>
+</tr>
+<tr>
+<td>Easter</td>
+<td>PrideDay</td>
+<td>TowelDay</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>... When these are or what they mean - look it up, if in doubt in our sources (😈).</p>
+<p>An audiovisual Mod (which the user <strong>must</strong> then mark as permanent) can define textures named "EasterEggs/<code>name</code><index>", where name must correspond exactly to one from the table above, and index starts at 1 counting up.
+Example: <mod>/Images/EasterEggs/Diwali1.png and so on.
+Then, Unciv will display them as "floating art" on the main menu screen, on the corresponding dates. They will from time to time appear from off-screen, slide through the window, and disappear out the other side, with varying angles and speeds.</p>
+<p>Notes:
+- You can test this by launching the jar and including <code>-DeasterEgg=name</code> on the command line.
+- In case of overlapping holidays, only one is chosen - and the "impact" of longer holidays is equalized by reducing the chance inversely proportional to the number of days. e.g. DiaDeLosMuertos is two days, so each Unciv launch on these days has 50% chance to show the egg.
+- Unciv's "map-based" easter eggs work independently!
+- No cultural prejudice is intended. If you know a nice custom we should include the date test for, just ask.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

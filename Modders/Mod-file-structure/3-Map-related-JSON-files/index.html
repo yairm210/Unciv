@@ -1,0 +1,2186 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://yairm210.github.io/Unciv/Modders/Mod-file-structure/3-Map-related-JSON-files/">
+      
+      
+        <link rel="prev" href="../2-Civilization-related-JSON-files/">
+      
+      
+        <link rel="next" href="../4-Unit-related-JSON-files/">
+      
+      
+      <link rel="icon" href="../../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Map-related JSON files - Unciv</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#map-related-json-files" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Unciv" class="md-header__button md-logo" aria-label="Unciv" data-md-component="logo">
+      
+  <img src="../../../assets/Icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Unciv
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Map-related JSON files
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yairm210/unciv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yairm210/unciv
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Unciv" class="md-nav__button md-logo" aria-label="Unciv" data-md-component="logo">
+      
+  <img src="../../../assets/Icon.png" alt="logo">
+
+    </a>
+    Unciv
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yairm210/unciv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yairm210/unciv
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Welcome to Unciv!
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Credits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Credits
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Guiding-Principles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Guiding Principles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Privacy-Policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Privacy Policy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Developers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Developers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Building-Locally/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Building Locally
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Coding standards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/From-code-to-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    From code to deployment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Game-Making-Tips/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Game Making Tips
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Map-rendering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map rendering
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Project-structure-and-major-classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Saved-games-and-transients/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Saved games and transients
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Testing-Android-Builds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Building for and testing on Android
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Translations, mods, and modding freedom in Open Source
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/UI-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    UI Development
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Unique-replacement-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Unique replacement process
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Developers/Uniques/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Uniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Modders
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Modders
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Mods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction to Mods
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Making-a-new-Civilization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    'My first mod' - Making a new Civilization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Images-and-Audio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Images and Audio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Mod file structure
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            Mod file structure
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1-Overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mod file structure Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2-Civilization-related-JSON-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Civilization-related JSON files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Map-related JSON files
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map-related JSON files
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#terrainsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      Terrains.json
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileimprovementsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      TileImprovements.json
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileresourcesjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      TileResources.json
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ruinsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ruins.json
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ruins.json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notifications
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-uniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Specific uniques
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileset-specific-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tileset-specific json
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tileset-specific json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#layering-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      Layering images
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stats
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-stat" class="md-nav__link">
+    <span class="md-ellipsis">
+      General stat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specialized-stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Specialized stats
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4-Unit-related-JSON-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Unit-related JSON files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5-Miscellaneous-JSON-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous JSON files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Special Mods
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            Special Mods
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Creating-a-custom-tileset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a custom tileset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Creating-a-UI-skin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a UI skin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Unique-parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Unique parameters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../uniques/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Uniques
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Type-checking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Type checking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Autoupdates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Autoupdates
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Other
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Other
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Other/Force-rating-calculation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Force rating calculation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Other/Installing-on-macOS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installing on MacOS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Other/Intentional-departures-from-Civ-V/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intentional departures from Civ V
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Other/Multiplayer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiplayer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Other/Regions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Regions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Other/Simulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Simulations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Other/Translating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Translating
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#terrainsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      Terrains.json
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileimprovementsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      TileImprovements.json
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileresourcesjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      TileResources.json
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ruinsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ruins.json
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ruins.json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notifications
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-uniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Specific uniques
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileset-specific-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tileset-specific json
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tileset-specific json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#layering-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      Layering images
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stats
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-stat" class="md-nav__link">
+    <span class="md-ellipsis">
+      General stat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specialized-stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Specialized stats
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="map-related-json-files">Map-related JSON files</h1>
+<h2 id="terrainsjson">Terrains.json</h2>
+<p><a href="https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Terrains.json">Link to original</a></p>
+<p>This file contains the base terrains, terrain features and natural wonders that can appear on the map.</p>
+<p>Each terrain entry has the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>Required</td>
+<td>[^A]</td>
+</tr>
+<tr>
+<td>type</td>
+<td>Enum</td>
+<td>Required</td>
+<td>Land, Water, TerrainFeature, NaturalWonder [^B]</td>
+</tr>
+<tr>
+<td>occursOn</td>
+<td>List of Strings</td>
+<td>none</td>
+<td>Only for terrain features and Natural Wonders: The baseTerrain it can be placed on</td>
+</tr>
+<tr>
+<td>turnsInto</td>
+<td>String</td>
+<td>none</td>
+<td>Only for NaturalWonder: optional mandatory base terrain [^C]</td>
+</tr>
+<tr>
+<td>weight</td>
+<td>Integer</td>
+<td>10</td>
+<td>Only for NaturalWonder: <em>relative</em> weight of being picked by the map generator</td>
+</tr>
+<tr>
+<td><a href="#general-stat"><code>&lt;stats&gt;</code></a></td>
+<td>Float</td>
+<td>0</td>
+<td>Per-turn yield or bonus yield for the tile</td>
+</tr>
+<tr>
+<td>overrideStats</td>
+<td>Boolean</td>
+<td>false</td>
+<td>If true, a feature's yields replace any yield from underlying terrain instead of adding to it</td>
+</tr>
+<tr>
+<td>unbuildable</td>
+<td>Boolean</td>
+<td>false</td>
+<td>If true, nothing can be built here - not even resource improvements</td>
+</tr>
+<tr>
+<td>impassable</td>
+<td>Boolean</td>
+<td>false</td>
+<td>No unit can enter unless it has a special unique</td>
+</tr>
+<tr>
+<td>movementCost</td>
+<td>Integer</td>
+<td>1</td>
+<td>Base movement cost</td>
+</tr>
+<tr>
+<td>defenceBonus</td>
+<td>Float</td>
+<td>0</td>
+<td>Combat bonus for units being attacked here</td>
+</tr>
+<tr>
+<td>RGB</td>
+<td><a href="../5-Miscellaneous-JSON-files/#rgb-colors-list">List of 3× Integer</a></td>
+<td>Gold</td>
+<td>RGB color for 'Default' tileset display</td>
+</tr>
+<tr>
+<td>uniques</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>List of <a href="../../uniques/">unique abilities</a> this terrain has</td>
+</tr>
+<tr>
+<td>civilopediaText</td>
+<td>List</td>
+<td>empty</td>
+<td>See <a href="../5-Miscellaneous-JSON-files/#civilopedia-text">civilopediaText chapter</a></td>
+</tr>
+</tbody>
+</table>
+<p>[^A]: Some names have special meanings. <code>Grassland</code> is used as fallback in some cases - e.g. Civilopedia prefers to displays a TerrainFeature on top of it, unless <code>occursOn</code> is not empty and does not contain it.
+      <code>River</code> is hardcoded to be used to look up a <a href="../uniques.md.md#global-uniques">Stats</a> unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
+      River should always be a TerrainFeature and have the same uniques the one in the vanilla rulesets has - if you change that, expect surprises.
+[^B]: A base ruleset mod is always expected to provide at least one Land and at least one Water terrain. We do not support Land-only or Water-only mods, even if they might be possible to pull off.
+[^C]: If set, the base terrain is changed to this after placing the Natural Wonder, and terrain features cleared. Otherwise, terrain features are reduced to only those present in occursOn.</p>
+<h2 id="tileimprovementsjson">TileImprovements.json</h2>
+<p><a href="https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/TileImprovements.json">Link to original</a></p>
+<p>This file lists the improvements that can be constructed or created on a map tile by a unit having the appropriate unique.</p>
+<p>Note that improvements have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will just miss out on an <em>optional</em> visualization. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of all other terrain elements.</p>
+<p>Each improvement has the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>Required</td>
+<td>[^A]</td>
+</tr>
+<tr>
+<td>terrainsCanBeBuiltOn</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>Terrains that this improvement can be built on [^B]. Removable terrain features will need to be removed before building an improvement [^C]. Must be in <a href="#terrainsjson">Terrains.json</a></td>
+</tr>
+<tr>
+<td>techRequired</td>
+<td>String</td>
+<td>none</td>
+<td>The name of the technology required to build this improvement</td>
+</tr>
+<tr>
+<td>replaces</td>
+<td>String</td>
+<td>none</td>
+<td>The name of a improvement that should be replaced by this improvement. Must be in <a href="#TileImprovementsjson">TileImprovements.json</a></td>
+</tr>
+<tr>
+<td>uniqueTo</td>
+<td>String</td>
+<td>none</td>
+<td>The name of the nation this improvement is unique for</td>
+</tr>
+<tr>
+<td><a href="#stats"><code>&lt;stats&gt;</code></a></td>
+<td>Integer</td>
+<td>0</td>
+<td>Per-turn bonus yield for the tile</td>
+</tr>
+<tr>
+<td>turnsToBuild</td>
+<td>Integer</td>
+<td>-1</td>
+<td>Number of turns a worker spends building this. If -1, the improvement is unbuildable [^D]. If 0, the improvement is always built in one turn</td>
+</tr>
+<tr>
+<td>uniques</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>List of <a href="../../uniques/">unique abilities</a> this improvement has</td>
+</tr>
+<tr>
+<td>shortcutKey</td>
+<td>String</td>
+<td>none</td>
+<td>Keyboard binding. Currently, only a single character is allowed (no function keys or Ctrl combinations)</td>
+</tr>
+<tr>
+<td>civilopediaText</td>
+<td>List</td>
+<td>empty</td>
+<td>See <a href="../5-Miscellaneous-JSON-files/#civilopedia-text">civilopediaText chapter</a></td>
+</tr>
+</tbody>
+</table>
+<p>[^A]: Special improvements: Road, Railroad, Remove *, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.
+[^B]: Improvements with an empty <code>terrainsCanBeBuiltOn</code> list and positive <code>turnsToBuild</code> value can only be built on <a href="#tileresourcesjson">resources</a> with <code>improvedBy</code> or <code>improvement</code> that contains the corresponding improvement.
+[^C]: The removal of terrain features is optional if the feature is named in <code>terrainsCanBeBuiltOn</code> <em>or</em> the unique <code>Does not need removal of [tileFilter]</code> is used (e.g. Camp allowed by resource).
+[^D]: They can still be created with the UnitAction unique <code>Can instantly construct a [improvementFilter] improvement</code>.</p>
+<h2 id="tileresourcesjson">TileResources.json</h2>
+<p><a href="https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/TileResources.json">Link to original</a></p>
+<p>This file lists the resources that a map tile can have.</p>
+<p>Note the predefined <code>resourceType</code> enum cannot be altered in a json.</p>
+<p>Note also that resources have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will miss out on a visualization on the map. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of terrain and features but below an improvement - if the single improvement graphic exists at all.</p>
+<p>Each resource has the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>Required</td>
+<td></td>
+</tr>
+<tr>
+<td>resourceType</td>
+<td>Enum</td>
+<td>Bonus</td>
+<td>Bonus, Luxury or Strategic</td>
+</tr>
+<tr>
+<td>terrainsCanBeFoundOn</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>Terrains that this resource can be found on. Must be in <a href="#terrainsjson">Terrains.json</a></td>
+</tr>
+<tr>
+<td><a href="#stats"><code>&lt;stats&gt;</code></a></td>
+<td>Integer</td>
+<td>0</td>
+<td>Per-turn bonus yield for the tile</td>
+</tr>
+<tr>
+<td>improvementStats</td>
+<td>Object</td>
+<td>none</td>
+<td>The additional yield when improved, see <a href="./#specialized-stats">specialized stats</a></td>
+</tr>
+<tr>
+<td>revealedBy</td>
+<td>String</td>
+<td>none</td>
+<td>The technology name required to see, work and improve this resource</td>
+</tr>
+<tr>
+<td>improvedBy</td>
+<td>List of strings</td>
+<td>empty</td>
+<td>The improvements required for obtaining this resource. Must be in <a href="#tileimprovementsjson">TileImprovements.json</a></td>
+</tr>
+<tr>
+<td>improvement</td>
+<td>String</td>
+<td>none</td>
+<td>The improvement required to obtain this resource. Must be in <a href="#tileimprovementsjson">TileImprovements.json</a> (redundant due to <code>improvedBy</code>)</td>
+</tr>
+<tr>
+<td>unique</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>List of <a href="../../uniques/">unique abilities</a> this resource has</td>
+</tr>
+<tr>
+<td>civilopediaText</td>
+<td>List</td>
+<td>empty</td>
+<td>See <a href="../5-Miscellaneous-JSON-files/#civilopedia-text">civilopediaText chapter</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="ruinsjson">Ruins.json</h2>
+<p><a href="https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json">Link to original</a></p>
+<p>This optional file contains the possible rewards ancient ruins give.</p>
+<p>Base ruleset Mods can omit the file, in which case they inherit the ones from the Vanilla ruleset. They can, however, provide a file with an empty list (<code>[]</code>) to avoid that. In this case there should be no improvements with the <a href="../../uniques/#improvement-uniques">"Provides a random bonus when entered" Unique</a>. Conversely, if there are such improvements, the Mod checker will flag an empty Ruins file as error.</p>
+<p>Each of the objects in the file represents a single reward you can get from ruins. It has the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>Required</td>
+<td>Name of the ruins. Never shown to the user, but they have to be distinct</td>
+</tr>
+<tr>
+<td>notification</td>
+<td>String</td>
+<td>Required</td>
+<td>Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below.</td>
+</tr>
+<tr>
+<td>weight</td>
+<td>Integer (≥0)</td>
+<td>1</td>
+<td><em>Relative</em> weight this reward is chosen next [^E]</td>
+</tr>
+<tr>
+<td>uniques</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>List of <a href="../../uniques/">unique abilities</a> that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated)</td>
+</tr>
+<tr>
+<td>excludedDifficulties</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>A list of all difficulties on which this reward may <em>not</em> be awarded</td>
+</tr>
+</tbody>
+</table>
+<p>[^E]: The exact algorithm for choosing a reward is the following:</p>
+<ul>
+<li>Create a list of all possible rewards. Each reward's frequency in the list corresponds to its weight, a reward with weight one will appear once, a reward with weight two will appear twice, etc.</li>
+<li>Shuffle this list</li>
+<li>Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.</li>
+</ul>
+<h3 id="notifications">Notifications</h3>
+<p>Some of the rewards ruins can give will have results that are not deterministic when writing it in the JSON, so creating a good notification for it would be impossible. An example for this would be the "Gain [50]-[100] [Gold]" unique, which will give a random amount of gold. For this reason, we allow some notifications to have parameters, in which values will be filled, such as "You found [goldAmount] gold in the ruins!". All the uniques which have this property can be found below.</p>
+<!-- (need to update) -->
+
+<table>
+<thead>
+<tr>
+<th>Unique</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free [] found in the ruins</td>
+<td>The name of the unit will be filled in the notification, including unique units of the nation</td>
+</tr>
+<tr>
+<td>[] population in a random city</td>
+<td>The name of the city to which the population is added will be filled in the notification</td>
+</tr>
+<tr>
+<td>Gain []-[] []</td>
+<td>The exact amount of the stat gained will be filled in the notification</td>
+</tr>
+<tr>
+<td>[] free random reasearchable Tech(s) from the []</td>
+<td>The notification must have placeholders equal to the number of techs granted this way. Each of the names of these free techs will be filled in the notification</td>
+</tr>
+<tr>
+<td>Gain enough Faith for a Pantheon</td>
+<td>The amount of faith gained is filled in the notification</td>
+</tr>
+<tr>
+<td>Gain enough Faith for []% of a Great Prophet</td>
+<td>The amount of faith gained is filled in the notification</td>
+</tr>
+</tbody>
+</table>
+<h3 id="specific-uniques">Specific uniques</h3>
+<p>A few uniques can be added to ancient ruin effects to modify when they can be earned. These are:</p>
+<ul>
+<li>"Only available after [amount] turns"</li>
+<li>"Only available <when religion is enabled>"</li>
+<li>"Hidden after a great prophet has been earned"</li>
+</ul>
+<h2 id="tileset-specific-json"><a href="../../Creating-a-custom-tileset/">Tileset-specific json</a></h2>
+<p><a href="https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/TileSets/FantasyHex.json">Link to original FantasyHex</a></p>
+<p>A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#useColorAsBaseTerrain">useColorAsBaseTerrain</a></td>
+<td>Boolean</td>
+<td>false</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#useSummaryImages">useSummaryImages</a></td>
+<td>Boolean</td>
+<td>false</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#unexploredTileColor">unexploredTileColor</a></td>
+<td>Color</td>
+<td>Dark Gray</td>
+<td><code>{"r":0.25,"g":0.25,"b":0.25,"a":1}</code></td>
+</tr>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#fogOfWarColor">fogOfWarColor</a></td>
+<td>Color</td>
+<td>Black</td>
+<td><code>{"r":0,"g":0,"b":0,"a":1}</code></td>
+</tr>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#fallbackTileSet">fallbackTileSet</a></td>
+<td>String</td>
+<td>"FantasyHex"</td>
+<td>null to disable</td>
+</tr>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#tileScale">tileScale</a></td>
+<td>Float</td>
+<td>1.0</td>
+<td>The scale of all tiles. Can be used to increase or decrease the size of every tile</td>
+</tr>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#tileScales">tileScales</a></td>
+<td>Object</td>
+<td>empty</td>
+<td>Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides <code>tileScale</code> value for specified terrain</td>
+</tr>
+<tr>
+<td><a href="../../Creating-a-custom-tileset/#ruleVariants">ruleVariants</a></td>
+<td>Object</td>
+<td>empty</td>
+<td><a href="#layering-images">See here</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="layering-images">Layering images</h3>
+<p>ruleVariants control substitutions when layering images for a tile, they are list looking like:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;ruleVariants&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;Grassland+Forest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Grassland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GrasslandForest&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;Plains+Forest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Plains&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PlainsForest&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;Plains+Jungle&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Plains&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PlainsJungle&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="c1">// . . .</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - <em>WIP</em>).</p>
+<p>When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry. (TODO)</p>
+<h2 id="stats">Stats</h2>
+<p>Terrains, features, resources and improvements may list yield statistics. The statistics can be one of the following:</p>
+<ul>
+<li>production</li>
+<li>food</li>
+<li>gold</li>
+<li>science</li>
+<li>culture</li>
+<li>happiness</li>
+<li>faith</li>
+</ul>
+<h3 id="general-stat">General stat</h3>
+<p>If an object carries general stat(s), it contains any combination (or none) of the above stats, each mapping to a corresponding number [^1]. For Example:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;gold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="nt">&quot;improvement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Quarry&quot;</span><span class="p">,</span>
+</code></pre></div>
+<h3 id="specialized-stats">Specialized stats</h3>
+<p>For specialized stats, they might come as sub-object in a named field. The sub-object contains any combination (or none) of the above stats, each mapping to a corresponding number [^1]. For Example:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;improvement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Quarry&quot;</span><span class="p">,</span>
+<span class="nt">&quot;improvementStats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;gold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;production&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">},</span>
+</code></pre></div>
+<p>[^1]: The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupported. Go ahead and thoroughly test that in a mod and help out with feedback 😁.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
