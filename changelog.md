@@ -1,19 +1,14 @@
 ## 4.17.18
 
-Resolved  - Peace trade no longer generates notification when it "ends"
+Peace trade no longer generates notification when it "ends"
 
-chore: Remove unused distanceToTiles cache
+Inquisitors disrupt religion in other civs as well
 
-Resolved  - Inquisitors disrupt religion in other civs as well
-
-4.17.17-patch1
-
-Fix unit force rankings
+Fixed automated move with escorted unit crash
 
 By RobLoach:
-- Add a Play Sound unique 
-- docs: Update unique parameters documentation 
-- Add unique to get resources from a percent of stat 
+- modding: Add a "Play Sound" unique 
+- modding: Add unique to get resources from a percent of stat 
 
 Added more option autosaves from 500 to 10000 - By Emandac
 
