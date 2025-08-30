@@ -573,6 +573,9 @@ class Civilization : IsPartOfGameInfoSerialization {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
+            "Open Borders" -> state?.civInfo?.diplomacy[civName]?.hasOpenBorders ?: false
+            "Peace" -> state?.civInfo?.let { !diplomacyFunctions.isAtWarWith(it) } ?: false
+            "War" -> state?.civInfo?.let { diplomacyFunctions.isAtWarWith(it) } ?: false
             else -> nation.matchesFilter(filter, state, false)
         }
     }

@@ -153,11 +153,13 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
-            return civilizations.count { it.isAlive() && it.matchesFilter(filter) }
+            return civilizations.count { it.isAlive() && it.matchesFilter(filter, gameContext) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
     },
     OwnedTiles("Owned [tileFilter] Tiles") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
