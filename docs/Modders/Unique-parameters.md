@@ -39,6 +39,7 @@ Allowed values:
 - `Human player`
 - `AI player`
 - [nationFilter](#nationfilter)
+- [policyFilter](#policyfilter) - Civilizations that have adopted the provided policy
 
 ## nationFilter
 

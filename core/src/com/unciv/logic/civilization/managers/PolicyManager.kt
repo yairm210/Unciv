@@ -172,7 +172,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     /** Uncached, use carefully */
     @Readonly
-    fun getAdoptedPoliciesMatching(policyFilter: String, gameContext: GameContext) =
+    fun getAdoptedPoliciesMatching(policyFilter: String, gameContext: GameContext? = null) =
         adoptedPolicies.asSequence()
             .mapNotNull { getRulesetPolicies()[it] }
             .filter { it.matchesFilter(policyFilter, gameContext) }

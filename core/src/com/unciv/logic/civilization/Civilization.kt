@@ -573,7 +573,9 @@ class Civilization : IsPartOfGameInfoSerialization {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
-            else -> nation.matchesFilter(filter, state, false)
+            else ->
+                nation.matchesFilter(filter, state, false) ||
+                policies.getAdoptedPoliciesMatching(filter, state).size > 0
         }
     }
 
