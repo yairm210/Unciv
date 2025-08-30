@@ -330,7 +330,8 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return pressure.toInt()
     }
 
-    /** Calculates how much pressure this religion is lacking compared to the majority religion */
+    /** Calculates how much pressure this religion is lacking compared to the majority religion
+     * That is, if we gain more than this, we'll be the majority */
     @Readonly
     fun getPressureDeficit(otherReligion: String?): Int {
         val pressures = getPressures()

@@ -267,13 +267,8 @@ class UnitMovement(val unit: MapUnit) {
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: Tile): Tile {
-        val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit() else null
-        val startTile = unit.getTile()
         val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
-        if (startTile != unit.getTile() && escortUnit != null) {
-            escortUnit.movement.headTowards(unit.getTile())
-        }
         return unit.currentTile
     }
 
@@ -748,10 +743,6 @@ class UnitMovement(val unit: MapUnit) {
         movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
-//        val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
-//        if (cacheResults != null) {
-//            return cacheResults
-//        }
         val distanceToTiles = getMovementToTilesAtPosition(
             unit.currentTile.position,
             unit.currentMovement,
@@ -761,8 +752,6 @@ class UnitMovement(val unit: MapUnit) {
             movementCostCache,
             includeOtherEscortUnit
         )
-
-        pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
 
         return distanceToTiles
     }
@@ -838,14 +827,13 @@ class UnitMovement(val unit: MapUnit) {
 class PathfindingCache(private val unit: MapUnit) {
     private var shortestPathCache = listOf<Tile>()
     private var destination: Tile? = null
-    private val distanceToTilesCache = mutableMapOf<Boolean, PathsToTilesWithinTurn>()
     private var movement = -1f
     private var currentTile: Tile? = null
 
     /** Check if the caches are valid (only checking if the unit has moved or consumed movement points;
      * the isPlayerCivilization check is performed in the functions because we want isValid() == false
      * to have a specific behavior) */
-    private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
+    @Readonly private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
 
     fun getShortestPathCache(destination: Tile): List<Tile> {
         if (unit.civ.isHuman()) return listOf()
@@ -863,23 +851,7 @@ class PathfindingCache(private val unit: MapUnit) {
         }
     }
 
-    fun getDistanceToTiles(zoneOfControl: Boolean): PathsToTilesWithinTurn? {
-        if (unit.civ.isHuman()) return null
-        if (isValid())
-            return distanceToTilesCache[zoneOfControl]
-        return null
-    }
-
-    fun setDistanceToTiles(zoneOfControl: Boolean, paths: PathsToTilesWithinTurn) {
-        if (unit.civ.isHuman()) return
-        if (!isValid()) {
-            clear() // we want to reset the entire cache at this point
-        }
-        distanceToTilesCache[zoneOfControl] = paths
-    }
-
     fun clear() {
-        distanceToTilesCache.clear()
         movement = unit.currentMovement
         currentTile = unit.getTile()
         destination = null

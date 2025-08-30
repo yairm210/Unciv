@@ -1523,6 +1523,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## Building uniques
+??? example  "[positiveAmount]% of [stat] from every [improvementFilter/buildingFilter] in the city added to [resource]"
+	Example: "[3]% of [Culture] from every [All Road] in the city added to [Iron]"
+
+	Applicable to: Building
+
 ??? example  "Consumes [amount] [resource]"
 	Example: "Consumes [3] [Iron]"
 

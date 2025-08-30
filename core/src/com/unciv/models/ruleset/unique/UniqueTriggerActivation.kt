@@ -102,7 +102,7 @@ object UniqueTriggerActivation {
         if (timingConditional != null) {
             return {
                 civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
-                if (unique.type in setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources))
+                if (unique.type in setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources, UniqueType.StatPercentFromObjectToResource))
                     civInfo.cache.updateCivResources()
                 true
             }
