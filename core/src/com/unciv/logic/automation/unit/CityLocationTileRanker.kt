@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 
 object CityLocationTileRanker {
 
@@ -37,7 +38,7 @@ object CityLocationTileRanker {
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             // Filter out tiles that we can't actually found on
             .filter { tile -> uniques.any { it.conditionalsApply(GameContext(unit = unit, tile = tile)) } }
-            .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
+            .filter { canSettleTile(it, unit, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
         val uniqueCache = LocalUniqueCache()
         val bestTilesToFoundCity = BestTilesToFoundCity()
         val baseTileMap = HashMap<Tile, Float>()
@@ -63,11 +64,33 @@ object CityLocationTileRanker {
         return bestTilesToFoundCity
     }
 
-    private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
+    private fun canSettleTile(tile: Tile, unit: MapUnit, nearbyCities: Sequence<City>): Boolean {
+        val civ = unit.civ
+        
+        val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
+        val unique = uniques.firstOrNull()!!
+        
+        val uniqueModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
+        
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
-        if (!tile.isLand || tile.isImpassible()) return false
+        if (!unique.hasModifier(UniqueType.ConditionalInTiles) && (!tile.isLand || tile.isImpassible())) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
         for (city in nearbyCities) {
+            var addedDistanceBeweenContinents: Int
+            var canSettleInTileWithUnique = false
+            if (uniqueModifier != null) {
+                canSettleInTileWithUnique = (tile.isWater || tile.isImpassible()) &&
+                    uniqueModifier.getModifiers(UniqueType.ConditionalInTiles).none{
+                        tile.matchesFilter(it.params[0])
+                    }
+            }
+            /*
+            Putting the ! to make sure the player/Ai doesn't place cities too near each other.
+            Because when .none return False when one element has a match.
+            */
+
+            addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
+            
             val distance = city.getCenterTile().aerialDistanceTo(tile)
             // todo: AgreedToNotSettleNearUs is hardcoded for now but it may be better to softcode it below in getDistanceToCityModifier
             if (distance <= 6 && civ.knows(city.civ)
@@ -79,7 +102,8 @@ object CityLocationTileRanker {
             if (tile.getContinent() == city.getCenterTile().getContinent()) {
                 if (distance <= modConstants.minimalCityDistance) return false
             } else {
-                if (distance <= modConstants.minimalCityDistanceOnDifferentContinents) return false
+                if (distance <= modConstants.minimalCityDistanceOnDifferentContinents+
+                    if (uniqueModifier != null) addedDistanceBeweenContinents else 0) return false
             }
         }
         return true
