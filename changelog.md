@@ -1,3 +1,29 @@
+## 4.17.18
+
+Peace trade no longer generates notification when it "ends"
+
+Inquisitors disrupt religion in other civs as well
+
+Fixed automated move with escorted unit crash
+
+By RobLoach:
+- modding: Add a "Play Sound" unique 
+- modding: Add unique to get resources from a percent of stat 
+
+Added more option autosaves from 500 to 10000 - By Emandac
+
+## 4.17.17
+
+Force rankings doesn't evaluate all unit conditionals as multiplicative
+
+Handle mods removing techs, adding/removing eras
+
+Post-battle movement doesn't occur if during the battle the unit lost movement points
+
+conditionals in event choices work again
+
+AI updates - By EmperorPinguin
+
 ## 4.17.16
 
 AI spy city selection greatly improved
