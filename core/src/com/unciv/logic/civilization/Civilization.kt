@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.civilization.managers.GoldenAgeManager
 import com.unciv.logic.civilization.managers.GreatPersonManager
@@ -574,8 +575,8 @@ class Civilization : IsPartOfGameInfoSerialization {
             "Human player" -> isHuman()
             "AI player" -> isAI()
             "Open Borders" -> state?.civInfo?.diplomacy[civName]?.hasOpenBorders ?: false
-            "Peace" -> state?.civInfo?.let { !diplomacyFunctions.isAtWarWith(it) } ?: false
-            "War" -> state?.civInfo?.let { diplomacyFunctions.isAtWarWith(it) } ?: false
+            "Friendly" -> state?.civInfo?.diplomacy[civName]?.isRelationshipLevelGE(RelationshipLevel.Friend) ?: false
+            "Hostile" -> state?.civInfo?.let { isAtWarWith(it) } ?: false
             else -> nation.matchesFilter(filter, state, false)
         }
     }
