@@ -256,19 +256,41 @@ class NotificationsScroll(
             .groupBy { it.category }
             .toSortedMap()  // This sorts by Category ordinal, so far intentional - the order of the grouped lists are unaffected
         for ((category, categoryNotifications) in orderedNotifications) {
-            if (category == NotificationCategory.General)
-                notificationsTable.add().padTop(categoryTopPad).row()  // Make sure category w/o header gets same spacing
+            val header: CategoryHeader?
+            if (category == NotificationCategory.General) {
+                notificationsTable.add().padTop(categoryTopPad)
+                    .row()  // Make sure category w/o header gets same spacing
+                header = null
+            }
             else {
-                val header = CategoryHeader(category, backgroundDrawable)
+                header = CategoryHeader(category, backgroundDrawable)
                 categoryHeaders.add(header)
                 notificationsTable.add(header).right().row()
             }
-            for (notification in categoryNotifications) {
-                val item = ListItem(notification, backgroundDrawable)
-                itemWidths.add(item.itemWidth)
-                val itemCell = notificationsTable.add(item)
-                if (notification == highlightNotification) selectedCell = itemCell
-                itemCell.right().row()
+            
+            val notificationCategoryTable = Table()
+            
+            fun fillNotificationCategoryTable() {
+                for (notification in categoryNotifications) {
+                    val item = ListItem(notification, backgroundDrawable)
+                    itemWidths.add(item.itemWidth)
+                    val itemCell = notificationCategoryTable.add(item)
+                    if (notification == highlightNotification) selectedCell = itemCell
+                    itemCell.right().row()
+                }
+            }
+            
+            fillNotificationCategoryTable()
+            notificationsTable.add(notificationCategoryTable).right().row()
+            
+            header?.onClick { 
+                if (notificationCategoryTable.hasChildren()) {
+                    notificationCategoryTable.clear()
+                    notificationCategoryTable.pack()
+                } else {
+                    fillNotificationCategoryTable()
+                    notificationCategoryTable.pack()
+                }
             }
         }
 
