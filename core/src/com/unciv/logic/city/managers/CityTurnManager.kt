@@ -34,7 +34,7 @@ class CityTurnManager(val city: City) {
         if (city.isPuppet) {
             city.setCityFocus(CityFocus.GoldFocus)
             city.reassignAllPopulation()
-        } else if (city.shouldReassignPopulation) {
+        } else if (city.shouldReassignPopulation || city.civ.isAI()) {
             city.reassignPopulation()  // includes cityStats.update
         } else
             city.cityStats.update()
