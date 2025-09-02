@@ -139,9 +139,10 @@ object UnitAutomation {
 
 
     @Readonly
-    private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
+    private fun isGoodTileToExplore(unit: MapUnit, tile: Tile, unitVisibilityRange: Int): Boolean {
+        // These should be ordered by increasing computational cost
         return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
-                && tile.getTilesInDistance(unit.getVisibilityRange()).any { !unit.civ.hasExplored(it) }
+                && tile.getTilesInDistance(unitVisibilityRange).any { !unit.civ.hasExplored(it) }
                 && (!unit.civ.isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
                 && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
@@ -152,8 +153,9 @@ object UnitAutomation {
     internal fun tryExplore(unit: MapUnit): Boolean {
         if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
 
+        val unitVisibilityRange = unit.getVisibilityRange()
         val explorableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
+                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it, unitVisibilityRange) }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
                 .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
@@ -166,7 +168,7 @@ object UnitAutomation {
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
         for (tile in unit.currentTile.getTilesInDistance(5))
-            if (isGoodTileToExplore(unit, tile)) {
+            if (isGoodTileToExplore(unit, tile, unitVisibilityRange)) {
                 unit.movement.headTowards(tile)
                 return true
             }
@@ -540,7 +542,8 @@ object UnitAutomation {
         val closeCities = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ in hostileCivs }
         val closestDistance = closeCities.minOfOrNull { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) }
             ?: return false
-        val citiesToDefend = closeCities.filter { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) <= closestDistance + 2 }
+        val citiesToDefend = closeCities
+            .filter { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) <= closestDistance + 2 }
             .map { it.first }
             .distinct() // Remove duplicate cities
             .sortedBy { unit.getTile().aerialDistanceTo(it.getCenterTile()) }
@@ -548,7 +551,8 @@ object UnitAutomation {
         // Move to the closest city with a tile we can enter nearby
         for (city in citiesToDefend) {
             if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
-            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2).firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
+            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2)
+                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
             unit.movement.headTowards(tileToMoveTo)
             return true
         }
