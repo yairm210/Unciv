@@ -127,7 +127,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /**
      * creates a hexagonal map of given radius (filled with grassland)
      *
-     * To help you visualize how UnCiv hexagonal coordinate system works, here's a small example:
+     * To help you visualize how Unciv hexagonal coordinate system works, here's a small example:
      * 
      * ```
      *          _____         _____         _____

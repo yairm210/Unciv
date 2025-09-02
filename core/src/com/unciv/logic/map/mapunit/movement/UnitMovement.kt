@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -25,13 +26,6 @@ class UnitMovement(val unit: MapUnit) {
     class ParentTileAndTotalMovement(val tile: Tile, val parentTile: Tile, val totalMovement: Float)
 
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
-    
-    // TODO: Convertable to array since min is 1 and no collisions, theoretically fills 1..(num_tiles * 6 + 1)
-    private fun tilesToUniqueHash(tile: Tile, neighbor: Tile): Int {
-        // each tile has 6 neighbors 
-        return tile.zeroBasedIndex * 6 + 
-                tile.tileMap.getNeighborTileClockPosition(tile, neighbor) / 2 // min: 2, max: 12, step 2
-    }
     
     /**
      * Gets the tiles the unit could move to at [position] with [unitMovement].
@@ -80,7 +74,7 @@ class UnitMovement(val unit: MapUnit) {
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
                         else -> {
-                            val key = tilesToUniqueHash(tileToCheck, neighbor)
+                            val key = HexMath.tilesAndNeighborUniqueIndex(tileToCheck, neighbor)
                             val movementCost = movementCostCache.getOrPut(key) {
                                 MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
                             }
