@@ -26,6 +26,12 @@ class UnitMovement(val unit: MapUnit) {
 
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
     
+    // TODO: Convertable to array since min is 1 and no collisions, theoretically fills 1..(num_tiles * 6 + 1)
+    private fun tilesToUniqueHash(tile: Tile, neighbor: Tile): Int {
+        // each tile has 6 neighbors 
+        return tile.zeroBasedIndex * 6 + 
+                tile.tileMap.getNeighborTileClockPosition(tile, neighbor) / 2 // min: 2, max: 12, step 2
+    }
     
     /**
      * Gets the tiles the unit could move to at [position] with [unitMovement].
@@ -39,7 +45,7 @@ class UnitMovement(val unit: MapUnit) {
         considerZoneOfControl: Boolean = true,
         tilesToIgnoreBitset: BitSet? = null,
         canPassThroughCache: ArrayList<Boolean?> = ArrayList(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
+        movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
         @LocalState val distanceToTiles = PathsToTilesWithinTurn()
@@ -74,7 +80,7 @@ class UnitMovement(val unit: MapUnit) {
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
                         else -> {
-                            val key = Pair(tileToCheck, neighbor)
+                            val key = tilesToUniqueHash(tileToCheck, neighbor)
                             val movementCost = movementCostCache.getOrPut(key) {
                                 MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
                             }
@@ -148,7 +154,7 @@ class UnitMovement(val unit: MapUnit) {
         val civilization = unit.civ
 
         val passThroughCacheNew = ArrayList<Boolean?>()
-        val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
+        val movementCostCache = HashMap<Int, Float>()
         val canMoveToCache = HashMap<Tile, Boolean>()
 
         while (true) {
@@ -740,7 +746,7 @@ class UnitMovement(val unit: MapUnit) {
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCacheNew: ArrayList<Boolean?> = ArrayList(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
+        movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
         val distanceToTiles = getMovementToTilesAtPosition(
