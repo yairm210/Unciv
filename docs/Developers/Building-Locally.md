@@ -40,7 +40,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
     -   If the "Run unit tests" is missing - look for the top-level "tests" folder, right-klick -> Modify Run Configuration...
 -   Select the Desktop configuration (or however you chose to name it) and click the green arrow button to run! Or you can use the next button -the green critter with six legs and two feelers - to start debugging.
 -   A few Android Studio settings that are recommended:
-    - Going to Settings > Version Control > Commit and turning off 'Before Commit - Analyze code'
+    - Going to Settings > Version Control > Commit > Advanced Commit Checks 'Analyze code'
     - On the same page, we recommend turning off "Use non-modal commit interface". This puts the "Local Changes and "Console" Tabs back into the Git toolpane (and the Shelf once you have shelved diffs). These can be hard to find otherwise - feel free to ignore if you don't think you need them.
     - Settings > Editor > Code Style > Kotlin > Tabs and Indents > Continuation Indent: 4
       ![image](https://user-images.githubusercontent.com/44038014/169315352-9ba0c4cf-307c-44d1-b3bc-2a58752c6854.png)
