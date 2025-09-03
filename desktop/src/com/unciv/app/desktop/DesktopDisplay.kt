@@ -5,8 +5,6 @@ import com.badlogic.gdx.Graphics.Monitor
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics
-import com.badlogic.gdx.utils.Os
-import com.badlogic.gdx.utils.SharedLibraryLoader
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.utils.PlatformDisplay
@@ -26,9 +24,6 @@ enum class DesktopScreenMode : ScreenMode {
             val isFillingDesktop = setWindowedMode(settings)
             if (isFillingDesktop)
                 getWindow()?.maximizeWindow()
-            if (SharedLibraryLoader.os == Os.Windows) {
-                getWindow()?.maximizeWindow()
-            }
         }
 
         override fun hasUserSelectableSize() = true
@@ -73,7 +68,10 @@ enum class DesktopScreenMode : ScreenMode {
 
         Gdx.graphics.setWindowedMode(width, height)
 
-        return width == maximumWindowBounds.width && height == maximumWindowBounds.height
+        val widthDiff = maximumWindowBounds.width - width
+        val heightDiff = maximumWindowBounds.height - height
+        val tolerance = 30
+        return widthDiff <= tolerance && heightDiff <= tolerance
     }
 
     companion object {
