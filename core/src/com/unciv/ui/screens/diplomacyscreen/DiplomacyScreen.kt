@@ -9,6 +9,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -248,11 +249,11 @@ class DiplomacyScreen(
         val relationshipColor: Color
         val relationshipText: String
         
-        if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact) {
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)) {
             relationshipText = Constants.defensivePact
             relationshipColor = Color.GREEN
         }
-        else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship)) {
+        else if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
             relationshipText = RelationshipLevel.Friend.name
             relationshipColor = Color.GREEN
         }
