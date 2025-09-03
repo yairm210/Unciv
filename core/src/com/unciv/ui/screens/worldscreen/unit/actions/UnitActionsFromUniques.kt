@@ -255,6 +255,7 @@ object UnitActionsFromUniques {
                         stat
                     )
                 }
+                UniqueType.TriggerEvent -> unique.params[0]
                 else -> unique.text.removeConditionals()
             }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
