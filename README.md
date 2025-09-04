@@ -1,4 +1,4 @@
-# Unciv - Civ V remake for Android & Desktop
+# Unciv - Civ V tái hiện cho Android & Desktop
 
 ![](/extraImages/GithubPreviewImage.jpg)
 
@@ -7,7 +7,7 @@
 [![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
 [![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv?logo=flathub)](https://flathub.org/apps/details/io.github.yairm210.unciv)
 [![AUR](https://img.shields.io/aur/version/unciv-bin?logo=arch-linux)](https://aur.archlinux.org/packages/unciv-bin)
-[![pi-apps](https://img.shields.io/badge/dynamic/json?color=c51a4a&label=Pi-Apps&logo=raspberry-pi&query=%24.Unciv.Version&url=https%3A%2F%2Fraw.githubusercontent.com%2FBotspot%2Fpi-apps-analytics%2Fmain%2Fpackage_data_v2.json)](https://github.com/Botspot/pi-apps)
+[![pi-apps](https://img.shields.io/badge/dynamic/json?color=c51a4a&label=Pi-Apps&logo=raspberry-pi&query=%24.Unciv.Version&url=https%3A%2F%2Fraw.githubusercontent.com%2FBotspot%2Fpi-apps-analytics%2Fm[...]
 ![Brew](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fformulae.brew.sh%2Fapi%2Fformula%2Funciv.json&query=%24.versions.stable&logo=homebrew&label=Brew)
 [![Chocolatey](https://img.shields.io/chocolatey/v/unciv?logo=chocolatey)](https://community.chocolatey.org/packages/unciv)
 [![scoop-games](https://img.shields.io/scoop/v/unciv?bucket=games)](https://github.com/Calinou/scoop-games)
@@ -16,118 +16,118 @@
 [![Discord](https://img.shields.io/discord/586194543280390151?color=%237289DA&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/bjrB4Xw)
 
 
-## What is this?
+## Đây là gì?
 
-An open source, moddability-focused Android and Desktop remake of Civ V, made with LibGDX
+Một phiên bản mã nguồn mở, tập trung vào khả năng sửa đổi (moddability) của Civ V cho Android và Desktop, được phát triển bằng LibGDX
 
-## Is this any good?
+## Có tốt không?
 
-Depends what you're looking for. If you're in the market for high-res graphics, amazing soundtracks, animations etc, I highly recommend Firaxis's Civ-V-like game, "Civilization V".
+Tùy vào nhu cầu của bạn. Nếu bạn đang tìm kiếm đồ họa chất lượng cao, nhạc nền tuyệt vời, hoạt ảnh,... tôi rất khuyên bạn chơi tựa game giống Civ V của Firaxis, "Civilization V".
 
-If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a potato, you've come to the right place :)
+Nếu bạn muốn một trò chơi nhỏ gọn, chạy nhanh, dễ sửa đổi, FOSS, thể loại 4X chuyên sâu mà vẫn có thể chạy trên máy yếu, bạn đã đến đúng chỗ :)
 
-## How do I install?
+## Cài đặt thế nào?
 
-- **Android** - [Google Play](https://play.google.com/store/apps/details?id=com.unciv.app) or [F-droid](https://f-droid.org/en/packages/com.unciv.app/)
-- **Linux** - [itch.io](https://yairm210.itch.io/unciv), Flatpak via [Flathub](https://flathub.org/apps/details/io.github.yairm210.unciv), or [AUR](https://aur.archlinux.org/packages/unciv-bin)
-- **Windows** - [Grab the MSI](https://github.com/yairm210/Unciv/releases/latest/download/Unciv.msi), or get from [itch.io](https://yairm210.itch.io/unciv), [Chocolatey](https://community.chocolatey.org/packages/unciv), or [Scoop](https://github.com/Calinou/scoop-games)
+- **Android** - [Google Play](https://play.google.com/store/apps/details?id=com.unciv.app) hoặc [F-droid](https://f-droid.org/en/packages/com.unciv.app/)
+- **Linux** - [itch.io](https://yairm210.itch.io/unciv), Flatpak qua [Flathub](https://flathub.org/apps/details/io.github.yairm210.unciv), hoặc [AUR](https://aur.archlinux.org/packages/unciv-bin)
+- **Windows** - [Tải file MSI](https://github.com/yairm210/Unciv/releases/latest/download/Unciv.msi), hoặc tải từ [itch.io](https://yairm210.itch.io/unciv), [Chocolatey](https://community.chocolatey.o[...]
 - **Raspberry Pi** - [Pi-apps](https://github.com/Botspot/pi-apps)
-- **MacOS** - Via [Brew](https://brew.sh/) (`brew update && brew install unciv`) or install [with this guide](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/) 
-- Jars, APKs and Windows/Linux builds also available in [Releases](https://github.com/yairm210/Unciv/releases) (run jar with `java -jar Unciv.jar`) - *not recommended* since we update frequently and you will quickly become out-of-date
-- [Build from scratch](https://yairm210.github.io/Unciv/Developers/Building-Locally/#without-android-studio) if that's your thing
+- **MacOS** - Qua [Brew](https://brew.sh/) (`brew update && brew install unciv`) hoặc cài đặt [theo hướng dẫn này](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/) 
+- Jar, APK và các bản dựng Windows/Linux cũng có tại [Releases](https://github.com/yairm210/Unciv/releases) (chạy jar với `java -jar Unciv.jar`) - *không khuyến nghị* vì chúng tôi cập nhật thường xuyên và y[...]
+- [Tự biên dịch](https://yairm210.github.io/Unciv/Developers/Building-Locally/#without-android-studio) nếu bạn thích
 
-## What's the roadmap?
+## Lộ trình phát triển?
 
-In this order:
+Theo thứ tự sau:
 
-* Polish!
-    * UI+UX improvements ([suggestions welcome!](https://github.com/yairm210/Unciv/issues/new?assignees=&labels=feature&template=feature_request.md&title=Feature+request%3A+))
-    * Better automation, AI etc. in-game
-* G&K mechanics - espionage, small other changes (see [#4697](https://www.github.com/yairm210/Unciv/issues/4697))
-* BNW mechanics - trade routes, world congress, etc.
+* Hoàn thiện!
+    * Cải thiện UI+UX ([hoan nghênh góp ý!](https://github.com/yairm210/Unciv/issues/new?assignees=&labels=feature&template=feature_request.md&title=Feature+request%3A+))
+    * Tự động hóa tốt hơn, AI trong game, v.v.
+* Cơ chế G&K - gián điệp, các thay đổi nhỏ khác (xem [#4697](https://www.github.com/yairm210/Unciv/issues/4697))
+* Cơ chế BNW - tuyến thương mại, quốc hội thế giới, v.v.
 
-## Contributing
+## Đóng góp
 
-Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
+Lập trình viên bắt đầu [ở đây](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 
-Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)! Language completion status [here](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/translations/completionPercentages.properties) 
+Người dịch bắt đầu [ở đây](https://yairm210.github.io/Unciv/Other/Translating/)! Tình trạng hoàn thành ngôn ngữ [ở đây](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/translations/complet[...]
 
-Modders start [here](https://yairm210.github.io/Unciv/Modders/Mods/)!
+Modder bắt đầu [ở đây](https://yairm210.github.io/Unciv/Modders/Mods/)!
 
-You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
+Bạn có thể tham gia bất kỳ vấn đề mở nào, hoặc cải thiện bất cứ thứ gì bạn muốn - khi xong, gửi pull request và nó sẽ được đưa vào phiên bản tiếp theo!
 
-If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
+Nếu không, bạn có thể giúp bằng cách quảng bá - bình chọn cho Unciv ở nơi bạn có thể, nhắc tới trên Reddit hoặc Twitter,... và giúp chúng tôi với những ý tưởng mới để lan tỏa dự án!
 
 
-## FAQ
+## FAQ - Câu hỏi thường gặp
 
-### How about iOS?
+### iOS thì sao?
 
-I'm not planning on it. It means paying money to Apple, yet another release path,
- and since I don't have an iOS device it means I can't test it properly.
+Tôi không có dự định. Điều đó đồng nghĩa với việc trả tiền cho Apple, thêm một quy trình phát hành,
+và vì tôi không có thiết bị iOS nên không thể kiểm thử.
 
-### Steam release?
+### Có phát hành trên Steam không?
 
-Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)
+Steam quyết định không lưu trữ Unciv, có thể vì lo ngại về pháp lý với Firaxis (dù điều đó gần như không tồn tại, xem bên dưới)
  
-### Will you implement {feature}?
+### Bạn sẽ thêm {tính năng} chứ?
 
-If it's in the original Civ V, then yes!
+Nếu có trong Civ V gốc, thì có!
 
-If not, then the feature won't be added to the base game - possibly it will be added as a way to mod the game, which is constantly expanding
+Nếu không, thì tính năng đó sẽ không được thêm vào bản gốc - có thể sẽ được thêm cho mod, vốn đang mở rộng liên tục
 
-#### Why not? This is its own game, why not add features that weren't in Civ V?
+#### Tại sao không? Đây là game riêng mà, sao không thêm các tính năng mới?
 
-Having a clear vision is important for actually getting things done.
+Có một tầm nhìn rõ ràng là rất quan trọng để hoàn thành công việc.
 
-Anyone can make a suggestion. Not all are good, viable, or simple. Not many can actually implement stuff.
+Ai cũng có thể góp ý. Không phải tất cả đều tốt, khả thi hoặc đơn giản. Không nhiều người thực sự có thể triển khai.
 
-As an open source project, this stuff is done in our spare time, of which there isn't much.
+Là dự án mã nguồn mở, mọi thứ đều được làm vào thời gian rảnh, vốn rất hạn chế.
 
-We need a clear-cut criteria to decide what to work on and what not to work on.
+Chúng tôi cần tiêu chí rõ ràng để quyết định làm gì và không làm gì.
 
-#### Will you implement Civ VI?
+#### Bạn sẽ làm Civ VI chứ?
 
-Considering how long it took to get this far, no.
+Xem xét thời gian để đến được hiện tại, sẽ không.
 
-### How can I learn to play? Where's the wiki?
+### Làm sao để chơi? Có wiki không?
 
-All the tutorial information is available in-game at menu > civilopedia > tutorials
+Tất cả hướng dẫn đều có trong game tại menu > civilopedia > tutorials
 
-All the information is included in the amazing [Civ V wiki](https://civilization.fandom.com/wiki/)
+Tất cả thông tin đều có tại [wiki Civ V](https://civilization.fandom.com/wiki/)
 
-Since this is a Civ V clone, you can search Google for how to play Civ V and there are loads of answers =)
+Vì đây là bản clone Civ V, bạn có thể tìm trên Google cách chơi Civ V và có rất nhiều câu trả lời =)
 
-Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and ask there =D
+Hoặc bạn có thể [tham gia Discord](https://discord.gg/bjrB4Xw) và hỏi ở đó =D
 
-### Aren't you basically making a Civ V clone? Is that even legal?
+### Đây thực ra là clone Civ V? Có hợp pháp không?
 
-According to the [US Copyright Office FL-108](https://upload.wikimedia.org/wikipedia/commons/9/96/U.S._Copyright_Office_fl108.pdf), intellectual property rights *do not* apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
+Theo [US Copyright Office FL-108](https://upload.wikimedia.org/wikipedia/commons/9/96/U.S._Copyright_Office_fl108.pdf), quyền sở hữu trí tuệ *không* áp dụng cho cơ chế game - như tôi đã xác[...]
 
-It is definitely illegal:
- - To use any assets from the original game (images, sound etc) - they belong to Firaxis
+Chắc chắn là bất hợp pháp:
+ - Nếu dùng bất kỳ tài sản nào từ game gốc (hình ảnh, âm thanh, v.v.) - chúng thuộc về Firaxis
 
-It is probably illegal (no solid sources on this):
- - To use the Civilization name
- - To impersonate the Civ games (so calling yourself civi|zation with a similar logo, for instance)
+Có thể bất hợp pháp (không có nguồn xác thực):
+ - Nếu dùng tên Civilization
+ - Nếu giả mạo các game Civ (ví dụ đặt tên là civi|zation với logo tương tự)
 
-Interestingly, [Civilization is a registered trademark](https://tsdr.uspto.gov/#caseNumber=74166752&caseType=SERIAL_NO&searchType=statusSearch), but it looks like it's only *that particular logo* which is trademarked, so technically you could make another game called "Civilization" and it'll stick. In any case we're not going there :) 
+Một điều thú vị, [Civilization là nhãn hiệu đã đăng ký](https://tsdr.uspto.gov/#caseNumber=74166752&caseType=SERIAL_NO&searchType=statusSearch), nhưng có vẻ chỉ *logo cụ thể đó* mới bị[...]
 
-## Run with Docker [![Docker](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml)
+## Chạy với Docker [![Docker](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml)
 
-If you have docker compose installed:
+Nếu bạn đã cài docker compose:
 
  ```$ docker compose build && docker compose up```
 
-and then goto http://localhost:6901/vnc.html?password=headless
+sau đó truy cập http://localhost:6901/vnc.html?password=headless
 
-If just docker:
+Nếu chỉ có docker:
 
 ```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
 
-Or just use our already built one:
+Hoặc dùng bản dựng sẵn:
 
 ```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
 
-and then goto http://localhost:6901/vnc.html?password=headless
-## [Credits and 3rd parties](docs/Credits.md)
+sau đó truy cập http://localhost:6901/vnc.html?password=headless
+## [Cám ơn và bên thứ 3](docs/Credits.md)
