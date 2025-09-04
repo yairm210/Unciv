@@ -1,3 +1,29 @@
+## 4.17.19
+
+Added map autosave
+
+perf(cpu): reassignPopulation for AI on turn start only once
+
+Ensure with test that tile+neighbor mapping is unique
+
+perf(cpu): Optimized tile-to-tile cost cache
+
+perf(cpu): Optimized 'good tile to explore' AI decision
+
+perf(cpu): Optimized trade mission AI logic
+
+Notification categories can me minimized by clicking on the title
+
+chore: slight cleanup for Battle.attack - there really is too much going on there...
+
+By RobLoach:
+- BNW: Fix getting Cultural Victory through Domination 
+- Have the Trigger Event unit action text be the Event 
+
+Updated max window in Windows platform - By SidedYapper
+
+Fix human-human relationship incorrectly showing "Friend" in the diplomacy screen, as well as inconsistent colors - By unciv-loof
+
 ## 4.17.18
 
 Peace trade no longer generates notification when it "ends"
