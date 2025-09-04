@@ -40,6 +40,8 @@ object Nuke {
         if (launchTile.aerialDistanceTo(targetTile) > nuke.unit.getRange()) return false
 
         var canNuke = true
+        
+        @Readonly
         fun checkDefenderCiv(defenderCiv: Civilization?) {
             if (defenderCiv == null) return
             // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
@@ -306,6 +308,7 @@ object Nuke {
         targetedCity.population.addPopulation(-populationLoss)
     }
 
+    @Readonly
     private fun City.getAggregateModifier(uniqueType: UniqueType): Float {
         var modifier = 1f
         for (unique in getMatchingUniques(uniqueType)) {
