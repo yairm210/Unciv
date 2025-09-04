@@ -41,7 +41,6 @@ object Nuke {
 
         var canNuke = true
         
-        @Readonly
         fun checkDefenderCiv(defenderCiv: Civilization?) {
             if (defenderCiv == null) return
             // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
