@@ -51,6 +51,9 @@ class ModConstants {
     var baseCityBombardRange = 2
     var cityWorkRange = 3
     var cityExpandRange = 5
+    
+    // Number of air units that can be stationed in a city
+    var cityAirUnitCapacity = 6
 
     // Modifies how much the gold value of a one-sided trade is applied to the gifts diplomatic modifier.
     // Eg: One side offers a city, resource or gold for nothing in return.
