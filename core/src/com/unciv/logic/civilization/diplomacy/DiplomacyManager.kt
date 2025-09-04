@@ -28,6 +28,7 @@ import kotlin.math.sign
 enum class RelationshipLevel(val color: Color) {
     // DiplomaticStatus.War is tested separately for the Diplomacy Screen. Colored RED.
     // DiplomaticStatus.DefensivePact - similar. Colored PURPLE.
+    // DiplomacyFlags.DeclarationOfFriendship colored GREEN. (DiplomaticStatus.DeclarationOfFriendship does not always equate to active DoF)
     Unforgivable(Color.BROWN),
     Enemy(Color.ORANGE),
     Afraid(Color.YELLOW),
@@ -288,20 +289,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             level != RelationshipLevel.Neutral || !civInfo.isCityState -> level
             civInfo.cityStateFunctions.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
             else -> RelationshipLevel.Neutral
-        }
-    }
-
-    /**
-     * For human-human relationships only
-     * @return [Pair] of [Color] (relationship color) and [String] (relationship text, e.g. "Friend")
-     */
-    @Readonly
-    fun humanRelationshipLevel(): Pair<Color, String> {
-        return when {
-            diplomaticStatus == DiplomaticStatus.DefensivePact -> Pair(RelationshipLevel.Ally.color, Constants.defensivePact)
-            hasFlag(DiplomacyFlags.DeclarationOfFriendship) -> Pair(Color.GREEN, RelationshipLevel.Friend.name)
-            diplomaticStatus == DiplomaticStatus.War -> Pair(Color.RED, RelationshipLevel.Enemy.name)
-            else -> Pair(RelationshipLevel.Neutral.color, RelationshipLevel.Neutral.name)
         }
     }
     

@@ -5,9 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -31,6 +33,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import yairm210.purity.annotations.Readonly
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -149,7 +152,7 @@ class DiplomacyScreen(
                     }
             else
                 ImageGetter.getCircle(
-                    color = if (civ.isHuman() && viewingCiv.isHuman()) diplomacy.humanRelationshipLevel().first
+                    color = if (civ.isHuman() && viewingCiv.isHuman()) humanRelationshipLevel(diplomacy).first
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact) Color.PURPLE
                     else if (civ.isAtWarWith(viewingCiv)) Color.RED
                     else relationLevel.color,
@@ -225,12 +228,26 @@ class DiplomacyScreen(
     }
 
     /**
+     * For human-human relationships only
+     * @return [Pair] of [Color] (relationship color) and [String] (relationship text, e.g. "Friend")
+     */
+    @Readonly
+    private fun humanRelationshipLevel(otherCivDiplomacyManager: DiplomacyManager): Pair<Color, String> {
+        return when {
+            otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact -> Pair(Color.PURPLE, Constants.defensivePact)
+            otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship) -> Pair(Color.GREEN, RelationshipLevel.Friend.name)
+            otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War -> Pair(Color.RED, RelationshipLevel.Enemy.name)
+            else -> Pair(RelationshipLevel.Neutral.color, RelationshipLevel.Neutral.name)
+        }
+    }
+
+    /**
      * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
      * @return Relationship [Table] for human vs human player only
      */
     internal fun getHumanRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val relationshipTable = Table()
-        val humanRelationshipLevel: Pair<Color, String> = otherCivDiplomacyManager.humanRelationshipLevel()
+        val humanRelationshipLevel: Pair<Color, String> = humanRelationshipLevel(otherCivDiplomacyManager)
         val relationshipColor = humanRelationshipLevel.first
         val relationshipText = humanRelationshipLevel.second
         relationshipTable.add("{Our relationship}: ".toLabel())
