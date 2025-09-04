@@ -9,8 +9,8 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.Trade
@@ -226,17 +226,37 @@ class DiplomacyScreen(
     }
 
     /**
-     * Helper function for updateLeftSideTable for human vs human player only
+     * Helper function for updateLeftSideTable() and getHumanRelationshipTable() (human-human relationships only)
      * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
      * @return Relationship color between two human players
      */
     private fun getHumanRelationshipColor(otherCivDiplomacyManager: DiplomacyManager): Color {
+        // should ensure colors align with equivalent human-AI relationship colors (RelationshipLevel ?)
+        // as of writing, RelationshipLevel colors are not appropriate IMO, so using hardcoded values for now
         return if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact)
-            Color.PURPLE
-        else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship))
-            RelationshipLevel.Friend.color
-        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War) Color.RED
-        else RelationshipLevel.Neutral.color
+            Color.CYAN
+        else if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+            Color.GREEN
+        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War)
+            Color.RED
+        else
+            RelationshipLevel.Neutral.color
+    }
+
+    /**
+     * Human-human relationships only. See also: getHumanRelationshipColor()
+     * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
+     * @return Relationship text (e.g. "Friend")
+     */
+    private fun getHumanRelationshipText(otherCivDiplomacyManager: DiplomacyManager): String {
+        return if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact)
+            Constants.defensivePact
+        else if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+            RelationshipLevel.Friend.name
+        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War)
+            RelationshipLevel.Enemy.name
+        else
+            RelationshipLevel.Neutral.name
     }
 
     /**
@@ -245,25 +265,8 @@ class DiplomacyScreen(
      */
     internal fun getHumanRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val relationshipTable = Table()
-        val relationshipColor: Color
-        val relationshipText: String
-        
-        if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact) {
-            relationshipText = Constants.defensivePact
-            relationshipColor = Color.GREEN
-        }
-        else if (otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DeclarationOfFriendship)) {
-            relationshipText = RelationshipLevel.Friend.name
-            relationshipColor = Color.GREEN
-        }
-        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War) {
-            relationshipText = RelationshipLevel.Enemy.name
-            relationshipColor = Color.RED
-        }
-        else {
-            relationshipText = RelationshipLevel.Neutral.name
-            relationshipColor = RelationshipLevel.Neutral.color
-        }
+        val relationshipColor: Color = getHumanRelationshipColor(otherCivDiplomacyManager)
+        val relationshipText: String = getHumanRelationshipText(otherCivDiplomacyManager)
 
         relationshipTable.add("{Our relationship}: ".toLabel())
         relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
