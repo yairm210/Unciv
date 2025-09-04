@@ -149,7 +149,7 @@ class DiplomacyScreen(
                     }
             else
                 ImageGetter.getCircle(
-                    color = if (civ.isHuman() && viewingCiv.isHuman()) diplomacy.humanRelationshipLevel().color
+                    color = if (civ.isHuman() && viewingCiv.isHuman()) diplomacy.humanRelationshipLevel().first
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact) Color.PURPLE
                     else if (civ.isAtWarWith(viewingCiv)) Color.RED
                     else relationLevel.color,
@@ -230,9 +230,11 @@ class DiplomacyScreen(
      */
     internal fun getHumanRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val relationshipTable = Table()
-        val humanRelationshipLevel = otherCivDiplomacyManager.humanRelationshipLevel()
+        val humanRelationshipLevel: Pair<Color, String> = otherCivDiplomacyManager.humanRelationshipLevel()
+        val relationshipColor = humanRelationshipLevel.first
+        val relationshipText = humanRelationshipLevel.second
         relationshipTable.add("{Our relationship}: ".toLabel())
-        relationshipTable.add(humanRelationshipLevel.text.toLabel(humanRelationshipLevel.color)).row()
+        relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
         return relationshipTable
     }
 

@@ -44,21 +44,6 @@ enum class RelationshipLevel(val color: Color) {
     }
 }
 
-/**
- * Similar to [RelationshipLevel] but for human-human relationships.
- * 
- * Use [DiplomacyManager.humanRelationshipLevel] to get appropriate relationship for a game state.
- *
- * (!) Use [HumanRelationshipLevel.text] to retrieve the relationship text string (e.g. "Friend" instead of "DeclarationOfFriendship").
- */
-enum class HumanRelationshipLevel(val color: Color, val text: String) {
-    War(Color.RED, RelationshipLevel.Enemy.name),
-    Neutral(RelationshipLevel.Neutral.color, RelationshipLevel.Neutral.name),
-    DeclarationOfFriendship(Color.GREEN, RelationshipLevel.Friend.name), // inconsistent with AI DoF color?
-    DefensivePact(RelationshipLevel.Ally.color, Constants.defensivePact)
-    ;
-}
-
 enum class DiplomacyFlags {
     DeclinedLuxExchange,
     DeclinedPeace,
@@ -306,13 +291,17 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    /**
+     * For human-human relationships only
+     * @return [Pair] of [Color] (relationship color) and [String] (relationship text, e.g. "Friend")
+     */
     @Readonly
-    fun humanRelationshipLevel(): HumanRelationshipLevel {
+    fun humanRelationshipLevel(): Pair<Color, String> {
         return when {
-            diplomaticStatus == DiplomaticStatus.DefensivePact -> HumanRelationshipLevel.DefensivePact
-            hasFlag(DiplomacyFlags.DeclarationOfFriendship) -> HumanRelationshipLevel.DeclarationOfFriendship
-            diplomaticStatus == DiplomaticStatus.War -> HumanRelationshipLevel.War
-            else -> HumanRelationshipLevel.Neutral
+            diplomaticStatus == DiplomaticStatus.DefensivePact -> Pair(RelationshipLevel.Ally.color, Constants.defensivePact)
+            hasFlag(DiplomacyFlags.DeclarationOfFriendship) -> Pair(Color.GREEN, RelationshipLevel.Friend.name)
+            diplomaticStatus == DiplomaticStatus.War -> Pair(Color.RED, RelationshipLevel.Enemy.name)
+            else -> Pair(RelationshipLevel.Neutral.color, RelationshipLevel.Neutral.name)
         }
     }
     
