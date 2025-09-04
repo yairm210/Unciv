@@ -106,9 +106,10 @@ class CityTurnManager(val city: City) {
         val chosenResource = missingResources.randomOrNull()
         
         city.demandedResource = chosenResource?.name ?: "" // mods may have no resources as candidates even
-        if (city.demandedResource == "") // Failed to get a valid resource, try again some time later
-            city.setFlag(CityFlags.ResourceDemand, 15 + Random.Default.nextInt(10))
-        else
+        // Get a new resource in ~20 turns
+        city.setFlag(CityFlags.ResourceDemand, 15 + Random.Default.nextInt(10))
+        
+        if (city.demandedResource != "") // Failed to get a valid resource, try again some time later
             city.civ.addNotification("[${city.name}] demands [${city.demandedResource}]!",
                 listOf(LocationAction(city.location), OverviewAction(EmpireOverviewCategories.Resources)),
                 NotificationCategory.General, NotificationIcon.City, "ResourceIcons/${city.demandedResource}")
