@@ -38,7 +38,11 @@
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
 		"upgradesTo": "Swordsman",
-		"uniques": ["May upgrade to [Spearman] through ruins-like effects"],
+		"uniques": [
+            "May upgrade to [Spearman] through ruins-like effects",
+            "Mark [Nation] as [Communist] <by consuming this unit>",
+            "Mark [Nation] as not [Communist] <by consuming this unit>"
+        ],
 		"attackSound": "nonmetalhit",
         "civilopediaText": [
 			{"text": "This is your basic, club-swinging fighter."}

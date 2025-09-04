@@ -675,6 +675,32 @@ class GlobalUniquesTests {
 
     // endregion
 
+    // region Mark [tagTarget] as [tag]
+
+    @Test
+    fun markTargetAsTag() {
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2.Zero)
+        val city = game.addCity(civInfo, tile, true)
+        city.cityConstructions.addBuilding(game.createBuilding("Mark [Nation] as [Communist]"))
+        val building = game.createBuilding("Gain [100] [Gold] <upon expending a [Great Person] unit> <for [Communist] Civilizations>")
+        city.cityConstructions.addBuilding(building)
+
+        civInfo.addGold(-civInfo.gold) // Reset the gold
+        Assert.assertEquals(0, civInfo.gold)
+
+        // Expend the unit
+        game.addUnit("Great Engineer", civInfo, tile).consume()
+        Assert.assertEquals(100, civInfo.gold)
+
+        // Remove the tag
+        city.cityConstructions.addBuilding(game.createBuilding("Mark [Nation] as not [Communist]"))
+        game.addUnit("Great Engineer", civInfo, tile).consume()
+        Assert.assertEquals(100, civInfo.gold)
+    }
+
+    // endregion
+
     // endregion
 
 }

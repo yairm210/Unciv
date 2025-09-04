@@ -241,6 +241,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Mark [tagTarget] as [tag]"
+	Adds a unique tag to either a Nation or a Base Unit.
+
+	Example: "Mark [Nation] as [Communist]"
+
+	Applicable to: Triggerable
+
+??? example  "Mark [tagTarget] as not [tag]"
+	Removes a unique tag from the target.
+
+	Example: "Mark [Nation] as not [Communist]"
+
+	Applicable to: Triggerable
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
@@ -3961,6 +3975,8 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
 *[stockpile]: The name of any stockpiled resource.
 *[stockpiledResource]: The name of any stockpiled resource.
+*[tag]: A tagged unique (verbatim, no placeholders).
+*[tagTarget]: `Nation`, or `Unit type`.
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'

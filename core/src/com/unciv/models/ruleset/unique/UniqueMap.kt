@@ -56,6 +56,9 @@ open class UniqueMap() {
     fun hasTagUnique(tagUnique: String) =
         innerUniqueMap.containsKey(tagUnique)
 
+    fun removeTagUnique(tagUnique: String) =
+        innerUniqueMap.remove(tagUnique)
+
     // 160ms vs 1000-1250ms/30s
     @Readonly
     fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
