@@ -44,6 +44,21 @@ enum class RelationshipLevel(val color: Color) {
     }
 }
 
+/**
+ * Similar to [RelationshipLevel] but for human-human relationships.
+ * 
+ * Use [DiplomacyManager.humanRelationshipLevel] to get appropriate relationship for a game state.
+ *
+ * (!) Use [HumanRelationshipLevel.text] to retrieve the relationship text string (e.g. "Friend" instead of "DeclarationOfFriendship").
+ */
+enum class HumanRelationshipLevel(val color: Color, val text: String) {
+    War(Color.RED, RelationshipLevel.Enemy.name),
+    Neutral(RelationshipLevel.Neutral.color, RelationshipLevel.Neutral.name),
+    DeclarationOfFriendship(Color.GREEN, RelationshipLevel.Friend.name), // inconsistent with AI DoF color?
+    DefensivePact(RelationshipLevel.Ally.color, Constants.defensivePact)
+    ;
+}
+
 enum class DiplomacyFlags {
     DeclinedLuxExchange,
     DeclinedPeace,
@@ -291,6 +306,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
+    fun humanRelationshipLevel(): HumanRelationshipLevel {
+        return when {
+            diplomaticStatus == DiplomaticStatus.DefensivePact -> HumanRelationshipLevel.DefensivePact
+            hasFlag(DiplomacyFlags.DeclarationOfFriendship) -> HumanRelationshipLevel.DeclarationOfFriendship
+            diplomaticStatus == DiplomaticStatus.War -> HumanRelationshipLevel.War
+            else -> HumanRelationshipLevel.Neutral
+        }
+    }
+    
     /** Same as [relationshipLevel] but omits the distinction Neutral/Afraid, which can be _much_ cheaper */
     @Readonly
     fun relationshipIgnoreAfraid(): RelationshipLevel {
