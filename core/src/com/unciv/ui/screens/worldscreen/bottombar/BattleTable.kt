@@ -226,14 +226,14 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                 attackerModifiersTable.run {
                     if (i < attackerModifiers.size) add(attackerModifiers[i]).right() else add()
                     if (i != maxModifierArraySize) {
-                        row().pad(3f)
+                        row().padBottom(3f)
                     }
                 }
 
                 defenderModifiersTable.run {
                     if (i < defenderModifiers.size) add(defenderModifiers[i]).right() else add()
                     if (i != maxModifierArraySize) {
-                        row().pad(3f)
+                        row().padBottom(3f)
                     }
                 }
             }
@@ -295,15 +295,14 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             else
                 attackerHealthString = "$attackerHealth → $minRemainingLifeAttacker–$maxRemainingLifeAttacker"
 
-            add(attackerHealthString.toLabel(alignment = Align.right)).right()
+            add(attackerHealthString.toLabel(alignment = Align.right)).right().padBottom(0f)
 
             if (showDefenderExact)
                 defenderHealthString = "$defenderHealth → $maxRemainingLifeDefender"
             else
                 defenderHealthString = "$defenderHealth → $minRemainingLifeDefender–$maxRemainingLifeDefender"
 
-            add(defenderHealthString.toLabel()).left()
-            row()
+            add(defenderHealthString.toLabel()).left().padBottom(0f).row()
 
             add(("Average".tr() + ": $avgDamageToAttacker").toLabel(fontSize = 12, alignment = Align.right)).right()
             add(("Average".tr() + ": $avgDamageToDefender").toLabel(fontSize = 12, alignment = Align.left)).left()
