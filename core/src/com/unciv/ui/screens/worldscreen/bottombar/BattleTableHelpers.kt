@@ -231,7 +231,7 @@ object BattleTableHelpers {
         val totalWidth = 120f
         fun addHealthToBar(image: Image, amount: Int) {
             val width = totalWidth * amount / maxHealth
-            healthBar.add(image).size(width.coerceIn(0f, totalWidth),4f)
+            healthBar.add(image).size(width.coerceIn(0f, totalWidth), 8f)
         }
 
         fun animateHealth(health: Image, healthDecreaseWidth: Float, move: Float) {
