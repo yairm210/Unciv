@@ -70,6 +70,8 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import yairm210.purity.annotations.Readonly
@@ -595,17 +597,38 @@ class WorldScreen(
             gameInfoClone.nextTurn(progressBar)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
+                // outer try-catch for non-auth exceptions
                 try {
-                    game.onlineMultiplayer.updateGame(gameInfoClone)
-                }catch (ex: Exception) {
-                    when (ex) {
-                        is MultiplayerAuthException -> {
+                    // keep retrying if upload fails AND reauthentication succeeds
+                    var retryUpload: Boolean
+                    do {
+                        try {
+                            game.onlineMultiplayer.updateGame(gameInfoClone)
+                            retryUpload = false
+                        } catch (ex: MultiplayerAuthException) {
+                            // true only if authentication succeeds (password retries are permitted)
+                            // false only if user closes the auth popup
+                            // let's hope the GL thread doesn't crash :-)
+                            val authResult = CompletableDeferred<Boolean>()
                             launchOnGLThread {
-                                AuthPopup(this@WorldScreen) {
-                                        success -> if (success) nextTurn()
-                                }.open(true)
+                                try {
+                                    AuthPopup(this@WorldScreen, authResult::complete).open(true)
+                                } catch (ex: Exception) {
+                                    // GL thread about to crash because of AuthPopup init
+                                    authResult.cancel()
+                                    throw ex
+                                }
+                            }
+                            retryUpload = try {
+                                // wait until authentication has finished
+                                authResult.await()
+                            } catch (ex: CancellationException) {
+                                false
                             }
                         }
+                    } while (retryUpload)
+                } catch (ex: Exception) { // non-auth exceptions
+                    when (ex) {
                         is FileStorageRateLimitReached -> {
                             val message = "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
                             launchOnGLThread {
