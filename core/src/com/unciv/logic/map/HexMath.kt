@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
@@ -373,6 +374,11 @@ object HexMath {
         val vectorsInRing = getVectorsAtDistance(Vector2.Zero, ring, ring, false)
         val positionInRing = vectorsInRing.indexOf(Vector2(x.toFloat(), y.toFloat()))
         return ringStart + positionInRing
+    }
+
+    fun tilesAndNeighborUniqueIndex(tile: Tile, neighbor: Tile): Int {
+        return tile.zeroBasedIndex * 6 +  // each tile has 6 neighbors 
+                tile.tileMap.getNeighborTileClockPosition(tile, neighbor) / 2 - 1 // min: 2, max: 12, step 2; Divide by 2 and it's numbers 1-6, -1 to get 0-5
     }
 
 }

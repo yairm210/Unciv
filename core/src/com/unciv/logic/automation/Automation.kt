@@ -130,11 +130,11 @@ object Automation {
         // No Growth if <-10, 1/4 if <0
         // Reusing food growth code from CityStats.updateFinalStatList()
         val growthNullifyingUnique =
-            city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
+            localUniqueCache.forCityGetMatchingUniques(city, UniqueType.NullifiesGrowth).firstOrNull()
         if (growthNullifyingUnique == null) { // if not nullified
             var newGrowthFood = growthFood  // running count of growthFood
             val cityStats = CityStats(city)
-            val growthBonuses = cityStats.getGrowthBonus(growthFood)
+            val growthBonuses = cityStats.getGrowthBonus(growthFood, localUniqueCache)
             for (growthBonus in growthBonuses) {
                 newGrowthFood += growthBonus.value.food
             }

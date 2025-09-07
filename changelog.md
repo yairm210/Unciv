@@ -1,3 +1,19 @@
+## 4.17.19
+
+Added map autosave
+
+CPU performance improvements
+
+Notification categories can me minimized by clicking on the title
+
+By RobLoach:
+- BNW: Fix getting Cultural Victory through Domination 
+- Modding: Trigger Event unit action text is the Event text 
+
+Fixed max window discrepancy in Windows platform - By SidedYapper - New contributor!
+
+Fix human-human relationship incorrectly showing "Friend" in Diplomacy screen, as well as inconsistent colors - By unciv-loof - New contributor! 
+
 ## 4.17.18
 
 Peace trade no longer generates notification when it "ends"

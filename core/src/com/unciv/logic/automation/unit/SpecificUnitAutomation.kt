@@ -251,7 +251,10 @@ object SpecificUnitAutomation {
      * `false` can be interpreted as: the unit doesn't know where to go or there are no city
      * states. */
     fun conductTradeMission(unit: MapUnit): Boolean {
-        val closestCityStateTile =
+        val conductedTradeMission = UnitActions.invokeUnitAction(unit, UnitActionType.ConductTradeMission)
+        if (conductedTradeMission) return true
+        
+        val relevantTiles = 
                 unit.civ.gameInfo.civilizations
                     .filter {
                         it != unit.civ
@@ -261,16 +264,15 @@ object SpecificUnitAutomation {
                     }
                     .flatMap { it.cities[0].getTiles() }
                     .filter { unit.civ.hasExplored(it) }
-                    .mapNotNull { tile ->
-                        val path = unit.movement.getShortestPath(tile)
-                        // 0 is unreachable, 10 is too far away
-                        if (path.size in 1..10) tile to path.size else null
-                    }
-                    .minByOrNull { it.second }?.first
-                    ?: return false
+                    .sortedBy { unit.currentTile.aerialDistanceTo(it) }
 
-        val conductedTradeMission = UnitActions.invokeUnitAction(unit, UnitActionType.ConductTradeMission)
-        if (conductedTradeMission) return true
+        val closestCityStateTile = relevantTiles.firstOrNull { tile ->
+            if (!unit.movement.canPassThrough(tile)) return@firstOrNull false
+            val path = unit.movement.getShortestPath(tile)
+            // 0 is unreachable, 10 is too far away
+            path.size in 1..10
+        }
+        if (closestCityStateTile == null) return false
 
         val unitTileBeforeMovement = unit.currentTile
         unit.movement.headTowards(closestCityStateTile)

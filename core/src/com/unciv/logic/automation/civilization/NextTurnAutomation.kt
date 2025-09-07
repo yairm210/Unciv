@@ -492,8 +492,6 @@ object NextTurnAutomation {
                 city.annexCity()
             }
 
-            city.reassignAllPopulation()
-
             if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
                 if (city.cityConstructions.constructionQueue.isNotEmpty())

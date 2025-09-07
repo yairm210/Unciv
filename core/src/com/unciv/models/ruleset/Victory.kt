@@ -151,13 +151,11 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 originalMajorCapitalsOwned(civInfo) == civsWithPotentialCapitalsToOwn(civInfo.gameInfo).size
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
-            MilestoneType.MoreCountableThanEachPlayer -> {
-                for (otherCiv in civInfo.gameInfo.civilizations) {
-                    if (!getMoreCountableThanOtherCivRelevent(civInfo, otherCiv)) continue
-                    if (getMoreCountableThanOtherCivPercent(civInfo, otherCiv) <= 100f) return false
-                }
-                return true
-            }
+            MilestoneType.MoreCountableThanEachPlayer ->
+                civInfo.gameInfo.civilizations.filter {
+                    getMoreCountableThanOtherCivRelevent(civInfo, it) &&
+                    getMoreCountableThanOtherCivPercent(civInfo, it) > 100f
+                }.isNotEmpty()
             MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
                 it.cityConstructions.isBuilt(params[0])
             }

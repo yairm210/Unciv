@@ -156,11 +156,10 @@ class CityStats(val city: City) {
     }
 
     @Readonly
-    fun getGrowthBonus(totalFood: Float): StatMap {
+    fun getGrowthBonus(totalFood: Float, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): StatMap {
         val growthSources = StatMap()
-        val stateForConditionals = city.state
         // "[amount]% growth [cityFilter]"
-        for (unique in city.getMatchingUniques(UniqueType.GrowthPercentBonus, gameContext = stateForConditionals)) {
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.GrowthPercentBonus)) {
             if (!city.matchesFilter(unique.params[1])) continue
 
             growthSources.add(
