@@ -179,16 +179,17 @@ class Terrain : RulesetStatsObject() {
     @Readonly
     fun matchesSingleFilter(filter: String): Boolean {
         return when (filter) {
-            in Constants.all -> true
-            name -> true
+            "all", "All" -> true
             "Terrain" -> true
             "Open terrain" -> !isRough()
             "Rough terrain" -> isRough()
-            type.name -> true
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
-
-            else -> false
+            else -> when(filter){ // non-constants
+                name -> true
+                type.name -> true
+                else -> false
+            }
         }
     }
 
