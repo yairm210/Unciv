@@ -170,7 +170,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
     @Readonly
     override fun getMatchingTagUniques(uniqueTag: String, state: GameContext): Sequence<Unique> {
-        return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueTag, state)
+        return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingTagUniques(uniqueTag, state)
         else super<RulesetObject>.getMatchingTagUniques(uniqueTag, state)
     }
 

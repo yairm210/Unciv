@@ -50,7 +50,7 @@ open class UniqueMap() {
 
     @Readonly
     fun hasUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
-        getUniques(uniqueTag).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
+        getTagUniques(uniqueTag).any { it.conditionalsApply(state) && !it.isTimedTriggerable }
 
     @Readonly
     fun hasTagUnique(tagUnique: String) =
@@ -63,7 +63,7 @@ open class UniqueMap() {
         ?: emptySequence()
 
     @Readonly
-    fun getUniques(uniqueTag: String) = innerUniqueMap[uniqueTag]
+    fun getTagUniques(uniqueTag: String) = innerUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
@@ -80,8 +80,8 @@ open class UniqueMap() {
             }
 
     @Readonly
-    fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
-        getUniques(uniqueTag)
+    fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
+        getTagUniques(uniqueTag)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
             .flatMap {
                 when {
@@ -96,8 +96,8 @@ open class UniqueMap() {
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
     @Readonly
-    fun hasMatchingUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
-        getUniques(uniqueTag)
+    fun hasMatchingTagUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
+        getTagUniques(uniqueTag)
             .any { it.conditionalsApply(state) }
 
     @Readonly
@@ -106,7 +106,7 @@ open class UniqueMap() {
     @Readonly
     fun getTriggeredUniques(trigger: UniqueType, gameContext: GameContext,
                             triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
-        return getAllUniques().filter { unique ->
+        return typedUniqueMap.values.asSequence().flatten().filter { unique ->
             unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
         }.flatMap { it.getMultiplied(gameContext) }
     }
