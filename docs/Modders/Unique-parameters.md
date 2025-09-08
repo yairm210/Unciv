@@ -366,12 +366,9 @@ Allowed values:
 -   Stat name (`Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` or `Faith`)
     - Example: `Only available <when number of [Science] is more than [0]>`
     - Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)
--   Resource name Per Turn (`Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` or `Faith`)
-    - Example: `Only available <when number of [[Iron] resources per turn] is more than [0]>`
-    - Gets the amount of a resource the civilization gains per turn
--   Stat name Per Turn (`Production`, `Food`, `Gold`, `Science`, `Culture`, `Happiness` or `Faith`)
+-   Stat/Resource Per Turn
     - Example: `Only available <when number of [[Culture] Per Turn] is more than [0]>`
-    - Gets the amount of a stat the civilization gains per turn
+    - Gets the amount of a stat or resource the civilization gains per turn
 -   `Completed Policy branches`
     - Example: `Only available <when number of [Completed Policy branches] is more than [0]>`
 -   `[cityFilter] Cities`
