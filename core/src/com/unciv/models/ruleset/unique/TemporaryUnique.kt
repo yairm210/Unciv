@@ -34,7 +34,7 @@ fun ArrayList<TemporaryUnique>.endTurn() {
 }
 
 @Readonly
-fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> {
+fun ArrayList<TemporaryUnique>.getMatchingTagUniques(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> {
     return this.asSequence()
         .map { it.uniqueObject }
         .filter { it.type == uniqueType && it.conditionalsApply(gameContext) }

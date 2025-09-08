@@ -536,7 +536,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, gameContext))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, gameContext))
-        yieldAll(temporaryUniques.getMatchingUniques(uniqueType, gameContext))
+        yieldAll(temporaryUniques.getMatchingTagUniques(uniqueType, gameContext))
         yieldAll(getEra().getMatchingUniques(uniqueType, gameContext))
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, gameContext))
         if (religionManager.religion != null)

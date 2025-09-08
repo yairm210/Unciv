@@ -493,7 +493,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
-                state != null && hasUnique(it, state) ||
+                state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
 

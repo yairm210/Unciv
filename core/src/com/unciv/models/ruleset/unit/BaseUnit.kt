@@ -148,16 +148,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     @Readonly
-    override fun hasUnique(uniqueTag: String, state: GameContext?): Boolean {
+    override fun hasTagUnique(uniqueTag: String, state: GameContext?): Boolean {
         val gameContext = state ?: GameContext.EmptyState
         return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueTag, gameContext)
-        else super<RulesetObject>.hasUnique(uniqueTag, gameContext)
+        else super<RulesetObject>.hasTagUnique(uniqueTag, gameContext)
     }
 
     @Readonly
-    override fun hasTagUnique(tagUnique: String): Boolean {
-        return if (::ruleset.isInitialized) rulesetUniqueMap.hasTagUnique(tagUnique)
-        else super<RulesetObject>.hasTagUnique(tagUnique)
+    override fun hasTagUnique(uniqueTag: String): Boolean {
+        return if (::ruleset.isInitialized) rulesetUniqueMap.hasTagUnique(uniqueTag)
+        else super<RulesetObject>.hasTagUnique(uniqueTag)
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
@@ -169,9 +169,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
     @Readonly
-    override fun getMatchingUniques(uniqueTag: String, state: GameContext): Sequence<Unique> {
+    override fun getMatchingTagUniques(uniqueTag: String, state: GameContext): Sequence<Unique> {
         return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueTag, state)
-        else super<RulesetObject>.getMatchingUniques(uniqueTag, state)
+        else super<RulesetObject>.getMatchingTagUniques(uniqueTag, state)
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
@@ -419,11 +419,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
-                state != null && hasUnique(it, state) ||
+                state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
         else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
-            state != null && hasUnique(filter, state) ||
+            state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
     

@@ -271,7 +271,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     @Readonly fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
             containedBuildingFiltersCache.getOrPut(buildingNameOrUnique) {
                 isBuilt(buildingNameOrUnique)
-                        || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique, city.state) }
+                        || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasTagUnique(buildingNameOrUnique, city.state) }
             }
 
     @Readonly
