@@ -79,6 +79,21 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names()
     },
 
+    ResourcePerTurn("[resource] resources per turn", shortDocumentation = "The amount of a resource gained per turn") {
+        override val documentationHeader = "Resource name Per Turn (${niceJoinList(Stat.names())})"
+        override val documentationStrings = listOf("Gets the amount of a resource the civilization gains per turn")
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val resource = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
+            return gameContext.civInfo?.getCivResourceSupply()?.sumBy(resource) ?: return null
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.Resource.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.Resource.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
+        override val example: String = "[Iron] resources per turn"
+    },
+
     StatPerTurn("[stat] Per Turn", shortDocumentation = "The amount of a stat gained per turn") {
         override val documentationHeader = "Stat name Per Turn (${niceJoinList(Stat.names())})"
         override val documentationStrings = listOf("Gets the amount of a stat the civilization gains per turn")

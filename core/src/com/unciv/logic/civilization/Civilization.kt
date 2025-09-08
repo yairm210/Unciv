@@ -426,6 +426,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getHappiness() = stats.happiness
 
     /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
+    @Readonly
     fun getCivResourceSupply(): ResourceSupplyList = summarizedCivResourceSupply
 
     /** Preserves some origins for resources so we can separate them for trades
