@@ -4,7 +4,7 @@ import yairm210.purity.annotations.Readonly
 import java.util.*
 
 open class UniqueMap() {
-    private val innerUniqueMap = HashMap<String, ArrayList<Unique>>()
+    private val tagUniqueMap = HashMap<String, ArrayList<Unique>>()
 
     // *shares* the list of uniques with the other map, to save on memory and allocations
     // This is a memory/speed tradeoff, since there are *600 unique types*,
@@ -17,13 +17,13 @@ open class UniqueMap() {
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     open fun addUnique(unique: Unique) {
-        val existingArrayList = innerUniqueMap[unique.placeholderText]
+        val existingArrayList = tagUniqueMap[unique.placeholderText]
         if (existingArrayList != null) existingArrayList.add(unique)
-        else innerUniqueMap[unique.placeholderText] = arrayListOf(unique)
+        else tagUniqueMap[unique.placeholderText] = arrayListOf(unique)
         
         if (unique.type == null) return
         if (typedUniqueMap[unique.type] != null) return
-        typedUniqueMap[unique.type] = innerUniqueMap[unique.placeholderText]
+        typedUniqueMap[unique.type] = tagUniqueMap[unique.placeholderText]
     }
 
     /** Calls [addUnique] on each item from [uniques] */
@@ -32,17 +32,17 @@ open class UniqueMap() {
     }
 
     fun removeUnique(unique: Unique) {
-        val existingArrayList = innerUniqueMap[unique.placeholderText]
+        val existingArrayList = tagUniqueMap[unique.placeholderText]
         existingArrayList?.remove(unique)
     }
     
     fun clear() {
-        innerUniqueMap.clear()
+        tagUniqueMap.clear()
         typedUniqueMap.clear()
     }
     
     @Readonly
-    fun isEmpty(): Boolean = innerUniqueMap.isEmpty()
+    fun isEmpty(): Boolean = tagUniqueMap.isEmpty()
     
     @Readonly
     fun hasUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
@@ -54,7 +54,7 @@ open class UniqueMap() {
 
     @Readonly
     fun hasTagUnique(tagUnique: String) =
-        innerUniqueMap.containsKey(tagUnique)
+        tagUniqueMap.containsKey(tagUnique)
 
     // 160ms vs 1000-1250ms/30s
     @Readonly
@@ -63,7 +63,7 @@ open class UniqueMap() {
         ?: emptySequence()
 
     @Readonly
-    fun getTagUniques(uniqueTag: String) = innerUniqueMap[uniqueTag]
+    fun getTagUniques(uniqueTag: String) = tagUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
@@ -101,7 +101,7 @@ open class UniqueMap() {
             .any { it.conditionalsApply(state) }
 
     @Readonly
-    fun getAllUniques() = innerUniqueMap.values.asSequence().flatten()
+    fun getAllUniques() = tagUniqueMap.values.asSequence().flatten()
 
     @Readonly
     fun getTriggeredUniques(trigger: UniqueType, gameContext: GameContext,
