@@ -190,3 +190,4 @@ detekt/reports.html
 /site/
 
 /buildSrc/.kotlin/errors/*
+/buildSrc/.kotlin/sessions/*
