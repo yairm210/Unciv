@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.civilopediascreen
 
+import com.unciv.UncivGame
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.input.KeyboardBinding
@@ -98,7 +99,16 @@ enum class CivilopediaCategories (
         getImage = null,
         KeyboardBinding.PediaTutorials,
         "OtherIcons/ExclamationMark",
-        { _, tutorialController -> tutorialController.getCivilopediaTutorials() }
+        { _, tutorialController ->
+            val tutorials = tutorialController.getCivilopediaTutorials()
+            // Add the Global Uniques
+            val globalUniques = UncivGame.Current.gameInfo?.getGlobalUniques()
+            if (globalUniques != null && globalUniques.hasUniques()) {
+                tutorials + globalUniques
+            } else {
+                tutorials
+            }
+        }
     ),
     Victory ("Victory Types",
         CivilopediaImageGetters.victoryType,

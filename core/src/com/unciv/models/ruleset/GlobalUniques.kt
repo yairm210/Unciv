@@ -4,14 +4,38 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 
 class GlobalUniques: RulesetObject() {
-    override var name = "GlobalUniques"
+    override var name = "Global Uniques"
 
     var unitUniques: ArrayList<String> = ArrayList()
     override fun makeLink() = "" // No own category on Civilopedia screen
     override fun getUniqueTarget() = UniqueTarget.GlobalUniques
+
+    @Readonly fun hasUniques(): Boolean =
+        !(uniques.isEmpty() && unitUniques.isEmpty())
+
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        val lines = mutableListOf<FormattedLine>()
+        lines.add(FormattedLine("Global uniques are modifiers that apply to all civilizations."))
+        if (uniques.isNotEmpty()) {
+            lines.add(FormattedLine(""))
+            lines.add(FormattedLine("Global Effect", header=4))
+            for (unique in uniques) {
+                lines.add(FormattedLine(unique))
+            }
+        }
+        if (unitUniques.isNotEmpty()) {
+            lines.add(FormattedLine(""))
+            lines.add(FormattedLine("Units", header=4))
+            for (unitUnique in unitUniques) {
+                lines.add(FormattedLine(unitUnique))
+            }
+        }
+        return lines
+    }
 
     companion object {
         @Readonly
