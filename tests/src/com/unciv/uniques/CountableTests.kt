@@ -115,6 +115,26 @@ class CountableTests {
     }
 
     @Test
+    fun testStatOrResourcePerTurn() {
+        setupModdedGame()
+        city.cityConstructions.addBuilding(game.createBuilding(
+            "Provides [5] [Coal]",
+            "[+1 Gold, +3 Culture] [in this city]"
+        ))
+        val tests = listOf(
+            "[Gold] Per Turn" to 4, // Palace provides 3
+            "[Culture] Per Turn" to 4, // Palace provides 1
+            "[Coal] Per Turn" to 5,
+            "[Iron] Per Turn" to 0,
+            "[Null] Per Turn" to null,
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
     fun testStatsCountables() {
         setupModdedGame()
         fun verifyStats(state: GameContext) {
