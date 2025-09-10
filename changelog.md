@@ -1,3 +1,31 @@
+## 4.17.20
+
+Resolve  - job list comodification when closing editor
+
+chore: More renames
+
+chore: More renames
+
+chore: Renamed unique functions to distinguish between tag and non-tag uniques
+
+perf(cpu): Optimized Civilization.getResourceAmount
+
+perf(cpu): Optimized CityConstructions.containsBuildingOrEquivalent, Conditionals.conditionalApplies
+
+perf(cpu): Optimized multiFilter string manipulations
+
+perf(cpu): Optimized Terrain.matchesSingleFilter
+
+Roads are not shown on non-visible tiles
+
+Limit tile information shown when spying on cities
+
+WLTK resource demand changes every ~20 turns
+
+Add cityAirUnitCapacity ModConstant - By unciv-loof
+
+Docs: Minor Update - By SidedYapper
+
 ## 4.17.19
 
 Added map autosave
