@@ -33,6 +33,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import yairm210.purity.annotations.Readonly
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -128,6 +129,7 @@ class DiplomacyScreen(
         closeButton.setPosition(stage.width - closeButtonPad, stage.height - closeButtonPad, Align.topRight)
     }
 
+    // There appear to be hardcoded AI relationship color values here. Should probably refactor to unify color schemes.
     internal fun updateLeftSideTable(selectCiv: Civilization?) {
         leftSideTable.clear()
         leftSideTable.add().padBottom(closeButtonPad).row()  // no default pad, and make distance of first civ to top same as for the close button
@@ -150,7 +152,7 @@ class DiplomacyScreen(
                     }
             else
                 ImageGetter.getCircle(
-                    color = if (civ.isHuman() && viewingCiv.isHuman()) getHumanRelationshipColor(diplomacy)
+                    color = if (civ.isHuman() && viewingCiv.isHuman()) humanRelationshipLevel(diplomacy).first
                     else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact) Color.PURPLE
                     else if (civ.isAtWarWith(viewingCiv)) Color.RED
                     else relationLevel.color,
@@ -226,37 +228,17 @@ class DiplomacyScreen(
     }
 
     /**
-     * Helper function for updateLeftSideTable() and getHumanRelationshipTable() (human-human relationships only)
-     * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
-     * @return Relationship color between two human players
+     * For human-human relationships only
+     * @return [Pair] of [Color] (relationship color) and [String] (relationship text, e.g. "Friend")
      */
-    private fun getHumanRelationshipColor(otherCivDiplomacyManager: DiplomacyManager): Color {
-        // should ensure colors align with equivalent human-AI relationship colors (RelationshipLevel ?)
-        // as of writing, RelationshipLevel colors are not appropriate IMO, so using hardcoded values for now
-        return if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact)
-            Color.CYAN
-        else if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            Color.GREEN
-        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War)
-            Color.RED
-        else
-            RelationshipLevel.Neutral.color
-    }
-
-    /**
-     * Human-human relationships only. See also: getHumanRelationshipColor()
-     * @param otherCivDiplomacyManager Other human player [DiplomacyManager]
-     * @return Relationship text (e.g. "Friend")
-     */
-    private fun getHumanRelationshipText(otherCivDiplomacyManager: DiplomacyManager): String {
-        return if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact)
-            Constants.defensivePact
-        else if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            RelationshipLevel.Friend.name
-        else if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War)
-            RelationshipLevel.Enemy.name
-        else
-            RelationshipLevel.Neutral.name
+    @Readonly
+    private fun humanRelationshipLevel(otherCivDiplomacyManager: DiplomacyManager): Pair<Color, String> {
+        return when {
+            otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.DefensivePact -> Pair(Color.PURPLE, Constants.defensivePact)
+            otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship) -> Pair(Color.GREEN, RelationshipLevel.Friend.name)
+            otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.War -> Pair(Color.RED, RelationshipLevel.Enemy.name)
+            else -> Pair(RelationshipLevel.Neutral.color, RelationshipLevel.Neutral.name)
+        }
     }
 
     /**
@@ -265,9 +247,9 @@ class DiplomacyScreen(
      */
     internal fun getHumanRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val relationshipTable = Table()
-        val relationshipColor: Color = getHumanRelationshipColor(otherCivDiplomacyManager)
-        val relationshipText: String = getHumanRelationshipText(otherCivDiplomacyManager)
-
+        val humanRelationshipLevel: Pair<Color, String> = humanRelationshipLevel(otherCivDiplomacyManager)
+        val relationshipColor = humanRelationshipLevel.first
+        val relationshipText = humanRelationshipLevel.second
         relationshipTable.add("{Our relationship}: ".toLabel())
         relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
         return relationshipTable
