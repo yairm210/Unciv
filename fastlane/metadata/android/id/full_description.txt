@@ -1,4 +1,4 @@
-Implementasi ulang bersumber terbuka dari permainan membangun peradaban paling terkenal yang pernah ada - cepat, kecil, tanpa iklan, gratis selamanya!
+Implementasi ulang bersumber terbuka dari permainan membangun peradaban paling terkenal yang pernah ada - cepat, kecil, tanpa iklan, gratis untuk selamanya!
 
 Bangun peradabanmu, teliti teknologi, perluas kotamu dan kalahkan musuhmu!
 
@@ -8,6 +8,6 @@ Pertanyaan? Komentar? Bergabunglah dengan kami di https://discord.gg/bjrB4Xw.
 
 Mau membantu menerjemahkan permainan ini ke dalam bahasamu? Kunjungi https://yairm210.github.io/Unciv/Other/Translating/.
 
-Dunia menunggumu! Akankah kamu akan membangun peradabanmu menjadi sebuah peradaban yang akan bertahan dalam ujian waktu?
+Dunia menunggumu! Akankah engkau membangun peradabanmu menjadi sebuah peradaban yang akan bertahan dalam ujian waktu?
 
 Izin 'memiliki akses jaringan penuh' diperlukan untuk unduhan yang dilakukan pengguna dan fitur multipemain. Semua izin terdaftar lainnya disertakan secara otomatis oleh API yang digunakan untuk mengimplementasikan notifikasi giliran multipemain. Izin jaringan digunakan untuk membuat daftar mod, mengunduh mod, mengunduh musik dan mengunggah/mengunduh permainan multipemain. Tidak ada komunikasi internet lain yang dilakukan oleh Unciv.

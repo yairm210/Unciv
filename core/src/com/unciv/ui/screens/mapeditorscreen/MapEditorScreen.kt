@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.unciv.UncivGame
+import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -40,6 +41,8 @@ import com.unciv.utils.Dispatcher
 import com.unciv.utils.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 
 //todo normalize properly
@@ -118,6 +121,30 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         globalShortcuts.add(KeyCharAndCode.ctrl('n')) { selectGeneratePage(0) }
         globalShortcuts.add(KeyCharAndCode.ctrl('g')) { selectGeneratePage(1) }
         globalShortcuts.add(KeyCharAndCode.BACK) { closeEditor() }
+
+        startMapAutosaveLoop()
+    }
+
+    private fun startMapAutosaveLoop() {
+        startBackgroundJob("MapEditorAutosaveLoop", true) {
+            while (true) {
+                delay(10_000L) // every 10 seconds
+
+                if (!isActive) return@startBackgroundJob
+                if (!isDirty) continue
+
+                try {
+                    val mapToSave = getMapCloneForSave()
+                    if (!isActive) return@startBackgroundJob
+                    mapToSave.assignContinents(TileMap.AssignContinentsMode.Reassign)
+                    if (!isActive) return@startBackgroundJob
+                    MapSaver.saveMap("Autosave", mapToSave)
+                    isDirty = false
+                } catch (ex: Exception) {
+                    Log.error("Failed to autosave map", ex)
+                }
+            }
+        }
     }
 
     override fun getCivilopediaRuleset() = ruleset
@@ -312,6 +339,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
             job.cancel()
         jobs.clear()
     }
+    
 
     //region Overlay Image
 

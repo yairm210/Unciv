@@ -273,11 +273,11 @@ class Nation : RulesetObject() {
         // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
-                state != null && hasUnique(it, state) ||
+                state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
         else matchesSingleFilter(filter) ||
-            state != null && hasUnique(filter, state) ||
+            state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
 

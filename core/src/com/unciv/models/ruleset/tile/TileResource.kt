@@ -215,7 +215,7 @@ class TileResource : RulesetStatsObject(), GameResource {
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
-                state != null && hasUnique(filter, state) ||
+                state != null && hasTagUnique(filter, state) ||
                 state == null && hasTagUnique(filter)
         })
 
