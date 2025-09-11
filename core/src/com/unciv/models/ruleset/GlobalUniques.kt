@@ -11,15 +11,16 @@ class GlobalUniques: RulesetObject() {
     override var name = "Global Uniques"
 
     var unitUniques: ArrayList<String> = ArrayList()
-    override fun makeLink() = "" // No own category on Civilopedia screen
     override fun getUniqueTarget() = UniqueTarget.GlobalUniques
 
     @Readonly fun hasUniques(): Boolean =
         !(uniques.isEmpty() && unitUniques.isEmpty())
 
+    @Readonly override fun makeLink() = "Tutorial/Global Uniques"
+
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = mutableListOf<FormattedLine>()
-        lines.add(FormattedLine("Global uniques are modifiers that apply to all civilizations."))
+        lines.add(FormattedLine("Global uniques are ruleset-wide modifiers that apply to all civilizations."))
         if (uniques.isNotEmpty()) {
             lines.add(FormattedLine(""))
             lines.add(FormattedLine("Global Effect", header=4))
