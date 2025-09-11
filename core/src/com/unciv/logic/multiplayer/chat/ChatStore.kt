@@ -1,7 +1,9 @@
 package com.unciv.logic.multiplayer.chat
 
 import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.ui.screens.worldscreen.chat.ChatPopup
+import com.unciv.utils.toUUIDOrNull
 import java.util.Collections.synchronizedMap
 import java.util.LinkedList
 import java.util.Queue
@@ -10,6 +12,8 @@ import java.util.UUID
 data class Chat(
     val gameId: UUID,
 ) {
+    var read = true
+
     // <civName, message> pairs
     private val messages: MutableList<Pair<String, String>> = mutableListOf(INITIAL_MESSAGE)
 
@@ -52,6 +56,8 @@ object ChatStore {
      */
     var chatPopup: ChatPopup? = null
 
+    var hasGlobalMessage = false
+
     private var gameIdToChat: MutableMap<UUID, Chat> = synchronizedMap(mutableMapOf())
 
     /** When no [ChatPopup] is open to receive these oddities, we keep them here.
@@ -72,21 +78,34 @@ object ChatStore {
         globalMessages = LinkedList()
     }
 
-    fun relayChatMessage(chat: Response.Chat) {
+    fun relayChatMessage(incomingChatMsg: Response.Chat) {
         Gdx.app.postRunnable {
-            if (chat.gameId == null || chat.gameId.isBlank()) {
-                relayGlobalMessage(chat.message, chat.civName)
+            if (incomingChatMsg.gameId == null || incomingChatMsg.gameId.isBlank()) {
+                relayGlobalMessage(incomingChatMsg.message, incomingChatMsg.civName)
             } else {
                 val gameId = try {
-                    UUID.fromString(chat.gameId)
+                    UUID.fromString(incomingChatMsg.gameId)
                 } catch (_: Throwable) {
                     // Discard messages with invalid UUID
                     return@postRunnable
                 }
 
-                getChatByGameId(gameId).addMessage(chat.civName, chat.message)
-                if (chatPopup?.chat?.gameId == gameId) {
-                    chatPopup?.addMessage(chat.civName, chat.message)
+                val chat = (chatPopup?.chat ?: getChatByGameId(gameId))
+                chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
+                if (gameId.equals(chatPopup?.chat?.gameId)) {
+                    chatPopup?.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
+                }
+
+                if (chatPopup == null && incomingChatMsg.civName != "System") {
+                    if (gameId.equals(UncivGame.Current.worldScreen?.gameInfo?.gameId?.toUUIDOrNull())) {
+                        if (UncivGame.Current.worldScreen?.gameInfo?.currentPlayer != incomingChatMsg.civName) {
+                            UncivGame.Current.worldScreen?.chatButton?.chat?.read = false
+                            UncivGame.Current.worldScreen?.chatButton?.startFlashing()
+                        }
+                    } else {
+                        // some other game not currently on screen has a message
+                        chat.read = false
+                    }
                 }
             }
         }
@@ -103,7 +122,17 @@ object ChatStore {
 
     fun relayGlobalMessage(message: String, civName: String = "System") {
         Gdx.app.postRunnable {
-            chatPopup?.addMessage(civName, message, suffix = "one time") ?: globalMessages.add(Pair(civName, message))
+            if (civName != "System") {
+                hasGlobalMessage = chatPopup == null
+                if (hasGlobalMessage) UncivGame.Current.worldScreen?.chatButton?.startFlashing()
+            }
+
+            chatPopup?.addMessage(civName, message, suffix = "one time") ?: globalMessages.add(
+                Pair(
+                    civName,
+                    message
+                )
+            )
         }
     }
 }
