@@ -90,7 +90,7 @@ object ChatStore {
                     return@postRunnable
                 }
 
-                val chat = (chatPopup?.chat ?: getChatByGameId(gameId))
+                val chat = chatPopup?.chat ?: getChatByGameId(gameId)
                 chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
                 if (gameId.equals(chatPopup?.chat?.gameId)) {
                     chatPopup?.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
@@ -98,6 +98,7 @@ object ChatStore {
 
                 if (chatPopup == null && incomingChatMsg.civName != "System") {
                     if (gameId.equals(UncivGame.Current.worldScreen?.gameInfo?.gameId?.toUUIDOrNull())) {
+                        // ensures that you are not getting notified for your own messages
                         if (UncivGame.Current.worldScreen?.gameInfo?.currentPlayer != incomingChatMsg.civName) {
                             UncivGame.Current.worldScreen?.chatButton?.chat?.read = false
                             UncivGame.Current.worldScreen?.chatButton?.startFlashing()
@@ -127,12 +128,8 @@ object ChatStore {
                 if (hasGlobalMessage) UncivGame.Current.worldScreen?.chatButton?.startFlashing()
             }
 
-            chatPopup?.addMessage(civName, message, suffix = "one time") ?: globalMessages.add(
-                Pair(
-                    civName,
-                    message
-                )
-            )
+            chatPopup?.addMessage(civName, message, suffix = "one time")
+                ?: globalMessages.add(Pair(civName, message))
         }
     }
 }
