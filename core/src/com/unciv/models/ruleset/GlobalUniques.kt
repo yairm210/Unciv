@@ -9,30 +9,33 @@ import yairm210.purity.annotations.Readonly
 
 class GlobalUniques: RulesetObject() {
     override var name = "Global Uniques"
+    @Readonly override fun makeLink() = "Tutorial/Global Uniques"
 
     var unitUniques: ArrayList<String> = ArrayList()
     override fun getUniqueTarget() = UniqueTarget.GlobalUniques
 
+    /** @return Whether or not there are global uniques that should be displayed to the user. */
     @Readonly fun hasUniques(): Boolean =
-        !(uniques.isEmpty() && unitUniques.isEmpty())
-
-    @Readonly override fun makeLink() = "Tutorial/Global Uniques"
+        uniqueObjects.any { !it.isHiddenToUsers() } || unitUniques.isNotEmpty()
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = mutableListOf<FormattedLine>()
         lines.add(FormattedLine("Global uniques are ruleset-wide modifiers that apply to all civilizations."))
-        if (uniques.isNotEmpty()) {
+        val visibleUniques = uniqueObjects.filter { !it.isHiddenToUsers() }
+        if (visibleUniques.isNotEmpty()) {
             lines.add(FormattedLine(""))
             lines.add(FormattedLine("Global Effect", header=4))
-            for (unique in uniques) {
+            for (unique in visibleUniques) {
                 lines.add(FormattedLine(unique))
             }
         }
-        if (unitUniques.isNotEmpty()) {
+
+        val visibleUnitUniques = unitUniques.map { Unique(it) }.filter { !it.isHiddenToUsers() }
+        if (visibleUnitUniques.isNotEmpty()) {
             lines.add(FormattedLine(""))
             lines.add(FormattedLine("Units", header=4))
-            for (unitUnique in unitUniques) {
-                lines.add(FormattedLine(unitUnique))
+            for (unique in visibleUnitUniques) {
+                lines.add(FormattedLine(unique))
             }
         }
         return lines

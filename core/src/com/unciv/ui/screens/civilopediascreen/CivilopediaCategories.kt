@@ -7,6 +7,7 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.basescreen.TutorialController
 import com.unciv.models.ruleset.Belief as BaseBelief
 import com.unciv.models.ruleset.unit.UnitType as BaseUnitType
+import yairm210.purity.annotations.Readonly
 
 /** Enum used as keys for Civilopedia "pages" (categories).
  *
@@ -100,14 +101,9 @@ enum class CivilopediaCategories (
         KeyboardBinding.PediaTutorials,
         "OtherIcons/ExclamationMark",
         { _, tutorialController ->
-            val tutorials = tutorialController.getCivilopediaTutorials()
-            // Add the Global Uniques
-            val globalUniques = UncivGame.Current.gameInfo?.getGlobalUniques()
-            if (globalUniques != null && globalUniques.hasUniques()) {
-                tutorials + globalUniques
-            } else {
-                tutorials
-            }
+            tutorialController.getCivilopediaTutorials() +
+            // Global Uniques
+            listOfNotNull(UncivGame.Current.gameInfo?.getGlobalUniques()?.takeIf { it.hasUniques() })
         }
     ),
     Victory ("Victory Types",
@@ -136,7 +132,7 @@ enum class CivilopediaCategories (
     );
 
     companion object {
-        fun fromLink(name: String): CivilopediaCategories? =
+        @Readonly fun fromLink(name: String): CivilopediaCategories? =
             values().firstOrNull { it.name == name }
             ?: values().firstOrNull { it.label == name }
     }
