@@ -1,3 +1,17 @@
+## 4.18.0
+
+CPU performance improvements
+
+Fixed rare crash when closing map editor
+
+Roads are not shown on non-visible tiles
+
+Limit tile information shown when spying on cities
+
+WLTK resource demand changes every ~20 turns
+
+Add cityAirUnitCapacity ModConstant - By unciv-loof
+
 ## 4.17.19
 
 Added map autosave
