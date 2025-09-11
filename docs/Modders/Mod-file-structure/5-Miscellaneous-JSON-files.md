@@ -211,6 +211,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | baseCityBombardRange                     | Int    | 2                             | [^S]  |
 | cityWorkRange                            | Int    | 3                             | [^T]  |
 | cityExpandRange                          | Int    | 5                             | [^U]  |
+| cityAirUnitCapacity                      | Int    | 6                             | [^W]  |
 | unitSupplyPerPopulation                  | Float  | 0.5                           | [^C]  |
 | minimalCityDistance                      | Int    | 3                             | [^D]  |
 | minimalCityDistanceOnDifferentContinents | Int    | 2                             | [^D]  |
@@ -279,6 +280,7 @@ Legend:
 - [^T]: The multiplier of the gold value of a one-sided trade to be stored as gifts.
 - [^U]: The multiplier of the gold value of a regular trade to be stored as gifts. Set to 0 to disable gold gifting in two-sided trades.
 - [^U]: Modifies how quickly the GaveUsGifts dimplomacy modifier runs out. A higher value makes it run out quicker. Normally the gifts reduced by ~2.5% per turn depending on the diplomatic relations with the default value.
+- [^W]: Number of air units that can be stationed in a city, not including carried/transported air units.
 
 #### UnitUpgradeCost
 
