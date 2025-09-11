@@ -316,6 +316,8 @@ class BattleTest {
             "Earn [100]% of killed [Military] unit's [Strength] as [Culture]",
             "Earn [100]% of killed [Military] unit's [Strength] as [Gold]"
         )
+        val taggedPolicyBranch = testGame.createPolicyBranch("Some marker", policy=attackerPolicy)
+        attackerCiv.policies.adopt(taggedPolicyBranch, true)
         attackerCiv.policies.adopt(attackerPolicy, true)
 
         defaultDefenderUnit.health = 1
