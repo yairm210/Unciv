@@ -10,6 +10,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import yairm210.purity.annotations.Readonly
 
 object ReligiousUnitAutomation {
 
@@ -21,6 +22,7 @@ object ReligiousUnitAutomation {
             it.religion.getMajorityReligion() != unit.civ.religionManager.religion
         }
         
+        @Readonly
         fun isValidSpreadReligionTarget(city: City): Boolean {
             val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
             if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
@@ -33,6 +35,7 @@ object ReligiousUnitAutomation {
         }
 
         /** Lowest value will be chosen */
+        @Readonly
         fun rankCityForReligionSpread(city: City): Int {
             var rank = city.getCenterTile().aerialDistanceTo(unit.getTile())
             
@@ -43,6 +46,7 @@ object ReligiousUnitAutomation {
                 
             return rank
         }
+        
         
         val city =
             if (ourCitiesWithoutReligion.any())
@@ -118,6 +122,7 @@ object ReligiousUnitAutomation {
         }
     }
 
+    @Readonly
     private fun determineBestInquisitorCityToConvert(
         unit: MapUnit,
     ): City? {
@@ -125,6 +130,7 @@ object ReligiousUnitAutomation {
             return null
 
         val holyCity = unit.civ.religionManager.getHolyCity()
+        // Our own holy city was taken over!
         if (holyCity != null && holyCity.religion.getMajorityReligion() != unit.civ.religionManager.religion!!)
             return holyCity
 
@@ -132,12 +138,22 @@ object ReligiousUnitAutomation {
         if (blockedHolyCity != null)
             return blockedHolyCity
 
-        return unit.civ.cities.asSequence()
-            .filter { it.religion.getMajorityReligion() != null }
-            .filter { it.religion.getMajorityReligion()!! != unit.civ.religionManager.religion }
-            // Don't go if it takes too long
+        // Find cities 
+        val relevantCities = unit.civ.gameInfo.getCities()
+            .filter { it.getCenterTile().isExplored(unit.civ) } // Cities we know about
+            // Someone else is controlling this city
+            .filter { 
+                val majorityReligion = it.religion.getMajorityReligion()
+                majorityReligion != null && majorityReligion != unit.civ.religionManager.religion
+            }
+        
+        val closeCity = relevantCities
             .filter { it.getCenterTile().aerialDistanceTo(unit.currentTile) <= 20 }
-            .maxByOrNull { it.religion.getPressureDeficit(unit.civ.religionManager.religion?.name) }
+            // Find the city that we're the closest to converting
+            .minByOrNull { it.religion.getPressureDeficit(unit.civ.religionManager.religion?.name) }
+        if (closeCity != null) return closeCity
+        
+        return relevantCities.minByOrNull { it.religion.getPressureDeficit(unit.civ.religionManager.religion?.name) }
     }
 
 

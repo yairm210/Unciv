@@ -9,6 +9,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PlayerType.AI
+import com.unciv.logic.civilization.PlayerType.Human
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
@@ -213,7 +215,7 @@ class PlayerPickerTable(
             updatePlayerTypeButtonEnabled()
         }
         playerTypeTextButton.onClick {
-            player.playerType = player.playerType.toggle()
+            player.playerType = if (player.playerType == AI) Human else AI
             update()
         }
 

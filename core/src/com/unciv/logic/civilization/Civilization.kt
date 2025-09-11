@@ -42,7 +42,6 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.*
@@ -427,6 +426,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getHappiness() = stats.happiness
 
     /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
+    @Readonly
     fun getCivResourceSupply(): ResourceSupplyList = summarizedCivResourceSupply
 
     /** Preserves some origins for resources so we can separate them for trades
@@ -489,7 +489,9 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns 0 for undefined resources */
     @Readonly
     fun getResourceAmount(resourceName: String): Int {
-        return getCivResourcesByName()[resourceName] ?: 0
+        val stockpileValue= resourceStockpiles[resourceName]
+        if (stockpileValue != 0) return stockpileValue
+        return getCivResourceSupply().firstOrNull { !it.resource.isStockpiled && it.resource.name == resourceName }?.amount ?: 0
     }
 
     /** Gets modifiers for ALL resources */
@@ -509,15 +511,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getResourceModifier(resource: TileResource): Float {
         var finalModifier = 1f
 
-        if (resource.resourceType == ResourceType.Strategic)
-            for (unique in getMatchingUniques(UniqueType.StrategicResourcesIncrease))
-                finalModifier += unique.params[0].toFloat() / 100f
         for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
             if (resource.matchesFilter(unique.params[1]))
                 finalModifier += unique.params[0].toFloat() / 100f
-        for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
-            if (unique.params[0] == resource.name)
-                finalModifier += 1f
 
         return finalModifier
     }
@@ -541,7 +537,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, gameContext))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, gameContext))
-        yieldAll(temporaryUniques.getMatchingUniques(uniqueType, gameContext))
+        yieldAll(temporaryUniques.getMatchingTagUniques(uniqueType, gameContext))
         yieldAll(getEra().getMatchingUniques(uniqueType, gameContext))
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, gameContext))
         if (religionManager.religion != null)
@@ -685,6 +681,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
      * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
      */
+    @Readonly
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer

@@ -196,11 +196,6 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return followers[majorityReligion]
     }
 
-    fun getFollowersOfOurReligion(): Int {
-        val ourReligion = city.civ.religionManager.religion ?: return 0
-        return followers[ourReligion.name]
-    }
-
     @Readonly
     fun getFollowersOfOtherReligionsThan(religion: String): Int {
         return followers.filterNot { it.key == religion }.values.sum()
@@ -335,7 +330,8 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return pressure.toInt()
     }
 
-    /** Calculates how much pressure this religion is lacking compared to the majority religion */
+    /** Calculates how much pressure this religion is lacking compared to the majority religion
+     * That is, if we gain more than this, we'll be the majority */
     @Readonly
     fun getPressureDeficit(otherReligion: String?): Int {
         val pressures = getPressures()

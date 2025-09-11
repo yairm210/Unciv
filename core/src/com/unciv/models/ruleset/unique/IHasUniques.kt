@@ -48,20 +48,20 @@ interface IHasUniques : INamed {
         uniqueMap.getMatchingUniques(uniqueType, state)
 
     @Readonly
-    fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
-        uniqueMap.getMatchingUniques(uniqueTag, state)
+    fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
+        uniqueMap.getMatchingTagUniques(uniqueTag, state)
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, state: GameContext? = null) =
         uniqueMap.hasMatchingUnique(uniqueType, state ?: GameContext.EmptyState)
 
     @Readonly
-    fun hasUnique(uniqueTag: String, state: GameContext? = null) =
-        uniqueMap.hasMatchingUnique(uniqueTag, state ?: GameContext.EmptyState)
+    fun hasTagUnique(uniqueTag: String, state: GameContext? = null) =
+        uniqueMap.hasMatchingTagUnique(uniqueTag, state ?: GameContext.EmptyState)
 
     @Readonly
-    fun hasTagUnique(tagUnique: String) =
-        uniqueMap.hasTagUnique(tagUnique)
+    fun hasTagUnique(uniqueTag: String) =
+        uniqueMap.hasTagUnique(uniqueTag)
     
     @Readonly
     fun techsRequiredByUniques(): Sequence<String> {
@@ -82,17 +82,21 @@ interface IHasUniques : INamed {
     @Readonly
     fun requiredTechs(): Sequence<String> = legacyRequiredTechs() + techsRequiredByUniques()
 
+    @Readonly
     fun requiredTechnologies(ruleset: Ruleset): Sequence<Technology?> =
         requiredTechs().map { ruleset.technologies[it] }
 
+    @Readonly
     fun era(ruleset: Ruleset): Era? =
             requiredTechnologies(ruleset).map { it?.era() }.map { ruleset.eras[it] }.maxByOrNull { it?.eraNumber ?: 0 }
             // This will return null only if requiredTechnologies() is empty or all required techs have no eraNumber
 
+    @Readonly
     fun techColumn(ruleset: Ruleset): TechColumn? =
             requiredTechnologies(ruleset).map { it?.column }.filterNotNull().maxByOrNull { it.columnNumber }
             // This will return null only if *all* required techs have null TechColumn.
 
+    @Readonly
     fun availableInEra(ruleset: Ruleset, requestedEra: String): Boolean {
         val eraAvailable: Era = era(ruleset)
             ?: return true // No technologies are required, so available in the starting era.
@@ -103,6 +107,7 @@ interface IHasUniques : INamed {
         return eraAvailable.eraNumber <= ruleset.eras[requestedEra]!!.eraNumber
     }
 
+    @Readonly
     fun getWeightForAiDecision(gameContext: GameContext): Float {
         var weight = 1f
         for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, gameContext))
@@ -160,6 +165,7 @@ interface IHasUniques : INamed {
      *                  In that case only this parameter can be `null`. So if you know it - provide!
      *  @param ruleset  Required if [gameInfo] is null, otherwise optional (but with both null this will simply return `false`).
      */
+    @Readonly
     fun isHiddenFromCivilopedia(
         gameInfo: GameInfo?,
         ruleset: Ruleset? = null
@@ -187,13 +193,14 @@ interface IHasUniques : INamed {
         return false
     }
     /** Overload of [isHiddenFromCivilopedia] for use in actually game-agnostic parts of Civilopedia */
-    fun isHiddenFromCivilopedia(ruleset: Ruleset) = isHiddenFromCivilopedia(UncivGame.getGameInfoOrNull(), ruleset)
+    @Readonly fun isHiddenFromCivilopedia(ruleset: Ruleset) = isHiddenFromCivilopedia(UncivGame.getGameInfoOrNull(), ruleset)
 
     /** Common for Religion/Espionage: Hidden check when no game is loaded
      *  @param hasFeature Best guess from the Ruleset whether the feature is available
      *  @param enabler The modifier testing feature is on: `ConditionalReligionEnabled` or `ConditionalEspionageEnabled`
      *  @param disabler The modifier testing feature is off: `ConditionalReligionDisabled` or `ConditionalEspionageDisabled`
      */
+    @Readonly
     private fun shouldBeHiddenIfNoGameLoaded(hasFeature: Boolean, enabler: UniqueType, disabler: UniqueType): Boolean {
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)) {
             if (unique.hasModifier(enabler)) return !hasFeature

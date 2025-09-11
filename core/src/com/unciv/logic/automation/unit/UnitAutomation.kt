@@ -24,150 +24,12 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 
 object UnitAutomation {
 
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
-
-    private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
-        return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
-                && tile.getTilesInDistance(unit.getVisibilityRange()).any { !unit.civ.hasExplored(it) }
-                && (!unit.civ.isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
-                && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
-                && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
-                && unit.movement.canMoveTo(tile) // expensive, evaluate last
-                && unit.movement.canReach(tile) // expensive, evaluate last
-    }
-
-    internal fun tryExplore(unit: MapUnit): Boolean {
-        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
-
-        val explorableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
-        if (explorableTilesThisTurn.any()) {
-            val bestTile = explorableTilesThisTurn
-                .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
-            // Assign each tile a score for "explore value"
-            // This could be more elaborate: for example add a malus for distant tiles such as to move not too far away from capital (barb control)
-            // or bonus according to tile yields (likely candidates for city locations), but this comes at a cost of performance
-            unit.movement.headTowards(bestTile)
-            return true
-        }
-
-        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
-            if (isGoodTileToExplore(unit, tile)) {
-                unit.movement.headTowards(tile)
-                return true
-            }
-        return false
-    }
-
-    private fun tryGoToRuinAndEncampment(unit: MapUnit): Boolean {
-        if (!unit.civ.isMajorCiv()) return false // barbs don't have anything to do in ruins
-
-        val tileWithRuinOrEncampment = unit.viewableTiles
-            .firstOrNull {
-                (it.getTileImprovement()?.isAncientRuinsEquivalent() == true
-                                || it.improvement == Constants.barbarianEncampment)
-                        && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
-            } ?: return false
-        unit.movement.headTowards(tileWithRuinOrEncampment)
-        return true
-    }
-
-    // "Fog busting" is a strategy where you put your units slightly outside your borders to discourage barbarians from spawning
-    private fun tryFogBust(unit: MapUnit): Boolean {
-        if (!Automation.afraidOfBarbarians(unit.civ)) return false // Not if we're not afraid
-
-        // If everything around this unit is visible, we can stop.
-        // Calculations below are quite expensive especially in the late game.
-        if (unit.currentTile.getTilesInDistance(5).all { it.isVisible(unit.civ) }) {
-            return false
-        }
-
-        val reachableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
-        if (reachableTilesThisTurn.any()) {
-            unit.movement.headTowards(reachableTilesThisTurn.random()) // Just pick one
-            return true
-        }
-
-        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
-            if (isGoodTileForFogBusting(unit, tile)) {
-                unit.movement.headTowards(tile)
-                return true
-            }
-        return false
-    }
-
-    private fun isGoodTileForFogBusting(unit: MapUnit, tile: Tile): Boolean {
-        return unit.movement.canMoveTo(tile)
-                && tile.getOwner() == null
-                && tile.neighbors.all { it.getOwner() == null }
-                && unit.civ.hasExplored(tile)
-                && tile.getTilesInDistance(2).any { it.getOwner() == unit.civ }
-                && unit.getDamageFromTerrain(tile) <= 0
-                && unit.movement.canReach(tile) // expensive, evaluate last
-    }
-
-    fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val reachableTiles = unitDistanceToTiles
-                .filter {
-                    it.key !in tilesToAvoid
-                    && unit.movement.canMoveTo(it.key)
-                    && unit.movement.canReach(it.key)
-                }
-
-        val reachableTilesMaxWalkingDistance = reachableTiles
-                .filter { it.value.totalMovement == unit.currentMovement
-                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.key.getOwner() == unit.civ) }
-        if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
-        else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
-    }
-
-    internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        if (unit.civ.isHuman() && !UncivGame.Current.settings.automatedUnitsCanUpgrade
-            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) return false
-
-        val upgradeUnits = getUnitsToUpgradeTo(unit)
-        if (upgradeUnits.none()) return false // for resource reasons, usually
-        val upgradedUnit = upgradeUnits.minBy { it.cost }
-
-        if (upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state).keys.any { !unit.requiresResource(it) }) {
-            // The upgrade requires new resource types, so check if we are willing to invest them
-            if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
-        }
-
-        val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
-
-        upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
-        //todo Incorrect - an _unsuccessful_ upgrade might have _resurrected_ the original in which case it's a new clone, and unit.isDestroyed is still true
-        return unit.isDestroyed // a successful upgrade action will destroy this unit
-    }
-
-    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
-     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
-     */
-    private fun getUnitsToUpgradeTo(unit: MapUnit): Sequence<BaseUnit> {
-
-        fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean {
-            if (!unit.civ.tech.isResearched(baseUnit))
-                return true
-            if (unit.civ.isBarbarian && baseUnit.hasUnique(UniqueType.CannotBeBarbarian))
-                return true
-            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                .any { !it.conditionalsApply(unit.cache.state) }
-        }
-
-        return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)
-            .map { unit.civ.getEquivalentUnit(it) }
-            .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) }
-    }
 
     fun automateUnitMoves(unit: MapUnit) {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
@@ -183,7 +45,7 @@ object UnitAutomation {
 
         while (unit.promotions.canBePromoted() &&
             // Restrict Human automated units from promotions via setting
-                (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
+            (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
             val promotions = unit.promotions.getAvailablePromotions()
             val availablePromotions = if (unit.health <= 60
                 && promotions.any {it.hasUnique(UniqueType.OneTimeUnitHeal)}
@@ -194,20 +56,20 @@ object UnitAutomation {
             if (availablePromotions.none()) break
             val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
             val stateForConditionals = unit.cache.state
-            
+
             val chosenPromotion = if (freePromotions.isNotEmpty()) freePromotions.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
             else availablePromotions.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
-            
+
             unit.promotions.addPromotion(chosenPromotion.name)
         }
-        
+
         // AI upgrades units via UseGoldAutomation in NextTurnAutomation
         if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
-                unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
-                && !unit.civ.isAtWar()){
+                    unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
+            && !unit.civ.isAtWar()){
             CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
             return
         }
@@ -273,6 +135,152 @@ object UnitAutomation {
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true)
+    }
+
+
+    @Readonly
+    private fun isGoodTileToExplore(unit: MapUnit, tile: Tile, unitVisibilityRange: Int): Boolean {
+        // These should be ordered by increasing computational cost
+        return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
+                && tile.getTilesInDistance(unitVisibilityRange).any { !unit.civ.hasExplored(it) }
+                && (!unit.civ.isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
+                && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
+                && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
+                && unit.movement.canMoveTo(tile) // expensive, evaluate last
+                && unit.movement.canReach(tile) // expensive, evaluate last
+    }
+
+    internal fun tryExplore(unit: MapUnit): Boolean {
+        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
+
+        val unitVisibilityRange = unit.getVisibilityRange()
+        val explorableTilesThisTurn =
+                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it, unitVisibilityRange) }
+        if (explorableTilesThisTurn.any()) {
+            val bestTile = explorableTilesThisTurn
+                .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
+            // Assign each tile a score for "explore value"
+            // This could be more elaborate: for example add a malus for distant tiles such as to move not too far away from capital (barb control)
+            // or bonus according to tile yields (likely candidates for city locations), but this comes at a cost of performance
+            unit.movement.headTowards(bestTile)
+            return true
+        }
+
+        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
+        for (tile in unit.currentTile.getTilesInDistance(5))
+            if (isGoodTileToExplore(unit, tile, unitVisibilityRange)) {
+                unit.movement.headTowards(tile)
+                return true
+            }
+        return false
+    }
+
+    private fun tryGoToRuinAndEncampment(unit: MapUnit): Boolean {
+        if (!unit.civ.isMajorCiv()) return false // barbs don't have anything to do in ruins
+
+        val tileWithRuinOrEncampment = unit.viewableTiles
+            .firstOrNull {
+                (it.getTileImprovement()?.isAncientRuinsEquivalent() == true
+                                || it.improvement == Constants.barbarianEncampment)
+                        && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
+            } ?: return false
+        unit.movement.headTowards(tileWithRuinOrEncampment)
+        return true
+    }
+
+    // "Fog busting" is a strategy where you put your units slightly outside your borders to discourage barbarians from spawning
+    private fun tryFogBust(unit: MapUnit): Boolean {
+        if (!Automation.afraidOfBarbarians(unit.civ)) return false // Not if we're not afraid
+
+        // If everything around this unit is visible, we can stop.
+        // Calculations below are quite expensive especially in the late game.
+        if (unit.currentTile.getTilesInDistance(5).all { it.isVisible(unit.civ) }) {
+            return false
+        }
+
+        val reachableTilesThisTurn =
+                unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
+        if (reachableTilesThisTurn.any()) {
+            unit.movement.headTowards(reachableTilesThisTurn.random()) // Just pick one
+            return true
+        }
+
+        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
+        for (tile in unit.currentTile.getTilesInDistance(5))
+            if (isGoodTileForFogBusting(unit, tile)) {
+                unit.movement.headTowards(tile)
+                return true
+            }
+        return false
+    }
+
+    @Readonly
+    private fun isGoodTileForFogBusting(unit: MapUnit, tile: Tile): Boolean {
+        return unit.movement.canMoveTo(tile)
+                && tile.getOwner() == null
+                && tile.neighbors.all { it.getOwner() == null }
+                && unit.civ.hasExplored(tile)
+                && tile.getTilesInDistance(2).any { it.getOwner() == unit.civ }
+                && unit.getDamageFromTerrain(tile) <= 0
+                && unit.movement.canReach(tile) // expensive, evaluate last
+    }
+
+    fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val reachableTiles = unitDistanceToTiles
+                .filter {
+                    it.key !in tilesToAvoid
+                    && unit.movement.canMoveTo(it.key)
+                    && unit.movement.canReach(it.key)
+                }
+
+        val reachableTilesMaxWalkingDistance = reachableTiles
+                .filter { it.value.totalMovement == unit.currentMovement
+                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't end turn on damaging terrain for no good reason
+                        && (!stayInTerritory || it.key.getOwner() == unit.civ) }
+        if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
+        else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
+    }
+
+    internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
+        if (unit.civ.isHuman() && !UncivGame.Current.settings.automatedUnitsCanUpgrade
+            && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) return false
+
+        val upgradeUnits = getUnitsToUpgradeTo(unit)
+        if (upgradeUnits.none()) return false // for resource reasons, usually
+        val upgradedUnit = upgradeUnits.minBy { it.cost }
+
+        if (upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state).keys.any { !unit.requiresResource(it) }) {
+            // The upgrade requires new resource types, so check if we are willing to invest them
+            if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
+        }
+
+        val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
+
+        upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
+        //todo Incorrect - an _unsuccessful_ upgrade might have _resurrected_ the original in which case it's a new clone, and unit.isDestroyed is still true
+        return unit.isDestroyed // a successful upgrade action will destroy this unit
+    }
+
+    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
+     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
+     */
+    @Readonly
+    private fun getUnitsToUpgradeTo(unit: MapUnit): Sequence<BaseUnit> {
+
+        @Readonly
+        fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean {
+            if (!unit.civ.tech.isResearched(baseUnit))
+                return true
+            if (unit.civ.isBarbarian && baseUnit.hasUnique(UniqueType.CannotBeBarbarian))
+                return true
+            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .any { !it.conditionalsApply(unit.cache.state) }
+        }
+
+        return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)
+            .map { unit.civ.getEquivalentUnit(it) }
+            .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) }
     }
 
 
@@ -361,7 +369,7 @@ object UnitAutomation {
             return false // will heal anyway, and attacks don't hurt
 
         // Try pillage improvements until healed
-        while(tryPillageImprovement(unit, false)) {
+        while (tryPillageImprovement(unit, false)) {
             // If we are fully healed and can still do things, lets keep on going by returning false
             if (!unit.hasMovement() || unit.health == 100) return !unit.hasMovement()
         }
@@ -369,12 +377,14 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 3)
+        
         // If the unit can heal on this tile in two turns, just heal here
-        if (canUnitHealInTurnsOnCurrentTile(unit,3)) return true
+        if (unit.currentTile !in dangerousTiles 
+            && canUnitHealInTurnsOnCurrentTile(unit,3)) return true
 
         val currentUnitTile = unit.getTile()
 
-        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 3)
 
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
@@ -423,6 +433,7 @@ object UnitAutomation {
     /**
      * @return true if the tile is safe and the unit can heal to full within [turns]
      */
+    @Readonly
     private fun canUnitHealInTurnsOnCurrentTile(unit: MapUnit, turns: Int, noEnemyDistance: Int = 3): Boolean {
         if (unit.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
         // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
@@ -433,6 +444,7 @@ object UnitAutomation {
         return healthRequiredPerTurn <= unit.rankTileForHealing(unit.getTile())
     }
 
+    @Readonly
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
         val nearbyEnemyUnits = unit.currentTile.getTilesInDistance(3)
             .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
@@ -517,6 +529,7 @@ object UnitAutomation {
     private fun tryPrepare(unit: MapUnit): Boolean {
         val civInfo = unit.civ
 
+        @Readonly
         fun hasPreparationFlag(targetCiv: Civilization): Boolean {
             val diploManager = civInfo.getDiplomacyManager(targetCiv)!!
             if (diploManager.hasFlag(DiplomacyFlags.Denunciation)
@@ -529,7 +542,8 @@ object UnitAutomation {
         val closeCities = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ in hostileCivs }
         val closestDistance = closeCities.minOfOrNull { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) }
             ?: return false
-        val citiesToDefend = closeCities.filter { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) <= closestDistance + 2 }
+        val citiesToDefend = closeCities
+            .filter { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) <= closestDistance + 2 }
             .map { it.first }
             .distinct() // Remove duplicate cities
             .sortedBy { unit.getTile().aerialDistanceTo(it.getCenterTile()) }
@@ -537,7 +551,8 @@ object UnitAutomation {
         // Move to the closest city with a tile we can enter nearby
         for (city in citiesToDefend) {
             if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
-            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2).firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
+            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2)
+                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
             unit.movement.headTowards(tileToMoveTo)
             return true
         }
@@ -601,6 +616,7 @@ object UnitAutomation {
         return true
     }
 
+    @Readonly
     private fun chooseBombardTarget(city: City): ICombatant? {
         var targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
             .filterNot { it is MapUnitCombatant &&
@@ -685,7 +701,7 @@ object UnitAutomation {
         unit.movement.headTowards(closestReachableCityNeedsDefending.getCenterTile())
         return true
     }
-
+    @Readonly
     private fun isCityThatNeedsDefendingInWartime(city: City): Boolean {
         if (city.health < city.getMaxHealth()) return true // this city is under attack!
         for (enemyCivCity in city.civ.diplomacy.values
@@ -696,7 +712,7 @@ object UnitAutomation {
     }
 
     private fun tryStationingMeleeNavalUnit(unit: MapUnit): Boolean {
-        fun isMeleeNaval(mapUnit: MapUnit) = mapUnit.baseUnit.isMelee() && mapUnit.type.isWaterUnit()
+        @Readonly fun isMeleeNaval(mapUnit: MapUnit) = mapUnit.baseUnit.isMelee() && mapUnit.type.isWaterUnit()
 
         if (!isMeleeNaval(unit)) return false
         val closeCity = unit.getTile().getTilesInDistance(3)

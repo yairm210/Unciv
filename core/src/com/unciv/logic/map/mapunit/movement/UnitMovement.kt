@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -26,7 +27,6 @@ class UnitMovement(val unit: MapUnit) {
 
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
     
-    
     /**
      * Gets the tiles the unit could move to at [position] with [unitMovement].
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
@@ -39,7 +39,7 @@ class UnitMovement(val unit: MapUnit) {
         considerZoneOfControl: Boolean = true,
         tilesToIgnoreBitset: BitSet? = null,
         canPassThroughCache: ArrayList<Boolean?> = ArrayList(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
+        movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
         @LocalState val distanceToTiles = PathsToTilesWithinTurn()
@@ -74,7 +74,7 @@ class UnitMovement(val unit: MapUnit) {
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
                         else -> {
-                            val key = Pair(tileToCheck, neighbor)
+                            val key = HexMath.tilesAndNeighborUniqueIndex(tileToCheck, neighbor)
                             val movementCost = movementCostCache.getOrPut(key) {
                                 MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
                             }
@@ -148,7 +148,7 @@ class UnitMovement(val unit: MapUnit) {
         val civilization = unit.civ
 
         val passThroughCacheNew = ArrayList<Boolean?>()
-        val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
+        val movementCostCache = HashMap<Int, Float>()
         val canMoveToCache = HashMap<Tile, Boolean>()
 
         while (true) {
@@ -267,13 +267,8 @@ class UnitMovement(val unit: MapUnit) {
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: Tile): Tile {
-        val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit() else null
-        val startTile = unit.getTile()
         val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
-        if (startTile != unit.getTile() && escortUnit != null) {
-            escortUnit.movement.headTowards(unit.getTile())
-        }
         return unit.currentTile
     }
 
@@ -281,6 +276,7 @@ class UnitMovement(val unit: MapUnit) {
      *  Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER
      *  @see canReachInCurrentTurn
      */
+    @Readonly
     fun canReach(destination: Tile) = canReachCommon(destination) {
         getShortestPath(it).any()
     }
@@ -292,7 +288,7 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     @Readonly
-    private inline fun canReachCommon(destination: Tile, specificFunction: (Tile) -> Boolean) = when {
+    private inline fun canReachCommon(destination: Tile, @Readonly specificFunction: (Tile) -> Boolean) = when {
         unit.cache.cannotMove ->
             destination == unit.getTile()
         unit.baseUnit.movesLikeAirUnits ->
@@ -744,13 +740,9 @@ class UnitMovement(val unit: MapUnit) {
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCacheNew: ArrayList<Boolean?> = ArrayList(),
-        movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap(),
+        movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
-//        val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
-//        if (cacheResults != null) {
-//            return cacheResults
-//        }
         val distanceToTiles = getMovementToTilesAtPosition(
             unit.currentTile.position,
             unit.currentMovement,
@@ -760,8 +752,6 @@ class UnitMovement(val unit: MapUnit) {
             movementCostCache,
             includeOtherEscortUnit
         )
-
-        pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
 
         return distanceToTiles
     }
@@ -837,14 +827,13 @@ class UnitMovement(val unit: MapUnit) {
 class PathfindingCache(private val unit: MapUnit) {
     private var shortestPathCache = listOf<Tile>()
     private var destination: Tile? = null
-    private val distanceToTilesCache = mutableMapOf<Boolean, PathsToTilesWithinTurn>()
     private var movement = -1f
     private var currentTile: Tile? = null
 
     /** Check if the caches are valid (only checking if the unit has moved or consumed movement points;
      * the isPlayerCivilization check is performed in the functions because we want isValid() == false
      * to have a specific behavior) */
-    private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
+    @Readonly private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
 
     fun getShortestPathCache(destination: Tile): List<Tile> {
         if (unit.civ.isHuman()) return listOf()
@@ -862,23 +851,7 @@ class PathfindingCache(private val unit: MapUnit) {
         }
     }
 
-    fun getDistanceToTiles(zoneOfControl: Boolean): PathsToTilesWithinTurn? {
-        if (unit.civ.isHuman()) return null
-        if (isValid())
-            return distanceToTilesCache[zoneOfControl]
-        return null
-    }
-
-    fun setDistanceToTiles(zoneOfControl: Boolean, paths: PathsToTilesWithinTurn) {
-        if (unit.civ.isHuman()) return
-        if (!isValid()) {
-            clear() // we want to reset the entire cache at this point
-        }
-        distanceToTilesCache[zoneOfControl] = paths
-    }
-
     fun clear() {
-        distanceToTilesCache.clear()
         movement = unit.currentMovement
         currentTile = unit.getTile()
         destination = null

@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.logic.automation.unit.HeadTowardsEnemyCityAutomation.getEnemyCitiesByPriority
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -65,49 +66,33 @@ object GreatGeneralImplementation {
      *
      * Used by [SpecificUnitAutomation.automateGreatGeneral].
      */
+    @Readonly
     fun getBestAffectedTroopsTile(general: MapUnit): Tile? {
-        // Normally we have only one Unique here. But a mix is not forbidden, so let's try to support mad modders.
+        // Normally we have only one Unique here. But a mix is not forbidden,
         // (imagine several GreatGeneralAura uniques - +50% at radius 1, +25% at radius 2, +5% at radius 3 - possibly learnable from promotions via buildings or natural wonders?)
+        // However, rang-1 generals are difficult to use fully without getting it killed, so it's probably best placed to support 2nd and 3rd row ranged units
+        // a 3 or more range generals are less sensitive to positioning, and thus probably suffice with 2-range general logic
 
-        // Map out the uniques sorted by bonus, as later only the best bonus will apply.
-        val generalBonusData = (
-                general.getMatchingUniques(UniqueType.StrengthBonusInRadius).map { GeneralBonusData(general, it) }
-            ).sortedWith(compareByDescending<GeneralBonusData> { it.bonus }.thenBy { it.radius })
-            .toList()
-
-        // Get candidate units to 'follow', coarsely.
-        // The mapUnitFilter of the unique won't apply here but in the ranking of the "Aura" effectiveness.
-        val unitMaxMovement = general.getMaxMovement()
-        val militaryUnitTilesInDistance = general.movement.getDistanceToTiles().asSequence()
+        val  militaryUnitTilesInDistance = general.movement.getDistanceToTiles().asSequence()
             .map { it.key }
             .filter { tile ->
                 val militaryUnit = tile.militaryUnit
                 militaryUnit != null && militaryUnit.civ == general.civ
-                        && (tile.civilianUnit == null || tile.civilianUnit == general)
-                        && militaryUnit.getMaxMovement() <= unitMaxMovement
-                        && !tile.isCityCenter()
+                    && (tile.civilianUnit == null || tile.civilianUnit == general)
             }
 
-        // rank tiles and find best
-        val unitBonusRadius = generalBonusData.maxOfOrNull { it.radius }
-            ?: return null
-        
-        val militaryUnitToHasAttackableEnemies = HashMap<MapUnit, Boolean>()
+        val closestReachableEnemyCity = getEnemyCitiesByPriority(general)
+            .firstOrNull { general.movement.canReach(it.getCenterTile()) } 
+        // Send generals to the same place as our units, so they don't get stuck at the wrong side of our empire. Update this when changing global unit movement
 
-        return militaryUnitTilesInDistance
-            .maxByOrNull { unitTile ->
-                unitTile.getTilesInDistance(unitBonusRadius).sumOf { affectedTile ->
-                    val militaryUnit = affectedTile.militaryUnit
-                    if (militaryUnit == null || militaryUnit.civ != general.civ || militaryUnit.isEmbarked()) 0
-                    else if (militaryUnitToHasAttackableEnemies.getOrPut(militaryUnit) {
-                            TargetHelper.getAttackableEnemies(militaryUnit, militaryUnit.movement.getDistanceToTiles()).isEmpty()
-                        }) 0
-                    else generalBonusData.firstOrNull {
-                        // "Military" as commented above only a small optimization
-                        affectedTile.aerialDistanceTo(unitTile) <= it.radius
-                                && (it.filter == "Military" || militaryUnit.matchesFilter(it.filter))
-                    }?.bonus ?: 0
-                }
-            }
+        val militaryUnitTile = militaryUnitTilesInDistance.maxByOrNull { unitTile ->
+            (2 * unitTile.getTilesInDistance(2).count { it.militaryUnit?.civ == general.civ }
+                - unitTile.getTilesInDistance(2).count { it.militaryUnit?.civ != general.civ }
+                - if (closestReachableEnemyCity != null) 3 * unitTile.aerialDistanceTo(closestReachableEnemyCity.getCenterTile()) else 0)
+            // Scoring here is found to help AI defeat former AI,
+            // a more robust scoring may be necessary to avoid leaving generals en-prise,
+            // and improve handling of multiple generals, e.g. use one to support bomber stacks and the other for frontline troops.
+        }
+        return militaryUnitTile
     }
 }

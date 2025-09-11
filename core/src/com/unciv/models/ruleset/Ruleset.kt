@@ -36,11 +36,10 @@ import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
-
 enum class RulesetFile(
     val filename: String,
-    val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
-    val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } }
+    @Readonly val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
+    @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } }
 ){
     Beliefs("Beliefs.json", { beliefs.values.asSequence() }),
     Buildings("Buildings.json", { buildings.values.asSequence() }),
@@ -138,8 +137,12 @@ class Ruleset {
         sequence {
             for (unique in this@Ruleset.allUniques())
                 for (conditional in unique.modifiers){
-                    if (conditional.type == UniqueType.ConditionalBelowHappiness) yield(conditional.params[0].toInt())
-                    if (conditional.type == UniqueType.ConditionalBetweenHappiness){
+                    if (conditional.type == UniqueType.ConditionalWhenBelowAmountStatResource
+                        && conditional.params[1] == "Happiness") yield(conditional.params[0].toInt())
+                    if (conditional.type == UniqueType.ConditionalWhenAboveAmountStatResource
+                        && conditional.params[1] == "Happiness") yield(conditional.params[0].toInt())
+                    if (conditional.type == UniqueType.ConditionalWhenBetweenStatResource
+                        && conditional.params[2] == "Happiness"){
                         yield(conditional.params[0].toInt())
                         yield(conditional.params[1].toInt() + 1)
                     }
@@ -292,8 +295,10 @@ class Ruleset {
         events.clear()
     }
 
-    @Readonly fun allRulesetObjects(): Sequence<IRulesetObject> = RulesetFile.entries.asSequence().flatMap { it.getRulesetObjects(this) }
-    @Readonly fun allUniques(): Sequence<Unique> = RulesetFile.entries.asSequence().flatMap { it.getUniques(this) }
+    @Readonly
+    fun allRulesetObjects(): Sequence<IRulesetObject> = RulesetFile.entries.asSequence().flatMap { it.getRulesetObjects(this) }
+    @Readonly
+    fun allUniques(): Sequence<Unique> = RulesetFile.entries.asSequence().flatMap { it.getUniques(this) }
     @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects() + events.values.flatMap { it.choices }
 
     fun load(folderHandle: FileHandle) {
@@ -544,6 +549,7 @@ class Ruleset {
         else -> "Combined RuleSet ($mods)"
     }
 
+    @Readonly
     fun getSummary(): String {
         val stringList = ArrayList<String>()
         if (modOptions.isBaseRuleset) stringList += "Base Ruleset"

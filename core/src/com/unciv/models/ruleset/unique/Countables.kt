@@ -64,7 +64,7 @@ enum class Countables(
     },
 
     Stats {
-        override val documentationHeader = "Stat name (${Stat.names().niceJoin()})"
+        override val documentationHeader = "Stat name (${niceJoinList(Stat.names())})"
         override val documentationStrings = listOf("Gets the stat *reserve*, not the amount per turn (can be city stats or civilization stats, depending on where the unique is used)")
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
@@ -77,10 +77,38 @@ enum class Countables(
 
         override val example = "Science"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = Stat.names()
-        private fun Iterable<String>.niceJoin() = joinToString("`, `", "`", "`").run {
-            val index = lastIndexOf("`, `")
-            substring(0, index) + "` or `" + substring(index + 4)
+    },
+
+    StatOrResourcePerTurn("[stat/resource] Per Turn", shortDocumentation = "The amount of a stat or resource gained per turn") {
+        override val documentationHeader = "Stat/Resource Per Turn"
+        override val documentationStrings = listOf("Gets the amount of a stat or resource the civilization gains per turn")
+        override val matchesWithRuleset = true
+        override fun matches(parameterText: String, ruleset: Ruleset): Boolean {
+            if (!parameterText.endsWith("] Per Turn")) return false
+            val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return false
+            return Stat.isStat(param) || TileResources.matches(param, ruleset)
         }
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
+            val civ = gameContext.civInfo ?: return null
+            if (Stat.isStat(param)) {
+                val relevantStat = Stat.safeValueOf(param) ?: return null
+                return civ.stats.getStatMapForNextTurn().values.map { it[relevantStat] }.sum().toInt()
+            }
+            return gameContext.civInfo?.getCivResourceSupply()?.sumBy(param) ?: return null
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            if (Stat.isStat(param)) {
+                return UniqueParameterType.StatName.getTranslatedErrorSeverity(parameterText, ruleset)
+            }
+            return UniqueParameterType.Resource.getTranslatedErrorSeverity(parameterText, ruleset)
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.StatName.getKnownValuesForAutocomplete(ruleset)
+                .union(UniqueParameterType.Resource.getKnownValuesForAutocomplete(ruleset))
+                .map { text.fillPlaceholders(it) }.toSet()
+        override val example: String = "[Culture] Per Turn"
     },
 
     PolicyBranches("Completed Policy branches") {
@@ -282,12 +310,20 @@ enum class Countables(
             return text.fillPlaceholders(*placeholderParams.toTypedArray())
         }
 
+    /**
+     * Joins a list with `,` while having an or for the last entry. Useful for the documentation headers.
+     */
+    @Readonly fun niceJoinList(list: Iterable<String>) = list.joinToString("`, `", "`", "`").run {
+        val index = lastIndexOf("`, `")
+        substring(0, index) + "` or `" + substring(index + 4)
+    }
+
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
     open fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
     @Readonly fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
 
-    protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+    @Readonly protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
         getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)
 
     companion object {

@@ -206,6 +206,7 @@ enum class KeyboardBinding(
     PediaPolicies(Category.Civilopedia, "Policies", 'o'),
     PediaBeliefs(Category.Civilopedia, "Religions and Beliefs", 'f'),
     PediaTutorials(Category.Civilopedia, "Tutorials", Input.Keys.F1),
+    PediaVictoryTypes(Category.Civilopedia, "Victory Types", 'v'),
     PediaDifficulties(Category.Civilopedia, "Difficulty levels", 'd'),
     PediaEras(Category.Civilopedia, "Eras", 'e'),
     PediaSpeeds(Category.Civilopedia, "Speeds", 's'),

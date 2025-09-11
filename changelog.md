@@ -1,3 +1,105 @@
+## 4.18.0
+
+CPU performance improvements
+
+Fixed rare crash when closing map editor
+
+Roads are not shown on non-visible tiles
+
+Limit tile information shown when spying on cities
+
+WLTK resource demand changes every ~20 turns
+
+Add cityAirUnitCapacity ModConstant - By unciv-loof
+
+## 4.17.19
+
+Added map autosave
+
+CPU performance improvements
+
+Notification categories can me minimized by clicking on the title
+
+By RobLoach:
+- BNW: Fix getting Cultural Victory through Domination 
+- Modding: Trigger Event unit action text is the Event text 
+
+Fixed max window discrepancy in Windows platform - By SidedYapper - New contributor!
+
+Fix human-human relationship incorrectly showing "Friend" in Diplomacy screen, as well as inconsistent colors - By unciv-loof - New contributor! 
+
+## 4.17.18
+
+Peace trade no longer generates notification when it "ends"
+
+Inquisitors disrupt religion in other civs as well
+
+Fixed automated move with escorted unit crash
+
+By RobLoach:
+- modding: Add a "Play Sound" unique 
+- modding: Add unique to get resources from a percent of stat 
+
+Added more option autosaves from 500 to 10000 - By Emandac
+
+## 4.17.17
+
+Force rankings doesn't evaluate all unit conditionals as multiplicative
+
+Handle mods removing techs, adding/removing eras
+
+Post-battle movement doesn't occur if during the battle the unit lost movement points
+
+conditionals in event choices work again
+
+AI updates - By EmperorPinguin
+
+## 4.17.16
+
+AI spy city selection greatly improved
+
+Changing mods while images load no longer displays multiple images on the last mod
+
+Removed city-state icons for cities in unit overview
+
+Replacement improvements also provide resources that require the original improvement
+
+Only heal on current tile if it's not a dangerous tile
+
+Fixed several problems with improvement-creating buildings
+
+## 4.17.15
+
+Allow AI to move-and-settle
+
+AI: declare less war against humans on higher difficulties - By EmperorPinguin
+
+Harden new game screen against bad scenarios - By SomeTroglodyte
+
+By RobLoach:
+- Add Victory Type for Brave New World 
+- Civilopedia: Add Victory Types
+
+## 4.17.14
+
+Fixed map editor tile click not displaying tile stats
+
+Ranged strength comparison for unique units correctly translated
+
+By SeventhM:
+- Fix Ruin rewards with multiple triggerables only giving the first effect 
+- Add in Target Unit check for uniques when entering combat 
+
+Add countable for `[stat] Per Turn` - By RobLoach
+
+## 4.17.13
+
+By EmperorPinguin:
+- AI: build more workers
+- AI: Better settler automation
+
+Fix combat conditionals not working correctly - By SeventhM
+
 ## 4.17.12
 
 Fixed spy surveillance progressing tech stealing when no techs are available to steal

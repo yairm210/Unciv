@@ -102,7 +102,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Readonly private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
+    @Readonly fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
@@ -168,7 +168,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return cost - (cost % 5)
     }
 
-    fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
+    @Readonly fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     /** Uncached, use carefully */
     @Readonly

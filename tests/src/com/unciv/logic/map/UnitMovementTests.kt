@@ -304,5 +304,4 @@ class UnitMovementTests {
         Assert.assertTrue("Payload must be teleported to the same tile",
             unit.currentTile == payload.currentTile)
     }
-
 }

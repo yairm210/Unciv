@@ -273,8 +273,9 @@ class CityScreen(
         }
 
         for (tileGroup in tileGroups) {
-            tileGroup.update()
+            tileGroup.update(selectedCiv)
             tileGroup.layerMisc.removeHexOutline()
+            if (isSpying) continue // the rest is only for own cities
 
             if (tileGroup.tileState == CityTileState.BLOCKADED)
                 displayTutorial(TutorialTrigger.CityTileBlockade)
@@ -476,7 +477,9 @@ class CityScreen(
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.state)) {
+            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.state)
+                && !tileInfo.isMarkedForCreatesOneImprovement()) {
+                
                 if (pickTileData.isBuying) {
                     BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {

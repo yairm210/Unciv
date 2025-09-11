@@ -15,6 +15,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
+import yairm210.purity.annotations.Readonly
 import kotlin.math.ulp
 import kotlin.random.Random
 
@@ -28,6 +29,7 @@ object Nuke {
      *
      *  Both [BattleTable.simulateNuke] and [AirUnitAutomation.automateNukes] check range, so that check is omitted here.
      */
+    @Readonly
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         val attackerCiv = nuke.getCivInfo()
         val launchTile = nuke.getTile()
@@ -38,6 +40,7 @@ object Nuke {
         if (launchTile.aerialDistanceTo(targetTile) > nuke.unit.getRange()) return false
 
         var canNuke = true
+        
         fun checkDefenderCiv(defenderCiv: Civilization?) {
             if (defenderCiv == null) return
             // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
@@ -304,6 +307,7 @@ object Nuke {
         targetedCity.population.addPopulation(-populationLoss)
     }
 
+    @Readonly
     private fun City.getAggregateModifier(uniqueType: UniqueType): Float {
         var modifier = 1f
         for (unique in getMatchingUniques(uniqueType)) {

@@ -189,3 +189,5 @@ detekt/reports.html
 # When you test the wiki by running mkdocs locally:
 /site/
 
+/buildSrc/.kotlin/errors/*
+/buildSrc/.kotlin/sessions/*

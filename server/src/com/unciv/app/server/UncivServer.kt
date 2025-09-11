@@ -33,6 +33,7 @@ import java.io.File
 import java.util.Collections.synchronizedMap
 import java.util.Collections.synchronizedSet
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -140,7 +141,7 @@ private class WebSocketSessionManager {
 data class BasicAuthInfo(
     val userId: Uuid,
     val password: String,
-) : Principal
+)
 
 /**
  * Checks if a [String] is a valid UUID
@@ -264,8 +265,8 @@ private class UncivServerRunner : CliktCommand() {
             }
 
             if (chatV1Enabled) install(WebSockets) {
-                pingPeriodMillis = 30_000
-                timeoutMillis = 60_000
+                pingPeriod = 30.seconds
+                timeout = 60.seconds
                 maxFrameSize = Long.MAX_VALUE
                 @OptIn(ExperimentalSerializationApi::class)
                 contentConverter = KotlinxWebsocketSerializationConverter(Json {
@@ -386,8 +387,7 @@ private class UncivServerRunner : CliktCommand() {
 
                         try {
                             while (isActive) {
-                                val message = receiveDeserialized<Message>()
-                                when (message) {
+                                when (val message = receiveDeserialized<Message>()) {
                                     is Message.Chat -> {
                                         val gameId = message.gameId.toUuidOrNull()
                                         if (gameId == null) {

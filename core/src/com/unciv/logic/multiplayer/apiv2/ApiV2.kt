@@ -11,14 +11,11 @@ import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import io.ktor.client.call.body
-import io.ktor.client.plugins.websocket.ClientWebSocketSession
-import io.ktor.client.request.get
-import io.ktor.http.isSuccess
-import io.ktor.websocket.Frame
-import io.ktor.websocket.FrameType
-import io.ktor.websocket.readText
-import io.ktor.websocket.close
+import io.ktor.client.call.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -35,7 +32,7 @@ import java.time.Instant
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.collections.set
+import kotlin.time.Duration
 
 /**
  * Main class to interact with multiplayer servers implementing [ApiVersion.ApiV2]
@@ -339,7 +336,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * [delay] internally to quit waiting for the result of the operation.
      * This function may also throw arbitrary exceptions for network failures.
      */
-    suspend fun awaitPing(size: Int = 2, timeout: Long? = null): Double? {
+    suspend fun awaitPing(size: Int = 2, timeout: Duration? = null): Double? {
         require(size < 2) { "Size too small to identify ping responses uniquely" }
         val body = ByteArray(size)
         Random().nextBytes(body)
@@ -501,7 +498,10 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * Note that this callback might not get called if no new WS connection was created.
      * It returns the measured round trip time in milliseconds if everything was fine.
      */
-    suspend fun ensureConnectedWebSocket(timeout: Long = DEFAULT_WEBSOCKET_PING_TIMEOUT, jobCallback: ((Job) -> Unit)? = null): Double? {
+    suspend fun ensureConnectedWebSocket(
+        timeout: Duration = DEFAULT_WEBSOCKET_PING_TIMEOUT,
+        jobCallback: ((Job) -> Unit)? = null
+    ): Double? {
         val pingMeasurement = try {
             awaitPing(timeout = timeout)
         } catch (e: Exception) {
