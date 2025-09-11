@@ -221,11 +221,15 @@ enum class UniqueParameterType(
 
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
             parameterText in staticKnownValues -> true
-            else -> NationFilter.isKnownValue(parameterText, ruleset)
+            else ->
+                NationFilter.isKnownValue(parameterText, ruleset) ||
+                PolicyFilter.isKnownValue(parameterText, ruleset)
         }
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
-            staticKnownValues + NationFilter.getKnownValuesForAutocomplete(ruleset)
+            staticKnownValues +
+                NationFilter.getKnownValuesForAutocomplete(ruleset) +
+                PolicyFilter.getKnownValuesForAutocomplete(ruleset)
     },
 
     /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.nation.Nation.matchesFilter] */
