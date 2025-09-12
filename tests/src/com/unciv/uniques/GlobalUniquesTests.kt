@@ -229,6 +229,27 @@ class GlobalUniquesTests {
     }
 
     @Test
+    fun uniqueTypeOneTimeAdoptPolicyOrBelief() {
+        val civ = game.addCiv()
+        val tile = game.getTile(Vector2.Zero)
+        val city = game.addCity(civ, tile, true)
+
+        // Policy
+        Assert.assertFalse(civ.policies.isAdopted("Legalism"))
+        city.cityConstructions.addBuilding(game.createBuilding("Adopt [Legalism]"))
+        Assert.assertTrue(civ.policies.isAdopted("Legalism"))
+
+        // Belief
+        Assert.assertFalse(civ.religionManager.religion?.hasBelief("Dance of the Aurora") ?: false)
+        city.cityConstructions.addBuilding(game.createBuilding("Adopt [Dance of the Aurora]")) // Expected to not work, since we require a Religion
+        Assert.assertFalse(civ.religionManager.religion?.hasBelief("Dance of the Aurora") ?: false)
+        game.addReligion(civ) // With the Religion, we should be able to adopt the belief
+        Assert.assertFalse(civ.religionManager.religion?.hasBelief("Dance of the Aurora") ?: false)
+        city.cityConstructions.addBuilding(game.createBuilding("Adopt [Dance of the Aurora]"))
+        Assert.assertTrue(civ.religionManager.religion?.hasBelief("Dance of the Aurora") ?: false)
+    }
+
+    @Test
     fun statsFromGlobalCitiesFollowingReligion() {
         val civ1 = game.addCiv()
         val religion = game.addReligion(civ1)

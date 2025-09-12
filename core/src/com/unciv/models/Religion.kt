@@ -70,6 +70,8 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         updateUniqueMaps()
     }
 
+    fun addBelief(belief: Belief) = addBeliefs(listOf(belief))
+
     @Readonly
     fun getIconName() =
         if (isPantheon()) "Pantheon"

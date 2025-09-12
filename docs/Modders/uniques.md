@@ -69,7 +69,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Adopt [policy]"
+??? example  "Adopt [policy/belief]"
 	Example: "Adopt [Oligarchy]"
 
 	Applicable to: Triggerable
