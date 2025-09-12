@@ -41,6 +41,7 @@ import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import yairm210.purity.annotations.Readonly
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
@@ -96,7 +97,7 @@ object UniqueTriggerActivation {
         val relevantCity by lazy {
             city?: tile?.getCity()
         }
-        fun getApplicableCities(cityFilter: String) =
+        @Readonly fun getApplicableCities(cityFilter: String) =
             if (cityFilter == "in this city") sequenceOf(relevantCity).filterNotNull()
             else civInfo.cities.asSequence().filter { it.matchesFilter(cityFilter) }
 
@@ -322,7 +323,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeAdoptPolicyOrBelief -> {
                 val name = unique.params[0]
-                val policy = civInfo.gameInfo.ruleset.policies[name] ?: null
+                val policy = civInfo.gameInfo.ruleset.policies[name]
                 if (policy != null) {
                     if (civInfo.policies.isAdopted(name)) return null
                     return {
@@ -338,7 +339,7 @@ object UniqueTriggerActivation {
                     }
                 }
                 val belief = civInfo.gameInfo.ruleset.beliefs[name]
-                if (belief == null || civInfo.religionManager.religion?.hasBelief(name) == true) return null
+                if (belief == null || civInfo.religionManager.religion == null || civInfo.religionManager.religion?.hasBelief(name) == true) return null
                 return {
                     civInfo.religionManager.religion?.addBelief(belief)
                     val notificationText = getNotificationText(
@@ -1169,7 +1170,7 @@ object UniqueTriggerActivation {
                 if (tilesToTakeOver.none()) return null
 
                 /** Lower is better */
-                fun cityPriority(city: City) = city.getCenterTile().aerialDistanceTo(tile) + (if (city.isBeingRazed) 5 else 0)
+                @Readonly fun cityPriority(city: City) = city.getCenterTile().aerialDistanceTo(tile) + (if (city.isBeingRazed) 5 else 0)
 
                 val citiesWithAdjacentTiles = tilesToTakeOver.asSequence()
                     .flatMap { it.neighbors + it }
@@ -1224,6 +1225,7 @@ object UniqueTriggerActivation {
         }
     }
 
+    @Readonly
     private fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText: String): String? {
         return if (!notification.isNullOrEmpty()) notification
         else if (triggerNotificationText != null)
