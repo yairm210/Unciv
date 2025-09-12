@@ -70,9 +70,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         updateUniqueMaps()
     }
 
-    fun addBelief(belief: Belief) {
-        addBeliefs(listOf(belief))
-    }
+    fun addBelief(belief: Belief) = addBeliefs(listOf(belief))
 
     @Readonly
     fun getIconName() =
