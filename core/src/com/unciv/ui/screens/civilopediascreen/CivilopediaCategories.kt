@@ -100,11 +100,7 @@ enum class CivilopediaCategories (
         getImage = null,
         KeyboardBinding.PediaTutorials,
         "OtherIcons/ExclamationMark",
-        { _, tutorialController ->
-            tutorialController.getCivilopediaTutorials() +
-            // Global Uniques
-            listOfNotNull(UncivGame.Current.gameInfo?.getGlobalUniques()?.takeIf { it.hasUniques() })
-        }
+        { _, tutorialController -> tutorialController.getCivilopediaTutorials() }
     ),
     Victory ("Victory Types",
         CivilopediaImageGetters.victoryType,
