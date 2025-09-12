@@ -324,31 +324,24 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeAdoptPolicyOrBelief -> {
                 val name = unique.params[0]
                 val policy = civInfo.gameInfo.ruleset.policies[name]
-                if (policy != null) {
-                    if (civInfo.policies.isAdopted(name)) return null
-                    return {
+                val belief = civInfo.gameInfo.ruleset.beliefs[name]
+                when {
+                    policy != null && !civInfo.policies.isAdopted(name) -> return {
                         civInfo.policies.freePolicies++
                         civInfo.policies.adopt(policy)
-                        val notificationText = getNotificationText(
-                            notification, triggerNotificationText,
-                            "You gain the [$name] Policy"
-                        )
-                        if (notificationText != null)
-                            civInfo.addNotification(notificationText, PolicyAction(name), NotificationCategory.General, NotificationIcon.Culture)
+                        getNotificationText(notification, triggerNotificationText, "You gain the [$name] Policy")?.let {
+                            civInfo.addNotification(it, PolicyAction(name), NotificationCategory.General, NotificationIcon.Culture)
+                        }
                         true
                     }
-                }
-                val belief = civInfo.gameInfo.ruleset.beliefs[name]
-                if (belief == null || civInfo.religionManager.religion == null || civInfo.religionManager.religion?.hasBelief(name) == true) return null
-                return {
-                    civInfo.religionManager.religion?.addBelief(belief)
-                    val notificationText = getNotificationText(
-                        notification, triggerNotificationText,
-                        "You gain the [$name] Belief"
-                    )
-                    if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.Religion, NotificationIcon.Faith)
-                    true
+                    belief != null && civInfo.religionManager.religion?.hasBelief(name) == false -> return {
+                        civInfo.religionManager.religion?.addBelief(belief)
+                        getNotificationText(notification, triggerNotificationText, "You gain the [$name] Belief")?.let {
+                            civInfo.addNotification(it, NotificationCategory.Religion, NotificationIcon.Faith)
+                        }
+                        true
+                    }
+                    else -> return null
                 }
             }
             UniqueType.OneTimeRemovePolicy -> {
