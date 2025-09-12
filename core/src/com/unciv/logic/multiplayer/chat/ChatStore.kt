@@ -97,16 +97,14 @@ object ChatStore {
                 }
 
                 if (chatPopup == null && incomingChatMsg.civName != "System") {
-                    if (UncivGame.Current.worldScreen == null) {
-                        // user is out of world screen
-                        chat.read = false
-                    } else if (gameId.equals(UncivGame.Current.worldScreen?.gameInfo?.gameId?.toUUIDOrNull())) {
+                    if (gameId.equals(UncivGame.Current.worldScreen?.gameInfo?.gameId?.toUUIDOrNull())) {
                         // ensures that you are not getting notified for your own messages
                         if (UncivGame.Current.worldScreen?.gameInfo?.currentPlayer != incomingChatMsg.civName) {
                             chat.read = false
                             UncivGame.Current.worldScreen?.chatButton?.startFlashing()
                         }
                     } else {
+                        // user is out of world screen or
                         // some other game not currently on screen has a message
                         chat.read = false
                     }
