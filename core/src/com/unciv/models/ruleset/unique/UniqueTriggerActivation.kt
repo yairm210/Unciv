@@ -320,21 +320,33 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-            UniqueType.OneTimeAdoptPolicy -> {
-                val policyName = unique.params[0]
-                if (civInfo.policies.isAdopted(policyName)) return null
-                val policy = civInfo.gameInfo.ruleset.policies[policyName] ?: return null
-
+            UniqueType.OneTimeAdoptPolicyOrBelief -> {
+                val name = unique.params[0]
+                val policy = civInfo.gameInfo.ruleset.policies[name] ?: null
+                if (policy != null) {
+                    if (civInfo.policies.isAdopted(name)) return null
+                    return {
+                        civInfo.policies.freePolicies++
+                        civInfo.policies.adopt(policy)
+                        val notificationText = getNotificationText(
+                            notification, triggerNotificationText,
+                            "You gain the [$name] Policy"
+                        )
+                        if (notificationText != null)
+                            civInfo.addNotification(notificationText, PolicyAction(name), NotificationCategory.General, NotificationIcon.Culture)
+                        true
+                    }
+                }
+                val belief = civInfo.gameInfo.ruleset.beliefs[name]
+                if (belief == null || civInfo.religionManager.religion?.hasBelief(name) == true) return null
                 return {
-                    civInfo.policies.freePolicies++
-                    civInfo.policies.adopt(policy)
-
+                    civInfo.religionManager.religion?.addBelief(belief)
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
-                        "You gain the [$policyName] Policy"
+                        "You gain the [$name] Belief"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, PolicyAction(policyName), NotificationCategory.General, NotificationIcon.Culture)
+                        civInfo.addNotification(notificationText, NotificationCategory.Religion, NotificationIcon.Faith)
                     true
                 }
             }
