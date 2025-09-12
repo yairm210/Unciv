@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.multiplayer.chat.Chat
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
@@ -28,14 +29,13 @@ private val civChatColorsMap = mapOf<String, Color>(
 )
 
 class ChatPopup(
+    val chat: Chat,
     private val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
     companion object {
         // the percentage of the minimum lightness allowed for a civName
         const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.60f
     }
-
-    val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
@@ -44,7 +44,9 @@ class ChatPopup(
     )
 
     init {
+        chat.read = true
         ChatStore.chatPopup = this
+        ChatStore.hasGlobalMessage = false
         chatTable.defaults().growX().pad(5f).center()
 
         /**
