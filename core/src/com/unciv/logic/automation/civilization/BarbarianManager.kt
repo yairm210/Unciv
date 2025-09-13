@@ -54,13 +54,15 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
     fun updateEncampments() {
         // Check if camps were destroyed
-        for (encampment in encampments.toList()) { // tolist to avoid concurrent modification
+        val iterator = encampments.iterator()
+        while (iterator.hasNext()) {
+            val encampment = iterator.next()
             if (tileMap[encampment.position].improvement != Constants.barbarianEncampment) {
                 encampment.wasDestroyed()
             }
             // Check if the ghosts are ready to depart
             if (encampment.destroyed && encampment.countdown == 0)
-                encampments.remove(encampment)
+                iterator.remove()
         }
 
         // Possibly place a new encampment
