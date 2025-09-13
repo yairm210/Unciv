@@ -12,6 +12,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
+import yairm210.purity.annotations.Readonly
 
 
 class TutorialController(screen: BaseScreen) {
@@ -76,6 +77,7 @@ class TutorialController(screen: BaseScreen) {
         }
     }
 
+    @Readonly
     private fun getTutorial(tutorial: TutorialTrigger): List<String> {
         val name = tutorial.value.replace('_', ' ').trimStart()
         return tutorials[name]?.steps ?: emptyList()

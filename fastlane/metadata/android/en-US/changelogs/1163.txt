@@ -1,0 +1,8 @@
+
+
+By RobLoach:
+- Add Global Uniques to the Civilopedia 
+- Add `Adopt [policy/belief]` Unique 
+- Add diplomacy status to `civFilter` 
+
+button alignment - By SidedYapper
