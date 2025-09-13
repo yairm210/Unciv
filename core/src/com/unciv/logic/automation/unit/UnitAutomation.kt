@@ -67,8 +67,7 @@ object UnitAutomation {
         if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
-        if ((unit.hasUnique(UniqueType.BuildImprovements) || 
-                unit.hasUnique(UniqueType.FoundCity) || 
+        if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) || 
                     unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
             && !unit.civ.isAtWar()){
             CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
