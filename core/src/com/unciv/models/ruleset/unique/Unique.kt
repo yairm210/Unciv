@@ -11,7 +11,6 @@ import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.removeConditionals
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
@@ -44,6 +43,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val allParams = params + modifiers.flatMap { it.params }
 
     val isLocalEffect = params.contains("in this city") || hasModifier(UniqueType.ConditionalInThisCity)
+    val isOtherModifierType = type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true
 
     @Readonly fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
     @Readonly fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
@@ -169,6 +169,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return -1 // Not found
     }
 
+    @Readonly
     fun getReplacementText(ruleset: Ruleset): String {
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
         val replacementUniqueText = deprecationAnnotation.replaceWith.expression
@@ -185,7 +186,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         for (possibleUnique in possibleUniques) {
             var resultingUnique = possibleUnique
             
-            @LocalState val timesParameterWasSeen = Counter<String>()
+            val timesParameterWasSeen = Counter<String>()
             for (parameter in possibleUnique.replace('<', ' ').getPlaceholderParameters()) {
                 val parameterHasSign = parameter.startsWith('-') || parameter.startsWith('+')
                 val parameterUnsigned = if (parameterHasSign) parameter.drop(1) else parameter

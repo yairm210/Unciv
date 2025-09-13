@@ -58,9 +58,11 @@ class Expressions {
             }
         }
         
+        @Readonly
         fun getParsingError(parameterText: String): Parser.ParsingError? = 
             parse(parameterText).exception
         
+        @Readonly
         fun getCountableErrors(parameterText: String, ruleset: Ruleset): List<String> {
             val parseResult = parse(parameterText)
             return if (parseResult.node == null) emptyList() else parseResult.node.getErrors(ruleset)

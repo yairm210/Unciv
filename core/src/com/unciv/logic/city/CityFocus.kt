@@ -7,7 +7,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.cityscreen.CitizenManagementTable
-import com.unciv.ui.images.ImageGetter
+import yairm210.purity.annotations.Pure
 
 /**
  *  Controls automatic worker-to-tile assignment
@@ -60,31 +60,21 @@ enum class CityFocus(
 
     val binding: KeyboardBinding =
         binding ?:
-        KeyboardBinding.values().firstOrNull { it.name == name } ?:
+        KeyboardBinding.entries.firstOrNull { it.name == name } ?:
         KeyboardBinding.None
 
+    @Pure
     open fun getStatMultiplier(stat: Stat) = when (this.stat) {
         stat -> 3.05f // on ties, prefer the Focus
         else -> 1f
     }
 
-    private val statValuesForFocus: List<Stat> by lazy {
-        Stat.values().filter { getStatMultiplier(it) != 1f }
-    }
-
-    fun applyWeightTo(stats: Stats) {
-        for (stat in statValuesForFocus) {
-            val currentStat = stats[stat]
-            if (currentStat == 0f) continue
-            val statMultiplier = getStatMultiplier(stat)
-            stats[stat] = currentStat * statMultiplier
-        }
+    val statValuesForFocus: List<Stat> by lazy {
+        Stat.entries.filter { getStatMultiplier(it) != 1f }
     }
 
     companion object {
-        fun safeValueOf(stat: Stat): CityFocus {
-            return values().firstOrNull { it.stat == stat } ?: NoFocus
-        }
+        @Pure fun safeValueOf(stat: Stat): CityFocus = entries.firstOrNull { it.stat == stat } ?: NoFocus
 
         // set used in Automation. All non-Food Focuses, so targets 0 Surplus Food
         val zeroFoodFocuses = setOf(

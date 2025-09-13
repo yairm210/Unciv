@@ -36,7 +36,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var shouldOpenPolicyPicker = false
 
     /** Used by NextTurnAction.PickPolicy.isChoice */
-    fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
+    @Readonly fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
 
     /** A [Map] pairing each [PolicyBranch] to its priority ([Int]). */
     val priorityMap: Map<PolicyBranch, Int>
@@ -102,7 +102,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Readonly private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
+    @Readonly fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
@@ -140,6 +140,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     // round down to nearest 5
     @Readonly fun getCultureNeededForNextPolicy(): Int = getPolicyCultureCost(numberOfAdoptedPolicies)
 
+    @Readonly
     fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
         var policyCostInput = numberOfAdoptedPolicies
 
@@ -167,7 +168,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return cost - (cost % 5)
     }
 
-    fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
+    @Readonly fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     /** Uncached, use carefully */
     @Readonly

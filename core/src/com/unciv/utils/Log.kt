@@ -1,5 +1,8 @@
 package com.unciv.utils
 
+import yairm210.purity.annotations.Immutable
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.time.Instant
 import java.util.regex.Pattern
 
@@ -21,10 +24,10 @@ object Log {
      * Log tags (= class names) **containing** these Strings will not be logged.
      * You _can_ disable the default exclusions with an empty `-DnoLog=` argument.
      */
-    val disableLogsFrom = (
+    @Immutable val disableLogsFrom = (
             System.getProperty("noLog")
             ?: "Battle,Music,Sounds,Translations,WorkerAutomation,assignRegions,RoadBetweenCitiesAutomation"
-        ).split(',').filterNot { it.isEmpty() }.toMutableSet()
+        ).split(',').filterNot { it.isEmpty() }.toSet()
 
     /**
      * Add -DonlyLog=<comma-separated-list-of-partial-class-names> to only log specific classes.
@@ -32,13 +35,15 @@ object Log {
      * [disableLogsFrom] will still be respected if this is set.
      * Note you cannot disable all logging with `-DonlyLog=`, use `-DonlyLog=~~~` instead.
      */
+    @Immutable 
     val enableLogsFrom = (
             System.getProperty("onlyLog")
             ?: ""
-        ).split(',').filterNot { it.isEmpty() }.toMutableSet()
+        ).split(',').filterNot { it.isEmpty() }.toSet()
 
     var backend: LogBackend = DefaultLogBackend()
 
+    @Readonly
     fun shouldLog(tag: Tag = getTag()): Boolean {
         return !backend.isRelease() && !isTagDisabled(tag)
     }
@@ -54,6 +59,7 @@ object Log {
      *
      * The [params] can contain value-producing lambdas, which will be called and their value used as parameter for the message instead.
      */
+    @Pure @Suppress("purity") // good suppression - log considered pure everywhere
     fun debug(msg: String, vararg params: Any?) {
         if (backend.isRelease()) return
         debug(getTag(), msg, *params)
@@ -159,7 +165,7 @@ interface LogBackend {
     fun error(tag: Tag, curThreadName: String, msg: String)
 
     /** Do not log on release builds for performance reasons. */
-    fun isRelease(): Boolean
+    @Readonly fun isRelease(): Boolean
 
     /** Get string information about operation system */
     fun getSystemInfo(): String
@@ -209,6 +215,7 @@ private fun doLog(logger: (Tag, String, String) -> Unit, tag: Tag, msg: String, 
     logger(tag, Thread.currentThread().name, formattedMessage)
 }
 
+@Pure
 private fun isTagDisabled(tag: Tag): Boolean {
     return Log.disableLogsFrom.any { it in tag.name } ||
             (Log.enableLogsFrom.isNotEmpty() && Log.enableLogsFrom.none { it in tag.name })
@@ -231,14 +238,16 @@ private fun replaceLambdasWithValues(params: Array<out Any?>): Array<out Any?> {
 }
 
 
+@Readonly
 private fun getTag(): Tag {
     @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-    val firstOutsideStacktrace = Throwable().stackTrace.filter { "com.unciv.utils.Log" !in it.className }.first()
+    val firstOutsideStacktrace = Throwable().stackTrace.first { "com.unciv.utils.Log" !in it.className }
     val simpleClassName = firstOutsideStacktrace.className.substringAfterLast('.')
     return Tag(removeAnonymousSuffix(simpleClassName))
 }
 
 private val ANONYMOUS_CLASS_PATTERN = Pattern.compile("(\\$\\d+)+$") // all "$123" at the end of the class name
+@Pure
 private fun removeAnonymousSuffix(tag: String): String {
     val matcher = ANONYMOUS_CLASS_PATTERN.matcher(tag)
     return if (matcher.find()) {

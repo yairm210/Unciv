@@ -14,7 +14,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 class TileResource : RulesetStatsObject(), GameResource {
@@ -61,14 +60,19 @@ class TileResource : RulesetStatsObject(), GameResource {
         val ruleset = this.ruleset
             ?: throw IllegalStateException("No ruleset on TileResource when initializing improvements")
         
-        @LocalState val allImprovementsLocal = mutableSetOf<String>()
+        val allImprovementsLocal = mutableSetOf<String>()
         
         if (improvement != null) allImprovementsLocal += improvement!!
         allImprovementsLocal.addAll(improvedBy)
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.getMatchingUniques(UniqueType.ImprovesResources).none { matchesFilter(it.params[0]) }) continue
-            allImprovementsLocal += improvement.name
+            // Explicitly stated by the improvement, or this is a replacement improvement
+            if (improvement.getMatchingUniques(UniqueType.ImprovesResources).any { matchesFilter(it.params[0]) }
+                || allImprovementsLocal.contains(improvement.replaces)) {
+                allImprovementsLocal += improvement.name
+            }
         }
+        
+        
         allImprovements = allImprovementsLocal
         return allImprovementsLocal
     }
@@ -139,7 +143,11 @@ class TileResource : RulesetStatsObject(), GameResource {
         val buildingsThatProvideThis = ruleset.buildings.values
             .filter { building ->
                 building.uniqueObjects.any { unique ->
-                    unique.type == UniqueType.ProvidesResources && unique.params[1] == name
+                    when (unique.type) {
+                        UniqueType.ProvidesResources -> unique.params[1] == name
+                        UniqueType.StatPercentFromObjectToResource -> unique.params[3] == name
+                        else -> false
+                    }
                 }
             }
         if (buildingsThatProvideThis.isNotEmpty()) {
@@ -207,7 +215,7 @@ class TileResource : RulesetStatsObject(), GameResource {
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
-                state != null && hasUnique(filter, state) ||
+                state != null && hasTagUnique(filter, state) ||
                 state == null && hasTagUnique(filter)
         })
 

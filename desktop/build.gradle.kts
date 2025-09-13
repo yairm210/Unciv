@@ -110,7 +110,7 @@ for (platform in Platform.values()) {
             classpath = listOf(jarFile)
             removePlatformLibs = config.classpath
             mainClass = mainClassName
-            vmArgs = listOf("Xmx1G")
+            vmArgs = listOf("Xmx2G")
             minimizeJre = "desktop/packrConfig.json"
             outDir = file("packr")
         }
@@ -139,12 +139,11 @@ for (platform in Platform.values()) {
 
             // Requires that both packr and the jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
 
-            val jdkFile =
-                    when (platform) {
-                        Platform.Linux64 -> "jre-linux-64.tar.gz"
-                        Platform.Windows64 -> "jdk-windows-64.zip"
-                        else -> "jre-macOS.tar.gz"
-                    }
+            val jdkFile = when (platform) {
+                Platform.Linux64 -> "jre-linux-64.tar.gz"
+                Platform.Windows64 -> "jdk-windows-64.zip"
+                else -> "jre-macOS.tar.gz"
+            }
 
             val platformNameForPackrCmd =
                     if (platform == Platform.MacOS) "mac"

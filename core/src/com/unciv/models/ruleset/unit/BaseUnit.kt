@@ -108,6 +108,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
         (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
 
+    @Readonly
     fun getUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<String> {
         return sequence {
             yieldIfNotNull(upgradesTo)
@@ -116,6 +117,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    @Readonly
     fun getRulesetUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<BaseUnit> {
         return sequence {
             for (unit in getUpgradeUnits(gameContext))
@@ -123,9 +125,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    
-    fun getMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
-        val unit = MapUnit()
+    @Readonly @Suppress("purity") // technically DOES increase gameInfo.lastUnitId...
+    fun newMapUnit(civInfo: Civilization, unitId: Int? = null): MapUnit {
+        @LocalState val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civName
@@ -146,16 +148,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     @Readonly
-    override fun hasUnique(uniqueTag: String, state: GameContext?): Boolean {
+    override fun hasTagUnique(uniqueTag: String, state: GameContext?): Boolean {
         val gameContext = state ?: GameContext.EmptyState
         return if (::ruleset.isInitialized) rulesetUniqueMap.hasUnique(uniqueTag, gameContext)
-        else super<RulesetObject>.hasUnique(uniqueTag, gameContext)
+        else super<RulesetObject>.hasTagUnique(uniqueTag, gameContext)
     }
 
     @Readonly
-    override fun hasTagUnique(tagUnique: String): Boolean {
-        return if (::ruleset.isInitialized) rulesetUniqueMap.hasTagUnique(tagUnique)
-        else super<RulesetObject>.hasTagUnique(tagUnique)
+    override fun hasTagUnique(uniqueTag: String): Boolean {
+        return if (::ruleset.isInitialized) rulesetUniqueMap.hasTagUnique(uniqueTag)
+        else super<RulesetObject>.hasTagUnique(uniqueTag)
     }
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
@@ -167,9 +169,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Allows unique functions (getMatchingUniques, hasUnique) to "see" uniques from the UnitType */
     @Readonly
-    override fun getMatchingUniques(uniqueTag: String, state: GameContext): Sequence<Unique> {
-        return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingUniques(uniqueTag, state)
-        else super<RulesetObject>.getMatchingUniques(uniqueTag, state)
+    override fun getMatchingTagUniques(uniqueTag: String, state: GameContext): Sequence<Unique> {
+        return if (::ruleset.isInitialized) rulesetUniqueMap.getMatchingTagUniques(uniqueTag, state)
+        else super<RulesetObject>.getMatchingTagUniques(uniqueTag, state)
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
@@ -194,7 +196,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? = costFunctions.getStatBuyCost(city, stat)
 
-    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
+    @Readonly fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
@@ -286,11 +288,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
             if (this@BaseUnit.matchesFilter(unique.params[0], stateForConditionals)) {
-                val hasHappinessCondition = unique.hasModifier(UniqueType.ConditionalBelowHappiness)
-                        || unique.hasModifier(UniqueType.ConditionalBetweenHappiness)
-                if (hasHappinessCondition)
-                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.getDisplayText()))
-                else yield(RejectionReasonType.CannotBeBuilt.toInstance())
+                yield(RejectionReasonType.CannotBeBuilt.toInstance())
             }
 
         if (city != null && isAirUnit() && !canUnitEnterTile(city)) {
@@ -301,7 +299,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     
     @Readonly @Suppress("purity") // Good suppression - we cheat by creating a unit
     fun canUnitEnterTile(city: City): Boolean {
-        val fakeUnit = getMapUnit(city.civ, Constants.NO_ID)
+        val fakeUnit = newMapUnit(city.civ, Constants.NO_ID)
         return fakeUnit.movement.canMoveTo(city.getCenterTile())
     }
 
@@ -372,6 +370,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     // This returns the name of the unit this tech upgrades this unit to,
     // or null if there is no automatic upgrade at that tech.
+    @Readonly
     fun automaticallyUpgradedInProductionToUnitByTech(techName: String): String? {
         for (obsoleteTech: String in techsAtWhichAutoUpgradeInProduction())
             if (obsoleteTech == techName)
@@ -406,6 +405,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
+    @Readonly
     fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
         return if (replaces == null) this
         else ruleset.units[replaces!!]!!
@@ -419,11 +419,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
-                state != null && hasUnique(it, state) ||
+                state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
         else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
-            state != null && hasUnique(filter, state) ||
+            state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
     
@@ -478,7 +478,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
-        @LocalState val resourceRequirements = Counter<String>()
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in getMatchingUniques(UniqueType.ConsumesResources, state ?: GameContext.EmptyState))
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())
@@ -495,6 +495,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     val isWaterUnit by lazy { type.isWaterUnit() }
     @Readonly fun isAirUnit() = type.isAirUnit()
 
+    @Readonly
     fun isProbablySiegeUnit() = isRanged()
             && getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
                 .any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalVsCity) }
@@ -538,13 +539,18 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             promotions.asSequence()
                 .mapNotNull { ruleset.unitPromotions[it] }
                 .flatMap { it.uniqueObjects }
+        
+        // When we have multiple conditional strength bonuses, only the highest one counts
+        // Otherwise we get massive overvaluation of units with many conflicting conditionals
+        var highestConditionalPowerBonus = 1f
 
         for (unique in allUniques) {
             when (unique.type) {
                 UniqueType.Strength -> {
                     if (unique.params[0].toInt() <= 0) continue
+                    
                     if (unique.hasModifier(UniqueType.ConditionalVsUnits)) { // Bonus vs some units - a quarter of the bonus
-                        power *= (unique.params[0].toInt() / 4f).toPercent()
+                        highestConditionalPowerBonus = (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
                         unique.modifiers.any {
                             it.type == UniqueType.ConditionalVsCity // City Attack - half the bonus
@@ -553,9 +559,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                                 || it.type == UniqueType.ConditionalFightingInTiles
                         } // Bonus in terrain or feature - half the bonus
                     ) {
-                        power *= (unique.params[0].toInt() / 2f).toPercent()
+                        highestConditionalPowerBonus = (unique.params[0].toInt() / 2f).toPercent()
                     } else {
-                        power *= (unique.params[0].toInt()).toPercent() // Static bonus
+                        highestConditionalPowerBonus = (unique.params[0].toInt()).toPercent() // Static bonus
                     }
                 }
                 UniqueType.StrengthNearCapital ->
@@ -563,16 +569,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
                 UniqueType.MayParadrop // Paradrop - 25% bonus
-                    -> power += power / 4
+                    -> power *= 1.25f
                 UniqueType.MayParadropOld // ParadropOld - 25% bonus
-                    -> power += power / 4
+                    -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
-                    -> power -= power / 5
+                    -> power /= 1.20f
                 UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
-                    -> power += (power * unique.params[0].toInt()) / 5
+                    -> power *= (unique.params[0].toInt() * 20f).toPercent()
                 else -> {}
             }
         }
+        power *= highestConditionalPowerBonus
 
         return power.toInt()
     }

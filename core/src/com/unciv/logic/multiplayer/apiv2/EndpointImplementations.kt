@@ -7,24 +7,17 @@
 package com.unciv.logic.multiplayer.apiv2
 
 import com.unciv.utils.Log
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.cookies.get
-import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.cookies.*
+import io.ktor.client.request.*
 import io.ktor.client.request.request
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.*
 import io.ktor.client.statement.request
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
-import io.ktor.http.path
-import io.ktor.http.setCookie
-import io.ktor.util.network.UnresolvedAddressException
+import io.ktor.http.*
+import io.ktor.util.network.*
 import java.io.IOException
+import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 
@@ -46,7 +39,7 @@ private const val DEFAULT_RANDOM_PASSWORD_LENGTH = 32
 /**
  * Max age of a cached entry before it will be re-queried
  */
-private const val MAX_CACHE_AGE_SECONDS = 60L
+private val MAX_CACHE_AGE = Duration.ofSeconds(60)
 
 /**
  * Perform a HTTP request via [method] to [endpoint]
@@ -218,7 +211,7 @@ private object Cache {
     }
 
     /**
-     * Wrapper around [request] to cache responses to GET queries up to [MAX_CACHE_AGE_SECONDS]
+     * Wrapper around [request] to cache responses to GET queries up to [MAX_CACHE_AGE]
      */
     suspend fun get(
         endpoint: String,
@@ -230,7 +223,7 @@ private object Cache {
         retry: (suspend () -> Boolean)? = null
     ): HttpResponse? {
         val result = responseCache[endpoint]
-        if (cache && result != null && result.first.plusSeconds(MAX_CACHE_AGE_SECONDS).isAfter(Instant.now())) {
+        if (cache && result != null && (result.first + MAX_CACHE_AGE).isAfter(Instant.now())) {
             return result.second
         }
         val response = request(HttpMethod.Get, endpoint, client, authHelper, refine, suppress, retry)

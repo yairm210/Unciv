@@ -102,7 +102,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             .filter { it.type == beliefType }
     }
 
-    fun getAllBeliefsOrdered(): Sequence<Belief> {
+    @Readonly fun getAllBeliefsOrdered(): Sequence<Belief> {
         return mapToExistingBeliefs(followerBeliefs).filter { it.type == BeliefType.Pantheon } +
             mapToExistingBeliefs(founderBeliefs).filter { it.type == BeliefType.Founder } +
             mapToExistingBeliefs(followerBeliefs).filter { it.type == BeliefType.Follower } +
@@ -138,8 +138,8 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             else -> {
                 if (filter == name) return true
                 if (filter in getBeliefs(BeliefType.Any).map { it.name }) return true
-                if (founderBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
-                if (followerBeliefUniqueMap.hasMatchingUnique(filter, state)) return true
+                if (founderBeliefUniqueMap.hasMatchingTagUnique(filter, state)) return true
+                if (followerBeliefUniqueMap.hasMatchingTagUnique(filter, state)) return true
                 return false
             }
         }

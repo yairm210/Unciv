@@ -27,7 +27,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.math.pow
@@ -120,6 +119,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
     }
 
+    @Readonly
     fun turnsForGreatPersonFromCityState(): Int = ((37 + Random.Default.nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
 
     /** Gain a random great person from the city state */
@@ -144,6 +144,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         val city = cities.city1
 
+        @Readonly
         fun giftableUniqueUnit(): BaseUnit? {
             val uniqueUnit = civInfo.gameInfo.ruleset.units[civInfo.cityStateUniqueUnit]
                 ?: return null
@@ -153,6 +154,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 return null
             return uniqueUnit
         }
+        @Readonly
         fun randomGiftableUnit() =
                 city.cityConstructions.getConstructableUnits()
                 .filter { !it.isCivilian() && it.isLandUnit && it.uniqueTo == null }
@@ -161,6 +163,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                     it.value > 0 && receivingCiv.getResourceAmount(it.key) < it.value
                 } }
                 .toList().randomOrNull()
+        
         val militaryUnit = giftableUniqueUnit() // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
             ?: randomGiftableUnit() // Otherwise pick at random
             ?: return  // That filter _can_ result in no candidates, if so, quit silently
@@ -188,6 +191,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         )
     }
 
+    @Readonly
     fun influenceGainedByGift(donorCiv: Civilization, giftAmount: Int): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp
         // line 8681 and below
@@ -242,6 +246,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         diplomacy.addInfluence(-20f)
     }
 
+    @Readonly
     fun otherCivCanPledgeProtection(otherCiv: Civilization): Boolean {
         // Must be a known city state
         if(!civInfo.isCityState || !otherCiv.isMajorCiv() || otherCiv.isDefeated() || !civInfo.knows(otherCiv))
@@ -262,6 +267,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         return true
     }
 
+    @Readonly
     fun otherCivCanWithdrawProtection(otherCiv: Civilization): Boolean {
         // Must be a known city state
         if(!civInfo.isCityState || !otherCiv.isMajorCiv() || otherCiv.isDefeated() || !civInfo.knows(otherCiv))
@@ -334,6 +340,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     /** @return a Sequence of NotificationActions for use in addNotification, showing Capital on map if any, then opening diplomacy */
+    @Readonly
     fun getNotificationActions() = sequence {
         // Notification click will first point to CS location, if any, then open diplomacy.
         // That's fine for the influence notifications and for afraid too.
@@ -348,6 +355,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         yield(DiplomacyAction(civInfo.civName))
     }
 
+    @Readonly
     fun getDiplomaticMarriageCost(): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
         var cost = (500 * civInfo.gameInfo.speed.goldCostModifier).toInt()
@@ -362,6 +370,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         return cost
     }
 
+    @Readonly
     fun canBeMarriedBy(otherCiv: Civilization): Boolean {
         return (!civInfo.isDefeated()
                 && civInfo.isCityState
@@ -418,7 +427,6 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     @Readonly
     fun getTributeModifiers(demandingCiv: Civilization, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
-        @LocalState
         val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
         // Can't bully major civs or unsettled CS's
         if (!civInfo.isCityState) {
@@ -489,6 +497,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         return modifiers
     }
 
+    @Readonly
     fun goldGainedByTribute(): Int {
         // These values are close enough, linear increase throughout the game
         var gold = (10 * civInfo.gameInfo.speed.goldGiftModifier).toInt() * 5 // rounding down to nearest 5
@@ -522,6 +531,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
     }
 
+    @Readonly
     fun canProvideStat(statType: Stat): Boolean {
         if (!civInfo.isCityState)
             return false
@@ -559,12 +569,13 @@ class CityStateFunctions(val civInfo: Civilization) {
             .filter { !it.hasUnique(UniqueType.ResearchableMultipleTimes) && civInfo.tech.canBeResearched(it.name) }
         for (tech in researchableTechs) {
             val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
-            if (aliveMajorCivs.count { it.tech.isResearched(tech.name) } >= aliveMajorCivs.size / 2)
+            if (aliveMajorCivs.count { it.tech.isResearched(tech.name) } > aliveMajorCivs.size / 2)
                 civInfo.tech.addTechnology(tech.name)
         }
         return
     }
 
+    @Readonly
     fun getNumThreateningBarbarians(): Int {
         if (civInfo.gameInfo.gameParameters.noBarbarians) return 0
         val barbarianCiv = civInfo.gameInfo.civilizations.firstOrNull { it.isBarbarian }
@@ -785,13 +796,16 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
     }
 
-    fun getCityStateResourcesForAlly() = ResourceSupplyList().apply {
+    @Readonly
+    fun getCityStateResourcesForAlly(): ResourceSupplyList {
+        val resourceSupplyList = ResourceSupplyList()
         // TODO: City-states don't give allies resources from civ-wide uniques!
         val civResourceModifiers = civInfo.getResourceModifiers()
         for (city in civInfo.cities) {
             // IGNORE the fact that they consume their own resources - #4769
-            addPositiveByResource(city.getResourcesGeneratedByCity(civResourceModifiers), Constants.cityStates)
+            resourceSupplyList.addPositiveByResource(city.getResourcesGeneratedByCity(civResourceModifiers), Constants.cityStates)
         }
+        return resourceSupplyList
     }
 
     // TODO: Optimize, update whenever status changes, otherwise retain the same list
@@ -815,15 +829,20 @@ class CityStateFunctions(val civInfo: Civilization) {
             .flatMap { it.getMultiplied(gameContext) }
     }
 
-
-    @Readonly
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType: UniqueType? = null): Sequence<Unique> {
-        val cityStateUniqueMap = when (relationshipLevel) {
-            RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
-            RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap
-            else -> return emptySequence()
+    companion object {
+        @Readonly
+        fun getCityStateBonuses(
+            cityStateType: CityStateType,
+            relationshipLevel: RelationshipLevel,
+            uniqueType: UniqueType? = null
+        ): Sequence<Unique> {
+            val cityStateUniqueMap = when (relationshipLevel) {
+                RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
+                RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap
+                else -> return emptySequence()
+            }
+            return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
+            else cityStateUniqueMap.getUniques(uniqueType)
         }
-        return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
-        else cityStateUniqueMap.getUniques(uniqueType)
     }
 }

@@ -24,6 +24,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Readonly
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -577,6 +578,7 @@ object GameStarter {
             }.sortedByDescending { it.isHuman() } // More important for humans to get their start biases!
     }
 
+    @Readonly
     private fun getFreeTiles(tileMap: TileMap, landTilesInBigEnoughGroup: Map<Tile, Float>, minimumDistanceBetweenStartingLocations: Int): MutableList<Tile> {
         return landTilesInBigEnoughGroup.asSequence()
             .filter {

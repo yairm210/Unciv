@@ -13,6 +13,8 @@ import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -73,6 +75,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         mapHolder.onViewportChangedListener = ::updateScrollPosition
     }
 
+    @Readonly
     private fun calcTileSize(minimapSize: Vector2): Float {
         val height: Float
         val width: Float
@@ -201,6 +204,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         worldHeight: Float,
         worldViewport: Rectangle
     ) {
+        @Pure
         operator fun Rectangle.times(other: Vector2) =
                 Rectangle(x * other.x, y * other.y, width * other.x, height * other.y)
 

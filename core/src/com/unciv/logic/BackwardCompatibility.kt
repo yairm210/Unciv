@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
+import yairm210.purity.annotations.Readonly
 
 /**
  * Container for all temporarily used code managing transitions from deprecated elements to their replacements.
@@ -36,6 +37,12 @@ object BackwardCompatibility {
         handleMissingReferencesForEachCity()
 
         removeTechAndPolicies()
+        updateMissingStartingEra()
+    }
+
+    private fun GameInfo.updateMissingStartingEra() {
+        if (gameParameters.startingEra in ruleset.eras) return
+        gameParameters.startingEra = ruleset.eras.keys.first()
     }
 
     fun GameInfo.migrateGreatGeneralPools() {
@@ -98,6 +105,7 @@ object BackwardCompatibility {
                     city.cityConstructions.builtBuildings.remove(building)
             }
 
+            @Readonly
             fun isInvalidConstruction(construction: String) =
                 !ruleset.buildings.containsKey(construction)
                     && !ruleset.units.containsKey(construction)
@@ -120,6 +128,11 @@ object BackwardCompatibility {
             for (tech in civInfo.tech.techsResearched.toList())
                 if (!ruleset.technologies.containsKey(tech))
                     civInfo.tech.techsResearched.remove(tech)
+            
+            for (tech in civInfo.tech.techsToResearch.toList())
+                if (!ruleset.technologies.containsKey(tech))
+                    civInfo.tech.techsToResearch.remove(tech)
+            
             for (policy in civInfo.policies.adoptedPolicies.toList())
                 if (!ruleset.policies.containsKey(policy))
                     civInfo.policies.adoptedPolicies.remove(policy)

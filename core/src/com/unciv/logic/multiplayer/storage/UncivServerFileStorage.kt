@@ -3,7 +3,6 @@ package com.unciv.logic.multiplayer.storage
 import com.badlogic.gdx.Net
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.utils.debug
-import kotlin.Exception
 
 object UncivServerFileStorage : FileStorage {
     var authHeader: Map<String, String>? = null
@@ -17,7 +16,7 @@ object UncivServerFileStorage : FileStorage {
                 debug("Error from UncivServer during save: %s", result)
                 when (code) {
                     401 -> throw MultiplayerAuthException(Exception(result))
-                    else -> throw Exception(result)
+                    else -> throw Exception("$code $result")
                 }
             }
         }

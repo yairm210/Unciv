@@ -127,7 +127,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /**
      * creates a hexagonal map of given radius (filled with grassland)
      *
-     * To help you visualize how UnCiv hexagonal coordinate system works, here's a small example:
+     * To help you visualize how Unciv hexagonal coordinate system works, here's a small example:
      * 
      * ```
      *          _____         _____         _____
@@ -405,7 +405,6 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Readonly
     fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack: Boolean = false): List<Tile> {
         val aUnitHeight = get(position).unitHeight
-        @LocalState
         val viewableTiles = mutableListOf(ViewableTile(
             get(position),
             aUnitHeight,
@@ -416,7 +415,6 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         for (i in 1..sightDistance+1) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
-            @LocalState
             val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
             for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
@@ -590,7 +588,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             civInfo: Civilization,
             unitId: Int? = null
     ): MapUnit? {
-        val unit = baseUnit.getMapUnit(civInfo, unitId)
+        val unit = baseUnit.newMapUnit(civInfo, unitId)
 
         fun getPassableNeighbours(tile: Tile): Set<Tile> =
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()

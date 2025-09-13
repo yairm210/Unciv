@@ -91,10 +91,12 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         getFreeBuildingNamesSequence(city.id).toSet()
 
     /** Tests whether the [city] has [building] for free, from nationwide sources or buildings in other cities */
+    @Readonly
     fun hasFreeBuilding(city: City, building: Building) =
         hasFreeBuildingByName(city.id, building.name)
 
     /** Tests whether a city by [cityId] has a building named [buildingName] for free, from nationwide sources or buildings in other cities */
+    @Readonly
     private fun hasFreeBuildingByName(cityId: String, buildingName: String) =
         getFreeBuildingNamesSequence(cityId).contains(buildingName)
 

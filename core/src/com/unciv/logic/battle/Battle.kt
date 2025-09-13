@@ -25,6 +25,8 @@ import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.utils.debug
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -125,16 +127,7 @@ object Battle {
             if (attacker.isDefeated()) return interceptDamage
         } else interceptDamage = DamageDealt.None
 
-        // Withdraw from melee ability
-        if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
-            && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, gameContext = GameContext(
-                        civInfo = defender.getCivInfo(),
-                        ourCombatant = defender,
-                        theirCombatant = attacker,
-                        tile = attackedTile
-                    ))
-            && doWithdrawFromMeleeAbility(attacker, defender)) return DamageDealt.None
-
+        if (hasWithdrawnFromMeelee(attacker, defender, attackedTile)) return DamageDealt.None
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
@@ -153,45 +146,21 @@ object Battle {
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
-        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)) {
-            // Barbarians can't capture cities
-            if (attacker.unit.civ.isBarbarian) {
-                defender.takeDamage(-1) // Back to 2 HP
-                val ransom = min(200, defender.city.civ.gold)
-                defender.city.civ.addGold(-ransom)
-                defender.city.civ.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
-                attacker.unit.destroy() // Remove the barbarian
-            } else
-                conquerCity(defender.city, attacker)
-        }
-
-        // Exploring units surviving an attack should "wake up"
-        if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
-            defender.unit.action = null
+        handleCityDefeated(defender, attacker)
 
         
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
-        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
-            tryEarnFromKilling(attacker, defender)
-            tryHealAfterKilling(attacker)
-
-            if (attacker is MapUnitCombatant) triggerVictoryUniques(attacker, defender, attackedTile)
-            triggerDefeatUniques(defender, attacker, attackedTile)
-
-        } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
-            tryEarnFromKilling(defender, attacker)
-            tryHealAfterKilling(defender)
-
-            if (defender is MapUnitCombatant) triggerVictoryUniques(defender, attacker, attackedTile)
-            triggerDefeatUniques(attacker, defender, attackedTile)
-        }
+        triggerPostKillingUniques(defender, attacker, attackedTile)
         
         if (attacker is MapUnitCombatant && defender is MapUnitCombatant){
             triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)
             if (!attacker.isRanged()) triggerDamageUniquesForUnit(defender, attacker, attackedTile, CombatAction.Defend)
         }
+
+        // Exploring units surviving an attack should "wake up"
+        if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
+            defender.unit.action = null
 
         if (attacker is MapUnitCombatant) {
             if (attacker.unit.hasUnique(UniqueType.SelfDestructs))
@@ -217,19 +186,67 @@ object Battle {
 
         return damageDealt + interceptDamage
     }
-    
+
+    private fun triggerPostKillingUniques(
+        defender: ICombatant,
+        attacker: ICombatant,
+        attackedTile: Tile
+    ) {
+        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
+            tryEarnFromKilling(attacker, defender)
+            tryHealAfterKilling(attacker)
+
+            if (attacker is MapUnitCombatant) triggerVictoryUniques(attacker, defender, attackedTile)
+            triggerDefeatUniques(defender, attacker, attackedTile)
+
+        } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
+            tryEarnFromKilling(defender, attacker)
+            tryHealAfterKilling(defender)
+
+            if (defender is MapUnitCombatant) triggerVictoryUniques(defender, attacker, attackedTile)
+            triggerDefeatUniques(attacker, defender, attackedTile)
+        }
+    }
+
+    private fun handleCityDefeated(defender: ICombatant, attacker: ICombatant) {
+        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || !attacker.isMelee()
+            || attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)
+        ) return
+        
+        // Barbarians can't capture cities, instead raiding them for gold
+        if (attacker.unit.civ.isBarbarian) {
+            defender.takeDamage(-1) // Back to 2 HP
+            val ransom = min(200, defender.city.civ.gold)
+            defender.city.civ.addGold(-ransom)
+            defender.city.civ.addNotification(
+                "Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!",
+                defender.city.location,
+                NotificationCategory.War,
+                NotificationIcon.War
+            )
+            attacker.unit.destroy() // Remove the barbarian
+        } else
+            conquerCity(defender.city, attacker)
+    }
+
     private fun triggerCombatUniques(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
         val attackerContext = GameContext(attacker.getCivInfo(),
             ourCombatant = attacker, theirCombatant = defender, tile = attackedTile, combatAction = CombatAction.Attack)
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, attackerContext)) {
-                UniqueTriggerActivation.triggerUnique(unique, attacker.unit)
+                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
+                    defender.unit
+                else attacker.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit)
             }
         val defenderContext = GameContext(defender.getCivInfo(),
             ourCombatant = defender, theirCombatant = attacker, tile = attackedTile, combatAction = CombatAction.Defend)
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponCombat, defenderContext)) {
-                UniqueTriggerActivation.triggerUnique(unique, defender.unit)
+                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
+                attacker.unit
+                else defender.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit)
             }
     }
 
@@ -299,6 +316,7 @@ object Battle {
     }
 
     /** See [UniqueType.KillUnitPlunder] for params */
+    @Readonly
     private fun getKillUnitPlunderUniques(civUnit: ICombatant, defeatedUnit: MapUnitCombatant): ArrayList<Unique> {
         val bonusUniques = ArrayList<Unique>()
 
@@ -325,7 +343,7 @@ object Battle {
      *  @param defenderDealt Damage done by defender to attacker
      */
     data class DamageDealt(val attackerDealt: Int, val defenderDealt: Int) {
-        operator fun plus(other: DamageDealt) =
+        @Pure operator fun plus(other: DamageDealt) =
             DamageDealt(attackerDealt + other.attackerDealt, defenderDealt + other.defenderDealt)
         companion object {
             val None = DamageDealt(0, 0)
@@ -365,13 +383,21 @@ object Battle {
 
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= defenderDamageDealt })
-                UniqueTriggerActivation.triggerUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
+                    { it.params[0].toInt() <= defenderDamageDealt }) {
+                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
+                    defender.unit
+                else attacker.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
+            }
 
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= attackerDamageDealt })
-                UniqueTriggerActivation.triggerUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
+                    { it.params[0].toInt() <= attackerDamageDealt }) {
+                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
+                attacker.unit
+                else defender.unit
+                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
+            }
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
@@ -481,17 +507,19 @@ object Battle {
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
         if (!attacker.isMelee()) return
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
-        if (attacker is MapUnitCombatant && attacker.unit.cache.cannotMove) return
-
+        if (attacker !is MapUnitCombatant) return
+        if (attacker.unit.cache.cannotMove) return
+        // Example: If the unit we attacked made us lose movement points
+        if (!attacker.unit.movement.canReachInCurrentTurn(attackedTile)) return
         // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
-        if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
-            // Units that can move after attacking are not affected by zone of control if the
-            // movement is caused by killing a unit. Effectively, this means that attack movements
-            // are exempt from zone of control, since units that cannot move after attacking already
-            // lose all remaining movement points anyway.
-            attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
-            attacker.unit.mostRecentMoveType = UnitMovementMemoryType.UnitAttacked
-        }
+        if (!attacker.unit.movement.canMoveTo(attackedTile)) return
+
+        // Units that can move after attacking are not affected by zone of control if the
+        // movement is caused by killing a unit. Effectively, this means that attack movements
+        // are exempt from zone of control, since units that cannot move after attacking already
+        // lose all remaining movement points anyway.
+        attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+        attacker.unit.mostRecentMoveType = UnitMovementMemoryType.UnitAttacked
     }
 
     private fun postBattleAddXp(attacker: ICombatant, defender: ICombatant) {
@@ -664,7 +692,8 @@ object Battle {
             city.isBeingRazed = true
         }
     }
-
+    
+    @Readonly
     fun getMapCombatantOfTile(tile: Tile): ICombatant? {
         if (tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
         if (tile.militaryUnit != null) return MapUnitCombatant(tile.militaryUnit!!)
@@ -680,6 +709,17 @@ object Battle {
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
+    
+    private fun hasWithdrawnFromMeelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
+        return (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
+                && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, gameContext = GameContext(
+            civInfo = defender.getCivInfo(),
+            ourCombatant = defender,
+            theirCombatant = attacker,
+            tile = attackedTile
+        )) 
+                && doWithdrawFromMeleeAbility(attacker, defender))
+    }
 
     private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
         if (defender.unit.isEmbarked()) return false
@@ -691,6 +731,7 @@ object Battle {
         val fromTile = defender.getTile()
         val attackerTile = attacker.getTile()
 
+        @Readonly
         fun canNotWithdrawTo(tile: Tile): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
            return !defender.unit.movement.canMoveTo(tile)
                    || defender.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded

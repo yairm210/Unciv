@@ -13,7 +13,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stat.Companion.statsUsableToBuy
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
@@ -133,7 +132,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     
     @Readonly
     override fun getStockpiledResourceRequirements(state: GameContext): Counter<String> {
-        @LocalState val counter = Counter<String>()
+        val counter = Counter<String>()
         for (unique in getMatchingUniquesNotConflicting(UniqueType.CostsResources, state)){
             var amount = unique.params[0].toInt()
             if (unique.isModifiedByGameSpeed()) amount = (amount * state.gameInfo!!.speed.modifier).toInt()
@@ -198,7 +197,6 @@ class RejectionReason(val type: RejectionReasonType,
             RejectionReasonType.RequiresBuildingInSomeCity,
             RejectionReasonType.RequiresBuildingInSomeCities,
             RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
-            RejectionReasonType.CannotBeBuiltUnhappiness,
             RejectionReasonType.PopulationRequirement,
             RejectionReasonType.ConsumesResources,
             RejectionReasonType.CanOnlyBePurchased,
@@ -208,7 +206,6 @@ class RejectionReason(val type: RejectionReasonType,
         // Exceptions. Used for units spawned/upgrade path, not built
         private val constructionRejectionReasonType = listOf(
             RejectionReasonType.Unbuildable,
-            RejectionReasonType.CannotBeBuiltUnhappiness,
             RejectionReasonType.CannotBeBuilt,
             RejectionReasonType.CanOnlyBeBuiltInSpecificCities,
         )
@@ -250,12 +247,10 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
     CannotBeBuilt(false, "Cannot be built by this nation"),
-    CannotBeBuiltUnhappiness(true, "Unhappiness"),
 
     Obsoleted(false, "Obsolete"),
     RequiresTech(false, "Required tech not researched"),
     RequiresPolicy(false, "Requires a specific policy!"),
-    UnlockedWithEra(false, "Unlocked when reaching a specific era"),
     MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
 
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
@@ -265,6 +260,9 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
     RequiresBuildingInSomeCities(true, "Requires a specific building in more cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
+    
+    NoSuchImprovement(false, "No such improvement exists in the ruleset"),
+    NoTileCanContainImprovement(false, "No tile can contain this improvement"),
 
     WonderAlreadyBuilt(false, "Wonder already built"),
     NationalWonderAlreadyBuilt(false, "National Wonder already built"),
@@ -294,7 +292,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
     IConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
-    open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
+    @Readonly open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
     override fun getStockpiledResourceRequirements(state: GameContext) = Counter.ZERO
 
     companion object {
@@ -326,7 +324,7 @@ open class PerpetualStatConversion(val stat: Stat) :
 
     override fun getProductionTooltip(city: City, withIcon: Boolean) : String
             = "\r\n${(city.cityStats.currentCityStats.production / getConversionRate(city)).roundToInt()}${if (withIcon) stat.character else ""}/${Fonts.turn}"
-    fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
+    @Readonly fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         val city = cityConstructions.city

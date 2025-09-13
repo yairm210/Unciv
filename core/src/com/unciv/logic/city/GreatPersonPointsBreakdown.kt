@@ -5,7 +5,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 /** Manages calculating Great Person Points per City for nextTurn. See public constructor(city) below for details. */
@@ -40,9 +40,9 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
         const val fixedPointFactor = 1000
 
 
-        @Readonly private fun getUniqueSourceName(unique: Unique) = unique.sourceObjectName ?: "Bonus"
+        @Pure private fun getUniqueSourceName(unique: Unique) = unique.sourceObjectName ?: "Bonus"
 
-        @Readonly
+        @Pure
         private fun guessPediaLink(unique: Unique): String? {
             if (unique.sourceObjectName == null) return null
             return unique.sourceObjectType!!.name + "/" + unique.sourceObjectName
@@ -134,13 +134,11 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
     @Readonly
     fun sum(): Counter<String> {
         // Accumulate base points as fake "fixed-point"
-        @LocalState
         val result = Counter<String>()
         for (entry in basePoints)
             result.add(entry.counter * fixedPointFactor)
 
         // Accumulate percentage bonuses additively not multiplicatively
-        @LocalState
         val bonuses = Counter<String>()
         for (entry in percentBonuses) {
             bonuses.add(entry.counter)

@@ -7,8 +7,10 @@ import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 object TargetHelper {
+    @Readonly
     fun getAttackableEnemies(
         unit: MapUnit,
         unitDistanceToTiles: PathsToTilesWithinTurn,
@@ -68,6 +70,7 @@ object TargetHelper {
         return attackableTiles
     }
 
+    @Readonly
     private fun getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles: PathsToTilesWithinTurn, unitMustBeSetUp: Boolean, unit: MapUnit) =
         unitDistanceToTiles.asSequence()
             .map { (tile, distance) ->
@@ -86,6 +89,7 @@ object TargetHelper {
                 it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
             }
 
+    @Readonly
     private fun tileContainsAttackableEnemy(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {
         if (tile !in (tilesToCheck ?: unit.civ.viewableTiles) || !containsAttackableEnemy(tile, MapUnitCombatant(unit)) )
             return false
@@ -94,6 +98,7 @@ object TargetHelper {
         return (!unit.baseUnit.isMelee() || mapCombatant !is MapUnitCombatant || !mapCombatant.unit.isCivilian() || unit.movement.canPassThrough(tile))
     }
 
+    @Readonly
     fun containsAttackableEnemy(tile: Tile, combatant: ICombatant): Boolean {
         if (combatant is MapUnitCombatant && combatant.unit.isEmbarked() && !combatant.hasUnique(UniqueType.AttackOnSea)) {
             // Can't attack water units while embarked, only land
@@ -146,6 +151,7 @@ object TargetHelper {
     }
 
     /** Get a list of visible tiles which have something attackable */
+    @Readonly
     fun getBombardableTiles(city: City): Sequence<Tile> =
             city.getCenterTile().getTilesInDistance(city.getBombardRange())
                     .filter { it.isVisible(city.civ) && containsAttackableEnemy(it, CityCombatant(city)) }

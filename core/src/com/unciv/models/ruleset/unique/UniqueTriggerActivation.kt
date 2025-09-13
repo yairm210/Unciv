@@ -31,10 +31,12 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.UncivSound
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
 import kotlin.math.roundToInt
@@ -62,7 +64,8 @@ object UniqueTriggerActivation {
             notification = notification, triggerNotificationText = triggerNotificationText)
     }
 
-    /** @return whether an action was successfully performed */
+    /** @return whether an action was successfully performed
+     * Assumes that conditional check has already been performed */
     fun triggerUnique(
         unique: Unique,
         civInfo: Civilization,
@@ -102,15 +105,13 @@ object UniqueTriggerActivation {
         if (timingConditional != null) {
             return {
                 civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
-                if (unique.type in setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources))
+                if (unique.type in setOf(UniqueType.ProvidesResources, UniqueType.ConsumesResources, UniqueType.StatPercentFromObjectToResource))
                     civInfo.cache.updateCivResources()
                 true
             }
         }
 
         val gameContext = GameContext(civInfo, city, unit, tile)
-
-        if (!unique.conditionalsApply(gameContext)) return null
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
@@ -164,6 +165,17 @@ object UniqueTriggerActivation {
             UniqueType.MarkTutorialComplete -> return {
                 UncivGame.Current.settings.addCompletedTutorialTask(unique.params[0])
                 true
+            }
+
+            UniqueType.PlaySound -> {
+                val soundName = unique.params[0]
+                if (soundName.isEmpty()) return null
+                var sound = UncivSound(soundName)
+                SoundPlayer.get(sound) ?: return null
+                return {
+                    SoundPlayer.play(sound)
+                    true
+                }
             }
 
             UniqueType.OneTimeFreeUnit -> {
@@ -522,19 +534,6 @@ object UniqueTriggerActivation {
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, TechAction(techName), NotificationCategory.General, NotificationIcon.Science)
-                    true
-                }
-            }
-
-            UniqueType.StrategicResourcesIncrease -> {
-                return {
-                    civInfo.cache.updateCivResources()
-                    if (notification != null)
-                        civInfo.addNotification(
-                            notification,
-                            NotificationCategory.General,
-                            NotificationIcon.Construction
-                        )
                     true
                 }
             }

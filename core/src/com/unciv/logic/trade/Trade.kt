@@ -5,6 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.ruleset.nation.PersonalityValue
+import yairm210.purity.annotations.Readonly
 
 class Trade : IsPartOfGameInfoSerialization {
 
@@ -13,20 +14,22 @@ class Trade : IsPartOfGameInfoSerialization {
 
     fun reverse(): Trade {
         val newTrade = Trade()
-        newTrade.theirOffers+=ourOffers.map { it.copy() }
-        newTrade.ourOffers+=theirOffers.map { it.copy() }
+        newTrade.theirOffers += ourOffers.map { it.copy() }
+        newTrade.ourOffers += theirOffers.map { it.copy() }
         return newTrade
     }
 
+    @Readonly
     fun equalTrade(trade: Trade): Boolean {
-       if(trade.ourOffers.size!=ourOffers.size
-           || trade.theirOffers.size!=theirOffers.size) return false
+        if (trade.ourOffers.size != ourOffers.size
+            || trade.theirOffers.size != theirOffers.size
+        ) return false
 
-        for(offer in trade.ourOffers)
-            if(ourOffers.none { it.equals(offer)})
+        for (offer in trade.ourOffers)
+            if (ourOffers.none { it.equals(offer) })
                 return false
-        for(offer in trade.theirOffers)
-            if(theirOffers.none { it.equals(offer)})
+        for (offer in trade.theirOffers)
+            if (theirOffers.none { it.equals(offer) })
                 return false
         return true
     }
@@ -45,7 +48,7 @@ class Trade : IsPartOfGameInfoSerialization {
         theirOffers.addAll(trade.theirOffers)
     }
 
-    fun isPeaceTreaty() = ourOffers.any { it.type == TradeOfferType.Treaty && it.name == Constants.peaceTreaty }
+    @Readonly fun isPeaceTreaty() = ourOffers.any { it.type == TradeOfferType.Treaty && it.name == Constants.peaceTreaty }
 }
 
 

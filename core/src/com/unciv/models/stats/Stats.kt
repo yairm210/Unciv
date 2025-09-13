@@ -1,8 +1,7 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
-import yairm210.purity.annotations.Pure
-import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.*
 
 /**
  * A container for the seven basic ["currencies"][Stat] in Unciv,
@@ -12,6 +11,7 @@ import yairm210.purity.annotations.Readonly
  *
  * Also possible: `<Stats>`.[values].sum() and similar aggregates over a Sequence<Float>.
  */
+@InternalState
 open class Stats(
     var production: Float = 0f,
     var food: Float = 0f,
@@ -121,10 +121,11 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
-    operator fun times(number: Int) = times(number.toFloat())
+    @Readonly operator fun times(number: Int) = times(number.toFloat())
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
+    @Readonly
     operator fun times(number: Float) = Stats(
         production * number,
         food * number,
@@ -149,7 +150,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new [Stats] instance */
-    operator fun div(number: Float) = times(1/number)
+    @Readonly operator fun div(number: Float) = times(1/number)
 
     /** **Mutating function**
      * Apply weighting for Production Ranking */
@@ -167,6 +168,7 @@ open class Stats(
      *
      * Example output: `+1 Production, -1 Food`.
      */
+    @Readonly
     override fun toString(): String {
         return this.joinToString {
             (if (it.value > 0) "+" else "") + it.value.toInt().tr() + " " + it.key.toString().tr()
@@ -187,6 +189,7 @@ open class Stats(
 
     // function that removes the icon from the Stats object since the circular icons all appear the same
     // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed (e.g., in notification text)
+    @Readonly
     fun toStringWithoutIcons(): String {
         return this.joinToString {
             it.value.toInt().tr() + " " + it.key.name.tr().substring(startIndex = 1)
@@ -194,6 +197,7 @@ open class Stats(
     }
 
     /** Return a string of just +/- value and Stat symbol*/
+    @Readonly
     fun toStringOnlyIcons(addPlusSign: Boolean = true): String {
         return this.joinToString {
             (if (addPlusSign && it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character
@@ -262,13 +266,15 @@ open class Stats(
          * - Order is not important.
          * @see [isStats]
          */
+        @Pure
         fun parse(string: String): Stats {
             val toReturn = Stats()
             val statsWithBonuses = string.split(", ")
-            for(statWithBonuses in statsWithBonuses) {
+            statsWithBonuses.forEach { statWithBonuses ->
                 val match = statRegex.matchEntire(statWithBonuses)!!
-                val statName = match.groupValues[3]
-                val statAmount = match.groupValues[2].toFloat() * (if (match.groupValues[1] == "-") -1 else 1)
+                @Immutable val groupValues = match.groupValues
+                val statName = groupValues[3]
+                val statAmount = groupValues[2].toFloat() * (if (groupValues[1] == "-") -1 else 1)
                 toReturn.add(Stat.valueOf(statName), statAmount)
             }
             return toReturn
@@ -279,6 +285,7 @@ open class Stats(
     }
 }
 
+@InternalState
 class StatMap : LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
         // We always clone to avoid touching the mutable stats of uniques

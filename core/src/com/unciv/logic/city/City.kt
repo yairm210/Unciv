@@ -170,8 +170,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     @Readonly fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
+    @Readonly fun getWorkedTiles(): Sequence<Tile> = workedTiles.asSequence().map { tileMap[it] }
     @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
-
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()
@@ -181,7 +181,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
     @Readonly
-    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
+    fun isConnectedToCapital(@Readonly connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
@@ -198,6 +198,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     @Readonly fun isInResistance() = hasFlag(CityFlags.Resistance)
+    @Readonly
     fun isBlockaded(): Boolean {
         // Coastal cities are blocked if every adjacent water tile is blocked
         if (!isCoastal()) return false
@@ -208,7 +209,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getRuleset() = civ.gameInfo.ruleset
 
-    fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
+    @Readonly fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     @Readonly fun isGrowing() = foodForNextTurn() > 0
@@ -258,19 +259,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
     }
 
-    fun getReserve(stat: GameResource): Int {
-        if (stat is TileResource) {
-            if (!stat.isStockpiled) return 0
-            if (stat.isCityWide) return resourceStockpiles[stat.name]
-            return civ.resourceStockpiles[stat.name]
-        }
-        return when (stat) {
-            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
-            Stat.Food, SubStat.StoredFood -> population.foodStored
-            else -> civ.getReserve(stat)
-        }
-    }
-
     @Readonly
     fun hasStatToBuy(stat: Stat, price: Int): Boolean {
         return when {
@@ -284,11 +272,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
 
-    // This should probably be configurable
-    @Transient
-    private val maxAirUnits = 6
     /** Gets max air units that can remain in the city untransported */
-    fun getMaxAirUnits() = maxAirUnits
+    @Readonly fun getMaxAirUnits() = civ.gameInfo.ruleset.modOptions.constants.cityAirUnitCapacity
 
     override fun toString() = name // for debug
 
@@ -460,7 +445,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         population.autoAssignPopulation() // also updates city stats
         civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
-
+    
+    @Readonly
     fun canPlaceNewUnit(construction: BaseUnit): Boolean {
         val tile = getCenterTile()
         return when {

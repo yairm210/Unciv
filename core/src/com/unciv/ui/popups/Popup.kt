@@ -280,8 +280,8 @@ open class Popup(
      * @param text The caption text.
      * @param size The font size for the label.
      */
-    fun addGoodSizedLabel(text: String, size: Int = Constants.defaultFontSize, hideIcons:Boolean = false): Cell<Label> {
-        val label = text.toLabel(fontSize = size, hideIcons = hideIcons)
+    fun addGoodSizedLabel(text: String, size: Int = Constants.defaultFontSize, hideIcons:Boolean = false, color: Color = Color.WHITE): Cell<Label> {
+        val label = text.toLabel(fontSize = size, hideIcons = hideIcons, fontColor = color)
         label.wrap = true
         label.setAlignment(Align.center)
         return add(label).width(stageToShowOn.width / 2)

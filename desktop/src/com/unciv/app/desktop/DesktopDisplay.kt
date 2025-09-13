@@ -68,7 +68,10 @@ enum class DesktopScreenMode : ScreenMode {
 
         Gdx.graphics.setWindowedMode(width, height)
 
-        return width == maximumWindowBounds.width && height == maximumWindowBounds.height
+        val widthDiff = maximumWindowBounds.width - width
+        val heightDiff = maximumWindowBounds.height - height
+        val tolerance = 30
+        return widthDiff <= tolerance && heightDiff <= tolerance
     }
 
     companion object {

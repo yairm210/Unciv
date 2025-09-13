@@ -166,6 +166,9 @@ music/
 SaveFiles/
 scenarios/
 
+# server artifacts
+server.auth
+MultiplayerFiles/
 
 /.kotlin/errors/*
 /.kotlin/sessions/*
@@ -186,3 +189,5 @@ detekt/reports.html
 # When you test the wiki by running mkdocs locally:
 /site/
 
+/buildSrc/.kotlin/errors/*
+/buildSrc/.kotlin/sessions/*

@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.unique.Countables
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
@@ -228,20 +230,30 @@ class VictoryScreenIllustrations(
                     civ.victoryManager.currentsSpaceshipParts.sumValues()
                 }
                 MilestoneType.DestroyAllPlayers -> {
-                    total += if (selectedCiv.hideCivCount()) game.gameParameters.maxNumberOfPlayers
+                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers
                         else game.civilizations.count { it.isMajorCiv() }
                     game.civilizations.count {
                         it != civ && it.isMajorCiv() && civ.knows(it) && it.isDefeated()
                     }
                 }
                 MilestoneType.CaptureAllCapitals -> {
-                    total += if (selectedCiv.hideCivCount()) game.gameParameters.maxNumberOfPlayers
+                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers
                         else game.getCities().count { it.isOriginalCapital }
                     civ.cities.count { it.isOriginalCapital }
                 }
                 MilestoneType.CompletePolicyBranches -> {
                     total += milestone.params[0].toInt()
                     civ.policies.completedBranches.size
+                }
+                MilestoneType.MoreCountableThanEachPlayer -> {
+                    var amountDone = 0; var amountToDo = 0;
+                    for (otherCiv in civ.gameInfo.civilizations) {
+                        if (!milestone.getMoreCountableThanOtherCivRelevent(civ, otherCiv)) continue
+                        amountToDo++
+                        if (milestone.getMoreCountableThanOtherCivPercent(civ, otherCiv) > 100f) amountDone++
+                    }
+                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers - 1 else amountToDo
+                    amountDone
                 }
                 MilestoneType.WorldReligion -> {
                     total += game.civilizations.count { it.isMajorCiv() && it.isAlive() }

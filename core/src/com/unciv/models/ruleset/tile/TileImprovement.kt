@@ -81,11 +81,11 @@ class TileImprovement : RulesetStatsObject() {
     fun matchesFilter(filter: String, tileState: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(it) ||
-                tileState != null && hasUnique(it, tileState) ||
+                tileState != null && hasTagUnique(it, tileState) ||
                 tileState == null && hasTagUnique(it)
         })
         else matchesSingleFilter(filter) ||
-            tileState != null && hasUnique(filter, tileState) ||
+            tileState != null && hasTagUnique(filter, tileState) ||
             tileState == null && hasTagUnique(filter)
     }
 
@@ -131,7 +131,7 @@ class TileImprovement : RulesetStatsObject() {
             }
         }.filter { it !in cannotFilters }.toMutableSet()
 
-        @LocalState val terrainsCanBeBuiltOnTypes = sequence {
+        val terrainsCanBeBuiltOnTypes = sequence {
             yieldAll(expandedTerrainsCanBeBuiltOn.asSequence()
                 .mapNotNull { ruleset.terrains[it]?.type })
             yieldAll(

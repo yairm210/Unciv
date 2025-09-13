@@ -25,47 +25,29 @@ object GUI {
         UncivGame.Current.resetToWorldScreen()
     }
 
+    @Readonly fun getSettings(): GameSettings = UncivGame.Current.settings
+
+    @Readonly fun isWorldLoaded(): Boolean = UncivGame.Current.worldScreen != null
+
     @Readonly
-    fun getSettings(): GameSettings {
-        return UncivGame.Current.settings
-    }
-
-    fun isWorldLoaded(): Boolean {
-        return UncivGame.Current.worldScreen != null
-    }
-
     fun isMyTurn(): Boolean {
         if (!UncivGame.isCurrentInitialized() || !isWorldLoaded()) return false
         return UncivGame.Current.worldScreen!!.isPlayersTurn
     }
 
-    fun isAllowedChangeState(): Boolean {
-        return UncivGame.Current.worldScreen!!.canChangeState
-    }
+    @Readonly fun isAllowedChangeState(): Boolean = UncivGame.Current.worldScreen!!.canChangeState
 
-    fun getWorldScreen(): WorldScreen {
-        return UncivGame.Current.worldScreen!!
-    }
+    @Readonly fun getWorldScreen(): WorldScreen = UncivGame.Current.worldScreen!!
 
-    fun getWorldScreenIfActive(): WorldScreen? {
-        return UncivGame.Current.getWorldScreenIfActive()
-    }
+    @Readonly fun getWorldScreenIfActive(): WorldScreen? = UncivGame.Current.getWorldScreenIfActive()
 
-    fun getMap(): WorldMapHolder {
-        return UncivGame.Current.worldScreen!!.mapHolder
-    }
+    @Readonly fun getMap(): WorldMapHolder = UncivGame.Current.worldScreen!!.mapHolder
 
-    fun getUnitTable(): UnitTable {
-        return UncivGame.Current.worldScreen!!.bottomUnitTable
-    }
+    @Readonly fun getUnitTable(): UnitTable = UncivGame.Current.worldScreen!!.bottomUnitTable
 
-    fun getViewingPlayer(): Civilization {
-        return UncivGame.Current.worldScreen!!.viewingCiv
-    }
+    @Readonly fun getViewingPlayer(): Civilization = UncivGame.Current.worldScreen!!.viewingCiv
 
-    fun getSelectedPlayer(): Civilization {
-        return UncivGame.Current.worldScreen!!.selectedCiv
-    }
+    @Readonly fun getSelectedPlayer(): Civilization = UncivGame.Current.worldScreen!!.selectedCiv
 
     /** Disable Undo (as in: forget the way back, but allow future undo checkpoints) */
     fun clearUndoCheckpoints() {

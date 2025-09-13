@@ -55,6 +55,7 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
         tradeOffersTable.add("Our trade offer".toLabel())
         tradeOffersTable.row()
 
+        
         fun getOfferText(offer:TradeOffer): String {
             var tradeText = offer.getOfferText()
             if (offer.type == TradeOfferType.Luxury_Resource || offer.type == TradeOfferType.Strategic_Resource)

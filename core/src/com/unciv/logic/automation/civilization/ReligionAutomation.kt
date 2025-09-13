@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
@@ -205,7 +206,7 @@ object ReligionAutomation {
     // endregion
 
     // region rate beliefs
-
+    @Readonly
     fun rateBelief(civInfo: Civilization, belief: Belief): Float {
         var score = 0f // Roughly equivalent to the sum of stats gained across all cities
 
@@ -234,6 +235,7 @@ object ReligionAutomation {
         return score
     }
 
+    @Readonly
     private fun beliefBonusForTile(belief: Belief, tile: Tile, city: City): Float {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
@@ -253,6 +255,7 @@ object ReligionAutomation {
         return bonusYield
     }
 
+    @Readonly
     private fun beliefBonusForCity(civInfo: Civilization, belief: Belief, city: City): Float {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleset
@@ -305,6 +308,7 @@ object ReligionAutomation {
         return score
     }
 
+    @Readonly
     private fun beliefBonusForPlayer(civInfo: Civilization, belief: Belief): Float {
         var score = 0f
         val numberOfFoundedReligions = civInfo.gameInfo.civilizations.count {
@@ -411,7 +415,7 @@ object ReligionAutomation {
         // line 4426 through 4870.
         // This is way too much work for now, so I'll just choose a random pantheon instead.
         // Should probably be changed later, but it works for now.
-        val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
+        val chosenPantheon = pickBeliefOfType(civInfo, BeliefType.Pantheon)
             ?: return // panic!
         civInfo.religionManager.chooseBeliefs(
             listOf(chosenPantheon),
@@ -461,14 +465,15 @@ object ReligionAutomation {
             if (belief == BeliefType.None) continue
             repeat(beliefsToChoose[belief]) {
                 chosenBeliefs.add(
-                    chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: return@repeat
+                    pickBeliefOfType(civInfo, belief, chosenBeliefs) ?: return@repeat
                 )
             }
         }
         return chosenBeliefs
     }
 
-    private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
+    @Readonly
+    private fun pickBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleset.beliefs.values
             .filter {
                 (it.type == beliefType || beliefType == BeliefType.Any)

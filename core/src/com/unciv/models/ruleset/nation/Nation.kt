@@ -23,11 +23,12 @@ import kotlin.math.pow
 
 class Nation : RulesetObject() {
     var leaderName = ""
+    @Readonly
     fun getLeaderDisplayName() = if (isCityState || isSpectator) name
         else "[$leaderName] of [$name]"
 
     val style = ""
-    fun getStyleOrCivName() = style.ifEmpty { name }
+    @Readonly fun getStyleOrCivName() = style.ifEmpty { name }
 
     var cityStateType: String? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
@@ -272,11 +273,11 @@ class Nation : RulesetObject() {
         // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
-                state != null && hasUnique(it, state) ||
+                state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
         else matchesSingleFilter(filter) ||
-            state != null && hasUnique(filter, state) ||
+            state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
 

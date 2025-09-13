@@ -24,6 +24,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
+import yairm210.purity.annotations.Readonly
 
 @Suppress("UNUSED_PARAMETER") // These methods are used as references in UnitActions.actionTypeToFunctions and need identical signature
 object UnitActionsFromUniques {
@@ -254,6 +255,7 @@ object UnitActionsFromUniques {
                         stat
                     )
                 }
+                UniqueType.TriggerEvent -> unique.params[0]
                 else -> unique.text.removeConditionals()
             }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
@@ -482,6 +484,7 @@ object UnitActionsFromUniques {
         ))
     }
 
+    @Readonly
     internal fun getRepairTurns(unit: MapUnit): Int {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
@@ -494,7 +497,8 @@ object UnitActionsFromUniques {
         return repairTurns.coerceAtMost(turnsToBuild)
     }
 
-    internal fun getRepairActions(unit: MapUnit, tile: Tile) = sequenceOf(getRepairAction(unit)).filterNotNull()
+    internal fun getRepairActions(unit: MapUnit, tile: Tile) =
+        sequenceOf(getRepairAction(unit)).filterNotNull()
 
     // Public - used in WorkerAutomation
     fun getRepairAction(unit: MapUnit) : UnitAction? {

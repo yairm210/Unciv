@@ -1,12 +1,11 @@
-
 import com.unciv.build.BuildConfig.appVersion
-import com.unciv.build.BuildConfig.coroutinesVersion
-import com.unciv.build.BuildConfig.gdxVersion
-import com.unciv.build.BuildConfig.jnaVersion
-import com.unciv.build.BuildConfig.kotlinVersion
-import com.unciv.build.BuildConfig.ktorVersion
 import java.util.Properties
 
+val kotlinVersion: String by project
+val gdxVersion: String by project
+val coroutinesVersion: String by project
+val ktorVersion: String by project
+val jnaVersion: String by project
 
 buildscript {
     repositories {
@@ -20,8 +19,9 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
-        classpath("com.android.tools.build:gradle:8.9.1")
+        val kotlinVersion: String by project
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("com.android.tools.build:gradle:8.9.3")
     }
 }
 
@@ -33,52 +33,45 @@ kotlin {
 
 // Plugins used for serialization of JSON for networking
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
-    // For some weird reason, the *docker build* fails to recognize linking to the shared kotlinVersion in plugins
-    // This is *with* gradle 8.2 downloaded according the project specs, no idea what that's about
-    kotlin("multiplatform") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
-    id("io.github.yairm210.purity-plugin") version "0.0.42" apply(false)
+    val kotlinVersion: String by project
+    kotlin("multiplatform") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("io.github.yairm210.purity-plugin") version "1.2.3" apply false
 }
 
 allprojects {
 //    repositories{ // for local purity
 //        mavenLocal()
 //    }
-    
+
     apply(plugin = "io.github.yairm210.purity-plugin")
-    configure<yairm210.purity.PurityConfiguration>{
+    configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
-            "kotlin.assert",
-            "kotlin.lazy",
-            "kotlin.getValue",
-            "kotlin.error",
         )
         wellKnownReadonlyFunctions = setOf(
-            // Looks like the Collection.contains is not considered overridden :thunk:
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
-            "java.lang.reflect.Field.getAnnotation", // not sure if generic enough to be useful globally
-            "java.lang.Class.getField",
-            
-            "kotlin.collections.Iterable.iterator", // moved
-            "kotlin.collections.Collection.containsAll",  // moved
-            "kotlin.collections.filterKeys",  // moved
-            "kotlin.collections.reversed",  // moved
-            "kotlin.collections.minus",  // moved
-            "kotlin.Array.get",
-            "kotlin.collections.mutableSetOf",
-            "kotlin.collections.withIndex", // applicable to sequence as well
-            "kotlin.collections.intersect",
+            "com.badlogic.gdx.math.Vector2.hashCode",
+
+            "com.badlogic.gdx.files.FileHandle.child",
+            "com.badlogic.gdx.files.FileHandle.list",
+            "com.badlogic.gdx.files.FileHandle.exists",
+            "com.badlogic.gdx.files.FileHandle.isDirectory",
+            "com.badlogic.gdx.files.FileHandle.isFile",
+            "com.badlogic.gdx.files.FileHandle.name",
         )
         wellKnownPureClasses = setOf(
-            "java.util.Locale",  // moved
         )
+        wellKnownInternalStateClasses = setOf(
+            "com.badlogic.gdx.math.Vector2",
+        )
+        warnOnPossibleAnnotations = true
     }
-    
+
     apply(plugin = "eclipse")
     apply(plugin = "idea")
-    
+
     version = appVersion
 
     repositories {
@@ -124,11 +117,10 @@ project(":server") {
         // For server-side
         "implementation"("io.ktor:ktor-server-core:$ktorVersion")
         "implementation"("io.ktor:ktor-server-netty:$ktorVersion")
-        "implementation"("io.ktor:ktor-server-auth:${ktorVersion}")
+        "implementation"("io.ktor:ktor-server-auth:$ktorVersion")
         "implementation"("io.ktor:ktor-server-content-negotiation:$ktorVersion")
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        "implementation"("io.ktor:ktor-server-websockets:${ktorVersion}")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+        "implementation"("io.ktor:ktor-server-websockets:$ktorVersion")
         "implementation"("ch.qos.logback:logback-classic:1.5.18")
         "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
 
@@ -136,7 +128,6 @@ project(":server") {
         "implementation"("net.java.dev.jna:jna:$jnaVersion")
         "implementation"("net.java.dev.jna:jna-platform:$jnaVersion")
     }
-
 }
 
 private fun getSdkPath(): String? {
@@ -182,8 +173,8 @@ project(":core") {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-        
-        "implementation"("io.github.yairm210:purity-annotations:0.0.40")
+
+        "implementation"("io.github.yairm210:purity-annotations:0.0.51")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
@@ -193,7 +184,6 @@ project(":core") {
         "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         // JSON serialization and de-serialization
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     }
 
 

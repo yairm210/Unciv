@@ -202,7 +202,7 @@ class TestGame(vararg addGlobalUniques: String) {
     fun addUnit(name: String, civInfo: Civilization, tile: Tile?): MapUnit {
         val baseUnit = ruleset.units[name]!!
         baseUnit.setRuleset(ruleset)
-        val mapUnit = baseUnit.getMapUnit(civInfo)
+        val mapUnit = baseUnit.newMapUnit(civInfo)
         civInfo.units.addUnit(mapUnit)
         if (tile!=null) {
             mapUnit.putInTile(tile)

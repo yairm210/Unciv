@@ -22,7 +22,11 @@ import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
@@ -30,16 +34,18 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
+import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withoutItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 import java.util.zip.Deflater
 
 class AdvancedTab(
@@ -52,9 +58,9 @@ class AdvancedTab(
         pad(10f)
         defaults().pad(5f)
         
-        addMaxAutosavesStored()
-
+        addAutosaveField()
         addAutosaveTurnsSelectBox()
+        
         addSeparator()
 
         if (Display.hasCutout())
@@ -94,29 +100,50 @@ class AdvancedTab(
             optionsPopup.reopenAfterDisplayLayoutChange()
         }
     }
-    
-    private fun addMaxAutosavesStored() {
-        add("Number of autosave files stored".toLabel()).left().fillX()
-        
-        val maxAutosavesStoredSelectBox = SelectBox<Int>(skin)
-        val maxAutosavesStoredArray = Array<Int>()
-        maxAutosavesStoredArray.addAll(1,2,5,10,15,20,35,50,100,150,200,250)
-        maxAutosavesStoredSelectBox.items = maxAutosavesStoredArray
-        maxAutosavesStoredSelectBox.selected = settings.maxAutosavesStored
-        
-        add(maxAutosavesStoredSelectBox).pad(10f).row()
-        
-        maxAutosavesStoredSelectBox.onChange {
-            settings.maxAutosavesStored = maxAutosavesStoredSelectBox.selected
-        }
-    }
 
+    private fun addAutosaveField() {
+        add("Number of autosave files stored".toLabel()).left().fillX()
+        val autosaveFieldTable = Table()
+        val autoSaveTrunsTextField = UncivTextField("",settings.maxAutosavesStored.toString())
+        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in "1234567890" }
+        autosaveFieldTable.add(autoSaveTrunsTextField)
+        val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
+
+        autoSaveTrunsTextFieldButton.onClick {
+            if (autoSaveTrunsTextField.text.isEmpty()) return@onClick
+            
+            val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
+
+            if (numberAutosaveTurns <= 0) {
+                val popup = Popup(stage)
+                popup.addGoodSizedLabel("Autosave turns must be larger than 0!", color = Color.RED)
+                popup.addCloseButton()
+                popup.open(true)
+
+            } else if (numberAutosaveTurns >= 200) {
+                val popup = Popup(stage)
+                popup.addGoodSizedLabel(
+                    "Autosave turns over 200 may take a lot of space on your device.",
+                    color = Color.ORANGE)
+                popup.addCloseButton()
+                popup.open(true)
+                settings.maxAutosavesStored = numberAutosaveTurns
+
+            } else {
+                settings.maxAutosavesStored = numberAutosaveTurns
+            
+            }
+        }
+        autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
+        add(autosaveFieldTable).row()
+    }
+    
     private fun addAutosaveTurnsSelectBox() {
         add("Turns between autosaves".toLabel()).left().fillX()
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
-        autosaveTurnsArray.addAll(1, 2, 5, 10)
+        autosaveTurnsArray.addAll(1,2,5,10,20,50,100,1000)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
 
@@ -125,6 +152,7 @@ class AdvancedTab(
         autosaveTurnsSelectBox.onChange {
             settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
         }
+
     }
 
     private fun addFontFamilySelect(onFontChange: () -> Unit) {
@@ -345,25 +373,23 @@ class AdvancedTab(
 
     private fun addSetUserId() {
         val idSetLabel = "".toLabel()
-        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
-            .onClick {
-                try {
-                    val clipboardContents = Gdx.app.clipboard.contents.trim()
-                    UUID.fromString(clipboardContents)
-                    ConfirmPopup(
-                        stage,
-                        "Doing this will reset your current user ID to the clipboard contents - are you sure?",
-                        "Take user ID from clipboard"
-                    ) {
-                        settings.multiplayer.setUserId(clipboardContents)
-                        idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                    }.open(true)
-                    idSetLabel.isVisible = true
-                } catch (_: Exception) {
-                    idSetLabel.isVisible = true
-                    idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
-                }
+        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton().onClick {
+            val clipboardContents = Gdx.app.clipboard.contents.trim()
+            if (clipboardContents.isUUID()) {
+                ConfirmPopup(
+                    stage,
+                    "Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                    "Take user ID from clipboard"
+                ) {
+                    settings.multiplayer.setUserId(clipboardContents)
+                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
+                }.open(true)
+                idSetLabel.isVisible = true
+            } else {
+                idSetLabel.isVisible = true
+                idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
             }
+        }
         add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
         add(idSetLabel).colspan(2).row()
     }
