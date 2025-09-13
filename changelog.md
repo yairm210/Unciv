@@ -1,3 +1,12 @@
+## 4.18.1
+
+By RobLoach:
+- Add Global Uniques to the Civilopedia 
+- Add `Adopt [policy/belief]` Unique 
+- Add diplomacy status to `civFilter` 
+
+button alignment - By SidedYapper
+
 ## 4.18.0
 
 CPU performance improvements
