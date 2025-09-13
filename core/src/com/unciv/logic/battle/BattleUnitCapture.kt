@@ -146,7 +146,7 @@ object BattleUnitCapture {
                 wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
-            capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) && attacker.getCivInfo().isCityState  -> {
+            capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) && attacker.getCivInfo().isCityState -> {
                 capturedUnit.destroy()
                 wasDestroyedInstead = true
             }
