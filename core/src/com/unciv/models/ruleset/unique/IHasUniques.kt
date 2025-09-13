@@ -48,20 +48,20 @@ interface IHasUniques : INamed {
         uniqueMap.getMatchingUniques(uniqueType, state)
 
     @Readonly
-    fun getMatchingUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
-        uniqueMap.getMatchingUniques(uniqueTag, state)
+    fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
+        uniqueMap.getMatchingTagUniques(uniqueTag, state)
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, state: GameContext? = null) =
         uniqueMap.hasMatchingUnique(uniqueType, state ?: GameContext.EmptyState)
 
     @Readonly
-    fun hasUnique(uniqueTag: String, state: GameContext? = null) =
-        uniqueMap.hasMatchingUnique(uniqueTag, state ?: GameContext.EmptyState)
+    fun hasTagUnique(uniqueTag: String, state: GameContext? = null) =
+        uniqueMap.hasMatchingTagUnique(uniqueTag, state ?: GameContext.EmptyState)
 
     @Readonly
-    fun hasTagUnique(tagUnique: String) =
-        uniqueMap.hasTagUnique(tagUnique)
+    fun hasTagUnique(uniqueTag: String) =
+        uniqueMap.hasTagUnique(uniqueTag)
     
     @Readonly
     fun techsRequiredByUniques(): Sequence<String> {

@@ -42,11 +42,11 @@ class Technology: RulesetObject() {
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
             matchesSingleFilter(filter) ||
-                state != null && hasUnique(filter, state) ||
+                state != null && hasTagUnique(filter, state) ||
                 state == null && hasTagUnique(filter)
         })
         else matchesSingleFilter(filter) ||
-            state != null && hasUnique(filter, state) ||
+            state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
 

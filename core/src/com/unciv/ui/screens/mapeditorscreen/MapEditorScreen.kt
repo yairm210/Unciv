@@ -335,7 +335,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     }
 
     private fun cancelJobs() {
-        for (job in jobs)
+        for (job in jobs.toList())
             job.cancel()
         jobs.clear()
     }
