@@ -5,7 +5,7 @@ By RobLoach:
 - Add `Adopt [policy/belief]` Unique 
 - Add diplomacy status to `civFilter` 
 
-button alignment - By SidedYapper
+New Screen 'start game' button alignment - By SidedYapper
 
 ## 4.18.0
 
