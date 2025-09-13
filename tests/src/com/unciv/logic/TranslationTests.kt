@@ -121,7 +121,6 @@ class TranslationTests {
     fun allTranslationsHaveNoExtraPlaceholders() {
         var allTranslationsHaveNoExtraPlaceholders = true
         val languages = translations.getLanguages()
-        java.util.ListIterator
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
