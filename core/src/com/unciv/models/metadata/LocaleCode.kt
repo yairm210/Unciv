@@ -46,6 +46,7 @@ enum class LocaleCode(val languageTag: String, private val fastlaneFolder: Strin
     Latvian("lv-LV"),
     Lithuanian("lt-LT"),
     Malay("ms-MY"),
+    Maltese("mt-MT"),
     Norwegian("no-NO"),
     NorwegianNynorsk("nn-NO"),
     PersianPinglishDIN("fa-IR"), // These might just fall back to default

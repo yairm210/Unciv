@@ -193,6 +193,13 @@ FlagIcons/Malay
   orig: 128, 128
   offset: 0, 0
   index: -1
+FlagIcons/Maltese
+  rotate: false
+  xy: 1908, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
 FlagIcons/Norwegian
   rotate: false
   xy: 1092, 4
