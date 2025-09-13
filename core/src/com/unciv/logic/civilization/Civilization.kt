@@ -575,7 +575,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             "Human player" -> isHuman()
             "AI player" -> isAI()
             "Open Borders" -> state?.civInfo?.diplomacy[civName]?.hasOpenBorders ?: false
-            "Friendly" -> state?.civInfo?.diplomacy[civName]?.isRelationshipLevelGE(RelationshipLevel.Friend) ?: false
+            "Friendly" -> state?.civInfo?.let { it.civName == civName || (it.diplomacy[civName]?.isRelationshipLevelGE(RelationshipLevel.Friend) == true) } ?: false
             "Hostile" -> state?.civInfo?.let { isAtWarWith(it) } ?: false
             else -> nation.matchesFilter(filter, state, false)
         }
