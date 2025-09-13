@@ -596,7 +596,6 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf("Cost", "Strength")
     },
 
-
     UnitTriggerTarget("unitTriggerTarget", Constants.thisUnit, "`${Constants.thisUnit}`, `${Constants.targetUnit}`, or `Every adjacent [mapUnitFilter] unit`") {
         override val staticKnownValues = setOf(Constants.thisUnit, Constants.targetUnit)
 
@@ -605,10 +604,11 @@ enum class UniqueParameterType(
             // Every adjacent [mapUnitFilter] unit
             if (parameterText.startsWith("Every adjacent [") && parameterText.endsWith("] unit")) {
                 val params = parameterText.getPlaceholderParameters()
-                return MapUnitFilter.isKnownValue(params[0], ruleset)
+                return MultiFilter.multiFilter(params[0], { MapUnitFilter.isKnownValue(it, ruleset) }, true)
             }
             return false
         }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
     /** Mod declarative compatibility: Define Mod relations by their name. */
