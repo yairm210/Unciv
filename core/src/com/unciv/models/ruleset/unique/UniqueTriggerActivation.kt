@@ -41,6 +41,7 @@ import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import yairm210.purity.annotations.Readonly
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
@@ -96,7 +97,7 @@ object UniqueTriggerActivation {
         val relevantCity by lazy {
             city?: tile?.getCity()
         }
-        fun getApplicableCities(cityFilter: String) =
+        @Readonly fun getApplicableCities(cityFilter: String) =
             if (cityFilter == "in this city") sequenceOf(relevantCity).filterNotNull()
             else civInfo.cities.asSequence().filter { it.matchesFilter(cityFilter) }
 
@@ -321,22 +322,27 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-            UniqueType.OneTimeAdoptPolicy -> {
-                val policyName = unique.params[0]
-                if (civInfo.policies.isAdopted(policyName)) return null
-                val policy = civInfo.gameInfo.ruleset.policies[policyName] ?: return null
-
-                return {
-                    civInfo.policies.freePolicies++
-                    civInfo.policies.adopt(policy)
-
-                    val notificationText = getNotificationText(
-                        notification, triggerNotificationText,
-                        "You gain the [$policyName] Policy"
-                    )
-                    if (notificationText != null)
-                        civInfo.addNotification(notificationText, PolicyAction(policyName), NotificationCategory.General, NotificationIcon.Culture)
-                    true
+            UniqueType.OneTimeAdoptPolicyOrBelief -> {
+                val name = unique.params[0]
+                val policy = civInfo.gameInfo.ruleset.policies[name]
+                val belief = civInfo.gameInfo.ruleset.beliefs[name]
+                when {
+                    policy != null && !civInfo.policies.isAdopted(name) -> return {
+                        civInfo.policies.freePolicies++
+                        civInfo.policies.adopt(policy)
+                        getNotificationText(notification, triggerNotificationText, "You gain the [$name] Policy")?.let {
+                            civInfo.addNotification(it, PolicyAction(name), NotificationCategory.General, NotificationIcon.Culture)
+                        }
+                        true
+                    }
+                    belief != null && civInfo.religionManager.religion?.hasBelief(name) == false -> return {
+                        civInfo.religionManager.religion?.addBelief(belief)
+                        getNotificationText(notification, triggerNotificationText, "You gain the [$name] Belief")?.let {
+                            civInfo.addNotification(it, NotificationCategory.Religion, NotificationIcon.Faith)
+                        }
+                        true
+                    }
+                    else -> return null
                 }
             }
             UniqueType.OneTimeRemovePolicy -> {
@@ -1158,7 +1164,7 @@ object UniqueTriggerActivation {
                 if (tilesToTakeOver.none()) return null
 
                 /** Lower is better */
-                fun cityPriority(city: City) = city.getCenterTile().aerialDistanceTo(tile) + (if (city.isBeingRazed) 5 else 0)
+                @Readonly fun cityPriority(city: City) = city.getCenterTile().aerialDistanceTo(tile) + (if (city.isBeingRazed) 5 else 0)
 
                 val citiesWithAdjacentTiles = tilesToTakeOver.asSequence()
                     .flatMap { it.neighbors + it }
@@ -1213,6 +1219,7 @@ object UniqueTriggerActivation {
         }
     }
 
+    @Readonly
     private fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText: String): String? {
         return if (!notification.isNullOrEmpty()) notification
         else if (triggerNotificationText != null)
