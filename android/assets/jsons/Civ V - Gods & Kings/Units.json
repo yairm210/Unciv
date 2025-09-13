@@ -1663,7 +1663,7 @@
 		"unitType": "Civilian Water",
 		"uniques": [
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
-            "[Target Unit] heals [100] HP <targeting [Water] units within [1] tiles> <by consuming this unit>",
+            "[Every adjacent [Water] unit] heals [100] HP <by consuming this unit>",
 			"Can be earned through combat",
             "Is part of Great Person group [Admiral]",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],

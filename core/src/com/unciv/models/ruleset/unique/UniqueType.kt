@@ -959,9 +959,6 @@ enum class UniqueType(
 
     ///////////////////////////////////////////// region 90 META /////////////////////////////////////////////
 
-    TargetingUnitsWithinTiles("targeting [mapUnitFilter] units within [positiveAmount] tiles", UniqueTarget.MetaModifier,
-        docDescription = "Modifies this unique to activate on each of the given units within the certain amount of tiles"),
-
     ConditionalTimedUnique("for [nonNegativeAmount] turns", UniqueTarget.MetaModifier,
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     

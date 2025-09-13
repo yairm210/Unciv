@@ -607,12 +607,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     @Readonly
-    fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean {
-        return if (multiFilter) MultiFilter.multiFilter(filter, ::matchesSingleFilter) else matchesSingleFilter(filter)
-    }
+    fun matchesFilter(filter: String, state: GameContext? = cache.state, multiFilter: Boolean = true): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
 
     @Readonly
-    private fun matchesSingleFilter(filter: String): Boolean {
+    private fun matchesSingleFilter(filter: String, state: GameContext? = cache.state): Boolean {
         return when (filter) {
             Constants.wounded, "wounded units" -> health < 100
             Constants.barbarians, "Barbarian" -> civ.isBarbarian
@@ -620,9 +620,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
-                if (baseUnit.matchesFilter(filter, cache.state, false)) return true
-                if (civ.matchesFilter(filter, cache.state, false)) return true
-                if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
+                if (baseUnit.matchesFilter(filter, state, false)) return true
+                if (civ.matchesFilter(filter, state, false)) return true
+                if (nonUnitUniquesMap.hasUnique(filter, if (state == null) cache.state else state)) return true
                 if (promotions.promotions.contains(filter)) return true
                 if (hasStatus(filter)) return true 
                 return false

@@ -3874,13 +3874,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Modifiers that can be added to other uniques changing user experience, not their behavior
 
-??? example  "&lt;targeting [mapUnitFilter] units within [positiveAmount] tiles&gt;"
-	Modifies this unique to activate on each of the given units within the certain amount of tiles
-
-	Example: "&lt;targeting [Wounded] units within [3] tiles&gt;"
-
-	Applicable to: MetaModifier
-
 ??? example  "&lt;for [nonNegativeAmount] turns&gt;"
 	Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns
 
@@ -3971,7 +3964,7 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
-*[unitTriggerTarget]: `This Unit` or `Target Unit`.
+*[unitTriggerTarget]: `This Unit`, `Target Unit`, or `Every adjacent [mapUnitFilter] unit`.
 *[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.
