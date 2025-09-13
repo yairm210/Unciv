@@ -12,6 +12,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
+import yairm210.purity.annotations.Readonly
 
 
 class TutorialController(screen: BaseScreen) {
@@ -76,6 +77,7 @@ class TutorialController(screen: BaseScreen) {
         }
     }
 
+    @Readonly
     private fun getTutorial(tutorial: TutorialTrigger): List<String> {
         val name = tutorial.value.replace('_', ' ').trimStart()
         return tutorials[name]?.steps ?: emptyList()
@@ -86,7 +88,9 @@ class TutorialController(screen: BaseScreen) {
         // Todo This is essentially an 'un-private' kludge and the accessor
         //      in CivilopediaCategories desperately needs independence from TutorialController:
         //      Move storage to RuleSet someday?
-        return tutorials.values
+        return tutorials.values +
+            // Global Uniques
+            listOfNotNull(UncivGame.Current.gameInfo?.getGlobalUniques()?.takeIf { it.hasUniques() })
     }
 }
 

@@ -70,6 +70,8 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         updateUniqueMaps()
     }
 
+    fun addBelief(belief: Belief) = addBeliefs(listOf(belief))
+
     @Readonly
     fun getIconName() =
         if (isPantheon()) "Pantheon"
@@ -145,6 +147,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         }
     }
 
+    @Readonly
     private fun unlockedBuildingsPurchasable(): List<String> {
         return getAllBeliefsOrdered().flatMap { belief ->
             belief.getMatchingUniques(UniqueType.BuyBuildingsWithStat).map { it.params[0] } +
