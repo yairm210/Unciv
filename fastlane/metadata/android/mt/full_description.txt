@@ -1,0 +1,19 @@
+Immaġinazzjoni mill-ġdid open-source tal-aktar logħba popolari ta' ġestjoni taċ-ċivilizzazzjoni li qatt saret; veloċi, ħafifa, bla reklami, u b'xejn għal dejjem!
+
+Ibni l-imperu tiegħek, irriċerka teknoloġiji differenti, espandi l-bliet tiegħek, u elimina l-avversarji tiegħek!
+
+Suġġerimenti? Bugs? Il-lista ta' kwistjonijiet miftuħa tista' tinstab fuq il-<a href="https://github.com/yairm210/Unciv/issues">paġna tal-Github fuq il-Kwistjonijiet</a>. Kull għajnuna hija milqugħa!
+
+Xi mistoqsijiet? Kummenti? Jew għandek ħafna ħin liberu biex tinvesti? Ejja tkellem magħna fuq is-<a href="https://discord.gg/bjrB4Xw">server tal-Unciv fuq Discord</a>.
+
+Trid tgħin fit-traduzzjoni tal-logħba fil-lingwa tiegħek? Segwi l-istruzzjonijiet fl-<a href="https://yairm210.github.io/Unciv/Other/Translating">artiklu tal-wiki</a> għat-tradutturi.
+
+Kotlin u/jew Java m'għandhom l-ebda sigriet għalik? Mela ejja tipparteċipa fl-iżvilupp fuq il-<a href="https://github.com/yairm210/Unciv">paġna tal-Github</a>!
+
+Id-dinja qed tistenniek! Ħa tibni ċivilizzazzjoni li tista' tgħix għal sekli?
+
+Il-permess "Ippermetti aċċess sħiħ għan-netwerk" huwa meħtieġ għall-karatteristiċi li ġejjin:
+- Listing u tniżżil ta' mods disponibbli
+- Tniżżil ta' mużika u ħsejjes
+- Tlugħ u tniżżil tal-istatus tal-logħba multiplayer onlajn
+Il-permessi l-oħra kollha msemmija huma mmaniġġjati awtomatikament mill-API għall-karatteristika ta' notifika tad-dawra tal-multiplayer.

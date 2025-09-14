@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.civilization.managers.GoldenAgeManager
 import com.unciv.logic.civilization.managers.GreatPersonManager
@@ -426,6 +427,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getHappiness() = stats.happiness
 
     /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
+    @Readonly
     fun getCivResourceSupply(): ResourceSupplyList = summarizedCivResourceSupply
 
     /** Preserves some origins for resources so we can separate them for trades
@@ -488,7 +490,9 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns 0 for undefined resources */
     @Readonly
     fun getResourceAmount(resourceName: String): Int {
-        return getCivResourcesByName()[resourceName] ?: 0
+        val stockpileValue= resourceStockpiles[resourceName]
+        if (stockpileValue != 0) return stockpileValue
+        return getCivResourceSupply().firstOrNull { !it.resource.isStockpiled && it.resource.name == resourceName }?.amount ?: 0
     }
 
     /** Gets modifiers for ALL resources */
@@ -534,7 +538,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, gameContext))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, gameContext))
-        yieldAll(temporaryUniques.getMatchingUniques(uniqueType, gameContext))
+        yieldAll(temporaryUniques.getMatchingTagUniques(uniqueType, gameContext))
         yieldAll(getEra().getMatchingUniques(uniqueType, gameContext))
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, gameContext))
         if (religionManager.religion != null)
@@ -573,6 +577,9 @@ class Civilization : IsPartOfGameInfoSerialization {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
+            "Open Borders" -> state?.civInfo?.diplomacy[civName]?.hasOpenBorders ?: false
+            "Friendly" -> state?.civInfo?.let { it.civName == civName || (it.diplomacy[civName]?.isRelationshipLevelGE(RelationshipLevel.Friend) == true) } ?: false
+            "Hostile" -> state?.civInfo?.let { isAtWarWith(it) } ?: false
             else -> nation.matchesFilter(filter, state, false)
         }
     }

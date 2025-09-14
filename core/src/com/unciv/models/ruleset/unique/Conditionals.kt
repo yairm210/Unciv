@@ -28,7 +28,7 @@ object Conditionals {
         state: GameContext
     ): Boolean {
 
-        if (conditional.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
+        if (conditional.isOtherModifierType)
             return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers
 
         /** Helper to simplify conditional tests requiring gameInfo */

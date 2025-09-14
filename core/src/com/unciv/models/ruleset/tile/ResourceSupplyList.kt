@@ -31,7 +31,7 @@ class ResourceSupplyList(
         firstOrNull { it.resource.name == resource.name && it.origin == origin }
 
     /** Get the total amount for a resource by [resourceName] */
-    fun sumBy(resourceName: String) =
+    @Readonly fun sumBy(resourceName: String) =
         asSequence().filter { it.resource.name == resourceName }.sumOf { it.amount }
 
     /**

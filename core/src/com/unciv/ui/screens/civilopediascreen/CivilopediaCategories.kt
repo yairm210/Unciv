@@ -1,11 +1,13 @@
 package com.unciv.ui.screens.civilopediascreen
 
+import com.unciv.UncivGame
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.basescreen.TutorialController
 import com.unciv.models.ruleset.Belief as BaseBelief
 import com.unciv.models.ruleset.unit.UnitType as BaseUnitType
+import yairm210.purity.annotations.Readonly
 
 /** Enum used as keys for Civilopedia "pages" (categories).
  *
@@ -126,7 +128,7 @@ enum class CivilopediaCategories (
     );
 
     companion object {
-        fun fromLink(name: String): CivilopediaCategories? =
+        @Readonly fun fromLink(name: String): CivilopediaCategories? =
             values().firstOrNull { it.name == name }
             ?: values().firstOrNull { it.label == name }
     }

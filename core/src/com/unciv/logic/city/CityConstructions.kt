@@ -37,6 +37,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
@@ -58,6 +59,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     @Transient
     private var builtBuildingObjects = ArrayList<Building>()
+    
+    @Transient @Cache
+    private val containedBuildingFiltersCache = HashMap<String, Boolean>()
 
     @Transient
     val builtBuildingUniqueMap = UniqueMap()
@@ -265,7 +269,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     @Readonly fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     @Readonly fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
-            isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique, city.state) }
+            containedBuildingFiltersCache.getOrPut(buildingNameOrUnique) {
+                isBuilt(buildingNameOrUnique)
+                        || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasTagUnique(buildingNameOrUnique, city.state) }
+            }
 
     @Readonly
     fun getWorkDone(constructionName: String): Int {
@@ -658,6 +665,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun updateUniques(onLoadGame: Boolean = false) {
         builtBuildingUniqueMap.clear()
+        containedBuildingFiltersCache.clear()
+        
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
         if (!onLoadGame) {

@@ -273,8 +273,9 @@ class CityScreen(
         }
 
         for (tileGroup in tileGroups) {
-            tileGroup.update()
+            tileGroup.update(selectedCiv)
             tileGroup.layerMisc.removeHexOutline()
+            if (isSpying) continue // the rest is only for own cities
 
             if (tileGroup.tileState == CityTileState.BLOCKADED)
                 displayTutorial(TutorialTrigger.CityTileBlockade)

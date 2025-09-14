@@ -2,6 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -87,14 +88,14 @@ class NewGameScreen(
 
         if (isPortrait) initPortrait()
         else initLandscape()
-
         bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
 
+        val horizontalGroup = HorizontalGroup().padBottom(5f).space(10f)
+        rightSideGroup.addActorAt(0, horizontalGroup)
+
         if (UncivGame.Current.settings.lastGameSetup != null) {
-            rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
-            rightSideGroup.addActorAt(0, resetToDefaultsButton)
             resetToDefaultsButton.onClick {
                 ConfirmPopup(
                     this,
@@ -104,10 +105,13 @@ class NewGameScreen(
                     game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
                 }.open(true)
             }
+            horizontalGroup.addActor(resetToDefaultsButton)
         }
 
-        rightSideButton.setText("Start game!".tr())
-        rightSideButton.onClick(this::startGameAvoidANRs)
+        val startGameButton = "Start game!".toTextButton().apply { color = Color.GREEN }        
+        startGameButton.onClick(this::startGameAvoidANRs)
+        horizontalGroup.addActor(startGameButton)
+        pickerPane.rightSideButton.remove()
     }
 
     private fun startGameAvoidANRs(){

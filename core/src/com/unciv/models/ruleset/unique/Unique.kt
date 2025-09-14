@@ -43,6 +43,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val allParams = params + modifiers.flatMap { it.params }
 
     val isLocalEffect = params.contains("in this city") || hasModifier(UniqueType.ConditionalInThisCity)
+    val isOtherModifierType = type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true
 
     @Readonly fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
     @Readonly fun isHiddenToUsers() = hasFlag(UniqueFlag.HiddenToUsers) || hasModifier(UniqueType.ModifierHiddenFromUsers)
