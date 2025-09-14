@@ -12,7 +12,7 @@ import java.util.UUID
 data class Chat(
     val gameId: UUID,
 ) {
-    var read = true
+    var unreadCount = 0
 
     // <civName, message> pairs
     private val messages: MutableList<Pair<String, String>> = mutableListOf(INITIAL_MESSAGE)
@@ -100,13 +100,13 @@ object ChatStore {
                     if (gameId.equals(UncivGame.Current.worldScreen?.gameInfo?.gameId?.toUUIDOrNull())) {
                         // ensures that you are not getting notified for your own messages
                         if (UncivGame.Current.worldScreen?.gameInfo?.currentPlayer != incomingChatMsg.civName) {
-                            chat.read = false
-                            UncivGame.Current.worldScreen?.chatButton?.startFlashing()
+                            chat.unreadCount++
+                            UncivGame.Current.worldScreen?.chatButton?.triggerChatIndication()
                         }
                     } else {
                         // user is out of world screen or
                         // some other game not currently on screen has a message
-                        chat.read = false
+                        chat.unreadCount++
                     }
                 }
             }
@@ -126,7 +126,7 @@ object ChatStore {
         Gdx.app.postRunnable {
             if (civName != "System") {
                 hasGlobalMessage = chatPopup == null
-                if (hasGlobalMessage) UncivGame.Current.worldScreen?.chatButton?.startFlashing()
+                if (hasGlobalMessage) UncivGame.Current.worldScreen?.chatButton?.triggerChatIndication()
             }
 
             chatPopup?.addMessage(civName, message, suffix = "one time")

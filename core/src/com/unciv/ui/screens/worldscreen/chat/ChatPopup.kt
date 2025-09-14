@@ -44,7 +44,6 @@ class ChatPopup(
     )
 
     init {
-        chat.read = true
         ChatStore.chatPopup = this
         ChatStore.hasGlobalMessage = false
         chatTable.defaults().growX().pad(5f).center()

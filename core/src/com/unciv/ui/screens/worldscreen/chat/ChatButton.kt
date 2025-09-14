@@ -2,36 +2,88 @@ package com.unciv.ui.screens.worldscreen.chat
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.AlternatingStateManager
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.logic.multiplayer.chat.Message
+import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.Concurrency
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
     "Chat", ImageGetter.getImage("OtherIcons/Chat"), 23
-), Disposable {
+) {
     val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
+
+    val badge = "".toTextButton().apply {
+        disable()
+        setColor(Color.valueOf("da1e28"))
+        label.setColor(Color.WHITE)
+        label.setAlignment(Align.center)
+        label.setFontScale(0.2f)
+    }
+
+    val flash = AlternatingStateManager(
+        name = "ChatButton color flash",
+        state = object {
+            val initialColor = fontColor
+            val targetColor = Color.ORANGE
+        }, originalState = { state ->
+            Gdx.app.postRunnable {
+                icon?.color = state.initialColor
+                label.color = state.initialColor
+            }
+        }, alternateState = { state ->
+            Gdx.app.postRunnable {
+                icon?.color = state.targetColor
+                label.color = state.targetColor
+            }
+        }
+    )
+
+    private fun updateBadge(visible: Boolean = false) {
+        badge.height = height / 3
+        badge.setPosition(
+            width - badge.width / 1.5f,
+            height - badge.height / 1.5f
+        )
+
+        badge.isVisible = visible || chat.unreadCount > 0 || ChatStore.hasGlobalMessage
+
+        if (badge.isVisible) {
+            var text = chat.unreadCount.toString()
+            if (ChatStore.hasGlobalMessage) {
+                text += '+'
+            }
+            badge.setText(text)
+        }
+    }
+
+    fun triggerChatIndication() {
+        updateBadge()
+        flash.start()
+    }
 
     init {
         width = 95f
         iconCell.pad(3f).center()
+        addActor(badge)
 
-        if (!chat.read || ChatStore.hasGlobalMessage) {
-            startFlashing()
+        if (chat.unreadCount > 0 || ChatStore.hasGlobalMessage) {
+            updateBadge(true)
+            flash.stop()
         }
 
         onClick {
-            stopFlashing()
+            chat.unreadCount = 0
+            updateBadge()
+            flash.stop()
+
             ChatPopup(chat, worldScreen).open()
         }
 
@@ -50,6 +102,7 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
                 Message.Join(listOf(worldScreen.gameInfo.gameId)),
             )
             updatePosition()
+            updateBadge()
             true
         } else {
             ChatWebSocket.stop()
@@ -61,38 +114,4 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
         worldScreen.techPolicyAndDiplomacy.x.coerceAtLeast(1f),
         worldScreen.techPolicyAndDiplomacy.y - height - 1f
     )
-
-    private var flashJob: Job? = null
-
-    fun startFlashing(targetColor: Color = Color.ORANGE, interval: Duration = 500.milliseconds) {
-        flashJob?.cancel()
-        flashJob = Concurrency.run("ChatButton color flash") {
-            var isAlternatingColor = true
-            while (true) {
-                Gdx.app.postRunnable {
-                    if (isAlternatingColor) {
-                        icon?.color = targetColor
-                        label.color = targetColor
-                    } else {
-                        icon?.color = fontColor
-                        label.color = fontColor
-                    }
-
-                    isAlternatingColor = !isAlternatingColor
-                }
-
-                delay(interval)
-            }
-        }
-    }
-
-    private fun stopFlashing() {
-        flashJob?.cancel()
-        icon?.color = fontColor
-        label.color = fontColor
-    }
-
-    override fun dispose() {
-        flashJob?.cancel()
-    }
 }
