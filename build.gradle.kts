@@ -37,7 +37,7 @@ plugins {
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("io.github.yairm210.purity-plugin") version "1.2.3" apply false
+    id("io.github.yairm210.purity-plugin") version "1.3.0" apply false
 }
 
 allprojects {
