@@ -49,23 +49,21 @@ object DeclareWar {
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWarFiltered)) {
-            if (otherCiv.matchesFilter(unique.params[0]))
-                UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        }
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWarFiltered)
+                { otherCiv.matchesFilter(it.params[0])} )
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
-        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponBeingDeclaredWarUpon)) {
-            if (civInfo.matchesFilter(unique.params[0]))
-                UniqueTriggerActivation.triggerUnique(unique, otherCiv)
-        }
+        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponBeingDeclaredWarUpon)
+                { civInfo.matchesFilter(it.params[0])} ) 
+            UniqueTriggerActivation.triggerUnique(unique, otherCiv)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringWar))
-            if (otherCiv.matchesFilter(unique.params[0]))
-                UniqueTriggerActivation.triggerUnique(unique, civInfo)
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringWar)
+                {otherCiv.matchesFilter(it.params[0])})
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
-        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponEnteringWar))
-            if (civInfo.matchesFilter(unique.params[0]))
-                UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponEnteringWar)
+                {civInfo.matchesFilter(it.params[0])})
+            UniqueTriggerActivation.triggerUnique(unique, otherCiv)
     }
 
     private fun handleCityStateDirectAttack(diplomacyManager: DiplomacyManager) {
