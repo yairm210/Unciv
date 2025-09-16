@@ -501,8 +501,13 @@ class ModManagementScreen private constructor(
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
-                    ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
-                    reloadCachesAfterModChange()
+                    val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
+                    reloadCachesAfterModChange(modFolder.name()) {
+                        toast.close()
+                        val msg = "{[$repoName] was downloaded, but is «RED»defective«»!}" +
+                            "\n{For more information, see Options-Locate mod errors.}"
+                        ToastPopup(msg, this@ModManagementScreen, 4000L)
+                    }
 
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
@@ -669,8 +674,10 @@ class ModManagementScreen private constructor(
         refreshInstalledModTable()
     }
 
-    private fun reloadCachesAfterModChange() {
-        RulesetCache.loadRulesets()
+    private fun reloadCachesAfterModChange(newModName: String? = null, onError: (()->Unit)? = null) {
+        val errorLines = RulesetCache.loadRulesets()
+        if (newModName != null && errorLines.any { newModName in it })
+            onError?.invoke()
         TileSetCache.loadTileSetConfigs()
         ImageGetter.reloadImages()
         UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
