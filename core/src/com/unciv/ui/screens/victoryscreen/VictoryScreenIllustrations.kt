@@ -248,7 +248,7 @@ class VictoryScreenIllustrations(
                 MilestoneType.MoreCountableThanEachPlayer -> {
                     var amountDone = 0; var amountToDo = 0;
                     for (otherCiv in civ.gameInfo.civilizations) {
-                        if (!milestone.getMoreCountableThanOtherCivRelevent(civ, otherCiv)) continue
+                        if (!milestone.getMoreCountableThanOtherCivRelevant(civ, otherCiv)) continue
                         amountToDo++
                         if (milestone.getMoreCountableThanOtherCivPercent(civ, otherCiv) > 100f) amountDone++
                     }
