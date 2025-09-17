@@ -246,14 +246,9 @@ class VictoryScreenIllustrations(
                     civ.policies.completedBranches.size
                 }
                 MilestoneType.MoreCountableThanEachPlayer -> {
-                    var amountDone = 0; var amountToDo = 0;
-                    for (otherCiv in civ.gameInfo.civilizations) {
-                        if (!milestone.getMoreCountableThanOtherCivRelevant(civ, otherCiv)) continue
-                        amountToDo++
-                        if (milestone.getMoreCountableThanOtherCivPercent(civ, otherCiv) > 100f) amountDone++
-                    }
-                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers - 1 else amountToDo
-                    amountDone
+                    val relevantCivs = civ.gameInfo.civilizations.filter { milestone.getMoreCountableThanOtherCivRelevant(civ, it) }
+                    total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers - 1 else relevantCivs.size
+                    relevantCivs.count { milestone.getMoreCountableThanOtherCivPercent(civ, it) > 100f }
                 }
                 MilestoneType.WorldReligion -> {
                     total += game.civilizations.count { it.isMajorCiv() && it.isAlive() }
