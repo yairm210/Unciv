@@ -55,6 +55,7 @@ private class RestorableTextButtonStyle(
 //todo ButtonStyle *does* have a `disabled` Drawable, and Button ignores touches in disabled state anyway - all this is a wrong approach
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
+    touchable = Touchable.disabled
     /** We want disabled buttons to "swallow" the click so that things behind aren't activated, so we don't change touchable
        The action won't be activated due to [ActorAttachments.activate] checking the isDisabled property */
     isDisabled = true
@@ -65,6 +66,7 @@ fun Button.disable() {
 }
 /** Enable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.enable() {
+    touchable = Touchable.enabled
     val oldStyle = style
     if (oldStyle is RestorableTextButtonStyle) {
         style = oldStyle.restoreStyle
