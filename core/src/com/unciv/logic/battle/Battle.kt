@@ -212,6 +212,18 @@ object Battle {
         if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || !attacker.isMelee()
             || attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)
         ) return
+
+        // Must come before normal conquest logic so units that cannot capture cities can still destroy them
+        // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capital cities
+        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant) {
+            if (!defender.city.isCapital()) {
+                val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
+                if (destroyFilters.any { filter: String -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                    defender.city.destroyCity()
+                    return // crashes due to continueing to conquer after this so its required
+                }
+            }
+        }
         
         // Barbarians can't capture cities, instead raiding them for gold
         if (attacker.unit.civ.isBarbarian) {
