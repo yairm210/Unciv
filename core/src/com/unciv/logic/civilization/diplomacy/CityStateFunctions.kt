@@ -28,6 +28,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
@@ -465,7 +466,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
         val globalModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeGlobalModifier
-        modifiers["Military Rank"] = globalModifier - ((globalModifier / civInfo.gameInfo.gameParameters.players.size) * forceRank)
+        modifiers["Military Rank"] = globalModifier - forceRank * globalModifier / max(civInfo.gameInfo.gameParameters.players.size-1, 1)
 
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
