@@ -70,7 +70,6 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -604,27 +603,23 @@ class WorldScreen(
                     do {
                         try {
                             game.onlineMultiplayer.updateGame(gameInfoClone)
+                            // upload succeeded
                             retryUpload = false
-                        } catch (ex: MultiplayerAuthException) {
-                            // true only if authentication succeeds (password retries are permitted)
-                            // false only if user closes the auth popup
-                            // let's hope the GL thread doesn't crash :-)
+                        } catch (_: MultiplayerAuthException) {
+                            // true only if authentication succeeds (the popup permits retries)
+                            // false only if user closes the auth popup or the popup init crashes
                             val authResult = CompletableDeferred<Boolean>()
                             launchOnGLThread {
                                 try {
                                     AuthPopup(this@WorldScreen, authResult::complete).open(true)
                                 } catch (ex: Exception) {
-                                    // GL thread about to crash because of AuthPopup init
-                                    authResult.cancel()
+                                    // GL thread crashed during AuthPopup init, let's wrap up
+                                    authResult.complete(false)
+                                    // ensure exception is passed to crash handler
                                     throw ex
                                 }
                             }
-                            retryUpload = try {
-                                // wait until authentication has finished
-                                authResult.await()
-                            } catch (ex: CancellationException) {
-                                false
-                            }
+                            retryUpload = authResult.await()
                         }
                     } while (retryUpload)
                 } catch (ex: Exception) { // non-auth exceptions
