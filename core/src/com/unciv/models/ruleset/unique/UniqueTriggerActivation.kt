@@ -29,8 +29,10 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
@@ -91,7 +93,8 @@ object UniqueTriggerActivation {
         unit: MapUnit? = null,
         tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
         notification: String? = null,
-        triggerNotificationText: String? = null
+        triggerNotificationText: String? = null,
+        unitTriggerableIteration: Boolean = false
     ): (()->Boolean)? {
 
         val relevantCity by lazy {
@@ -120,6 +123,26 @@ object UniqueTriggerActivation {
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
         val ruleset = civInfo.gameInfo.ruleset
+
+        // Allow iterating through all unit targets, if needed.
+        if (unique.type?.targetTypes?.contains(UniqueTarget.UnitTriggerable) == true && !unitTriggerableIteration && tile != null &&
+            !UniqueParameterType.UnitTriggerTarget.staticKnownValues.contains(unique.params[0])) {
+            // Every adjacent [mapUnitFilter] unit
+            val triggerFunctions = tile.getTilesInDistance(1) // Adjacent
+                .flatMap { it.getUnits() }
+                .filter {
+                    val mapUnitFilter = unique.params[0]?.getPlaceholderParameters()?.firstOrNull()
+                    if (mapUnitFilter != null) it.matchesFilter(mapUnitFilter, gameContext) else false
+                }
+                .mapNotNull { getTriggerFunction(unique, civInfo, city, it, it.getTile(), notification, triggerNotificationText, true) }
+            if (triggerFunctions.none()) return null
+            return {
+                for (triggerFunction in triggerFunctions) {
+                    triggerFunction.invoke()
+                }
+                true
+            }
+        }
 
         when (unique.type) {
             UniqueType.TriggerEvent -> {
