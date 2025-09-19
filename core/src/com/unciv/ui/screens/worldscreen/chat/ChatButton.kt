@@ -40,14 +40,14 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
         }
     )
 
-    private fun updateBadge(visible: Boolean = false) {
+    private fun updateBadge() {
         badge.height = height / 3
         badge.setPosition(
             width - badge.width / 1.5f,
             height - badge.height / 1.5f
         )
 
-        badge.isVisible = visible || chat.unreadCount > 0 || ChatStore.hasGlobalMessage
+        badge.isVisible = chat.unreadCount > 0 || ChatStore.hasGlobalMessage
 
         if (badge.isVisible) {
             var text = chat.unreadCount.toString()
@@ -55,7 +55,7 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
                 text += '+'
             }
             badge.setText(text)
-        }
+        } else flash.stop()
     }
 
     fun triggerChatIndication() {
@@ -67,16 +67,12 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
         width = 95f
         iconCell.pad(3f).center()
         addActor(badge)
-
-        if (chat.unreadCount > 0 || ChatStore.hasGlobalMessage) {
-            updateBadge(true)
-            flash.stop()
-        }
+        updateBadge()
 
         onClick {
             chat.unreadCount = 0
+            ChatStore.hasGlobalMessage = false
             updateBadge()
-            flash.stop()
 
             ChatPopup(chat, worldScreen).open()
         }
