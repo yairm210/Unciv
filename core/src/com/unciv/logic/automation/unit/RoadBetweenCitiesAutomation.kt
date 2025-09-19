@@ -107,10 +107,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         if (roadsToBuildByCitiesCache.containsKey(city))
             return roadsToBuildByCitiesCache[city]!!
 
-        // TODO: some better worker representative needs to be used here
-        val workerUnit = civInfo.gameInfo.ruleset.units.map { it.value }.firstOrNull { it.hasUnique(UniqueType.BuildImprovements) }
-            // This is a temporary unit only for AI purposes so it doesn't get a unique ID
-            ?.newMapUnit(civInfo, Constants.NO_ID) ?: return listOf()
         val roadToCapitalStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
 
         /** @return Rank 0, 1 or 2 of how important it is to build best available road to capital */
@@ -144,8 +140,8 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
             // Try to build a plan for the road to the city
             // TODO: May return inconsistent paths across turns due to worker position, this makes it impossible to plan an exact road resulting in excessive roads built
-            val roadPath = if (civInfo.cities.indexOf(city) < civInfo.cities.indexOf(closeCity)) MapPathing.getRoadPath(workerUnit, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
-                else MapPathing.getRoadPath(workerUnit, closeCity.getCenterTile(), city.getCenterTile()) ?: continue
+            val roadPath = if (civInfo.cities.indexOf(city) < civInfo.cities.indexOf(closeCity)) MapPathing.getRoadPath(civInfo, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
+                else MapPathing.getRoadPath(civInfo, closeCity.getCenterTile(), city.getCenterTile()) ?: continue
             val worstRoadStatus = getWorstRoadTypeInPath(roadPath)
             if (worstRoadStatus == bestRoadAvailable) continue
 
@@ -171,7 +167,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         // If and only if we have no roads to build to close-by cities then we check for a road to build to the capital
         // The condition !city.isConnectedToCapital() is to avoid BFS for cities connected to capital with roads when railroads are unlocked
         else if (roadPlans.isEmpty() && (roadToCapitalStatus < bestRoadAvailable) && !city.isConnectedToCapital()) {
-            val roadToCapital = getRoadToConnectCityToCapital(workerUnit, city)
+            val roadToCapital = getRoadToConnectCityToCapital(city)
 
             if (roadToCapital != null) {
                 val worstRoadStatus = getWorstRoadTypeInPath(roadToCapital.second)
@@ -243,10 +239,10 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      * @return a pair containing a list of tiles that resemble the road to build and the city that the road will connect to
      */
     @Readonly
-    private fun getRoadToConnectCityToCapital(unit: MapUnit, city: City): Pair<City, List<Tile>>? {
+    private fun getRoadToConnectCityToCapital(city: City): Pair<City, List<Tile>>? {
         if (tilesOfConnectedCities.isEmpty()) return null // In mods with no capital city indicator, there are no connected cities
 
-        val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
+        val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && MapPathing.isValidRoadPathTile(city.civ, it) }
         val toConnectTile = city.getCenterTile()
         @LocalState val bfs: BFS = bfsCache[toConnectTile.position] ?: run {
             val bfs = BFS(toConnectTile, isCandidateTilePredicate)
