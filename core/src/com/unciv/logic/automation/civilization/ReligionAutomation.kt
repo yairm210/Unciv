@@ -349,8 +349,7 @@ object ReligionAutomation {
                 else 1f
             // Some city-filters are modified by personality (non-enemy foreign cities)
             score += modifier * when (unique.type) {
-                UniqueType.KillUnitPlunderNearCity ->
-                    unique.params[0].toFloat() * 0.25f//can be very strong, but a low weight for now as the AI currently isn't farming barb camp
+                UniqueType.KillUnitPlunderNearCity -> 0f //can be very strong, but the AI currently isn't farming barb camps
                 UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.followerBeliefUniqueMap.getUniques(unique.type).any()
