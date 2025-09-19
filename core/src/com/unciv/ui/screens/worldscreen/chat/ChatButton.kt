@@ -20,16 +20,16 @@ private val smallButtonStyle = SmallButtonStyle()
 class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
     "Chat", ImageGetter.getImage("OtherIcons/Chat"), 23
 ) {
-    val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
+    private val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
 
-    val badge = "".toTextButton(smallButtonStyle).apply {
+    private val badge = "".toTextButton(smallButtonStyle).apply {
         disable()
         label.setColor(Color.WHITE)
         label.setAlignment(Align.center)
         label.setFontScale(0.2f)
     }
 
-    val flash = AlternatingStateManager(
+    private val flash = AlternatingStateManager(
         name = "ChatButton color flash",
         originalState = {
             icon?.color = fontColor
