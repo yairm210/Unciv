@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.chat
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -30,19 +29,12 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
 
     val flash = AlternatingStateManager(
         name = "ChatButton color flash",
-        state = object {
-            val initialColor = fontColor
-            val targetColor = Color.ORANGE
-        }, originalState = { state ->
-            Gdx.app.postRunnable {
-                icon?.color = state.initialColor
-                label.color = state.initialColor
-            }
-        }, alternateState = { state ->
-            Gdx.app.postRunnable {
-                icon?.color = state.targetColor
-                label.color = state.targetColor
-            }
+        originalState = {
+            icon?.color = fontColor
+            label.color = fontColor
+        }, alternateState = {
+            icon?.color = Color.ORANGE
+            label.color = Color.ORANGE
         }
     )
 

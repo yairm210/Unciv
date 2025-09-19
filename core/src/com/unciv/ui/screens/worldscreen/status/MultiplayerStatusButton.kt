@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.status
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
@@ -137,19 +136,12 @@ private class TurnIndicator : HorizontalGroup(), Disposable {
 
     val flash = AlternatingStateManager(
         name = "StatusButton color flash",
-        state = object {
-            val initialColor = Color.WHITE
-            val targetColor = Color.ORANGE
-        }, originalState = { state ->
-            Gdx.app.postRunnable {
-                image.color = state.initialColor
-                gameAmount.color = state.initialColor
-            }
-        }, alternateState = { state ->
-            Gdx.app.postRunnable {
-                image.color = state.targetColor
-                gameAmount.color = state.targetColor
-            }
+        originalState = {
+            image.color = Color.WHITE
+            gameAmount.color = Color.WHITE
+        }, alternateState = {
+            image.color = Color.ORANGE
+            gameAmount.color = Color.ORANGE
         }
     )
 

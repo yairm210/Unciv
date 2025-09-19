@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.Gdx
 import com.unciv.utils.Concurrency
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -9,11 +10,10 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
-class AlternatingStateManager<State>(
+class AlternatingStateManager(
     private val name: String,
-    private val state: State,
-    private val originalState: (State) -> Unit,
-    private val alternateState: (State) -> Unit
+    private val originalState: () -> Unit,
+    private val alternateState: () -> Unit
 ) {
     private var job: Job? = null
 
@@ -28,15 +28,15 @@ class AlternatingStateManager<State>(
             var isAlternateState = true
             while (true) {
                 if (isAlternateState) {
-                    alternateState(state)
+                    Gdx.app.postRunnable(alternateState)
                     isAlternateState = false
                 } else {
-                    originalState(state)
+                    Gdx.app.postRunnable(originalState)
                     isAlternateState = true
                 }
 
                 if (Clock.System.now() - startTime >= duration) {
-                    originalState(state)
+                    Gdx.app.postRunnable(originalState)
                     return@run
                 }
 
@@ -47,6 +47,6 @@ class AlternatingStateManager<State>(
 
     fun stop() {
         job?.cancel()
-        originalState(state)
+        Gdx.app.postRunnable(originalState)
     }
 }
