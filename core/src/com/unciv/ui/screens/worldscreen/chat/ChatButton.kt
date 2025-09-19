@@ -7,6 +7,7 @@ import com.unciv.logic.AlternatingStateManager
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.logic.multiplayer.chat.Message
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
@@ -14,14 +15,15 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
+private val smallButtonStyle = SmallButtonStyle()
+
 class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
     "Chat", ImageGetter.getImage("OtherIcons/Chat"), 23
 ) {
     val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
 
-    val badge = "".toTextButton().apply {
+    val badge = "".toTextButton(smallButtonStyle).apply {
         disable()
-        setColor(Color.valueOf("da1e28"))
         label.setColor(Color.WHITE)
         label.setAlignment(Align.center)
         label.setFontScale(0.2f)
