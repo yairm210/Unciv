@@ -81,8 +81,7 @@ interface ISortableGridContentProvider<IT, ACT> {
         items.sumOf { getEntryValue(it) }.toCenteredLabel()
 
     companion object {
-        @JvmStatic
-        val collator = UncivGame.Current.settings.getCollatorFromLocale()
+        val collator by lazy {UncivGame.Current.settings.getCollatorFromLocale()}
 
         @JvmStatic
         fun getCircledIcon(path: String, iconSize: Float, circleColor: Color = Color.LIGHT_GRAY) =
