@@ -285,8 +285,10 @@ class WorkerAutomation(
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.hasFalloutEquivalent()) priority += 1
-            if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) priority += 0.5f// removing our forests is good for tempo
-            if (tile.terrainHasUnique(UniqueType.FreshWater)) priority += 1 // we want our farms up when unlocking Civil Service
+            if (tile.terrainFeatures.isNotEmpty() && tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) priority += 0.5f else if (tile.lastTerrain.hasUnique(UniqueType.Vegetation)) priority -= 0.4f
+            // Removing our forests is good for tempo, jungles not as much
+            if (tile.terrainHasUnique(UniqueType.FreshWater)) priority += 1
+            // we want our farms up when unlocking Civil Service
         }
         // give a minor priority to tiles that we could expand onto
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
