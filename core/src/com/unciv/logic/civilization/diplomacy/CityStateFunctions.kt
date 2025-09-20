@@ -463,11 +463,14 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (!requireWholeList && modifiers.values.sum() < -200)
             return modifiers
 
-        // highest force gets rank=0
+        // highest force is rank=0
         val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
+        // probably not necessary, but just in case, avoid division by zero if there's some edge case where no players are alive
+        val numAlivePlayers = max(civInfo.gameInfo.getAliveMajorCivs().size, 1)
         val globalModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeGlobalModifier
-        modifiers["Military Rank"] = globalModifier * (civInfo.gameInfo.gameParameters.players.size - forceRank) / civInfo.gameInfo.gameParameters.players.size
+        // apparently lowest force gets some pity points
+        modifiers["Military Rank"] = globalModifier * (numAlivePlayers - forceRank) / numAlivePlayers
 
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
