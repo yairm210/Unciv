@@ -164,6 +164,23 @@ enum class Countables(
                 .map { text.fillPlaceholders(it) }.toSet()
     },
 
+    FilteredPoliciesByCivs("Adopted [policyFilter] Policies by [civFilter] Civilizations") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val (policyFilter, civFilter) = parameterText.getPlaceholderParameters().takeIf { it.size >= 2 } ?: return null
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
+            return civilizations
+                .filter { it.isAlive() && it.matchesFilter(civFilter, gameContext) }
+                .sumOf { it.policies.getAdoptedPoliciesMatching(policyFilter, gameContext).size }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            if (params.size < 2) return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+            return UniqueParameterType.PolicyFilter.getErrorSeverity(params[0], ruleset) ?:
+                UniqueParameterType.CivFilter.getErrorSeverity(params[1], ruleset)
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
     RemainingCivs("Remaining [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]

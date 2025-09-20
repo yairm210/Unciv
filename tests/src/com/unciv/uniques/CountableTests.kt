@@ -244,6 +244,16 @@ class CountableTests {
             freePolicies++
             adopt(taggedPolicyBranch) // Will be completed as it has no member policies
         }
+
+        // Add a second Civilization
+        val civ2 = game.addCiv()
+        val city2 = game.addCity(civ2, game.tileMap[2,2])
+        civ2.policies.run {
+            freePolicies += 2
+            adopt(getPolicyByName("Tradition"))
+            adopt(getPolicyByName("Oligarchy"))
+        }
+
         val tests = listOf(
             "Completed Policy branches" to 2,               // Tradition and taggedPolicyBranch
             "Adopted [Tradition Complete] Policies" to 1,
@@ -251,6 +261,8 @@ class CountableTests {
             "Adopted [Liberty Complete] Policies" to 0,
             "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
             "Adopted [Some marker] Policies" to 1,
+            "Adopted [Some marker] Policies by [All] Civilizations" to 1,
+            "Adopted [Oligarchy] Policies by [All] Civilizations" to 2,
         )
         for ((test, expected) in tests) {
             val actual = Countables.getCountableAmount(test, GameContext(civ))
