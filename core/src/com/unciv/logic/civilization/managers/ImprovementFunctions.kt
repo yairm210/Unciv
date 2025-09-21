@@ -51,12 +51,13 @@ object ImprovementFunctions {
                 yield(ImprovementBuildingProblem.MissingResources)
             
             if (tile != null) {
-                if (tile.getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, gameContext)) {
-                    if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, gameContext))
-                        yield(ImprovementBuildingProblem.OutsideBorders)
-                    else if (tile.neighbors.none { it.getOwner() == civInfo })
-                        yield(ImprovementBuildingProblem.NotJustOutsideBorders)
-                }
+                if (tile.getOwner() != civInfo
+                    && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, gameContext)
+                    && (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, gameContext)
+                            || tile.neighbors.none { it.getOwner() == civInfo })
+                ) 
+                    yield(ImprovementBuildingProblem.OutsideBorders)
+                
                 val knownFeatureRemovals = tile.ruleset.nonRoadTileRemovals
                     .filter { rulesetImprovement ->
                         rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!)
