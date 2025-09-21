@@ -755,8 +755,6 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
         displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian } } }
         displayTutorial(TutorialTrigger.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
-        displayTutorial(TutorialTrigger.Happiness) { viewingCiv.getHappiness() < 5 }
-        displayTutorial(TutorialTrigger.Unhappiness) { viewingCiv.getHappiness() < 0 }
         displayTutorial(TutorialTrigger.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
         displayTutorial(TutorialTrigger.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
         displayTutorial(TutorialTrigger.ContactMe) { gameInfo.turns >= 100 }

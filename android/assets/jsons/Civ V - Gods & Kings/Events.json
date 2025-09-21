@@ -52,16 +52,16 @@
         ]
     },
     {
-        "name":"Tutorial Task: [Pick construction]",
+        "name":"Tutorial Task: [Build a Worker]",
         "presentation":"Floating",
         "civilopediaText":[
-			{"text":"Pick a construction!", "centered":true},
-            {"extraImage":"Tutorials/Pick construction", "imageSize":120},
-            {"text":"Enter city screen → Click on a unit or building → Click 'add to queue'."},
+			{"text":"Build a [Worker]!", "centered":true},
+            {"extraImage":"Tutorials/Build a Worker", "imageSize":120},
+            {"text":"Your lands could become productive.\n1. Enter city screen\n2. Select [Worker]\n3. Click 'add to queue'"},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
-            "Unavailable <if tutorial [Pick construction] is completed>"
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]> <when number of [[Worker] Units] is equal to [0]>",
+            "Unavailable <if tutorial [Build a Worker] is completed>"
         ]
     },
     {
@@ -73,7 +73,7 @@
             {"text":"Cycle through units with 'Next unit' → Click 'Next turn'."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [turns] is less than [3]>",
+            "Only available <if tutorials are enabled> <when number of [turns] is less than [3]> <if tutorial [Pick technology] is completed>",
             "Unavailable <if tutorial [Pass a turn] is completed>"
         ]
     },
@@ -86,7 +86,7 @@
             {"text":"Enter city screen → Click the assigned tile to unassign → Click an unassigned tile to assign population."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]> <after turn number [50]>",
             "Unavailable <if tutorial [Reassign worked tiles] is completed>"
         ]
     },
@@ -99,7 +99,7 @@
             {"text":"Explore the map until you encounter another civilization!"},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [turns] is more than [1]>",
+            "Only available <if tutorials are enabled> <after turn number [20]>",
             "Unavailable <if tutorial [Meet another civilization] is completed>"
         ],
         "choices": [
@@ -118,7 +118,7 @@
             {"text":"Click the menu button (top left) → Click 'Options'."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled>",
+            "Only available <if tutorials are enabled> <after turn number [30]>",
             "Unavailable <if tutorial [Open the options table] is completed>"
         ]
     },
@@ -128,10 +128,10 @@
         "civilopediaText":[
 			{"text":"Construct an improvement!", "centered":true},
             {"extraImage":"Tutorials/Construct an improvement", "imageSize":150},
-            {"text":"Construct a Worker unit → Move it to a Plains or Grassland tile → Click 'Construct improvement' → Choose the farm → Leave the worker there until it's finished."},
+            {"text":"1. Move your [Worker] to a [Plains] or [Grassland] tile\n2. Select \"Construct improvement\"\n3. Choose [Farm]\n4. Let the [Worker] complete the [Farm]"},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]> <when number of [[Worker] Units] is more than [0]>",
             "Unavailable <if tutorial [Construct an improvement] is completed>"
         ]
     },
@@ -170,7 +170,7 @@
             {"text":"Select an air unit → Select another city within range → Move the unit to the other city."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <when number of [[Air] Units] is more than [0]>",
+            "Only available <if tutorials are enabled> <when number of [[Air] Units] is more than [0]> <when number of [Cities] is more than [1]>",
             "Unavailable <if tutorial [Move an air unit] is completed>"
         ]
     },
@@ -183,8 +183,46 @@
             {"text":"Enter the Overview screen (top right corner) → Click on 'Stats'."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled>",
+            "Only available <if tutorials are enabled> <after turn number [40]>",
             "Unavailable <if tutorial [See your stats breakdown] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Base happiness]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Happiness", "centered":true, "header": 4},
+            {"text":"A thriving civilization depends on keeping your people content. Citizens generate unhappiness, but luxury resources and certain buildings grant [Happiness] to balance it out. Maintain high happiness to ensure your Civilization is prosperous."},
+            {"text": "Happiness", "link": "Tutorial/Happiness"}
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Happiness] is less than [5]> <after turn number [10]>",
+            "Unavailable <if tutorial [Base happiness] is completed>"
+        ],
+        "choices": [
+            {
+                "text": "Got it",
+                "uniques": ["Mark tutorial [Base happiness] complete"]
+            }
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Unhappiness]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Unhappiness", "centered":true, "header": 4},
+            {"text":"It seems that your citizens are unhappy!\nWhile unhappy, your civilization will suffer many detrimental effects, increasing in severity as unhappiness gets higher."},
+            {"text": "Happiness", "link": "Tutorial/Happiness"}
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Happiness] is less than [0]> <after turn number [15]>",
+            "Unavailable <if tutorial [Unhappiness] is completed>"
+        ],
+        "choices": [
+            {
+                "text": "Got it",
+                "uniques": ["Mark tutorial [Unhappiness] complete"]
+            }
         ]
     },
 ]

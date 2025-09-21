@@ -93,25 +93,28 @@
             {"text": "Gold is also very valuable in Diplomacy. You can directly Gift Gold to City-States to gain their favor. Use it to balance a Trade Deal with other Nations. Or demand every last drop after a successful war and your enemy sues for peace."},
             {"text": "Ironically, some may consider Gold to be one of the less important Resources. But it's flexible nature and importance to keep your Nation running makes it a precious thing to pay attention to. After all, everyone loves Gold."},
             {"text": "Not to be confused with the Resource of the same name, Gold Ore", "link": "Resources/Gold Ore"},
-            {"text": "See also: Trade Route", "link": "Tutorials/Trade Route"},
-            {"text": "See also: Golden Age", "link": "Tutorials/Golden Age"},
-            {"text": "See also: Research Agreements", "link": "Tutorials/Research Agreements"}
+            {"text": ""},
+            {"text": "See also", "header": 4},
+            {"text": "Trade Route", "link": "Tutorials/Trade Route"},
+            {"text": "Golden Age", "link": "Tutorials/Golden Age"},
+            {"text": "Research Agreements", "link": "Tutorials/Research Agreements"}
         ]
     },
   {
     "name": "Happiness",
-    "steps": [
-      "As cities grow in size and influence, you have to deal with a happiness mechanic that is no longer tied to each individual city.\nInstead, your entire empire shares the same level of satisfaction.\nAs your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."    ,
-      "In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.\nIf your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.\nIf your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)\n  your armies will have a big penalty slapped on to their overall combat effectiveness."    ,
-      "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn't do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."
-    ]
-  },
-  {
-    "name": "Unhappiness",
-    "steps": [
-      "It seems that your citizens are unhappy!\nWhile unhappy, your civilization will suffer many detrimental effects, increasing in severity as unhappiness gets higher.",
-      "Unhappiness has two main causes: Population and cities.\n  Each city causes 3 unhappiness, and each population, 1",
-      "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders."
+    "civilopediaText": [
+      {"text": "As cities grow in size and influence, you have to deal with a happiness mechanic that is no longer tied to each individual city.\nInstead, your entire empire shares the same level of satisfaction.\nAs your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."},
+      {"text": "In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.\nIf your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.\nIf your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)\n  your armies will have a big penalty slapped on to their overall combat effectiveness."},
+      {"text": "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn't do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."},
+      {"text": ""},
+      {"text": "Unhappiness", "header": 4},
+      {"text": "Unhappiness has two main causes: Population and cities.\n  Each city causes 3 unhappiness, and each population, 1"},
+      {"text": "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders."},
+      {"text": ""},
+      {"text": "See also", "header": 4},
+      {"text": "Colosseum", "link": "Building/Colosseum"},
+      {"text": "Theatre", "link": "Building/Theatre"},
+      {"text": "Luxury Resource", "link": "Tutorial/Luxury Resource"}
     ]
   },
   {

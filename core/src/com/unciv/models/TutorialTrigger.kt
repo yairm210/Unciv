@@ -12,7 +12,6 @@ enum class TutorialTrigger(val value: String, val isCivilopedia: Boolean = !valu
     NewGame("New_Game"),
     SlowStart("_Slow_Start"),
     CultureAndPolicies("Culture_and_Policies"),
-    Happiness("Happiness"),
     Unhappiness("Unhappiness"),
     GoldenAge("Golden_Age"),
     RoadsAndRailroads("Roads_and_Railroads"),
