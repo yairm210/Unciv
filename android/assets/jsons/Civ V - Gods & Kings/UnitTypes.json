@@ -33,7 +33,10 @@
     },
     {
         "name": "Siege",
-        "movementType": "Land"
+        "movementType": "Land",
+        "civilopediaText": [
+            { "text": "Siege units are extremely powerful against cities, but need to be Set Up before they can attack.\nOnce your siege unit is set up, it can attack from the current tile,\n  but once moved to another tile, it will need to be set up again." }
+        ]
     },
     {
         "name": "Civilian Water",
