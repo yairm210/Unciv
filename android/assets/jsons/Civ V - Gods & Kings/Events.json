@@ -191,7 +191,7 @@
         "name":"Tutorial Task: [Base happiness]",
         "presentation":"Floating",
         "civilopediaText":[
-			{"text":"Happiness", "centered":true, "header": 4},
+			{"text":"Happiness", "centered": true, "header": 4},
             {"text":"A thriving civilization depends on keeping your people content. Citizens generate unhappiness, but luxury resources and certain buildings grant [Happiness] to balance it out. Maintain high happiness to ensure your Civilization is prosperous."},
             {"text": "Happiness", "link": "Tutorial/Happiness"}
 		],
@@ -210,9 +210,9 @@
         "name":"Tutorial Task: [Unhappiness]",
         "presentation":"Floating",
         "civilopediaText":[
-			{"text":"Unhappiness", "centered":true, "header": 4},
+			{"text":"Unhappiness", "centered": true, "header": 4},
             {"text":"It seems that your citizens are unhappy!\nWhile unhappy, your civilization will suffer many detrimental effects, increasing in severity as unhappiness gets higher."},
-            {"text": "Happiness", "link": "Tutorial/Happiness"}
+            {"text":"Happiness", "link": "Tutorial/Happiness"}
 		],
         "uniques": [
             "Only available <if tutorials are enabled> <when number of [Happiness] is less than [0]> <after turn number [15]>",
@@ -222,6 +222,24 @@
             {
                 "text": "Got it",
                 "uniques": ["Mark tutorial [Unhappiness] complete"]
+            }
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Empire enters golden age]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Golden Age", "centered": true, "header": 4},
+            {"text":"You have entered a Golden Age!\nGolden age points are accumulated each turn by the total happiness \n  of your civilization\nWhen in a golden age, culture and production generation increases +20%,\n  and every tile already providing at least one gold will provide an extra gold."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <during a Golden Age>",
+            "Unavailable <if tutorial [Empire enters golden age] is completed>"
+        ],
+        "choices": [
+            {
+                "text": "Got it",
+                "uniques": ["Mark tutorial [Empire enters golden age] complete"]
             }
         ]
     },

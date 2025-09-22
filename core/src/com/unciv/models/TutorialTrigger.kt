@@ -5,6 +5,8 @@ package com.unciv.models
  *  Each instance represents some event that can display a [Tutorial][com.unciv.models.ruleset.Tutorial].
  *
  *  TODO implement as unique conditionals instead?
+ *
+ * @see WorldScreen::showTutorialsOnNextTurn()
  */
 enum class TutorialTrigger(val value: String, val isCivilopedia: Boolean = !value.startsWith("_")) {
 
@@ -12,7 +14,6 @@ enum class TutorialTrigger(val value: String, val isCivilopedia: Boolean = !valu
     NewGame("New_Game"),
     SlowStart("_Slow_Start"),
     CultureAndPolicies("Culture_and_Policies"),
-    GoldenAge("Golden_Age"),
     RoadsAndRailroads("Roads_and_Railroads"),
     VictoryTypes("Victory_Types"),
     EnemyCity("Enemy_City"),
