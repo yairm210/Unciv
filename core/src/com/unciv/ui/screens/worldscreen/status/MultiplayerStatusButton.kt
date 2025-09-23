@@ -136,10 +136,10 @@ private class TurnIndicator : HorizontalGroup(), Disposable {
 
     val flash = AlternatingStateManager(
         name = "StatusButton color flash",
-        originalState = {
+        onOriginalState = {
             image.color = Color.WHITE
             gameAmount.color = Color.WHITE
-        }, alternateState = {
+        }, onAlternateState = {
             image.color = Color.ORANGE
             gameAmount.color = Color.ORANGE
         }

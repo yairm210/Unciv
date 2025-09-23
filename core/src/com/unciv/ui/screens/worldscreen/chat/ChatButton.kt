@@ -31,10 +31,10 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
 
     private val flash = AlternatingStateManager(
         name = "ChatButton color flash",
-        originalState = {
+        onOriginalState = {
             icon?.color = fontColor
             label.color = fontColor
-        }, alternateState = {
+        }, onAlternateState = {
             icon?.color = Color.ORANGE
             label.color = Color.ORANGE
         }
