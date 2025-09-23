@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.unciv.app.server
 
 import com.github.ajalt.clikt.core.CliktCommand
@@ -88,10 +90,12 @@ sealed class Response {
     ) : Response()
 }
 
-@OptIn(ExperimentalUuidApi::class)
 private class WebSocketSessionManager {
-    private val gameId2WSSessions = synchronizedMap(mutableMapOf<Uuid, MutableSet<DefaultWebSocketServerSession>>())
-    private val wsSession2GameIds = synchronizedMap(mutableMapOf<DefaultWebSocketServerSession, MutableSet<Uuid>>())
+    private val gameId2WSSessions =
+        synchronizedMap(mutableMapOf<Uuid, MutableSet<DefaultWebSocketServerSession>>())
+
+    private val wsSession2GameIds =
+        synchronizedMap(mutableMapOf<DefaultWebSocketServerSession, MutableSet<Uuid>>())
 
     fun isSubscribed(session: DefaultWebSocketServerSession, gameId: Uuid): Boolean =
         gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }.contains(session)
@@ -137,7 +141,6 @@ private class WebSocketSessionManager {
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 data class BasicAuthInfo(
     val userId: Uuid,
     val password: String,
@@ -146,7 +149,6 @@ data class BasicAuthInfo(
 /**
  * Checks if a [String] is a valid UUID
  */
-@OptIn(ExperimentalUuidApi::class)
 private fun String.toUuidOrNull() = try {
     Uuid.parse(this)
 } catch (_: Throwable) {
@@ -195,12 +197,10 @@ private class UncivServerRunner : CliktCommand() {
     }
 
     // region Auth
-    @OptIn(ExperimentalUuidApi::class)
     private val authMap: MutableMap<Uuid, String> = mutableMapOf()
 
     private val wsSessionManager = WebSocketSessionManager()
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun loadAuthFile() {
         val authFile = File("server.auth")
         if (!authFile.exists()) {
@@ -214,7 +214,6 @@ private class UncivServerRunner : CliktCommand() {
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun saveAuthFile() {
         val authFile = File("server.auth")
         authFile.writeText(authMap.map { "${it.key}:${it.value}" }.joinToString("\n"))
@@ -225,8 +224,7 @@ private class UncivServerRunner : CliktCommand() {
      * or the password is correct
      */
     private fun validateGameAccess(file: File, authInfo: BasicAuthInfo): Boolean {
-        if (!file.exists())
-            return true
+        if (!file.exists()) return true
 
         return validateAuth(authInfo)
 
@@ -236,7 +234,7 @@ private class UncivServerRunner : CliktCommand() {
     private fun validateAuth(authInfo: BasicAuthInfo): Boolean {
         if (!authV1Enabled) return true
 
-        @OptIn(ExperimentalUuidApi::class) val password = authMap[authInfo.userId]
+        val password = authMap[authInfo.userId]
         return password == null || password == authInfo.password
     }
     // endregion Auth
@@ -254,7 +252,7 @@ private class UncivServerRunner : CliktCommand() {
                 basic {
                     realm = "Optional for /files and /auth, Mandatory for /chat"
 
-                    @OptIn(ExperimentalUuidApi::class) validate {
+                    validate {
                         return@validate try {
                             BasicAuthInfo(userId = Uuid.parse(it.name), password = it.password)
                         } catch (_: Throwable) {
@@ -268,11 +266,11 @@ private class UncivServerRunner : CliktCommand() {
                 pingPeriod = 30.seconds
                 timeout = 60.seconds
                 maxFrameSize = Long.MAX_VALUE
-                @OptIn(ExperimentalSerializationApi::class)
                 contentConverter = KotlinxWebsocketSerializationConverter(Json {
                     classDiscriminator = "type"
                     // DO NOT OMIT
                     // if omitted the "type" field will be missing from all outgoing messages
+                    @OptIn(ExperimentalSerializationApi::class)
                     classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
                 })
             }
@@ -283,7 +281,7 @@ private class UncivServerRunner : CliktCommand() {
                     call.respond(isAliveInfo)
                 }
 
-                @OptIn(ExperimentalUuidApi::class) authenticate {
+                authenticate {
                     put("/files/{fileName}") {
                         val fileName = call.parameters["fileName"] ?: return@put call.respond(
                             HttpStatusCode.BadRequest, "Missing filename!"
@@ -301,7 +299,8 @@ private class UncivServerRunner : CliktCommand() {
                         }
 
                         val file = File(fileFolderName, fileName)
-                        if (!validateGameAccess(file, authInfo)) return@put call.respond(HttpStatusCode.Unauthorized)
+                        if (!validateGameAccess(file, authInfo))
+                            return@put call.respond(HttpStatusCode.Unauthorized)
 
                         withContext(Dispatchers.IO) {
                             file.outputStream().use {
@@ -341,9 +340,11 @@ private class UncivServerRunner : CliktCommand() {
                         get("/auth") {
                             call.application.log.info("Received auth request from ${call.request.local.remoteHost}")
 
-                            val authInfo = call.principal<BasicAuthInfo>() ?: return@get call.respond(
-                                HttpStatusCode.BadRequest, "Possibly malformed authentication header!"
-                            )
+                            val authInfo = call.principal<BasicAuthInfo>()
+                                ?: return@get call.respond(
+                                    HttpStatusCode.BadRequest,
+                                    "Possibly malformed authentication header!"
+                                )
 
                             when (authMap[authInfo.userId]) {
                                 null -> call.respond(HttpStatusCode.NoContent)
@@ -354,15 +355,18 @@ private class UncivServerRunner : CliktCommand() {
                         put("/auth") {
                             call.application.log.info("Received auth password set from ${call.request.local.remoteHost}")
 
-                            val authInfo = call.principal<BasicAuthInfo>() ?: return@put call.respond(
-                                HttpStatusCode.BadRequest, "Possibly malformed authentication header!"
-                            )
+                            val authInfo = call.principal<BasicAuthInfo>()
+                                ?: return@put call.respond(
+                                    HttpStatusCode.BadRequest,
+                                    "Possibly malformed authentication header!"
+                                )
 
                             val password = authMap[authInfo.userId]
                             if (password == null || password == authInfo.password) {
                                 val newPassword = call.receiveText()
                                 if (newPassword.length < 6) return@put call.respond(
-                                    HttpStatusCode.BadRequest, "Password should be at least 6 characters long"
+                                    HttpStatusCode.BadRequest,
+                                    "Password should be at least 6 characters long"
                                 )
                                 authMap[authInfo.userId] = newPassword
                                 call.respond(HttpStatusCode.OK)
@@ -423,7 +427,9 @@ private class UncivServerRunner : CliktCommand() {
                                         )
                                     }
 
-                                    is Message.Leave -> wsSessionManager.unsubscribe(this, message.gameIds)
+                                    is Message.Leave -> wsSessionManager.unsubscribe(
+                                        this, message.gameIds
+                                    )
                                 }
                                 yield()
                             }
