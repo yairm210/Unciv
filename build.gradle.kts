@@ -122,7 +122,7 @@ project(":server") {
         "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
         "implementation"("io.ktor:ktor-server-websockets:$ktorVersion")
         "implementation"("ch.qos.logback:logback-classic:1.5.18")
-        "implementation"("com.github.ajalt.clikt:clikt:4.4.0")
+        "implementation"("com.github.ajalt.clikt:clikt:5.0.3")
 
         // clikt somehow needs this
         "implementation"("net.java.dev.jna:jna:$jnaVersion")
@@ -198,7 +198,7 @@ project(":core") {
             "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
             "implementation"("junit:junit:4.13.2")
-            "implementation"("org.mockito:mockito-core:5.13.0")
+            "implementation"("org.mockito:mockito-core:5.20.0")
 
             "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
