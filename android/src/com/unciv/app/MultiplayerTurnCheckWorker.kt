@@ -39,6 +39,7 @@ import java.time.Duration
 import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
+import androidx.core.net.toUri
 
 
 class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParameters)
@@ -162,7 +163,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             Log.i(LOG_TAG, "notifyUserAboutTurn ${game.first}")
             val intent = Intent(applicationContext, AndroidLauncher::class.java).apply {
                 action = Intent.ACTION_VIEW
-                data = Uri.parse("https://unciv.app/multiplayer?id=${game.second}")
+                data = "https://unciv.app/multiplayer?id=${game.second}".toUri()
             }
             val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                     FLAG_UPDATE_CURRENT

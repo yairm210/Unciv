@@ -75,7 +75,7 @@ trim_trailing_whitespace = true
 ij_properties_keep_blank_lines = false
 ij_properties_spaces_around_key_value_delimiter = false
 
-[{*.yaml, *.yml}]
+[{*.yaml,*.yml}]
 indent_size = 2
 
 [{*.markdown,*.md}]
