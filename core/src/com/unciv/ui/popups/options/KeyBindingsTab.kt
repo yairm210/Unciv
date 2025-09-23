@@ -48,7 +48,7 @@ class KeyBindingsTab(
         //     associated with the actual UI widget (a KeyCapturingButton),
         //     and we want to easily index that by binding, so it should be a order-preserving map.
         val collator = UncivGame.Current.settings.getCollatorFromLocale()
-        return KeyboardBinding.values().asSequence()
+        return KeyboardBinding.entries.asSequence()
             .filterNot { it.hidden }
             .groupBy { it.category }  // Materializes a Map<Category,List<KeyboardBinding>>
             .asSequence()

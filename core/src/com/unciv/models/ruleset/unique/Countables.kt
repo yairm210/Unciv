@@ -95,7 +95,7 @@ enum class Countables(
                 val relevantStat = Stat.safeValueOf(param) ?: return null
                 return civ.stats.getStatMapForNextTurn().values.map { it[relevantStat] }.sum().toInt()
             }
-            return gameContext.civInfo?.getCivResourceSupply()?.sumBy(param) ?: return null
+            return gameContext.civInfo.getCivResourceSupply().sumBy(param)
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant

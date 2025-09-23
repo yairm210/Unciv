@@ -118,10 +118,9 @@ class MultiplayerStatusButton(
 
 private class TurnIndicator : HorizontalGroup(), Disposable {
     val gameAmount = Label("2", BaseScreen.skin)
-    val image: Image
+    val image = ImageGetter.getImage("OtherIcons/ExclamationMark")
     private var job: Job? = null
     init {
-        image = ImageGetter.getImage("OtherIcons/ExclamationMark")
         image.setSize(30f)
         addActor(image)
     }

@@ -80,8 +80,7 @@ object ReligiousUnitAutomation {
         val holyCity = unit.civ.religionManager.getHolyCity()
         val cityToConvert = determineBestInquisitorCityToConvert(unit) // Also returns null if the inquisitor can't convert cities
         val pressureDeficit =
-            if (cityToConvert == null) 0
-            else cityToConvert.religion.getPressureDeficit(civReligion?.name)
+            cityToConvert?.religion?.getPressureDeficit(civReligion?.name) ?: 0
 
         val citiesToProtect = unit.civ.cities.asSequence()
             .filter { it.religion.getMajorityReligion() == civReligion }

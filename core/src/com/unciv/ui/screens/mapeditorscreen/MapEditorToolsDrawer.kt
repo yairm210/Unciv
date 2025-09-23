@@ -17,7 +17,7 @@ import kotlin.math.abs
 class MapEditorToolsDrawer(
     tabs: MapEditorMainTabs,
     initStage: Stage,
-    private val mapHolder: com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
+    private val mapHolder: EditorMapHolder
 ): Table(BaseScreen.skin) {
     private companion object {
         const val arrowImage = "OtherIcons/BackArrow"

@@ -152,10 +152,11 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
             MilestoneType.MoreCountableThanEachPlayer ->
-                civInfo.gameInfo.civilizations.filter {
+                civInfo.gameInfo.civilizations.any {
                     getMoreCountableThanOtherCivRelevent(civInfo, it) &&
-                    getMoreCountableThanOtherCivPercent(civInfo, it) > 100f
-                }.isNotEmpty()
+                        getMoreCountableThanOtherCivPercent(civInfo, it) > 100f
+                }
+
             MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
                 it.cityConstructions.isBuilt(params[0])
             }

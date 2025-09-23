@@ -71,7 +71,7 @@ class RiverGenerator(
         // Recommendation: Draw a bunch of hexagons on paper before trying to understand this, it's super helpful!
 
         var riverCoordinate = RiverCoordinate(tileMap, initialPosition.position,
-                RiverCoordinate.BottomRightOrLeft.values().random(randomness.RNG))
+                RiverCoordinate.BottomRightOrLeft.entries.toTypedArray().random(randomness.RNG))
 
         repeat(maxRiverLength) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
             if (riverCoordinate.getAdjacentTiles().any { it.isWater }) return
@@ -207,7 +207,7 @@ class RiverGenerator(
         fun getNeighborTile(selectedTile: Tile): Tile? =
             selectedTile.tileMap.getClockPositionNeighborTile(selectedTile, clockPosition)
         companion object {
-            val names get() = values().map { it.name }
+            val names get() = entries.map { it.name }
         }
     }
 

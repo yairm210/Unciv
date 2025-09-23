@@ -248,14 +248,9 @@ enum class KeyboardBinding(
         open fun checkConflictsIn() = sequenceOf(this)
     }
 
-    val label: String
-    val defaultKey: KeyCharAndCode
+    val label: String = label ?: unCamelCase(name)
+    val defaultKey: KeyCharAndCode = key ?: KeyCharAndCode(name[0])
     val hidden: Boolean get() = category == Category.None
-
-    init {
-        this.label = label ?: unCamelCase(name)
-        this.defaultKey = key ?: KeyCharAndCode(name[0])
-    }
 
     //region Helper constructors
     constructor(category: Category, label: String, key: Char) : this(category, label, KeyCharAndCode(key))

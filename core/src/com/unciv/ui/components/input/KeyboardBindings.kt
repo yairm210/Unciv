@@ -19,7 +19,7 @@ class KeyboardBindings : HashMap<KeyboardBinding, KeyCharAndCode>(), Json.Serial
 
     /** Allows adding entries by [KeyboardBinding] as name / [KeyCharAndCode] as string representation */
     private fun put(name: String, value: String) {
-        val binding = KeyboardBinding.values().firstOrNull { it.name == name} ?: return
+        val binding = KeyboardBinding.entries.firstOrNull { it.name == name} ?: return
         put(binding, value)
     }
 

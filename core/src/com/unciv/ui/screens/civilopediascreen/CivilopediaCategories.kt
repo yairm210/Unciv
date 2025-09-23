@@ -129,7 +129,7 @@ enum class CivilopediaCategories (
 
     companion object {
         @Readonly fun fromLink(name: String): CivilopediaCategories? =
-            values().firstOrNull { it.name == name }
-            ?: values().firstOrNull { it.label == name }
+            entries.firstOrNull { it.name == name }
+            ?: entries.firstOrNull { it.label == name }
     }
 }
