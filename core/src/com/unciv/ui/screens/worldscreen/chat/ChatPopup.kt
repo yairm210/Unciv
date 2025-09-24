@@ -39,9 +39,7 @@ class ChatPopup(
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
-    private val messageField = UncivTextField(
-        hint = "Type something... Chats are not stored and dissapears on app close."
-    )
+    private val messageField = UncivTextField(hint = "Type something...")
 
     init {
         ChatStore.chatPopup = this
