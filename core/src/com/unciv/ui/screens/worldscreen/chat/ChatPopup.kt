@@ -34,7 +34,7 @@ class ChatPopup(
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
     companion object {
         // the percentage of the minimum lightness allowed for a civName
-        const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.60f
+        const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.55f
     }
 
     private val chatTable = Table(skin)
