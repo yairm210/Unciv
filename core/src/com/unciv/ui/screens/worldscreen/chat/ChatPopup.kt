@@ -54,7 +54,7 @@ class ChatPopup(
 
         // Header: |  ChatHeader | CloseButton  |
         val chatHeader = Table(skin)
-        val chatLabel = "UncivChat™".toLabel(fontSize = 30, alignment = Align.center)
+        val chatLabel = "Chat".toLabel(fontSize = 30, alignment = Align.center)
         val chatIcon = ImageGetter.getImage("OtherIcons/Chat")
 
         chatHeader.add(chatIcon).size(chatLabel.height * 1.6f)
