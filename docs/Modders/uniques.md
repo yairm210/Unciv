@@ -3303,6 +3303,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;if no other Civilization has adopted this&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;if no Civilization has adopted [policy/belief]&gt;"
+	Example: "&lt;if no Civilization has adopted [Oligarchy]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;after adopting [policy/belief]&gt;"
 	Example: "&lt;after adopting [Oligarchy]&gt;"
 
