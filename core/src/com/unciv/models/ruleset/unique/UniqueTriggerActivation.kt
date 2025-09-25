@@ -129,6 +129,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
                     val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)
+                    true // The choice was randomly selected, so no need to continue.
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
                     /** See [com.unciv.ui.screens.worldscreen.AlertPopup.addEvent] for the deserializing of this string to the context */

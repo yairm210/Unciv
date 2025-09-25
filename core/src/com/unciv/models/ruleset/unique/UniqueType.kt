@@ -963,7 +963,7 @@ enum class UniqueType(
     ConditionalTimedUnique("for [nonNegativeAmount] turns", UniqueTarget.MetaModifier,
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     
-    AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
+    AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech, UniqueTarget.EventChoice,
         UniqueTarget.Promotion, UniqueTarget.Policy, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief,
         flags = UniqueFlag.setOfHiddenToUsers),
     
