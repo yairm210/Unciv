@@ -386,6 +386,7 @@ class MultiplayerScreen : PickerScreen() {
         rightSideButton.disable()
         for (button in gameSpecificButtons)
             button.disable()
+        skipTurnButton.isVisible = false
         forceResignButton.isVisible = false
 
         descriptionLabel.setText("")
@@ -411,22 +412,19 @@ class MultiplayerScreen : PickerScreen() {
             rightSideButton.disable()
         }
 
+        // is it our turn?
         resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.getUserId()
 
         val preview = multiplayerGame.preview
         if (resignButton.isEnabled || preview == null){
+            skipTurnButton.isVisible = false
             forceResignButton.isVisible = false
         } else {
             val durationInactive = Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now())
-            forceResignButton.isVisible =
-                game.settings.multiplayer.getUserId() in preview.civilizations.map { it.playerId } &&
-                        preview.getPlayerCiv(game.settings.multiplayer.getUserId())?.civName == Constants.spectator
-                            || durationInactive > Duration.ofDays(2)
+            val weAreAPlayer = game.settings.multiplayer.getUserId() in preview.civilizations.map { it.playerId }
+            skipTurnButton.isVisible = weAreAPlayer && durationInactive > Duration.ofMinutes(preview.gameParameters.minutesUntilSkipTurn.toLong())
+            forceResignButton.isVisible = weAreAPlayer && durationInactive > Duration.ofDays(2)
         }
-        skipTurnButton.isVisible = preview != null
-                && game.settings.multiplayer.getUserId() in preview.civilizations.map { it.playerId }
-                && preview.gameParameters.minutesUntilSkipTurn <= 
-                    Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now()).toMinutes()
         
         descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))
     }
