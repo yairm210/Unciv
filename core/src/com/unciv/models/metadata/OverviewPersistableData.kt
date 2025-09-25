@@ -40,14 +40,14 @@ class OverviewPersistableData(
      */
     override fun read(json: Json, jsonData: JsonValue) {
         val lastName = jsonData.get("last")?.asString() // Nullable, benign if field missing - getString() is not.
-        EmpireOverviewCategories.values().firstOrNull { it.name == lastName }?.let { last = it }
+        EmpireOverviewCategories.entries.firstOrNull { it.name == lastName }?.let { last = it }
         if (jsonData.isObject && jsonData.notEmpty())
             for (element in jsonData) readEntry(json, element)
     }
 
     private fun readEntry(json: Json, element: JsonValue) {
         val name = element.name()
-        val category = EmpireOverviewCategories.values().firstOrNull { it.name == name }
+        val category = EmpireOverviewCategories.entries.firstOrNull { it.name == name }
             ?: return // Guards against downgrading to an Unciv missing a category, but also skips "last" here
         val clazz = category.getPersistDataClass()
         try {

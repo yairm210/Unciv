@@ -1,3 +1,20 @@
+## 4.18.2
+
+Can no longer repair improvements in neutral territory (exploit)
+
+Fixed crash on declare war with triggers
+
+By RobLoach:
+- BNW: Fix logic around Cultural Victories 
+- Add `if no Civ has adopted [policy/belief]` Conditional 
+
+By unciv-loof:
+- Fix multiplayer auth popup causing duplicate actions on turn end 
+- CS military rank tribute based on number of alive players 
+- Show button to forcibly resign player after 2 days inactivity 
+
+AI: less worker priority for jungles - By EmperorPinguin
+
 ## 4.18.1
 
 By RobLoach:

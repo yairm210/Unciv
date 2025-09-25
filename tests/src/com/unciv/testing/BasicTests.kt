@@ -145,7 +145,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all uniques of units are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all uniques of units are presented in UniqueType.entries", allOK)
     }
 
     @Test
@@ -160,7 +160,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all uniques of buildings are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all uniques of buildings are presented in UniqueType.entries", allOK)
     }
 
     @Test
@@ -175,7 +175,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all uniques of promotions are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all uniques of promotions are presented in UniqueType.entries", allOK)
     }
 
     @Test
@@ -190,7 +190,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all policy uniques are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all policy uniques are presented in UniqueType.entries", allOK)
     }
 
     @Test
@@ -206,7 +206,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all belief uniques are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all belief uniques are presented in UniqueType.entries", allOK)
     }
 
     @Test
@@ -221,7 +221,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all era uniques are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all era uniques are presented in UniqueType.entries", allOK)
     }
 
     @Test
@@ -236,7 +236,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all ruin reward uniques are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all ruin reward uniques are presented in UniqueType.entries", allOK)
     }
 
     @Test
