@@ -20,6 +20,7 @@ import com.unciv.utils.Log
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.ceil
+import androidx.core.graphics.createBitmap
 
 class AndroidFont : FontImplementation {
 
@@ -99,7 +100,7 @@ class AndroidFont : FontImplementation {
             width = height
         }
 
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, height)
         val canvas = Canvas(bitmap)
         canvas.drawText(symbolString, 0f, metric.leading + metric.ascent + 1f, paint)
 

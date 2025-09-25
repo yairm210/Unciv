@@ -9,6 +9,7 @@ import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.utils.Log
 import java.io.InputStream
 import java.io.OutputStream
+import androidx.core.net.toUri
 
 
 class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
@@ -32,7 +33,7 @@ class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
     ) {
 
         // When we loaded, we returned a "content://" URI as file location.
-        val suggestedUri = Uri.parse(suggestedLocation)
+        val suggestedUri = suggestedLocation.toUri()
         val fileName = getFilename(suggestedUri, suggestedLocation)
 
         val onFileChosen = { uri: Uri ->

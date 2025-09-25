@@ -78,6 +78,7 @@ sealed class Response {
 class ChatRestartException : CancellationException("Chat restart requested")
 class ChatStopException : CancellationException("Chat stop requested")
 
+@OptIn(ExperimentalTime::class)
 object ChatWebSocket {
     private const val MAX_RECONNECTION_ATTEMPTS = 100
     private val INITIAL_RECONNECT_TIME = 1.seconds
@@ -86,7 +87,6 @@ object ChatWebSocket {
 
     private var isStarted = false
 
-    @OptIn(ExperimentalTime::class)
     private var lastRetry = Clock.System.now()
     private var reconnectionAttempts = 0
     private var reconnectTime = INITIAL_RECONNECT_TIME
@@ -94,7 +94,6 @@ object ChatWebSocket {
     private var job: Job? = null
     private var session: DefaultClientWebSocketSession? = null
 
-    @OptIn(ExperimentalSerializationApi::class)
     private val client = HttpClient(CIO) {
         install(WebSockets) {
             pingInterval = 30.seconds
@@ -102,12 +101,13 @@ object ChatWebSocket {
                 classDiscriminator = "type"
                 // DO NOT OMIT
                 // if omitted the "type" field will be missing from all outgoing messages
+                @OptIn(ExperimentalSerializationApi::class)
                 classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
             })
         }
     }
 
-    @OptIn(ExperimentalTime::class)
+
     private fun resetExponentialBackoff() {
         lastRetry = Clock.System.now()
 
@@ -145,7 +145,6 @@ object ChatWebSocket {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun handleWebSocketThrowables(t: Throwable) {
         print("ChatError: ${t.message}. Reconnecting...")
 
@@ -200,9 +199,7 @@ object ChatWebSocket {
                         is Response.JoinSuccess -> Unit // TODO
                     }
                 }
-            }
-                .onSuccess { restart() }
-                .onFailure { handleWebSocketThrowables(it) }
+            }.onSuccess { restart() }.onFailure { handleWebSocketThrowables(it) }
         } catch (e: Exception) {
             handleWebSocketThrowables(e)
         }
@@ -229,7 +226,6 @@ object ChatWebSocket {
      * Force mode will cancel the previous [job] and reassign a new one.
      * This is helpfull when we need to reset [job] due to events.
      */
-    @OptIn(DelicateCoroutinesApi::class)
     fun restart(dueToError: Boolean = false, force: Boolean = false) {
         if (!isStarted) return
         if (dueToError) {
@@ -240,6 +236,7 @@ object ChatWebSocket {
 
         if (force) println("ChatLog: A force restart seems to be requested!")
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             if (!force) {
                 // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
