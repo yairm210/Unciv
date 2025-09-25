@@ -300,8 +300,7 @@ private class UncivServerRunner : CliktCommand() {
                         }
 
                         val file = File(fileFolderName, fileName)
-                        if (!validateGameAccess(file, authInfo))
-                            return@put call.respond(HttpStatusCode.Unauthorized)
+                        if (!validateGameAccess(file, authInfo)) return@put call.respond(HttpStatusCode.Unauthorized)
 
                         withContext(Dispatchers.IO) {
                             file.outputStream().use {
@@ -428,9 +427,7 @@ private class UncivServerRunner : CliktCommand() {
                                         )
                                     }
 
-                                    is Message.Leave -> wsSessionManager.unsubscribe(
-                                        this, message.gameIds
-                                    )
+                                    is Message.Leave -> wsSessionManager.unsubscribe(this, message.gameIds)
                                 }
                                 yield()
                             }
