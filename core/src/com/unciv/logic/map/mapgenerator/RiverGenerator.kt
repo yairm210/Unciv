@@ -71,7 +71,7 @@ class RiverGenerator(
         // Recommendation: Draw a bunch of hexagons on paper before trying to understand this, it's super helpful!
 
         var riverCoordinate = RiverCoordinate(tileMap, initialPosition.position,
-                RiverCoordinate.BottomRightOrLeft.entries.toTypedArray().random(randomness.RNG))
+                RiverCoordinate.BottomRightOrLeft.entries.random(randomness.RNG))
 
         repeat(maxRiverLength) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
             if (riverCoordinate.getAdjacentTiles().any { it.isWater }) return

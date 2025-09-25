@@ -14,6 +14,9 @@ import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRi
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingProdScores
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TerrainType
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 object RegionStartFinder {
@@ -132,6 +135,7 @@ object RegionStartFinder {
     }
     
     /** @returns a scaled according to [proportion] Rectangle centered over [originalRect] */
+    @Pure
     private fun getCentralRectangle(originalRect: Rectangle, proportion: Float): Rectangle {
         val scaledRect = Rectangle(originalRect)
 

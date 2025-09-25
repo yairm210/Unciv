@@ -91,7 +91,7 @@ Optionally add one or more of the following topics to mark your mod as belonging
 -   `unciv-mod-modsofmods` (for mods extending another mod's ruleset)
 
 When you open Unciv's Mod Manager, it will query Github's [list of repos with that topic](https://github.com/topics/unciv-mod), and now YOUR repo will appear there!
-The categories will appear als annotations on the mod buttons, and the user can filter for them. They are not required for the game to use the content - e.g. you can still load maps from mods lacking the unciv-mod-maps topic.
+The categories will appear as annotations on the mod buttons, and the user can filter for them. They are not required for the game to use the content - e.g. you can still load maps from mods lacking the unciv-mod-maps topic.
 If you want new categories, github will accept any topic, but you'll have to ask the Unciv team to enable them in the game.
 
 If you feel there should be additional topics supported in-game, then the course of action is as follows:
