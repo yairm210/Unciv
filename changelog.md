@@ -1,27 +1,19 @@
 ## 4.18.2
 
-Resolved  - Can no longer repair unbuildable improvements in neutral territory for pillage/repair exploit loop
+Can no longer repair improvements in neutral territory (exploit)
 
-Resolved  - Added Maltese flag
-
-Fix settings load dependency on UncivGame.Current
-
-chore: Purity upgrade
-
-Resolved  - Fixed crash on declare war with triggers
+Fixed crash on declare war with triggers
 
 By RobLoach:
 - BNW: Fix logic around Cultural Victories 
 - Add `if no Civ has adopted [policy/belief]` Conditional 
-- Tutorials: Move Siege Units and Apollo Program 
 
 By unciv-loof:
-- Add aiDifficultyLevel to Difficulties.json documentation 
-- CS military rank tribute points based on number of alive players 
-- Show button to forcibly resign player after 2 days of inactivity 
-- Fix multiplayer authentication popup causing duplicate actions on turn end 
+- Fix multiplayer auth popup causing duplicate actions on turn end 
+- CS military rank tribute based on number of alive players 
+- Show button to forcibly resign player after 2 days inactivity 
 
-AI: less worker prioritization for jungles - By EmperorPinguin
+AI: less worker priority for jungles - By EmperorPinguin
 
 ## 4.18.1
 
