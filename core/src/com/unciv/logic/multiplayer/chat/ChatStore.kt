@@ -97,16 +97,16 @@ object ChatStore {
                 }
 
                 if (chatPopup == null && incomingChatMsg.civName != "System") {
-                    if (gameId.equals(UncivGame.Current.worldScreen?.gameInfo?.gameId?.toUUIDOrNull())) {
-                        // ensures that you are not getting notified for your own messages
-                        if (UncivGame.Current.worldScreen?.gameInfo?.currentPlayer != incomingChatMsg.civName) {
-                            chat.unreadCount++
-                            UncivGame.Current.worldScreen?.chatButton?.triggerChatIndication()
-                        }
-                    } else {
+                    if (!gameId.equals(UncivGame.Current.worldScreen?.gameInfo?.gameId?.toUUIDOrNull())) {
                         // user is out of world screen or
                         // some other game not currently on screen has a message
                         chat.unreadCount++
+
+                    }
+                    // ensures that you are not getting notified for your own messages
+                    else if (UncivGame.Current.worldScreen?.gameInfo?.currentPlayer != incomingChatMsg.civName) {
+                        chat.unreadCount++
+                        UncivGame.Current.worldScreen?.chatButton?.triggerChatIndication()
                     }
                 }
             }
