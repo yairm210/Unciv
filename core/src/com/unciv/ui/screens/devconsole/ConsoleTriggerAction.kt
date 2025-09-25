@@ -79,7 +79,7 @@ internal class ConsoleTriggerAction(
 
         private fun getUniqueType(param: CliInput): UniqueType {
             val filterText = CliInput(param.content.getPlaceholderText(), param.method)
-            val uniqueTypes = UniqueType.values().asSequence()
+            val uniqueTypes = UniqueType.entries.asSequence()
                 .filter { CliInput(it.placeholderText, param.method) == filterText }
                 .take(4).toList()
             if (uniqueTypes.isEmpty())

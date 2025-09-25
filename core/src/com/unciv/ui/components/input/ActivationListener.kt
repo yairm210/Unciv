@@ -9,7 +9,7 @@ class ActivationListener : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.
 
     override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
         val actor = event?.listenerActor ?: return
-        val type = ActivationTypes.values().firstOrNull {
+        val type = ActivationTypes.entries.firstOrNull {
             it.isGesture && it.tapCount == count && it.button == button
         } ?: return
         actor.activate(type)

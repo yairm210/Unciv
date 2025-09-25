@@ -58,7 +58,7 @@ class MapEditorOptionsTab(
         defaults().pad(10f)
 
         add("Tile Matching Criteria".toLabel(Color.GOLD)).row()
-        for (option in TileMatchFuzziness.values()) {
+        for (option in TileMatchFuzziness.entries) {
             val check = option.label.toCheckBox(option == tileMatchFuzziness)
             { tileMatchFuzziness = option }
             add(check).row()
