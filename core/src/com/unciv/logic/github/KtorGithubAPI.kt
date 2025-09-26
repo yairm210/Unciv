@@ -16,6 +16,7 @@ object KtorGithubAPI {
     const val baseUrl = "https://api.github.com"
 
     // add bearer token here if needed
+    // see: https://github.com/yairm210/Unciv/issues/13951#issuecomment-3326406877
     const val bearerToken = ""
 
     private val client = HttpClient(CIO) {
