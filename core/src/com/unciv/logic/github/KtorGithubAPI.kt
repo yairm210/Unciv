@@ -33,7 +33,7 @@ object KtorGithubAPI {
         if (remainingRequests < 1) return false
 
         val resetEpoch = resp.headers["x-ratelimit-reset"]?.toLongOrNull() ?: 0
-        delay(Clock.System.now() - Instant.fromEpochSeconds(resetEpoch))
+        delay(Instant.fromEpochSeconds(resetEpoch) - Clock.System.now())
 
         return true
     }
@@ -69,7 +69,7 @@ object KtorGithubAPI {
             parameter("q", "$search${if (search.isEmpty()) "" else "+"} topic:unciv-mod fork:true")
         }
 
-    suspend fun fetchGithubTopics() = request { 
+    suspend fun fetchGithubTopics() = request {
         url("$baseUrl/search/topics")
         parameter("sort", "name")
         parameter("order", "asc")
