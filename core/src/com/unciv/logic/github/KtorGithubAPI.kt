@@ -74,7 +74,7 @@ object KtorGithubAPI {
         parameter("sort", "name")
         parameter("order", "asc")
 
-        // `+repositories:>1` means ignore unused or practically unused topics
+        // `repositories:>1` means ignore unused or practically unused topics
         parameter("q", "unciv-mod repositories:>1")
     }
 }
