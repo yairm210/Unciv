@@ -14,7 +14,9 @@ import kotlin.time.Instant
 
 object KtorGithubAPI {
     /**
-     * https://ktor.io/docs/client-default-request.html#url
+     * @see <a href="https://ktor.io/docs/client-default-request.html#url">
+     *          Ktor Client > Developing applications > Requests > Default request > Base URL
+     *      </a>
      */
     const val baseUrl = "https://api.github.com"
 
