@@ -28,6 +28,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
@@ -462,10 +463,14 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (!requireWholeList && modifiers.values.sum() < -200)
             return modifiers
 
+        // highest force is rank=0
         val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
+        // probably not necessary, but just in case, avoid division by zero if there's some edge case where no players are alive
+        val numAlivePlayers = max(civInfo.gameInfo.getAliveMajorCivs().size, 1)
         val globalModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeGlobalModifier
-        modifiers["Military Rank"] = globalModifier - ((globalModifier / civInfo.gameInfo.gameParameters.players.size) * forceRank)
+        // apparently lowest force gets some pity points
+        modifiers["Military Rank"] = globalModifier * (numAlivePlayers - forceRank) / numAlivePlayers
 
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers

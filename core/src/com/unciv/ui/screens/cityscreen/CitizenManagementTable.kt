@@ -66,7 +66,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
 
         var currCol = numCol
         val defaultTable = Table()
-        for (focus in CityFocus.values()) {
+        for (focus in CityFocus.entries) {
             if (!focus.tableEnabled) continue
             if (focus == CityFocus.FaithFocus && !city.civ.gameInfo.isReligionEnabled()) continue
             val label = focus.label.toLabel()

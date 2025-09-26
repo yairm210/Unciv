@@ -15,7 +15,7 @@ enum class FriendshipEvent(val type: String) {
     Deleted("deleted");
 
     companion object {
-        private val VALUES = FriendshipEvent.values()
+        private val VALUES = FriendshipEvent.entries
         fun getByValue(type: String) = VALUES.first { it.type == type }
     }
 }
@@ -338,7 +338,6 @@ enum class WebSocketMessageType(val type: String) {
     AccountUpdated("accountUpdated");
 
     companion object {
-        private val VALUES = values()
-        fun getByValue(type: String) = VALUES.first { it.type == type }
+        fun getByValue(type: String) = entries.first { it.type == type }
     }
 }

@@ -5,6 +5,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
 object MinorCivPlacer {
@@ -222,6 +223,7 @@ object MinorCivPlacer {
         }
     }
 
+    @Readonly
     private fun canPlaceMinorCiv(tile: Tile, tileData: TileDataMap) = !tile.isWater && !tile.isImpassible() &&
         !tileData[tile.position]!!.isJunk &&
         tile.getBaseTerrain().getMatchingUniques(UniqueType.HasQuality).none { it.params[0] == "Undesirable" } && // So we don't get snow hills

@@ -114,7 +114,7 @@ class CivilopediaSearchPopup(
 
     private fun CoroutineScope.searchLoop() {
         val gameInfo = UncivGame.getGameInfoOrNull()
-        for (category in CivilopediaCategories.values()) {
+        for (category in CivilopediaCategories.entries) {
             if (!isActive) break
             if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial)
                 continue  // Search tutorials only when the mod filter is a base ruleset

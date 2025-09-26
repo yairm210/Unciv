@@ -71,3 +71,4 @@ Each unit type has the following structure:
 | name         | String         | Required |                                                                                          |
 | movementType | Enum           | Required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air"          |
 | uniques      | List of String | none     | List of [unique abilities](../uniques.md) this promotion grants to units of this type |
+| civilopediaText | List        | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)            |
