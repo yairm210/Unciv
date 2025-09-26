@@ -213,10 +213,10 @@ abstract class LoadOrSaveScreen(
             return Pair(errorText.toString(), isUserFixable)
         }
 
-        fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
+        suspend fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
             for (rawName in missingMods) {
                 val modName = rawName.folderNameToRepoName().lowercase()
-                val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
+                val repos = Github.tryGetGithubReposWithTopic(1, 10, modName)
                     ?: throw UncivShowableException("Could not download mod list.")
                 val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
                     ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")

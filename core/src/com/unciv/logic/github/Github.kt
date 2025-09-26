@@ -7,10 +7,17 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.Github.CountingInputStream.Companion.create
+import com.unciv.logic.github.Github.download
+import com.unciv.logic.github.Github.downloadAndExtract
+import com.unciv.logic.github.Github.repoNameToFolderName
+import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
 import com.unciv.logic.github.GithubAPI.getUrlForTreeQuery
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -337,22 +344,12 @@ object Github {
      * @return              Parsed [RepoSearch][GithubAPI.RepoSearch] json on success, `null` on failure.
      * @see <a href="https://docs.github.com/en/rest/reference/search#search-repositories">Github API doc</a>
      */
-    fun tryGetGithubReposWithTopic(amountPerPage: Int, page: Int, searchRequest: String = ""): GithubAPI.RepoSearch? {
-        val link = GithubAPI.getUrlForModListing(searchRequest, amountPerPage, page)
-        var retries = 2
-        while (retries > 0) {
-            retries--
-            // obey rate limit
-            if (RateLimit.waitForLimit()) return null
-            // try download
-            val inputStream = download(link) {
-                if (it.responseCode == 403 || it.responseCode == 200 && page == 1 && retries == 1) {
-                    // Pass the response headers to the rate limit handler so it can process the rate limit headers
-                    RateLimit.notifyHttpResponse(it)
-                    retries++   // An extra retry so the 403 is ignored in the retry count
-                }
-            } ?: continue
-            val text = inputStream.bufferedReader().readText()
+    suspend fun tryGetGithubReposWithTopic(
+        page: Int, amountPerPage: Int, searchRequest: String = ""
+    ): GithubAPI.RepoSearch? {
+        val resp = KtorGithubAPI.fetchGithubReposWithTopic(searchRequest, page, amountPerPage)
+        if (resp.status.isSuccess()) {
+            val text = resp.bodyAsText()
             try {
                 return json().fromJson(GithubAPI.RepoSearch::class.java, text)
             } catch (_: Throwable) {
@@ -428,22 +425,10 @@ object Github {
      * Query GitHub for topics named "unciv-mod*"
      * @return Parsed [TopicSearchResponse][GithubAPI.TopicSearchResponse] json on success, `null` on failure.
      */
-    fun tryGetGithubTopics(): GithubAPI.TopicSearchResponse? {
-        val link = GithubAPI.urlToQueryModTopics
-        var retries = 2
-        while (retries > 0) {
-            retries--
-            // obey rate limit
-            if (RateLimit.waitForLimit()) return null
-            // try download
-            val inputStream = download(link) {
-                if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
-                    // Pass the response headers to the rate limit handler so it can process the rate limit headers
-                    RateLimit.notifyHttpResponse(it)
-                    retries++   // An extra retry so the 403 is ignored in the retry count
-                }
-            } ?: continue
-            return json().fromJson(GithubAPI.TopicSearchResponse::class.java, inputStream.bufferedReader().readText())
+    suspend fun tryGetGithubTopics(): GithubAPI.TopicSearchResponse? {
+        val resp = KtorGithubAPI.fetchGithubTopics()
+        if (resp.status.isSuccess()) {
+            return json().fromJson(GithubAPI.TopicSearchResponse::class.java, resp.bodyAsText())
         }
         return null
     }
