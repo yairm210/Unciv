@@ -13,6 +13,9 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 object KtorGithubAPI {
+    /**
+     * https://ktor.io/docs/client-default-request.html#url
+     */
     const val baseUrl = "https://api.github.com"
 
     // add bearer token here if needed
@@ -26,6 +29,7 @@ object KtorGithubAPI {
             retryOnException()
         }
         defaultRequest {
+            url(baseUrl)
             header("X-GitHub-Api-Version", "2022-11-28")
             header(HttpHeaders.Accept, "application/vnd.github+json")
             userAgent(UncivGame.getUserAgent("Github"))
@@ -75,13 +79,13 @@ object KtorGithubAPI {
 
     suspend fun fetchGithubReposWithTopic(search: String, page: Int, amountPerPage: Int) =
         paginatedRequest(page, amountPerPage) {
-            url("$baseUrl/search/repositories")
+            url("/search/repositories")
             parameter("sort", "stars")
             parameter("q", "$search${if (search.isEmpty()) "" else "+"} topic:unciv-mod fork:true")
         }
 
     suspend fun fetchGithubTopics() = request {
-        url("$baseUrl/search/topics")
+        url("/search/topics")
         parameter("sort", "name")
         parameter("order", "asc")
 
