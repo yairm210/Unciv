@@ -1,6 +1,7 @@
 package com.unciv.logic.github
 
 import com.unciv.json.json
+import com.unciv.logic.github.GithubAPI.parseUrl
 
 /**
  *  "Namespace" collects all Github API structural knowledge
@@ -24,11 +25,6 @@ object GithubAPI {
     // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
     internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) = "$gitRepoUrl/archive/refs/heads/$branch.zip"
 
-    /** Format a URL to query for Mod repos by topic */
-    internal fun getUrlForModListing(searchRequest: String, amountPerPage: Int, page: Int) =
-        // Add + if needed to separate the query text from its parameters
-        "https://api.github.com/search/repositories?q=$searchRequest${ if (searchRequest.isEmpty()) "" else "+" }%20topic:unciv-mod%20fork:true&sort:stars&per_page=$amountPerPage&page=$page"
-
     /** Format URL to fetch one specific [Repo] metadata from the API */
     private fun getUrlForSingleRepoQuery(owner: String, repoName: String) = "https://api.github.com/repos/$owner/$repoName"
 
@@ -43,10 +39,6 @@ object GithubAPI {
     /** Format a URL to fetch a preview image - without extension */
     internal fun getUrlForPreview(modUrl: String, branch: String) = "$modUrl/$branch/preview"
         .replace("github.com", "raw.githubusercontent.com")
-
-    /** A query returning all known topics staring with "unciv-mod" and having at least two uses */
-    // `+repositories:>1` means ignore unused or practically unused topics
-    internal const val urlToQueryModTopics = "https://api.github.com/search/topics?q=unciv-mod+repositories:%3E1&sort=name&order=asc"
 
     //endregion
     //region responses
