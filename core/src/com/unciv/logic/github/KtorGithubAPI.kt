@@ -18,8 +18,11 @@ object KtorGithubAPI {
      */
     const val baseUrl = "https://api.github.com"
 
-    // add bearer token here if needed
-    // see: https://github.com/yairm210/Unciv/issues/13951#issuecomment-3326406877
+    /**
+     * Add a bearer token here if needed
+     *
+     * @see <a href="https://github.com/yairm210/Unciv/issues/13951#issuecomment-3326406877">#13951 (comment)</a>
+     */
     const val bearerToken = ""
 
     private val client = HttpClient(CIO) {
@@ -38,7 +41,7 @@ object KtorGithubAPI {
     }
 
     /**
-     * wait for rate limit to end if any and returns true if there was any rate limit
+     * Wait for rate limit to end if any and returns true if there was any rate limit
      */
     @OptIn(ExperimentalTime::class)
     private suspend fun consumeRateLimit(resp: HttpResponse): Boolean {
@@ -54,7 +57,7 @@ object KtorGithubAPI {
     }
 
     /**
-     * Make a ktor request. Stuff like rate limits, retries and redirects is handled automatically
+     * Make a ktor request handling rate limits automatically
      */
     private suspend fun request(
         maxRateLimitedRetries: Int = 3,
@@ -89,7 +92,9 @@ object KtorGithubAPI {
         parameter("sort", "name")
         parameter("order", "asc")
 
-        // `repositories:>1` means ignore unused or practically unused topics
+        /**
+         * `repositories:>1` means ignore unused or practically unused topics
+         */
         parameter("q", "unciv-mod repositories:>1")
     }
 }
