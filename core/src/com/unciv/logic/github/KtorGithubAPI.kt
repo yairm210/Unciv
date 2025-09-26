@@ -12,7 +12,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 object KtorGithubAPI {
-    val baseUrl = "https://api.github.com"
+    const val baseUrl = "https://api.github.com"
 
     private val client = HttpClient(CIO) {
         followRedirects = true
