@@ -1,5 +1,6 @@
 package com.unciv.logic.github
 
+import com.unciv.UncivGame
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -14,11 +15,20 @@ import kotlin.time.Instant
 object KtorGithubAPI {
     const val baseUrl = "https://api.github.com"
 
+    // add bearer token here if needed
+    const val bearerToken = ""
+
     private val client = HttpClient(CIO) {
         followRedirects = true
         install(HttpRequestRetry) {
             maxRetries = 3
             retryOnException()
+        }
+        defaultRequest {
+            header("X-GitHub-Api-Version", "2022-11-28")
+            header(HttpHeaders.Accept, "application/vnd.github+json")
+            userAgent(UncivGame.getUserAgent("Github"))
+            if (bearerToken.isNotBlank()) bearerAuth(bearerToken)
         }
     }
 
