@@ -32,9 +32,9 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
@@ -131,8 +131,8 @@ object UniqueTriggerActivation {
             val triggerFunctions = tile.getTilesInDistance(1) // Adjacent
                 .flatMap { it.getUnits() }
                 .filter {
-                    val mapUnitFilter = unique.params[0]?.getPlaceholderParameters()?.firstOrNull()
-                    if (mapUnitFilter != null) it.matchesFilter(mapUnitFilter, gameContext) else false
+                    val mapUnitFilter = unique.params.getOrNull(0)?.getPlaceholderParameters()?.firstOrNull()
+                    mapUnitFilter != null && it.matchesFilter(mapUnitFilter, gameContext)
                 }
                 .mapNotNull { getTriggerFunction(unique, civInfo, city, it, it.getTile(), notification, triggerNotificationText, true) }
             if (triggerFunctions.none()) return null

@@ -160,7 +160,6 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [General](https://thenounproject.com/icon/general-933566) By anbileru adaleru for Great General
 -   [Religion](https://thenounproject.com/icon/preach-53064) by Bruno Gätjens González adapted for Missionary
 -   [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
--   [Anchor](https://thenounproject.com/icon/anchor-7764100/) by M. Adebadal for Great Admiral
 
 ### Units - AbsoluteUnits unitset images
 

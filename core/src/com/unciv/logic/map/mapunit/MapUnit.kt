@@ -622,7 +622,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> {
                 if (baseUnit.matchesFilter(filter, state, false)) return true
                 if (civ.matchesFilter(filter, state, false)) return true
-                if (nonUnitUniquesMap.hasUnique(filter, if (state == null) cache.state else state)) return true
+                if (state != null && nonUnitUniquesMap.hasUnique(filter, state)) return true
                 if (promotions.promotions.contains(filter)) return true
                 if (hasStatus(filter)) return true 
                 return false

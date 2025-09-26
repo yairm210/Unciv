@@ -87,7 +87,7 @@ enum class UniqueParameterType(
 
     // todo potentially remove if OneTimeRevealSpecificMapTiles changes
     KeywordAll("'all'", "All", severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant) {
-    override val staticKnownValues = Constants.all
+        override val staticKnownValues = Constants.all
     },
 
     /** Implemented by [ICombatant.matchesCategory][com.unciv.logic.battle.ICombatant.matchesFilter] */
@@ -598,7 +598,6 @@ enum class UniqueParameterType(
 
     UnitTriggerTarget("unitTriggerTarget", Constants.thisUnit, "`${Constants.thisUnit}`, `${Constants.targetUnit}`, or `Every adjacent [mapUnitFilter] unit`") {
         override val staticKnownValues = setOf(Constants.thisUnit, Constants.targetUnit)
-
         override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
             if (parameterText in staticKnownValues) return true
             // Every adjacent [mapUnitFilter] unit
