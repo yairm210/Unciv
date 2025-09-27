@@ -79,17 +79,18 @@ object CityLocationTileRanker {
             var addedDistanceBeweenContinents: Int
             var canSettleInTileWithUnique = false
             if (uniqueModifier != null) {
-                canSettleInTileWithUnique = (tile.isWater || tile.isImpassible()) &&
-                    uniqueModifier.getModifiers(UniqueType.ConditionalInTiles).none{
-                        tile.matchesFilter(it.params[0])
-                    }
+
+                canSettleInTileWithUnique = !unique.getModifiers(UniqueType.ConditionalInTiles).none{
+                    unit.getTile().matchesFilter(it.params[0])
+                    
+                }
             }
             /*
             Putting the ! to make sure the player/Ai doesn't place cities too near each other.
             Because when .none return False when one element has a match.
             */
 
-            addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
+            addedDistanceBeweenContinents = if (canSettleInTileWithUnique) 1 else 0
             
             val distance = city.getCenterTile().aerialDistanceTo(tile)
             // todo: AgreedToNotSettleNearUs is hardcoded for now but it may be better to softcode it below in getDistanceToCityModifier
@@ -99,12 +100,13 @@ object CityLocationTileRanker {
                 && city.civ.getDiplomacyManager(civ)!!
                     .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
                 return false
+
+            if (distance <= modConstants.minimalCityDistanceOnDifferentContinents+
+                if (uniqueModifier != null) addedDistanceBeweenContinents else 0) return false
+            
             if (tile.getContinent() == city.getCenterTile().getContinent()) {
                 if (distance <= modConstants.minimalCityDistance) return false
-            } else {
-                if (distance <= modConstants.minimalCityDistanceOnDifferentContinents+
-                    if (uniqueModifier != null) addedDistanceBeweenContinents else 0) return false
-            }
+            } 
         }
         return true
     }
