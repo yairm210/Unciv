@@ -32,7 +32,10 @@ object CivilianUnitAutomation {
                 .any { canUse(unit, it) }
         
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
-        
+        /*
+        *   allow citystate to build unit Military,
+        *   that can settle but stop them from settling that unit.
+        * */
         if (hasSettlerUnique)
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
