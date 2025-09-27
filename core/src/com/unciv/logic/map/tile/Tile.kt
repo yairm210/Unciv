@@ -644,8 +644,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 }
         }
         /*
-        Putting the ! to make sure the player/Ai doesn't place cities too near each other.
-        Because when .none return False when one element has a match.
+        If the Player can settle in water/moutain add extra tile before they 
+        can settle because water/moutain tiles don't count has being in a contient.
         */
         
         addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
