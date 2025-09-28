@@ -209,7 +209,8 @@ object Battle {
     }
 
     private fun handleCityDefeated(defender: ICombatant, attacker: ICombatant) {
-        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || !attacker.isMelee()
+        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || 
+            (!attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true))
             || attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)
         ) return
 
