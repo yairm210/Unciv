@@ -12,7 +12,7 @@ import com.unciv.logic.github.Github.download
 import com.unciv.logic.github.Github.downloadAndExtract
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
-import com.unciv.logic.github.GithubAPI.getUrlForTreeQuery
+import com.unciv.logic.github.GithubAPI.fetchReleaseZip
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -362,26 +362,29 @@ object Github {
     /** Get a Pixmap from a "preview" png or jpg file at the root of the repo, falling back to the
      *  repo owner's avatar [avatarUrl]. The file content url is constructed from [modUrl] and [defaultBranch]
      *  by replacing the host with `raw.githubusercontent.com`.
+     *  
+     *  @return [Pixmap] on success or `null` on failure
      */
-    fun tryGetPreviewImage(modUrl: String, defaultBranch: String, avatarUrl: String?): Pixmap? {
+    suspend fun getPreviewImageOrNull(modUrl: String, defaultBranch: String, avatarUrl: String?): Pixmap? {
         // Side note: github repos also have a "Social Preview" optionally assignable on the repo's
         // settings page, but that info is inaccessible using the v3 API anonymously. The easiest way
         // to get it would be to query the the repo's frontend page (modUrl), and parse out
         // `head/meta[property=og:image]/@content`, which is one extra spurious roundtrip and a
         // non-trivial waste of bandwidth.
         // Thus we ask for a "preview" file as part of the repo contents instead.
-        val fileLocation = GithubAPI.getUrlForPreview(modUrl, defaultBranch)
         try {
-            val file = download("$fileLocation.jpg", shouldLogError = false)
-                ?: download("$fileLocation.png", shouldLogError = false)
-                    // Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
-                    // So the image format is only recognizable from the response "Content-Type" header
-                    // or by looking for magic markers in the bits - which the Pixmap constructor below does.
-                ?: avatarUrl?.let { download(it, shouldLogError = false) }
+            val resp = KtorGithubAPI.fetchPreviewImageOrNull(modUrl, defaultBranch, "jpg")
+                ?: KtorGithubAPI.fetchPreviewImageOrNull(modUrl, defaultBranch, "png")
+                // Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
+                // So the image format is only recognizable from the response "Content-Type" header
+                // or by looking for magic markers in the bits - which the Pixmap constructor below does.
+                ?: avatarUrl?.let { KtorGithubAPI.getOrNull(it) }
                 ?: return null
-            val byteArray = file.readBytes()
-            val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
-            return Pixmap(buffer)
+            return if (resp.status.isSuccess()) {
+                val byteArray = resp.bodyAsBytes()
+                val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
+                Pixmap(buffer)
+            } else null
         } catch (_: Throwable) {
             return null
         }
@@ -391,24 +394,11 @@ object Github {
      *  @return -1 on failure, else size rounded to kB
      *  @see <a href="https://docs.github.com/en/rest/git/trees#get-a-tree">Github API "Get a tree"</a>
      */
-    fun getRepoSize(repo: GithubAPI.Repo): Int {
-        val link = repo.getUrlForTreeQuery()
+    suspend fun getRepoSize(repo: GithubAPI.Repo): Int {
+        val resp = repo.fetchReleaseZip()
 
-        var retries = 2
-        while (retries > 0) {
-            retries--
-            // obey rate limit
-            if (RateLimit.waitForLimit()) return -1
-            // try download
-            val inputStream = download(link) {
-                if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
-                    // Pass the response headers to the rate limit handler so it can process the rate limit headers
-                    RateLimit.notifyHttpResponse(it)
-                    retries++   // An extra retry so the 403 is ignored in the retry count
-                }
-            } ?: continue
-
-            val tree = json().fromJson(GithubAPI.Tree::class.java, inputStream.bufferedReader().readText())
+        if (resp.status.isSuccess()) {
+            val tree = json().fromJson(GithubAPI.Tree::class.java, resp.bodyAsText())
             if (tree.truncated) return -1  // unlikely: >100k blobs or blob > 7MB
 
             var totalSizeBytes = 0L
@@ -418,6 +408,7 @@ object Github {
             // overflow unlikely: >2TB
             return ((totalSizeBytes + 512) / 1024).toInt()
         }
+
         return -1
     }
 

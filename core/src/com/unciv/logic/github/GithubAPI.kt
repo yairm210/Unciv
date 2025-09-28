@@ -2,6 +2,9 @@ package com.unciv.logic.github
 
 import com.unciv.json.json
 import com.unciv.logic.github.GithubAPI.parseUrl
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
 /**
  *  "Namespace" collects all Github API structural knowledge
@@ -25,20 +28,15 @@ object GithubAPI {
     // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
     internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) = "$gitRepoUrl/archive/refs/heads/$branch.zip"
 
-    /** Format URL to fetch one specific [Repo] metadata from the API */
-    private fun getUrlForSingleRepoQuery(owner: String, repoName: String) = "https://api.github.com/repos/$owner/$repoName"
-
     /** Format a download URL for a release archive */
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
 
     /** Format a URL to query a repo tree - to calculate actual size */
     // It's hard to see in the doc this not only accepts a commit SHA, but either branch (used here) or tag names too
-    internal fun Repo.getUrlForTreeQuery() =
-        "https://api.github.com/repos/$full_name/git/trees/$default_branch?recursive=true"
-
-    /** Format a URL to fetch a preview image - without extension */
-    internal fun getUrlForPreview(modUrl: String, branch: String) = "$modUrl/$branch/preview"
-        .replace("github.com", "raw.githubusercontent.com")
+    internal suspend fun Repo.fetchReleaseZip() = KtorGithubAPI.request {
+        url("/repos/$full_name/git/trees/$default_branch")
+        parameter("recursive", "true")
+    }
 
     //endregion
     //region responses
@@ -93,14 +91,13 @@ object GithubAPI {
              *  @see GithubAPI.parseUrl
              *  @return `null` for invalid links or any other failures
              */
-            fun parseUrl(url: String): Repo? = Repo().parseUrl(url)
+            suspend fun parseUrl(url: String): Repo? = Repo().parseUrl(url)
 
             /** Query Github API for [owner]'s [repoName] repository metadata */
-            fun query(owner: String, repoName: String): Repo? {
-                val response = Github.download(getUrlForSingleRepoQuery(owner, repoName))
-                    ?: return null
-                val repoString = response.bufferedReader().readText()
-                return json().fromJson(Repo::class.java, repoString)
+            suspend fun query(owner: String, repoName: String): Repo? {
+                val resp = KtorGithubAPI.fetchSingleRepo(owner, repoName)
+                return if (!resp.status.isSuccess()) null
+                else json().fromJson(Repo::class.java, resp.bodyAsText())
             }
         }
     }
@@ -171,7 +168,7 @@ object GithubAPI {
      * @return a new Repo instance for the 'Basic repo url' case, otherwise `this`, modified, to allow chaining, `null` for invalid links or any other failures
      * @see <a href="https://docs.github.com/en/rest/repos/repos#get-a-repository--code-samples">Github API Repository Code Samples</a>
      */
-    private fun Repo.parseUrl(url: String): Repo? {
+    private suspend fun Repo.parseUrl(url: String): Repo? {
         fun processMatch(matchResult: MatchResult): Repo {
             html_url = matchResult.groups[1]!!.value
             owner.login = matchResult.groups[2]!!.value

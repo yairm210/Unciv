@@ -59,9 +59,21 @@ object KtorGithubAPI {
     }
 
     /**
+     * Wrapper for [client.get][HttpClient.get] that returns `null` on failure
+     * 
+     * @return [HttpResponse] on success and `null` on failure
+     */
+    suspend fun getOrNull(url: String, block: HttpRequestBuilder.() -> Unit = {}) = try {
+        val resp = client.get(url, block)
+        if (resp.status.isSuccess()) resp else null
+    } catch (_: Throwable) {
+        null
+    }
+
+    /**
      * Make a ktor request handling rate limits automatically
      */
-    private suspend fun request(
+    suspend fun request(
         maxRateLimitedRetries: Int = 3,
         block: HttpRequestBuilder.() -> Unit,
     ): HttpResponse {
@@ -99,4 +111,10 @@ object KtorGithubAPI {
          */
         parameter("q", "unciv-mod repositories:>1")
     }
+
+    suspend fun fetchSingleRepo(owner: String, repoName: String) =
+        request { url("/repos/$owner/$repoName") }
+
+    suspend fun fetchPreviewImageOrNull(modUrl: String, branch: String, ext: String) =
+        getOrNull("$modUrl/$branch/preview.${ext}") { host = "raw.githubusercontent.com" }
 }
