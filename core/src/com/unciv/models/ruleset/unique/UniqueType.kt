@@ -434,10 +434,10 @@ enum class UniqueType(
         docDescription = "Performs an attack against every unit that matches the filter inside the radius with the damage decreasing with distance from the main target. Status effects and on-hit abilities apply.\n" +
                 "If both this and equal area attacks are present, only this will be used.\n" +
                 "Damage formula: Damage = (1 - (distance / radius)) * baseDamage"),
-    CanDamageSelfInAOE("Damages self with Aoe attacks", UniqueTarget.Unit, 
-        docDescription = "This unit takes damage from its own Aoe attacks, does not mean it will take damage from allied Aoe attacks."),
-    TakeCounterDamageFromAOE("Takes counter damage from each unit hit by its area attacks", UniqueTarget.Unit,
-        docDescription = "Only works for melee units, counter damage does not activate on self if \"Damages self with Aoe attacks\" unique is also present."),
+    DamageSelfInAOE("Takes [relativeAmount]% damage from own area attacks", UniqueTarget.Unit, 
+        docDescription = "This unit takes damage from its own area attacks when it is in range, 100 = 100% damage."),
+    TakeCounterDamageFromAOE("Takes [relativeAmount]% counter damage from each unit hit by its area attacks", UniqueTarget.Unit,
+        docDescription = "Only works for melee units, 100 = 100% damage, negative values work but are taken as positive."),
 
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
