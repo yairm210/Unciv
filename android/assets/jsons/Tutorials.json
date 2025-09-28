@@ -14,7 +14,7 @@
       "civilopediaText": [
           {"text": "Welcome to Unciv!"},
           {},
-          {"text": "Because this is a complex game, there are some tutorials to help familiarize you with it. These can be disbaled in the Options -> Display menu, but please hang on if you're new here!"},
+          {"text": "Because this is a complex game, there are some tutorials to help familiarize you with it. These can be disabled in the Options -> Display menu, but please hang on if you're new here!"},
           {"separator": true },
           {"text": "Your first mission is to found your capital city. This is actually an important task because your capital city will probably be your most prosperous. Many game bonuses apply only to your capital city, and it will be the center of your empire."},
           {},
@@ -279,7 +279,7 @@
     {
         "name": "Open Borders",
         "civilopediaText": [
-            { text: "Open Borders from other player and vice versa allow units to freely pass trough their territoy." },
+            { text: "Open Borders from other player and vice versa allow units to freely pass through their territory." },
             { text: "They also let Missionaries to enter other players' territory without suffering attrition." },
             { text: "Open Borders expire depending on game speed and are canceled upon Declaration of War, the closure however takes effect only after war ends and need to be traded again." },
             { text: "You gain diplomatic boost with other AI player if you both have Open Borders to each other" },

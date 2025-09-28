@@ -43,26 +43,26 @@ object DeclareWar {
         triggerUniques(otherCiv, civInfo)
     }
 
-    private fun triggerUniques(otherCiv: Civilization, civInfo: Civilization) {
+    private fun triggerUniques(otherCiv: Civilization, warDeclarerCiv: Civilization) {
         if (otherCiv.isMajorCiv()) {
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
-                UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            for (unique in warDeclarerCiv.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
+                UniqueTriggerActivation.triggerUnique(unique, warDeclarerCiv)
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWarFiltered)
+        for (unique in warDeclarerCiv.getTriggeredUniques(UniqueType.TriggerUponDeclaringWarFiltered)
                 { otherCiv.matchesFilter(it.params[0])} )
-            UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            UniqueTriggerActivation.triggerUnique(unique, warDeclarerCiv)
 
         for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponBeingDeclaredWarUpon)
-                { civInfo.matchesFilter(it.params[0])} ) 
+                { warDeclarerCiv.matchesFilter(it.params[0])} ) 
             UniqueTriggerActivation.triggerUnique(unique, otherCiv)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringWar)
+        for (unique in warDeclarerCiv.getTriggeredUniques(UniqueType.TriggerUponEnteringWar)
                 {otherCiv.matchesFilter(it.params[0])})
-            UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            UniqueTriggerActivation.triggerUnique(unique, warDeclarerCiv)
 
         for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponEnteringWar)
-                {civInfo.matchesFilter(it.params[0])})
+                {warDeclarerCiv.matchesFilter(it.params[0])})
             UniqueTriggerActivation.triggerUnique(unique, otherCiv)
     }
 
