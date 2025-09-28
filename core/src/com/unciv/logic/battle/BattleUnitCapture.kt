@@ -146,17 +146,12 @@ object BattleUnitCapture {
                 wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
-            capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) && attacker.getCivInfo().isCityState -> {
+            // Same with puppet city sttlers
+             attacker.getCivInfo().isCityState && (capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) ||
+                 capturedUnit.hasUnique(UniqueType.FoundPuppetCity, GameContext.IgnoreConditionals)) -> {
                 capturedUnit.destroy()
                 wasDestroyedInstead = true
             }
-            
-            // Same with puppet city sttlers.
-            capturedUnit.hasUnique(UniqueType.FoundPuppetCity, GameContext.IgnoreConditionals) && attacker.getCivInfo().isCityState -> {
-                capturedUnit.destroy()
-                wasDestroyedInstead = true
-            }
-            
             // Is it our old unit?
             attacker.getCivInfo() == originalOwner -> {
                 // Then it is recaptured without converting settlers to workers
