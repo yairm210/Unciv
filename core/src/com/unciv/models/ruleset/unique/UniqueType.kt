@@ -427,17 +427,15 @@ enum class UniqueType(
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
 
     //Aoe Attacks
-    AoeFlatAttack("Attacks also target all units within [positiveAmount] tiles", UniqueTarget.Unit,
-        docDescription = "Performs an attack against every unit in the radius, dealing equal damage. Status effects and on-hit abilities apply to all affected units. " +
+    AoeFlatAttack("Attacks also target [mapUnitFilter] units within [positiveAmount] tiles", UniqueTarget.Unit,
+        docDescription = "Performs an attack against every unit that matches the filter inside the radius including allied units or own units if not filtered out, dealing equal damage. Status effects and on-hit abilities apply to all affected units.\n" +
                 "If both this and decreasing area attacks are present, only decreasing area attacks will be used."),
-    AoeDegradeAttack("Attacks also target units within [positiveAmount] tiles, with damage decreasing by distance", UniqueTarget.Unit,
-        docDescription = "Performs an attack against every unit in the radius. Status effects and on-hit abilities apply. " +
-                "Damage decreases with distance from the main target. If both this and equal area attacks are present, only this will be used. " +
+    AoeDegradeAttack("Attacks also target [mapUnitFilter] units within [positiveAmount] tiles, with damage decreasing by distance", UniqueTarget.Unit,
+        docDescription = "Performs an attack against every unit that matches the filter inside the radius with the damage decreasing with distance from the main target. Status effects and on-hit abilities apply.\n" +
+                "If both this and equal area attacks are present, only this will be used.\n" +
                 "Damage formula: Damage = (1 - (distance / radius)) * baseDamage"),
     CanDamageSelfInAOE("Damages self with Aoe attacks", UniqueTarget.Unit, 
         docDescription = "This unit takes damage from its own Aoe attacks, does not mean it will take damage from allied Aoe attacks."),
-    CanDamageAlliesInAOE("Damages allied units with Aoe attacks", UniqueTarget.Unit,
-        docDescription = "This unit damages allied units with Aoe attacks, does not mean it will take damage from its own Aoe attacks unless Damages self with Aoe attacks is also set."),
     TakeCounterDamageFromAOE("Takes counter damage from each unit hit by its area attacks", UniqueTarget.Unit,
         docDescription = "Only works for melee units, counter damage does not activate on self if \"Damages self with Aoe attacks\" unique is also present."),
 
