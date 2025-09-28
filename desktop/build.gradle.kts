@@ -15,10 +15,12 @@ sourceSets {
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_21
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 java {
+    // required for building Unciv with a Java version higher than 24 (e.g. Java 25)
+    sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
