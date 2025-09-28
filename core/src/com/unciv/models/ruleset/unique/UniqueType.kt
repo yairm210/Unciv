@@ -734,6 +734,7 @@ enum class UniqueType(
         docDescription = "This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)"),
 
     ConditionalFirstCivToAdopt("if no other Civilization has adopted this", UniqueTarget.Conditional),
+    ConditionalNoCivAdopted("if no Civilization has adopted [policy/belief]", UniqueTarget.Conditional),
     ConditionalAfterPolicyOrBelief("after adopting [policy/belief]", UniqueTarget.Conditional),
     ConditionalBeforePolicyOrBelief("before adopting [policy/belief]", UniqueTarget.Conditional),
 
