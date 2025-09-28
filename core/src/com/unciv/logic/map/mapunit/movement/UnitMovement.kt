@@ -3,25 +3,54 @@
 package com.unciv.logic.map.mapunit.movement
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.PathingMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.utils.Log
 import com.unciv.utils.getOrPut
 import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.BitSet
 
-
+/**
+ * Handles all movement-related logic for a [MapUnit]
+ *
+ * getMovementToTilesAtPosition does a breadth-first search outwards from a given position,
+ * calculating the movement cost to each tile within the units remaining movement, with no specific
+ * target destination. In some cases, this involves a small amount of backtracking. This creates
+ * a PathsToTilesWithinTurn - a hashmap of tiles to fastest-paths.
+ *
+ * getShortestPath is the multi-turn pathing logic.  This calls getMovementToTilesAtPosition, and
+ * then for each edge tile, starting with the closest to the destination, it calls getMovementToTilesAtPosition
+ * again, until it finds a path to the destination.  This shares caching with getMovementToTilesAtPosition
+ * so that it doesn't recalculate the same tiles multiple times. This doesn't find optimal paths,
+ * but it finds reasonably good paths.
+ *
+ * teleportToClosestMoveableTile has something akin to pathing logic as well, iterating over nearby
+ * tiles, and calling getPathBetweenTiles to see if the unit can reach them.
+ *
+ * getAerialPathsToCities is the aerial equivalent of getMovementToTilesAtPosition.
+ *
+ * getPathBetweenTiles uses {@link com.unciv.logic.map.BFS} for single-turn pathing to a target.
+ */
+@InternalState
 class UnitMovement(val unit: MapUnit) {
 
     @Cache private val pathfindingCache = PathfindingCache(unit)
+    @Cache private val aStarPathing by lazy { PathingMap.createUnitPathingMap(unit) }
+    @Cache private val aStarPathingWithoutZoneControl by lazy { PathingMap.createUnitPathingMap(unit, considerZoneOfControl = false) }
+    @Cache private val aStarPathingWithoutEscort by lazy { PathingMap.createUnitPathingMap(unit, includeEscortUnit = false) }
+    @Cache private val roadPathing by lazy { PathingMap.createRoadPathingMap(unit.civ, unit.currentTile) }
 
     class ParentTileAndTotalMovement(val tile: Tile, val parentTile: Tile, val totalMovement: Float)
 
@@ -42,6 +71,13 @@ class UnitMovement(val unit: MapUnit) {
         movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
+        if (UncivGame.Current.settings.useAStarPathfinding) {
+            if (!considerZoneOfControl) require(includeOtherEscortUnit)
+            val pathingMap = if (!considerZoneOfControl) aStarPathingWithoutZoneControl
+                else if (includeOtherEscortUnit || !unit.isEscorting()) aStarPathing
+                else aStarPathingWithoutEscort
+            return pathingMap.getMovementToTilesAtPosition()
+        }
         @LocalState val distanceToTiles = PathsToTilesWithinTurn()
 
         val currentUnitTile = unit.currentTile
@@ -109,9 +145,11 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
      */
-    @Readonly
+    @Readonly @Suppress("purity")
     fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> {
         if (unit.cache.cannotMove) return listOf()
+        if (UncivGame.Current.settings.useAStarPathfinding)
+            return aStarPathing.getShortestPath(destination) ?: listOf()
 
         // First try and find a path without damaging terrain
         if (!avoidDamagingTerrain && unit.civ.passThroughImpassableUnlocked && unit.baseUnit.isLandUnit) {
@@ -228,9 +266,8 @@ class UnitMovement(val unit: MapUnit) {
 
     class UnreachableDestinationException(msg: String) : Exception(msg)
 
-    @Readonly
+    @Readonly @Suppress("purity")
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {
-
         val currentTile = unit.getTile()
         if (currentTile == finalDestination) return currentTile
 
@@ -780,22 +817,32 @@ class UnitMovement(val unit: MapUnit) {
     @Readonly
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
-        passThroughCacheNew: ArrayList<Boolean?> = ArrayList(unit.getTile().tileMap.tileList.size),
-        movementCostCache: HashMap<Int, Float> = HashMap(),
+        passThroughCacheNew: ArrayList<Boolean?>? = null,
+        movementCostCache: HashMap<Int, Float>? = null,
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
+        if (UncivGame.Current.settings.useAStarPathfinding) {
+            if (!considerZoneOfControl) require(includeOtherEscortUnit)
+            val pathingMap = if (!considerZoneOfControl) aStarPathingWithoutZoneControl
+                else if (includeOtherEscortUnit || !unit.isEscorting()) aStarPathing 
+                else aStarPathingWithoutEscort
+            return pathingMap.getMovementToTilesAtPosition()
+        }
         val distanceToTiles = getMovementToTilesAtPosition(
             unit.currentTile.position,
             unit.currentMovement,
             considerZoneOfControl,
             null,
-            passThroughCacheNew,
-            movementCostCache,
+            passThroughCacheNew ?: ArrayList(unit.getTile().tileMap.tileList.size),
+            movementCostCache ?: HashMap(),
             includeOtherEscortUnit
         )
 
         return distanceToTiles
     }
+    
+    @Readonly
+    fun getRoadPath(destinationTile: Tile): List<Tile>? = roadPathing.getShortestPath(destinationTile)
 
     fun getAerialPathsToCities(): HashMap<Tile, ArrayList<Tile>> {
         var tilesToCheck = ArrayList<Tile>()
@@ -852,7 +899,13 @@ class UnitMovement(val unit: MapUnit) {
         return bfs.getReachedTiles()
     }
 
-    fun clearPathfindingCache() = pathfindingCache.clear()
+    fun clearPathfindingCache() {
+        pathfindingCache.clear()
+        aStarPathing.clear()
+        aStarPathingWithoutZoneControl.clear()
+        aStarPathingWithoutEscort.clear()
+        roadPathing.clear()
+    }
 
 }
 
@@ -902,8 +955,10 @@ class PathfindingCache(private val unit: MapUnit) {
 
 class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
     fun getPathToTile(tile: Tile): List<Tile> {
-        if (!containsKey(tile))
-            throw Exception("Can't reach this tile!")
+        if (!containsKey(tile)) {
+            Log.debug("PathsToTilesWithinTurn#getPathToTile does not contain $tile: $this")
+            throw Exception("Can't reach $tile")
+        }
         val reversePathList = ArrayList<Tile>()
         var currentTile = tile
         while (get(currentTile)!!.parentTile != currentTile) {

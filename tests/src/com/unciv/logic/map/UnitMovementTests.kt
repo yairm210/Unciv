@@ -4,31 +4,44 @@
 package com.unciv.logic.map
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.GdxTestRunnerFactory
 import com.unciv.testing.TestGame
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
+import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
-@RunWith(GdxTestRunner::class)
-class UnitMovementTests {
-
+@RunWith(Parameterized::class)
+@UseParametersRunnerFactory(GdxTestRunnerFactory::class)
+class UnitMovementTests(
+    // parameters come from the Compantion#parameters method
+    private val pathfindingAlgorithm: PathfindingAlgorithm,
+) {
     private lateinit var tile: Tile
     private lateinit var civInfo: Civilization
     private var testGame = TestGame()
 
     @Before
     fun initTheWorld() {
+        UncivGame.Current.settings.useAStarPathfinding = (pathfindingAlgorithm == AStarPathfinding)
         testGame.makeHexagonalMap(2)
         tile = testGame.tileMap[0,0]
         civInfo = testGame.addCiv()
@@ -45,7 +58,7 @@ class UnitMovementTests {
             tile.setTerrainFeatures(listOf())
             tile.setTransients()
 
-            Assert.assertTrue(terrain.name, terrain.impassable != unit.movement.canPassThrough(tile))
+            assertTrue(terrain.name, terrain.impassable != unit.movement.canPassThrough(tile))
         }
     }
 
@@ -72,7 +85,7 @@ class UnitMovementTests {
         for (type in testGame.ruleset.unitTypes.values)
         {
             val unit = addFakeUnit(type)
-            Assert.assertTrue(unit.movement.canPassThrough(tile))
+            assertTrue(unit.movement.canPassThrough(tile))
         }
     }
 
@@ -85,7 +98,7 @@ class UnitMovementTests {
 
             for (type in testGame.ruleset.unitTypes.values) {
                 val unit = addFakeUnit(type)
-                Assert.assertTrue("%s cannot be at %s".format(type.name, terrain.name),
+                assertTrue("%s cannot be at %s".format(type.name, terrain.name),
                         (unit.baseUnit.isWaterUnit && tile.isLand) != unit.movement.canPassThrough(tile))
             }
         }
@@ -101,7 +114,7 @@ class UnitMovementTests {
             val unit = addFakeUnit(type)
             unit.updateUniques()
 
-            Assert.assertTrue(
+            assertTrue(
                 "$type cannot be in Ice",
                 unit.movement.canPassThrough(tile) == (
                     type.uniques.contains("Can enter ice tiles")
@@ -119,7 +132,7 @@ class UnitMovementTests {
 
         for (type in testGame.ruleset.unitTypes.values) {
             val unit = addFakeUnit(type)
-            Assert.assertTrue("$type must not enter Wonder tile",
+            assertTrue("$type must not enter Wonder tile",
                 unit.movement.canPassThrough(tile) == type.hasUnique(UniqueType.CanPassImpassable))
         }
     }
@@ -133,7 +146,7 @@ class UnitMovementTests {
         for (type in testGame.ruleset.unitTypes.values) {
             val unit = addFakeUnit(type)
 
-            Assert.assertTrue("$type cannot be in Coast",
+            assertTrue("$type cannot be in Coast",
                     unit.baseUnit.isLandUnit != unit.movement.canPassThrough(tile))
         }
     }
@@ -148,7 +161,7 @@ class UnitMovementTests {
         for (type in testGame.ruleset.unitTypes.values) {
             val unit = addFakeUnit(type)
 
-            Assert.assertTrue("$type cannot be in Ocean",
+            assertTrue("$type cannot be in Ocean",
                     unit.baseUnit.isLandUnit != unit.movement.canPassThrough(tile))
         }
     }
@@ -161,14 +174,14 @@ class UnitMovementTests {
         val unitType = testGame.ruleset.unitTypes.values.first()
         val unit = addFakeUnit(unitType, listOf("Cannot enter ocean tiles"))
 
-        Assert.assertFalse(unit.movement.canPassThrough(tile))
+        assertFalse(unit.movement.canPassThrough(tile))
 
         val unitCanEnterAfterAstronomy = addFakeUnit(unitType, listOf("Cannot enter ocean tiles <before discovering [Astronomy]>"))
-        Assert.assertTrue(unitCanEnterAfterAstronomy.movement.canPassThrough(tile))
+        assertTrue(unitCanEnterAfterAstronomy.movement.canPassThrough(tile))
 
         civInfo.tech.techsResearched.remove("Astronomy")
         unitCanEnterAfterAstronomy.updateUniques()
-        Assert.assertFalse(unitCanEnterAfterAstronomy.movement.canPassThrough(tile))
+        assertFalse(unitCanEnterAfterAstronomy.movement.canPassThrough(tile))
     }
 
     @Test
@@ -184,7 +197,7 @@ class UnitMovementTests {
 
         for (type in testGame.ruleset.unitTypes.values) {
             val outUnit = addFakeUnit(type)
-            Assert.assertFalse("$type must not enter occupied tile", outUnit.movement.canPassThrough(tile))
+            assertFalse("$type must not enter occupied tile", outUnit.movement.canPassThrough(tile))
         }
     }
 
@@ -196,13 +209,13 @@ class UnitMovementTests {
 
         val unit = testGame.addUnit("Warrior", civInfo, null)
 
-        Assert.assertFalse("Unit must not enter other civ tile", unit.movement.canPassThrough(tile))
+        assertFalse("Unit must not enter other civ tile", unit.movement.canPassThrough(tile))
 
         city.hasJustBeenConquered = true
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)
         civInfo.getDiplomacyManager(otherCiv)!!.diplomaticStatus = DiplomaticStatus.War
 
-        Assert.assertTrue("Unit can capture other civ city", unit.movement.canPassThrough(tile))
+        assertTrue("Unit can capture other civ city", unit.movement.canPassThrough(tile))
     }
 
     @Test
@@ -212,8 +225,8 @@ class UnitMovementTests {
         val otherCiv = testGame.addCiv()
         val city = testGame.addCity(otherCiv, tile)
 
-        Assert.assertTrue("Unit must be teleported to new location", unit.currentTile != tile)
-        Assert.assertTrue("Unit must be teleported to tile outside of civ's control", unit.currentTile.getOwner() == null)
+        assertTrue("Unit must be teleported to new location", unit.currentTile != tile)
+        assertTrue("Unit must be teleported to tile outside of civ's control", unit.currentTile.getOwner() == null)
     }
 
     @Test
@@ -232,7 +245,7 @@ class UnitMovementTests {
         val city = testGame.addCity(otherCiv, tile)
 
         // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
-        Assert.assertTrue("Unit must be teleported to closest tile outside of civ's control",
+        assertTrue("Unit must be teleported to closest tile outside of civ's control",
             unit.currentTile.position.eq(1, 2))
     }
 
@@ -252,7 +265,7 @@ class UnitMovementTests {
         val city = testGame.addCity(otherCiv, tile)
 
         // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
-        Assert.assertTrue("Unit must not be teleported but destroyed", unit.isDestroyed)
+        assertTrue("Unit must not be teleported but destroyed", unit.isDestroyed)
     }
 
     @Test
@@ -276,8 +289,8 @@ class UnitMovementTests {
         val otherCiv = testGame.addCiv()
         val city = testGame.addCity(otherCiv, tile)
 
-        Assert.assertTrue("Warrior teleported to 1,2", unit.currentTile.position.eq(1,2))
-        Assert.assertTrue("Worker must be captured", enemyWorkerUnit.civ == civInfo)
+        assertTrue("Warrior teleported to 1,2", unit.currentTile.position.eq(1,2))
+        assertTrue("Worker must be captured", enemyWorkerUnit.civ == civInfo)
     }
 
 
@@ -297,9 +310,71 @@ class UnitMovementTests {
         val city = testGame.addCity(otherCiv, tile)
 
         // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
-        Assert.assertTrue("Unit must be teleported to closest tile outside of civ's control",
+        assertTrue("Unit must be teleported to closest tile outside of civ's control",
             unit.currentTile.position.eq(1, 2))
-        Assert.assertTrue("Payload must be teleported to the same tile",
+        assertTrue("Payload must be teleported to the same tile",
             unit.currentTile == payload.currentTile)
+    }
+    
+    @Test
+    fun twoEscortsCanSwap() {
+        val settler1 = testGame.addUnit("Settler", civInfo, testGame.tileMap[1,1])
+        val settler2 = testGame.addUnit("Settler", civInfo, testGame.tileMap[2,2])
+        val warrior1 = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
+        val warrior2 = testGame.addUnit("Warrior", civInfo, testGame.tileMap[2,2])
+        warrior1.startEscorting()
+        warrior2.startEscorting()
+        assertEquals(warrior1, settler1.getOtherEscortUnit())
+        assertEquals(warrior2, settler2.getOtherEscortUnit())
+
+        assertTrue(warrior1.movement.canUnitSwapTo(testGame.tileMap[2,2]))
+        assertTrue(warrior2.movement.canUnitSwapTo(testGame.tileMap[1,1]))
+        
+        warrior1.movement.swapMoveToTile(testGame.tileMap[2,2])
+        
+        assertEquals(testGame.tileMap[2,2], warrior1.currentTile)
+        assertEquals(testGame.tileMap[1,1], settler1.currentTile)
+        assertEquals(testGame.tileMap[1,1], warrior2.currentTile)
+        assertEquals(testGame.tileMap[2,2], settler2.currentTile)
+        assertEquals(warrior1, settler2.getOtherEscortUnit())
+        assertEquals(warrior2, settler1.getOtherEscortUnit())
+    }
+
+    @Test
+    fun twoEscortsCanSwapEvenIfSettlerHasNoMovement() {
+        val settler1 = testGame.addUnit("Settler", civInfo, testGame.tileMap[1,1])
+        val settler2 = testGame.addUnit("Settler", civInfo, testGame.tileMap[2,2])
+        val warrior1 = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
+        val warrior2 = testGame.addUnit("Warrior", civInfo, testGame.tileMap[2,2])
+        warrior1.startEscorting()
+        warrior2.startEscorting()
+        assertEquals(warrior1, settler1.getOtherEscortUnit())
+        assertEquals(warrior2, settler2.getOtherEscortUnit())
+        settler1.currentMovement = 0f
+
+        assertFalse(warrior1.movement.canUnitSwapTo(testGame.tileMap[2,2]))
+        assertFalse(warrior2.movement.canUnitSwapTo(testGame.tileMap[1,1]))
+
+        warrior1.movement.swapMoveToTile(testGame.tileMap[2,2])
+
+        assertEquals(testGame.tileMap[2,2], warrior1.currentTile)
+        assertEquals(testGame.tileMap[1,1], settler1.currentTile)
+        assertEquals(testGame.tileMap[1,1], warrior2.currentTile)
+        assertEquals(testGame.tileMap[2,2], settler2.currentTile)
+        assertEquals(warrior1, settler2.getOtherEscortUnit())
+        assertEquals(warrior2, settler1.getOtherEscortUnit())
+    }
+
+    companion object {
+        @Suppress("unused")
+        @Parameters
+        @JvmStatic
+        fun parameters(): Collection<Array<Any?>?> {
+            return listOf( 
+                /* First execute the test with these parametrers */
+                arrayOf(ClassicPathfinding),
+                /* and then execute the test with these parametrers */
+                arrayOf(AStarPathfinding))
+        }
     }
 }

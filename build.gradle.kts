@@ -69,6 +69,7 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.name",
             
             "kotlin.sequences.shuffled",
+            "kotlin.LongArray.get",
         )
         wellKnownPureClasses = setOf(
         )

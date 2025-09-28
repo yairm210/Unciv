@@ -728,7 +728,17 @@ class Tile : IsPartOfGameInfoSerialization {
             getUnpillagedRoad() == RoadStatus.Railroad
         else
             roadStatus == RoadStatus.Railroad
-
+    
+    @Readonly
+    fun getConnectionStatus(civInfo: Civilization): RoadStatus {
+        val roadType = getUnpillagedRoad()
+        if (roadType != RoadStatus.None)
+            return roadType
+        if (forestOrJungleAreRoads(civInfo))
+            return RoadStatus.Road
+        return RoadStatus.None
+    }
+    
     @Readonly
     private fun forestOrJungleAreRoads(civInfo: Civilization) =
             civInfo.nation.forestsAndJunglesAreRoads
