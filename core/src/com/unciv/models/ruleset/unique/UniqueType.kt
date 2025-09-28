@@ -432,7 +432,7 @@ enum class UniqueType(
                 "If both this and decreasing area attacks are present, only decreasing area attacks will be used."),
     AoeDegradeAttack("Attacks also target [mapUnitFilter] units within [positiveAmount] tiles, with damage decreasing by distance", UniqueTarget.Unit,
         docDescription = "Performs an attack against every unit that matches the filter inside the radius with the damage decreasing with distance from the main target. Status effects and on-hit abilities apply.\n" +
-                "If both this and equal area attacks are present, only this will be used.\n" +
+                "If both this and equal area attacks are present, only this will be used, also affects counter damage and damage from own area attacks.\n" +
                 "Damage formula: Damage = (1 - (distance / radius)) * baseDamage"),
     DamageSelfInAOE("Takes [relativeAmount]% damage from own area attacks", UniqueTarget.Unit, 
         docDescription = "This unit takes damage from its own area attacks when it is in range, 100 = 100% damage."),
