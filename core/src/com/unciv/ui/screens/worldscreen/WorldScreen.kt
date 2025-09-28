@@ -70,6 +70,7 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import yairm210.purity.annotations.Readonly
@@ -298,6 +299,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.DeveloperConsole, action = ::openDeveloperConsole)
     }
 
+    @Readonly
     fun openDeveloperConsole() {
         // No cheating unless you're by yourself
         if (gameInfo.civilizations.count { it.isHuman() } > 1) return
@@ -595,17 +597,34 @@ class WorldScreen(
             gameInfoClone.nextTurn(progressBar)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
+                // outer try-catch for non-auth exceptions
                 try {
-                    game.onlineMultiplayer.updateGame(gameInfoClone)
-                }catch (ex: Exception) {
-                    when (ex) {
-                        is MultiplayerAuthException -> {
+                    // keep retrying if upload fails AND reauthentication succeeds
+                    var retryUpload: Boolean
+                    do {
+                        try {
+                            game.onlineMultiplayer.updateGame(gameInfoClone)
+                            // upload succeeded
+                            retryUpload = false
+                        } catch (_: MultiplayerAuthException) {
+                            // true only if authentication succeeds (the popup permits retries)
+                            // false only if user closes the auth popup or the popup init crashes
+                            val authResult = CompletableDeferred<Boolean>()
                             launchOnGLThread {
-                                AuthPopup(this@WorldScreen) {
-                                        success -> if (success) nextTurn()
-                                }.open(true)
+                                try {
+                                    AuthPopup(this@WorldScreen, authResult::complete).open(true)
+                                } catch (ex: Exception) {
+                                    // GL thread crashed during AuthPopup init, let's wrap up
+                                    authResult.complete(false)
+                                    // ensure exception is passed to crash handler
+                                    throw ex
+                                }
                             }
+                            retryUpload = authResult.await()
                         }
+                    } while (retryUpload)
+                } catch (ex: Exception) { // non-auth exceptions
+                    when (ex) {
                         is FileStorageRateLimitReached -> {
                             val message = "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
                             launchOnGLThread {
@@ -767,8 +786,6 @@ class WorldScreen(
             viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
-        displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
-        displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.units.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
         displayTutorial(TutorialTrigger.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
         displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
         displayTutorial(TutorialTrigger.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }

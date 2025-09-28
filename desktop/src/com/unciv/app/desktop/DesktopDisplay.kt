@@ -75,7 +75,7 @@ enum class DesktopScreenMode : ScreenMode {
     }
 
     companion object {
-        operator fun get(id: Int) = values()[id]
+        operator fun get(id: Int) = entries[id]
 
         private fun getWindow() = (Gdx.graphics as? Lwjgl3Graphics)?.window
 
@@ -127,7 +127,7 @@ enum class DesktopScreenMode : ScreenMode {
 class DesktopDisplay : PlatformDisplay {
 
     override fun getScreenModes() =
-        DesktopScreenMode.values().associateBy { it.getId() }
+        DesktopScreenMode.entries.associateBy { it.getId() }
 
     override fun setScreenMode(id: Int, settings: GameSettings) {
         DesktopScreenMode[id].activate(settings)

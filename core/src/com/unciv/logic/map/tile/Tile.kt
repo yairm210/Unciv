@@ -359,7 +359,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun getRow() = HexMath.getRow(position)
     fun getColumn() = HexMath.getColumn(position)
 
-    fun getBaseTerrain(): Terrain = baseTerrainObject
+    @Readonly fun getBaseTerrain(): Terrain = baseTerrainObject
 
     @Readonly fun getOwner(): Civilization? = getCity()?.civ
 

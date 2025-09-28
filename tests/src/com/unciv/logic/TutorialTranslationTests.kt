@@ -30,7 +30,7 @@ class TutorialTranslationTests {
     @Test
     fun tutorialsFileCoversAllTriggers() {
         if (tutorials == null) return
-        for (trigger in TutorialTrigger.values()) {
+        for (trigger in TutorialTrigger.entries) {
             val name = trigger.value.replace('_', ' ').trimStart()
             if (name in tutorials!!) continue
             fail("TutorialTrigger $trigger has no matching entry in Tutorials.json")
