@@ -161,7 +161,12 @@ object Battle {
         // Exploring units surviving an attack should "wake up"
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
-
+        
+        //Aoe attack
+        if (attacker is MapUnitCombatant && (attacker.unit.hasUnique(UniqueType.AoeDegradeAttack) || attacker.unit.hasUnique(UniqueType.AoeFlatAttack))) {
+            applyAoeAttack(attacker, defender)
+        }
+        
         if (attacker is MapUnitCombatant) {
             if (attacker.unit.hasUnique(UniqueType.SelfDestructs))
                 attacker.unit.destroy()
@@ -184,32 +189,25 @@ object Battle {
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
         
-        //Aoe attack
-        if (attacker is MapUnitCombatant && (attacker.unit.hasUnique(UniqueType.AoeDegradeAttack) || attacker.unit.hasUnique(UniqueType.AoeFlatAttack))) {
-            applyAoeAttack(attacker, defender)
-        }
-        
         return damageDealt + interceptDamage
     }
 
     //Aoe Logic function
     fun applyAoeAttack(attacker: MapUnitCombatant, defender: ICombatant) {
-        
-        //degrading AOE is used if both AoeDegradeAttack and AoeFlatAttack uniques are present
         val degradeUnique = attacker.unit.getMatchingUniques(UniqueType.AoeDegradeAttack).firstOrNull()
         val flatUnique = attacker.unit.getMatchingUniques(UniqueType.AoeFlatAttack).firstOrNull()
         val aoeUnique = degradeUnique ?: flatUnique ?: return
         val isDegrade = degradeUnique != null
 
-        val radius = aoeUnique.params.getOrNull(0)?.toIntOrNull() ?: return
+        val targetFilter = aoeUnique.params[0]
+        val radius = aoeUnique.params.getOrNull(1)?.toIntOrNull() ?: return
         if (radius <= 0) return
 
-        val includeAllies = attacker.unit.hasUnique(UniqueType.CanDamageAlliesInAOE)
         val excludeSelf = !attacker.unit.hasUnique(UniqueType.CanDamageSelfInAOE)
         val receivesCounterDamage = attacker.unit.hasUnique(UniqueType.TakeCounterDamageFromAOE)
+        val damagesSelf = attacker.unit.hasUnique(UniqueType.CanDamageSelfInAOE)
         val centerTile = defender.getTile()
-        val attackerCiv = attacker.getCivInfo()
-        
+
         for (tile in centerTile.getTilesInDistance(radius)) {
             val distance = centerTile.aerialDistanceTo(tile)
             val distanceFactor = if (isDegrade)
@@ -217,31 +215,29 @@ object Battle {
             else 1.0
 
             for (unit in tile.getUnits()) {
-                if (excludeSelf && unit == attacker.unit) continue
+                val isSelf = (unit == attacker.unit)
+
+                if (excludeSelf && isSelf) continue
                 if (unit == (defender as? MapUnitCombatant)?.unit && unit != attacker.unit) continue
-                
-                val isAlly = !unit.civ.isAtWarWith(attackerCiv)
-                if (!includeAllies && isAlly && unit != attacker.unit) continue
 
                 val aoeDefender = MapUnitCombatant(unit)
+
+                if (!aoeDefender.matchesFilter(targetFilter) && !(isSelf && damagesSelf)) continue
+
                 val damage = (BattleDamage.calculateDamageToDefender(attacker, aoeDefender) * distanceFactor).toInt().coerceAtLeast(1)
 
                 if (aoeDefender.isCivilian() && attacker.isMelee()) {
-                    // Capture civilian units if attacker can capture
                     BattleUnitCapture.captureCivilianUnit(attacker, aoeDefender)
                     continue
                 }
 
-                // Apply combat effects but no counter-damage
                 triggerCombatUniques(attacker, aoeDefender, tile)
                 aoeDefender.takeDamage(damage)
                 triggerDamageUniquesForUnit(attacker, aoeDefender, tile, CombatAction.Attack)
-                
+
                 if (aoeDefender.isDefeated() && !aoeDefender.isCivilian()) {
-                    // Try to capture first - if successful, skip other defeat effects
                     val captured = BattleUnitCapture.tryCaptureMilitaryUnit(attacker, aoeDefender, tile)
                     if (!captured) {
-                        // If not captured, proceed with normal defeat effects
                         triggerPostKillingUniques(aoeDefender, attacker, tile)
                     }
                 }
@@ -251,9 +247,6 @@ object Battle {
                         (defender is MapUnitCombatant && unit == defender.unit) ||
                         (defender is CityCombatant && unit == defender.city)
 
-                    val isSelf = (unit == attacker.unit)
-
-                    // Counter damage from every valid target except main defender + self
                     if (!isMainTarget && !isSelf) {
                         val baseCounterDamage = BattleDamage.calculateDamageToAttacker(attacker, aoeDefender)
                         val finalCounterDamage =
@@ -261,10 +254,10 @@ object Battle {
                             else baseCounterDamage
 
                         attacker.takeDamage(finalCounterDamage)
-
                         if (attacker.isDefeated()) return
                     }
                 }
+
                 if (attacker.isDefeated()) return
             }
         }
