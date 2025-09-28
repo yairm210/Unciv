@@ -334,7 +334,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             value += modifier
         }
         if (building.hasUnique(UniqueType.EnablesNuclearWeapons) && !civInfo.hasUnique(UniqueType.EnablesNuclearWeapons))
-            value += 4f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
+            value += 10f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
         return value
     }
 
