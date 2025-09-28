@@ -203,9 +203,13 @@ object Battle {
         val radius = aoeUnique.params.getOrNull(1)?.toIntOrNull() ?: return
         if (radius <= 0) return
 
-        val excludeSelf = !attacker.unit.hasUnique(UniqueType.CanDamageSelfInAOE)
         val receivesCounterDamage = attacker.unit.hasUnique(UniqueType.TakeCounterDamageFromAOE)
-        val damagesSelf = attacker.unit.hasUnique(UniqueType.CanDamageSelfInAOE)
+        val counterPercent = attacker.unit.getMatchingUniques(UniqueType.TakeCounterDamageFromAOE).sumOf { it.params[0].toDouble() }
+        val counterFactor = kotlin.math.abs(counterPercent) / 100.0
+
+        val selfDamagePercent = attacker.unit.getMatchingUniques(UniqueType.DamageSelfInAOE).sumOf { it.params[0].toDouble() }
+        val selfDamageFactor = kotlin.math.abs(selfDamagePercent) / 100.0
+
         val centerTile = defender.getTile()
 
         for (tile in centerTile.getTilesInDistance(radius)) {
@@ -217,14 +221,15 @@ object Battle {
             for (unit in tile.getUnits()) {
                 val isSelf = (unit == attacker.unit)
 
-                if (excludeSelf && isSelf) continue
                 if (unit == (defender as? MapUnitCombatant)?.unit && unit != attacker.unit) continue
 
                 val aoeDefender = MapUnitCombatant(unit)
+                if (!aoeDefender.matchesFilter(targetFilter) && !(isSelf && selfDamageFactor > 0.0)) continue
 
-                if (!aoeDefender.matchesFilter(targetFilter) && !(isSelf && damagesSelf)) continue
-
-                val damage = (BattleDamage.calculateDamageToDefender(attacker, aoeDefender) * distanceFactor).toInt().coerceAtLeast(1)
+                var damage = (BattleDamage.calculateDamageToDefender(attacker, aoeDefender) * distanceFactor).toInt().coerceAtLeast(1)
+                if (isSelf) {
+                    damage = (damage * selfDamageFactor).roundToInt().coerceAtLeast(1)
+                }
 
                 if (aoeDefender.isCivilian() && attacker.isMelee()) {
                     BattleUnitCapture.captureCivilianUnit(attacker, aoeDefender)
@@ -249,9 +254,8 @@ object Battle {
 
                     if (!isMainTarget && !isSelf) {
                         val baseCounterDamage = BattleDamage.calculateDamageToAttacker(attacker, aoeDefender)
-                        val finalCounterDamage =
-                            if (isDegrade) (baseCounterDamage * distanceFactor).toInt().coerceAtLeast(1)
-                            else baseCounterDamage
+                        val scaledCounter = baseCounterDamage * counterFactor * if (isDegrade) distanceFactor else 1.0
+                        val finalCounterDamage = scaledCounter.roundToInt().coerceAtLeast(1)
 
                         attacker.takeDamage(finalCounterDamage)
                         if (attacker.isDefeated()) return
