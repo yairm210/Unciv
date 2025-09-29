@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.nation.PersonalityValue
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -93,7 +94,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                                           val remainingWork: Int, val production: Int)
 
     private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: IConstruction, choiceModifier: Float) {
-        choices.add(ConstructionChoice(choice, choiceModifier,
+        val extraAiModifier = if (civInfo.isAI() && choice is INonPerpetualConstruction)
+            choice.getWeightForAiDecision(GameContext(civInfo, city))
+        else 1f
+        choices.add(ConstructionChoice(choice, choiceModifier * extraAiModifier,
             cityConstructions.getRemainingWork(choice.name), cityConstructions.productionForConstruction(choice.name)))
     }
 

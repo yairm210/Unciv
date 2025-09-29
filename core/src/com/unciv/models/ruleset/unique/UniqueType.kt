@@ -964,7 +964,7 @@ enum class UniqueType(
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
     
     AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
-        UniqueTarget.Promotion, UniqueTarget.Policy, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief,
+        UniqueTarget.Promotion, UniqueTarget.Policy, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief, UniqueTarget.Building,
         flags = UniqueFlag.setOfHiddenToUsers),
     
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
