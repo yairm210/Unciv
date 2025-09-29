@@ -11,7 +11,9 @@ import yairm210.purity.annotations.Readonly
 enum class UniqueTarget(
     val documentationString: String = "",
     val inheritsFrom: UniqueTarget? = null,
-    val modifierType: ModifierType = ModifierType.None
+    val modifierType: ModifierType = ModifierType.None,
+    /** Limits modifiers to only be available for specific unique types */
+    val modifierFor: Set<UniqueTarget> = emptySet()
 ) {
 
     /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
@@ -66,11 +68,18 @@ enum class UniqueTarget(
     EventChoice(inheritsFrom = UnitTriggerable),
 
     // Modifiers
-    Conditional("Modifiers that can be added to other uniques to limit when they will be active", modifierType = ModifierType.Conditional),
-    TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", modifierType = ModifierType.Other),
-    UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", modifierType = ModifierType.Other),
-    UnitActionModifier("Modifiers that can be added to UnitAction uniques as conditionals", modifierType = ModifierType.Other),
-    MetaModifier("Modifiers that can be added to other uniques changing user experience, not their behavior", modifierType = ModifierType.Other),
+    Conditional("Modifiers that can be added to other uniques to limit when they will be active",
+        modifierType = ModifierType.Conditional,
+    ),
+    TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.",
+        modifierType = ModifierType.Other, modifierFor = setOf(Triggerable, UnitTriggerable)
+    ),
+    UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.",
+        modifierType = ModifierType.Other, modifierFor = setOf(UnitTriggerable)),
+    UnitActionModifier("Modifiers that can be added to UnitAction uniques as conditionals",    
+        modifierType = ModifierType.Other, modifierFor = setOf(UnitAction)),
+    MetaModifier("Modifiers that can be added to other uniques changing user experience, not their behavior", 
+        modifierType = ModifierType.Other),
     ;
 
     /** Whether a UniqueType is allowed in the `<conditional or trigger>` part - or not.
@@ -86,6 +95,12 @@ enum class UniqueTarget(
         if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)
         return false
     }
+    
+    @Readonly
+    fun getInheritanceList(): List<UniqueTarget>{
+        return entries.filter { this.canAcceptUniqueTarget(it) }
+    } 
+    
     companion object {
         /** All targets that can display their Uniques */
         // As Array so it can used in a vararg parameter list.

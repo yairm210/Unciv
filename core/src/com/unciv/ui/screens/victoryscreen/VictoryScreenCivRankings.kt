@@ -23,7 +23,7 @@ class VictoryScreenCivRankings(
 
         val majorCivs = worldScreen.gameInfo.civilizations.filter { it.isMajorCiv() }
 
-        for (category in RankingType.values()) {
+        for (category in RankingType.entries) {
             val textAndIcon = Table()
             val columnImage = category.getImage()
             if (columnImage != null)

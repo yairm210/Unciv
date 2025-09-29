@@ -53,7 +53,7 @@ class TranslationTests {
 //    @Test
 //    fun allUnitActionsHaveTranslation() {
 //        val actions: MutableSet<String> = HashSet()
-//        for (action in UnitActionType.values()) {
+//        for (action in UnitActionType.entries) {
 //            actions.add(
 //                when(action) {
 //                    UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"

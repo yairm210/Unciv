@@ -21,7 +21,7 @@ class VictoryScreenDemographics(
 
         buildDemographicsHeaders()
 
-        for (rankLabel in RankLabels.values())   {
+        for (rankLabel in RankLabels.entries)   {
             if (rankLabel == RankLabels.Value) {
                 // playerCiv is not necessarily alive nor major, and the `first` below would throw
                 if (playerCiv.isDefeated() || !playerCiv.isMajorCiv()) continue
@@ -29,7 +29,7 @@ class VictoryScreenDemographics(
             row()
             add(rankLabel.name.toLabel())
 
-            for (category in RankingType.values()) {
+            for (category in RankingType.entries) {
                 val aliveMajorCivsSorted = majorCivs.filter { it.isAlive() || it == playerCiv }
                     .map { VictoryScreen.CivWithStat(it, category) }
                     .sortedByDescending { it.value }
@@ -57,7 +57,7 @@ class VictoryScreenDemographics(
         demoLabel.addSeparator().fillX()
         add(demoLabel)
 
-        for (category in RankingType.values()) {
+        for (category in RankingType.entries) {
             val headers = Table().apply { defaults().pad(5f) }
             val textAndIcon = Table().apply { defaults() }
             val columnImage = category.getImage()

@@ -14,7 +14,7 @@
       "civilopediaText": [
           {"text": "Welcome to Unciv!"},
           {},
-          {"text": "Because this is a complex game, there are some tutorials to help familiarize you with it. These can be disbaled in the Options -> Display menu, but please hang on if you're new here!"},
+          {"text": "Because this is a complex game, there are some tutorials to help familiarize you with it. These can be disabled in the Options -> Display menu, but please hang on if you're new here!"},
           {"separator": true },
           {"text": "Your first mission is to found your capital city. This is actually an important task because your capital city will probably be your most prosperous. Many game bonuses apply only to your capital city, and it will be the center of your empire."},
           {},
@@ -143,8 +143,8 @@
   {
     "name": "Victory Types",
     "steps": [
-      "Once you’ve settled your first two or three cities you’re probably 100 to 150 turns into the game.\nNow is a good time to start thinking about how, exactly, you want to win – if you haven’t already.",
-      "There are four ways to win in Unciv. They are:\n - Cultural Victory: Complete 5 Social Policy Trees and build the Utopia Project\n - Domination Victory: Survive as the last civilization\n - Science Victory: Be the first to construct a spaceship to Alpha Centauri\n - Diplomatic Victory: Build the United Nations and win the vote",
+      "Once you’ve settled 3-4 cities and build universities, you’re probably already 100 to 150 turns into the game.\nNow is a good time to start thinking about how, exactly, you want to win – if you haven’t already.",
+      "There are four ways to win in Unciv. They are:\n - Cultural Victory: Complete 5 Social Policy Trees and build the Utopia Project\n - Domination Victory: Conquer the original capital of all other Major civs\n - Science Victory: Be the first to construct a Spaceship\n - Diplomatic Victory: Build the United Nations and win the vote",
       "So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness, and set yourself up for the victory condition you wish to pursue.\nObviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim."
     ],
     "civilopediaText": [
@@ -203,12 +203,6 @@
     "uniques": ["Will not be displayed in Civilopedia"]
   },
   {
-    "name": "Apollo Program",
-    "steps": [
-      "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a Scientific Victory!"
-    ]
-  },
-  {
     "name": "Injured Units",
     "steps": [
       "Injured units deal less damage, but recover after turns that they have been inactive.\nUnits heal 10 health per turn in enemy territory or neutral land,\n  20 inside your territory and 25 in your cities."
@@ -218,12 +212,6 @@
     "name": "Workers",
     "steps": [
       "Workers are vital to your cities' growth, since only they can construct improvements on tiles.\nImprovements raise the yield of your tiles, allowing your city to produce more and grow faster while working the same amount of tiles!"
-    ]
-  },
-  {
-    "name": "Siege Units",
-    "steps": [
-      "Siege units are extremely powerful against cities, but need to be Set Up before they can attack.\nOnce your siege unit is set up, it can attack from the current tile,\n  but once moved to another tile, it will need to be set up again."
     ]
   },
   {
@@ -287,7 +275,7 @@
     {
         "name": "Open Borders",
         "civilopediaText": [
-            { text: "Open Borders from other player and vice versa allow units to freely pass trough their territoy." },
+            { text: "Open Borders from other player and vice versa allow units to freely pass through their territory." },
             { text: "They also let Missionaries to enter other players' territory without suffering attrition." },
             { text: "Open Borders expire depending on game speed and are canceled upon Declaration of War, the closure however takes effect only after war ends and need to be traded again." },
             { text: "You gain diplomatic boost with other AI player if you both have Open Borders to each other" },

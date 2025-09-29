@@ -719,6 +719,7 @@ enum class UniqueType(
         docDescription = "This condition is fulfilled while the technology is actively being researched (it is the one research points are added to)"),
 
     ConditionalFirstCivToAdopt("if no other Civilization has adopted this", UniqueTarget.Conditional),
+    ConditionalNoCivAdopted("if no Civilization has adopted [policy/belief]", UniqueTarget.Conditional),
     ConditionalAfterPolicyOrBelief("after adopting [policy/belief]", UniqueTarget.Conditional),
     ConditionalBeforePolicyOrBelief("before adopting [policy/belief]", UniqueTarget.Conditional),
 
@@ -943,7 +944,7 @@ enum class UniqueType(
     TriggerUponDamagingUnit("upon damaging a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition,
         docDescription = "Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'"),
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
-    TriggerUponExpendingUnit("upon expending a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
+    TriggerUponExpendingUnit("upon expending a [mapUnitFilter] unit", UniqueTarget.TriggerCondition),
     TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotion("upon being promoted", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotionGain("upon gaining the [promotion] promotion", UniqueTarget.UnitTriggerCondition),
