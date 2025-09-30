@@ -186,9 +186,9 @@ object Automation {
         if (city.isPuppet) return
         if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary == true)
             return // already training a military unit
-        val chosenUnitName = chooseMilitaryUnit(city, city.civ.gameInfo.ruleset.units.values.asSequence())
-        if (chosenUnitName != null)
-            city.cityConstructions.currentConstructionFromQueue = chosenUnitName
+        val chosenUnit = chooseMilitaryUnit(city, city.civ.gameInfo.ruleset.units.values.asSequence())
+        if (chosenUnit != null)
+            city.cityConstructions.currentConstructionFromQueue = chosenUnit.name
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -216,9 +216,9 @@ object Automation {
     }
 
     @Readonly
-    fun chooseMilitaryUnit(city: City, availableUnits: Sequence<BaseUnit>): String? {
+    fun chooseMilitaryUnit(city: City, availableUnits: Sequence<BaseUnit>): BaseUnit? {
         val currentChoice = city.cityConstructions.getCurrentConstruction()
-        if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return city.cityConstructions.currentConstructionFromQueue
+        if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return currentChoice
 
         // if not coastal, removeShips == true so don't even consider ships
         var removeShips = true
@@ -283,7 +283,7 @@ object Automation {
             val bestForce = bestUnitsForType.maxOfOrNull { it.value.getForceEvaluation() } ?: return null
             chosenUnit = bestUnitsForType.filterValues { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.values.random()
         }
-        return chosenUnit.name
+        return chosenUnit
     }
 
     /** Determines whether [civInfo] should be allocating military to fending off barbarians */
