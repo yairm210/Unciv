@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.multiplayer.chat.Chat
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
@@ -28,20 +29,17 @@ private val civChatColorsMap = mapOf<String, Color>(
 )
 
 class ChatPopup(
+    val chat: Chat,
     private val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
     companion object {
         // the percentage of the minimum lightness allowed for a civName
-        const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.60f
+        const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.55f
     }
-
-    val chat = ChatStore.getChatByGameId(worldScreen.gameInfo.gameId)
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
-    private val messageField = UncivTextField(
-        hint = "Type something... Chats are not stored and dissapears on app close."
-    )
+    private val messageField = UncivTextField(hint = "Type something...")
 
     init {
         ChatStore.chatPopup = this
@@ -56,7 +54,7 @@ class ChatPopup(
 
         // Header: |  ChatHeader | CloseButton  |
         val chatHeader = Table(skin)
-        val chatLabel = "UncivChat™".toLabel(fontSize = 30, alignment = Align.center)
+        val chatLabel = "Chat".toLabel(fontSize = 30, alignment = Align.center)
         val chatIcon = ImageGetter.getImage("OtherIcons/Chat")
 
         chatHeader.add(chatIcon).size(chatLabel.height * 1.6f)

@@ -5,17 +5,17 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
+import com.unciv.logic.AlternatingStateManager
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.HasMultiplayerGameName
 import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
+import com.unciv.logic.multiplayer.MultiplayerGamePreview
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
-import com.unciv.logic.multiplayer.MultiplayerGamePreview
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.setSize
@@ -24,20 +24,20 @@ import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
-import com.unciv.utils.launchOnGLThread
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 class MultiplayerStatusButton(
     screen: BaseScreen,
     curGame: MultiplayerGamePreview?
 ) : Button(BaseScreen.skin), Disposable {
     private var curGameName = curGame?.name
-    private val loadingImage = LoadingImage(style = LoadingImage.Style(
-        idleImageName = "OtherIcons/Multiplayer",
-        idleIconColor = Color.WHITE,
-        minShowTime = 500
-    ))
+    private val loadingImage = LoadingImage(
+        style = LoadingImage.Style(
+            idleImageName = "OtherIcons/Multiplayer",
+            idleIconColor = Color.WHITE,
+            minShowTime = 500
+        )
+    )
     private val turnIndicator = TurnIndicator()
     private val turnIndicatorCell: Cell<Actor>
     private val gameNamesWithCurrentTurn = getInitialGamesWithCurrentTurn()
@@ -96,7 +96,7 @@ class MultiplayerStatusButton(
     }
 
     private fun updateTurnIndicator(flash: Boolean = true) {
-        if (gameNamesWithCurrentTurn.size == 0) {
+        if (gameNamesWithCurrentTurn.isEmpty()) {
             turnIndicatorCell.clearActor()
         } else {
             turnIndicatorCell.setActor(turnIndicator)
@@ -105,7 +105,7 @@ class MultiplayerStatusButton(
 
         // flash so the user sees an better update
         if (flash) {
-            turnIndicator.flash()
+            turnIndicator.flash.start(3.seconds)
         }
     }
 
@@ -118,10 +118,9 @@ class MultiplayerStatusButton(
 
 private class TurnIndicator : HorizontalGroup(), Disposable {
     val gameAmount = Label("2", BaseScreen.skin)
-    val image: Image
-    private var job: Job? = null
+    val image = ImageGetter.getImage("OtherIcons/ExclamationMark")
+
     init {
-        image = ImageGetter.getImage("OtherIcons/ExclamationMark")
         image.setSize(30f)
         addActor(image)
     }
@@ -135,23 +134,18 @@ private class TurnIndicator : HorizontalGroup(), Disposable {
         }
     }
 
-    fun flash() {
-        // using a gdx Action would be nicer, but we don't necessarily have continuousRendering on and we still want to flash
-        flash(6, Color.WHITE, Color.ORANGE)
-    }
-    private fun flash(alternations: Int, curColor: Color, nextColor: Color) {
-        if (alternations == 0) return
-        gameAmount.color = nextColor
-        image.color = nextColor
-        job = Concurrency.run("StatusButton color flash") {
-            delay(500)
-            launchOnGLThread {
-                flash(alternations - 1, nextColor, curColor)
-            }
+    val flash = AlternatingStateManager(
+        name = "StatusButton color flash",
+        onOriginalState = {
+            image.color = Color.WHITE
+            gameAmount.color = Color.WHITE
+        }, onAlternateState = {
+            image.color = Color.ORANGE
+            gameAmount.color = Color.ORANGE
         }
-    }
+    )
 
     override fun dispose() {
-        job?.cancel()
+        flash.stop()
     }
 }
