@@ -300,8 +300,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             }
         } else value += when {
             building.hasUnique(UniqueType.CreatesOneImprovement) -> 5f // District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
-            building.hasUnique(UniqueType.ProvidesResources) -> 2f // Should be weighed by how much we need the resources
+            building.hasUnique(UniqueType.ProvidesResources) -> 3f // Should be weighed by how much we need the resources
             building.hasUnique(UniqueType.StatPercentFromObjectToResource) -> 1.5f // Should be weighed by the amount of active improvementFilter/buildingFilter in the city
+            building.requiredResource != null && building.requiredResource in civInfo.gameInfo.spaceResources -> -4f // This may need to be reverted when resource management is bugfixed elsewhere
             else -> 0f
         }
         return value
@@ -337,7 +338,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             value += modifier
         }
         if (building.hasUnique(UniqueType.EnablesNuclearWeapons) && !civInfo.hasUnique(UniqueType.EnablesNuclearWeapons))
-            value += 4f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
+            value += 10f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
         return value
     }
 
