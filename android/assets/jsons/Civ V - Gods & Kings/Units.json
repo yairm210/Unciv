@@ -1662,7 +1662,7 @@
 		"name": "Great Admiral",
 		"unitType": "Civilian Water",
 		"uniques": [
-            // TODO: "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>",
+            "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>",
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
 			"Can be earned through combat",
             "Is part of Great Person group [Admiral]",
