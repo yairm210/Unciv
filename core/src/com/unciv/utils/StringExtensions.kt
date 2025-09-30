@@ -4,12 +4,18 @@ import yairm210.purity.annotations.Pure
 import java.util.UUID
 
 /**
- * Checks if a [String] is a valid UUID
+ * Tries to convert a [String] to a valid [UUID]
+ * and returns `null` upon failure
  */
 @Pure
-fun String.isUUID(): Boolean = try {
+fun String.toUUIDOrNull(): UUID? = try {
     UUID.fromString(this)
-    true
 } catch (_: Throwable) {
-    false
+    null
 }
+
+/**
+ * Checks if a [String] is a valid [UUID]
+ */
+@Pure
+fun String.isUUID(): Boolean = toUUIDOrNull() != null
