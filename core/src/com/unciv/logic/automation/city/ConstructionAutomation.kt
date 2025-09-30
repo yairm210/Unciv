@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.nation.PersonalityValue
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -89,12 +90,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     private val cityIsOverAverageProduction = city.cityStats.currentCityStats.production >= averageProduction
 
-    private data class ConstructionChoice(val choice: String, var choiceModifier: Float,
+    private data class ConstructionChoice(val choice: IConstruction, var choiceModifier: Float,
                                           val remainingWork: Int, val production: Int)
 
-    private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: String, choiceModifier: Float) {
-        choices.add(ConstructionChoice(choice, choiceModifier,
-            cityConstructions.getRemainingWork(choice), cityConstructions.productionForConstruction(choice)))
+    private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: IConstruction, choiceModifier: Float) {
+        val extraAiModifier = if (civInfo.isAI() && choice is INonPerpetualConstruction)
+            choice.getWeightForAiDecision(GameContext(civInfo, city))
+        else 1f
+        choices.add(ConstructionChoice(choice, choiceModifier * extraAiModifier,
+            cityConstructions.getRemainingWork(choice.name), cityConstructions.productionForConstruction(choice.name)))
     }
 
 
@@ -121,15 +125,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             addMilitaryUnitChoice()
         }
 
-        val chosenConstruction: String =
+        val chosenConstruction: IConstruction =
             if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
                 // add science!
                 when {
-                    PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science.name
-                    PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
-                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture.name
-                    PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith.name
-                    else -> PerpetualConstruction.idle.name
+                    PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science
+                    PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold
+                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture
+                    PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith
+                    else -> PerpetualConstruction.idle
                 }
             } else { relativeCostEffectiveness.maxBy { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }.choice }
             //TODO: All bad things are build anyways at the moment, maybe let's stop doing that and chose perpetual construction instead
@@ -139,9 +143,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         // Also do not notify when the decision hasn't changed - duh!
         val noNotification = city.isInResistance()
             || civInfo.isAI() // Optimization: addNotification filters anyway, but saves a string builder and a CityAction instantiation
-            || cityConstructions.currentConstructionFromQueue == chosenConstruction
+            || cityConstructions.currentConstructionFromQueue == chosenConstruction.name
             || UncivGame.Current.screen is CityScreen
-        cityConstructions.currentConstructionFromQueue = chosenConstruction
+        cityConstructions.currentConstructionFromQueue = chosenConstruction.name
         if (noNotification) return
 
         civInfo.addNotification(
@@ -226,7 +230,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         if (!findTileWorthImproving()) return
 
-        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }.name, 6f) // Improving coastal luxuries etc. is quite important
+        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }, 6f) // Improving coastal luxuries etc. is quite important
     }
 
     private fun addWorkerChoice() {
@@ -242,7 +246,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         if (workers < numberOfWorkersWeWant) {
             val modifier = numberOfWorkersWeWant / (workers + 0.17f) // The worse our worker to city ratio is, the more desperate we are
-            addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
+            addChoice(relativeCostEffectiveness, workerEquivalents.minBy { it.cost }, modifier)
         }
     }
 
@@ -252,7 +256,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
             ?: return
         val modifier = 20f //We're weighing Apollo program according to personality. If we decided to invest in that, we might as well commit to it.
-        addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
+        addChoice(relativeCostEffectiveness, spaceshipPart, modifier)
     }
 
     private fun addBuildingChoices() {
@@ -261,7 +265,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (building.isWonder && city.isPuppet) continue
             // We shouldn't try to build wonders in undeveloped cities and empires
             if (building.isWonder && (!cityIsOverAverageProduction || civInfo.cities.sumOf { it.population.population } < 12)) continue
-            addChoice(relativeCostEffectiveness, building.name, getValueOfBuilding(building, localUniqueCache))
+            addChoice(relativeCostEffectiveness, building, getValueOfBuilding(building, localUniqueCache))
         }
     }
 
@@ -296,8 +300,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             }
         } else value += when {
             building.hasUnique(UniqueType.CreatesOneImprovement) -> 5f // District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
-            building.hasUnique(UniqueType.ProvidesResources) -> 2f // Should be weighed by how much we need the resources
+            building.hasUnique(UniqueType.ProvidesResources) -> 3f // Should be weighed by how much we need the resources
             building.hasUnique(UniqueType.StatPercentFromObjectToResource) -> 1.5f // Should be weighed by the amount of active improvementFilter/buildingFilter in the city
+            building.requiredResource != null && building.requiredResource in civInfo.gameInfo.spaceResources -> -4f // This may need to be reverted when resource management is bugfixed elsewhere
             else -> 0f
         }
         return value
@@ -333,7 +338,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             value += modifier
         }
         if (building.hasUnique(UniqueType.EnablesNuclearWeapons) && !civInfo.hasUnique(UniqueType.EnablesNuclearWeapons))
-            value += 4f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
+            value += 10f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
         return value
     }
 

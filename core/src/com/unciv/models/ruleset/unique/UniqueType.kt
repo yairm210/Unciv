@@ -944,7 +944,7 @@ enum class UniqueType(
     TriggerUponDamagingUnit("upon damaging a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition,
         docDescription = "Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'"),
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
-    TriggerUponExpendingUnit("upon expending a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
+    TriggerUponExpendingUnit("upon expending a [mapUnitFilter] unit", UniqueTarget.TriggerCondition),
     TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotion("upon being promoted", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotionGain("upon gaining the [promotion] promotion", UniqueTarget.UnitTriggerCondition),
@@ -962,11 +962,17 @@ enum class UniqueType(
 
     ConditionalTimedUnique("for [nonNegativeAmount] turns", UniqueTarget.MetaModifier,
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
-    
-    AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
-        UniqueTarget.Promotion, UniqueTarget.Policy, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief,
+
+    AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions",
+        UniqueTarget.Building,
+        UniqueTarget.EventChoice,
+        UniqueTarget.FollowerBelief,
+        UniqueTarget.FounderBelief,
+        UniqueTarget.Policy,
+        UniqueTarget.Promotion,
+        UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
-    
+
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
