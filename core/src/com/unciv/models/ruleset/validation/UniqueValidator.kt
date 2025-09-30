@@ -113,8 +113,8 @@ class UniqueValidator(val ruleset: Ruleset) {
             rulesetErrors += getExpressionParseErrors(complianceError, uniqueContainer, unique)
         }
 
-        for (conditional in unique.modifiers) {
-            rulesetErrors += getConditionalErrors(conditional, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
+        for (modifier in unique.modifiers) {
+            rulesetErrors += getModifierErrors(modifier, prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
         }
 
         rulesetErrors += getUniqueTypeSpecificErrors(prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
@@ -193,8 +193,8 @@ class UniqueValidator(val ruleset: Ruleset) {
     )
 
     @Readonly
-    private fun getConditionalErrors(
-        conditional: Unique,
+    private fun getModifierErrors(
+        modifier: Unique,
         prefix: String,
         unique: Unique,
         uniqueContainer: IHasUniques?,
@@ -203,21 +203,21 @@ class UniqueValidator(val ruleset: Ruleset) {
         val rulesetErrors = RulesetErrorList()
         if (unique.hasFlag(UniqueFlag.NoConditionals)) {
             rulesetErrors.add(
-                "$prefix contains the conditional \"${conditional.text}\"," +
+                "$prefix contains the conditional \"${modifier.text}\"," +
                     " but the unique does not accept conditionals!",
                 RulesetErrorSeverity.Error, uniqueContainer, unique
             )
             return rulesetErrors
         }
 
-        if (conditional.type == null) {
-            var text = "$prefix contains the conditional \"${conditional.text}\"," +
+        if (modifier.type == null) {
+            var text = "$prefix contains the conditional \"${modifier.text}\"," +
                 " which is of an unknown type!"
 
             val similarConditionals = UniqueType.entries.filter {
                 getRelativeTextDistance(
                     it.placeholderText,
-                    conditional.placeholderText
+                    modifier.placeholderText
                 ) <= RulesetCache.uniqueMisspellingThreshold
             }
             if (similarConditionals.isNotEmpty())
@@ -229,26 +229,49 @@ class UniqueValidator(val ruleset: Ruleset) {
             return rulesetErrors
         }
 
-        if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
+        if (modifier.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
             rulesetErrors.add(
-                "$prefix contains the conditional \"${conditional.text}\"," +
-                    " which is a Unique type not allowed as conditional or trigger.",
+                "$prefix contains the modifier \"${modifier.text}\"," +
+                    " which is a Unique that is not a modifier.",
                 RulesetErrorSeverity.Warning, uniqueContainer, unique
             )
+        
+        if (modifier.type.targetTypes.all { it.modifierFor.isNotEmpty() }) { // No target is a modifier for whatever
+            
+            if (unique.type == null)
+                rulesetErrors.add(
+                    "$prefix contains the modifier \"${modifier.text}\"," +
+                            " which is not valid for unknown uniques.",
+                    RulesetErrorSeverity.Warning, uniqueContainer, unique
+                )
+            
+            // A tad confusing - there can be 2 unique targets (e.g. Triggerable, UnitTriggerable) 
+            //   and 2 modifier "acceptable" targets (e.g. TriggerCondition, UnitTriggerCondition)
+            // If ANY unique target is okay with ANY modifier target, we're okay.
+            // The modifier uniques's types have inheritance - dealt with in possibleUniqueTargetTypes
+            // The unique's type itself has inheritance - dealt with in canAcceptUniqueTarget
+            else {
+                val possibleUniqueTargetTypes = modifier.type.targetTypes
+                    .flatMap { it.modifierFor }
+                    .flatMap { it.getInheritanceList() }.toSet()
+                
+                
+                if (! unique.type.targetTypes.any { uniqueTarget -> possibleUniqueTargetTypes.any { 
+                    modifierUniqueTarget -> modifierUniqueTarget.canAcceptUniqueTarget(uniqueTarget) } }) {
+                    rulesetErrors.add(
+                        "$prefix contains the modifier \"${modifier.text}\"," +
+                                " which as a ${modifier.type.targetTypes.joinToString("/")}" +
+                                " is only allowed on ${possibleUniqueTargetTypes.joinToString("/")} uniques.",
+                        RulesetErrorSeverity.Warning, uniqueContainer, unique
+                    )
+                }
+            }
+        }
 
-        if (conditional.type.targetTypes.contains(UniqueTarget.UnitActionModifier)
-            && unique.type!!.targetTypes.none { UniqueTarget.UnitAction.canAcceptUniqueTarget(it) }
-        )
+        if (unique.type in resourceUniques && modifier.type in resourceConditionals
+            && ruleset.tileResources[modifier.params.last()]?.isCityWide == true)
             rulesetErrors.add(
-                "$prefix contains the conditional \"${conditional.text}\"," +
-                    " which as a UnitActionModifier is only allowed on UnitAction uniques.",
-                RulesetErrorSeverity.Warning, uniqueContainer, unique
-            )
-
-        if (unique.type in resourceUniques && conditional.type in resourceConditionals
-            && ruleset.tileResources[conditional.params.last()]?.isCityWide == true)
-            rulesetErrors.add(
-                "$prefix contains the conditional \"${conditional.text}\"," +
+                "$prefix contains the conditional \"${modifier.text}\"," +
                     " which references a citywide resource. This is not a valid conditional for a resource uniques, " +
                     "as it causes a recursive evaluation loop.",
                 RulesetErrorSeverity.Error, uniqueContainer, unique)
@@ -256,26 +279,26 @@ class UniqueValidator(val ruleset: Ruleset) {
         // Find resource uniques with countable parameters in conditionals, that depend on citywide resources
         // This too leads to an endless loop
         if (unique.type in resourceUniques)
-            for ((index, param) in conditional.params.withIndex()){
+            for ((index, param) in modifier.params.withIndex()){
                 if (ruleset.tileResources[param]?.isCityWide != true) continue
                 if (unique.type!!.parameterTypeMap.getOrNull(index)?.contains(UniqueParameterType.Countable) != true) continue
 
                 rulesetErrors.add(
-                    "$prefix contains the modifier \"${conditional.text}\"," +
+                    "$prefix contains the modifier \"${modifier.text}\"," +
                         " which references a citywide resource as a countable." +
                         " This is not a valid conditional for a resource uniques, as it causes a recursive evaluation loop.",
                     RulesetErrorSeverity.Error, uniqueContainer, unique)
             }
 
         val conditionalComplianceErrors =
-            getComplianceErrors(conditional)
+            getComplianceErrors(modifier)
 
         for (complianceError in conditionalComplianceErrors) {
             if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
                 continue
 
             rulesetErrors.add(
-                "$prefix contains modifier \"${conditional.text}\"." +
+                "$prefix contains modifier \"${modifier.text}\"." +
                 " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
@@ -284,7 +307,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             rulesetErrors += getExpressionParseErrors(complianceError, uniqueContainer, unique)
         }
 
-        rulesetErrors += getDeprecationAnnotationErrors(conditional, "$prefix contains modifier \"${conditional.text}\" which", uniqueContainer)
+        rulesetErrors += getDeprecationAnnotationErrors(modifier, "$prefix contains modifier \"${modifier.text}\" which", uniqueContainer)
         return rulesetErrors
     }
 

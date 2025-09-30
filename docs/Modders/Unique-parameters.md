@@ -38,6 +38,9 @@ Allowed values:
 
 - `Human player`
 - `AI player`
+- `Friendly`
+- `Hostile`
+- `Open Borders`
 - [nationFilter](#nationfilter)
 
 ## nationFilter
