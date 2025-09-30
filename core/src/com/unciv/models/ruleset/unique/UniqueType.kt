@@ -962,11 +962,17 @@ enum class UniqueType(
 
     ConditionalTimedUnique("for [nonNegativeAmount] turns", UniqueTarget.MetaModifier,
         docDescription = "Turns this unique into a trigger, activating this unique as a *global* unique for a number of turns"),
-    
-    AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions", UniqueTarget.Tech,
-        UniqueTarget.Promotion, UniqueTarget.Policy, UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief, UniqueTarget.Building,
+
+    AiChoiceWeight("[relativeAmount]% weight to this choice for AI decisions",
+        UniqueTarget.Building,
+        UniqueTarget.EventChoice,
+        UniqueTarget.FollowerBelief,
+        UniqueTarget.FounderBelief,
+        UniqueTarget.Policy,
+        UniqueTarget.Promotion,
+        UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
-    
+
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
