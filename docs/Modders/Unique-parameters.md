@@ -382,6 +382,8 @@ Allowed values:
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
     - Example: `Only available <when number of [Adopted [Oligarchy] Policies] is more than [0]>`
+-   `Adopted [policyFilter] Policies by [civFilter] Civilizations`
+    - Example: `Only available <when number of [Adopted [Oligarchy] Policies by [City-States] Civilizations] is more than [0]>`
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Owned [tileFilter] Tiles`
