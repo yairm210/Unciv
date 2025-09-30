@@ -416,7 +416,8 @@ class MultiplayerScreen : PickerScreen() {
         resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.getUserId()
 
         val preview = multiplayerGame.preview
-        if (resignButton.isEnabled || preview == null){
+        // the latter checks if we are on the first turn on a new game, where the start time has not yet been set (default 0L)
+        if (resignButton.isEnabled || preview == null || preview.currentTurnStartTime == 0L){
             skipTurnButton.isVisible = false
             forceResignButton.isVisible = false
         } else {
