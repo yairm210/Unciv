@@ -135,7 +135,7 @@ class ColorMarkupLabel private constructor(
                 if (newColor != currentColor) {
                     if (currentColor != ' ') sb.append("[]")
                     sb.append('[')
-                    sb.append((if (newColor == 'S') sc else tc).toString())
+                    sb.append((if (newColor == 'S') sc else tc))
                     sb.append(']')
                     currentColor = newColor
                 }

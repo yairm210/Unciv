@@ -321,7 +321,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             @LocalState val cityStats = CityStats(city)
             cityStats.statsFromTiles = city.cityStats.statsFromTiles // take as-is
             val construction = city.cityConstructions.getConstruction(constructionName)
-            cityStats.update(construction, false, false)
+            cityStats.update(construction, updateTileStats = false, updateCivStats = false)
             cityStatsForConstruction = cityStats.currentCityStats
         }
 
@@ -932,7 +932,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun raisePriority(constructionQueueIndex: Int): Int {
-        if (constructionQueueIndex == 0) return constructionQueueIndex // Already first
+        if (constructionQueueIndex == 0) return 0 // Already first
         constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
         return constructionQueueIndex - 1
     }

@@ -123,7 +123,7 @@ enum class UnitOverviewTabColumn(
         override fun getEntryString(item: MapUnit) = if (item.isCivilian()) ""
             else "{${item.promotions.XP}}/{${item.promotions.xpForNextPromotion()}}"
         override fun getComparator() = compareBy<MapUnit> { it.promotions.xpForNextPromotion() }.thenBy { it.promotions.XP }
-        override fun getTotalsActor(items: Iterable<MapUnit>) = items.map { it.promotions.XP }.sum().toLabel()
+        override fun getTotalsActor(items: Iterable<MapUnit>) = items.sumOf { it.promotions.XP }.toLabel()
     },
     ;
     //endregion
