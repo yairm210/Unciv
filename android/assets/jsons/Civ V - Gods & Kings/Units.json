@@ -1639,7 +1639,7 @@
 		"uniques": [
             "[+15]% Strength bonus for [Military] units within [2] tiles",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
-			"Can be earned through combat",
+			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
 			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
@@ -1653,7 +1653,7 @@
             "[+15]% Strength bonus for [Military] units within [2] tiles",
 			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
-			"Can be earned through combat",
+			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
@@ -1664,7 +1664,7 @@
 		"uniques": [
             // TODO: "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>",
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
-			"Can be earned through combat",
+			"Can be earned through combat <for [Water] units>",
             "Is part of Great Person group [Admiral]",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 4
