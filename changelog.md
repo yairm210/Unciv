@@ -1,3 +1,32 @@
+## 4.18.3
+
+Buildings can now include "[relativeAmount]% weight to this choice for AI decisions"
+
+chore: construction choice is IConstruction rather than String
+
+Resolved  - Fixed tutorial misspellings
+
+Resolved  - Validate that TriggerCondition, UnitTriggerCondition and UnitActionModifier are only added to uniques where they are relevant
+
+More Enum.values() -> Enum.entries
+
+All Enum.values() -> Enum.entries
+
+Re-added changes for puppet city unique - By Emandac
+
+Flash `ChatButton` on New Chat Messages - By touhidurrr
+
+By RobLoach:
+- Add Great Admiral 
+- Allow weighted AI decisions in Event Choices 
+- docs: Update civFilter with Friendly, Hostile and Open Borders 
+
+AI: more value for space resources and Manhattan project in construction automation - By EmperorPinguin
+
+By unciv-loof:
+- Prevent skip/resign button showing before first turn in MP games 
+- No special treatment for spectators to skip or resign players 
+
 ## 4.18.2
 
 Can no longer repair improvements in neutral territory (exploit)
