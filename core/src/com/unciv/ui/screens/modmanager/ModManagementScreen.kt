@@ -20,7 +20,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -36,6 +35,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.LoadingImage
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
@@ -280,9 +280,9 @@ class ModManagementScreen private constructor(
      */
     private fun tryDownloadPage(pageNum: Int) {
         runningSearchJob = Concurrency.run("GitHubSearch") {
-            val repoSearch: GithubAPI.RepoSearch
+            val repoSearch: GithubAPI.RepoSearch?
             try {
-                repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
+                repoSearch = Github.tryGetGithubReposWithTopic(pageNum, amountPerPage)
             } catch (ex: Exception) {
                 Log.error("Could not download mod list", ex)
                 launchOnGLThread {
@@ -297,7 +297,7 @@ class ModManagementScreen private constructor(
                 return@run
             }
 
-            if (!isActive) {
+            if (!isActive || repoSearch == null) {
                 return@run
             }
 
