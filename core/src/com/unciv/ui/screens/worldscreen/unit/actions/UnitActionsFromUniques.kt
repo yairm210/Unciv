@@ -154,21 +154,26 @@ object UnitActionsFromUniques {
         }
 
         // Retrieve all parardrop uniques, considering the state of the unit
-        val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
+        val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadropOld2, unit.cache.state) +
+            unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
 
         // Construct the list of possible destination tile filters, keeping the largest distance
+        var title = ""
         for (unique in paradropUniques) {
-            val tileFilter = unique.params[0]
-            val distance = unique.params[1].toInt()
+            val shift = if (unique.type == UniqueType.MayParadrop) 1 else 0
+            val tileFilter = unique.params[shift]
+            val distance = unique.params[shift + 1].toInt()
             val existingDistance = unit.cache.paradropDestinationTileFilters[tileFilter]
             if (existingDistance == null || distance > existingDistance) {
                 unit.cache.paradropDestinationTileFilters[tileFilter] = distance
+                title = if (unique.type == UniqueType.MayParadrop) unique.params[0] else "Paradrop"
             }
         }
 
         if (unit.cache.paradropDestinationTileFilters.isEmpty()) return emptySequence()
 
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
+            title = title,
             isCurrentAction = unit.isPreparingParadrop(),
             useFrequency = 60f, // While it is important to see, it isn't nessesary used a lot
             action = {

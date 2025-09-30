@@ -568,9 +568,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     if (unique.params[0].toInt() > 0)
                         power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                UniqueType.MayParadrop // Paradrop - 25% bonus
-                    -> power *= 1.25f
-                UniqueType.MayParadropOld // ParadropOld - 25% bonus
+                UniqueType.MayParadrop, UniqueType.MayParadropOld, UniqueType.MayParadropOld2 // Paradrop - 25% bonus
                     -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power /= 1.20f
