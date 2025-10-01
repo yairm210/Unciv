@@ -52,7 +52,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    @Readonly fun xpForNextPromotion(): Int = Math.round(baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier())
+    @Readonly fun xpForNextPromotion(): Int = (baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier()).toInt()
     
     /** @return the XP points needed to "buy" the next [count] promotions. */
     @Readonly
