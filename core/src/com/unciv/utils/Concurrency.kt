@@ -48,7 +48,7 @@ object Concurrency {
             try {
                 block(this)
             } catch (ex: Throwable) {
-                UncivGame.Current.handleUncaughtThrowable(ex)
+                UncivGame.handleUncaughtThrowable(ex)
                 null
             }
         }
@@ -88,7 +88,7 @@ fun CoroutineScope.launchCrashHandling(
         try {
             block(this)
         } catch (ex: Throwable) {
-            UncivGame.Current.handleUncaughtThrowable(ex)
+            UncivGame.handleUncaughtThrowable(ex)
         }
     }
 }

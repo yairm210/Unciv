@@ -455,27 +455,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         }
     }
 
-    /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
-    fun handleUncaughtThrowable(ex: Throwable) {
-        if (ex is CancellationException) {
-            return // kotlin coroutines use this for control flow... so we can just ignore them.
-        }
-        Log.error("Uncaught throwable", ex)
-        try {
-            PrintWriter(files.fileWriter("lasterror.txt")).use {
-                ex.printStackTrace(it)
-            }
-        } catch (_: Exception) {
-            // ignore
-        }
-        Gdx.app.postRunnable {
-            Gdx.input.inputProcessor = null // CrashScreen needs to toJson which can take a while
-            // This may not be enough, we may need to run "generate crash text" in a different thread,
-            //   but for now let's try this.
-            setAsRootScreen(CrashScreen(ex))
-        }
-    }
-
     /** Returns the [worldScreen] if it is the currently active screen of the game */
     @Readonly
     fun getWorldScreenIfActive(): WorldScreen? {
@@ -511,6 +490,36 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         fun getUserAgent(fallbackStr: String = "Unknown"): String = if (isCurrentInitialized()) {
             "Unciv/${VERSION.toNiceString()}-GNU-Terry-Pratchett"
         } else "Unciv/$fallbackStr-GNU-Terry-Pratchett"
+
+        /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
+        fun handleUncaughtThrowable(ex: Throwable) {
+            if (ex is CancellationException) {
+                return // kotlin coroutines use this for control flow... so we can just ignore them.
+            }
+            Log.error("Uncaught throwable", ex)
+            dumpLastError(ex)
+            Gdx.app.postRunnable {
+                Gdx.input.inputProcessor =
+                    null // CrashScreen needs to toJson which can take a while
+                // This may not be enough, we may need to run "generate crash text" in a different thread,
+                //   but for now let's try this.
+                Current.setAsRootScreen(CrashScreen(ex))
+            }
+        }
+
+        private fun dumpLastError(ex: Throwable) {
+            try {
+                val files =
+                    if (isCurrentInitialized() && Current::files.isInitialized) Current.files
+                    else UncivFiles(Gdx.files, null)
+                PrintWriter(files.fileWriter("lasterror.txt")).use {
+                    ex.printStackTrace(it)
+                }
+            } catch (_: Exception) {
+                Log.debug("Failed to write exception to lasterror.txt", ex)
+                // ignore
+            }
+        }
     }
 
     data class Version(
