@@ -13,7 +13,7 @@ class UniqueErrorTests {
     fun testMultipleUniqueTypesSameText() {
         val textToUniqueType = HashMap<String, UniqueType>()
         var errors = false
-        for (uniqueType in UniqueType.values()) {
+        for (uniqueType in UniqueType.entries) {
             if (textToUniqueType.containsKey(uniqueType.placeholderText)) {
                 println("UniqueTypes ${uniqueType.name} and ${textToUniqueType[uniqueType.placeholderText]!!.name} have the same text!")
                 errors = true

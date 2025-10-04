@@ -1,3 +1,38 @@
+## 4.18.3
+
+Buildings can now include "[relativeAmount]% weight to this choice for AI decisions"
+
+Re-added changes for puppet city unique - By Emandac
+
+Flash `ChatButton` on New Chat Messages - By touhidurrr
+
+By RobLoach:
+- Add Great Admiral 
+- Allow weighted AI decisions in Event Choices 
+
+AI valuea space resources and Manhattan project more - By EmperorPinguin
+
+By unciv-loof:
+- Prevent skip/resign button showing before first turn in MP games
+- No special treatment for spectators to skip/resign players
+
+## 4.18.2
+
+Can no longer repair improvements in neutral territory (exploit)
+
+Fixed crash on declare war with triggers
+
+By RobLoach:
+- BNW: Fix logic around Cultural Victories 
+- Add `if no Civ has adopted [policy/belief]` Conditional 
+
+By unciv-loof:
+- Fix multiplayer auth popup causing duplicate actions on turn end 
+- CS military rank tribute based on number of alive players 
+- Show button to forcibly resign player after 2 days inactivity 
+
+AI: less worker priority for jungles - By EmperorPinguin
+
 ## 4.18.1
 
 By RobLoach:
