@@ -223,7 +223,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         val stateForConditionals = city?.state ?: civ.state
 
-        if (city != null && isWaterUnit && !city.isCoastal())
+        /*
+        * !city.getCenterTile().matchesFilter("Water")
+        * to allow the cities on water tiles to spwan naval units.
+        * */ 
+        if (city != null && isWaterUnit && !city.isCoastal() && !city.getCenterTile().matchesFilter("Water"))
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
 
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals))
