@@ -222,7 +222,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     ): Sequence<RejectionReason> = sequence {
 
         val stateForConditionals = city?.state ?: civ.state
-
+        
         if (city != null && isWaterUnit && !city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
 
