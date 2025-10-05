@@ -679,10 +679,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     fun denounce() {
-        setModifier(DiplomaticModifiers.Denunciation, -35f)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
         setFlag(DiplomacyFlags.Denunciation, 30)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
+        if (otherCiv().isAI()) {
+            otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
+            setModifier(DiplomaticModifiers.Denunciation, -35f)
+        }
 
         // Denounciation results in removal of embasies for both sides
         civInfo.diplomacyFunctions.removeEmbassies(otherCiv())
