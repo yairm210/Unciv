@@ -697,15 +697,20 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             if (thirdCiv.isSpectator()) return@forEach
-            val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv())!!.relationshipIgnoreAfraid()
-            val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)!!
-            when (thirdCivRelationshipWithOtherCiv) {
-                RelationshipLevel.Unforgivable -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
-                RelationshipLevel.Enemy -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
-                RelationshipLevel.Friend -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
-                RelationshipLevel.Ally -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
-                else -> {}
+            fun affectThirdCivRelationship(denouncerCiv: Civilization, receiverCiv: Civilization) {
+                val thirdCivRelationshipWithReceiver = thirdCiv.getDiplomacyManager(receiverCiv)!!.relationshipIgnoreAfraid()
+                val thirdCivRelationshipWithDenouncer = thirdCiv.getDiplomacyManager(denouncerCiv)!!
+                when (thirdCivRelationshipWithReceiver) {
+                    RelationshipLevel.Unforgivable -> thirdCivRelationshipWithDenouncer.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
+                    RelationshipLevel.Enemy -> thirdCivRelationshipWithDenouncer.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
+                    RelationshipLevel.Friend -> thirdCivRelationshipWithDenouncer.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
+                    RelationshipLevel.Ally -> thirdCivRelationshipWithDenouncer.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
+                    else -> {}
+                }
             }
+            affectThirdCivRelationship(civInfo, otherCiv())
+            if (otherCiv().isAI())
+                affectThirdCivRelationship(otherCiv(), civInfo)
         }
     }
     
