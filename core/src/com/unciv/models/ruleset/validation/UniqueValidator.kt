@@ -94,17 +94,9 @@ class UniqueValidator(val ruleset: Ruleset) {
 
             var text = "$prefix contains parameter \"${complianceError.parameterName}\", $whichDoesNotFitParameterType" +
                     " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
-            
-            val similarParameters = complianceError.acceptableParameterTypes
-                .flatMap { it.getKnownValuesForAutocomplete(ruleset) }.filter {
-                getRelativeTextDistance(
-                    it,
-                    complianceError.parameterName
-                ) <= RulesetCache.uniqueMisspellingThreshold
-            }
-            if (similarParameters.isNotEmpty())
-                text += " May be a misspelling of: " + similarParameters.joinToString(", ") { "\"$it\"" }
-            
+
+            text = addPossibleMisspellings(complianceError, text)
+
             rulesetErrors.add(
                 text,
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
@@ -149,6 +141,24 @@ class UniqueValidator(val ruleset: Ruleset) {
             rulesetErrors += getDeprecationAnnotationErrors(unique, prefix, uniqueContainer)
 
         return rulesetErrors
+    }
+
+    @Readonly
+    private fun addPossibleMisspellings(
+        complianceError: UniqueComplianceError,
+        text: String
+    ): String {
+        var toReturn = text
+        val similarParameters = complianceError.acceptableParameterTypes
+            .flatMap { it.getKnownValuesForAutocomplete(ruleset) }.filter {
+                getRelativeTextDistance(
+                    it,
+                    complianceError.parameterName
+                ) <= RulesetCache.uniqueMisspellingThreshold
+            }
+        if (similarParameters.isNotEmpty())
+            toReturn += " May be a misspelling of: " + similarParameters.joinToString(", ") { "\"$it\"" }
+        return toReturn
     }
 
     @Readonly
@@ -273,12 +283,14 @@ class UniqueValidator(val ruleset: Ruleset) {
             if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
                 continue
 
-            rulesetErrors.add(
-                "$prefix contains modifier \"${modifier.text}\"." +
-                " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
-                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
-            )
+            var text = "$prefix contains modifier \"${modifier.text}\"." +
+                    " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
+                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+            
+            text = addPossibleMisspellings(complianceError, text)
+            
+            rulesetErrors.add(text,
+                complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique)
 
             rulesetErrors += getExpressionParseErrors(complianceError, uniqueContainer, unique)
         }
