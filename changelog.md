@@ -1,26 +1,20 @@
 ## 4.18.4
 
-Unique validation: Find possible misspellings for incorrect modifier parameters
-
-Better "acceptable modifier for" validation - accepts timed uniques as triggerable
+Unique validation: 
+- Find possible misspellings for incorrect modifier parameters
+- Better "acceptable modifier for" validation
 
 By touhidurrr:
-- implement `KtorGithubAPI` and temporarily ignore unsuccessful status codes while fetching mods list 
-- Fix failure to build Unciv with Java 25 
+- Ignore temporary errors when fetching mods list 
 
-By Ambeco:
-- handleUncaughtThrowable logs exceptions even when globals not initialized 
-- Tile.zeroBasedIndex is now dense 
+Memory perf improvements - By Ambeco (new contributor!)
 
 By unciv-loof:
-- Adjust time before force resign button appears to 3 days 
-- Fix temperatureShift slider not updating map preview 
+- Temperature shift slider now updates map preview 
 
 By RobLoach:
-- Great Admiral: Have points only accumulate for Water units 
-- hexarealm: Add Great Admiral sprite, by The Bucketeer 
-
-commit - By Emandac
+- Great Admiral: GPP only accumulate for Water units 
+- hexarealm: Add Great Admiral sprite, by The Bucketeer
 
 ## 4.18.3
 
