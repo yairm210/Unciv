@@ -28,6 +28,10 @@ buildscript {
 // Fixes the error "Please initialize at least one Kotlin target in 'Unciv (:)'"
 kotlin {
     jvm()
+    java {
+        // required for building Unciv with a Java version higher than 24 (e.g. Java 25)
+        sourceCompatibility = JavaVersion.VERSION_21
+    }
 }
 
 
