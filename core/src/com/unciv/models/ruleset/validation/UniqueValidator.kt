@@ -236,36 +236,12 @@ class UniqueValidator(val ruleset: Ruleset) {
                 RulesetErrorSeverity.Warning, uniqueContainer, unique
             )
         
-        if (modifier.type.targetTypes.all { it.modifierFor.isNotEmpty() }) { // No target is a modifier for whatever
-            
-            if (unique.type == null)
-                rulesetErrors.add(
-                    "$prefix contains the modifier \"${modifier.text}\"," +
-                            " which is not valid for unknown uniques.",
-                    RulesetErrorSeverity.Warning, uniqueContainer, unique
-                )
-            
-            // A tad confusing - there can be 2 unique targets (e.g. Triggerable, UnitTriggerable) 
-            //   and 2 modifier "acceptable" targets (e.g. TriggerCondition, UnitTriggerCondition)
-            // If ANY unique target is okay with ANY modifier target, we're okay.
-            // The modifier uniques's types have inheritance - dealt with in possibleUniqueTargetTypes
-            // The unique's type itself has inheritance - dealt with in canAcceptUniqueTarget
-            else {
-                val possibleUniqueTargetTypes = modifier.type.targetTypes
-                    .flatMap { it.modifierFor }
-                    .flatMap { it.getInheritanceList() }.toSet()
-                
-                
-                if (! unique.type.targetTypes.any { uniqueTarget -> possibleUniqueTargetTypes.any { 
-                    modifierUniqueTarget -> modifierUniqueTarget.canAcceptUniqueTarget(uniqueTarget) } }) {
-                    rulesetErrors.add(
-                        "$prefix contains the modifier \"${modifier.text}\"," +
-                                " which as a ${modifier.type.targetTypes.joinToString("/")}" +
-                                " is only allowed on ${possibleUniqueTargetTypes.joinToString("/")} uniques.",
-                        RulesetErrorSeverity.Warning, uniqueContainer, unique
-                    )
-                }
-            }
+        if (modifier.type.targetTypes.none { it.isAcceptableModifierFor(unique) }) { // No target is a modifier for whatever
+            rulesetErrors.add(
+                "$prefix contains the modifier \"${modifier.text}\"," +
+                        " which is not an acceptable modifier for this unique.",
+                RulesetErrorSeverity.Warning, uniqueContainer, unique
+            )
         }
 
         if (unique.type in resourceUniques && modifier.type in resourceConditionals
