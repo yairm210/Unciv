@@ -143,11 +143,11 @@ class UnitMovement(val unit: MapUnit) {
         var distance = 1
         val unitMaxMovement = unit.getMaxMovement().toFloat()
         val newTilesToCheck = ArrayList<Tile>()
-        val visitedTilesBitset = BitSet()
+        val visitedTilesBitset = BitSet(currentTile.tileMap.tileList.size)
         visitedTilesBitset.set(currentTile.zeroBasedIndex)
         val civilization = unit.civ
 
-        val passThroughCacheNew = ArrayList<Boolean?>()
+        val passThroughCacheNew = ArrayList<Boolean?>(currentTile.tileMap.tileList.size)
         val movementCostCache = HashMap<Int, Float>()
         val canMoveToCache = HashMap<Tile, Boolean>()
 
@@ -739,7 +739,7 @@ class UnitMovement(val unit: MapUnit) {
     @Readonly
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
-        passThroughCacheNew: ArrayList<Boolean?> = ArrayList(),
+        passThroughCacheNew: ArrayList<Boolean?> = ArrayList(unit.getTile().tileMap.tileList.size),
         movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
