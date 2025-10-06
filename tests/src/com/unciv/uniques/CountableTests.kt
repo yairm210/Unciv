@@ -261,8 +261,10 @@ class CountableTests {
             "Adopted [Liberty Complete] Policies" to 0,
             "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
             "Adopted [Some marker] Policies" to 1,
+            "Adopted [Military Tradition] Policies by [All] Civilizations" to 0,
             "Adopted [Some marker] Policies by [All] Civilizations" to 1,
             "Adopted [Oligarchy] Policies by [All] Civilizations" to 2,
+            "Adopted [Oligarchy] Policies by [City-State] Civilizations" to 0,
         )
         for ((test, expected) in tests) {
             val actual = Countables.getCountableAmount(test, GameContext(civ))
