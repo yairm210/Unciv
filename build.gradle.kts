@@ -28,6 +28,10 @@ buildscript {
 // Fixes the error "Please initialize at least one Kotlin target in 'Unciv (:)'"
 kotlin {
     jvm()
+    java {
+        // required for building Unciv with a Java version higher than 24 (e.g. Java 25)
+        sourceCompatibility = JavaVersion.VERSION_21
+    }
 }
 
 
@@ -174,7 +178,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-        "implementation"("io.github.yairm210:purity-annotations:0.0.51")
+        "implementation"("io.github.yairm210:purity-annotations:1.3.0")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")

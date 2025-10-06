@@ -170,7 +170,13 @@ object Conditionals {
                 else tech.researchedTechnologies.none { it.matchesFilter(filter) }
             }
             UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnology()?.matchesFilter(conditional.params[0]) == true }
-
+            UniqueType.ConditionalNoCivAdopted -> checkOnGameInfo {
+                civilizations.none {
+                    it.isMajorCiv() &&
+                    it.isAlive() &&
+                    (it.policies.isAdopted(conditional.params[0]) || it.religionManager.religion?.hasBelief(conditional.params[0]) == true)
+                }
+            }
             UniqueType.ConditionalAfterPolicyOrBelief ->
                 checkOnCiv { policies.isAdopted(conditional.params[0]) || religionManager.religion?.hasBelief(conditional.params[0]) == true }
             UniqueType.ConditionalBeforePolicyOrBelief ->

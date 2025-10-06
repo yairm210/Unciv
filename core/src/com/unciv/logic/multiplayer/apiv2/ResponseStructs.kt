@@ -81,8 +81,7 @@ enum class ApiStatusCode(val value: Int, val message: String) {
     SessionError(2002, "Internal session error. Please report this as a bug.");
 
     companion object {
-        private val VALUES = values()
-        fun getByValue(value: Int) = VALUES.first { it.value == value }
+        fun getByValue(value: Int) = entries.first { it.value == value }
     }
 }
 

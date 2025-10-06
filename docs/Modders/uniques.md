@@ -1189,7 +1189,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1219,7 +1219,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1263,7 +1263,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1517,7 +1517,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1695,6 +1695,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
+
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -2364,7 +2371,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Promotion
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -3148,6 +3155,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
 
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
 
@@ -3301,6 +3315,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;if no other Civilization has adopted this&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;if no Civilization has adopted [policy/belief]&gt;"
+	Example: "&lt;if no Civilization has adopted [Oligarchy]&gt;"
+
 	Applicable to: Conditional
 
 ??? example  "&lt;after adopting [policy/belief]&gt;"
@@ -3720,6 +3739,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon enhancing a Religion&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon expending a [mapUnitFilter] unit&gt;"
+	Example: "&lt;upon expending a [Wounded] unit&gt;"
+
+	Applicable to: TriggerCondition
+
 ## UnitTriggerCondition uniques
 !!! note ""
 
@@ -3751,11 +3775,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
-
-	Applicable to: UnitTriggerCondition
-
-??? example  "&lt;upon expending a [mapUnitFilter] unit&gt;"
-	Example: "&lt;upon expending a [Wounded] unit&gt;"
 
 	Applicable to: UnitTriggerCondition
 

@@ -8,16 +8,17 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
+class AuthPopup(stage: Stage, private val authSuccessful: ((Boolean) -> Unit)? = null)
     : Popup(stage) {
 
     constructor(screen: BaseScreen, authSuccessful: ((Boolean) -> Unit)? = null) : this(screen.stage, authSuccessful)
 
-    init {
-        val passwordField = UncivTextField("Password")
-        val button = "Authenticate".toTextButton()
-        val negativeButtonStyle = BaseScreen.skin.get("negative", TextButton.TextButtonStyle::class.java)
+    private val passwordField: UncivTextField = UncivTextField("Password")
+    private val button: TextButton = "Authenticate".toTextButton()
+    private val negativeButtonStyle: TextButton.TextButtonStyle =
+        BaseScreen.skin.get("negative", TextButton.TextButtonStyle::class.java)
 
+    init {
         button.onClick {
             try {
                 UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(passwordField.text)
@@ -25,17 +26,18 @@ class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
                 close()
             } catch (_: Exception) {
                 clear()
-                addGoodSizedLabel("Authentication failed").colspan(2).row()
-                add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
-                addCloseButton(style = negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
-                add(button).growX().padLeft(8f)
-                return@onClick
+                addComponents("Authentication failed")
             }
         }
-
-        addGoodSizedLabel("Please enter your server password").colspan(2).row()
+        addComponents("Please enter your server password")
+    }
+    
+    private fun addComponents(headerLabelText: String) {
+        addGoodSizedLabel(headerLabelText).colspan(2).row()
         add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
-        addCloseButton(style = negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
+        addCloseButton(style = negativeButtonStyle) {
+            authSuccessful?.invoke(false)
+        }.growX().padRight(8f)
         add(button).growX().padLeft(8f)
     }
 }
