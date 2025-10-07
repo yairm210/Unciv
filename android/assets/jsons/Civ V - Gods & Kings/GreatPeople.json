@@ -1,0 +1,57 @@
+[
+    // Great General
+	{ "name": "Ahuitzotl", "units": ["Great General"] },
+    { "name": "Akbar", "units": ["Great General"] },
+    { "name": "Heinz Guderian", "units": ["Great General"] },
+    { "name": "Hamilcar Barca", "units": ["Great General"] },
+    { "name": "Hannibal Barca", "units": ["Great General"] },
+    { "name": "Gustavus Adolphus", "units": ["Great General"], "uniques": ["Only available <for [Sweden] Civilizations>"] },
+
+    // Great Admiral
+    { "name": "Jacques Cartier", "units": ["Great Admiral"] },
+    { "name": "Christopher Columbus", "units": ["Great Admiral"] },
+    { "name": "James Cook", "units": ["Great Admiral"] },
+    { "name": "Andrew Cunningham", "units": ["Great Admiral"] },
+    { "name": "Michiel de Ruyter", "units": ["Great Admiral"] },
+    { "name": "George Dewey", "units": ["Great Admiral"] },
+
+    // Great Artist
+    { "name": "Adrien Carpentiers", "units": ["Great Artist"] },
+    { "name": "Edgar Degas", "units": ["Great Artist"] },
+    { "name": "El Greco", "units": ["Great Artist"] },
+    { "name": "Francisco de Goya", "units": ["Great Artist"] },
+    { "name": "Frans Post", "units": ["Great Artist"] },
+    { "name": "Gilbert Stuart", "units": ["Great Artist"] },
+
+    // Great Merchant
+    { "name": "Andrew Carnegie", "units": ["Great Merchant"] },
+    { "name": "Jakob Fugger", "units": ["Great Merchant"] },
+    { "name": "Edward Harriman", "units": ["Great Merchant"] },
+    { "name": "Steve Jobs", "units": ["Great Merchant"] },
+    { "name": "Adam Smith", "units": ["Great Merchant"] },
+    { "name": "Raja Todar Mal", "units": ["Great Merchant"] },
+
+    // Great Engineer
+    { "name": "Gottlieb Daimler", "units": ["Great Engineer"] },
+    { "name": "Thomas Edison", "units": ["Great Engineer"] },
+    { "name": "Robert Goddard", "units": ["Great Engineer"] },
+    { "name": "Heron", "units": ["Great Engineer"] },
+    { "name": "Wilhelm Schickard", "units": ["Great Engineer"] },
+    { "name": "Nikola Tesla", "units": ["Great Engineer"] },
+
+    // Great Scientist
+    { "name": "Charles Darwin", "units": ["Great Scientist"] },
+    { "name": "Albert Einstein", "units": ["Great Scientist"] },
+    { "name": "Michael Faraday", "units": ["Great Scientist"] },
+    { "name": "Alexander von Humboldt", "units": ["Great Scientist"] },
+    { "name": "Isaac Newton", "units": ["Great Scientist"] },
+    { "name": "Alan Turing", "units": ["Great Scientist"] },
+
+    // Khan
+    { "name": "Batu", "units": ["Khan"] },
+    { "name": "Genghis", "units": ["Khan"] },
+    { "name": "Guyuk", "units": ["Khan"] },
+    { "name": "Mongke", "units": ["Khan"] },
+    { "name": "Ogedei", "units": ["Khan"] },
+    { "name": "Temur Khagan", "units": ["Khan"] }
+]

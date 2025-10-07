@@ -178,6 +178,14 @@ object BaseUnitDescriptions {
             }
         }
 
+        if (baseUnit.hasUnique(UniqueType.GreatPerson)) {
+            val greatPeople = ruleset.greatPeople.values.filter { baseUnit.name in it.units }
+            if (greatPeople.isNotEmpty()) {
+                textList += FormattedLine("{Great People}:", header = 5)
+                greatPeople.sortedBy { it.name }.forEach { textList += FormattedLine(it.name, link = "GreatPerson/${it.name}") } // TODO: Why doesn't the LINK work?
+            }
+        }
+
         val seeAlso = ArrayList<FormattedLine>()
         for ((other, unit) in ruleset.units) {
             if (unit.replaces == baseUnit.name || baseUnit.uniques.contains("[${baseUnit.name}]")) {
