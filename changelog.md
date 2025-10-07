@@ -1,3 +1,21 @@
+## 4.18.4
+
+Unique validation: 
+- Find possible misspellings for incorrect modifier parameters
+- Better "acceptable modifier for" validation
+
+By touhidurrr:
+- Ignore temporary errors when fetching mods list 
+
+Memory perf improvements - By Ambeco (new contributor!)
+
+By unciv-loof:
+- Temperature shift slider now updates map preview 
+
+By RobLoach:
+- Great Admiral: GPP only accumulate for Water units 
+- hexarealm: Add Great Admiral sprite, by The Bucketeer
+
 ## 4.18.3
 
 Buildings can now include "[relativeAmount]% weight to this choice for AI decisions"
