@@ -1,225 +1,32 @@
 package com.unciv.logic.github
 
-import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
-import com.unciv.logic.UncivShowableException
+import com.unciv.logic.UncivKtor
 import com.unciv.logic.github.Github.CountingInputStream.Companion.create
-import com.unciv.logic.github.Github.download
-import com.unciv.logic.github.Github.downloadAndExtract
 import com.unciv.logic.github.Github.repoNameToFolderName
-import com.unciv.logic.github.Github.tryGetGithubReposWithTopic
 import com.unciv.logic.github.GithubAPI.fetchReleaseZip
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Concurrency
-import com.unciv.utils.Log
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import java.io.BufferedReader
-import java.io.FileFilter
+import kotlinx.coroutines.runBlocking
 import java.io.InputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URI
 import java.nio.ByteBuffer
-import java.util.zip.ZipException
 
 
 /**
  * Utility managing Github access (except the link in WorldScreenCommunityPopup)
- *
- * Singleton - RateLimit is shared app-wide and has local variables, and is not tested for thread safety.
- * Therefore, additional effort is required should [tryGetGithubReposWithTopic] ever be called non-sequentially.
- * [download] and [downloadAndExtract] should be thread-safe as they are self-contained.
- * They do not join in the [RateLimit] handling because Github doc suggests each API
- * has a separate limit (and I found none for cloning via a zip).
  */
 object Github {
-    private const val contentDispositionHeader = "Content-Disposition"
-    private val parseAttachmentDispositionRegex = Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
-    private val redirectingResponseCodes = setOf(301, 302, 303, 307, 308)
-    private class RedirectionException : Exception()
-
-    // These are used in isValidModFolder to check an archive's content
-    private val goodFolders = listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios", ".github")
-        .map { Regex(it, RegexOption.IGNORE_CASE) }
-    private val goodFiles = listOf(".*\\.atlas", ".*\\.png", "preview.jpg", ".*\\.md", "Atlases.json", ".nomedia", "license", "contribute.md", "readme.md", "credits.md")
-        .map { Regex(it, RegexOption.IGNORE_CASE) }
-
-    // Consider merging this with the Dropbox function
-    /**
-     * Helper opens an url and accesses its input stream, logging errors to the console
-     * @param url String representing a [URI] to download.
-     * @param shouldLogError Some downloads are just us guessing where an image could be, an exception is acceptable in these circumstances
-     * @param preDownloadAction Optional callback that will be executed between opening the connection and
-     *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers.
-     * @return The [InputStream] if successful, `null` otherwise.
-     */
-    fun download(url: String, shouldLogError: Boolean = true, preDownloadAction: (HttpURLConnection) -> Unit = {}): InputStream? {
-        try {
-            // Problem type 1 - opening the URL connection
-            // URL(string) is deprecated, URI.toUrl(string) API level 36, see [Android Doc](https://developer.android.com/reference/java/net/URI#toURL()):
-            with(URI(url).toURL().openConnection() as HttpURLConnection) {
-                preDownloadAction(this)
-                // Problem type 2 - getting the information
-                try {
-                    return inputStream
-                } catch (ex: Exception) {
-                    // No error handling, just log the message.
-                    // NOTE that this 'read error stream' CAN ALSO fail, but will be caught by the big try/catch
-                    val reader = BufferedReader(InputStreamReader(errorStream, Charsets.UTF_8))
-                    Log.error("Message from GitHub: %s", reader.readText())
-                    throw ex
-                }
-            }
-        } catch (ex: UncivShowableException) {
-            throw ex
-        } catch (_: RedirectionException) {
-            return null
-        } catch (ex: Exception) {
-            if (shouldLogError) Log.error("Exception during GitHub download", ex)
-            return null
-        }
-    }
-
-    /**
-     * Download a mod and extract, deleting any pre-existing version.
-     * @param repo A repository descriptor with either `direct_zip_url` set or the fields `name`, `html_url` and `default_branch` populated.
-     * @param modsFolder Destination handle of mods folder - also controls Android internal/external.
-     * @param updateProgressPercent A function recieving a download progress percentage (0-100) roughly every 100ms. Call will run under a Coroutine context.
-     * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone.
-     * @return FileHandle for the downloaded Mod's folder or null if download failed.
-     */
-    fun downloadAndExtract(
-        repo: GithubAPI.Repo,
-        modsFolder: FileHandle,
-        /** Should accept a number 0-100 */
-        updateProgressPercent: ((Int)->Unit)? = null
-    ): FileHandle? {
-        var modNameFromFileName = repo.name
-
-        val defaultBranch = repo.default_branch
-        val zipUrl: String
-        val tempName: String
-        if (repo.direct_zip_url.isEmpty()) {
-            val gitRepoUrl = repo.html_url
-            // Initiate download - the helper returns null when it fails
-            zipUrl = GithubAPI.getUrlForBranchZip(gitRepoUrl, defaultBranch)
-
-            // Get a mod-specific temp file name
-            tempName = "temp-" + gitRepoUrl.hashCode().toString(16)
-        } else {
-            zipUrl = repo.direct_zip_url
-            tempName = "temp-" + repo.toString().hashCode().toString(16)
-        }
-
-        val (inputStream, contentLength, disposition) = processRequestHandlingRedirects(zipUrl)
-        if (inputStream == null) return null
-        modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
-
-        // Download to temporary zip
-        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
-        // and assume low compression efficiency - bigger mods typically have mostly images.
-        val progressEndsAtSize = contentLength ?: (repo.size * 1024 * 4 / 5)
-        val countingStream = CountingInputStream.create(inputStream, progressEndsAtSize, updateProgressPercent)
-        val tempZipFileHandle = modsFolder.child("$tempName.zip")
-        tempZipFileHandle.write(countingStream, false)
-
-        // prepare temp unpacking folder
-        val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
-        // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
-        if (unzipDestination.exists())
-            if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
-
-        try {
-            Zip.extractFolder(tempZipFileHandle, unzipDestination)
-        } catch (ex: ZipException) {
-            throw UncivShowableException("That is not a valid ZIP file", ex)
-        }
-
-        val (innerFolder, modName) = resolveZipStructure(unzipDestination, modNameFromFileName)
-
-        // modName can be "$repoName-$defaultBranch"
-        val finalDestinationName = modName.replace("-$defaultBranch", "").repoNameToFolderName()
-        // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
-        val finalDestination = modsFolder.child(finalDestinationName)
-
-        // prevent mixing new content with old
-        var tempBackup: FileHandle? = null
-        if (finalDestination.exists()) {
-            tempBackup = finalDestination.sibling("$finalDestinationName.updating")
-            finalDestination.renameOrMove(tempBackup)
-        }
-
-        // Move temp unpacked content to their final place
-        finalDestination.mkdirs() // If we don't create this as a directory, it will think this is a file and nothing will work.
-        // The move will reset the last modified time (recursively, at least on Linux)
-        // This sort will guarantee the desktop launcher will not re-pack textures and overwrite the atlas as delivered by the mod
-        for (innerFileOrFolder in innerFolder.list()
-            .sortedBy { file -> file.extension() == "atlas" } ) {
-            innerFileOrFolder.renameOrMove(finalDestination)
-        }
-
-        // clean up
-        tempZipFileHandle.delete()
-        unzipDestination.deleteDirectory()
-        if (tempBackup != null)
-            if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
-
-        return finalDestination
-    }
-
-    private data class RequestHandlingRedirectsResult(val stream: InputStream?, val length: Int?, val disposition: String?)
-
-    private fun processRequestHandlingRedirects(zipUrl: String): RequestHandlingRedirectsResult {
-        var redirectCount = 0
-        var currentUrl = zipUrl
-        var inputStream: InputStream? = null
-        var contentLength: Int? = null
-        var disposition: String? = null
-
-        while (redirectCount < 2) {
-            inputStream = download(currentUrl) {
-                // Github will not return Content-Length for mod archives, they come back with Transfer-Encoding=chunked,
-                // which implies the server is obliged to withhold that info.
-                // Attempts to prevent that using Accept-Encoding or Content-Encoding request headers have failed.
-                // See also: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-                // See also: https://github.com/psf/requests/issues/3953
-
-                val responseCode = it.responseCode
-                val location = it.getHeaderField("Location")
-                when {
-                    responseCode in redirectingResponseCodes && !location.isNullOrEmpty() -> {
-                        currentUrl = location
-                        redirectCount++
-                        throw RedirectionException()
-                    }
-                    responseCode == 403 && it.getHeaderField("CF-RAY") != null && it.getHeaderField("cf-mitigated").orEmpty() == "challenge" ->
-                        throw UncivShowableException("Blocked by Cloudflare")
-                    responseCode in 401..403 || responseCode == 407 ->
-                        throw UncivShowableException("Servers requiring authentication are not supported")
-                    responseCode in 300..499 ->
-                        throw UncivShowableException("Unexpected response: [${it.responseMessage}]")
-                    responseCode in 500..599 ->
-                        throw UncivShowableException("Server failure: [${it.responseMessage}]")
-                    else -> {
-                        disposition = it.getHeaderField(contentDispositionHeader)
-                        // We could check Content-Type=[application/x-zip-compressed] here, but the ZipFile will catch that anyway. Would save some bandwidth, however.
-                        contentLength = it.getHeaderField("Content-Length")?.toIntOrNull() // Pass no Content-Length header up as null, let caller decide
-                    }
-                }
-            }
-            if (inputStream != null) break
-        }
-        return RequestHandlingRedirectsResult(inputStream, contentLength, disposition)
-    }
-
     /** Helper implementing minimum viable bytes-read tracking with a callback to display a progress percentage.
      *  Pass-through if either the callback is null or the content length is not known beforehand.
      *
@@ -286,57 +93,6 @@ object Github {
         }
     }
 
-    private fun parseNameFromDisposition(disposition: String?, default: String): String {
-        fun String.removeZipExtension() = removeSuffix(".zip").replace('.', ' ')
-        if (disposition == null) return default.removeZipExtension()
-        val match = parseAttachmentDispositionRegex.matchAt(disposition, 0)
-            ?: return default.removeZipExtension()
-        return match.groups[2]!!.value.removeZipExtension()
-    }
-
-    private fun isValidModFolder(dir: FileHandle): Boolean {
-        var good = 0
-        var bad = 0
-        for (file in dir.list()) {
-            val goodList = if (file.isDirectory) goodFolders else goodFiles
-            if (goodList.any { file.name().matches(it) }) good++ else bad++
-        }
-        return good > 0 && good > bad
-    }
-
-    /** Check whether the unpacked zip contains a subfolder with mod content or is already the mod.
-     *  If there's a subfolder we'll assume it is the mod name, optionally suffixed with branch or release-tag name like github does.
-     *  @return Pair: actual mod content folder to name (subfolder name or [defaultModName])
-     */
-    private fun resolveZipStructure(dir: FileHandle, defaultModName: String): Pair<FileHandle, String> {
-        if (isValidModFolder(dir))
-            return dir to defaultModName
-        val subdirs = dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
-        if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
-            throw UncivShowableException("Invalid Mod archive structure")
-        return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
-    }
-    private fun choosePrettierName(folderName: String, defaultModName: String): String {
-        fun String.isMixedCase() = this != lowercase() && this != uppercase()
-        if (defaultModName.startsWith(folderName, true) && defaultModName.isMixedCase() && !folderName.isMixedCase())
-            return defaultModName.removeSuffix("-main").removeSuffix("-master")
-        return folderName
-    }
-
-    private fun FileHandle.renameOrMove(dest: FileHandle) {
-        // Gdx tries a java rename for Absolute and External, but NOT for Local - rectify that
-        if (type() == Files.FileType.Local) {
-            // See #5346: renameTo 'unpacks' a source folder if the destination exists and is an
-            // empty folder, dropping the name of the source entirely.
-            // Safer to ask for a move to the not-yet-existing full resulting path instead.
-            if (isDirectory)
-                if (file().renameTo(dest.child(name()).file())) return
-            else
-                if (file().renameTo(dest.file())) return
-        }
-        moveTo(dest)
-    }
-
     /**
      * Query GitHub for repositories marked "unciv-mod"
      * @param amountPerPage Number of search results to return for this request.
@@ -347,7 +103,7 @@ object Github {
     suspend fun tryGetGithubReposWithTopic(
         page: Int, amountPerPage: Int, searchRequest: String = ""
     ): GithubAPI.RepoSearch? {
-        val resp = KtorGithubAPI.fetchGithubReposWithTopic(searchRequest, page, amountPerPage)
+        val resp = GithubAPI.fetchGithubReposWithTopic(searchRequest, page, amountPerPage)
         if (resp.status.isSuccess()) {
             val text = resp.bodyAsText()
             try {
@@ -373,18 +129,24 @@ object Github {
         // non-trivial waste of bandwidth.
         // Thus we ask for a "preview" file as part of the repo contents instead.
         try {
-            val resp = KtorGithubAPI.fetchPreviewImageOrNull(modUrl, defaultBranch, "jpg")
-                ?: KtorGithubAPI.fetchPreviewImageOrNull(modUrl, defaultBranch, "png")
-                // Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
-                // So the image format is only recognizable from the response "Content-Type" header
-                // or by looking for magic markers in the bits - which the Pixmap constructor below does.
-                ?: avatarUrl?.let { KtorGithubAPI.getOrNull(it) }
-                ?: return null
-            return if (resp.status.isSuccess()) {
-                val byteArray = resp.bodyAsBytes()
-                val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
-                Pixmap(buffer)
-            } else null
+            val resp = runBlocking {
+                /**
+                 * Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
+                 * So the image format is only recognizable from the response "Content-Type" header
+                 * or by looking for magic markers in the bits - which the Pixmap constructor below does.
+                 */
+                return@runBlocking listOf(
+                    async { GithubAPI.fetchPreviewImageOrNull(modUrl, defaultBranch, "jpg") },
+                    async { GithubAPI.fetchPreviewImageOrNull(modUrl, defaultBranch, "png") },
+                    async { avatarUrl?.let { UncivKtor.getOrNull(it) } }
+                ).awaitAll()
+                    // automatically falls back to last succeeding response
+                    .firstNotNullOf { it }
+            }
+
+            val byteArray = resp.bodyAsBytes()
+            val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
+            return Pixmap(buffer)
         } catch (_: Throwable) {
             return null
         }
@@ -417,7 +179,7 @@ object Github {
      * @return Parsed [TopicSearchResponse][GithubAPI.TopicSearchResponse] json on success, `null` on failure.
      */
     suspend fun tryGetGithubTopics(): GithubAPI.TopicSearchResponse? {
-        val resp = KtorGithubAPI.fetchGithubTopics()
+        val resp = GithubAPI.fetchGithubTopics()
         if (resp.status.isSuccess()) {
             return json().fromJson(GithubAPI.TopicSearchResponse::class.java, resp.bodyAsText())
         }
