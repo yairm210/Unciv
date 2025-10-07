@@ -94,17 +94,9 @@ class UniqueValidator(val ruleset: Ruleset) {
 
             var text = "$prefix contains parameter \"${complianceError.parameterName}\", $whichDoesNotFitParameterType" +
                     " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
-            
-            val similarParameters = complianceError.acceptableParameterTypes
-                .flatMap { it.getKnownValuesForAutocomplete(ruleset) }.filter {
-                getRelativeTextDistance(
-                    it,
-                    complianceError.parameterName
-                ) <= RulesetCache.uniqueMisspellingThreshold
-            }
-            if (similarParameters.isNotEmpty())
-                text += " May be a misspelling of: " + similarParameters.joinToString(", ") { "\"$it\"" }
-            
+
+            text = addPossibleMisspellings(complianceError, text)
+
             rulesetErrors.add(
                 text,
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
@@ -149,6 +141,24 @@ class UniqueValidator(val ruleset: Ruleset) {
             rulesetErrors += getDeprecationAnnotationErrors(unique, prefix, uniqueContainer)
 
         return rulesetErrors
+    }
+
+    @Readonly
+    private fun addPossibleMisspellings(
+        complianceError: UniqueComplianceError,
+        text: String
+    ): String {
+        var toReturn = text
+        val similarParameters = complianceError.acceptableParameterTypes
+            .flatMap { it.getKnownValuesForAutocomplete(ruleset) }.filter {
+                getRelativeTextDistance(
+                    it,
+                    complianceError.parameterName
+                ) <= RulesetCache.uniqueMisspellingThreshold
+            }
+        if (similarParameters.isNotEmpty())
+            toReturn += " May be a misspelling of: " + similarParameters.joinToString(", ") { "\"$it\"" }
+        return toReturn
     }
 
     @Readonly
@@ -236,36 +246,12 @@ class UniqueValidator(val ruleset: Ruleset) {
                 RulesetErrorSeverity.Warning, uniqueContainer, unique
             )
         
-        if (modifier.type.targetTypes.all { it.modifierFor.isNotEmpty() }) { // No target is a modifier for whatever
-            
-            if (unique.type == null)
-                rulesetErrors.add(
-                    "$prefix contains the modifier \"${modifier.text}\"," +
-                            " which is not valid for unknown uniques.",
-                    RulesetErrorSeverity.Warning, uniqueContainer, unique
-                )
-            
-            // A tad confusing - there can be 2 unique targets (e.g. Triggerable, UnitTriggerable) 
-            //   and 2 modifier "acceptable" targets (e.g. TriggerCondition, UnitTriggerCondition)
-            // If ANY unique target is okay with ANY modifier target, we're okay.
-            // The modifier uniques's types have inheritance - dealt with in possibleUniqueTargetTypes
-            // The unique's type itself has inheritance - dealt with in canAcceptUniqueTarget
-            else {
-                val possibleUniqueTargetTypes = modifier.type.targetTypes
-                    .flatMap { it.modifierFor }
-                    .flatMap { it.getInheritanceList() }.toSet()
-                
-                
-                if (! unique.type.targetTypes.any { uniqueTarget -> possibleUniqueTargetTypes.any { 
-                    modifierUniqueTarget -> modifierUniqueTarget.canAcceptUniqueTarget(uniqueTarget) } }) {
-                    rulesetErrors.add(
-                        "$prefix contains the modifier \"${modifier.text}\"," +
-                                " which as a ${modifier.type.targetTypes.joinToString("/")}" +
-                                " is only allowed on ${possibleUniqueTargetTypes.joinToString("/")} uniques.",
-                        RulesetErrorSeverity.Warning, uniqueContainer, unique
-                    )
-                }
-            }
+        if (modifier.type.targetTypes.none { it.isAcceptableModifierFor(unique) }) { // No target is a modifier for whatever
+            rulesetErrors.add(
+                "$prefix contains the modifier \"${modifier.text}\"," +
+                        " which is not an acceptable modifier for this unique.",
+                RulesetErrorSeverity.Warning, uniqueContainer, unique
+            )
         }
 
         if (unique.type in resourceUniques && modifier.type in resourceConditionals
@@ -297,12 +283,14 @@ class UniqueValidator(val ruleset: Ruleset) {
             if (!reportRulesetSpecificErrors && complianceError.errorSeverity == UniqueType.UniqueParameterErrorSeverity.RulesetSpecific)
                 continue
 
-            rulesetErrors.add(
-                "$prefix contains modifier \"${modifier.text}\"." +
-                " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
-                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique
-            )
+            var text = "$prefix contains modifier \"${modifier.text}\"." +
+                    " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
+                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+            
+            text = addPossibleMisspellings(complianceError, text)
+            
+            rulesetErrors.add(text,
+                complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique)
 
             rulesetErrors += getExpressionParseErrors(complianceError, uniqueContainer, unique)
         }

@@ -145,7 +145,7 @@ internal class ModInfoAndActionPane : Table() {
         }
 
         Concurrency.run {
-            val imagePixmap = Github.tryGetPreviewImage(repoUrl, defaultBranch, avatarUrl)
+            val imagePixmap = Github.getPreviewImageOrNull(repoUrl, defaultBranch, avatarUrl)
 
             if (imagePixmap == null) {
                 repoUrlToPreviewImage[repoUrl] = null
