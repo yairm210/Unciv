@@ -1,3 +1,24 @@
+## 4.18.5
+
+Don't throw exceptions for unsuccessful mp background sync tasks - fail silently to not crash "for no reason"
+
+Resolved  - conditional tags are accepted as "filtering uniques"
+
+AI will not attack cities with no health with siege units
+
+AI will not attack capturable cities with melee units that cannot capture them
+
+By RobLoach:
+- Add Countable: `Adopted [policy] Policies by [civ] Civilizations` 
+- Allow Buildings to increase Air Unit Capacity 
+- Add Victory Type-specific music 
+
+Disable automatic counter-denunciation for human players - By unciv-loof
+
+By Ambeco:
+- getRoadPath takes a civ instead of a unit 
+- handleUncaughtThrowable logs exceptions even when globals not initialized 
+
 ## 4.18.4
 
 Unique validation: 
