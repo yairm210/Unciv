@@ -77,7 +77,9 @@ Each unit type has the following structure:
 
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/GreatPeople.json)
 
-Provides a list of names that can be applied to Great People.
+Provides a list of names that can be applied to Great People. The Civilopedia will display images of great people present in the `ExtraImages/GreatPeople` directory.
+
+Each Great Person has the following structure:
 
 | Attribute    | Type           | Default  | Notes |
 |--------------|----------------|----------|-------|

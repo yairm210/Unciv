@@ -27,9 +27,10 @@ class GreatPerson : RulesetObject() {
         return newGreatPerson
     }
 
-    override fun makeLink() = "GreatPerson/$name"
+    override fun makeLink() = "Great People/$name"
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = ArrayList<FormattedLine>()
+        lines.add(FormattedLine(extraImage = "GreatPeople/$name", centered = true))
         for (unitName in units) {
             lines.add(FormattedLine(unitName, link = "Unit/$unitName"))
         }
