@@ -174,7 +174,6 @@ enum class Countables(
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val params = parameterText.getPlaceholderParameters()
-            if (params.size < 2) return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
             return UniqueParameterType.PolicyFilter.getErrorSeverity(params[0], ruleset) ?:
                 UniqueParameterType.CivFilter.getErrorSeverity(params[1], ruleset)
         }
