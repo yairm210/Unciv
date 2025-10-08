@@ -1,3 +1,20 @@
+## 4.18.5
+
+AI will not attack cities with no health with siege units
+
+AI will not attack capturable cities with melee units that cannot capture them
+
+Mod checker: conditional tags are accepted as "filtering uniques"
+
+By RobLoach:
+- Add Countable: `Adopted [policy] Policies by [civ] Civilizations` 
+- Allow Buildings to increase Air Unit Capacity 
+- Add Victory Type-specific music 
+
+Disable automatic counter-denunciation for human players - By unciv-loof
+
+By Ambeco - error handling works in edge cases 
+
 ## 4.18.4
 
 Unique validation: 

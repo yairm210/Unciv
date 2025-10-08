@@ -35,7 +35,7 @@ class UniqueValidator(val ruleset: Ruleset) {
 
     private fun addToHashsets(uniqueHolder: IHasUniques) {
         for (unique in uniqueHolder.uniqueObjects) {
-            if (unique.type == null) allNonTypedUniques.add(unique.text)
+            if (unique.type == null) allNonTypedUniques.add(unique.placeholderText) // not unique.text, since there are conditional tags as well
             else allUniqueParameters.addAll(
                 unique.allParams.asSequence().flatMap { MultiFilter.getAllSingleFilters(it) }
             )
