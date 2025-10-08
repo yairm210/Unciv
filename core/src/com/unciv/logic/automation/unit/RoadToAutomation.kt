@@ -52,7 +52,7 @@ class RoadToAutomation(val civInfo: Civilization) {
 
         // The path does not exist, create it
         if (pathToDest == null) {
-            val foundPath: List<Tile>? = MapPathing.getRoadPath(unit, currentTile, destinationTile)
+            val foundPath: List<Tile>? = MapPathing.getRoadPath(unit.civ, unit.getTile(), destinationTile)
             if (foundPath == null) {
                 Log.debug("WorkerAutomation: $unit -> connect road failed")
                 stopAndCleanAutomation(unit)

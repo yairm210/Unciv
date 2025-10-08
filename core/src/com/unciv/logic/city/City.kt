@@ -273,7 +273,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
 
     /** Gets max air units that can remain in the city untransported */
-    @Readonly fun getMaxAirUnits() = civ.gameInfo.ruleset.modOptions.constants.cityAirUnitCapacity
+    @Readonly fun getMaxAirUnits(): Int = civ.gameInfo.ruleset.modOptions.constants.cityAirUnitCapacity +
+        getMatchingUniques(UniqueType.CarryExtraAirUnits)
+            .filter { it.params[1] == "Air" }
+            .sumOf { it.params[0].toInt() }
 
     override fun toString() = name // for debug
 

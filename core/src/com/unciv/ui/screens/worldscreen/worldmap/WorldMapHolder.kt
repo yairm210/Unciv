@@ -468,7 +468,7 @@ class WorldMapHolder(
                 selectedUnit.civ.hasExplored(tile)
 
             if (validTile) {
-                val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit, selectedUnit.currentTile, tile)
+                val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit.civ, selectedUnit.getTile(), tile)
                 launchOnGLThread {
                     if (roadPath == null) { // give the regular tile overlays with no road connection
                         addTileOverlays(tile)
