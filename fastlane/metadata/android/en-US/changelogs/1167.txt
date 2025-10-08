@@ -1,12 +1,8 @@
-
-
-Don't throw exceptions for unsuccessful mp background sync tasks - fail silently to not crash "for no reason"
-
-Resolved  - conditional tags are accepted as "filtering uniques"
-
 AI will not attack cities with no health with siege units
 
 AI will not attack capturable cities with melee units that cannot capture them
+
+Mod checker: conditional tags are accepted as "filtering uniques"
 
 By RobLoach:
 - Add Countable: `Adopted [policy] Policies by [civ] Civilizations` 
@@ -15,6 +11,4 @@ By RobLoach:
 
 Disable automatic counter-denunciation for human players - By unciv-loof
 
-By Ambeco:
-- getRoadPath takes a civ instead of a unit 
-- handleUncaughtThrowable logs exceptions even when globals not initialized 
+By Ambeco - error handling works in edge cases
