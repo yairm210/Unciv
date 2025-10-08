@@ -265,6 +265,12 @@ class Ruleset {
         modOptions.constants.merge(ruleset.modOptions.constants)
 
         unitPromotions.putAll(ruleset.unitPromotions)
+        ruleset.modOptions.greatPeopleToRemove
+            .flatMap { greatPersonToRemove ->
+                greatPeople.filter { it.value.name == greatPersonToRemove }.keys
+            }.toSet().forEach {
+                greatPeople.remove(it)
+            }
         greatPeople.putAll(ruleset.greatPeople)
 
         mods += ruleset.mods
