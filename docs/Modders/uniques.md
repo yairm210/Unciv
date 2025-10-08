@@ -1690,6 +1690,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building
 
+??? example  "Can carry [amount] extra [mapUnitFilter] units"
+	For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity.
+
+	Example: "Can carry [3] extra [Wounded] units"
+
+	Applicable to: Building, Unit
+
 ??? example  "Spaceship part"
 	Applicable to: Building, Unit
 
@@ -2095,9 +2102,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can carry [amount] extra [mapUnitFilter] units"
+	For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity.
+
 	Example: "Can carry [3] extra [Wounded] units"
 
-	Applicable to: Unit
+	Applicable to: Building, Unit
 
 ??? example  "Cannot be carried by [mapUnitFilter] units"
 	Example: "Cannot be carried by [Wounded] units"
