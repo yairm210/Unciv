@@ -104,7 +104,7 @@ object WorldMapTileUpdater {
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
             if (unit.currentTile.ruleset.roadImprovement == null) return
             val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
-                MapPathing.isValidRoadPathTile(unit, it)
+                MapPathing.isValidRoadPathTile(unit.civ, it)
             }
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {
