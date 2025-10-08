@@ -166,7 +166,7 @@ enum class Countables(
 
     FilteredPoliciesByCivs("Adopted [policyFilter] Policies by [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
-            val (policyFilter, civFilter) = parameterText.getPlaceholderParameters().takeIf { it.size >= 2 } ?: return null
+            val (policyFilter, civFilter) = parameterText.getPlaceholderParameters()
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations
                 .filter { it.isAlive() && it.matchesFilter(civFilter, gameContext) }
