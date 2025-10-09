@@ -16,6 +16,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
+import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -491,12 +492,12 @@ class ModManagementScreen private constructor(
     private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((Int)->Unit)? = null, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                val modFolder = Github.downloadAndExtract(
-                    repo,
-                    UncivGame.Current.files.getModsFolder(),
-                    updateProgressPercent
-                )
-                    ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
+                val modFolder =
+                    repo.downloadAndExtract(
+                        UncivGame.Current.files.getModsFolder(),
+                        updateProgressPercent
+                    )
+                        ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
