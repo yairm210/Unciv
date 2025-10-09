@@ -12,8 +12,8 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
 class GreatPerson : RulesetObject() {
-    var units = listOf<String>()
-    override fun getUniqueTarget() = UniqueTarget.GreatPerson
+    /** A list of unit names that this Great Person applies to (Great Engineer, Great Scientist, etc). */
+    var units = ArrayList<String>()
 
     fun clone(): GreatPerson {
         val newGreatPerson = GreatPerson()
@@ -27,6 +27,7 @@ class GreatPerson : RulesetObject() {
         return newGreatPerson
     }
 
+    override fun getUniqueTarget() = UniqueTarget.GreatPerson
     override fun makeLink() = "Great People/$name"
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = ArrayList<FormattedLine>()
