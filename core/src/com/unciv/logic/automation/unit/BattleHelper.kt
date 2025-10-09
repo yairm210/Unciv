@@ -101,11 +101,15 @@ object BattleHelper {
     private fun getCityAttackValue(attacker: MapUnit, city: City): Int {
         val attackerUnit = MapUnitCombatant(attacker)
         val cityUnit = CityCombatant(city)
-        val isCityCapturable = city.health == 1
-            || attacker.baseUnit.isMelee() && city.health <= BattleDamage.calculateDamageToDefender(attackerUnit, cityUnit).coerceAtLeast(1)
-        if (isCityCapturable)
-            return if (attacker.baseUnit.isMelee()) 10000 // Capture the city immediatly!
-            else 0 // Don't attack the city anymore since we are a ranged unit
+        
+        val canCaptureCity = attacker.baseUnit.isMelee() && !attacker.hasUnique(UniqueType.CannotCaptureCities)
+        if (city.health == 1)
+            return if (canCaptureCity) 10000 // Capture the city immediately!
+            else 0 // No reason to attack, we won't make any difference
+        
+        if (canCaptureCity && city.health <= BattleDamage.calculateDamageToDefender(attackerUnit, cityUnit).coerceAtLeast(1))
+            return 10000
+            
 
         if (attacker.baseUnit.isMelee()) {
             val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
