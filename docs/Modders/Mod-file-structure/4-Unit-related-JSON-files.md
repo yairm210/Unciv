@@ -81,9 +81,9 @@ Provides a list of names that can be applied to Great People. The Civilopedia wi
 
 Each Great Person has the following structure:
 
-| Attribute    | Type           | Default  | Notes |
-|--------------|----------------|----------|-------|
-| name         | String         | Required | A unique name for the great person. |
-| units        | List of String | Required | A list of Great Person units that this name applies to. Example: "Great Scientist", "Great Engineer", etc. |
-| uniques      | List of String | none     | List of [triggerable uniques](../uniques.md) that are applied to the unit |
-| civilopediaText | List        | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| Attribute       | Type           | Default  | Notes |
+|-----------------|----------------|----------|-------|
+| name            | String         | Required | A unique name for the great person. |
+| units           | List of String | Required | A list of Great Person units that this name applies to. Example: "Great Scientist", "Great Engineer", etc. |
+| uniques         | List of String | none     | List of [triggerable uniques](../uniques.md#triggerable-uniques) that are applied to the unit |
+| civilopediaText | List           | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
