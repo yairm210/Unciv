@@ -82,7 +82,7 @@
         },
         "uniques": [
             "[+1 Culture] [in all cities]",
-            "Get the leader title of [The Consul]"
+            "Get the leader title of [Consul]"
         ],
         "policies": [
             {
@@ -361,7 +361,7 @@
         },
         "uniques": [
             "[+25]% [Gold] [in capital]",
-            "Get the leader title of [The Doge]"
+            "Get the leader title of [Doge]"
         ],
         "policies": [
             {
