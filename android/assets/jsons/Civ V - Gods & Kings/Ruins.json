@@ -36,6 +36,7 @@
         "notification": "We have found survivors in the ruins! Population added to [cityName].",
         "uniques": [
             "[+1] population in a random city", // This can't be easily added to cityFilter, as it is non-deterministic
+            "Only available <if [Palace] is constructed>",
             "Play [wagon] sound"
         ],
         "color": "#81c784"
