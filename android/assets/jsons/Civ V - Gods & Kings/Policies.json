@@ -11,7 +11,8 @@
         },
         "uniques": [
             "[+3 Culture] [in capital]",
-            "[-25]% Culture cost of natural border growth [in all cities]"
+            "[-25]% Culture cost of natural border growth [in all cities]",
+            "Get the leader title of [Lord]"
         ],
         "policies": [
             {
@@ -79,7 +80,10 @@
             "Domination": 10,
             "Scientific": 10
         },
-        "uniques": ["[+1 Culture] [in all cities]"],
+        "uniques": [
+            "[+1 Culture] [in all cities]",
+            "Get the leader title of [The Consul]"
+        ],
         "policies": [
             {
                 "name": "Republic",
@@ -150,7 +154,8 @@
         "uniques": [
             "[+33]% Strength <vs [Barbarian] units>",
             "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
-            "Notified of new Barbarian encampments"
+            "Notified of new Barbarian encampments",
+            "Get the leader title of [The Great]"
         ],
         "policies": [
             {
@@ -223,7 +228,8 @@
             "[+100]% Production when constructing [Shrine] buildings [in all cities]",
             "[+100]% Production when constructing [Temple] buildings [in all cities]",
             "Only available <before adopting [Rationalism]>",
-            "[-100]% weight to this choice for AI decisions <when religion is disabled>"
+            "[-100]% weight to this choice for AI decisions <when religion is disabled>",
+            "Get the leader title of [The Pious]"
         ],
         "policies": [
             {
@@ -286,7 +292,8 @@
         },
         "uniques": [
             "[-25]% City-State Influence degradation",
-            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>"
+            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>",
+            "Get the leader title of [The Enlightened]"
         ],
         "policies": [
             {
@@ -352,7 +359,10 @@
             "Domination": 5,
             "Scientific": 5
         },
-        "uniques": ["[+25]% [Gold] [in capital]"],
+        "uniques": [
+            "[+25]% [Gold] [in capital]",
+            "Get the leader title of [The Doge]"
+        ],
         "policies": [
             {
                 "name": "Naval Tradition",
@@ -425,7 +435,8 @@
         },
         "uniques": [
             "[+15]% [Science] <while the empire is happy>",
-            "Only available <before adopting [Piety]>"
+            "Only available <before adopting [Piety]>",
+            "Get the leader title of [The Wise]"
         ],
         "policies": [
             {
@@ -493,7 +504,8 @@
         "uniques": [
             "[+25]% Great Person generation [in all cities]",
             "Only available <before adopting [Autocracy]>",
-            "Only available <before adopting [Order]>"
+            "Only available <before adopting [Order]>",
+            "Get the leader title of [President]"
         ],
         "policies": [
             {
@@ -556,7 +568,8 @@
             "[-33]% maintenance costs <for [All] units>",
             "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
             "Only available <before adopting [Order]>",
-            "Only available <before adopting [Freedom]>"
+            "Only available <before adopting [Freedom]>",
+            "Get the leader title of [The Terrible]"
         ],
         "policies": [
             {
@@ -624,7 +637,8 @@
         "uniques": [
             "[+1 Happiness] [in all cities]",
             "Only available <before adopting [Autocracy]>",
-            "Only available <before adopting [Freedom]>"
+            "Only available <before adopting [Freedom]>",
+            "Get the leader title of [Chairman]"
         ],
         "policies": [
             {
