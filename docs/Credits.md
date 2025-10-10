@@ -182,6 +182,7 @@ By Basil:
 
 - Worker-Barbarians
 - Settler-Ancient era
+- Great Admiral
 
 ### HexaRealm
 
