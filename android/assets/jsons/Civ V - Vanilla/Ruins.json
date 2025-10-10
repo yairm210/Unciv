@@ -25,10 +25,7 @@
     {
         "name": "survivors (adds population to a city)",
         "notification": "We have found survivors in the ruins! Population added to [cityName].",
-        "uniques": [
-            "Only available <if [Palace] is constructed>",
-            "[+1] population in a random city" // This can't be easily added to cityFilter, as it is non-deterministic
-        ],
+        "uniques": ["[+1] population in a random city"], // This can't be easily added to cityFilter, as it is non-deterministic
 		"color": "#81c784"
     },
     {
