@@ -185,6 +185,23 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Total of each turn Science during Research Agreement */
     internal var totalOfScienceDuringRA = 0
 
+    // how quickly do we forget past relationships?
+    // used in AI denounce logic (values updated for all major civs, incase player resigns)
+    // a period of 1 is equivalent to only remembering our opinion from the last turn - sudden drop in opinion is required to denounce
+    // a period of >1 means we keep some memory of opinions from previous turns
+    private fun emaPeriod() = civInfo.gameInfo.speed.dealDuration // value of 1 is useful for debugging
+    // the smoothed opinion perpetually converges with the actual opinion, updated each turn
+    internal var smoothedOpinionOfOtherCiv = 0f
+        private set
+    // needed as a cache because the opinion value is saved right before the automation logic runs - but we want to use the one from the previous turn
+    private var currentSmoothedOpinionOfOtherCiv = 0f
+
+    // smoothing formula = (value + average * (period - 1)) / period
+    internal fun saveOpinionOfOtherCiv() {
+        smoothedOpinionOfOtherCiv = currentSmoothedOpinionOfOtherCiv
+        currentSmoothedOpinionOfOtherCiv = (opinionOfOtherCiv() + smoothedOpinionOfOtherCiv * (emaPeriod() - 1)) / emaPeriod()
+    }
+
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
@@ -194,6 +211,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA = totalOfScienceDuringRA
+        toReturn.smoothedOpinionOfOtherCiv = smoothedOpinionOfOtherCiv
+        toReturn.currentSmoothedOpinionOfOtherCiv = currentSmoothedOpinionOfOtherCiv
         return toReturn
     }
 
@@ -680,14 +699,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun denounce() {
         activateDenounceEffects()
+        // legacy code for AI to counter-denounce
+        /*
         if (otherCiv().isAI())
             otherCivDiplomacy().activateDenounceEffects()
+        */
     }
     
     private fun activateDenounceEffects() {
         setFlag(DiplomacyFlags.Denunciation, 30)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
         
+        // TODO: make denouncement more impactful with a popup
         otherCiv().addNotification(
             "[${civInfo.civName}] has denounced us!",
             NotificationCategory.Diplomacy,

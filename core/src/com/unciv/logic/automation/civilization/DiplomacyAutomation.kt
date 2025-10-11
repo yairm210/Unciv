@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.random.Random
 
 object DiplomacyAutomation {
@@ -460,5 +461,41 @@ object DiplomacyAutomation {
         return otherCiv.tradeRequests.filter { request -> request.requestingCiv == civInfo.civName }
             .any { trade -> trade.trade.ourOffers.any { offer -> offer.name == offerName }
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
+    }
+
+    // denounce likelyhood determined by current relationship and how rapidly our opinion of them has declined
+    internal fun denounce(civInfo: Civilization) {
+        // not able to denounce if we are at war, signed DoF, or already denounced them
+        civInfo.diplomacy.values.filter { 
+            it.otherCiv().isMajorCiv() && ! (
+                it.diplomaticStatus == DiplomaticStatus.War 
+                    || it.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                    || it.hasFlag(DiplomacyFlags.Denunciation)
+            )
+        }.forEach {
+            val denounceWillingnessModifier = 1 // TODO: apply denounceWillingness personality trait
+            /*
+            this is not an official formula - modify or replace if needed
+            
+            to view in graphing calculator: -50 * 1.005 ^ x
+            
+            short summary:
+                - more likely to denounce if opinion drops rapidly
+                - less likely to denounce friends
+            
+            with the current formula, excluding decounceWillingness, the AI will denounce if opinion drops rapidly from:
+                115 to 50
+                50 to 0
+                -10 to -50
+                -70 to -100
+            
+            what "quickly" means depends on the configured emaPeriod - see DiplomacyManager
+            */
+            val requiredOpinionChange: Float = -50 * denounceWillingnessModifier * 1.005f.pow(it.opinionOfOtherCiv())
+            // this compares our current opinion with the smoothed opinion
+            val opinionChange = it.opinionOfOtherCiv() - it.smoothedOpinionOfOtherCiv
+            if (opinionChange <= requiredOpinionChange)
+                it.denounce()
+        }
     }
 }

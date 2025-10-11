@@ -24,6 +24,7 @@ object DiplomacyTurnManager {
         nextTurnFlags()
         if (civInfo.isCityState && otherCiv().isMajorCiv())
             nextTurnCityStateInfluence()
+        saveOpinionOfOtherCiv()
     }
 
     private fun DiplomacyManager.removeUntenableTrades() {
