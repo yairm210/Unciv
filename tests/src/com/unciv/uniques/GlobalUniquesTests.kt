@@ -728,6 +728,23 @@ class GlobalUniquesTests {
 
     // endregion
 
+    // region Can carry air units
+
+    @Test
+    fun testCarryExtraAirUnits() {
+        game.makeHexagonalMap(5)
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2.Zero)
+        val city = game.addCity(civInfo, tile, true)
+        Assert.assertEquals(6, city.getMaxAirUnits())
+        city.cityConstructions.addBuilding(game.createBuilding("Can carry [6] extra [Air] units <in this city>"))
+        Assert.assertEquals(12, city.getMaxAirUnits())
+        city.cityConstructions.addBuilding(game.createBuilding("Can carry [-3] extra [Air] units <in this city>"))
+        Assert.assertEquals(9, city.getMaxAirUnits())
+    }
+
+    // endregion
+
     // endregion
 
 }
