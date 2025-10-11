@@ -208,6 +208,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
         toReturn.lastUnitId = lastUnitId
+        toReturn.greatPeopleBorn.addAll(greatPeopleBorn)
 
         return toReturn
     }
