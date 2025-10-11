@@ -12,9 +12,12 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
@@ -639,6 +642,30 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             if (unit.matchesFilter(unique.params[0])) {
                 unit.promotions.addPromotion(unique.params[1], true)
             }
+        }
+
+        // Apply the Great Person name if available
+        if (unit.isGreatPerson()) {
+            civInfo.gameInfo.ruleset.greatPeople.values
+                // Select only the available great people
+                .filter {
+                    it.units.contains(baseUnit.name) && // Only the associated Great Person type
+                    it.name !in civInfo.gameInfo.greatPeopleBorn && // It hasn't been born yet
+                    it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                        .none { unique -> !unique.conditionalsApply(unit.cache.state) } &&
+                    it.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                        .none { unique -> unique.conditionalsApply(unit.cache.state) }
+                }
+                .randomOrNull()
+                ?.let {
+                    unit.instanceName = it.name
+                    civInfo.gameInfo.greatPeopleBorn.add(it.name)
+                    // Trigger any associated uniques for the Great Person
+                    for (unique in it.uniqueObjects) {
+                        if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(unit.cache.state))
+                            UniqueTriggerActivation.triggerUnique(unique, unit)
+                    }
+                }
         }
 
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption

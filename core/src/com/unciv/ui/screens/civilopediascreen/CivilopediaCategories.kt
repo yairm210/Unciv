@@ -108,6 +108,12 @@ enum class CivilopediaCategories (
         "OtherIcons/Score",
         { ruleset, _ -> ruleset.victories.values }
     ),
+    GreatPeople("Great People",
+        CivilopediaImageGetters.greatPerson,
+        KeyboardBinding.PediaGreatPeople,
+        "PolicyIcons/Educated Elite",
+        { ruleset, _ -> ruleset.greatPeople.values }
+    ),
     Difficulty ("Difficulty levels",
         getImage = null,
         KeyboardBinding.PediaDifficulties,

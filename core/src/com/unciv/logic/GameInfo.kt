@@ -146,6 +146,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Volatile
     var customSaveLocation: String? = null
 
+    /** List of Great People names that have been born in this game. */
+    var greatPeopleBorn = mutableListOf<String>()
+
     //endregion
     //region Fields - Transient
 
@@ -205,6 +208,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
         toReturn.lastUnitId = lastUnitId
+        toReturn.greatPeopleBorn.addAll(greatPeopleBorn)
 
         return toReturn
     }
