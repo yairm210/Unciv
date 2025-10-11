@@ -112,6 +112,7 @@ open class RulesetValidator protected constructor(
         addRuinsErrors(lines)
         addPromotionErrors(lines)
         addUnitTypeErrors(lines)
+        addGreatPersonErrors(lines)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
         addEventErrors(lines)
@@ -481,6 +482,18 @@ open class RulesetValidator protected constructor(
             if (unitType.movementType !in unitMovementTypes)
                 lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
             uniqueValidator.checkUniques(unitType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
+
+    protected open fun addGreatPersonErrors(lines: RulesetErrorList) {
+        val unitNames = ruleset.units.values.map { it.name }.toTypedArray()
+        for (greatPerson in ruleset.greatPeople.values) {
+            for (unit in greatPerson.units) {
+                if (unit !in unitNames) {
+                    lines.add("Great Person \"${greatPerson.name}\" references a unit \"${unit}\" that does not exist", sourceObject = greatPerson)
+                }
+                uniqueValidator.checkUniques(greatPerson, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            }
         }
     }
 
