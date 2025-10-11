@@ -156,10 +156,14 @@ class VictoryScreen(
             ?: Victory()  // This contains our default victory/defeat texts
         if (winningCiv == playerCiv.civName) {
             displayWonOrLost("You have won a [$victoryType] Victory!", victory.victoryString)
-            music.chooseTrack(playerCiv.civName, listOf(MusicMood.Victory, MusicMood.Theme), EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+            if (!music.chooseTrack(victory.name, MusicMood.Victory, EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SuffixMustMatch))) {
+                music.chooseTrack(playerCiv.civName, listOf(MusicMood.Victory, MusicMood.Theme), EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+            }
         } else {
             displayWonOrLost("[$winningCiv] has won a [$victoryType] Victory!", victory.defeatString)
-            music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+            if (!music.chooseTrack(victory.name, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SuffixMustMatch))) {
+                music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+            }
         }
         worldScreen.autoPlay.stopAutoPlay()
     }

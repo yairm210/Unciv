@@ -679,29 +679,44 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     fun denounce() {
-        setModifier(DiplomaticModifiers.Denunciation, -35f)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
+        activateDenounceEffects()
+        if (otherCiv().isAI())
+            otherCivDiplomacy().activateDenounceEffects()
+    }
+    
+    private fun activateDenounceEffects() {
         setFlag(DiplomacyFlags.Denunciation, 30)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
-
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
+        
+        otherCiv().addNotification(
+            "[${civInfo.civName}] has denounced us!",
+            NotificationCategory.Diplomacy,
+            NotificationIcon.Diplomacy, civInfo.civName
+        )
+        
         // Denounciation results in removal of embasies for both sides
         civInfo.diplomacyFunctions.removeEmbassies(otherCiv())
 
-        otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
-            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
-
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
         getCommonKnownCivsWithSpectators().forEach { thirdCiv ->
-            thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-            if (thirdCiv.isSpectator()) return@forEach
-            val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv())!!.relationshipIgnoreAfraid()
-            val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)!!
-            when (thirdCivRelationshipWithOtherCiv) {
-                RelationshipLevel.Unforgivable -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
-                RelationshipLevel.Enemy -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
-                RelationshipLevel.Friend -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
-                RelationshipLevel.Ally -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
+            thirdCiv.addNotification(
+                "[${civInfo.civName}] has denounced [${otherCiv().civName}]!",
+                NotificationCategory.Diplomacy,
+                civInfo.civName, NotificationIcon.Diplomacy, otherCivName
+            )
+            
+            if (thirdCiv.isSpectator())
+                return@forEach
+
+            // their relationship with us
+            val thirdCivRelationship = thirdCiv.getDiplomacyManager(civInfo)!!
+            // their relationship with the civ we are denouncing
+            val thirdCivRelationshipWithTarget = thirdCiv.getDiplomacyManager(otherCiv())!!.relationshipIgnoreAfraid()
+            when (thirdCivRelationshipWithTarget) {
+                RelationshipLevel.Unforgivable -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
+                RelationshipLevel.Enemy -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
+                RelationshipLevel.Friend -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
+                RelationshipLevel.Ally -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
                 else -> {}
             }
         }

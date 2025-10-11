@@ -53,6 +53,22 @@ object Concurrency {
             }
         }
     }
+    
+    fun parallelize(
+        functions: List<() -> Unit>,
+        parallelize: Boolean = true
+    ){
+        if (parallelize)
+            runBlocking {
+                functions
+                    .map { function -> launchOnNonDaemonThreadPool { function() } }
+                    .map { it.join() }
+            }
+        else 
+            runBlocking { // entirely sequential
+                functions.forEach { function -> function() }
+            }
+    }
 
     /** Non-blocking version of [runBlocking]. Runs on a daemon thread pool by default. Use this for code that does not necessarily need to finish executing. */
     fun run(
