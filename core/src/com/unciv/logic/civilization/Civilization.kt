@@ -216,6 +216,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     var totalCultureForContests = 0
     var totalFaithForContests = 0
 
+    /**
+     * The title for the Civilization's leader.
+     *
+     * When empty, will display the nation's display name, otherwise will parse it with [leadername]. For example: "King [leadername]"
+     */
     var leaderTitle = ""
 
     /**
