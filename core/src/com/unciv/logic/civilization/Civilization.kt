@@ -282,6 +282,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.neutralRoads = neutralRoads
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
+        toReturn.leaderTitle = leaderTitle
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
@@ -691,8 +692,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        val title = if (leaderTitle.isEmpty()) "" else ", " + leaderTitle.tr(hideIcons = true)
-        return nation.getLeaderDisplayName().tr(hideIcons = true) + title +
+        val title = if (leaderTitle.isEmpty()) "[leadername]" else leaderTitle
+        return title.replace("leadername", nation.getLeaderDisplayName()).tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"

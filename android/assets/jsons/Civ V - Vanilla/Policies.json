@@ -12,7 +12,7 @@
         "uniques": [
             "[+3 Culture] [in capital]",
             "[-25]% Culture cost of natural border growth [in all cities]",
-            "Get the leader title of [Lord]"
+            "Get the leader title of [Lord [leadername]]"
         ],
         "policies": [
             {
@@ -81,7 +81,7 @@
         },
         "uniques": [
             "[+1 Culture] [in all cities]",
-            "Get the leader title of [Consul]"
+            "Get the leader title of [Consul [leadername]]"
         ],
         "policies": [
 
@@ -153,7 +153,7 @@
             "[+25]% Strength <vs [Barbarian] units>",
             "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
             "Notified of new Barbarian encampments",
-            "Get the leader title of [The Great]"
+            "Get the leader title of [[leadername] the Great]"
         ],
         "policies": [
             {
@@ -225,7 +225,7 @@
         "uniques": [
             "[+15]% Production when constructing [Culture] buildings [in all cities]",
             "Only available <before adopting [Rationalism]>",
-            "Get the leader title of [The Pious]"
+            "Get the leader title of [[leadername] the Pious]"
         ],
         "policies": [
             {
@@ -294,7 +294,7 @@
         "uniques": [
             "[-25]% City-State Influence degradation",
             "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>",
-            "Get the leader title of [The Enlightened]"
+            "Get the leader title of [[leadername] the Enlightened]"
         ],
         "policies": [
             {
@@ -362,7 +362,7 @@
         },
         "uniques": [
             "[+25]% [Gold] [in capital]",
-            "Get the leader title of [Doge]"
+            "Get the leader title of [Doge [leadername]]"
         ],
         "policies": [
             {
@@ -428,7 +428,7 @@
         "uniques": [
             "Science gained from research agreements [+50]%",
             "Only available <before adopting [Piety]>",
-            "Get the leader title of [The Wise]"
+            "Get the leader title of [[leadername] the Wise]"
         ],
         "policies": [
             {
@@ -495,7 +495,7 @@
             "[+25]% Great Person generation [in all cities]",
             "Only available <before adopting [Autocracy]>",
             "Only available <before adopting [Order]>",
-            "Get the leader title of [President]"
+            "Get the leader title of [President [leadername]]"
         ],
         "policies": [
             {
@@ -557,7 +557,7 @@
             "[-33]% maintenance costs <for [All] units>",
             "Only available <before adopting [Order]>",
             "Only available <before adopting [Freedom]>",
-            "Get the leader title of [The Terrible]"
+            "Get the leader title of [[leadername] the Terrible]"
         ],
         "policies": [
             {
@@ -623,7 +623,7 @@
             "[+1 Happiness] [in all cities]",
             "Only available <before adopting [Autocracy]>",
             "Only available <before adopting [Freedom]>",
-            "Get the leader title of [Chairman]"
+            "Get the leader title of [Chairman [leadername]]"
         ],
         "policies": [
             {
