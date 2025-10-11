@@ -112,7 +112,7 @@ open class RulesetValidator protected constructor(
         addRuinsErrors(lines)
         addPromotionErrors(lines)
         addUnitTypeErrors(lines)
-        addGreatPersonErrors(lines)
+        addGreatPeopleErrors(lines)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
         addEventErrors(lines)
@@ -485,15 +485,20 @@ open class RulesetValidator protected constructor(
         }
     }
 
-    protected open fun addGreatPersonErrors(lines: RulesetErrorList) {
-        val unitNames = ruleset.units.values.map { it.name }.toTypedArray()
+    protected open fun addGreatPeopleErrors(lines: RulesetErrorList) {
+        val greatPeopleUnits = ruleset.units.values
+            .filter { it.hasUnique(UniqueType.GreatPerson) }
+            .map { it.name }
         for (greatPerson in ruleset.greatPeople.values) {
-            for (unit in greatPerson.units) {
-                if (unit !in unitNames) {
-                    lines.add("Great Person \"${greatPerson.name}\" references a unit \"${unit}\" that does not exist", sourceObject = greatPerson)
-                }
-                uniqueValidator.checkUniques(greatPerson, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            if (greatPerson.units.isEmpty()) {
+                lines.add("Great Person \"${greatPerson.name}\" doesn't reference any units. Add an array of applicable great people units. For example: \"units\": [\"Great Engineer\"]", sourceObject = greatPerson)
             }
+            for (unit in greatPerson.units) {
+                if (unit !in greatPeopleUnits) {
+                    lines.add("Great Person \"${greatPerson.name}\" references a great person unit \"${unit}\" that does not exist", sourceObject = greatPerson)
+                }
+            }
+            uniqueValidator.checkUniques(greatPerson, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
