@@ -158,6 +158,14 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.GetLeaderTitle -> {
+                if (!civInfo.isMajorCiv()) return null
+                return {
+                    civInfo.leaderTitle = unique.params[0]
+                    true
+                }
+            }
+
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
