@@ -241,8 +241,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Get the leader title of [comment]"
-	Example: "Get the leader title of [comment]"
+??? example  "Get the leader title of [leaderTitle]"
+	Example: "Get the leader title of [Sovereign [leaderName] the Great]"
 
 	This unique is automatically hidden from users.
 
@@ -3979,6 +3979,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement excluding 'Cancel improvement order'
+*[leaderTitle]: Provides a leader title that includes the leader's name in parameters.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 Note that this must use the Mod name as Unciv displays it, not the Repository name.
 There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.

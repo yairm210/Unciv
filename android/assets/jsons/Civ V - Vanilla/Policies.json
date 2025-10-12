@@ -11,8 +11,7 @@
         },
         "uniques": [
             "[+3 Culture] [in capital]",
-            "[-25]% Culture cost of natural border growth [in all cities]",
-            "Get the leader title of [Lord [leadername]]"
+            "[-25]% Culture cost of natural border growth [in all cities]"
         ],
         "policies": [
             {
@@ -64,7 +63,8 @@
                 "name": "Tradition Complete",
                 "uniques": [
                     "[+15]% growth [in all cities]",
-                    "[+2 Food] [in all cities]"
+                    "[+2 Food] [in all cities]",
+                    "Get the leader title of [Lord [leaderName]]"
                 ]
             }
         ]
@@ -80,8 +80,7 @@
             "Scientific": 20
         },
         "uniques": [
-            "[+1 Culture] [in all cities]",
-            "Get the leader title of [Consul [leadername]]"
+            "[+1 Culture] [in all cities]"
         ],
         "policies": [
 
@@ -135,7 +134,10 @@
             },
             {
                 "name": "Liberty Complete",
-                "uniques": ["Free Great Person"]
+                "uniques": [
+                    "Free Great Person",
+                    "Get the leader title of [Consul [leaderName]]"
+                ]
             }
         ]
     },
@@ -152,8 +154,7 @@
         "uniques": [
             "[+25]% Strength <vs [Barbarian] units>",
             "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
-            "Notified of new Barbarian encampments",
-            "Get the leader title of [[leadername] the Great]"
+            "Notified of new Barbarian encampments"
         ],
         "policies": [
             {
@@ -207,7 +208,8 @@
             {
                 "name": "Honor Complete",
                 "uniques": [
-                    "Earn [10]% of killed [Military] unit's [Cost] as [Gold]"
+                    "Earn [10]% of killed [Military] unit's [Cost] as [Gold]",
+                    "Get the leader title of [[leaderName] the Great]"
                 ]
             }
         ]
@@ -224,8 +226,7 @@
         },
         "uniques": [
             "[+15]% Production when constructing [Culture] buildings [in all cities]",
-            "Only available <before adopting [Rationalism]>",
-            "Get the leader title of [[leadername] the Pious]"
+            "Only available <before adopting [Rationalism]>"
         ],
         "policies": [
             {
@@ -276,7 +277,8 @@
             {
                 "name": "Piety Complete",
                 "uniques": [
-                    "[-10]% Culture cost of adopting new Policies"
+                    "[-10]% Culture cost of adopting new Policies",
+                    "Get the leader title of [[leaderName] the Pious]"
                 ]
             }
         ]
@@ -293,8 +295,7 @@
         },
         "uniques": [
             "[-25]% City-State Influence degradation",
-            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>",
-            "Get the leader title of [[leadername] the Enlightened]"
+            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>"
         ],
         "policies": [
             {
@@ -345,7 +346,8 @@
                 "name": "Patronage Complete",
                 "uniques": [
                     "Influence of all other civilizations with all city-states degrades [33]% faster",
-                    "Triggers the following global alert: [Our influence with City-States has started dropping faster!]"
+                    "Triggers the following global alert: [Our influence with City-States has started dropping faster!]",
+                    "Get the leader title of [[leaderName] the Enlightened]"
                 ]
             }
         ]
@@ -360,10 +362,7 @@
             "Domination": 20,
             "Scientific": 10
         },
-        "uniques": [
-            "[+25]% [Gold] [in capital]",
-            "Get the leader title of [Doge [leadername]]"
-        ],
+        "uniques": ["[+25]% [Gold] [in capital]"],
         "policies": [
             {
                 "name": "Naval Tradition",
@@ -410,7 +409,8 @@
             {
                 "name": "Commerce Complete",
                 "uniques": [
-                    "[+1 Gold] from every specialist [in all cities]"
+                    "[+1 Gold] from every specialist [in all cities]",
+                    "Get the leader title of [Doge [leaderName]]"
                 ]
             }
         ]
@@ -427,8 +427,7 @@
         },
         "uniques": [
             "Science gained from research agreements [+50]%",
-            "Only available <before adopting [Piety]>",
-            "Get the leader title of [[leadername] the Wise]"
+            "Only available <before adopting [Piety]>"
         ],
         "policies": [
             {
@@ -477,6 +476,7 @@
                 "name": "Rationalism Complete",
                 "uniques": [
                     "[+1 Gold] from all [Science] buildings",
+                    "Get the leader title of [[leaderName] the Wise]"
                 ]
             }
         ]
@@ -494,8 +494,7 @@
         "uniques": [
             "[+25]% Great Person generation [in all cities]",
             "Only available <before adopting [Autocracy]>",
-            "Only available <before adopting [Order]>",
-            "Get the leader title of [President [leadername]]"
+            "Only available <before adopting [Order]>"
         ],
         "policies": [
             {
@@ -539,6 +538,7 @@
                 "uniques": [
                     "[+100]% Yield from every [Great Improvement]",
                     "[+50]% Golden Age length",
+                    "Get the leader title of [President [leaderName]]"
                 ]
             }
         ]
@@ -556,8 +556,7 @@
         "uniques": [
             "[-33]% maintenance costs <for [All] units>",
             "Only available <before adopting [Order]>",
-            "Only available <before adopting [Freedom]>",
-            "Get the leader title of [[leadername] the Terrible]"
+            "Only available <before adopting [Freedom]>"
         ],
         "policies": [
             {
@@ -604,7 +603,8 @@
             {
                 "name": "Autocracy Complete",
                 "uniques": [
-                    "[+20]% Strength <when attacking> <for [Military] units> <for [30] turns>"
+                    "[+20]% Strength <when attacking> <for [Military] units> <for [30] turns>",
+                    "Get the leader title of [[leaderName] the Terrible]"
                 ]
             }
         ]
@@ -622,8 +622,7 @@
         "uniques": [
             "[+1 Happiness] [in all cities]",
             "Only available <before adopting [Autocracy]>",
-            "Only available <before adopting [Freedom]>",
-            "Get the leader title of [Chairman [leadername]]"
+            "Only available <before adopting [Freedom]>"
         ],
         "policies": [
             {
@@ -672,7 +671,8 @@
             {
                 "name": "Order Complete",
                 "uniques": [
-                    "[+1 Food, +1 Production, +1 Science, +1 Gold, +1 Culture] [in all cities]"
+                    "[+1 Food, +1 Production, +1 Science, +1 Gold, +1 Culture] [in all cities]",
+                    "Get the leader title of [Chairman [leaderName]]"
                 ]
             }
         ]

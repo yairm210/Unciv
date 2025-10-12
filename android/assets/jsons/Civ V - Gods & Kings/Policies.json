@@ -11,8 +11,7 @@
         },
         "uniques": [
             "[+3 Culture] [in capital]",
-            "[-25]% Culture cost of natural border growth [in all cities]",
-            "Get the leader title of [Lord [leadername]]"
+            "[-25]% Culture cost of natural border growth [in all cities]"
         ],
         "policies": [
             {
@@ -65,7 +64,8 @@
                 "name": "Tradition Complete",
                 "uniques": [
                     "[+15]% growth [in all cities]",
-                    "Provides a [Aqueduct] in your first [4] cities for free"
+                    "Provides a [Aqueduct] in your first [4] cities for free",
+                    "Get the leader title of [Lord [name]]"
                 ]
             }
         ]
@@ -80,10 +80,7 @@
             "Domination": 10,
             "Scientific": 10
         },
-        "uniques": [
-            "[+1 Culture] [in all cities]",
-            "Get the leader title of [Consul [leadername]]"
-        ],
+        "uniques": ["[+1 Culture] [in all cities]"],
         "policies": [
             {
                 "name": "Republic",
@@ -137,7 +134,10 @@
             },
             {
                 "name": "Liberty Complete",
-                "uniques": ["Free Great Person"]
+                "uniques": [
+                    "Free Great Person",
+                    "Get the leader title of [Consul [leaderName]]"
+                ]
             }
         ]
     },
@@ -154,8 +154,7 @@
         "uniques": [
             "[+33]% Strength <vs [Barbarian] units>",
             "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
-            "Notified of new Barbarian encampments",
-            "Get the leader title of [[leadername] the Great]"
+            "Notified of new Barbarian encampments"
         ],
         "policies": [
             {
@@ -209,7 +208,8 @@
             {
                 "name": "Honor Complete",
                 "uniques": [
-                    "Earn [10]% of killed [Military] unit's [Cost] as [Gold]"
+                    "Earn [10]% of killed [Military] unit's [Cost] as [Gold]",
+                    "Get the leader title of [[leaderName] the Great]"
                 ]
             }
         ]
@@ -228,8 +228,7 @@
             "[+100]% Production when constructing [Shrine] buildings [in all cities]",
             "[+100]% Production when constructing [Temple] buildings [in all cities]",
             "Only available <before adopting [Rationalism]>",
-            "[-100]% weight to this choice for AI decisions <when religion is disabled>",
-            "Get the leader title of [[leadername] the Pious]"
+            "[-100]% weight to this choice for AI decisions <when religion is disabled>"
         ],
         "policies": [
             {
@@ -275,7 +274,8 @@
                 "name": "Piety Complete",
                 "uniques": [
                     "[Faith] cost of purchasing items in cities [-20]%",
-                    "[+3 Gold, +3 Culture] from every [Holy site]"
+                    "[+3 Gold, +3 Culture] from every [Holy site]",
+                    "Get the leader title of [[leaderName] the Pious]"
                 ]
             }
         ]
@@ -292,8 +292,7 @@
         },
         "uniques": [
             "[-25]% City-State Influence degradation",
-            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>",
-            "Get the leader title of [[leadername] the Enlightened]"
+            "[-100]% weight to this choice for AI decisions <when number of [Remaining [City-State] Civilizations] is less than [2]>"
         ],
         "policies": [
             {
@@ -344,7 +343,8 @@
                 "name": "Patronage Complete",
                 "uniques": [
                     "Influence of all other civilizations with all city-states degrades [33]% faster",
-                    "Triggers the following global alert: [Our influence with City-States has started dropping faster!]"
+                    "Triggers the following global alert: [Our influence with City-States has started dropping faster!]",
+                    "Get the leader title of [[leaderName] the Enlightened]"
                 ]
             }
         ]
@@ -359,10 +359,7 @@
             "Domination": 5,
             "Scientific": 5
         },
-        "uniques": [
-            "[+25]% [Gold] [in capital]",
-            "Get the leader title of [Doge [leadername]]"
-        ],
+        "uniques": ["[+25]% [Gold] [in capital]"],
         "policies": [
             {
                 "name": "Naval Tradition",
@@ -418,7 +415,8 @@
                 "uniques": [
                     "[+1 Gold] from every [Trading post]",
                     "[+100]% Gold from Great Merchant trade missions",
-                    "May buy [Great Merchant] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
+                    "May buy [Great Merchant] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>",
+                    "Get the leader title of [Doge [leaderName]]"
                 ]
             }
         ]
@@ -435,8 +433,7 @@
         },
         "uniques": [
             "[+15]% [Science] <while the empire is happy>",
-            "Only available <before adopting [Piety]>",
-            "Get the leader title of [[leadername] the Wise]"
+            "Only available <before adopting [Piety]>"
         ],
         "policies": [
             {
@@ -486,7 +483,8 @@
                 "name": "Rationalism Complete",
                 "uniques": [
                     "[2] Free Technologies",
-                    "May buy [Great Scientist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
+                    "May buy [Great Scientist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>",
+                    "Get the leader title of [[leaderName] the Wise]"
                 ]
             }
         ]
@@ -504,8 +502,7 @@
         "uniques": [
             "[+25]% Great Person generation [in all cities]",
             "Only available <before adopting [Autocracy]>",
-            "Only available <before adopting [Order]>",
-            "Get the leader title of [President [leadername]]"
+            "Only available <before adopting [Order]>"
         ],
         "policies": [
             {
@@ -549,7 +546,8 @@
                 "uniques": [
                     "[+100]% Yield from every [Great Improvement]",
                     "[+50]% Golden Age length",
-                    "May buy [Great Artist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
+                    "May buy [Great Artist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>",
+                    "Get the leader title of [President [leaderName]]"
                 ]
             }
         ]
@@ -568,8 +566,7 @@
             "[-33]% maintenance costs <for [All] units>",
             "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
             "Only available <before adopting [Order]>",
-            "Only available <before adopting [Freedom]>",
-            "Get the leader title of [[leadername] the Terrible]"
+            "Only available <before adopting [Freedom]>"
         ],
         "policies": [
             {
@@ -620,6 +617,7 @@
                 "uniques": [
                     "[+25]% Strength <when attacking> <for [Military] units> <for [50] turns>",
                     "May buy [Great General] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>",
+                    "Get the leader title of [[leaderName] the Terrible]"
                 ]
             }
         ]
@@ -637,8 +635,7 @@
         "uniques": [
             "[+1 Happiness] [in all cities]",
             "Only available <before adopting [Autocracy]>",
-            "Only available <before adopting [Freedom]>",
-            "Get the leader title of [Chairman [leadername]]"
+            "Only available <before adopting [Freedom]>"
         ],
         "policies": [
             {
@@ -690,7 +687,8 @@
                 "name": "Order Complete",
                 "uniques": [
                     "[+2 Food, +2 Production, +2 Science, +2 Gold, +2 Culture] [in all cities]",
-                    "May buy [Great Engineer] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
+                    "May buy [Great Engineer] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>",
+                    "Get the leader title of [Chairman [leaderName]]"
                 ]
             }
         ]

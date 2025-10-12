@@ -52,6 +52,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
@@ -219,7 +220,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /**
      * The title for the Civilization's leader.
      *
-     * When empty, will display the nation's display name, otherwise will parse it with [leadername]. For example: "King [leadername]"
+     * When empty, will display the nation's display name, otherwise will parse it with [leaderName]. For example: "King [leaderName]"
      */
     var leaderTitle = ""
 
@@ -697,8 +698,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        val title = if (leaderTitle.isEmpty()) "[leadername]" else leaderTitle
-        return title.replace("leadername", nation.getLeaderDisplayName()).tr(hideIcons = true) +
+        val leaderDisplayName = nation.getLeaderDisplayName()
+        var title = if (leaderTitle.isEmpty()) leaderDisplayName else leaderTitle.fillPlaceholders(leaderDisplayName)
+        return title.tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"
