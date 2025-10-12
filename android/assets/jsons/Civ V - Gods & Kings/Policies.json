@@ -65,7 +65,7 @@
                 "uniques": [
                     "[+15]% growth [in all cities]",
                     "Provides a [Aqueduct] in your first [4] cities for free",
-                    "Get the leader title of [Lord [name]]"
+                    "Get the leader title of [Lord [leaderName]]"
                 ]
             }
         ]
