@@ -79,9 +79,7 @@
             "Domination": 20,
             "Scientific": 20
         },
-        "uniques": [
-            "[+1 Culture] [in all cities]"
-        ],
+        "uniques": ["[+1 Culture] [in all cities]"],
         "policies": [
 
             {
