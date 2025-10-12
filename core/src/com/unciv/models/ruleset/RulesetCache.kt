@@ -10,7 +10,9 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.validation.RulesetErrorList
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.getRelativeTextDistance
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import java.util.concurrent.ConcurrentHashMap
 
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
@@ -23,41 +25,56 @@ object RulesetCache : HashMap<String, Ruleset>() {
 
     /** Returns error lines from loading the rulesets, so we can display the errors to users */
     fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false): List<String> {
-        val newRulesets = HashMap<String, Ruleset>()
-
-        for (ruleset in BaseRuleset.entries) {
+        val parallel = true // set to false to debug loading issues more easily
+        val startTimeMs = System.currentTimeMillis()
+        val newRulesets = ConcurrentHashMap<String, Ruleset>()
+        fun getBuiltinRulesetFileHandle(ruleset: BaseRuleset): FileHandle {
             val fileName = "jsons/${ruleset.fullName}"
-            val fileHandle =
-                if (consoleMode) FileHandle(fileName)
-                else Gdx.files.internal(fileName)
+            return if (consoleMode) FileHandle(fileName)
+            else Gdx.files.internal(fileName)
+        }
+        
+        fun loadBuiltinRuleset(ruleset: BaseRuleset) {
+            val fileHandle = getBuiltinRulesetFileHandle(ruleset)
             newRulesets[ruleset.fullName] = Ruleset().apply {
                 name = ruleset.fullName
                 load(fileHandle)
             }
         }
-        this.putAll(newRulesets)
+
+        // Base rulesets must be available for fallback for missing parts of custom rulesets
+        val builtinRulesetTasks = BaseRuleset.entries.map {
+            { loadBuiltinRuleset(it) } // return a *function* that loads the ruleset when called
+        }
+        Concurrency.parallelize(builtinRulesetTasks, parallel)
+        
+        this.putAll(newRulesets) // Make base rulesets available while loading other mods
 
         val errorLines = ArrayList<String>()
         if (!noMods) {
             val modsHandles = if (consoleMode) FileHandle("mods").list()
                 else UncivGame.Current.files.getModsFolder().list()
 
+            val modRulesetTasks = ArrayList<() -> Unit>()
             for (modFolder in modsHandles) {
                 if (modFolder.name().startsWith('.')) continue
                 if (!modFolder.isDirectory) continue
-                try {
-                    val modRuleset = Ruleset()
-                    modRuleset.name = modFolder.name()
-                    modRuleset.load(modFolder.child("jsons"))
-                    modRuleset.folderLocation = modFolder
-                    newRulesets[modRuleset.name] = modRuleset
-                    Log.debug("Mod loaded successfully: %s", modRuleset.name)
-                } catch (ex: Exception) {
-                    errorLines += "Exception loading mod '${modFolder.name()}':"
-                    errorLines += "  ${ex.localizedMessage}"
-                    errorLines += "  ${ex.cause?.localizedMessage}"
+                modRulesetTasks.add {
+                    try {
+                        val modRuleset = Ruleset()
+                        modRuleset.name = modFolder.name()
+                        modRuleset.load(modFolder.child("jsons"))
+                        modRuleset.folderLocation = modFolder
+                        newRulesets[modRuleset.name] = modRuleset
+                        Log.debug("Mod loaded successfully: %s", modRuleset.name)
+                    } catch (ex: Exception) {
+                        errorLines += "Exception loading mod '${modFolder.name()}':"
+                        errorLines += "  ${ex.localizedMessage}"
+                        errorLines += "  ${ex.cause?.localizedMessage}"
+                    }
                 }
             }
+            Concurrency.parallelize(modRulesetTasks, parallel)
             if (Log.shouldLog()) for (line in errorLines) Log.debug(line)
         }
 
@@ -66,10 +83,12 @@ object RulesetCache : HashMap<String, Ruleset>() {
         this.clear()
         this.putAll(newRulesets)
 
+        val endTimeMs = System.currentTimeMillis()
+        val loadTime = endTimeMs - startTimeMs
+        println("Loaded ${this.size} rulesets in ${loadTime}ms")
         return errorLines
     }
-
-
+    
     fun getVanillaRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
     fun getSortedBaseRulesets(): List<String> {
