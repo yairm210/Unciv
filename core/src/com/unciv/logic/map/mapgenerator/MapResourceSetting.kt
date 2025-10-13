@@ -17,7 +17,7 @@ enum class MapResourceSetting(
     ;
     private fun active() = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java) == null
     companion object {
-        fun activeLabels() = values().filter { it.active() }.map { it.label }
-        fun safeValueOf(label: String) = values().firstOrNull { it.label == label } ?: default
+        fun activeLabels() = entries.filter { it.active() }.map { it.label }
+        fun safeValueOf(label: String) = entries.firstOrNull { it.label == label } ?: default
     }
 }

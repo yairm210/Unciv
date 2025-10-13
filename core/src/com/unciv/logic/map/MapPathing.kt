@@ -16,29 +16,29 @@ object MapPathing {
      */
     @Suppress("UNUSED_PARAMETER") // While `from` is unused, this function should stay close to the signatures expected by the AStar and getPath `heuristic` parameter.
     @Readonly
-    private fun roadPreferredMovementCost(unit: MapUnit, from: Tile, to: Tile): Float{
+    private fun roadPreferredMovementCost(civ: Civilization, from: Tile, to: Tile): Float{
         // hasRoadConnection accounts for civs that treat jungle/forest as roads
         // Ignore road over river penalties.
-        if ((to.hasRoadConnection(unit.civ, false) || to.hasRailroadConnection(false)))
+        if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false)))
             return .5f
 
         return 1f
     }
 
     @Readonly
-    fun isValidRoadPathTile(unit: MapUnit, tile: Tile): Boolean {
+    fun isValidRoadPathTile(civ: Civilization, tile: Tile): Boolean {
         val roadImprovement = tile.ruleset.roadImprovement
         val railRoadImprovement = tile.ruleset.railroadImprovement
         
         if (tile.isWater) return false
         if (tile.isImpassible()) return false
-        if (!unit.civ.hasExplored(tile)) return false
-        if (!tile.canCivPassThrough(unit.civ)) return false
+        if (!civ.hasExplored(tile)) return false
+        if (!tile.canCivPassThrough(civ)) return false
         
-        return tile.hasRoadConnection(unit.civ, false)
+        return tile.hasRoadConnection(civ, false)
                 || tile.hasRailroadConnection(false)
-                || roadImprovement != null && tile.improvementFunctions.canBuildImprovement(roadImprovement, unit.cache.state)
-                || railRoadImprovement != null && tile.improvementFunctions.canBuildImprovement(railRoadImprovement, unit.cache.state)
+                || roadImprovement != null && tile.improvementFunctions.canBuildImprovement(roadImprovement, civ.state)
+                || railRoadImprovement != null && tile.improvementFunctions.canBuildImprovement(railRoadImprovement,civ.state)
     }
 
     /**
@@ -46,14 +46,14 @@ object MapPathing {
      *
      * This function uses the A* search algorithm to find an optimal path for road construction between two specified tiles.
      *
-     * @param unit The unit that will construct the road.
+     * @param civ The civlization that will construct the road.
      * @param startTile The starting tile of the path.
      * @param endTile The destination tile of the path.
      * @return A sequence of tiles representing the path from startTile to endTile, or null if no valid path is found.
      */
     @Readonly
-    fun getRoadPath(unit: MapUnit, startTile: Tile, endTile: Tile): List<Tile>?{
-        return getPath(unit,
+    fun getRoadPath(civ: Civilization, startTile: Tile, endTile: Tile): List<Tile>? {
+        return getConnection(civ,
             startTile,
             endTile,
             ::isValidRoadPathTile,
@@ -112,13 +112,15 @@ object MapPathing {
     fun getConnection(civ: Civilization,
         startTile: Tile,
         endTile: Tile,
-        predicate: (Civilization, Tile) -> Boolean
+        predicate: (Civilization, Tile) -> Boolean,
+        cost: (Civilization, Tile, Tile) -> Float = { _, _, _ -> 1f },
+        heuristic: (Civilization, Tile, Tile) -> Float = { _, from, to -> from.aerialDistanceTo(to).toFloat() }
     ): List<Tile>? {
         val astar = AStar(
                 startTile,
                 predicate = { tile -> predicate(civ, tile) },
-                cost = { _, _ -> 1f },
-                heuristic = { from, to -> from.aerialDistanceTo(to).toFloat() }
+                cost = { from, to -> cost(civ, from, to) },
+                heuristic = { from, to -> heuristic(civ, from, to) }
         )
         while (true) {
             if (astar.hasEnded()) {
@@ -136,4 +138,5 @@ object MapPathing {
                     .reversed()
         }
     }
+
 }

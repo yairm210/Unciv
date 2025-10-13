@@ -661,6 +661,38 @@ class GlobalUniquesTests {
         }
     }
 
+    @Test
+    fun conditionalFirstCivToAdopt() {
+        val civInfo = game.addCiv()
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
+        // Policy
+        civInfo.policies.run {
+            freePolicies++
+            adopt(getPolicyByName("Tradition"))
+        }
+        // Belief
+        game.addReligion(civInfo)
+        civInfo.religionManager.religion?.run {
+            addBelief("Ancestor Worship")
+            addBelief("Not A Belief")
+        }
+        val tests = listOf(
+            "<if no Civilization has adopted [Oligarchy]>" to 1,
+            "<if no Civilization has adopted [Tradition]>" to 0,
+            "<if no Civilization has adopted [God of Craftsman]>" to 1,
+            "<if no Civilization has adopted [Not A Policy]>" to 1,
+            "<if no Civilization has adopted [Ancestor Worship]>" to 0,
+            "<if no Civilization has adopted [Not A Belief]>" to 1,
+        )
+        Assert.assertEquals(civInfo.gold, 0)
+        for ((test, expected) in tests) {
+            val building = game.createBuilding("Gain [1] [Gold] $test")
+            city.cityConstructions.addBuilding(building)
+            Assert.assertEquals("Conditional `$test` should be: $expected", civInfo.gold, expected)
+            civInfo.addGold(-civInfo.gold) // Reset the gold
+        }
+    }
+
     // endregion
 
     // region Great Persons
@@ -692,6 +724,23 @@ class GlobalUniquesTests {
         val building = game.createBuilding("Gain control over [8] tiles [in this city]")
         city.cityConstructions.addBuilding(building)
         Assert.assertEquals(15, city.getTiles().count())
+    }
+
+    // endregion
+
+    // region Can carry air units
+
+    @Test
+    fun testCarryExtraAirUnits() {
+        game.makeHexagonalMap(5)
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2.Zero)
+        val city = game.addCity(civInfo, tile, true)
+        Assert.assertEquals(6, city.getMaxAirUnits())
+        city.cityConstructions.addBuilding(game.createBuilding("Can carry [6] extra [Air] units <in this city>"))
+        Assert.assertEquals(12, city.getMaxAirUnits())
+        city.cityConstructions.addBuilding(game.createBuilding("Can carry [-3] extra [Air] units <in this city>"))
+        Assert.assertEquals(9, city.getMaxAirUnits())
     }
 
     // endregion
