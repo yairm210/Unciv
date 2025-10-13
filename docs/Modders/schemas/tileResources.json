@@ -11,7 +11,7 @@
               "uniqueItems": true
           },
           "improvement": { "type": "string" },
-          "resourceType": { "enum": ["Strategic", "Luxury", "Bonus"]},
+          "resourceType": { "enum": ["Strategic", "Luxury", "Bonus"], "default": "Bonus" },
           "revealedBy": { "type": "string" },
           "improvedBy": {
               "type": "array",
@@ -36,7 +36,7 @@
           "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
       },
       "required": [
-          "name",
+          "name"
       ],
       "additionalProperties": false,
       "definitions": {

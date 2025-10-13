@@ -7,16 +7,16 @@
           "name": { "type": "string" },
           "unitType": { "type": "string" },
 
-          "movement": { "type": "number" },
+          "movement": { "type": "integer" },
 
-          "strength": { "type": "number" },
-          "rangedStrength": { "type": "number" },
+          "strength": { "type": "integer" },
+          "rangedStrength": { "type": "integer" },
           "religiousStrength": { "type": "number" },
-          "range": { "type": "number" },
-          "interceptRange": { "type": "number" },
+          "range": { "type": "integer" },
+          "interceptRange": { "type": "integer" },
 
-          "cost": { "type": "number" },
-          "hurryCostModifier": { "type": "number" },
+          "cost": { "type": "integer" },
+          "hurryCostModifier": { "type": "integer" },
 
           "requiredResource": { "type": "string" },
           "requiredTech": { "type": "string" },
