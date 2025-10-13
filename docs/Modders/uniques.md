@@ -2341,6 +2341,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ## UnitType uniques
+??? example  "Can be named [comment]"
+	Allows units to be assigned a name on creation. Provide a comma-seperated list of names for the parameter.
+
+	Example: "Can be named [comment]"
+
+	Applicable to: UnitType
+
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
 

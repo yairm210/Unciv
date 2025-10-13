@@ -140,6 +140,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      */
     var historyStartTurn = -1
 
+    /** The list of unit names tha have been taken. */
+    var unitNamesTaken = HashSet<String>()
+
     /**
      * Keep track of a custom location this game was saved to _or_ loaded from, using it as the default custom location for any further save/load attempts.
      */
@@ -205,6 +208,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
         toReturn.lastUnitId = lastUnitId
+        toReturn.unitNamesTaken.addAll(unitNamesTaken)
 
         return toReturn
     }

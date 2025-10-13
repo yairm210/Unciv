@@ -517,6 +517,8 @@ enum class UniqueType(
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
     SpaceshipPart("Spaceship part", UniqueTarget.Unit, UniqueTarget.Building), // Should be deprecated in the near future
     TakeReligionOverBirthCity("Takes your religion over the one in their birth city", UniqueTarget.Unit),
+    CanBeNamed("Can be named [comment]", UniqueTarget.UnitType,
+        docDescription = "Allows units to be assigned a name on creation. Provide a comma-seperated list of names for the parameter."),
 
     // Hurried means: sped up using great engineer/scientist ability, so this is in some sense a unit unique that should be here
     CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),

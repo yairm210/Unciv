@@ -641,6 +641,17 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             }
         }
 
+        // Select a name for the unit
+        unit.getMatchingUniques(UniqueType.CanBeNamed)
+            .flatMap { it.params[0].split(", ") }
+            .filter { !civInfo.gameInfo.unitNamesTaken.contains(it) }
+            .shuffled().firstOrNull()
+            ?.let {
+                unit.instanceName = it
+                civInfo.gameInfo.unitNamesTaken.add(it)
+                unit.promotions.addPromotion(it, true) // Add the promotion for the name, if available
+            }
+
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
 
