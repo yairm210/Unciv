@@ -61,8 +61,8 @@ class UnitManager(val civInfo: Civilization) {
         val cityToAddTo = when {
             unit.isWaterUnit && canSpwanUnitOnWater -> city
             unit.isWaterUnit && (city == null || !city.isNaval() && !canSpwanUnitOnWater) ->
-                citiesNotInResistance.filter { it.isCoastal() }.randomOrNull() ?:
-                civInfo.cities.filter { it.isCoastal() }.randomOrNull()
+                citiesNotInResistance.filter { it.isNaval() }.randomOrNull() ?:
+                civInfo.cities.filter { it.isNaval() }.randomOrNull()
             city != null -> city
             else -> citiesNotInResistance.randomOrNull() ?: civInfo.cities.random()
         } ?: return null // If we got a free water unit with no coastal city to place it in
