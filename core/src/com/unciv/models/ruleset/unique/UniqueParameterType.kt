@@ -639,7 +639,7 @@ enum class UniqueParameterType(
 
     /** Used in [GetLeaderTitle], and validates a [leaderName] is provided. */
     LeaderTitle("leaderTitle", "Sovereign [leaderName] the Great", "Provides a leader title that includes the leader's name in parameters.", "Leader Title") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText.isNotEmpty() && parameterText.hasPlaceholderParameters()
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText.hasPlaceholderParameters()
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
