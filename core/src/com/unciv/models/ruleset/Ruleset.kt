@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.HistoricalFigures
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
@@ -57,6 +58,7 @@ enum class RulesetFile(
     Specialists("Specialists.json"),
     Units("Units.json", { units.values.asSequence() }),
     UnitPromotions("UnitPromotions.json", { unitPromotions.values.asSequence() }),
+    HistoricalFigures("HistoricalFigures.json", { historicalFigures.values.asSequence() }),
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
     VictoryTypes("VictoryTypes.json"),
     CityStateTypes("CityStateTypes.json", getUniques =
@@ -115,6 +117,7 @@ class Ruleset {
     val tileResources = LinkedHashMap<String, TileResource>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
+    val historicalFigures = LinkedHashMap<String, HistoricalFigures>()
     val unitTypes = LinkedHashMap<String, UnitType>()
     var victories = LinkedHashMap<String, Victory>()
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
@@ -262,6 +265,7 @@ class Ruleset {
         modOptions.constants.merge(ruleset.modOptions.constants)
 
         unitPromotions.putAll(ruleset.unitPromotions)
+        historicalFigures.putAll(ruleset.historicalFigures)
 
         mods += ruleset.mods
     }
@@ -287,6 +291,7 @@ class Ruleset {
         tileImprovements.clear()
         tileResources.clear()
         unitPromotions.clear()
+        historicalFigures.clear()
         units.clear()
         unitTypes.clear()
         victories.clear()
@@ -366,6 +371,9 @@ class Ruleset {
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
+
+        val historicalFiguresFile = folderHandle.child("HistoricalFigures.json")
+        if (historicalFiguresFile.exists()) historicalFigures += createHashmap(json().fromJsonFile(Array<HistoricalFigures>::class.java, historicalFiguresFile))
 
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))

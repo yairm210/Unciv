@@ -108,6 +108,12 @@ enum class CivilopediaCategories (
         "OtherIcons/Score",
         { ruleset, _ -> ruleset.victories.values }
     ),
+    HistoricalFigures("Historical Figures",
+        CivilopediaImageGetters.historicalFigure,
+        KeyboardBinding.PediaHistoricalFigures,
+        "OtherIcons/HistoricalFigures",
+        { ruleset, _ -> ruleset.historicalFigures.values }
+    ),
     Difficulty ("Difficulty levels",
         getImage = null,
         KeyboardBinding.PediaDifficulties,

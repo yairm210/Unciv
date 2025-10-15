@@ -112,6 +112,7 @@ open class RulesetValidator protected constructor(
         addRuinsErrors(lines)
         addPromotionErrors(lines)
         addUnitTypeErrors(lines)
+        addHistoricalFiguresErrors(lines)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
         addEventErrors(lines)
@@ -481,6 +482,12 @@ open class RulesetValidator protected constructor(
             if (unitType.movementType !in unitMovementTypes)
                 lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
             uniqueValidator.checkUniques(unitType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        }
+    }
+
+    protected open fun addHistoricalFiguresErrors(lines: RulesetErrorList) {
+        for (historicalFigureGroup in ruleset.historicalFigures.values) {
+            uniqueValidator.checkUniques(historicalFigureGroup, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 

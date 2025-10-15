@@ -72,3 +72,18 @@ Each unit type has the following structure:
 | movementType | Enum           | Required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air"          |
 | uniques      | List of String | none     | List of [unique abilities](../uniques.md) this promotion grants to units of this type |
 | civilopediaText | List        | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)            |
+
+## HistoricalFigures.json
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/HistoricalFigures.json)
+
+Provides a list of names that can be applied to units as historical figures.
+
+Each Historical Figure has the following structure:
+
+| Attribute       | Type           | Default  | Notes |
+|-----------------|----------------|----------|-------|
+| name            | String         | Required | A unique name for the historical figure group (example: Scientist) |
+| names           | List of String | Required | A list of names that can be applied to the group (example: Alan Turing) |
+| uniques         | List of String | none     | List of [triggerable uniques](../uniques.md#triggerable-uniques) that are applied to the unit on creation |
+| civilopediaText | List           | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |

@@ -489,6 +489,7 @@ enum class UniqueType(
 
     RuinsUpgrade("May upgrade to [unit] through ruins-like effects", UniqueTarget.Unit),
     CanUpgrade("Can upgrade to [unit]", UniqueTarget.Unit),
+    CanBeAHistoricalFigure("Can be a [historicalFigure] historical figure", UniqueTarget.Unit),
 
     DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 

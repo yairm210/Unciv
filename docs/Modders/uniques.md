@@ -2215,6 +2215,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Can be a [historicalFigure] historical figure"
+	Example: "Can be a [Scientist] historical figure"
+
+	Applicable to: Unit
+
 ??? example  "Destroys tile improvements when attacking"
 	Applicable to: Unit
 
@@ -3971,6 +3976,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
+*[historicalFigure]: The name of any historical figure group found in HistoricalFigures.json, or one of their unique tags.
 *[improvementName]: The name of any improvement excluding 'Cancel improvement order'
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 Note that this must use the Mod name as Unciv displays it, not the Repository name.

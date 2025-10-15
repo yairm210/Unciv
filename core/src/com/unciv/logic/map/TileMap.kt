@@ -12,9 +12,12 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
@@ -640,6 +643,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 unit.promotions.addPromotion(unique.params[1], true)
             }
         }
+
+        // Select a instance name for the unit if needed
+        unit.setHistoricalFigureName()
 
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
