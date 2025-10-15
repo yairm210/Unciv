@@ -50,7 +50,7 @@ class HistoricalFigures : RulesetObject() {
         if (units.isNotEmpty()) {
             lines.add(FormattedLine("Units", header = 4))
             for (unit in units) {
-                lines.add(FormattedLine(unit.name, link = "Unit/${unit.name}"))
+                lines.add(FormattedLine(unit.name, link = unit.makeLink()))
             }
         }
 
