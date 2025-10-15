@@ -109,9 +109,9 @@ enum class CivilopediaCategories (
         { ruleset, _ -> ruleset.victories.values }
     ),
     HistoricalFigures("Historical Figures",
-        getImage = null,
+        CivilopediaImageGetters.historicalFigure,
         KeyboardBinding.PediaHistoricalFigures,
-        "PolicyIcons/Educated Elite",
+        "OtherIcons/HistoricalFigures",
         { ruleset, _ -> ruleset.historicalFigures.values }
     ),
     Difficulty ("Difficulty levels",

@@ -27,32 +27,40 @@ class HistoricalFigures : RulesetObject() {
         return newHistoricalFigures
     }
 
+    /**
+     * Retrieve a list of units that match this historical figure instance.
+     */
+    fun getUnits(ruleset: Ruleset) = ruleset.units.values.filter { unit ->
+        unit.getMatchingUniques(UniqueType.CanBeAHistoricalFigure).any { unique ->
+            // Match by using either the direct name, or a tag
+            unique.params[0] == name || hasTagUnique(unique.params[0])
+        }
+    }
+
     override fun getUniqueTarget() = UniqueTarget.UnitTriggerable
     override fun makeLink() = "Historical Figures/$name"
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = ArrayList<FormattedLine>()
-        val unitLines = ArrayList<FormattedLine>()
-        for (unit in ruleset.units.values) {
-            for (unique in unit.getMatchingUniques(UniqueType.CanBeAHistoricalFigure)) {
-                if (unique.params[0] == name || hasTagUnique(unique.params[0])) {
-                    unitLines.add(FormattedLine(unit.name, link = "Unit/${unit.name}"))
-                    break
-                }
+        uniquesToCivilopediaTextLines(lines)
+
+        // Units
+        val units = getUnits(ruleset)
+        if (units.isNotEmpty()) {
+            lines.add(FormattedLine("Units", header = 4))
+            for (unit in units) {
+                lines.add(FormattedLine(unit.name, link = "Unit/${unit.name}"))
             }
         }
-        if (unitLines.isNotEmpty()) {
-            lines.addAll(unitLines)
-        }
 
+        // Names
         if (names.isNotEmpty()) {
-            lines.add(FormattedLine(""))
+            lines.add(FormattedLine())
             lines.add(FormattedLine("Historical Figures", header = 4))
-            for (name in names) {
+            for (name in names) {   
                 lines.add(FormattedLine(name))
             }
         }
 
-        uniquesToCivilopediaTextLines(lines)
         return lines
     }
 }

@@ -1586,8 +1586,8 @@
             "Empire enters a [8]-turn Golden Age <by consuming this unit>",
             "Can instantly construct a [Landmark] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
-            "Great Person - [Culture]", "Unbuildable", "Uncapturable",
-            "Can be a [Artist] historical figure"],
+            "Can be a [Artist] historical figure",
+            "Great Person - [Culture]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
@@ -1597,8 +1597,8 @@
             "Can hurry technology research",
             "Can instantly construct a [Academy] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
-            "Great Person - [Science]", "Unbuildable", "Uncapturable",
-            "Can be a [Scientist] historical figure"],
+            "Can be a [Scientist] historical figure",
+            "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
@@ -1607,8 +1607,8 @@
 		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
             "Can instantly construct a [Customs house] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
-			"Great Person - [Gold]", "Unbuildable", "Uncapturable",
-            "Can be a [Merchant] historical figure"],
+            "Can be a [Merchant] historical figure",
+			"Great Person - [Gold]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
@@ -1617,8 +1617,8 @@
 		"uniques": ["Can speed up construction of a building",
             "Can instantly construct a [Manufactory] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
-            "Great Person - [Production]", "Unbuildable", "Uncapturable",
-            "Can be a [Engineer] historical figure"],
+            "Can be a [Engineer] historical figure",
+            "Great Person - [Production]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
@@ -1645,8 +1645,8 @@
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
-			"Great Person - [War]", "Unbuildable", "Uncapturable",
-            "Can be a [General] historical figure"],
+            "Can be a [General] historical figure",
+			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
@@ -1660,8 +1660,8 @@
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
-            "Great Person - [War]", "Unbuildable", "Uncapturable",
-            "Can be a [Khan] historical figure"],
+            "Can be a [Khan] historical figure",
+            "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},
 	{
@@ -1672,8 +1672,8 @@
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
 			"Can be earned through combat <for [Water] units>",
             "Is part of Great Person group [Admiral]",
-            "Great Person - [War]", "Unbuildable", "Uncapturable",
-            "Can be a [Admiral] historical figure"],
+            "Can be a [Admiral] historical figure",
+            "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 4
 	},
 
