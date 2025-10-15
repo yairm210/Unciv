@@ -10,6 +10,7 @@ import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import yairm210.purity.annotations.Readonly
 
 class HistoricalFigures : RulesetObject() {
     /** A list of names available for this historical figure group. */
