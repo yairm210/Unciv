@@ -1140,11 +1140,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                         .none { unique -> unique.conditionalsApply(cache.state) }
                 }
                 .flatMap { hf -> 
-                    // Make a pair of the name and related unique
+                    // Grab only names that haven't been taken
                     hf.names.filter {
-                        // Grab only names of historical figures that haven't been taken
                         name -> name !in civ.gameInfo.historicalFiguresTaken
-                    }.map { it to hf }
+                    }
+                    // Make a pair of the name and associated unique
+                    .map { it to hf }
                 }
                 .shuffled().firstOrNull()
             if (pair != null) {
