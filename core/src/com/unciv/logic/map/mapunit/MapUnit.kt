@@ -1144,7 +1144,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     hf.names.filter {
                         name -> name !in civ.gameInfo.historicalFiguresTaken
                     }
-                    // Make a pair of the name and associated unique
+                    // Make a pair of the name and the historical figure instance
                     .map { it to hf }
                 }
                 .shuffled().firstOrNull()
