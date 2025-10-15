@@ -1117,6 +1117,36 @@ class MapUnit : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerUnique(unique, this)
     }
 
+    /**
+     * Sets the instance name should the unit be needing a historical figure name.
+     */
+    fun setHistoricalFigureName() {
+        if (hasUnique(UniqueType.CanBeAHistoricalFigure, cache.state)) {
+            getMatchingUniques(UniqueType.CanBeAHistoricalFigure, cache.state)
+                .map { it.params[0] }.distinct()
+                .flatMap { name ->
+                    civ.gameInfo.ruleset.historicalFigures.values.filter { hf ->
+                        // It's the name of the group, or a tag
+                        (hf.name == name || hf.hasTagUnique(name, cache.state)) &&
+                        // Check Only Available
+                        hf.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                            .none { unique -> !unique.conditionalsApply(cache.state) } &&
+                        // Check Unavailable
+                        hf.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                            .none { unique -> unique.conditionalsApply(cache.state) }
+                    }
+                }
+                .flatMap { it.names }.distinct()
+                .filter { it !in civ.gameInfo.historicalFiguresTaken }
+                .shuffled()
+                .firstOrNull()
+                ?.let {
+                    instanceName = it
+                    civ.gameInfo.historicalFiguresTaken.add(it)
+                    promotions.addPromotion(it, true)
+                }
+        }
+    }
 
     fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
     //endregion

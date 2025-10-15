@@ -79,11 +79,6 @@ internal object CivilopediaImageGetters {
         return tryImage("$policyBranchIconFolder/$name", ImageGetter.CHARCOAL)
             ?: tryImage("$policyIconFolder/$name", Color.BROWN)
     }
-    val greatPerson = { name: String, size: Float ->
-        val greatPerson = ImageGetter.ruleset.greatPeople[name]
-        if (greatPerson == null || greatPerson.units.isEmpty()) null
-        else ImageGetter.getConstructionPortrait(greatPerson.units.first(), size)
-    }
     val resource = { name: String, size: Float ->
         ImageGetter.getResourcePortrait(name, size)
     }

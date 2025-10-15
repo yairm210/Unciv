@@ -644,29 +644,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             }
         }
 
-        // Apply the Great Person name if available
-        if (unit.isGreatPerson()) {
-            civInfo.gameInfo.ruleset.greatPeople.values
-                // Select only the available great people
-                .filter {
-                    it.units.contains(baseUnit.name) && // Only the associated Great Person type
-                    it.name !in civInfo.gameInfo.greatPeopleBorn && // It hasn't been born yet
-                    it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                        .none { unique -> !unique.conditionalsApply(unit.cache.state) } &&
-                    it.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
-                        .none { unique -> unique.conditionalsApply(unit.cache.state) }
-                }
-                .randomOrNull()
-                ?.let {
-                    unit.instanceName = it.name
-                    civInfo.gameInfo.greatPeopleBorn.add(it.name)
-                    // Trigger any associated uniques for the Great Person
-                    for (unique in it.uniqueObjects) {
-                        if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(unit.cache.state))
-                            UniqueTriggerActivation.triggerUnique(unique, unit)
-                    }
-                }
-        }
+        // Select a instance name for the unit if needed
+        unit.setHistoricalFigureName()
 
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()

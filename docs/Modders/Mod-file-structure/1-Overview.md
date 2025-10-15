@@ -27,7 +27,7 @@ The JSON files that make up mods can have many different fields, and as not all 
     -   [Units.json](4-Unit-related-JSON-files.md#unitsjson)
     -   [UnitPromotions.json](4-Unit-related-JSON-files.md#unitpromotionsjson)
     -   [UnitTypes.json](4-Unit-related-JSON-files.md#unittypesjson)
-    -   [GreatPeople.json](4-Unit-related-JSON-files.md#greatpeoplejson)
+    -   [HistoricalFigures.json](4-Unit-related-JSON-files.md#historicalfiguresjson)
 -   [Miscellaneous JSON files](5-Miscellaneous-JSON-files.md)
     - [Difficulties.json](5-Miscellaneous-JSON-files.md#difficultiesjson)
     - [Eras.json](5-Miscellaneous-JSON-files.md#erasjson)

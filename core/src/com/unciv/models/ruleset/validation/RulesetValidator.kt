@@ -112,7 +112,7 @@ open class RulesetValidator protected constructor(
         addRuinsErrors(lines)
         addPromotionErrors(lines)
         addUnitTypeErrors(lines)
-        addGreatPeopleErrors(lines)
+        addHistoricalFiguresErrors(lines)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
         addEventErrors(lines)
@@ -485,20 +485,12 @@ open class RulesetValidator protected constructor(
         }
     }
 
-    protected open fun addGreatPeopleErrors(lines: RulesetErrorList) {
-        val greatPeopleUnits = ruleset.units.values
-            .filter { it.hasUnique(UniqueType.GreatPerson) }
-            .map { it.name }
-        for (greatPerson in ruleset.greatPeople.values) {
-            if (greatPerson.units.isEmpty()) {
-                lines.add("Great Person \"${greatPerson.name}\" doesn't reference any units. Add an array of applicable great people units. For example: \"units\": [\"Great Engineer\"]", sourceObject = greatPerson)
+    protected open fun addHistoricalFiguresErrors(lines: RulesetErrorList) {
+        for (historicalFigureGroup in ruleset.historicalFigures.values) {
+            if (historicalFigureGroup.names.isEmpty()) {
+                lines.add("Historical Figure group \"${historicalFigureGroup.name}\" doesn't have any names associated with it. Add some names. For example: \"names\": [\"Alan Turing\"]", sourceObject = historicalFigureGroup)
             }
-            for (unit in greatPerson.units) {
-                if (unit !in greatPeopleUnits) {
-                    lines.add("Great Person \"${greatPerson.name}\" references a great person unit \"${unit}\" that does not exist", sourceObject = greatPerson)
-                }
-            }
-            uniqueValidator.checkUniques(greatPerson, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(historicalFigureGroup, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 

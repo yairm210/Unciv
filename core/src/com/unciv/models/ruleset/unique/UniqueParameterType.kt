@@ -588,6 +588,18 @@ enum class UniqueParameterType(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.victories.keys
     },
 
+    /** Used by [UniqueType.CanBeAHistoricalFigure] */
+    HistoricalFigure("historicalFigure",
+        "Scientist", "The name of any historical figure group found in HistoricalFigures.json, or one of their unique tags"
+    ) {
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.historicalFigures.keys
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
+            parameterText in ruleset.historicalFigures -> true
+            ruleset.historicalFigures.values.any { it.hasTagUnique(parameterText) } -> true
+            else -> false
+        }
+    },
+
     /** Used by [UniqueType.KillUnitPlunder] and [UniqueType.KillUnitPlunderNearCity], implementation in [Battle.tryEarnFromKilling][com.unciv.logic.battle.Battle.tryEarnFromKilling] */
     CostOrStrength("costOrStrength", "Cost", "`Cost` or `Strength`",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant

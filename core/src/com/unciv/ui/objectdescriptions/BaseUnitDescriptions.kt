@@ -190,17 +190,6 @@ object BaseUnitDescriptions {
             textList += seeAlso
         }
 
-        if (baseUnit.hasUnique(UniqueType.GreatPerson)) {
-            val greatPeople = ruleset.greatPeople.values.filter { baseUnit.name in it.units }
-            if (greatPeople.isNotEmpty()) {
-                textList += FormattedLine()
-                textList += FormattedLine("{Great People}:", header = 5)
-                greatPeople.sortedBy { it.name }.forEach {
-                    textList += FormattedLine(it.name, link = it.makeLink())
-                }
-            }
-        }
-
         return textList
     }
 

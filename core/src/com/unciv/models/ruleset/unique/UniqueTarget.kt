@@ -48,7 +48,6 @@ enum class UniqueTarget(
     Unit("Uniques that can be added to units, unit types, or promotions", inheritsFrom = UnitAction),
     UnitType(inheritsFrom = Unit),
     Promotion(inheritsFrom = Unit),
-    GreatPerson(inheritsFrom = UnitTriggerable),
 
     // Tile-specific
     Terrain,
