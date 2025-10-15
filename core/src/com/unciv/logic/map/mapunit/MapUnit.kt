@@ -1128,12 +1128,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 .flatMap {
                     // Get all historical figure groups that match the name or a tag
                     civ.gameInfo.ruleset.historicalFigures.values.filter {
-                        hf -> hf.name == name || hf.hasTagUnique(name, cache.state)
+                        hf -> hf.name == it || hf.hasTagUnique(it, cache.state)
                     }
                 }
                 .distinct()
                 .filter {
-                    // Validate the it's available
+                    // Validate that it's available
                     it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                         .none { unique -> !unique.conditionalsApply(cache.state) } &&
                     it.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
