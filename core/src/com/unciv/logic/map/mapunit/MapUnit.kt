@@ -1125,22 +1125,27 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // Get both the name and associated unique for the historical figure
             val pair = getMatchingUniques(UniqueType.CanBeAHistoricalFigure, cache.state)
                 .map { it.params[0] }.distinct()
-                .flatMap { name ->
-                    civ.gameInfo.ruleset.historicalFigures.values.filter { hf ->
-                        // It's the name of the group, or a tag
-                        (hf.name == name || hf.hasTagUnique(name, cache.state)) &&
-                        // Check Only Available
-                        hf.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                            .none { unique -> !unique.conditionalsApply(cache.state) } &&
-                        // Check Unavailable
-                        hf.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
-                            .none { unique -> unique.conditionalsApply(cache.state) }
-                    }.flatMap {
-                        // The key is the name, and the value is the associated unique.
-                        hf -> hf.names.map { it to hf }
+                .flatMap {
+                    // Get all historical figure groups that match the name or a tag
+                    civ.gameInfo.ruleset.historicalFigures.values.filter {
+                        hf -> hf.name == name || hf.hasTagUnique(name, cache.state)
                     }
                 }
-                .filter { (name, _) -> name !in civ.gameInfo.historicalFiguresTaken }
+                .distinct()
+                .filter {
+                    // Validate the it's available
+                    it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                        .none { unique -> !unique.conditionalsApply(cache.state) } &&
+                    it.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                        .none { unique -> unique.conditionalsApply(cache.state) }
+                }
+                .flatMap { hf -> 
+                    // Make a pair of the name and related unique
+                    hf.names.filter {
+                        // Grab only names of historical figures that haven't been taken
+                        name -> name !in civ.gameInfo.historicalFiguresTaken
+                    }.map { it to hf }
+                }
                 .shuffled().firstOrNull()
             if (pair != null) {
                 instanceName = pair.first
