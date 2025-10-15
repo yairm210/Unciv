@@ -1,15 +1,13 @@
 ## 4.18.6
 
-avoid concurrent modification when calculating construction costs
+Game startup performance improvements
 
-perf(startup): =Get rid of ManagementFactory.getRuntimeMXBean().inputArguments which was taking a whole second (!) on startup
+Mod preview performance improvements
 
-perf(startup): Parallelize mod loading between mods (840ms -> 550ms on my machine with 150 mods)
-
-Integrate `KtorGithubAPI` into `GithubAPI` and remove `RateLimit` - By touhidurrr
+Avoid rare crash concurrent modification when calculating construction costs
 
 By RobLoach:
-- Add Unit State to Ancient Ruins 
+- Modding: Ancient Ruins can have unit-related conditionals 
 - AbsoluteUnits: Add Great Admiral by Basil 
 
 Allow naval units to be spawn in water city - By Emandac
