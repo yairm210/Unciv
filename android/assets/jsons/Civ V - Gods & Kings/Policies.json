@@ -359,9 +359,8 @@
                 "uniques": [
                     "[+1] Movement <for [{Military} {Water}] units>",
                     "[+1] Sight <for [{Military} {Water}] units>",
-                    "Free [Great General] appears"
-                    // "[+2] Movement <for [Great Admiral] units>"
-                    // ToDo: Should be "Free [Great Admiral] appears"
+                    "Free [Great Admiral] appears",
+                    "[+2] Movement <for [Great Admiral] units>",
                 ],
                 "row": 1,
                 "column": 2
