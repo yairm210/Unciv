@@ -60,7 +60,7 @@ class UnitManager(val civInfo: Civilization) {
         val canSpawnUnitOnWater = city?.isNaval() == true
         val cityToAddTo = when {
             unit.isWaterUnit && canSpawnUnitOnWater -> city
-            unit.isWaterUnit && (city == null || !canSpawnUnitOnWater) ->
+            unit.isWaterUnit ->
                 citiesNotInResistance.filter { it.isNaval() }.randomOrNull() ?:
                 civInfo.cities.filter { it.isNaval() }.randomOrNull()
             city != null -> city
