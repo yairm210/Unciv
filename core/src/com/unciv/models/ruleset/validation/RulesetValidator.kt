@@ -487,9 +487,6 @@ open class RulesetValidator protected constructor(
 
     protected open fun addHistoricalFiguresErrors(lines: RulesetErrorList) {
         for (historicalFigureGroup in ruleset.historicalFigures.values) {
-            if (historicalFigureGroup.names.isEmpty()) {
-                lines.add("Historical Figure group \"${historicalFigureGroup.name}\" doesn't have any names associated with it. Add some names. For example: \"names\": [\"Alan Turing\"]", sourceObject = historicalFigureGroup)
-            }
             uniqueValidator.checkUniques(historicalFigureGroup, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
