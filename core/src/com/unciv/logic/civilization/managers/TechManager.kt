@@ -100,6 +100,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun getOverflowScience(): Int = overflowScience
 
+    @Readonly
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         val numberOfCivsResearchedThisTech = civInfo.getKnownCivs()
             .count { it.isMajorCiv() && it.tech.isResearched(techName) }
@@ -110,6 +111,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     @Readonly private fun getRuleset() = civInfo.gameInfo.ruleset
 
+    @Readonly
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isHuman())
@@ -139,11 +141,13 @@ class TechManager : IsPartOfGameInfoSerialization {
     @Readonly fun researchOfTech(techName: String?) = techsInProgress[techName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
+    @Readonly
     fun remainingScienceToTech(techName: String): Int {
         val spareScience = if (canBeResearched(techName)) getOverflowScience() else 0
         return costOfTech(techName) - researchOfTech(techName) - spareScience
     }
 
+    @Readonly
     fun turnsToTech(techName: String): String {
         val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {

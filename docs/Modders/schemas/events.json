@@ -4,10 +4,9 @@
   "items": {
       "type": "object",
       "properties": {
-          "name": { "type": "string" },
-          "text": { "type": "string" },
-          "presentation": { "enum": ["None", "Alert", "Floating"] },
-          
+          "name": { "type": "string", "description": "Used for triggering via 'Triggers a [event] event' unique" },
+          "text": { "type": "string", "description": "Flavor text displayed to user" },
+          "presentation": { "enum": ["None", "Alert", "Floating"], "description": "Alert indicates a regular popup, None means the choice is made randomly, Floating is for tutorial-style indicators" },
           "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
           "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
           
@@ -17,7 +16,8 @@
                   "properties": {
                       "text": { "type": "string" },
                       "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
-                      "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+                      "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
+                      "keyShortcut": { "type": "string" }
                   },
                   "required": ["text", "uniques"],
                   "additionalProperties": false

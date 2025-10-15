@@ -8,6 +8,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import yairm210.purity.annotations.Pure
 
 
 typealias NotificationCategory = Notification.NotificationCategory
@@ -56,7 +57,7 @@ class Notification() : IsPartOfGameInfoSerialization, Json.Serializable {
         ;
 
         companion object {
-            fun safeValueOf(name: String): NotificationCategory? =
+            @Pure fun safeValueOf(name: String): NotificationCategory? =
                 entries.firstOrNull { it.name == name }
         }
     }
