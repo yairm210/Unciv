@@ -421,6 +421,7 @@ List of attributes - note not all combinations are valid:
 | `separator`  | Boolean | Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, default 2)                    |
 | `starred`    | Boolean | Decorates text with a star icon - if set, it receives the `color` instead of the text                                             |
 | `centered`   | Boolean | Centers the line (and turns off automatic wrap). For an `extraImage`, turns on crop-to-content to equalize transparent borders    |
+| `iconCrossed` | Boolean | Paint a red X over the `icon` or `link` image |
 
 The lines from json will 'surround' the automatically generated lines such that the latter are inserted just above the first json line carrying a link, if any. If no json lines have links, they will be inserted between the automatic title and the automatic info. This method may, however, change in the future.
 
