@@ -1,3 +1,19 @@
+## 4.18.6
+
+avoid concurrent modification when calculating construction costs
+
+perf(startup): =Get rid of ManagementFactory.getRuntimeMXBean().inputArguments which was taking a whole second (!) on startup
+
+perf(startup): Parallelize mod loading between mods (840ms -> 550ms on my machine with 150 mods)
+
+Integrate `KtorGithubAPI` into `GithubAPI` and remove `RateLimit` - By touhidurrr
+
+By RobLoach:
+- Add Unit State to Ancient Ruins 
+- AbsoluteUnits: Add Great Admiral by Basil 
+
+Allow naval units to be spawn in water city - By Emandac
+
 ## 4.18.5
 
 AI will not attack cities with no health with siege units
