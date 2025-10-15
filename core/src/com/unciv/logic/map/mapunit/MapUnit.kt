@@ -1122,7 +1122,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      */
     fun setHistoricalFigureName() {
         if (hasUnique(UniqueType.CanBeAHistoricalFigure, cache.state)) {
-            getMatchingUniques(UniqueType.CanBeAHistoricalFigure, cache.state)
+            val name = getMatchingUniques(UniqueType.CanBeAHistoricalFigure, cache.state)
                 .map { it.params[0] }.distinct()
                 .flatMap { name ->
                     civ.gameInfo.ruleset.historicalFigures.values.filter { hf ->
@@ -1138,13 +1138,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 }
                 .flatMap { it.names }.distinct()
                 .filter { it !in civ.gameInfo.historicalFiguresTaken }
-                .shuffled()
-                .firstOrNull()
-                ?.let {
-                    instanceName = it
-                    civ.gameInfo.historicalFiguresTaken.add(it)
-                    promotions.addPromotion(it, true)
-                }
+                .shuffled().firstOrNull()
+            if (name != null) {
+                instanceName = name
+                civ.gameInfo.historicalFiguresTaken.add(name)
+                promotions.addPromotion(name, true)
+            }
         }
     }
 
