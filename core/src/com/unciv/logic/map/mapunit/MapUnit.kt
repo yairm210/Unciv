@@ -1122,7 +1122,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
      */
     fun setHistoricalFigureName() {
         if (hasUnique(UniqueType.CanBeAHistoricalFigure, cache.state)) {
-            val name = getMatchingUniques(UniqueType.CanBeAHistoricalFigure, cache.state)
+            // Get both the name and associated unique for the historical figure
+            val pair = getMatchingUniques(UniqueType.CanBeAHistoricalFigure, cache.state)
                 .map { it.params[0] }.distinct()
                 .flatMap { name ->
                     civ.gameInfo.ruleset.historicalFigures.values.filter { hf ->
@@ -1134,15 +1135,22 @@ class MapUnit : IsPartOfGameInfoSerialization {
                         // Check Unavailable
                         hf.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
                             .none { unique -> unique.conditionalsApply(cache.state) }
+                    }.flatMap {
+                        // The key is the name, and the value is the associated unique.
+                        hf -> hf.names.map { it to hf }
                     }
                 }
-                .flatMap { it.names }.distinct()
-                .filter { it !in civ.gameInfo.historicalFiguresTaken }
+                .filter { (name, _) -> name !in civ.gameInfo.historicalFiguresTaken }
                 .shuffled().firstOrNull()
-            if (name != null) {
-                instanceName = name
-                civ.gameInfo.historicalFiguresTaken.add(name)
-                promotions.addPromotion(name, true)
+            if (pair != null) {
+                instanceName = pair.first
+                civ.gameInfo.historicalFiguresTaken.add(pair.first)
+                promotions.addPromotion(pair.first, true)
+                for (unique in pair.second.uniqueObjects) {
+                    if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(cache.state)) {
+                        UniqueTriggerActivation.triggerUnique(unique, this)
+                    }
+                }
             }
         }
     }
