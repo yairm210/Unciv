@@ -79,7 +79,7 @@ Each unit type has the following structure:
 
 Provides a list of names that can be applied to units as historical figures.
 
-Each Great Person has the following structure:
+Each Historical Figure has the following structure:
 
 | Attribute       | Type           | Default  | Notes |
 |-----------------|----------------|----------|-------|
