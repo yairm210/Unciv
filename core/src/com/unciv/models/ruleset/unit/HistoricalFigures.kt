@@ -31,6 +31,7 @@ class HistoricalFigures : RulesetObject() {
     /**
      * Retrieve a list of units that match this historical figure instance.
      */
+    @Readonly
     fun getUnits(ruleset: Ruleset) = ruleset.units.values.filter { unit ->
         unit.getMatchingUniques(UniqueType.CanBeAHistoricalFigure).any { unique ->
             // Match by using either the direct name, or a tag
