@@ -484,7 +484,8 @@ object TranslationFileWriter {
                 "RuinReward.uniques", "TerrainType.name",
                 "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques",
                 "Era.citySound",
-                "keyShortcut"
+                "keyShortcut",
+                "originRuleset"
             )
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
