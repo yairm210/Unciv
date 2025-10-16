@@ -24,6 +24,6 @@
         // something something unit supply
     ],
     "civilopediaText": [
-        {"text": "Global uniques are ruleset-wide modifiers that apply to all civilizations:"}
+        {"text": "Global uniques are ruleset-wide modifiers that apply to all civilizations."}
     ]
 }
