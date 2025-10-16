@@ -4,6 +4,7 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 
@@ -21,22 +22,19 @@ class GlobalUniques: RulesetObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = mutableListOf<FormattedLine>()
         lines.add(FormattedLine("Global uniques are ruleset-wide modifiers that apply to all civilizations."))
-        val visibleUniques = uniqueObjects.filter { !it.isHiddenToUsers() }
-        if (visibleUniques.isNotEmpty()) {
-            lines.add(FormattedLine(""))
-            lines.add(FormattedLine("Global Effect", header=4))
-            for (unique in visibleUniques) {
-                lines.add(FormattedLine(unique))
-            }
-        }
+        uniquesToCivilopediaTextLines(lines, leadingSeparator = {
+            yield(FormattedLine())
+            yield(FormattedLine("Global Effect", header=4))
+        })
 
-        val visibleUnitUniques = unitUniques.map { Unique(it) }.filter { !it.isHiddenToUsers() }
-        if (visibleUnitUniques.isNotEmpty()) {
-            lines.add(FormattedLine(""))
-            lines.add(FormattedLine("Units", header=4))
-            for (unique in visibleUnitUniques) {
-                lines.add(FormattedLine(unique))
-            }
+        val visibleUnitUniques = unitUniques.asSequence()
+            .map { Unique(it) }
+            .filter { !it.isHiddenToUsers() }
+            .map { FormattedLine(it) }
+        if (visibleUnitUniques.any()) {
+            lines += FormattedLine()
+            lines += FormattedLine("Units", header=4)
+            lines += visibleUnitUniques
         }
         return lines
     }
