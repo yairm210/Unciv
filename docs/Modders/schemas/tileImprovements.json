@@ -12,6 +12,7 @@
           },
           "turnsToBuild": { "type": "integer" },
           "techRequired": { "type": "string" },
+          "replaces": { "type": "string" },
           "uniqueTo": { "type": "string" },
           "shortcutKey": {
               "type": "string",
@@ -31,7 +32,7 @@
           "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
       },
       "required": [
-          "name",
+          "name"
       ],
       "additionalProperties": false
   }

@@ -55,11 +55,14 @@ class UnitManager(val civInfo: Civilization) {
 
         val unit = civInfo.getEquivalentUnit(baseUnit)
         val citiesNotInResistance = civInfo.cities.filterNot { it.isInResistance() }
-        
+
+        // To allow cities on water tiles to be able to build water units.
+        val canSpawnUnitOnWater = city?.isNaval() == true
         val cityToAddTo = when {
-            unit.isWaterUnit && (city == null || !city.isCoastal()) ->
-                citiesNotInResistance.filter { it.isCoastal() }.randomOrNull() ?:
-                civInfo.cities.filter { it.isCoastal() }.randomOrNull()
+            unit.isWaterUnit && canSpawnUnitOnWater -> city
+            unit.isWaterUnit ->
+                citiesNotInResistance.filter { it.isNaval() }.randomOrNull() ?:
+                civInfo.cities.filter { it.isNaval() }.randomOrNull()
             city != null -> city
             else -> citiesNotInResistance.randomOrNull() ?: civInfo.cities.random()
         } ?: return null // If we got a free water unit with no coastal city to place it in
