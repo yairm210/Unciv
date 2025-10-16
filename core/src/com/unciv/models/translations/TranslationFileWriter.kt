@@ -45,6 +45,8 @@ import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 object TranslationFileWriter {
 
@@ -262,6 +264,7 @@ object TranslationFileWriter {
         return countOfTranslatedLines
     }
 
+    @Pure
     private fun StringBuilder.appendTranslation(key: String, value: String) {
         appendLine(key.replace("\n", "\\n") +
                 " = " + value.replace("\n", "\\n"))
@@ -498,6 +501,7 @@ object TranslationFileWriter {
                 "uniques", "promotions", "milestones",
             )
 
+            @Readonly
             private fun isFieldTypeRelevant(type: Class<*>) =
                     type == String::class.java ||
                     type == java.util.ArrayList::class.java ||
