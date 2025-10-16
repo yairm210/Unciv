@@ -352,7 +352,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
     private fun spreadAncientRuins(map: TileMap) {
         val ruinsEquivalents = ruleset.tileImprovements.filter {
-            it.value.isAncientRuinsEquivalent(GameContext.IgnoreConditionals)
+            it.value.isAncientRuinsEquivalent()
         }
         if (map.mapParameters.noRuins || ruinsEquivalents.isEmpty()) return
 
