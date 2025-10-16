@@ -109,7 +109,7 @@ object ImprovementDescriptions {
         )
             textList += FormattedLine("Needs removal of terrain features to be built")
 
-        if (improvement.isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
+        if (improvement.isAncientRuinsEquivalent(GameContext.IgnoreConditionals) && ruleset.ruinRewards.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("The possible rewards are:")
             ruleset.ruinRewards.values.asSequence()

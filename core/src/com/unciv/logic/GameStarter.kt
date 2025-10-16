@@ -418,7 +418,7 @@ object GameStarter {
     private fun removeAncientRuinsNearStartingLocation(startingLocation: Tile) {
         for (tile in startingLocation.getTilesInDistance(3)) {
             if (tile.improvement != null
-                && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
+                && tile.getTileImprovement()!!.isAncientRuinsEquivalent(GameContext.IgnoreConditionals)
             ) {
                 tile.removeImprovement() // Remove ancient ruins in immediate vicinity
             }
