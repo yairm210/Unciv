@@ -55,11 +55,15 @@ class GlobalUniques: RulesetObject() {
 
         fun combine(globalUniques: GlobalUniques, vararg otherSources: IHasUniques) = GlobalUniques().apply {
             /** This must happen before [uniqueMap] and [uniqueObjects] are triggered */
-            uniques.addAll(globalUniques.uniques)
-            unitUniques = globalUniques.unitUniques
-            for (source in otherSources) {
+            /** We're not copying [name] which means any assignments in actual jsons differing from the default will be lost, but still be picked up by TFW */
+            val combinedPediaText = mutableListOf<FormattedLine>()
+            for (source in sequenceOf(globalUniques) + otherSources) {
                 uniques.addAll(source.uniques)
+                if (source !is GlobalUniques) continue
+                unitUniques.addAll(source.unitUniques)
+                combinedPediaText.addAll(source.civilopediaText)
             }
+            civilopediaText = combinedPediaText
         }
     }
 }
