@@ -141,7 +141,7 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
             for (diplomaticModifier in DiplomaticModifiers.entries)
                 linesToTranslate += "${diplomaticModifier.text} = "
-            
+
             linesToTranslate += "\n\n#################### Lines from demands #######################\n"
             for (demand in Demand.entries) {
                 linesToTranslate += "\n### ${demand.name} \n"
@@ -331,18 +331,22 @@ object TranslationFileWriter {
                 val javaClass = getJavaClassByName(filename)
                     ?: continue // unknown JSON, let's skip it
 
-                val array = json().fromJsonFile(javaClass, jsonFile.path())
+                val data = json().fromJsonFile(javaClass, jsonFile.path())
 
                 resultStrings = mutableSetOf()
                 this[filename] = resultStrings
 
                 @Suppress("RemoveRedundantQualifierName")  // to clarify this is the kotlin way
-                if (array is kotlin.Array<*>)
-                    for (element in array) {
+                if (data is kotlin.Array<*>) {
+                    for (element in data) {
                         serializeElement(element!!) // let's serialize the strings recursively
                         // This is a small hack to insert multiple /n into the set, which can't contain identical lines
                         resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
                     }
+                } else {
+                    serializeElement(data)
+                    resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                }
             }
             val displayName = if (jsonsFolder.name() != "jsons") jsonsFolder.name()
                 else jsonsFolder.parent().name().ifEmpty { "Tutorials" }  // Show mod name - or special case

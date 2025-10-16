@@ -21,7 +21,7 @@ class GlobalUniques: RulesetObject() {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = mutableListOf<FormattedLine>()
-        lines.add(FormattedLine("Global uniques are ruleset-wide modifiers that apply to all civilizations."))
+
         uniquesToCivilopediaTextLines(lines, leadingSeparator = {
             yield(FormattedLine())
             yield(FormattedLine("Global Effect", header=4))
