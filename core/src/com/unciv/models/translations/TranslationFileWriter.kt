@@ -45,6 +45,8 @@ import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 object TranslationFileWriter {
 
@@ -141,7 +143,7 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
             for (diplomaticModifier in DiplomaticModifiers.entries)
                 linesToTranslate += "${diplomaticModifier.text} = "
-            
+
             linesToTranslate += "\n\n#################### Lines from demands #######################\n"
             for (demand in Demand.entries) {
                 linesToTranslate += "\n### ${demand.name} \n"
@@ -262,6 +264,7 @@ object TranslationFileWriter {
         return countOfTranslatedLines
     }
 
+    @Pure
     private fun StringBuilder.appendTranslation(key: String, value: String) {
         appendLine(key.replace("\n", "\\n") +
                 " = " + value.replace("\n", "\\n"))
@@ -331,18 +334,22 @@ object TranslationFileWriter {
                 val javaClass = getJavaClassByName(filename)
                     ?: continue // unknown JSON, let's skip it
 
-                val array = json().fromJsonFile(javaClass, jsonFile.path())
+                val data = json().fromJsonFile(javaClass, jsonFile.path())
 
                 resultStrings = mutableSetOf()
                 this[filename] = resultStrings
 
                 @Suppress("RemoveRedundantQualifierName")  // to clarify this is the kotlin way
-                if (array is kotlin.Array<*>)
-                    for (element in array) {
+                if (data is kotlin.Array<*>) {
+                    for (element in data) {
                         serializeElement(element!!) // let's serialize the strings recursively
                         // This is a small hack to insert multiple /n into the set, which can't contain identical lines
                         resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
                     }
+                } else {
+                    serializeElement(data)
+                    resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                }
             }
             val displayName = if (jsonsFolder.name() != "jsons") jsonsFolder.name()
                 else jsonsFolder.parent().name().ifEmpty { "Tutorials" }  // Show mod name - or special case
@@ -477,7 +484,8 @@ object TranslationFileWriter {
                 "RuinReward.uniques", "TerrainType.name",
                 "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques",
                 "Era.citySound",
-                "keyShortcut"
+                "keyShortcut",
+                "originRuleset"
             )
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
@@ -494,6 +502,7 @@ object TranslationFileWriter {
                 "uniques", "promotions", "milestones",
             )
 
+            @Readonly
             private fun isFieldTypeRelevant(type: Class<*>) =
                     type == String::class.java ||
                     type == java.util.ArrayList::class.java ||
