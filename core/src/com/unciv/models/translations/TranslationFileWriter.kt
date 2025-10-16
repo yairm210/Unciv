@@ -37,6 +37,7 @@ import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitNameGroup
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.input.KeyboardBinding
@@ -532,6 +533,7 @@ object TranslationFileWriter {
                     "Eras" -> emptyArray<Era>().javaClass
                     "Events" -> emptyArray<Event>().javaClass
                     "GlobalUniques" -> GlobalUniques().javaClass
+                    "HistoricalFigures" -> emptyArray<UnitNameGroup>().javaClass
                     "Nations" -> emptyArray<Nation>().javaClass
                     "Policies" -> emptyArray<PolicyBranch>().javaClass
                     "Quests" -> emptyArray<Quest>().javaClass
