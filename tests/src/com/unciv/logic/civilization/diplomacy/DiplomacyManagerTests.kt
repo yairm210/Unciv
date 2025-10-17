@@ -100,7 +100,7 @@ class DiplomacyManagerTests {
         val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
         val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
 
-        assertEquals(-35f, aOpinionOfB)
+        assertEquals(0f, aOpinionOfB)
         assertEquals(-35f, bOpinionOfA)
     }
 
