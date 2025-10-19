@@ -146,8 +146,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Volatile
     var customSaveLocation: String? = null
 
-    /** List of historical figure names that have been taken in this game. */
-    var historicalFiguresTaken = mutableListOf<String>()
+    /** List of unit names that have been taken in this game from UnitNameGroups.json. */
+    var unitNamesTaken = mutableListOf<String>()
 
     //endregion
     //region Fields - Transient
@@ -208,7 +208,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
         toReturn.lastUnitId = lastUnitId
-        toReturn.historicalFiguresTaken.addAll(historicalFiguresTaken)
+        toReturn.unitNamesTaken.addAll(unitNamesTaken)
 
         return toReturn
     }

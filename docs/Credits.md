@@ -778,7 +778,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
-- [Celebrity](https://thenounproject.com/icon/elebrity-99330/) by Andy Selimov for "OtherIcons/HistoricalFigures"
+- [Celebrity](https://thenounproject.com/icon/elebrity-99330/) by Andy Selimov for "OtherIcons/UnitNameGroups"
 - [Galileo Donatello](https://en.wikipedia.org/wiki/File:Galileo_Donato.jpg) for the "Meet another civilization" tutorial: Public domain
 - [ServerRack](https://thenounproject.com/icon/server-rack-922717/) by Chad Remsing
 - [RobotArm](https://thenounproject.com/icon/robot-7300306/) by Faizal khusein

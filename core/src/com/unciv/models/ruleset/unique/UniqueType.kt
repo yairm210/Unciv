@@ -493,7 +493,6 @@ enum class UniqueType(
 
     RuinsUpgrade("May upgrade to [unit] through ruins-like effects", UniqueTarget.Unit),
     CanUpgrade("Can upgrade to [unit]", UniqueTarget.Unit),
-    CanBeAHistoricalFigure("Can be a [historicalFigure] historical figure", UniqueTarget.Unit),
 
     DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 
@@ -907,6 +906,7 @@ enum class UniqueType(
                 "Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns."),
     OneTimeUnitLoseStatus("[unitTriggerTarget] loses the [promotion] status", UniqueTarget.UnitTriggerable),
     OneTimeUnitDestroyed("[unitTriggerTarget] is destroyed", UniqueTarget.UnitTriggerable),
+    OneTimeUnitGetsName("[unitTriggerTarget] gets a name from the [unitNameGroup] group", UniqueTarget.UnitTriggerable),
     //endregion
 
 

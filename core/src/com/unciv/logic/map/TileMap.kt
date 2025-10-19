@@ -644,9 +644,6 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             }
         }
 
-        // Select a instance name for the unit if needed
-        unit.setHistoricalFigureName()
-
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
 

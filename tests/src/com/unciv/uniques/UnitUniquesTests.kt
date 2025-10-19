@@ -138,6 +138,22 @@ class UnitUniquesTests {
     }
 
     @Test
+    fun testOneTimeUnitGetsName() {
+        game.makeHexagonalMap(3)
+        val civ = game.addCiv()
+        val centerTile = game.getTile(Vector2.Zero)
+        val capital = game.addCity(civ, centerTile)
+        val unitTile = game.getTile(Vector2(1f,0f))
+        val unit = game.addDefaultMeleeUnitWithUniques(civ, unitTile, "[This Unit] gets a name from the [Scientist] group")
+
+        // TODO: Why isn't the instance name being set?
+        //unit.instanceName = "Albert Einstein"
+
+        Assert.assertTrue(unit.instanceName != null)
+        Assert.assertTrue(game.ruleset.unitNameGroups["Scientist"]?.unitNames?.contains(unit.instanceName) ?: false)
+    }
+
+    @Test
     fun testPromotionTreeSetUp() {
         val civ = game.addCiv(isPlayer = true)
 

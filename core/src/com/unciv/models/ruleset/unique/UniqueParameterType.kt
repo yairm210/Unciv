@@ -589,14 +589,14 @@ enum class UniqueParameterType(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.victories.keys
     },
 
-    /** Used by [UniqueType.CanBeAHistoricalFigure] */
-    HistoricalFigure("historicalFigure",
-        "Scientist", "The name of any historical figure group found in HistoricalFigures.json, or one of their unique tags"
+    /** Used by [UniqueType.OneTimeUnitGetsName] */
+    UnitNameGroup("unitNameGroup",
+        "Scientist", "The name of a unit name group found in UnitNameGroups.json, or one of their unique tags"
     ) {
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.historicalFigures.keys
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.unitNameGroups.keys
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
-            parameterText in ruleset.historicalFigures -> true
-            ruleset.historicalFigures.values.any { it.hasTagUnique(parameterText) } -> true
+            parameterText in ruleset.unitNameGroups -> true
+            ruleset.unitNameGroups.values.any { it.hasTagUnique(parameterText, GameContext.IgnoreConditionals) } -> true
             else -> false
         }
     },

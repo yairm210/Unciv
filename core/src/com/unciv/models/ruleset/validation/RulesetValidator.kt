@@ -112,7 +112,7 @@ open class RulesetValidator protected constructor(
         addRuinsErrors(lines)
         addPromotionErrors(lines)
         addUnitTypeErrors(lines)
-        addHistoricalFiguresErrors(lines)
+        addUnitNameGroupsErrors(lines)
         addVictoryTypeErrors(lines)
         addDifficultyErrors(lines)
         addEventErrors(lines)
@@ -485,9 +485,9 @@ open class RulesetValidator protected constructor(
         }
     }
 
-    protected open fun addHistoricalFiguresErrors(lines: RulesetErrorList) {
-        for (historicalFigureGroup in ruleset.historicalFigures.values) {
-            uniqueValidator.checkUniques(historicalFigureGroup, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+    protected open fun addUnitNameGroupsErrors(lines: RulesetErrorList) {
+        for (unitNameGroup in ruleset.unitNameGroups.values) {
+            uniqueValidator.checkUniques(unitNameGroup, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 

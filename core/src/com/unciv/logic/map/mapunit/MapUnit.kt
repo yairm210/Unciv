@@ -1117,50 +1117,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerUnique(unique, this)
     }
 
-    /**
-     * Sets the instance name should the unit be needing a historical figure name.
-     */
-    fun setHistoricalFigureName() {
-        if (hasUnique(UniqueType.CanBeAHistoricalFigure, cache.state)) {
-            // Get both the name and associated unique for the historical figure
-            val pair = getMatchingUniques(UniqueType.CanBeAHistoricalFigure, cache.state)
-                .map { it.params[0] }.distinct()
-                .flatMap {
-                    // Get all historical figure groups that match the name or a tag
-                    civ.gameInfo.ruleset.historicalFigures.values.filter {
-                        hf -> hf.name == it || hf.hasTagUnique(it, cache.state)
-                    }
-                }
-                .distinct()
-                .filter {
-                    // Validate that it's available
-                    it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                        .none { unique -> !unique.conditionalsApply(cache.state) } &&
-                    it.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
-                        .none { unique -> unique.conditionalsApply(cache.state) }
-                }
-                .flatMap { hf -> 
-                    // Grab only names that haven't been taken
-                    hf.names.filter {
-                        name -> name !in civ.gameInfo.historicalFiguresTaken
-                    }
-                    // Make a pair of the name and the historical figure instance
-                    .map { it to hf }
-                }
-                .shuffled().firstOrNull()
-            if (pair != null) {
-                instanceName = pair.first
-                civ.gameInfo.historicalFiguresTaken.add(pair.first)
-                promotions.addPromotion(pair.first, true)
-                for (unique in pair.second.uniqueObjects) {
-                    if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(cache.state)) {
-                        UniqueTriggerActivation.triggerUnique(unique, this)
-                    }
-                }
-            }
-        }
-    }
-
     fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
     //endregion
 }

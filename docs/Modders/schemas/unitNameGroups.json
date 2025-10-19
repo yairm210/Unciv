@@ -6,9 +6,9 @@
     "properties": {
       "name": {
         "type": "string",
-        "description": "The name of the historical figure group. For example: Scientist."
+        "description": "The name of the unit name group. For example: Scientist."
       },
-      "names": {
+      "unitNames": {
         "type": "array",
         "description": "A list of names that apply to the group. For example: Alan Turing.",
         "items": { "type": "string" }
@@ -17,7 +17,7 @@
       "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
     },
     "required": [
-      "name", "names"
+      "name"
     ],
     "additionalProperties": false
   }
