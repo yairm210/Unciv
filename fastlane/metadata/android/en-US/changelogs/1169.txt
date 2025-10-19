@@ -1,0 +1,11 @@
+
+
+Changes to Naval Tradition Policy under Commerce - By JhandeFlores
+
+Improve CivilopediaPedia display of GlobalUniques - By SomeTroglodyte
+
+By RobLoach:
+- Fix Ancient Ruins when there are conditionals 
+- Add Leader Titles 
+
+Modding/Feature: Allow units to destroy cities instead of capturing - By PhiRite
