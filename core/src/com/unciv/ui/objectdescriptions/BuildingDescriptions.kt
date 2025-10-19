@@ -58,9 +58,21 @@ object BuildingDescriptions {
             }
         }
 
+        for ((resourceName, amount) in getStockpiledResourceRequirements(city.state)) {
+            val resource = city.getRuleset().tileResources[resourceName] ?: continue
+            val available = city.getAvailableResourceAmount(resourceName)
+            val costsString = resourceName.getConsumesAmountString(amount, resource.isStockpiled,
+                perTurn = false,
+                label = "Costs")
+            translatedLines += if (showAdditionalInfo) "$costsString ({[$available] available})".tr()
+            else costsString.tr()
+        }
+
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) translatedLines += replacementTextForUniques.tr()
-            else translatedLines += getUniquesStringsWithoutDisablers{ it.type != UniqueType.ConsumesResources }.map { it.tr() }
+            else translatedLines += getUniquesStringsWithoutDisablers {
+                it.type != UniqueType.ConsumesResources && it.type != UniqueType.CostsResources
+            }.map { it.tr() }
         }
         if (!stats.isEmpty())
             translatedLines += stats.toString()

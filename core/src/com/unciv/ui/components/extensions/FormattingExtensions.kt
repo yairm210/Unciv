@@ -22,9 +22,10 @@ import java.util.SortedMap
 @Pure fun Float.toPercent() = 1 + this/100
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
-@Pure fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
-    val uniqueString = "{Consumes [$amount] [$this]}"
-    return if (isStockpiled) "$uniqueString /${Fonts.turn}" else uniqueString
+@Pure fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean, perTurn: Boolean = true, label: String = "Consumes"): String {
+    val uniqueString = "{$label [$amount] [$this]}"
+    val perTurnString = if (perTurn) " /${Fonts.turn}" else ""
+    return if (isStockpiled) "${uniqueString}${perTurnString}" else uniqueString
 }
 
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
