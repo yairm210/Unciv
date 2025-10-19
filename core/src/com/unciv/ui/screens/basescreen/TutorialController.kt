@@ -88,9 +88,14 @@ class TutorialController(screen: BaseScreen) {
         // Todo This is essentially an 'un-private' kludge and the accessor
         //      in CivilopediaCategories desperately needs independence from TutorialController:
         //      Move storage to RuleSet someday?
+
+        /** Note: **Not** UncivGame.Current.gameInfo?.getGlobalUniques() because this is for pedia display,
+         *        and showing the merged GlobalUniques + Speed uniques + Difficulty might surprise.
+         */
+        val globalUniques = UncivGame.Current.screen?.getCivilopediaRuleset()?.globalUniques
         return tutorials.values +
-            // Global Uniques
-            listOfNotNull(UncivGame.Current.gameInfo?.getGlobalUniques()?.takeIf { it.hasUniques() })
+            // Add entry for Global Uniques only if they have anything interesting
+            listOfNotNull(globalUniques?.takeIf { it.hasUniques() })
     }
 }
 

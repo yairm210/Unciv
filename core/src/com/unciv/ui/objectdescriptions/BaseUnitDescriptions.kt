@@ -243,7 +243,7 @@ object BaseUnitDescriptions {
                     yield(FormattedLine(promotion.name, promotion.makeLink()))
             }
 
-            yieldAll(uniquesToCivilopediaTextLines(leadingSeparator = true))
+            yieldAll(uniquesToCivilopediaTextLines(leadingSeparator = { yield(FormattedLine(separator = true)) }))
         }
         return (if (name.startsWith("Domain: ")) getDomainLines() else getUnitTypeLines()).toList()
     }
