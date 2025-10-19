@@ -197,12 +197,7 @@ class Ruleset {
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
         speeds.putAll(ruleset.speeds)
-        globalUniques = GlobalUniques().apply {
-            uniques.addAll(globalUniques.uniques)
-            uniques.addAll(ruleset.globalUniques.uniques)
-            unitUniques.addAll(globalUniques.unitUniques)
-            unitUniques.addAll(ruleset.globalUniques.unitUniques)
-        }
+        globalUniques = GlobalUniques.combine(globalUniques, ruleset.globalUniques)
         ruleset.modOptions.nationsToRemove
             .flatMap { nationToRemove ->
                 nations.filter { it.value.matchesFilter(nationToRemove) }.keys

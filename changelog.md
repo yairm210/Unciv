@@ -1,3 +1,17 @@
+## 4.18.6
+
+Game startup performance improvements
+
+Mod preview performance improvements
+
+Avoid rare crash concurrent modification when calculating construction costs
+
+By RobLoach:
+- Modding: Ancient Ruins can have unit-related conditionals 
+- AbsoluteUnits: Add Great Admiral by Basil 
+
+Allow naval units to be spawn in water city - By Emandac
+
 ## 4.18.5
 
 AI will not attack cities with no health with siege units

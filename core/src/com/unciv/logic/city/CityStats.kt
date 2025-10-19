@@ -194,8 +194,8 @@ class CityStats(val city: City) {
     private fun getStatsFromSpecialists(specialists: Counter<String>): Stats {
         val stats = Stats()
         val localUniqueCache = LocalUniqueCache()
-        for (entry in specialists.filter { it.value > 0 })
-            stats.add(getStatsOfSpecialist(entry.key, localUniqueCache) * entry.value)
+        for ((key, value) in specialists.filter { it.value > 0 }.toList()) // avoid concurrent modification when calculating construction costs
+            stats.add(getStatsOfSpecialist(key, localUniqueCache) * value)
         return stats
     }
 

@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
+import com.unciv.models.translations.hasPlaceholderParameters
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -645,6 +646,12 @@ enum class UniqueParameterType(
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = null
+        override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
+    },
+
+    /** Used in [GetLeaderTitle], and validates a [leaderName] is provided. */
+    LeaderTitle("leaderTitle", "Sovereign [leaderName] the Great", "Provides a leader title that includes the leader's name in parameters.", "Leader Title") {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText.hasPlaceholderParameters()
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
