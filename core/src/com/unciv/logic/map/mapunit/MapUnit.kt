@@ -1117,6 +1117,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerUnique(unique, this)
     }
 
+
     fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
     //endregion
 }
