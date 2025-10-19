@@ -47,6 +47,16 @@ object BaseUnitDescriptions {
             val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled)
             lines += "$consumesString ({[$available] available})".tr()
         }
+
+        for ((resourceName, amount) in baseUnit.getStockpiledResourceRequirements(city.civ.state)) {
+            val available = city.getAvailableResourceAmount(resourceName)
+            val resource = city.getRuleset().tileResources[resourceName] ?: continue
+            val costsString = resourceName.getConsumesAmountString(amount, resource.isStockpiled,
+                perTurn = false,
+                label = "Costs")
+            lines += "$costsString ({[$available] available})".tr()
+        }
+
         var strengthLine = ""
         if (baseUnit.strength != 0) {
             strengthLine += "${baseUnit.strength}${Fonts.strength}, "
@@ -56,8 +66,12 @@ object BaseUnitDescriptions {
         lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
-        else baseUnit.uniquesToDescription(lines) { type == UniqueType.Unbuildable
-                || type == UniqueType.ConsumesResources } // Already displayed in the resource requirements
+        else baseUnit.uniquesToDescription(lines) {
+            type == UniqueType.Unbuildable
+            // Already displayed in the resource requirements
+            || type == UniqueType.ConsumesResources
+            || type == UniqueType.CostsResources
+        } 
 
         if (baseUnit.promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (baseUnit.promotions.size == 1) "" else "s"}:".tr() + " "
