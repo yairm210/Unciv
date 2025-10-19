@@ -137,7 +137,7 @@ class UnitManager(val civInfo: Civilization) {
 
     // Similar to getCivUnits(), but the returned list is rotated so that the
     // 'nextPotentiallyDueAt' unit is first here.
-    private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(unitList.subList(nextPotentiallyDueAt, unitList.size) + unitList.subList(0, nextPotentiallyDueAt)).flatten()
+    @Readonly private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(unitList.subList(nextPotentiallyDueAt, unitList.size) + unitList.subList(0, nextPotentiallyDueAt)).flatten()
 
     /** Assigns an existing [mapUnit] to this manager.
      *
@@ -175,13 +175,13 @@ class UnitManager(val civInfo: Civilization) {
             civInfo.cache.updateCivResources()
     }
 
-    fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
+    @Readonly fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
+    @Readonly fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
-    fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
+    @Readonly fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
 
     // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
     fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {

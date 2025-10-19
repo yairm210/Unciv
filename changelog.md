@@ -1,12 +1,12 @@
 ## 4.18.7
 
-Changes to Naval Tradition Policy under Commerce - By JhandeFlores
+Improve Civilopedia display of GlobalUniques - By SomeTroglodyte
 
-Improve CivilopediaPedia display of GlobalUniques - By SomeTroglodyte
+Naval Tradition Policy under Commerce as per Civ V - By JhandeFlores
 
 By RobLoach:
 - Fix Ancient Ruins when there are conditionals 
-- Add Leader Titles 
+- Add Leader Titles unique 
 
 Modding/Feature: Allow units to destroy cities instead of capturing - By PhiRite
 
