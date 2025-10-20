@@ -10,6 +10,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.extensions.getCostsAmountString
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -48,30 +49,26 @@ object BuildingDescriptions {
         if (isWonder) translatedLines += "Wonder".tr()
         if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
+            // Consumes
             for ((resourceName, amount) in getResourceRequirementsPerTurn(city.state)) {
-                val available = city.getAvailableResourceAmount(resourceName)
+                val available = if (showAdditionalInfo) city.getAvailableResourceAmount(resourceName) else -1
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
-                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled)
-
-                translatedLines += if (showAdditionalInfo) "$consumesString ({[$available] available})".tr()
-                else consumesString.tr()
+                translatedLines += resourceName.getConsumesAmountString(amount, resource.isStockpiled, available).tr()
             }
-        }
 
-        for ((resourceName, amount) in getStockpiledResourceRequirements(city.state)) {
-            val resource = city.getRuleset().tileResources[resourceName] ?: continue
-            val available = city.getAvailableResourceAmount(resourceName)
-            val costsString = resourceName.getConsumesAmountString(amount, resource.isStockpiled,
-                perTurn = false,
-                label = "Costs")
-            translatedLines += if (showAdditionalInfo) "$costsString ({[$available] available})".tr()
-            else costsString.tr()
+            // Costs
+            for ((resourceName, amount) in getStockpiledResourceRequirements(city.state)) {
+                val resource = city.getRuleset().tileResources[resourceName] ?: continue
+                val available = if (showAdditionalInfo) city.getAvailableResourceAmount(resourceName) else -1
+                translatedLines += resourceName.getCostsAmountString(amount, available).tr()
+            }
         }
 
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty()) translatedLines += replacementTextForUniques.tr()
             else translatedLines += getUniquesStringsWithoutDisablers {
-                it.type != UniqueType.ConsumesResources && it.type != UniqueType.CostsResources
+                it.type != UniqueType.ConsumesResources &&
+                it.type != UniqueType.CostsResources
             }.map { it.tr() }
         }
         if (!stats.isEmpty())

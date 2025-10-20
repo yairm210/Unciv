@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.extensions.getCostsAmountString
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -41,20 +42,19 @@ object BaseUnitDescriptions {
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()
+
+        // Consumes
         for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn(city.civ.state)) {
             val available = availableResources[resourceName] ?: 0
             val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
-            val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled)
-            lines += "$consumesString ({[$available] available})".tr()
+            lines += resourceName.getConsumesAmountString(amount, resource.isStockpiled, available).tr()
         }
 
+        // Costs
         for ((resourceName, amount) in baseUnit.getStockpiledResourceRequirements(city.civ.state)) {
             val available = city.getAvailableResourceAmount(resourceName)
             val resource = city.getRuleset().tileResources[resourceName] ?: continue
-            val costsString = resourceName.getConsumesAmountString(amount, resource.isStockpiled,
-                perTurn = false,
-                label = "Costs")
-            lines += "$costsString ({[$available] available})".tr()
+            lines += resourceName.getCostsAmountString(amount, available).tr()
         }
 
         var strengthLine = ""
