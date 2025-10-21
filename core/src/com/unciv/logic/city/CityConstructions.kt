@@ -418,6 +418,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
             if (construction.isBuildable(this))
                 constructionQueue.add(constructionName)
+            else if (construction is Building)
+                removeImprovementForBuilding(construction)
         }
         chooseNextConstruction()
     }
@@ -448,6 +450,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                         NotificationCategory.Production,
                         NotificationIcon.Gold, "BuildingIcons/${constructionName}")
                 }
+                removeImprovementForBuilding(construction)
+                
             } else if (construction is BaseUnit) {
                 // Production put into upgradable units gets put into upgraded version
                 val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(city.state)
@@ -460,6 +464,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
             inProgressConstructions.remove(constructionName)
         }
+    }
+    
+    private fun removeImprovementForBuilding(building: Building){
+        val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
+        val tile = city.getTiles().firstOrNull { it.isMarkedForCreatesOneImprovement(improvementToCreate.name) }
+        tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
     }
 
     private fun constructionBegun(construction: IConstruction) {

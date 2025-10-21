@@ -1,3 +1,15 @@
+## 4.18.7
+
+Improve Civilopedia display of GlobalUniques - By SomeTroglodyte
+
+Naval Tradition Policy under Commerce as per Civ V - By JhandeFlores
+
+By RobLoach:
+- Fix Ancient Ruins when there are conditionals 
+- Add Leader Titles unique 
+
+Modding/Feature: Allow units to destroy cities instead of capturing - By PhiRite
+
 ## 4.18.6
 
 Game startup performance improvements
