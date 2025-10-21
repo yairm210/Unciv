@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import yairm210.purity.annotations.Readonly
 
 class VictoryManager : IsPartOfGameInfoSerialization {
     @Transient
@@ -26,6 +27,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+    @Readonly
     private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String?>): Counter<String> {
         val results = Counter<String>()
         // UN Owner gets 2 votes in G&K
@@ -37,6 +39,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return results
     }
 
+    @Readonly
     private fun getVotingCivs() = civInfo.gameInfo.civilizations.asSequence()
         .filterNot { it.isBarbarian || it.isSpectator() || it.isDefeated() }
 
@@ -44,6 +47,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
      *  - if it's built at all and only if the owner is alive
      *  @return `first`: Building name, `second`: Owner civ name; both null if not found
      */
+    @Readonly
     fun getUNBuildingAndOwnerNames(): Pair<String?, String?> = getVotingCivs()
             .flatMap { civ -> civ.cities.asSequence()
                 .flatMap { it.cityConstructions.getBuiltBuildings() }
@@ -51,6 +55,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
                 .map { it.name to civ.civName }
             }.firstOrNull() ?: (null to null)
 
+    @Readonly
     private fun votesNeededForDiplomaticVictory(): Int {
         // The original counts "teams ever alive", which excludes Observer and Barbarians.
         // The "ever alive" part sounds unfair - could make a Vote unwinnable?
@@ -67,6 +72,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return voteCount * (67 - (1.1 * voteCount).toInt()) / 100 + 1
     }
 
+    @Readonly
     fun hasEnoughVotesForDiplomaticVictory(): Boolean {
         val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
         val bestCiv = results.maxByOrNull { it.value } ?: return false
@@ -82,6 +88,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
     }
 
     data class DiplomaticVictoryVoteBreakdown(val results: Counter<String>, val winnerText: String)
+    @Readonly
     fun getDiplomaticVictoryVoteBreakdown(): DiplomaticVictoryVoteBreakdown {
         val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
         val (voteCount, winnerList) = results.asSequence()
@@ -105,6 +112,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return DiplomaticVictoryVoteBreakdown(results, lines.joinToString("\n") { "{$it}" })
     }
 
+    @Readonly
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
         val enabledVictories = civInfo.gameInfo.gameParameters.victoryTypes
@@ -117,7 +125,8 @@ class VictoryManager : IsPartOfGameInfoSerialization {
             return Constants.neutralVictoryType
         return null
     }
-
+    
+    @Readonly
     fun getNextMilestone(victory: Victory): Milestone? {
         for (milestone in victory.milestoneObjects) {
             if (!milestone.hasBeenCompletedBy(civInfo))
@@ -126,6 +135,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return null
     }
 
+    @Readonly
     fun amountMilestonesCompleted(victory: Victory): Int {
         var completed = 0
         for (milestone in victory.milestoneObjects) {
@@ -137,5 +147,5 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return completed
     }
 
-    fun hasWon() = getVictoryTypeAchieved() != null
+    @Readonly fun hasWon() = getVictoryTypeAchieved() != null
 }
