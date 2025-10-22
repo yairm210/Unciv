@@ -35,10 +35,9 @@ object CivilianUnitAutomation {
 
         /*
         *   allow citystate to build unit Military,
-        *   that can settle but stop them from settling that unit.
+        *   that can settle but can't settle.
         * */
         if (hasSettlerUnique && !(unit.civ.isCityState && unit.isMilitary()))
-
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (tryRunAwayIfNeccessary(unit)) return
