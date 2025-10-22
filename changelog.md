@@ -1,3 +1,16 @@
+## 4.18.8
+
+Remove building-improvement if the building is no longer buildable
+
+By RobLoach:
+- Add 'when not stacked with a [mapUnitFilter] unit' Conditional 
+- Fix relevent Civ for within tiles Conditional 
+- City Screen: Display Stockpile Amount Available for Cost 
+
+Display promises in diplomacy overview for human players - By unciv-loof
+
+Fix battle notification translations - by dadadnet (new contributor!)
+
 ## 4.18.7
 
 Improve Civilopedia display of GlobalUniques - By SomeTroglodyte
