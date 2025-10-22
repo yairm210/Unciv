@@ -88,9 +88,9 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         else { 
             diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
-            val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
-            if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
+        val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
+        if (promisesTable != null) diplomacyTable.add(promisesTable).row()
 
         // Starting playback here assumes the MajorCivDiplomacyTable is shown immediately
         UncivGame.Current.musicController.playVoice(helloVoice)

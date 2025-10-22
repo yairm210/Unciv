@@ -266,6 +266,8 @@ object Conditionals {
                     state.unit.abilityToTimesUsed.isEmpty()
             UniqueType.ConditionalStackedWithUnit -> state.relevantUnit != null && 
                     state.relevantUnit!!.getTile().getUnits().any { it != state.relevantUnit && it.matchesFilter(conditional.params[0]) }
+            UniqueType.ConditionalNotStackedWithUnit -> state.relevantUnit == null ||
+                    !state.relevantUnit!!.getTile().getUnits().any { it != state.relevantUnit && it.matchesFilter(conditional.params[0]) }
 
             UniqueType.ConditionalInTiles ->
                 state.relevantTile?.matchesFilter(conditional.params[0], state.relevantCiv) == true
@@ -277,7 +279,7 @@ object Conditionals {
                 state.attackedTile?.matchesFilter(conditional.params[0], state.relevantCiv) == true
             UniqueType.ConditionalNearTiles ->
                 state.relevantTile != null && state.relevantTile!!.getTilesInDistance(conditional.params[0].toInt()).any {
-                    it.matchesFilter(conditional.params[1])
+                    it.matchesFilter(conditional.params[1], state.relevantCiv)
                 }
 
             UniqueType.ConditionalVsLargerCiv -> {

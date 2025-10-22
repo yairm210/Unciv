@@ -52,11 +52,15 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
+            "kotlin.repeat",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
+
+            "com.badlogic.gdx.graphics.Color.cpy",
+            "com.badlogic.gdx.graphics.Color.toString",
 
             "com.badlogic.gdx.files.FileHandle.child",
             "com.badlogic.gdx.files.FileHandle.list",
