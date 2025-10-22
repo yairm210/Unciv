@@ -180,11 +180,15 @@ class NotificationsScroll(
         scrollY = if (selectedCell == null) {
             previousScrollY
         } else selectedCell!!.let {
-            val actualBottom = (it.actorY + notificationsTable.y) * scaleFactor
-            val actualTop = (it.actorY + it.actorHeight + notificationsTable.y) * scaleFactor
+            /** Note: This now works for [ListItem]'s wrapped 0 or 1 times. If the hierarchy of the
+                selection *relative to* [notificationsTable] changes again, this will need patching.
+            */
+            val trueActorY = it.actorY + (if (it.table == notificationsTable) 0f else it.table.y)
+            val actualBottom = (trueActorY + notificationsTable.y) * scaleFactor
+            val actualTop = (trueActorY + it.actorHeight + notificationsTable.y) * scaleFactor
             val fullyVisible = actualBottom >= coveredNotificationsBottom && actualTop <= stage.height - coveredNotificationsTop
             val centeredBottom = (stage.height - coveredNotificationsTop + coveredNotificationsBottom - it.actorHeight * scaleFactor) / 2
-            val centeredScrollY = centeredBottom * inverseScaleFactor - it.actorY + maxY
+            val centeredScrollY = centeredBottom * inverseScaleFactor - trueActorY + maxY
             if (fullyVisible) previousScrollY else centeredScrollY
         }
         updateVisualScroll()
@@ -203,7 +207,7 @@ class NotificationsScroll(
             coveredNotificationsBottom + restoreButtonPad,
             Align.bottomRight)
     }
-    
+
     private fun updateContent(
         notifications: List<Notification>,
         coveredNotificationsTop: Float,
@@ -267,9 +271,9 @@ class NotificationsScroll(
                 categoryHeaders.add(header)
                 notificationsTable.add(header).right().row()
             }
-            
+
             val notificationCategoryTable = Table()
-            
+
             fun fillNotificationCategoryTable() {
                 for (notification in categoryNotifications) {
                     val item = ListItem(notification, backgroundDrawable)
@@ -279,11 +283,11 @@ class NotificationsScroll(
                     itemCell.right().row()
                 }
             }
-            
+
             fillNotificationCategoryTable()
             notificationsTable.add(notificationCategoryTable).right().row()
-            
-            header?.onClick { 
+
+            header?.onClick {
                 if (notificationCategoryTable.hasChildren()) {
                     notificationCategoryTable.clear()
                     notificationCategoryTable.pack()

@@ -61,6 +61,7 @@ class Technology: RulesetObject() {
     }
 
     // Wrapper so that if the way to require a tech with a Unique ever changes, this only needs to change in one place.
+    @Readonly
     fun uniqueIsRequirementForThisTech(unique: Unique): Boolean =
             unique.type == UniqueType.OnlyAvailable
             // OnlyAvailableWhen can take multiple conditionals, in which case the true conditional is implicitly the conjunction of all those conditionals.
@@ -70,5 +71,5 @@ class Technology: RulesetObject() {
             && unique.modifiers.size == 1
             && unique.modifiers[0].let { it.type == UniqueType.ConditionalTech && it.params[0] == name }
 
-    fun uniqueIsNotRequirementForThisTech(unique: Unique): Boolean = !uniqueIsRequirementForThisTech(unique)
+    @Readonly fun uniqueIsNotRequirementForThisTech(unique: Unique): Boolean = !uniqueIsRequirementForThisTech(unique)
 }

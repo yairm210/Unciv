@@ -24,6 +24,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.debug
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 object GameStarter {
@@ -236,6 +237,7 @@ object GameStarter {
         }
     }
 
+    @Readonly
     private fun chooseCivilizations(
         newGameParameters: GameParameters,
         gameInfo: GameInfo,
@@ -247,21 +249,21 @@ object GameStarter {
 
         val selectedPlayerNames = newGameParameters.players
             .map { it.chosenCiv }.toSet()
-        val randomNationsPool = (
+        @LocalState val randomNationsPool = (
                 if (gameSetupInfo.gameParameters.enableRandomNationsPool)
                     gameSetupInfo.gameParameters.randomNationsPool.asSequence()
                 else
                     ruleset.nations.filter { it.value.isMajorCiv && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
                         .keys.asSequence()
                 ).filter { it !in selectedPlayerNames }
-            .shuffled().toCollection(ArrayDeque(dequeCapacity))
+            .shuffled().let { ArrayDeque(it.toList()) }
 
         val civNamesWithStartingLocations =
             if (existingMap) gameInfo.tileMap.startingLocationsByNation.keys
             else emptySet()
-        val presetRandomNationsPool = randomNationsPool
+        @LocalState val presetRandomNationsPool = randomNationsPool
             .filter { it in civNamesWithStartingLocations }
-            .shuffled().toCollection(ArrayDeque(dequeCapacity))
+            .shuffled().let { ArrayDeque(it) }
         randomNationsPool.removeAll(presetRandomNationsPool)
 
         // At this point the civ names in newGameParameters.players, randomNationsPool and presetRandomNationsPool
@@ -464,6 +466,7 @@ object GameStarter {
         return startingUnits
     }
 
+    @Readonly
     private fun getEquivalentUnit(
         civ: Civilization,
         unitParam: String,
@@ -565,6 +568,7 @@ object GameStarter {
         throw Exception("Didn't manage to get starting tiles even with distance of 1?")
     }
 
+    @Readonly
     private fun getCivsOrderedByAvailableLocations(civs: List<Civilization>, tileMap: TileMap): List<Civilization> {
         return civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
@@ -589,6 +593,7 @@ object GameStarter {
             .toMutableList()
     }
 
+    // Mutating - updates freeTiles
     private fun getStartingLocationsForCivs(
         civsOrderedByAvailableLocations: List<Civilization>,
         tileMap: TileMap,
@@ -631,6 +636,7 @@ object GameStarter {
         return startingLocation
     }
 
+    @Readonly
     private fun getOneStartingLocation(
         civ: Civilization,
         tileMap: TileMap,
