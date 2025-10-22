@@ -42,6 +42,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import yairm210.purity.annotations.Pure
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -92,7 +93,7 @@ fun colorFromHex(hexColor: Int): Color {
 }
 
 /** Create a new [Color] instance from [r]/[g]/[b] given as Integers in the range 0..255 */
-fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1f)
+@Pure fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1f)
 
 /** Create a new [Color] instance from r/g/b given as Integers in the range 0..255 in the form of a 3-element List [rgb] */
 fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
