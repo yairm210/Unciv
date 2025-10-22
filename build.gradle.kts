@@ -53,6 +53,7 @@ allprojects {
     configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
             "kotlin.repeat",
+            "kotlin.internal.ir.EQEQEQ",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
@@ -68,6 +69,8 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
+            
+            "kotlin.sequences.shuffled",
         )
         wellKnownPureClasses = setOf(
         )
