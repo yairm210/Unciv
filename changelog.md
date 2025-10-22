@@ -1,6 +1,6 @@
 ## 4.18.8
 
-Resolved  - Remove building-improvement if the building is no longer buildable
+Remove building-improvement if the building is no longer buildable
 
 By RobLoach:
 - Add 'when not stacked with a [mapUnitFilter] unit' Conditional 
@@ -8,6 +8,8 @@ By RobLoach:
 - City Screen: Display Stockpile Amount Available for Cost 
 
 Display promises in diplomacy overview for human players - By unciv-loof
+
+Fix battle notification translations - by dadadnet (new contributor!)
 
 ## 4.18.7
 
