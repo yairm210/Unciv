@@ -191,6 +191,17 @@ object Github {
      *  (called on background thread)
      */
     fun rewriteModOptions(repo: GithubAPI.Repo, modFolder: FileHandle) {
+        /**
+         *  - On `ModManagementScreen`, when the user selects a local mod without preview,
+         *    fallback code to display the owner's avatar would be cumbersome
+         *  - Therefore, save the avatar after download, so local mods always have a preview as long as the avatar could be fetched
+         *  - Using the **cached** version of the image failed miserably - the pixmap inside the texture is already disposed
+         *  - Compromise: Download _again_
+         *  - Do it here so it works for `LoadOrSaveScreen.loadMissingMods` too
+         */
+        if (!modFolder.child("preview.jpg").exists() && !modFolder.child("preview.png").exists())
+            trySaveAvatarAsPreview(modFolder, repo.owner.avatar_url)
+
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
 
@@ -235,5 +246,22 @@ object Github {
         if (result.endsWith(outerBlankReplacement)) result = result.trimEnd(outerBlankReplacement) + '-'
         if (result.startsWith(outerBlankReplacement)) result = '-' + result.trimStart(outerBlankReplacement)
         return result
+    }
+
+    private fun trySaveAvatarAsPreview(modFolder: FileHandle, avatarUrl: String?) {
+        if (avatarUrl == null) return
+        Concurrency.run("Save avatar") {
+            val response = UncivKtor.getOrNull(avatarUrl) ?: return@run
+            if (!response.status.isSuccess()) return@run
+            // looking for 0xFFD8 or 0x89504E47 in the body bytes works too, but kotlin's embarrassing bytes & literals support makes that ugly
+            val type = response.headers["Content-Type"] ?: return@run
+            val extension = when(type) {
+                "image/png" -> "png"
+                "image/jpeg" -> "jpg"
+                else -> return@run
+            }
+            val fileHandle = modFolder.child("preview.$extension")
+            fileHandle.writeBytes(response.bodyAsBytes(), false)
+        }
     }
 }
