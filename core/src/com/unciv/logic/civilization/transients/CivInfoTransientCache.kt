@@ -287,11 +287,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (civInfo.cities.isEmpty()) return // No cities to connect
 
         val oldConnectedCities = if (initialSetup)
-            civInfo.cities.filter { it.connectedToCapitalStatus == City.ConnectedToCapitalStatus.`true` }
+            civInfo.cities.filterTo(mutableSetOf()) { it.connectedToCapitalStatus }
             else citiesConnectedToCapitalToMediums.keys
-        val oldMaybeConnectedCities = if (initialSetup)
-            civInfo.cities.filter { it.connectedToCapitalStatus != City.ConnectedToCapitalStatus.`false` }
-        else citiesConnectedToCapitalToMediums.keys
 
         citiesConnectedToCapitalToMediums = if (civInfo.getCapital() == null) mapOf()
         else CapitalConnectionsFinder(civInfo).find()
@@ -299,7 +296,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newConnectedCities = citiesConnectedToCapitalToMediums.keys
 
         for (city in newConnectedCities)
-            if (city !in oldMaybeConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
+            if (city !in oldConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
                 civInfo.addNotification("[${city.name}] has been connected to your capital!",
                     city.location, NotificationCategory.Cities, NotificationIcon.Gold
                 )
@@ -312,8 +309,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 )
 
         for (city in civInfo.cities)
-            city.connectedToCapitalStatus = if (city in newConnectedCities)
-                City.ConnectedToCapitalStatus.`true` else City.ConnectedToCapitalStatus.`false`
+            city.connectedToCapitalStatus = city in newConnectedCities
     }
 
     fun updateCivResources() {
