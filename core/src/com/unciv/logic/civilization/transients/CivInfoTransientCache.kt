@@ -10,7 +10,9 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium.Companion.bestRoadStatus
 import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -288,22 +290,36 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
         if (civInfo.cities.isEmpty()) return // No cities to connect
 
-        val oldConnectedCities = if (initialSetup)
-            civInfo.cities.filterTo(mutableSetOf()) { it.connectedToCapitalStatus }
-            else citiesConnectedToCapitalToMediums.keys
+        fun initialOldConnectedCities(): Map<City, EnumSet<CapitalConnectionMedium>> {
+            val mediums = EnumSet.of(CapitalConnectionMedium.Unknown)
+            return civInfo.cities.filter { it.connectedToCapitalStatus }.associateWith { mediums }
+        }
+        val oldConnectedCities = if (initialSetup) initialOldConnectedCities() else citiesConnectedToCapitalToMediums
 
         citiesConnectedToCapitalToMediums = CapitalConnectionsFinder(civInfo).find()
 
-        val newConnectedCities = citiesConnectedToCapitalToMediums.keys
+        val newConnectedCities = citiesConnectedToCapitalToMediums // alias for readability
 
-        for (city in newConnectedCities)
-            if (city !in oldConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
-                civInfo.addNotification("[${city.name}] has been connected to your capital!",
-                    city.location, NotificationCategory.Cities, NotificationIcon.Gold
-                )
+        for ((city, newMediums) in newConnectedCities) {
+            if (city.civ != civInfo || city == civInfo.getCapital()) continue
+            val oldRoadStatus = oldConnectedCities[city].bestRoadStatus()
+            val newRoadStatus = newMediums.bestRoadStatus()
+            if (oldRoadStatus == newRoadStatus) continue
+            // cases left: None to Road, None to Railroad, Road to Railroad, Railroad to Road. Road/Railroad to None aren't covered in this loop.
+            val text = when {
+                oldRoadStatus == RoadStatus.Road -> "[${city.name}] has upgraded its connection to your capital to railroads!"
+                oldRoadStatus == RoadStatus.Railroad -> "[${city.name}] has lost its railroad connection to your capital but is still connected otherwise!"
+                newRoadStatus == RoadStatus.Railroad -> "[${city.name}] has been connected to your capital via railroad!"
+                else -> "[${city.name}] has been connected to your capital!"
+            }
+            civInfo.addNotification(
+                text,
+                city.location, NotificationCategory.Cities, NotificationIcon.Gold
+            )
+        }
 
         // This may still contain cities that have just been destroyed by razing - thus the population test
-        for (city in oldConnectedCities)
+        for (city in oldConnectedCities.keys)
             if (city !in newConnectedCities && city.civ == civInfo && city.population.population > 0)
                 civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
                     city.location, NotificationCategory.Cities, NotificationIcon.Gold
