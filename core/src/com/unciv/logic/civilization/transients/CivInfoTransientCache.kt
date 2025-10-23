@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
@@ -19,6 +20,7 @@ import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
+import java.util.EnumSet
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
@@ -41,8 +43,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
-    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
-    
+    var citiesConnectedToCapitalToMediums = mapOf<City, EnumSet<CapitalConnectionMedium>>()
+
     fun updateState() {
         civInfo.state = GameContext(civInfo)
     }
@@ -290,8 +292,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             civInfo.cities.filterTo(mutableSetOf()) { it.connectedToCapitalStatus }
             else citiesConnectedToCapitalToMediums.keys
 
-        citiesConnectedToCapitalToMediums = if (civInfo.getCapital() == null) mapOf()
-        else CapitalConnectionsFinder(civInfo).find()
+        citiesConnectedToCapitalToMediums = CapitalConnectionsFinder(civInfo).find()
 
         val newConnectedCities = citiesConnectedToCapitalToMediums.keys
 

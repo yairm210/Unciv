@@ -60,8 +60,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     @Readonly fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
     @Readonly fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     @Readonly fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
-    @Suppress("unused") // Keep the how-to around
-    fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -569,8 +567,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
                 UniqueType.MayParadrop // Paradrop - 25% bonus
-                    -> power *= 1.25f
-                UniqueType.MayParadropOld // ParadropOld - 25% bonus
                     -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power /= 1.20f

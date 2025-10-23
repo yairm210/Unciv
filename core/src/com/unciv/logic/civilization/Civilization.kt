@@ -52,7 +52,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
@@ -698,9 +697,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        val leaderDisplayName = nation.getLeaderDisplayName()
-        var title = if (leaderTitle.isEmpty()) leaderDisplayName else leaderTitle.fillPlaceholders(leaderDisplayName)
-        return title.tr(hideIcons = true) +
+        return nation.getLeaderDisplayName(leaderTitle).tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"

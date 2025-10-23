@@ -12,6 +12,7 @@ import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
@@ -29,6 +30,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import yairm210.purity.annotations.Readonly
+import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -178,7 +180,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
     @Readonly
-    fun isConnectedToCapital(@Readonly connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
+    fun isConnectedToCapital() = this in civ.cache.citiesConnectedToCapitalToMediums
+    @Readonly
+    fun isConnectedToCapital(
+        @Readonly connectionTypePredicate: (EnumSet<CapitalConnectionMedium>) -> Boolean
+    ): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
