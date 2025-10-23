@@ -52,8 +52,8 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
-            "kotlin.repeat",
-            "kotlin.internal.ir.EQEQEQ",
+            "kotlin.repeat", // moved
+            "kotlin.internal.ir.EQEQEQ", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
