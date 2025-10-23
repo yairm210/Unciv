@@ -870,8 +870,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 // Note this also works if currentConstructionFromQueue is perpetual and the only entry - that var is delegated to the first queue position
                 if (construction is PerpetualConstruction) {
                     // perpetual constructions will replace each other
-                    constructionQueue.removeLast()
-                    constructionQueue.add(constructionName)
+                    constructionQueue[constructionQueue.lastIndex] = constructionName
                 } else
                     constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
             }
