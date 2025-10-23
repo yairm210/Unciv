@@ -331,7 +331,7 @@ object GameStarter {
             newGameParameters.numberOfCityStates
         }
 
-        ruleset.nations.asSequence()
+        chosenPlayers += ruleset.nations.asSequence()
             .filter {
                 it.value.isCityState &&
                         !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames)
@@ -340,7 +340,6 @@ object GameStarter {
             .sortedByDescending { it in civNamesWithStartingLocations }  // please those with location first
             .take(numberOfCityStates)
             .map { Player(it) }
-            .toCollection(chosenPlayers)
 
         return chosenPlayers
     }

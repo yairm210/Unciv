@@ -41,7 +41,7 @@ plugins {
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("io.github.yairm210.purity-plugin") version "1.3.0" apply false
+    id("io.github.yairm210.purity-plugin") version "1.3.2" apply false
 }
 
 allprojects {
@@ -52,8 +52,6 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
-            "kotlin.repeat", // moved
-            "kotlin.internal.ir.EQEQEQ", // moved
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
