@@ -327,7 +327,7 @@ object DeclareWar {
             ourDipManager.diplomaticStatus == DiplomaticStatus.DefensivePact
                 && !ourDipManager.otherCiv().isDefeated()
                 && !ourDipManager.otherCiv().isAtWarWith(civAtWarWith)
-        }) {
+        }.toList()) {
             val ally = ourDefensivePact.otherCiv()
             if (!civAtWarWith.knows(ally)) civAtWarWith.diplomacyFunctions.makeCivilizationsMeet(ally, true)
             // Have the aggressor declare war on the ally.
@@ -338,14 +338,13 @@ object DeclareWar {
     private fun callInCityStateAllies(diplomacyManager: DiplomacyManager) {
         val civAtWarWith = diplomacyManager.otherCiv()
         for (thirdCiv in diplomacyManager.civInfo.getKnownCivs()
-            .filter { it.isCityState && it.getAllyCivName() == diplomacyManager.civInfo.civName }) {
+            .filter { it.isCityState && it.getAllyCivName() == diplomacyManager.civInfo.civName }.toList()) {
 
-            if (!thirdCiv.isAtWarWith(civAtWarWith)) {
-                if (!thirdCiv.knows(civAtWarWith))
-                    // Our city state ally has not met them yet, so they have to meet first
-                    thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
-                thirdCiv.getDiplomacyManager(civAtWarWith)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
-            }
+            if (thirdCiv.isAtWarWith(civAtWarWith)) continue
+            if (!thirdCiv.knows(civAtWarWith))
+                // Our city state ally has not met them yet, so they have to meet first
+                thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
+            thirdCiv.getDiplomacyManager(civAtWarWith)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
         }
     }
 }
