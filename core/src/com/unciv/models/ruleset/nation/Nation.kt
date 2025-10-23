@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -23,9 +24,17 @@ import kotlin.math.pow
 
 class Nation : RulesetObject() {
     var leaderName = ""
-    @Readonly
-    fun getLeaderDisplayName() = if (isCityState || isSpectator) name
-        else "[$leaderName] of [$name]"
+
+    /**
+     * Retrieves a display name for the nation's leader, considering the provided title (untranslated).
+     *
+     * @param [title] Optional title to apply to the leader. For example: `[leaderName] the Great`
+     */
+    @Readonly fun getLeaderDisplayName(title: String = ""): String = when {
+        isCityState || isSpectator -> name
+        title.isEmpty() -> "[$leaderName] of [$name]"
+        else -> "[${title.fillPlaceholders(leaderName)}] of [$name]"
+    }
 
     val style = ""
     @Readonly fun getStyleOrCivName() = style.ifEmpty { name }

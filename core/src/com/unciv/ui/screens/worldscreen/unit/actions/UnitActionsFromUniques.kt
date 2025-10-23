@@ -151,12 +151,6 @@ object UnitActionsFromUniques {
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         unit.cache.paradropDestinationTileFilters.clear()
 
-        // Support the old paradrop unique, going from Friendly Land to any Land tile
-        val paradropOldUniques = unit.getMatchingUniques(UniqueType.MayParadropOld)
-        if (paradropOldUniques.any() && !unit.isEmbarked() && !unit.getTile().isWater && unit.getTile().isFriendlyTerritory(unit.civ)) {
-            unit.cache.paradropDestinationTileFilters["Land"] = paradropOldUniques.maxOf { it.params[0] }.toInt()
-        }
-
         // Retrieve all parardrop uniques, considering the state of the unit
         val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
 

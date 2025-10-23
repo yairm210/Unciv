@@ -376,8 +376,6 @@ enum class UniqueType(
     PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
     RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
 
-    @Deprecated("As of 4.17.4", ReplaceWith("May Paradrop to [Land] tiles up to [positiveAmount] tiles away <in [{Friendly} {Land}] tiles>"), DeprecationLevel.WARNING)
-    MayParadropOld("May Paradrop up to [positiveAmount] tiles from inside friendly territory", UniqueTarget.Unit),
     MayParadrop("May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", UniqueTarget.Unit),
     CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
 
@@ -916,8 +914,6 @@ enum class UniqueType(
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEraUnfiltered("upon entering a new era", UniqueTarget.TriggerCondition),
     TriggerUponAdoptingPolicyOrBelief("upon adopting [policy/belief]", UniqueTarget.TriggerCondition),
-    @Deprecated("As of 4.17.12", ReplaceWith("upon declaring war on [Major] Civilizations"), DeprecationLevel.WARNING)
-    TriggerUponDeclaringWar("upon declaring war with a major Civilization", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringWarFiltered("upon declaring war on [civFilter] Civilizations", UniqueTarget.TriggerCondition),
     TriggerUponBeingDeclaredWarUpon("upon being declared war on by [civFilter] Civilizations", UniqueTarget.TriggerCondition),
     TriggerUponEnteringWar("upon entering a war with [civFilter] Civilizations", UniqueTarget.TriggerCondition),
@@ -1033,11 +1029,15 @@ enum class UniqueType(
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
-    @Deprecated("As of 4.16.18", ReplaceWith("[relativeAmount]% [Strategic] resource production"))
+    @Deprecated("As of 4.17.12", ReplaceWith("upon declaring war on [Major] Civilizations"), DeprecationLevel.ERROR)
+    TriggerUponDeclaringWar("upon declaring war with a major Civilization", UniqueTarget.TriggerCondition),
+    @Deprecated("As of 4.17.4", ReplaceWith("May Paradrop to [Land] tiles up to [positiveAmount] tiles away <in [{Friendly} {Land}] tiles>"), DeprecationLevel.ERROR)
+    MayParadropOld("May Paradrop up to [positiveAmount] tiles from inside friendly territory", UniqueTarget.Unit),
+    @Deprecated("As of 4.16.18", ReplaceWith("[relativeAmount]% [Strategic] resource production"), DeprecationLevel.ERROR)
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used by Policies
-    @Deprecated("As of 4.16.18", ReplaceWith("[+100]% [resource] resource production"))
+    @Deprecated("As of 4.16.18", ReplaceWith("[+100]% [resource] resource production"), DeprecationLevel.ERROR)
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
-    @Deprecated(message = "as of 4.16.13", ReplaceWith("[relativeAmount]% maintenance cost for [all] buildings [cityFilter]"), level = DeprecationLevel.WARNING)
+    @Deprecated(message = "as of 4.16.13", ReplaceWith("[relativeAmount]% maintenance cost for [all] buildings [cityFilter]"), level = DeprecationLevel.ERROR)
     BuildingMaintenanceOld("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 4.16.14", ReplaceWith("Removes extra unhappiness from annexed cities"), DeprecationLevel.ERROR)
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),

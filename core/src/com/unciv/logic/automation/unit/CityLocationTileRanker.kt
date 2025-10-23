@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
+import yairm210.purity.annotations.Readonly
+
 
 object CityLocationTileRanker {
 
@@ -64,6 +66,8 @@ object CityLocationTileRanker {
         return bestTilesToFoundCity
     }
 
+
+  @Readonly
     private fun canSettleTile(tile: Tile, unit: MapUnit, nearbyCities: Sequence<City>): Boolean {
         val civ = unit.civ
         
@@ -152,6 +156,7 @@ object CityLocationTileRanker {
         return tileValue
     }
 
+    @Readonly
     private fun getDistanceToCityModifier(newCityTile: Tile,nearbyCities: Sequence<City>, civ: Civilization): Float {
         var modifier = 0f
         for (city in nearbyCities) {
