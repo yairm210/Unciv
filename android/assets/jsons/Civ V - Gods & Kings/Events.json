@@ -187,17 +187,4 @@
             "Unavailable <if tutorial [See your stats breakdown] is completed>"
         ]
     },
-    {
-        "name": "Do Something",
-        "presentation": "Alert",
-        "choices": [
-            {
-                "text": "FD",
-                "uniques": [
-                    "Instantly gain [100] [Gold]",
-                    "Unavailable"
-                ]
-            }
-        ]
-    }
 ]
