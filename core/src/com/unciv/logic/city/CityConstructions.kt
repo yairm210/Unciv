@@ -53,6 +53,10 @@ import kotlin.math.roundToInt
  * @property constructionQueue a list of constructions names enqueued
  */
 class CityConstructions : IsPartOfGameInfoSerialization {
+    companion object {
+        private const val queueMaxSize = 10
+    }
+
     //region Non-Serialized Properties
     @Transient
     lateinit var city: City
@@ -82,9 +86,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionIsUserSet = false
-    var constructionQueue = mutableListOf<String>()
+    var constructionQueue = ArrayList<String>(queueMaxSize)
     var productionOverflow = 0
-    private val queueMaxSize = 10
 
     /** Maps cities by id to a set of the buildings they received (by nation equivalent name)
      *  Source: [UniqueType.GainFreeBuildings]
@@ -951,6 +954,16 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (constructionQueueIndex >= constructionQueue.size - 1) return constructionQueueIndex // Already last
         raisePriority(constructionQueueIndex + 1)
         return constructionQueueIndex + 1
+    }
+
+    /** Replace each element of [constructionQueue] with the result of [transformConstruction],
+     *  optionally dropping elements if the predicate returns `null`. */
+    fun transformQueue(transformConstruction: (String, City) -> String?) {
+        // Replace queue - the iteration and finalization happens before the result
+        // is reassigned, therefore no concurrent modification worries
+        constructionQueue = constructionQueue
+                .mapNotNullTo(ArrayList(city.cityConstructions.constructionQueue.size))
+                { transformConstruction(it, city) }
     }
 
     private fun MutableList<String>.swap(idx1: Int, idx2: Int) {
