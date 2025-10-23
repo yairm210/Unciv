@@ -288,20 +288,16 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
         if (civInfo.cities.isEmpty()) return // No cities to connect
 
-        fun getOldConnectedCities(predicate: (City) -> Boolean) =
-            if (initialSetup) civInfo.cities.filterTo(mutableSetOf(), predicate)
+        val oldConnectedCities = if (initialSetup)
+            civInfo.cities.filterTo(mutableSetOf()) { it.connectedToCapitalStatus }
             else citiesConnectedToCapitalToMediums.keys
-        //TODO Replacing the [connectedToCapitalStatus] tristate with a normal Boolean is overdue
-        //     (2023-06-12: #9545), then this can be simplified
-        val oldConnectedCities = getOldConnectedCities { it.connectedToCapitalStatus == City.ConnectedToCapitalStatus.`true` }
-        val oldMaybeConnectedCities = getOldConnectedCities { it.connectedToCapitalStatus != City.ConnectedToCapitalStatus.`false` }
 
         citiesConnectedToCapitalToMediums = CapitalConnectionsFinder(civInfo).find()
 
         val newConnectedCities = citiesConnectedToCapitalToMediums.keys
 
         for (city in newConnectedCities)
-            if (city !in oldMaybeConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
+            if (city !in oldConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
                 civInfo.addNotification("[${city.name}] has been connected to your capital!",
                     city.location, NotificationCategory.Cities, NotificationIcon.Gold
                 )
@@ -314,8 +310,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 )
 
         for (city in civInfo.cities)
-            city.connectedToCapitalStatus = if (city in newConnectedCities)
-                City.ConnectedToCapitalStatus.`true` else City.ConnectedToCapitalStatus.`false`
+            city.connectedToCapitalStatus = city in newConnectedCities
     }
 
     fun updateCivResources() {

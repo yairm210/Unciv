@@ -126,11 +126,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     internal var flagsCountdown = HashMap<String, Int>()
 
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
-    // Unknown only exists to support older saves, so those do not generate spurious connected/disconnected messages.
-    // The other names are chosen so serialization is compatible with a Boolean to allow easy replacement in the future.
-    @Suppress("EnumEntryName")
-    enum class ConnectedToCapitalStatus { Unknown, `false`, `true` }
-    var connectedToCapitalStatus = ConnectedToCapitalStatus.Unknown
+    var connectedToCapitalStatus = false
 
     @Readonly fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
 
