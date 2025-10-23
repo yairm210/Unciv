@@ -17,6 +17,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -562,16 +563,40 @@ class AlertPopup(
         val splitString = popupAlert.value.split(Constants.stringSplitCharacter)
         val eventName = splitString[0]
         var unit: MapUnit? = null
+        var civInfo: Civilization? = null
+        var city: City? = null
+        var tileX: Int? = null
+        var tileY: Int? = null
+        var tile: Tile? = null
+
         for (i in 1 until splitString.size) {
-            if (splitString[i].startsWith("unitId=")){
-                val unitId = splitString[i].substringAfter("unitId=").toInt()
-                unit = viewingCiv.units.getUnitById(unitId)
+            when {
+                splitString[i].startsWith("civName=") -> {
+                    val civName = splitString[i].substringAfter("civName=")
+                    civInfo = getCiv(civName)
+                }
+                splitString[i].startsWith("unitId=") -> {
+                    val unitId = splitString[i].substringAfter("unitId=").toInt()
+                    unit = viewingCiv.units.getUnitById(unitId)
+                }
+                splitString[i].startsWith("cityId=") -> {
+                    val cityId = splitString[i].substringAfter("cityId=")
+                    city = getCity(cityId)
+                }
+                splitString[i].startsWith("tileX=") -> {
+                    tileX = splitString[i].substringAfter("tileX=").toIntOrNull()
+                }
+                splitString[i].startsWith("tileY=") -> {
+                    tileY = splitString[i].substringAfter("tileY=").toIntOrNull()
+                }
             }
         }
-        
-        
+
+        if (tileX != null && tileY != null)
+            tile = gameInfo.tileMap[tileX, tileY]
+
         val event = gameInfo.ruleset.events[eventName] ?: return false
-        val render = RenderEvent(event, worldScreen, unit) { close() }
+        val render = RenderEvent(event, worldScreen, civInfo = civInfo, unit = unit, city = city, tile = tile) { close() }
         if (!render.isValid) return false
         add(render).pad(0f).row()
         return true
