@@ -5,7 +5,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.*
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
-
+import yairm210.purity.annotations.Readonly
 
 class Event : RulesetObject() {
     enum class Presentation { /** Does not display a popup, choice chosen randomly */ None, Alert, Floating }
@@ -40,8 +40,8 @@ class EventChoice : ICivilopediaText, RulesetObject() {
 
     /** Keyboard support - not user-rebindable, mod control only. Will be [parsed][KeyCharAndCode.parse], so Gdx key names will work. */
     val keyShortcut = ""
-    
 
+    @Readonly
     fun matchesConditions(gameContext: GameContext): Boolean {
         if (hasUnique(UniqueType.Unavailable, gameContext)) return false
         if (getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
@@ -50,13 +50,12 @@ class EventChoice : ICivilopediaText, RulesetObject() {
         return true
     }
 
-    fun triggerChoice(civ: Civilization, unit: MapUnit? = null): Boolean {
+    fun triggerChoice(gameContext: GameContext): Boolean {
         var success = false
-        val gameContext = GameContext(civ, unit = unit)
         val triggerUniques = uniqueObjects
             .filter { it.isTriggerable && it.conditionalsApply(gameContext) }
         for (unique in triggerUniques.flatMap { it.getMultiplied(gameContext) })
-            if (UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit)) success = true
+            if (UniqueTriggerActivation.triggerUnique(unique, gameContext)) success = true
         return success
     }
 }
