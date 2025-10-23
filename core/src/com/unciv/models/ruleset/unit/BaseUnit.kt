@@ -570,8 +570,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
                 UniqueType.MayParadrop // Paradrop - 25% bonus
                     -> power *= 1.25f
-                UniqueType.MayParadropOld // ParadropOld - 25% bonus
-                    -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power /= 1.20f
                 UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack

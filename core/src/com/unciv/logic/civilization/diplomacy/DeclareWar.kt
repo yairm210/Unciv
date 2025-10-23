@@ -44,10 +44,6 @@ object DeclareWar {
     }
 
     private fun triggerUniques(otherCiv: Civilization, warDeclarerCiv: Civilization) {
-        if (otherCiv.isMajorCiv()) {
-            for (unique in warDeclarerCiv.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
-                UniqueTriggerActivation.triggerUnique(unique, warDeclarerCiv)
-        }
 
         for (unique in warDeclarerCiv.getTriggeredUniques(UniqueType.TriggerUponDeclaringWarFiltered)
                 { otherCiv.matchesFilter(it.params[0])} )
