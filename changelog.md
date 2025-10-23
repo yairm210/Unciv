@@ -1,22 +1,13 @@
 ## 4.18.9
 
-Libgdx 1.14.0 
+Updated Libgdx to 1.14.0 - solving Wayand and Android bugs
 
-chore(purity): CityLocationTileRanker, GameStarter
-
-chore: deprecate old uniques
-
-Fix super-rare (once in 8 years!) modification exception on bringing in allies when declaring war
-
-chore(readonly) - GameStarter
-
-chore(readonly) - era
+Fix super-rare bug on bringing in allies when declaring war
 
 Fix Leader Titles when with a suffixing title - By RobLoach
 
-By SomeTroglodyte:
-- Refactor CapitalConnectionsFinder to use an enum instead of strings 
-- Fix selecting local mods without preview won't display an avatar 
+By SomeTroglodyte: 
+- Selecting local mods without preview will now display an avatar 
 - Workaround for certain rare Java Runtime quirks (construction queue crash) 
 
 ## 4.18.8
