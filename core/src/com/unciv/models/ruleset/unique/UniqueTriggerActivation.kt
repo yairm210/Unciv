@@ -1215,6 +1215,45 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeUnitGetsName -> {
+                if (unit == null) return null
+                val unitNameGroup = unique.params[1]
+                // Get both the name and associated unique for the unit name
+                val pair = ruleset.unitNameGroups.values.filter {
+                        // Get all unit name groups that match the name or a tag
+                        it.name == unitNameGroup || it.hasTagUnique(unitNameGroup, unit.cache.state)
+                    }
+                    .filter {
+                        // Validate that it's available
+                        it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                            .none { unique -> !unique.conditionalsApply(unit.cache.state) } &&
+                        it.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                            .none { unique -> unique.conditionalsApply(unit.cache.state) }
+                    }
+                    .flatMap { group -> 
+                        // Grab only names that haven't been taken
+                        group.unitNames.filter {
+                            name -> name !in civInfo.gameInfo.unitNamesTaken
+                        }
+                        // Make a pair of the name and the group instance
+                        .map { it to group }
+                    }
+                    .shuffled().firstOrNull()
+                if (pair == null) return null
+
+                return {
+                    unit.instanceName = pair.first
+                    civInfo.gameInfo.unitNamesTaken.add(pair.first)
+                    unit.promotions.addPromotion(pair.first, true)
+                    for (unique in pair.second.uniqueObjects) {
+                        if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(unit.cache.state)) {
+                            UniqueTriggerActivation.triggerUnique(unique, unit)
+                        }
+                    }
+                    true
+                }
+            }
+
             UniqueType.OneTimeGlobalAlert -> {
                 if (triggerNotificationText == null) return null
                 val alertText = unique.params[0]

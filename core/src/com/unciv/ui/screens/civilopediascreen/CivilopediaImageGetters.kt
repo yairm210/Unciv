@@ -15,6 +15,7 @@ import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.models.ruleset.unit.UnitNameGroup
 
 /** Encapsulates the knowledge on how to get an icon for each of the Civilopedia categories */
 internal object CivilopediaImageGetters {
@@ -87,6 +88,12 @@ internal object CivilopediaImageGetters {
     }
     val promotion = { name: String, size: Float ->
         ImageGetter.getPromotionPortrait(name, size)
+    }
+    val unitNameGroup = { name: String, size: Float ->
+        // Use the first applicable unit's portrait
+        val unit = ImageGetter.ruleset.unitNameGroups[name]?.getUnits(ImageGetter.ruleset)?.firstOrNull()
+        if (unit != null) ImageGetter.getConstructionPortrait(unit.name, size)
+        else ImageGetter.getImage("OtherIcons/UnitNameGroups").apply { setSize(size) }
     }
     val terrain = { name: String, size: Float ->
         val terrain = ImageGetter.ruleset.terrains[name]

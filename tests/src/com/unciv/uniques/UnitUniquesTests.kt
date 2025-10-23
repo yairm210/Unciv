@@ -138,6 +138,18 @@ class UnitUniquesTests {
     }
 
     @Test
+    fun testOneTimeUnitGetsName() {
+        val unit = game.addDefaultMeleeUnitWithUniques(
+            game.addCiv(),
+            game.getTile(Vector2.Zero),
+            "[This Unit] gets a name from the [Scientist] group <upon turn start>")
+        UnitTurnManager(unit).startTurn()
+
+        Assert.assertTrue(unit.instanceName != null)
+        Assert.assertTrue(game.ruleset.unitNameGroups["Scientist"]?.unitNames?.contains(unit.instanceName) ?: false)
+    }
+
+    @Test
     fun testPromotionTreeSetUp() {
         val civ = game.addCiv(isPlayer = true)
 
