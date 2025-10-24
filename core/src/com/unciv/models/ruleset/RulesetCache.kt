@@ -46,7 +46,11 @@ object RulesetCache : HashMap<String, Ruleset>() {
         val builtinRulesetTasks = BaseRuleset.entries.map {
             { loadBuiltinRuleset(it) } // return a *function* that loads the ruleset when called
         }
-        Concurrency.parallelize(builtinRulesetTasks, parallel)
+        if (consoleMode) {
+            builtinRulesetTasks.forEach { it() }
+        } else {
+            Concurrency.parallelize(builtinRulesetTasks, parallel)
+        }
         
         this.putAll(newRulesets) // Make base rulesets available while loading other mods
 
@@ -74,7 +78,11 @@ object RulesetCache : HashMap<String, Ruleset>() {
                     }
                 }
             }
-            Concurrency.parallelize(modRulesetTasks, parallel)
+            if (consoleMode) {
+                modRulesetTasks.forEach { it() }
+            } else {
+                Concurrency.parallelize(modRulesetTasks, parallel)
+            }
             if (Log.shouldLog()) for (line in errorLines) Log.debug(line)
         }
 
