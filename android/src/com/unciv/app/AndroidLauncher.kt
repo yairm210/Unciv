@@ -12,6 +12,9 @@ import com.unciv.utils.Display
 import com.unciv.utils.Log
 import java.io.File
 import java.lang.Exception
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 open class AndroidLauncher : AndroidApplication() {
 
@@ -44,7 +47,9 @@ open class AndroidLauncher : AndroidApplication() {
         // Create notification channels for Multiplayer notificator
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
-        copyMods()
+        CoroutineScope(Dispatchers.IO).launch {
+            copyMods()
+        }
 
         game = AndroidGame(this)
         initialize(game, config)
@@ -80,8 +85,14 @@ open class AndroidLauncher : AndroidApplication() {
                 && game.settings.multiplayer.turnCheckerEnabled
                 && game.files.getMultiplayerSaves().any()
         ) {
-            MultiplayerTurnCheckWorker.startTurnChecker(
-                applicationContext, game.files, game.gameInfo!!, game.settings.multiplayer)
+            CoroutineScope(Dispatchers.IO).launch {
+                MultiplayerTurnCheckWorker.startTurnChecker(
+                    applicationContext,
+                    game.files,
+                    game.gameInfo!!,
+                    game.settings.multiplayer
+                )
+            }
         }
         super.onPause()
     }
