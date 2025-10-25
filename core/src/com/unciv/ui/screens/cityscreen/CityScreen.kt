@@ -309,7 +309,7 @@ class CityScreen(
 
         val canAnnex = !city.civ.hasUnique(UniqueType.MayNotAnnexCities)
         if (city.isPuppet && canAnnex) {
-            val annexCityButton = "Annex city".toTextButton()
+            val annexCityButton = "Annex City".toTextButton()
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
                 city.annexCity()
