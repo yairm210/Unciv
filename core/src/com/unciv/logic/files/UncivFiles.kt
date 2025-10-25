@@ -98,11 +98,11 @@ class UncivFiles(
      * @throws GdxRuntimeException if the [path] represents a directory
      */
     fun fileWriter(path: String, append: Boolean = false): Writer {
-        val file = pathToFileHandler(path)
+        val file = pathToFileHandle(path)
         return file.writer(append, Charsets.UTF_8.name())
     }
 
-    fun pathToFileHandler(path: String): FileHandle {
+    fun pathToFileHandle(path: String): FileHandle {
         return if (preferExternalStorage && files.isExternalStorageAvailable) files.external(path)
         else getLocalFile(path)
     }
@@ -337,7 +337,7 @@ class UncivFiles(
     //endregion
 
     //region Mod caching
-    fun saveModCache(modDataList: List<ModUIData>){
+    fun saveModCache(modDataList: List<ModUIData>) {
         val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
         try {
             json().toJson(modDataList, file)
@@ -527,11 +527,12 @@ class Autosaves(val files: UncivFiles) {
         return try {
             files.loadGameByName(AUTOSAVE_FILE_NAME)
         } catch (_: Exception) {
-            // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
-            val autosaves = files.getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(
-                AUTOSAVE_FILE_NAME
-            ) }
-            files.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
+            // silent fail if we can't read the autosave for any reason - try to load the last autosave by timestamp first
+            val autosaves = files.getSaves().filter {
+                it.name() != AUTOSAVE_FILE_NAME &&
+                it.name().startsWith(AUTOSAVE_FILE_NAME)
+            }
+            files.loadGameFromFile(autosaves.maxBy { it.lastModified() })
         }
     }
 

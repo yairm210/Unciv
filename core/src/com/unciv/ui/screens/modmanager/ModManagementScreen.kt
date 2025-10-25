@@ -143,7 +143,7 @@ class ModManagementScreen private constructor(
                 game.settings.tileSet = tileSets.first()
             }
             val screen = game.popScreen()
-            
+
             // We want to immediately display/hide Scenario button based on changes
             if (screen is MainMenuScreen)
                 screen.game.replaceCurrentScreen(MainMenuScreen())
@@ -166,10 +166,10 @@ class ModManagementScreen private constructor(
         if (isPortrait) initPortrait()
         else initLandscape()
         showLoadingImage()
-        
+
         if (installedModInfo.isEmpty())
             refreshInstalledModInfo()
-        
+
         refreshInstalledModTable()
 
         refreshOnlineModTable() // Refresh table - chances are we have cached data...
@@ -245,7 +245,7 @@ class ModManagementScreen private constructor(
 
         loading.show()  // Now that it's on stage, start animation
         replaceLoadingWithOptions()
-        
+
         // Allow clicking the loading icon to stop the query
         loading.onClick {
             if (runningSearchJob?.isActive != true) return@onClick
@@ -293,7 +293,7 @@ class ModManagementScreen private constructor(
                     // If it's too large Android won't let you copy, hence the guardrails
                     Gdx.app.clipboard.contents = ex.stackTraceToString()
                 } catch (_:Exception) {}
-                
+
                 runningSearchJob = null
                 return@run
             }
@@ -476,7 +476,7 @@ class ModManagementScreen private constructor(
         rightSideButton.onClick {
             rightSideButton.setText("Downloading...".tr())
             rightSideButton.disable()
-            
+
             downloadMod(repo,{
                 rightSideButton.setText("{Downloading...} ${it}%".tr())
             }) {
