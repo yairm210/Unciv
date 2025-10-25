@@ -159,7 +159,11 @@ class UncivFiles(
 
     //region Saving
 
-    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+    private fun rethrowIfNotNull(ex: Exception?) {
+        if (ex != null) throw ex
+    }
+
+    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull): FileHandle {
         val file = getSave(gameName)
         saveGame(game, file, saveCompletionCallback)
         return file
@@ -168,7 +172,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
@@ -182,7 +186,7 @@ class UncivFiles(
     /**
      * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
      */
-    fun saveMultiplayerGamePreview(game: GameInfoPreview, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+    fun saveMultiplayerGamePreview(game: GameInfoPreview, gameName: String, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull): FileHandle {
         val file = getMultiplayerSave(gameName)
         saveMultiplayerGamePreview(game, file, saveCompletionCallback)
         return file
@@ -191,7 +195,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveMultiplayerGamePreview(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveMultiplayerGamePreview(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfoPreview %s to %s", game.gameId, file.path())
             json().toJson(game, file)
