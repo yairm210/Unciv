@@ -504,25 +504,28 @@ class Autosaves(val files: UncivFiles) {
             return  // not much we can do here
         }
 
-        // keep auto-saves for the last 10 turns for debugging purposes
-        if (nextTurn) {
-            val newAutosaveFilename =
-                SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-            val file = files.pathToFileHandler(newAutosaveFilename)
-            files.getSave(AUTOSAVE_FILE_NAME).copyTo(file)
+        if (!nextTurn) return
 
-            fun getAutosaves(): Sequence<FileHandle> {
-                return files.getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
-            }
-            // added the plus 1 to avoid player choosing 6,11,21,51,101, etc.. in options.
-//          // with the old version with 10 has example, it would start overriding after 9 instead of 10.
-            // like from autosave-1 to autosave-9 after the autosave-9 the autosave-1 would override to autosave-2.
-            // For me it should be after autosave-10 that it should start overriding old autosaves.
-            while (getAutosaves().count() > settings.maxAutosavesStored+1) {
-                val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
-                files.deleteSave(saveToDelete.name())
-            }
-        }
+        // keep auto-saves for the last `settings.maxAutosavesStored` turns
+        val newAutosaveFile = files.pathToFileHandle(SAVE_FILES_FOLDER)
+            .child("$AUTOSAVE_FILE_NAME-${gameInfo.currentPlayer}-${gameInfo.turns}")
+        files.getSave(AUTOSAVE_FILE_NAME).copyTo(newAutosaveFile)
+
+        purgeOldAutosaves(settings.maxAutosavesStored)
+    }
+
+    private fun purgeOldAutosaves(maxAutosavesStored: Int) {
+        // Since the latest numbered autosave is a copy of the un-numbered autosave file,
+        // we add 1 so `maxAutosavesStored` numbered files AND the un-numbered one are kept (see #12790).
+        val oldAutoSaves = files.getSaves()
+            .filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
+            .sortedByDescending { it.lastModified() }   // youngest to the top
+            .drop(maxAutosavesStored + 1)  // dropping those we want to keep
+            // The following only has an effect if an exception is thrown halfway through the list
+            // We delete the oldest first - principle of least surprise
+            .asIterable().reversed()
+        for (file in oldAutoSaves)
+            files.deleteSave(file)
     }
 
     fun loadLatestAutosave(): GameInfo {
