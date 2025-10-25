@@ -1135,6 +1135,46 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeAddResourceInTile -> {
+                if (tile == null) return null
+                if (tile.resource != null) return null
+                val resourceName = unique.params[0]
+                val resource = ruleset.tileResources[resourceName] ?: return null
+                if (resource.terrainsCanBeFoundOn.none { it == tile.baseTerrain || tile.terrainFeatures.contains(it) }) return null
+                return {
+                    tile.resource = resourceName
+                    tile.resourceAmount = 0
+                    true
+                }
+            }
+
+            UniqueType.OneTimeAddResourceAmountInTile -> {
+                if (tile == null) return null
+                val amount = unique.params[0].toIntOrNull() ?: return null
+                if (amount == 0) return null
+                val resourceFilter = unique.params[1]
+                if (tile.resource != null) { // Changing the amount of an existing resource
+                    val tileResource = ruleset.tileResources[tile.resource] ?: return null
+                    if (!tileResource.matchesFilter(resourceFilter)) return null
+                    return {
+                        tile.resourceAmount += amount
+                        if (tile.resourceAmount <= 0) {
+                            tile.resourceAmount = 0
+                            tile.resource = null
+                        }
+                        true
+                    }
+                }
+                if (amount < 0) return null // We can't remove nothing, only add
+                val resource = ruleset.tileResources[resourceFilter] ?: return null // Be explicit about which resource to add
+                if (resource.terrainsCanBeFoundOn.none { it == tile.baseTerrain || tile.terrainFeatures.contains(it) }) return null
+                return {
+                    tile.resource = resourceFilter
+                    tile.resourceAmount = amount
+                    true
+                }
+            }
+
             UniqueType.OneTimeChangeTerrain -> {
                 if (tile == null) return null
                 val terrain = ruleset.terrains[unique.params[0]] ?: return null
