@@ -26,7 +26,6 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
-import java.io.File
 import java.io.Writer
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
@@ -56,7 +55,7 @@ class UncivFiles(
 
     fun getLocalFile(fileName: String): FileHandle {
         return if (customDataDirectory == null) files.local(fileName)
-        else files.absolute(customDataDirectory + File.separator + fileName)
+        else files.absolute(customDataDirectory).child(fileName)
     }
 
     fun getModsFolder() = getLocalFile("mods")
@@ -386,7 +385,7 @@ class UncivFiles(
         fun getSettingsForPlatformLaunchers(baseDirectory: String): GameSettings {
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(baseDirectory + File.separator + SETTINGS_FILE_NAME)
+            val file = FileHandle(baseDirectory).child(SETTINGS_FILE_NAME)
             if (file.exists()){
                 try {
                     return json().fromJson(GameSettings::class.java, file)
