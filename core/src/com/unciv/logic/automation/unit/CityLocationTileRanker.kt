@@ -123,7 +123,7 @@ object CityLocationTileRanker {
         }
 
         // Placing cities on the edge of the map is bad, we can't even build improvements on them!
-        tileValue -= (19 - tiles) * 3f
+        tileValue -= (19 - tiles) * 2.4f
         return tileValue
     }
 
