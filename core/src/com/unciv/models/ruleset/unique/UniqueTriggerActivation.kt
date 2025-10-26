@@ -163,7 +163,7 @@ object UniqueTriggerActivation {
                 return {
                     civInfo.leaderTitle = unique.params[0]
                     if (notification != null)
-                        civInfo.addNotification(notification, NotificationCategory.Units, NotificationIcon.Diplomacy)
+                        civInfo.addNotification(notification, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy)
                     true
                 }
             }
@@ -1045,7 +1045,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.healBy(unique.params[1].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name) // Do we have a heal icon?
                     true
                 }
             }
@@ -1054,7 +1054,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.takeDamage(unique.params[1].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
@@ -1063,7 +1063,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.XP += unique.params[1].toInt()
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
@@ -1076,7 +1076,7 @@ object UniqueTriggerActivation {
                         else -unique.params[1].toFloat()
                     unit.useMovementPoints(movementToUse)
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
@@ -1086,7 +1086,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.setStatus(unique.params[1], unique.params[2].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
@@ -1096,7 +1096,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.removeStatus(unique.params[1])
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
@@ -1104,7 +1104,7 @@ object UniqueTriggerActivation {
                 if (unit == null) return null
                 return {
                     if (notification != null)
-                        unit.civ.addNotification(notification, LocationAction(unit.getTile().position), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, LocationAction(unit.getTile().position), NotificationCategory.Units, unit.name)
                     unit.destroy()
                     true
                 }
@@ -1119,7 +1119,7 @@ object UniqueTriggerActivation {
                 return {
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
