@@ -76,6 +76,8 @@ class Notification() : IsPartOfGameInfoSerialization, Json.Serializable {
                     ImageGetter.getNationPortrait(ruleset.nations[icon]!!, iconSize)
                 ruleset.units.containsKey(icon) ->
                     ImageGetter.getUnitIcon(ruleset.units[icon]!!)
+                ruleset.unitPromotions.containsKey(icon) ->
+                    ImageGetter.getPromotionPortrait(icon, iconSize)
                 else ->
                     ImageGetter.getImage(icon)
             }

@@ -1045,7 +1045,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.healBy(unique.params[1].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "Medic")
                     true
                 }
             }
@@ -1063,7 +1063,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.XP += unique.params[1].toInt()
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "UnitActionIcons/Promote")
                     true
                 }
             }
@@ -1086,7 +1086,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.setStatus(unique.params[1], unique.params[2].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, unique.params[1])
                     true
                 }
             }
@@ -1096,7 +1096,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.removeStatus(unique.params[1])
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, unique.params[1])
                     true
                 }
             }
@@ -1104,7 +1104,7 @@ object UniqueTriggerActivation {
                 if (unit == null) return null
                 return {
                     if (notification != null)
-                        unit.civ.addNotification(notification, LocationAction(unit.getTile().position), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, LocationAction(unit.getTile().position), NotificationCategory.Units, unit.name, "OtherIcons/DisbandUnit")
                     unit.destroy()
                     true
                 }
@@ -1119,7 +1119,7 @@ object UniqueTriggerActivation {
                 return {
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "UnitActionIcons/Upgrade")
                     true
                 }
             }
@@ -1131,7 +1131,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.addPromotion(promotion, true)
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, promotion)
                     true
                 }
             }
@@ -1143,7 +1143,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.removePromotion(promotion)
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, promotion)
                     true
                 }
             }
