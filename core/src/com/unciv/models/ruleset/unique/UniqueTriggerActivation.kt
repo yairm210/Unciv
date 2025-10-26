@@ -620,7 +620,7 @@ object UniqueTriggerActivation {
                             notification,
                             MapUnitAction(promotedUnits),
                             NotificationCategory.Units,
-                            "UnitPromotionIcons/$promotionName"
+                            promotionName
                         )
                     }
                     true
