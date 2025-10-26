@@ -480,12 +480,12 @@ class TranslationTests {
 
         setupUncivGame()
         var failures = 0
-        for ((label, text, expected, setup) in testData) {
-            setup()
-            val actual = text.tr()
-            if (actual == expected) continue
+        for (test in testData) {
+            test.setup()
+            val actual = test.text.tr()
+            if (actual == test.expected) continue
             failures++
-            println("""Test "$label" failed: Expected="$expected", actual="$actual"""")
+            println("""Test "${test.label}" failed: Expected="${test.expected}", actual="$actual"""")
         }
         Assert.assertEquals(0, failures)
     }
