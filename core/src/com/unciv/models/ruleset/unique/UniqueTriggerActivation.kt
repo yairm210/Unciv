@@ -548,7 +548,7 @@ object UniqueTriggerActivation {
                         "You have gained [$amount] [$resourceName]"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, "ResourceIcons/$resourceName")
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
                     true
                 }
             }
@@ -568,7 +568,7 @@ object UniqueTriggerActivation {
                         "You have lost [$amount] [$resourceName]"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, "ResourceIcons/$resourceName")
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
                     true
                 }
             }
@@ -591,7 +591,7 @@ object UniqueTriggerActivation {
                         "You have gained [$amount] [$resourceName]"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, "ResourceIcons/$resourceName")
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
                     true
                 }
             }
@@ -802,6 +802,7 @@ object UniqueTriggerActivation {
                         civInfo.addNotification(
                             notification,
                             NotificationCategory.Religion,
+                            NotificationIcon.Faith,
                             "ReligionIcons/${religionIcon}"
                         )
                     }
@@ -1045,7 +1046,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.healBy(unique.params[1].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "Medic")
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "Heal Instantly")
                     true
                 }
             }
