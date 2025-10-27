@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.CombatAction
@@ -11,6 +12,7 @@ import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
+import com.unciv.models.ruleset.Ruleset
 import yairm210.purity.annotations.Readonly
 
 data class GameContext(
@@ -99,6 +101,71 @@ data class GameContext(
         /** When caching uniques, we need to cache them unmultiplied, and apply multiplication only on retrieval from cache
          * This state lets the multiplication function know that it's always 1:1 */
         val IgnoreMultiplicationForCaching = GameContext(ignoreConditionals = true)
+
+        /**
+         * Builds out a GameContext from the given string.
+         *
+         * @param value A string whose values are split by the given splitCharacter. For example: unitId=123&cityId=123
+         * @param viewingCiv The acting Civilization.
+         * @param splitCharacter The character that will be used when spliting the value.
+         * @return A GameContext object including the parameters civInfo, city, tile, ignoreConditionals, and unit.
+         */
+        @Readonly
+        fun fromSerializedString(value: String, viewingCiv: Civilization, separator: String = Constants.stringSplitCharacter.toString()) : GameContext {
+            val splitString = value.split(separator)
+            var civInfo = viewingCiv
+            var city: City? = null
+            var unit: MapUnit? = null
+            var tile: Tile? = null
+            var ignoreConditionals = false
+            var tileX: Int? = null
+            var tileY: Int? = null
+            for (entry in splitString) {
+                val (key, value) = entry.split("=", limit = 2).let {
+                    it[0] to it.getOrElse(1) { "" }
+                }
+                when (key) {
+                    "civName" -> civInfo = viewingCiv.gameInfo.getCivilization(value)
+                    "cityId" -> city = viewingCiv.gameInfo.getCities().firstOrNull { it.id == value }
+                    "tileX" -> tileX = value.toIntOrNull()
+                    "tileY" -> tileY = value.toIntOrNull()
+                    "ignoreConditionals" -> ignoreConditionals = true
+                    "unitId" -> {
+                        val unitId = value.toIntOrNull()
+                        if (unitId != null) {
+                            unit = viewingCiv.units.getUnitById(unitId)
+                        }
+                    }
+                }
+            }
+            if (tileX != null && tileY != null) {
+                tile = viewingCiv.gameInfo.tileMap.getIfTileExistsOrNull(tileX, tileY)
+            }
+            else {
+                tile = unit?.getTile() ?: city?.getCenterTileOrNull()
+            }
+            return GameContext(civInfo, city, unit, tile, ignoreConditionals = ignoreConditionals)
+        }
+    }
+
+    /**
+     * Creates a string of the parameters available within the GameContext.
+     * 
+     * @param splitCharacter The character which will be used to join the values.
+     * @return A string that is contains all the characters seperated splitCharacter. For example: unitId=123&cityId=123
+     */
+    @Readonly
+    fun toSerializedString(separator: String = Constants.stringSplitCharacter.toString()) : String {
+        val output = mutableListOf<String>()
+        if (civInfo != null) output.add("civName=${civInfo.civName}")
+        if (unit != null) output.add("unitId=${unit.id}")
+        if (city != null) output.add("cityId=${city.id}")
+        if (ignoreConditionals) output.add("ignoreConditionals")
+        if (tile != null) {
+            output.add("tileX=${tile.position.x.toInt()}")
+            output.add("tileY=${tile.position.y.toInt()}")
+        }
+        return output.joinToString(separator)
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */
@@ -126,7 +193,5 @@ data class GameContext(
         result = 31 * result + ignoreConditionals.hashCode()
         return result
     }
-
-
 }
 

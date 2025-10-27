@@ -145,19 +145,8 @@ object UniqueTriggerActivation {
                     }
                     event.presentation == Event.Presentation.Alert -> {
                         {
-                            // See [com.unciv.ui.screens.worldscreen.AlertPopup.addEvent] for deserialization
-                            var eventText = event.name
-                            if (gameContext.civInfo != null)
-                                eventText += Constants.stringSplitCharacter + "civName=" + gameContext.civInfo.civName
-                            if (gameContext.unit != null)
-                                eventText += Constants.stringSplitCharacter + "unitId=" + gameContext.unit.id
-                            if (gameContext.city != null)
-                                eventText += Constants.stringSplitCharacter + "cityId=" + gameContext.city.id
-                            if (gameContext.tile != null) {
-                                eventText += Constants.stringSplitCharacter + "tileX=" + gameContext.tile.position.x.toInt()
-                                eventText += Constants.stringSplitCharacter + "tileY=" + gameContext.tile.position.y.toInt()
-                            }
-                            civInfo.popupAlerts.add(PopupAlert(AlertType.Event, eventText))
+                            val serializedString = event.name + Constants.stringSplitCharacter + gameContext.toSerializedString()
+                            civInfo.popupAlerts.add(PopupAlert(AlertType.Event, serializedString))
                             true
                         }
                     }

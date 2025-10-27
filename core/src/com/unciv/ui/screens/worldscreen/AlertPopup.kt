@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -34,6 +35,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
+import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 
 /**
@@ -68,8 +70,8 @@ class AlertPopup(
     private val viewingCiv get() = worldScreen.viewingCiv
     private val stageWidth get() = worldScreen.stage.width
     private val stageHeight get() = worldScreen.stage.height
-    private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
-    private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
+    @Readonly private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
+    @Readonly private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
     //endregion
 
     // This redirects all addCloseButton uses with only text and no action to accept the space key
@@ -566,43 +568,12 @@ class AlertPopup(
     private fun addEvent(): Boolean {
         // The event string is in the format "eventName" + (Constants.stringSplitCharacter + "unitId=1234")?
         // We explicitly specify that this is a unitId, to enable us to add other context info in the future - for example city id
-        val splitString = popupAlert.value.split(Constants.stringSplitCharacter)
-        val eventName = splitString[0]
-        var unit: MapUnit? = null
-        var civInfo: Civilization? = null
-        var city: City? = null
-        var tileX: Int? = null
-        var tileY: Int? = null
-        var tile: Tile? = null
-
-        for (i in 1 until splitString.size) {
-            when {
-                splitString[i].startsWith("civName=") -> {
-                    val civName = splitString[i].substringAfter("civName=")
-                    civInfo = getCiv(civName)
-                }
-                splitString[i].startsWith("unitId=") -> {
-                    val unitId = splitString[i].substringAfter("unitId=").toInt()
-                    unit = viewingCiv.units.getUnitById(unitId)
-                }
-                splitString[i].startsWith("cityId=") -> {
-                    val cityId = splitString[i].substringAfter("cityId=")
-                    city = getCity(cityId)
-                }
-                splitString[i].startsWith("tileX=") -> {
-                    tileX = splitString[i].substringAfter("tileX=").toIntOrNull()
-                }
-                splitString[i].startsWith("tileY=") -> {
-                    tileY = splitString[i].substringAfter("tileY=").toIntOrNull()
-                }
-            }
-        }
-
-        if (tileX != null && tileY != null)
-            tile = gameInfo.tileMap[tileX, tileY]
-
+        val eventName = popupAlert.value.substringBefore(Constants.stringSplitCharacter)
         val event = gameInfo.ruleset.events[eventName] ?: return false
-        val render = RenderEvent(event, worldScreen, civInfo = civInfo, unit = unit, city = city, tile = tile) { close() }
+        val contextString = popupAlert.value.substringAfter(Constants.stringSplitCharacter, "")
+        if (contextString.isEmpty()) return false
+        val gameContext = GameContext.fromSerializedString(contextString, viewingCiv)
+        val render = RenderEvent(event, worldScreen, gameContext.unit, gameContext.civInfo, gameContext.city, gameContext.tile) { close() }
         if (!render.isValid) return false
         add(render).pad(0f).row()
         return true
