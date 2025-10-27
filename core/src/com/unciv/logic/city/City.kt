@@ -219,19 +219,19 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
     
     @Readonly
-    fun getLandAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_TURNS): List<Tile>? {
+    fun getLandAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
         @LocalState val pathingCache = landAttackPathing.getOrPut(destination.civ, {PathingMap.createLandAttackPathingMap(civ, centerTile, destination.civ)})
         return pathingCache.getShortestPath(destination.getCenterTile(), maxTurns)
 
     }
     @Readonly
-    fun getAmphibiousAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_TURNS): List<Tile>? {
+    fun getAmphibiousAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
         @LocalState val pathingCache = amphibiousAttackPathing.getOrPut(destination.civ, { PathingMap.createAmphibiousAttackPathingMap(civ, centerTile, destination.civ) })
         return pathingCache.getShortestPath(destination.getCenterTile(), maxTurns)
     }
 
     @Readonly
-    fun getRoadPath(destination: City, maxTurns: Int = PathingMap.MAX_TURNS): List<Tile>? {
+    fun getRoadPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
         if (!::potentialRoadPathing.isInitialized)
             potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
         return if (id < destination.id) potentialRoadPathing.getShortestPath( destination.centerTile, maxTurns)

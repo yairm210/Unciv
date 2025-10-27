@@ -67,9 +67,13 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
-            
+
+            "java.util.stream.StreamSupport.longStream",
+            "java.util.stream.LongStream.parallel",
             "kotlin.sequences.shuffled",
             "kotlin.LongArray.get",
+            "kotlin.LongArray.iterator",
+            "kotlin.collections.copyInto",
         )
         wellKnownPureClasses = setOf(
         )
