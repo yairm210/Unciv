@@ -336,7 +336,6 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         override var sortShown = SortDirection.None
 
         init {
-            outerActor.isTransform = false
             outerActor.align(column.align)
             outerActor.addActor(headerActor)
             initActivationAndTooltip(column)
