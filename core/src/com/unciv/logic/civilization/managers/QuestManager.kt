@@ -817,7 +817,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /**
      * Returns a random Natural Wonder not yet discovered by [challenger], or the [civ] dispatching the quest.
      *
-     * @param challenger The Civilization that will be recieving the quest.
+     * @param challenger The Civilization that will be receiving the quest.
      */
     @Readonly
     private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? =
