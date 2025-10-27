@@ -1,19 +1,14 @@
-//  Taken from https://github.com/TomGrill/gdx-testing
-package com.unciv.uniques
+package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.abs
 
 @RunWith(GdxTestRunner::class)
 class GameContextTests {
