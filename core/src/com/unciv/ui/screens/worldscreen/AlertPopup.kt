@@ -448,9 +448,15 @@ class AlertPopup(
         }
 
         val centerTable = Table()
-        centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(stageWidth / 3).pad(10f)
-        centerTable.add(wonder.getShortDescription()
-            .toLabel().apply { wrap = true }).width(stageWidth / 3).pad(10f)
+        val centerTableColumnWidth = if (wonder.quote.isEmpty()) stageWidth / 2 else stageWidth / 3
+        if (wonder.quote.isNotEmpty()) {
+            centerTable.add(wonder.quote.toLabel().apply { wrap = true })
+                .width(centerTableColumnWidth)
+                .pad(10f)
+        }
+        centerTable.add(wonder.getShortDescription().toLabel().apply { wrap = true })
+            .width(centerTableColumnWidth)
+            .pad(10f)
         add(centerTable).row()
         addCloseButton()
         music.chooseTrack(wonder.name, MusicMood.Wonder, MusicTrackChooserFlags.setSpecific)
