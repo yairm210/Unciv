@@ -37,6 +37,8 @@ object NotificationIcon {
     /** Get the image for a [Notification] icon, translating:
      *  - A [Baseunit][com.unciv.models.ruleset.unit.BaseUnit] name to [ImageGetter.getUnitIcon]
      *  - A [Nation][com.unciv.models.ruleset.nation.Nation] name to [ImageGetter.getNationPortrait]
+     *  - A [Promotion][com.unciv.models.ruleset.unit.Promotion] name to [ImageGetter.getPromotionPortrait]
+     *  - A [Reource][com.unciv.models.ruleset.tile.TileResource] name to [ImageGetter.getResourcePortrait]
      *  - A [Technology][com.unciv.models.ruleset.tech.Technology] name to [ImageGetter.getTechIconPortrait]
      *  - Otherwise, the string must be a direct texture path resolvable by [ImageGetter.getImage]
      */
