@@ -16,6 +16,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
+import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -111,8 +112,8 @@ class ModManagementScreen private constructor(
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
     // Keep metadata and buttons in separate pools
-    private val installedModInfo = previousInstalledMods ?: HashMap(10)
-    private val onlineModInfo = previousOnlineMods ?: HashMap(game.files.loadModCache().associateBy { it.name })
+    private val installedModInfo = previousInstalledMods ?: HashMap(RulesetCache.size)
+    private val onlineModInfo = previousOnlineMods ?: game.files.loadModCache().associateByTo(HashMap()) { it.name }
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
@@ -142,7 +143,7 @@ class ModManagementScreen private constructor(
                 game.settings.tileSet = tileSets.first()
             }
             val screen = game.popScreen()
-            
+
             // We want to immediately display/hide Scenario button based on changes
             if (screen is MainMenuScreen)
                 screen.game.replaceCurrentScreen(MainMenuScreen())
@@ -165,10 +166,10 @@ class ModManagementScreen private constructor(
         if (isPortrait) initPortrait()
         else initLandscape()
         showLoadingImage()
-        
+
         if (installedModInfo.isEmpty())
             refreshInstalledModInfo()
-        
+
         refreshInstalledModTable()
 
         refreshOnlineModTable() // Refresh table - chances are we have cached data...
@@ -244,7 +245,7 @@ class ModManagementScreen private constructor(
 
         loading.show()  // Now that it's on stage, start animation
         replaceLoadingWithOptions()
-        
+
         // Allow clicking the loading icon to stop the query
         loading.onClick {
             if (runningSearchJob?.isActive != true) return@onClick
@@ -292,7 +293,7 @@ class ModManagementScreen private constructor(
                     // If it's too large Android won't let you copy, hence the guardrails
                     Gdx.app.clipboard.contents = ex.stackTraceToString()
                 } catch (_:Exception) {}
-                
+
                 runningSearchJob = null
                 return@run
             }
@@ -475,7 +476,7 @@ class ModManagementScreen private constructor(
         rightSideButton.onClick {
             rightSideButton.setText("Downloading...".tr())
             rightSideButton.disable()
-            
+
             downloadMod(repo,{
                 rightSideButton.setText("{Downloading...} ${it}%".tr())
             }) {
@@ -491,12 +492,12 @@ class ModManagementScreen private constructor(
     private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((Int)->Unit)? = null, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                val modFolder = Github.downloadAndExtract(
-                    repo,
-                    UncivGame.Current.files.getModsFolder(),
-                    updateProgressPercent
-                )
-                    ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
+                val modFolder =
+                    repo.downloadAndExtract(
+                        UncivGame.Current.files.getModsFolder(),
+                        updateProgressPercent
+                    )
+                        ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s

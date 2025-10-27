@@ -217,6 +217,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     var totalFaithForContests = 0
 
     /**
+     * The title for the Civilization's leader.
+     *
+     * When empty, will display the nation's display name, otherwise will parse it with [leaderName]. For example: "King [leaderName]"
+     */
+    var leaderTitle = ""
+
+    /**
      * Container class to represent a historical attack recently performed by this civilization.
      *
      * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
@@ -280,6 +287,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.neutralRoads = neutralRoads
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
+        toReturn.leaderTitle = leaderTitle
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
@@ -689,7 +697,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        return nation.getLeaderDisplayName().tr(hideIcons = true) +
+        return nation.getLeaderDisplayName(leaderTitle).tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"

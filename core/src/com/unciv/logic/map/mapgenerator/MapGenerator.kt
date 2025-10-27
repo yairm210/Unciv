@@ -351,13 +351,14 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     private fun spreadAncientRuins(map: TileMap) {
-        val ruinsEquivalents = ruleset.tileImprovements.filter { it.value.isAncientRuinsEquivalent() }
-        if (map.mapParameters.noRuins || ruinsEquivalents.isEmpty() )
-            return
-        
+        val ruinsEquivalents = ruleset.tileImprovements.filter {
+            it.value.isAncientRuinsEquivalent()
+        }
+        if (map.mapParameters.noRuins || ruinsEquivalents.isEmpty()) return
+
         fun isPlaceable(improvement: TileImprovement, tile: Tile) =
             tile.improvementFunctions.canImprovementBeBuiltHere(improvement, gameContext = GameContext.IgnoreConditionals)
-        
+
         val suitableTiles = map.values.filter { it.isLand && !it.isImpassible()
                 && ruinsEquivalents.values.any { improvement -> isPlaceable(improvement, it) } }
         val locations = randomness.chooseSpreadOutLocations(

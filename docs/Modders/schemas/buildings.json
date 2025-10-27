@@ -44,7 +44,7 @@
               "items": { "type": "string" },
               "uniqueItems": true
           },
-          "cityStrength": { "type": "integer" },
+          "cityStrength": { "type": "number" },
           "cityHealth": { "type": "integer" },
 
           "uniqueTo": {

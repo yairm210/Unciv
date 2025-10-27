@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.extensions.getCostsAmountString
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -41,12 +42,21 @@ object BaseUnitDescriptions {
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()
+
+        // Consumes
         for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn(city.civ.state)) {
             val available = availableResources[resourceName] ?: 0
             val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
-            val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled)
-            lines += "$consumesString ({[$available] available})".tr()
+            lines += resourceName.getConsumesAmountString(amount, resource.isStockpiled, available).tr()
         }
+
+        // Costs
+        for ((resourceName, amount) in baseUnit.getStockpiledResourceRequirements(city.civ.state)) {
+            val available = city.getAvailableResourceAmount(resourceName)
+            val resource = city.getRuleset().tileResources[resourceName] ?: continue
+            lines += resourceName.getCostsAmountString(amount, available).tr()
+        }
+
         var strengthLine = ""
         if (baseUnit.strength != 0) {
             strengthLine += "${baseUnit.strength}${Fonts.strength}, "
@@ -56,8 +66,12 @@ object BaseUnitDescriptions {
         lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
-        else baseUnit.uniquesToDescription(lines) { type == UniqueType.Unbuildable
-                || type == UniqueType.ConsumesResources } // Already displayed in the resource requirements
+        else baseUnit.uniquesToDescription(lines) {
+            type == UniqueType.Unbuildable
+            // Already displayed in the resource requirements
+            || type == UniqueType.ConsumesResources
+            || type == UniqueType.CostsResources
+        } 
 
         if (baseUnit.promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (baseUnit.promotions.size == 1) "" else "s"}:".tr() + " "
@@ -243,7 +257,7 @@ object BaseUnitDescriptions {
                     yield(FormattedLine(promotion.name, promotion.makeLink()))
             }
 
-            yieldAll(uniquesToCivilopediaTextLines(leadingSeparator = true))
+            yieldAll(uniquesToCivilopediaTextLines(leadingSeparator = { yield(FormattedLine(separator = true)) }))
         }
         return (if (name.startsWith("Domain: ")) getDomainLines() else getUnitTypeLines()).toList()
     }
