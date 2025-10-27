@@ -103,7 +103,7 @@ class UnitOverviewTab(
     internal fun update() = grid.update()
 
     override fun select(selection: String): Float? {
-        val cell = grid.findCell<IconTextButton>(selection)
+        val cell = grid.findCell<IconTextButton>("unit-$selection")
             ?: return null
         val button = cell.actor
         val scrollY = (0 until cell.row)

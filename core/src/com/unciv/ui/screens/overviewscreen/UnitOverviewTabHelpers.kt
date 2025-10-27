@@ -9,11 +9,9 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
@@ -28,13 +26,6 @@ import yairm210.purity.annotations.Readonly
  *  Note - this will be made into a companion object by simply inheriting it, so do treat it as singleton
  */
 open class UnitOverviewTabHelpers {
-    /** Create an identifier to support selecting a specific unit - or finding it again after a resort or after an upgrade.
-     *  This is for UI only, as there can be no 100% guarantee the find will succeed or be unambiguous.
-     */
-    internal fun getUnitIdentifier(unit: MapUnit, unitToUpgradeTo: BaseUnit? = null): String {
-        val name = unitToUpgradeTo?.name ?: unit.name
-        return "$name@${unit.getTile().position.toPrettyString()}"
-    }
 
     private fun showWorldScreenAt(position: Vector2, unit: MapUnit?) {
         GUI.resetToWorldScreen()
@@ -76,7 +67,7 @@ open class UnitOverviewTabHelpers {
         for (unitAction in unitActions) {
             val enable = canEnable && unitAction.action != null
             val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
-            val selectKey = getUnitIdentifier(unit, unitToUpgradeTo)
+            val selectKey = unit.id.toString()
             val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo,
                 if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
             upgradeIcon.onClick {
@@ -106,7 +97,7 @@ open class UnitOverviewTabHelpers {
         val promotionsTable = Table()
         val canEnable = actionContext.viewingPlayer.isCurrentPlayer() && GUI.isAllowedChangeState()
         updatePromotionsTable(promotionsTable, unit, canEnable)
-        val selectKey = getUnitIdentifier(unit)
+        val selectKey = unit.id.toString()
 
         fun onPromotionsTableClick() {
             val canPromote = canEnable && unit.promotions.canBePromoted()
