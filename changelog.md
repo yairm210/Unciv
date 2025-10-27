@@ -1,3 +1,15 @@
+## 4.18.9
+
+Updated Libgdx to 1.14.0 - solving Wayand and Android bugs
+
+Fix super-rare bug on bringing in allies when declaring war
+
+Fix Leader Titles when with a suffixing title - By RobLoach
+
+By SomeTroglodyte: 
+- Selecting local mods without preview will now display an avatar 
+- Workaround for certain rare Java Runtime quirks (construction queue crash) 
+
 ## 4.18.8
 
 Remove building-improvement if the building is no longer buildable

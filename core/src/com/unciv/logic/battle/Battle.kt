@@ -296,13 +296,11 @@ object Battle {
 
         // Must come before normal conquest logic so units that cannot capture cities can still destroy them
         // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capital cities
-        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant) {
-            if (defender.city.canBeDestroyed()) {
-                val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
-                if (destroyFilters.any { filter -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
-                    defender.city.destroyCity()
-                    return // stop further logic because city was destroyed
-                }
+        if (defender.isDefeated() && defender.city.canBeDestroyed()) {
+            val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
+            if (destroyFilters.any { filter -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                defender.city.destroyCity()
+                return // stop further logic because city was destroyed
             }
         }
         

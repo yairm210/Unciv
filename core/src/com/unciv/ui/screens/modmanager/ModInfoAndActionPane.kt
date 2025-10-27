@@ -43,6 +43,7 @@ internal class ModInfoAndActionPane : Table() {
         isBuiltin = false
         enableVisualCheckBox = false
         update(
+            isLocal = false,
             repo.name, repo.html_url, repo.default_branch,
             repo.pushed_at, repo.owner.login, repo.size,
             repo.owner.avatar_url
@@ -58,19 +59,21 @@ internal class ModInfoAndActionPane : Table() {
         isBuiltin = modOptions.modUrl.isEmpty() && BaseRuleset.entries.any { it.fullName == modName }
         enableVisualCheckBox = ModCompatibility.isAudioVisualMod(mod)
         update(
+            isLocal = true,
             modName, modOptions.modUrl, modOptions.defaultBranch,
             modOptions.lastUpdated, modOptions.author, modOptions.modSize
         )
     }
 
     private fun update(
-           modName: String,
-           repoUrl: String,
-           defaultBranch: String,
-           updatedAt: String,
-           author: String,
-           modSize: Int,
-           avatarUrl: String? = null
+        isLocal: Boolean,
+        modName: String,
+        repoUrl: String,
+        defaultBranch: String,
+        updatedAt: String,
+        author: String,
+        modSize: Int,
+        avatarUrl: String? = null
     ) {
         // Display metadata
         clear()
@@ -79,7 +82,7 @@ internal class ModInfoAndActionPane : Table() {
         imageHolder.clear()
         when {
             isBuiltin -> addUncivLogo(modName)
-            repoUrl.isEmpty() -> addLocalPreviewImage(modName)
+            isLocal -> addLocalPreviewImage(modName)
             else -> addPreviewImage(modName, repoUrl, defaultBranch, avatarUrl)
         }
         add(imageHolder).row()

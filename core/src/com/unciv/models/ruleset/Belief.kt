@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 
 class Belief() : RulesetObject() {
     var type: BeliefType = BeliefType.None
@@ -41,6 +42,7 @@ class Belief() : RulesetObject() {
 
     companion object {
         // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
+        @Readonly
         private fun getBeliefsMatching(name: String, ruleset: Ruleset) =
             ruleset.beliefs.values.asSequence()
             .filterNot { it.isHiddenFromCivilopedia(ruleset) }
