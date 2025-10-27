@@ -118,7 +118,7 @@ object GithubAPI {
         paginatedRequest(page, amountPerPage) {
             url("/search/repositories")
             parameter("sort", "stars")
-            parameter("q", "$search${if (search.isEmpty()) "" else "+"} topic:unciv-mod fork:true")
+            parameter("q", "$search topic:unciv-mod fork:true")
         }
 
     suspend fun fetchGithubTopics() = request {

@@ -76,7 +76,7 @@ class Victory : INamed, ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         return listOf(
-            FormattedLine(victoryScreenHeader.lines().joinToString(" ")), // Remove newlines
+            FormattedLine(victoryScreenHeader),
             FormattedLine(extraImage="VictoryIllustrations/$name/Won", centered = true),
             FormattedLine(),
         ) + milestoneObjects.map { it.getFormattedLine() }

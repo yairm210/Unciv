@@ -1,3 +1,21 @@
+## 4.18.10
+
+By RobLoach:
+- Add more notifications to Triggerable Uniques 
+- Fix Victory Type translations in Civilopedia 
+- Fix Wonder Alert without a quote 
+- Great Admiral: Add 'Change Port' Ability 
+
+By EmperorPinguin:
+- Adjust luxury resource placement logic thresholds
+- Add minimumCityLocationTileValue mod constant
+
+By SomeTroglodyte:
+- Fix broken "download missing mods"  
+- Better Resource descriptions  
+
+Run Android tasks in parallel - By nbd-boss (new constributor!)
+
 ## 4.18.9
 
 Updated Libgdx to 1.14.0 - solving Wayand and Android bugs
