@@ -359,7 +359,6 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             Log.e(LOG_TAG, "doWork ${ex::class.simpleName}: ${ex.message}")
             val failCount = inputData.getInt(FAIL_COUNT, 0)
             if (failCount > 3) {
-                showErrorNotification(getStackTraceString(ex))
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
@@ -395,36 +394,5 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         val displayTime = "$hour:$minute"
 
         showPersistentNotification(applicationContext, displayTime, getConfiguredDelay(inputData))
-    }
-
-    private fun showErrorNotification(stackTraceString: String) {
-        val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
-                FLAG_UPDATE_CURRENT
-        val pendingLaunchGameIntent: PendingIntent =
-                Intent(applicationContext, AndroidLauncher::class.java).let { notificationIntent ->
-                    PendingIntent.getActivity(applicationContext, 0, notificationIntent, flags)
-                }
-
-        val pendingCopyClipboardIntent: PendingIntent =
-                Intent(applicationContext, CopyToClipboardReceiver::class.java).putExtra(CLIPBOARD_EXTRA, stackTraceString)
-                        .let { notificationIntent -> PendingIntent.getBroadcast(applicationContext,0, notificationIntent, flags)
-                }
-
-        val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
-                .setPriority(NotificationManagerCompat.IMPORTANCE_DEFAULT) // No direct user action expected
-                .setContentTitle(applicationContext.resources.getString(R.string.Notify_Error_Short))
-                .setContentText(applicationContext.resources.getString(R.string.Notify_Error_Long))
-                .setSmallIcon(R.drawable.uncivnotification)
-                // without at least vibrate, some Android versions don't show a heads-up notification
-                .setDefaults(DEFAULT_VIBRATE)
-                .setLights(Color.YELLOW, 300, 100)
-                .setContentIntent(pendingLaunchGameIntent)
-                .setCategory(NotificationCompat.CATEGORY_ERROR)
-                .setOngoing(false)
-                .addAction(0, applicationContext.resources.getString(R.string.Notify_Error_CopyAction), pendingCopyClipboardIntent)
-
-        with(NotificationManagerCompat.from(applicationContext)) {
-            notify(NOTIFICATION_ID_INFO, notification.build())
-        }
     }
 }
