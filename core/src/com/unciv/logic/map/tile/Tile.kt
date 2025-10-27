@@ -647,7 +647,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         If the Player can settle in water/moutain add extra tile before they 
         can settle because water/moutain tiles don't count has being in a contient.
         */
-        
         addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
         
         return when {

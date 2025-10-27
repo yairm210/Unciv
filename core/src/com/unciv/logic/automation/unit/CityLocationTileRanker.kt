@@ -72,7 +72,7 @@ object CityLocationTileRanker {
         val civ = unit.civ
         val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
         val unique = uniques.firstOrNull()!!
-        
+      
         val uniqueModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
         if (!unique.hasModifier(UniqueType.ConditionalInTiles) && (!tile.isLand || tile.isImpassible())) return false
