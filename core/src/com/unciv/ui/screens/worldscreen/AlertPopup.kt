@@ -448,7 +448,7 @@ class AlertPopup(
         }
 
         val centerTable = Table()
-        val centerTableColumnWidth = if (wonder.quote.isEmpty()) stageWidth / 2 else stageWidth / 3
+        val centerTableColumnWidth = stageWidth / if (wonder.quote.isEmpty()) 2 else 3
         if (wonder.quote.isNotEmpty()) {
             centerTable.add(wonder.quote.toLabel().apply { wrap = true })
                 .width(centerTableColumnWidth)
