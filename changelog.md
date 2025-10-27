@@ -1,22 +1,20 @@
 ## 4.18.10
 
-By EmperorPinguin:
-- Add minimumCityLocationTileValue mod constant 
-- Adjust luxury resource placement logic thresholds 
-
 By RobLoach:
 - Add more notifications to Triggerable Uniques 
 - Fix Victory Type translations in Civilopedia 
 - Fix Wonder Alert without a quote 
-- Great Admiral: Add Change Port Ability 
+- Great Admiral: Add 'Change Port' Ability 
+
+By EmperorPinguin:
+- Adjust luxury resource placement logic thresholds
+- Add minimumCityLocationTileValue mod constant
 
 By SomeTroglodyte:
-- Refactor and comment Resource descriptions 
-- Linting with slight optimizations around files and the mods cache 
-- Fix broken "download missing mods" 
-- Minor simplifications due to Gdx 1.14.0 update 
+- Fix broken "download missing mods"  
+- Better Resource descriptions  
 
-Modified AndroidLauncher.kt - By nbd-boss
+Run Android tasks in parallel - By nbd-boss (new constributor!)
 
 ## 4.18.9
 
