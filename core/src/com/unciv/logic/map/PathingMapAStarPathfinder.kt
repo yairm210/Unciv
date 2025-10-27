@@ -21,6 +21,7 @@ import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_LO_MASK
 import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_OFFSET
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
+import com.unciv.utils.LongPriorityQueue
 import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.InternalState
@@ -85,7 +86,7 @@ internal class AStarPathfinder(
      * Tiles are ordered based on their priority, determined by the cumulative cost so far and the
      * heuristic estimate to the goal.
      */
-    internal val todo = PriorityQueue(initialBufferSize, PrioritizedNode.COMPARATOR)   
+    internal val todo = LongPriorityQueue(initialBufferSize)
 
     /*
      * Separate init function so that this work can occur outside 
@@ -96,7 +97,7 @@ internal class AStarPathfinder(
         cache.nodesNeedingNeighbors.forEachSetBit {
             val node = RouteNode(routeNodes[it])
             if (node.initialized && node.turns <= timeLimitTurns) {
-                todo.add(PrioritizedNode(node, calculateUnderestimatedMovement(node)))
+                todo.add(PrioritizedNode(node, calculateUnderestimatedMovement(node)).bits)
                 tilesInTodo.put(it, node.damagingTiles)
             }
         }
@@ -132,7 +133,7 @@ internal class AStarPathfinder(
         // If another thread already calculated the best route, then we can queue it and move on
         if (alreadyCalculatedNode.initialized && alreadyCalculatedNode.damagingTiles <= currentNode.damagingTiles) {
             if (alreadyCalculatedNode.turns < timeLimitTurns)
-                todo.add(PrioritizedNode(alreadyCalculatedNode, calculateUnderestimatedMovement(alreadyCalculatedNode)))
+                todo.add(PrioritizedNode(alreadyCalculatedNode, calculateUnderestimatedMovement(alreadyCalculatedNode)).bits)
             tilesInTodo.put(neighborTile.zeroBasedIndex, alreadyCalculatedNode.damagingTiles)
             cache.nodesNeedingNeighbors.set(neighborTile.zeroBasedIndex)
             if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
@@ -198,8 +199,8 @@ internal class AStarPathfinder(
 
     // returns target node. If timed out 
     internal fun stepUntilDestination() {
-        while (true) {
-            val currentPrioritizedNode = todo.poll() ?: return
+        while (todo.isNotEmpty()) {
+            val currentPrioritizedNode = PrioritizedNode(todo.poll())
             val currentNode = RouteNode(routeNodes[currentPrioritizedNode.tileIdx])
             val currentTile = currentNode.tile(tileMap)
             for (neighborTile in currentTile.neighbors) { // calculate each neighbor               
@@ -207,7 +208,7 @@ internal class AStarPathfinder(
                 val newNode = calculateNeighborNode(currentNode, neighborTile) // calculate each neighbor
                 routeNodes[neighborTile.zeroBasedIndex] = newNode.bits
                 if (newNode.turns < timeLimitTurns)
-                    todo.add(PrioritizedNode(newNode, calculateUnderestimatedMovement(newNode)))
+                    todo.add(PrioritizedNode(newNode, calculateUnderestimatedMovement(newNode)).bits)
                 tilesInTodo.put(neighborTile.zeroBasedIndex, newNode.damagingTiles)
                 cache.nodesNeedingNeighbors.set(neighborTile.zeroBasedIndex)
             }

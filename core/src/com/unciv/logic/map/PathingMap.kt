@@ -15,11 +15,15 @@ import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.mapunit.movement.UnitMovement.ParentTileAndTotalMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
+import com.unciv.utils.LongPriorityQueue
 import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
+import java.util.BitSet
+import java.util.Formatter
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
 /**
