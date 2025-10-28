@@ -135,6 +135,9 @@ object GithubAPI {
     suspend fun fetchSingleRepo(owner: String, repoName: String) =
         request { url("/repos/$owner/$repoName") }
 
+    suspend fun fetchSingleRepoOwner(owner: String) =
+        request { url("/users/$owner") }
+
     /**
      * We are not using KtorGithubAPI here because the URL provided is not an API URL
      */
@@ -209,6 +212,14 @@ object GithubAPI {
     class RepoOwner {
         var login = ""
         var avatar_url: String? = null
+        companion object {
+            /** Query Github API for [owner]'s metadata */
+            suspend fun query(owner: String): RepoOwner? {
+                val resp = fetchSingleRepoOwner(owner)
+                return if (!resp.status.isSuccess()) null
+                else json().fromJson(RepoOwner::class.java, resp.bodyAsText())
+            }
+        }
     }
 
     /** Topic search response */
