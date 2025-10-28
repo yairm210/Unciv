@@ -105,10 +105,13 @@ data class GameContext(
         /**
          * Builds out a GameContext from the given string.
          *
+         * Currently, this only covers the GameContext civInfo, unit, city, tile, and ignoreConditionals.
+         *
          * @param value A string whose values are split by the given splitCharacter. For example: unitId=123&cityId=123
          * @param viewingCiv The acting Civilization.
-         * @param splitCharacter The character that will be used when spliting the value.
+         * @param separator The string that will be used when splitting t that will be used when spliting the value.
          * @return A GameContext object including the parameters civInfo, city, tile, ignoreConditionals, and unit.
+         * @see toSerializedString()
          */
         @Readonly
         fun fromSerializedString(value: String, viewingCiv: Civilization, separator: String = Constants.stringSplitCharacter.toString()) : GameContext {
@@ -150,9 +153,12 @@ data class GameContext(
 
     /**
      * Creates a string of the parameters available within the GameContext.
-     * 
-     * @param splitCharacter The character which will be used to join the values.
-     * @return A string that is contains all the characters seperated splitCharacter. For example: unitId=123&cityId=123
+     *
+     * Currently, this only covers the GameContext civInfo, unit, city, tile, and ignoreConditionals.
+     *
+     * @param separator The character which will be used to join the values.
+     * @return A string containing all parameters joined by the separator. For example: "unitId=123&cityId=456"
+     * @see fromSerializedString()
      */
     @Readonly
     fun toSerializedString(separator: String = Constants.stringSplitCharacter.toString()) : String {
