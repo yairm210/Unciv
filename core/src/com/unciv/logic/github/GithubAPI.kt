@@ -512,22 +512,30 @@ object GithubAPI {
         moveTo(dest)
     }
 
-    private val goodFolders =
-        listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios", ".github")
-            .map { Regex(it, RegexOption.IGNORE_CASE) }
-    private val goodFiles = listOf(
+    @Pure
+    private fun regexListOf(vararg pattern: String) =
+        pattern.map { Regex(it, RegexOption.IGNORE_CASE) }
+
+    private val goodFolders = regexListOf(
+        "Images",
+        "jsons",
+        "maps",
+        "music",
+        "scenarios",
+        "sounds",
+        "voices",
+        "Images\\..*",
+        "\\.github"
+    )
+    private val goodFiles = regexListOf(
         ".*\\.atlas",
         ".*\\.png",
         "preview.jpg",
         ".*\\.md",
         "Atlases.json",
-        ".nomedia",
-        "license",
-        "contribute.md",
-        "readme.md",
-        "credits.md"
+        "\\.nomedia",
+        "license"
     )
-        .map { Regex(it, RegexOption.IGNORE_CASE) }
 
     private fun isValidModFolder(dir: FileHandle): Boolean {
         var good = 0
