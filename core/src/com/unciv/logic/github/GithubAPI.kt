@@ -557,8 +557,7 @@ object GithubAPI {
     ): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs =
-            dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
+        val subdirs = dir.list { it.isDirectory }
         if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
             throw UncivShowableException("Invalid Mod archive structure")
         return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
