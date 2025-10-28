@@ -324,6 +324,14 @@ object GithubAPI {
             return this
         }
 
+        val matchCommit = Regex("""^(.*/(.*)/(.*))/archive/([0-9a-z]{40})\.zip$""").matchEntire(url)
+        if (matchCommit != null && matchCommit.groups.size > 4) {
+            processMatch(matchCommit)
+            // the commit hash is now in the default_branch field - let's leave it at that
+            direct_zip_url = url
+            return this
+        }
+
         val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
         if (matchRepo != null && matchRepo.groups.size > 2) {
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
@@ -549,6 +557,14 @@ object GithubAPI {
     }
 
     private fun choosePrettierName(folderName: String, defaultModName: String): String {
+        // kotlin's isHexLetter and isAsciiDigit are private
+        fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
+        // Special case for specific commit (getting an older point-in-time version of a mod) zips
+        if (defaultModName.all { it.isHex() } && folderName.endsWith(defaultModName)) {
+            return folderName.removeSuffix(defaultModName).removeSuffix("-")
+        }
+
+        @Pure
         fun String.isMixedCase() = this != lowercase() && this != uppercase()
         if (defaultModName.startsWith(
                 folderName,
