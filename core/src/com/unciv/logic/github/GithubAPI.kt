@@ -369,10 +369,23 @@ object GithubAPI {
             tempName = "temp-" + toString().hashCode().toString(16)
         }
 
+        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
+        // and assume low compression efficiency - bigger mods typically have mostly images.
+        val fallbackSize = size.toLong() * 1024L * 4L / 5L
+        @Pure
+        fun reportProgress(bytesReceivedTotal: Long, contentLength: Long?) {
+            val progressEndsAtSize = contentLength ?: fallbackSize
+            if (progressEndsAtSize <= 0L) return
+            val percent = bytesReceivedTotal * 100L / progressEndsAtSize
+            updateProgressPercent!!(percent.toInt().coerceIn(0, 100))
+        }
+
         val resp = UncivKtor.client.get(zipUrl) {
             timeout {
                 requestTimeoutMillis = Long.MAX_VALUE
             }
+            if (updateProgressPercent != null)
+                onDownload(::reportProgress)
         }
 
         /**
