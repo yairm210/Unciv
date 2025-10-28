@@ -13,7 +13,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.delay
-import java.io.FileFilter
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -86,9 +87,11 @@ object GithubAPI {
     // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
     // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
     // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
+    @Pure
     internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) = "$gitRepoUrl/archive/refs/heads/$branch.zip"
 
     /** Format a download URL for a release archive */
+    @Readonly
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
 
     /** Format a URL to query a repo tree - to calculate actual size */
@@ -490,7 +493,9 @@ object GithubAPI {
     private val parseAttachmentDispositionRegex =
         Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
 
+    @Pure
     private fun parseNameFromDisposition(disposition: String?, default: String): String {
+        @Pure
         fun String.removeZipExtension() = removeSuffix(".zip").replace('.', ' ')
         if (disposition == null) return default.removeZipExtension()
         val match = parseAttachmentDispositionRegex.matchAt(disposition, 0)
@@ -563,8 +568,10 @@ object GithubAPI {
         return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
     }
 
+    @Pure
     private fun choosePrettierName(folderName: String, defaultModName: String): String {
         // kotlin's isHexLetter and isAsciiDigit are private
+        @Pure
         fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
         // Special case for specific commit (getting an older point-in-time version of a mod) zips
         if (defaultModName.all { it.isHex() } && folderName.endsWith(defaultModName)) {
