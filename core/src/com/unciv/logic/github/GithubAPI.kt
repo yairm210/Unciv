@@ -369,7 +369,12 @@ object GithubAPI {
             tempName = "temp-" + toString().hashCode().toString(16)
         }
 
-        val resp = UncivKtor.client.get(zipUrl)
+        val resp = UncivKtor.client.get(zipUrl) {
+            timeout {
+                requestTimeoutMillis = Long.MAX_VALUE
+            }
+        }
+
         /**
          * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
          * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
