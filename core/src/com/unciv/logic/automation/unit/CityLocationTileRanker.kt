@@ -68,29 +68,27 @@ object CityLocationTileRanker {
   @Readonly
     private fun canSettleTile(tile: Tile, unit: MapUnit, nearbyCities: Sequence<City>): Boolean {
         val civ = unit.civ
-        val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
-        val unique = uniques.firstOrNull()!!
+        val foundUniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
+        val unique = foundUniques.firstOrNull()!!
+        var canSettleInTileWithUnique = false
       
         val uniqueModifier = unique.getModifiers(UniqueType.ConditionalInTiles).firstOrNull()
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
-        if (!unique.hasModifier(UniqueType.ConditionalInTiles) && (!tile.isLand || tile.isImpassible())) return false
         if (tile.getOwner() != null && tile.getOwner() != civ) return false
+      
+        if (unique.hasModifier(UniqueType.ConditionalInTiles)) {
+            canSettleInTileWithUnique = !unique.getModifiers(UniqueType.ConditionalInTiles).none{ 
+                unit.getTile().matchesFilter(it.params[0])}
+        } else if (!tile.isLand || tile.isImpassible()) {
+            return false
+        }
         for (city in nearbyCities) {
-            var addedDistanceBeweenContinents: Int
-            var canSettleInTileWithUnique = false
-            if (uniqueModifier != null) {
-
-                canSettleInTileWithUnique = !unique.getModifiers(UniqueType.ConditionalInTiles).none{
-                    unit.getTile().matchesFilter(it.params[0])
-                    
-                }
-            }
             /*
             If the Ai can settle in water/moutain add extra tile before they 
             can settle because water/moutain tiles don't count has being in a contient.
             */
 
-            addedDistanceBeweenContinents = if (canSettleInTileWithUnique) 1 else 0
+            val addedDistanceBeweenContinents = if (canSettleInTileWithUnique) 1 else 0
             
             val distance = city.getCenterTile().aerialDistanceTo(tile)
             // todo: AgreedToNotSettleNearUs is hardcoded for now but it may be better to softcode it below in getDistanceToCityModifier
