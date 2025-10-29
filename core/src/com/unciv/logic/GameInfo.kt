@@ -38,6 +38,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -230,6 +231,23 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     @delegate:Transient
     val civMap by lazy { civilizations.associateBy { it.civName } }
+
+    @delegate:Transient
+    val isRulesetAllowsSettlingWater by lazy {
+        ruleset.units.values.asSequence()
+            .flatMap { unit ->
+                unit.uniqueObjects.asSequence()
+                    .filter { it.type == UniqueType.FoundCity || it.type == UniqueType.FoundPuppetCity  }
+                    .flatMap { unique -> unique.modifiers }
+            }
+            .filter { it.type == UniqueType.ConditionalInTiles }
+            .map { it.params[0] }
+            .any {
+                it == "Water" ||
+                    ruleset.terrains[it]?.type == TerrainType.Water
+            }
+    }
+    
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     @Readonly
