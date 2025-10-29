@@ -39,8 +39,8 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
     companion object {
         /** Mods live in Local - but this file prepares for music living in External just in case */
         private val musicLocation = FileType.Local
-        private const val musicPath = "music"
-        private const val modPath = "mods"
+        internal const val musicPath = "music"
+        internal const val modPath = "mods"
         /** Dropbox path of default download offer */
         private const val musicFallbackLocation = "/music/thatched-villagers.mp3"
         /** Name we save the default download offer to */
@@ -55,7 +55,7 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
         /** Number of names to keep, to avoid playing the same in short succession */
         private const val musicHistorySize = 8
         /** All Gdx-supported sound formats (file extensions) */
-        private val gdxSupportedFileExtensions = IMediaFinder.SupportedAudioExtensions.names
+        internal val gdxSupportedFileExtensions = IMediaFinder.SupportedAudioExtensions.names
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -69,37 +69,6 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
             val newFallbackFile = UncivGame.Current.files.getLocalFile(musicFallbackLocalName)
             if (!newFallbackFile.exists())
                 oldFallbackFile.moveTo(newFallbackFile)
-        }
-    }
-
-    /** Container for track info - used for [onChange] and [getHistory].
-     *
-     *  [toString] returns a prettified label: "Modname: Track".
-     *  No track playing is reported as a MusicTrackInfo instance with all
-     *  fields empty, for which _`toString`_ returns "—Paused—".
-     */
-    data class MusicTrackInfo(val mod: String, val track: String, val type: String) {
-        /** Used for display, not only debugging */
-        override fun toString() = if (track.isEmpty()) "—Paused—"  // using em-dash U+2014
-            else if (mod.isEmpty()) track else "$mod: $track"
-
-        companion object {
-            /** Parse a path - must be relative to `UncivGame.Current.files.getLocalFile` */
-            @Readonly
-            fun parse(fileName: String): MusicTrackInfo {
-                if (fileName.isEmpty())
-                    return MusicTrackInfo("", "", "")
-                val fileNameParts = fileName.split('/')
-                val modName = if (fileNameParts.size > 1 && fileNameParts[0] == modPath)
-                    fileNameParts[1] else ""
-                var trackName = fileNameParts[
-                        if (fileNameParts.size > 3 && fileNameParts[2] == musicPath) 3 else 1
-                    ]
-                val type = gdxSupportedFileExtensions
-                    .firstOrNull {trackName.endsWith(".$it") } ?: ""
-                trackName = trackName.removeSuffix(".$type")
-                return MusicTrackInfo(modName, trackName, type)
-            }
         }
     }
 
