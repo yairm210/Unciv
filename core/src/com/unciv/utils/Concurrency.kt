@@ -171,8 +171,8 @@ private class Dispatchers {
     /** Runs coroutines on a non-daemon thread pool. */
     val NON_DAEMON: CoroutineDispatcher = createThreadpoolDispatcher("threadpool-nondaemon-", isDaemon = false)
 
-    /** Runs coroutines on the GDX GL thread. */
-    val GL: CoroutineDispatcher = CrashHandlingDispatcher(GLDispatcher(DAEMON))
+    /** Runs coroutines on the GDX GL thread - unused in e.g. ConsoleLauncher */
+    val GL: CoroutineDispatcher by lazy { CrashHandlingDispatcher(GLDispatcher(DAEMON)) }
 
     fun stopThreadPools() {
         val iterator = EXECUTORS.iterator()
