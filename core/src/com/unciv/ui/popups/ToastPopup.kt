@@ -2,11 +2,15 @@ package com.unciv.ui.popups
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Align
+import com.unciv.ui.components.extensions.addRoundCloseButton
+import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 
 /**
@@ -21,10 +25,12 @@ class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) 
 
     constructor(message: String, screen: BaseScreen, time: Long = 2000) : this(message, screen.stage, time)
 
+    private var timerJob: Job? = null
+
     init {
         //Make this popup unobtrusive
         setFillParent(false)
-        onClick { close() }  // or `touchable = Touchable.disabled` so you can operate what's behind
+        onClick(::stayVisible) // or `touchable = Touchable.disabled` so you can operate what's behind
 
         add(ColorMarkupLabel(message).apply {
             wrap = true
@@ -39,15 +45,32 @@ class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) 
     }
 
     private fun startTimer() {
-        Concurrency.run("ResponsePopup") {
+        timerJob = Concurrency.run("ResponsePopup") {
             delay(time)
+            timerJob = null
             launchOnGLThread { this@ToastPopup.close() }
         }
+    }
+    private fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
+    }
+
+    override fun close() {
+        stopTimer()
+        super.close()
     }
 
     override fun setVisible(visible: Boolean) {
         if (visible)
             startTimer()
         super.setVisible(visible)
+    }
+
+    private fun stayVisible() {
+        stopTimer()
+        clearActivationActions(ActivationTypes.Tap, false)
+        //onClick(::close) TODO ...?
+        addRoundCloseButton(this, ::close)
     }
 }
