@@ -6,6 +6,7 @@ val gdxVersion: String by project
 val coroutinesVersion: String by project
 val ktorVersion: String by project
 val jnaVersion: String by project
+val miniaudioVersion: String by project
 
 buildscript {
     repositories {
@@ -108,6 +109,8 @@ project(":desktop") {
             exclude("com.badlogicgames.gdx", "gdx-backend-lwjgl")
         }
 
+        "implementation"("games.rednblack.miniaudio:gdx-miniaudio-platform:$miniaudioVersion:natives-desktop")
+
         // Needed to display "Playing Unciv" in Discord
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
 
@@ -168,6 +171,10 @@ if (getSdkPath() != null) {
             natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
             natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
             natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
+            natives("games.rednblack.miniaudio:gdx-miniaudio-platform:$miniaudioVersion:natives-armeabi-v7a")
+            natives("games.rednblack.miniaudio:gdx-miniaudio-platform:$miniaudioVersion:natives-arm64-v8a")
+            natives("games.rednblack.miniaudio:gdx-miniaudio-platform:$miniaudioVersion:natives-x86")
+            natives("games.rednblack.miniaudio:gdx-miniaudio-platform:$miniaudioVersion:natives-x86_64")
         }
     }
 }
@@ -180,6 +187,8 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
+        "api"("games.rednblack.miniaudio:miniaudio:$miniaudioVersion")
+
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 

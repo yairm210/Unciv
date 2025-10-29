@@ -1,14 +1,15 @@
 package com.unciv.ui.audio
 
-import com.badlogic.gdx.Application
+import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.files.IMediaFinder
 import com.unciv.models.UncivSound
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import games.rednblack.miniaudio.MASound
+import games.rednblack.miniaudio.MiniAudioException
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -17,32 +18,13 @@ import kotlinx.coroutines.isActive
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
-/*
- * Problems on Android
- *
- * Essentially the freshly created Gdx Sound object from newSound() is not immediately usable, it
- * needs some preparation time - buffering, decoding, whatever. Calling play() immediately will result
- * in no sound, a logcat warning (not ready), and nothing else - specifically no exceptions. Also,
- * keeping a Sound object for longer than necessary to play it once will trigger CloseGuard warnings
- * (resource failed to clean up). Also, Gdx will attempt fast track, which will cause logcat entries,
- * and these will be warnings if the sound file's sample rate (not bitrate) does not match the device's
- * hardware preferred bitrate. On a Xiaomi Mi8 that is 48kHz, not 44.1kHz. Channel count also must match.
- *
- * @see "https://github.com/libgdx/libgdx/issues/1775"
- * logcat entry "W/System: A resource failed to call end.":
- *  unavoidable as long as we cache Gdx Sound objects loaded from assets
- * logcat entry "W/SoundPool: sample X not READY":
- *  could be avoided by preloading the 'cache' or otherwise ensuring a minimum delay between
- *  newSound() and play() - there's no test function that does not trigger logcat warnings.
- *
- * Current approach: Cache on demand as before, catch stream not ready and retry. This maximizes
- * logcat messages but user experience is acceptable. Empiric delay needed was measured a 40ms
- * so that is the minimum wait before attempting play when we know the sound is freshly cached
- * and the system is Android.
+/* TODO
+    - Use MA's Reverb instead of playRepeated's approach
+    - Use MASoundPool instead of MASound for concurrency? (that's a pool for one single file)
  */
 
 /**
- * Generates Gdx [Sound] objects from [UncivSound] ones on demand, only once per key
+ * Generates MiniAudio [MASound] objects from [UncivSound] ones on demand, only once per key
  * (two UncivSound custom instances with the same filename are considered equal).
  *
  * Gdx asks Sound usage to respect the Disposable contract, but since we're only caching
@@ -118,7 +100,7 @@ object SoundPlayer {
     }
 
     /** Holds a Gdx Sound and a flag indicating the sound is freshly loaded and not from cache */
-    data class GetSoundResult(val resource: Sound, val isFresh: Boolean)
+    data class GetSoundResult(val resource: MASound, val isFresh: Boolean)
 
     /** Retrieve (if not cached create from resources) a Gdx Sound from an UncivSound
      * @param sound The sound to fetch
@@ -151,6 +133,8 @@ object SoundPlayer {
     }
 
     private fun createAndCacheResult(sound: UncivSound, file: FileHandle?): GetSoundResult? {
+        if (!UncivGame.isCurrentInitialized()) return null
+
         fun logAndMarkFailure(msg: String): GetSoundResult? {
             Log.debug(msg)
             // remember that the actual file is missing
@@ -160,7 +144,7 @@ object SoundPlayer {
         fun logAndMarkFailure(e: Exception) =
             logAndMarkFailure("Failed to create a sound ${sound.fileName} from ${file!!.path()}: ${e.javaClass.simpleName} ${e.message}")
 
-        fun storeAndReturn(newSound: Sound): GetSoundResult {
+        fun storeAndReturn(newSound: MASound): GetSoundResult {
             Log.debug("Sound %s loaded from %s", sound.fileName, file!!.path())
             // Store Sound for reuse
             soundMap[sound] = newSound
@@ -170,10 +154,22 @@ object SoundPlayer {
         if (file == null || !file.exists())
             return logAndMarkFailure("Sound ${sound.fileName} not found!")
 
-        return try {
-            storeAndReturn(Gdx.audio.newSound(file))
+        val ma = UncivGame.Current.miniAudio
+        try {
+            // Use Flags.MA_SOUND_FLAG_DECODE: keep decoded in memory?
+            return storeAndReturn(ma.createSound(file.path()))
         } catch (e: Exception) {
-            logAndMarkFailure(e)
+            // TODO follow https://github.com/rednblackgames/gdx-miniaudio/issues/2 - this may become obsolete?
+            if (e is MiniAudioException && file.type() == Files.FileType.Internal && IMediaFinder.isRunFromJar()) {
+                try {
+                    val bytes = file.readBytes()
+                    val newSound = ma.createSound(ma.decodeBytes(bytes, 2))
+                    return storeAndReturn(newSound)
+                } catch (e: Exception) {
+                    return logAndMarkFailure(e)
+                }
+            }
+            return logAndMarkFailure(e)
         }
     }
 
@@ -192,44 +188,10 @@ object SoundPlayer {
     fun play(sound: UncivSound) {
         val volume = UncivGame.Current.settings.soundEffectsVolume
         if (sound == UncivSound.Silent || volume < 0.01) return
-        val (resource, isFresh) = get(sound) ?: return
-        if (Gdx.app.type == Application.ApplicationType.Android)
-            playAndroid(resource, isFresh, volume)
-        else
-            playDesktop(resource, volume)
-    }
-
-    // Android needs time for a newly created sound to become ready, but in turn AndroidSound.play seems thread-safe.
-    private fun playAndroid(resource: Sound, isFresh: Boolean, volume: Float) {
-        /** Tested with a 2022 Android "S" and libGdx 1.12.1 - still required */
-        // See also: https://github.com/libgdx/libgdx/issues/694
-        // Typical logcat (effectively means we tried play before even the codec got loaded):
-/*
-        Unciv SoundPlayer       com.unciv.app                        D  [GLThread 8951] Sound click loaded from mods/Higher quality builtin sounds/sounds/click.ogg
-        SoundPool               com.unciv.app                        W  play soundID 1 not READY
-        MediaCodecList          com.unciv.app                        D  codecHandlesFormat: no format, so no extra checks
-        MediaCodecList          com.unciv.app                        D  codecHandlesFormat: no format, so no extra checks
-        CCodec                  com.unciv.app                        D  allocate(c2.android.vorbis.decoder)
-        Codec2Client            com.unciv.app                        I  Available Codec2 services: "software"
-        CCodec                  com.unciv.app                        I  Created component [c2.android.vorbis.decoder]
-        CCodecConfig            com.unciv.app                        D  read media type: audio/vorbis
- */
-        if (!isFresh && resource.play(volume) != -1L) return // If it's already cached we should be able to play immediately
-        Concurrency.run("DelayedSound") {
-            delay(40L)
-            var repeatCount = 0
-            while (resource.play(volume) == -1L && ++repeatCount < 12) // quarter second tops
-                delay(20L)
-        }
-    }
-
-    // Let's do just one silent retry on Desktop. In turn, OpenALSound.play is not thread-safe.
-    private fun playDesktop(resource: Sound, volume: Float) {
-        if (resource.play(volume) != -1L) return
-        Concurrency.runOnGLThread("SoundRetry") {
-            delay(20L)
-            resource.play(volume)
-        }
+        val (resource, _) = get(sound) ?: return
+        resource.setVolume(volume)
+        resource.seekTo(0f)
+        resource.play()
     }
 
     /** Play a sound repeatedly - e.g. to express that an action was applied multiple times or to multiple targets.
@@ -287,19 +249,21 @@ object SoundPlayer {
 
     /** A wrapper for a HashMap<UncivSound, Sound?> with synchronized writes */
     private class Cache {
-        private val cache = HashMap<UncivSound, Sound?>(20)  // Enough for all standard sounds
+        private val cache = HashMap<UncivSound, MASound?>(20)  // Enough for all standard sounds
 
+        @Readonly
         operator fun contains(key: UncivSound) = cache.containsKey(key)
+        @Readonly
         operator fun get(key: UncivSound) = cache[key]
 
-        operator fun set(key: UncivSound, value: Sound?) {
+        operator fun set(key: UncivSound, value: MASound?) {
             synchronized(cache) {
                 cache[key] = value
             }
         }
 
         fun clear() {
-            val oldSounds: List<Sound?>
+            val oldSounds: List<MASound?>
             synchronized(cache) {
                 oldSounds = cache.values.toList()
                 cache.clear()

@@ -48,6 +48,7 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
+import games.rednblack.miniaudio.MiniAudio
 import kotlinx.coroutines.CancellationException
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -62,6 +63,8 @@ import kotlin.reflect.KClass
  *  - contains references to [the game being played][gameInfo], and high-level UI elements.
  */
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
+    /** MiniAudio instance to use exclusively instead of Gdx.audio */
+    val miniAudio = MiniAudio()
 
     var deepLinkedMultiplayerGame: String? = null
     override var customDataDirectory: String? = null
@@ -121,8 +124,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
 
-        musicController = MusicController()  // early, but at this point does only copy volume from settings
-        installAudioHooks()
+        musicController = MusicController(miniAudio)  // early, but at this point does only copy volume from settings
+        initAudio(miniAudio)  // Currently only Android connects the asset manager
 
         onlineMultiplayer = Multiplayer()
 
@@ -393,6 +396,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+        miniAudio.startEngine()
         musicController.resumeFromShutdown()
 
         // This is also needed in resume to open links and notifications
@@ -405,6 +409,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // Needs to go ASAP - on Android, there's a tiny race condition: The OS will stop our playback forcibly, it likely
         // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
         if (::musicController.isInitialized) musicController.pause()
+        miniAudio.stopEngine()
         val curGameInfo = gameInfo
         // Since we're pausing the game, we don't need to clone it before autosave - no one else will touch it
         if (curGameInfo != null) files.autosaves.requestAutoSaveUnCloned(curGameInfo)
@@ -420,7 +425,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun dispose() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
         SoundPlayer.clearCache()
-        if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+        if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out... for a few ms
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
@@ -438,6 +443,10 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             }
         }
         settings.save()
+
+        if (::musicController.isInitialized) musicController.dispose()
+        miniAudio.dispose()
+
         Concurrency.stopThreadPools()
 
         // On desktop this should only be this one and "DestroyJavaVM"
