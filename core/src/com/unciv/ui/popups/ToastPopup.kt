@@ -70,7 +70,7 @@ class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) 
     private fun stayVisible() {
         stopTimer()
         clearActivationActions(ActivationTypes.Tap, false)
-        //onClick(::close) TODO ...?
+        onClick(::close)
         addRoundCloseButton(this, ::close)
     }
 }
