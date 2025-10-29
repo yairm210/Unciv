@@ -15,6 +15,7 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.SettingsSelect
+import yairm210.purity.annotations.Readonly
 import kotlin.reflect.full.declaredMemberProperties
 
 /**
@@ -135,19 +136,39 @@ interface IMediaFinder {
         // Our caller will append the one builtin folder candidate (not here, as it's internal instead of local)
     }.map { getModMediaFolder(it) }
 
-    //////////////////////////////////////////// Specializations
+    /** Supported audio extensions per MiniAudio docs, no aac/m4a
+     *  Use [SupportedAudioExtensions.names] for a string version
+     */
+    @Suppress("EnumEntryName")
+    enum class SupportedAudioExtensions {
+        mp3, ogg, wav, flac;
+        companion object {
+            val names = entries.map { it.name }.toSet()
+        }
+    }
+
+    /** Supported image extensions per Gdx loader capabilities
+     *  Use [SupportedImageExtensions.names] for a string version
+     */
+    @Suppress("EnumEntryName")
+    enum class SupportedImageExtensions {
+        png, jpg, jpeg;
+        companion object {
+            val names = entries.map { it.name }.toSet()
+        }
+    }
 
     companion object {
-        private fun supportedAudioExtensions() = setOf(".mp3", ".ogg", ".wav")   // Per Gdx docs, no aac/m4a
-        private fun supportedImageExtensions() = setOf(".png", ".jpg", ".jpeg")
-        private fun isRunFromJar(): Boolean =
+        fun isRunFromJar(): Boolean =
             Gdx.app.type == Application.ApplicationType.Desktop &&
             this::class.java.`package`.specificationVersion != null
     }
 
+    //////////////////////////////////////////// Specializations
+
     open class Sounds : IMediaFinder {
         override val mediaSubFolderName = "sounds"
-        override val supportedMediaExtensions = supportedAudioExtensions()
+        override val supportedMediaExtensions = SupportedAudioExtensions.names
 
         private val uncivSoundNames by lazy { uncivSoundNames().toList() }
         private val unitAttackSounds by lazy { unitAttackSounds().map { it.second }.toList() }
@@ -162,6 +183,7 @@ interface IMediaFinder {
             // Extract Unit attack sounds from the larger vanilla ruleset
             // Remember this replaces enumeration over *bundled* assets - not necessary for mods
             // Keeps unit around not for this class but for the labeled version
+            @Readonly
             fun unitAttackSounds(): Sequence<Pair<BaseUnit, String>> {
                 val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return emptySequence()
                 return ruleset.units.values.asSequence()
@@ -174,19 +196,19 @@ interface IMediaFinder {
 
     open class Music : IMediaFinder {
         override val mediaSubFolderName = "music"
-        override val supportedMediaExtensions = supportedAudioExtensions()
+        override val supportedMediaExtensions = SupportedAudioExtensions.names
         val names = sequenceOf("Thatched Villagers - Ambient")
         override fun getInternalMediaNames(folder: FileHandle) = names
     }
 
     open class Voices : IMediaFinder {
         override val mediaSubFolderName = "voices"
-        override val supportedMediaExtensions = supportedAudioExtensions()
+        override val supportedMediaExtensions = SupportedAudioExtensions.names
     }
 
     open class Images : IMediaFinder {
         override val mediaSubFolderName = "ExtraImages"
-        override val supportedMediaExtensions = supportedImageExtensions()
+        override val supportedMediaExtensions = SupportedImageExtensions.names
         // no getInternalMediaNames - no listMediaFiles() for internal assets needed
     }
 

@@ -5,14 +5,17 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
+import com.unciv.logic.files.IMediaFinder
 import com.unciv.models.UncivSound
 import com.unciv.utils.Concurrency
-import com.unciv.utils.debug
+import com.unciv.utils.Log
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 /*
  * Problems on Android
@@ -47,9 +50,6 @@ import kotlinx.coroutines.isActive
  * app lifetime - and we do dispose them when the app is disposed.
  */
 object SoundPlayer {
-    @Suppress("EnumEntryName")
-    private enum class SupportedExtensions { mp3, ogg, wav }    // Per Gdx docs, no aac/m4a
-
     private val soundMap = Cache()
 
     private val separator = File.separator      // just a shorthand for readability
@@ -79,7 +79,7 @@ object SoundPlayer {
         // Seems the mod list has changed - clear the cache
         clearCache()
         modListHash = newHash
-        debug("Sound cache cleared")
+        Log.debug("Sound cache cleared")
         Preloader.restart()
     }
 
@@ -92,6 +92,7 @@ object SoundPlayer {
     }
 
     /** Build list of folders to look for sounds */
+    @Readonly
     private fun getFolders(): Sequence<String> {
         if (!UncivGame.isCurrentInitialized())
             // Sounds before main menu shouldn't happen, but just in case return a default ""
@@ -138,8 +139,8 @@ object SoundPlayer {
     private fun getFile(sound: UncivSound): FileHandle? {
         val fileName = sound.fileName
         for (modFolder in getFolders()) {
-            for (extension in SupportedExtensions.entries) {
-                val path = "${modFolder}sounds$separator$fileName.${extension.name}"
+            for (extension in IMediaFinder.SupportedAudioExtensions.names) {
+                val path = "${modFolder}sounds$separator$fileName.$extension"
                 val localFile = UncivGame.Current.files.getLocalFile(path)
                 if (localFile.exists()) return localFile
                 val internalFile = Gdx.files.internal(path)
@@ -150,24 +151,29 @@ object SoundPlayer {
     }
 
     private fun createAndCacheResult(sound: UncivSound, file: FileHandle?): GetSoundResult? {
-        if (file == null || !file.exists()) {
-            debug("Sound %s not found!", sound.fileName)
+        fun logAndMarkFailure(msg: String): GetSoundResult? {
+            Log.debug(msg)
             // remember that the actual file is missing
             soundMap[sound] = null
             return null
         }
+        fun logAndMarkFailure(e: Exception) =
+            logAndMarkFailure("Failed to create a sound ${sound.fileName} from ${file!!.path()}: ${e.javaClass.simpleName} ${e.message}")
 
-        debug("Sound %s loaded from %s", sound.fileName, file.path())
-        try {
-            val newSound = Gdx.audio.newSound(file)
+        fun storeAndReturn(newSound: Sound): GetSoundResult {
+            Log.debug("Sound %s loaded from %s", sound.fileName, file!!.path())
             // Store Sound for reuse
             soundMap[sound] = newSound
             return GetSoundResult(newSound, true)
+        }
+
+        if (file == null || !file.exists())
+            return logAndMarkFailure("Sound ${sound.fileName} not found!")
+
+        return try {
+            storeAndReturn(Gdx.audio.newSound(file))
         } catch (e: Exception) {
-            debug("Failed to create a sound %s from %s: %s", sound.fileName, file.path(), e.message)
-            // remember that the actual file is missing
-            soundMap[sound] = null
-            return null
+            logAndMarkFailure(e)
         }
     }
 
@@ -244,6 +250,7 @@ object SoundPlayer {
 
     /** Manages background loading of sound files into Gdx.Sound instances */
     private class Preloader {
+        @Pure
         private fun UncivSound.Companion.getPreloadList() =
             listOf(Click, Whoosh, Construction, Promote, Upgrade, Coin, Chimes, Choir)
 
@@ -257,7 +264,7 @@ object SoundPlayer {
                 if (!isActive) break
                 // This way skips minor things as compared to get(sound) - the cache stale check and result instantiation on cache hit
                 if (sound in soundMap) continue
-                debug("Preload $sound")
+                Log.debug("Preload $sound")
                 createAndCacheResult(sound, getFile(sound))
                 if (!isActive) break
             }

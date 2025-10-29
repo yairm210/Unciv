@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
+import com.unciv.logic.files.IMediaFinder
 import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Concurrency
@@ -26,6 +27,7 @@ import kotlin.math.roundToInt
  * * Can load from internal (jar,apk) - music is always local, nothing is packaged into a release.
  */
 class MusicController {
+    @Suppress("ConstPropertyName")
     companion object {
         /** Mods live in Local - but this file prepares for music living in External just in case */
         private val musicLocation = FileType.Local
@@ -48,7 +50,7 @@ class MusicController {
         /** Number of names to keep, to avoid playing the same in short succession */
         private const val musicHistorySize = 8
         /** All Gdx-supported sound formats (file extensions) */
-        val gdxSupportedFileExtensions = listOf("mp3", "ogg", "wav")
+        private val gdxSupportedFileExtensions = IMediaFinder.SupportedAudioExtensions.names
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
