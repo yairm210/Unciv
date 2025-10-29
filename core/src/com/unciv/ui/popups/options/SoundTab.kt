@@ -19,6 +19,8 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 
 fun soundTab(
@@ -148,9 +150,26 @@ private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: Mus
 private fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
     val label = WrappableLabel("", table.width - 10f, Color(-0x2f5001), 16)
     label.wrap = true
+    var length = 0f
+    val formatter = DateTimeFormatter.ofPattern("mm:ss")
+    fun Float.formatTime() = LocalTime.ofSecondOfDay(toLong()).format(formatter)
+    val slider = UncivSlider(0f, 1000f, 1f, plusMinus = false, initial = 0f,
+        sound = UncivSound.Silent, tipType = UncivSlider.TipType.Auto,
+        getTipText = { value -> "${value.formatTime()} / ${length.formatTime()}" }
+    ) {
+        music.setCurrentPosition(it)
+    }
+    slider.isVisible = false
     table.add(label).padTop(20f).colspan(2).fillX().row()
+    table.add(slider).padTop(20f).colspan(2).row()
     music.onChange {
         label.setText("Currently playing: [$it]".tr())
+        if (it.length != null && it.length > 0f && it.position != null) {
+            length = it.length
+            slider.setRange(0f, it.length)
+            slider.value = it.position
+            slider.isVisible = true
+        } else slider.isVisible = false
     }
     table.firstAscendant(Popup::class.java)?.run {
         closeListeners.add { music.onChange(null) }

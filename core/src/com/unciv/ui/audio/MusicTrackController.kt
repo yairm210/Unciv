@@ -29,6 +29,7 @@ internal class MusicTrackController(
         private set
     var music: MASound? = null
         private set
+    private var path: String? = null
     private var fadeStep = MusicController.defaultFadingStep
     private var fadeVolume: Float = initialFadeVolume
 
@@ -59,6 +60,7 @@ internal class MusicTrackController(
         state = State.Loading
         try {
             music = miniAudio.createSound(file.path(), MASound.Flags.MA_SOUND_FLAG_STREAM, null)
+            path = file.path()
             if (state != State.Loading) {  // in case dispose was called in the meantime
                 dispose()
             } else {
@@ -108,6 +110,8 @@ internal class MusicTrackController(
     /** @return [MASound.isPlaying] (miniAudio music stream is playing)
      *      unless [state] says it won't make sense */
     fun isPlaying() = state.canPlay && music?.isPlaying == true
+
+    fun getPath() = if (state.canPlay) path else null
 
     /** Calls play() on the wrapped Gdx Music, catching exceptions to console.
      *  @return success

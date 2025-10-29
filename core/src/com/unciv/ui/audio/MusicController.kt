@@ -56,6 +56,8 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
         private const val musicHistorySize = 8
         /** All Gdx-supported sound formats (file extensions) */
         internal val gdxSupportedFileExtensions = IMediaFinder.SupportedAudioExtensions.names
+        /** Since we have MASound.cursorPosition, we can update listeners with smooth progress - but not every tick */
+        private val ticksPerOnChange = 4
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -129,6 +131,9 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
     /** These listeners get notified when track changes */
     private var onTrackChangeListeners = mutableListOf<(MusicTrackInfo)->Unit>()
 
+    /** count to [ticksPerOnChange] and fire onChange listeners only once per cycle */
+    private var onChangeTicks = 0
+
     //endregion
     //region Pure functions
 
@@ -167,6 +172,7 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
     private fun clearCurrent() {
         current?.dispose()
         current = null
+        onChangeTicks = 0
     }
     private fun clearNext() {
         next?.dispose()
@@ -226,6 +232,9 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
                     if (current?.timerTick() == MusicTrackController.State.Idle)
                         clearCurrent()
                     next?.timerTick()
+                    // This is the one constantly updating listeners with the current position
+                    if (onChangeTicks == 0) fireOnChange()
+                    onChangeTicks = (onChangeTicks + 1) % ticksPerOnChange
                 }
             ControllerState.Silence ->
                 if (++ticksOfSilence > silenceLengthInTicks) {
@@ -320,8 +329,11 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
 
     private fun fireOnChange() {
         if (onTrackChangeListeners.isEmpty()) return
+        val fileName = current?.getPath()
+        val info = if (fileName == null) MusicTrackInfo.parse("")
+            else MusicTrackInfo.parse(fileName,current!!.music)
         Concurrency.runOnGLThread {
-            fireOnChange(MusicTrackInfo.parse(currentlyPlaying()))
+            fireOnChange(info)
         }
     }
     private fun fireOnChange(trackInfo: MusicTrackInfo) {
@@ -532,6 +544,12 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
         baseVolume = volume
         if ( volume < 0.01 ) shutdown()
         else if (isPlaying()) current?.setVolume(baseVolume * maxVolume)
+    }
+
+    fun setCurrentPosition(position: Float) {
+        val music = current?.music ?: return
+        if (!state.showTrack || !current!!.isPlaying()) return
+        music.seekTo(position)
     }
 
     /** Soft shutdown of music playback, with fadeout */

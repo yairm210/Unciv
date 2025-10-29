@@ -68,7 +68,10 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
-            
+
+            "games.rednblack.miniaudio.MASound.getLength",
+            "games.rednblack.miniaudio.MASound.getCursorPosition",
+
             "kotlin.sequences.shuffled",
         )
         wellKnownPureClasses = setOf(

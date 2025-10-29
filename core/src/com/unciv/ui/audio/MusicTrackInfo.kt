@@ -3,9 +3,10 @@ package com.unciv.ui.audio
 import com.unciv.ui.audio.MusicController.Companion.gdxSupportedFileExtensions
 import com.unciv.ui.audio.MusicController.Companion.modPath
 import com.unciv.ui.audio.MusicController.Companion.musicPath
+import games.rednblack.miniaudio.MASound
 import yairm210.purity.annotations.Readonly
 
-/** Container for track info - used for [onChange] and [getHistory].
+/** Container for track info - used for [onChange][MusicController.onChange] and [getHistory][MusicController.getHistory].
  *
  *  [toString] returns a prettified label: "Modname: Track".
  *  No track playing is reported as a MusicTrackInfo instance with all
@@ -14,7 +15,9 @@ import yairm210.purity.annotations.Readonly
 data class MusicTrackInfo(
     val mod: String,
     val track: String,
-    val type: String
+    val type: String,
+    val length: Float? = null,
+    val position: Float? = null
 ) {
     /** Used for display, not only debugging */
     override fun toString() = if (track.isEmpty()) "—Paused—"  // using em-dash U+2014
@@ -23,7 +26,7 @@ data class MusicTrackInfo(
     companion object {
         /** Parse a path - must be relative to `UncivGame.Current.files.getLocalFile` */
         @Readonly
-        fun parse(fileName: String): MusicTrackInfo {
+        internal fun parse(fileName: String, sound: MASound? = null): MusicTrackInfo {
             if (fileName.isEmpty())
                 return MusicTrackInfo("", "", "")
             val fileNameParts = fileName.split('/')
@@ -35,7 +38,9 @@ data class MusicTrackInfo(
             val type = gdxSupportedFileExtensions
                 .firstOrNull {trackName.endsWith(".$it") } ?: ""
             trackName = trackName.removeSuffix(".$type")
-            return MusicTrackInfo(modName, trackName, type)
+            if (sound == null)
+                return MusicTrackInfo(modName, trackName, type)
+            return MusicTrackInfo(modName, trackName, type, sound.length, sound.cursorPosition)
         }
     }
 }
