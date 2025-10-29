@@ -1188,7 +1188,7 @@ object UniqueTriggerActivation {
                 if (terrain.type == TerrainType.TerrainFeature && !terrain.occursOn.contains(tile.lastTerrain.name))
                     return null
                 if (tile.terrainFeatures.contains(terrain.name)) return null
-                if (tile.isCityCenter() && !tile.tileMap.gameInfo.isRulesetAllowsSettlingWater) return null
+                if (tile.isCityCenter() && terrain.type != TerrainType.Land && !tile.tileMap.gameInfo.isRulesetAllowsSettlingWater) return null
                 if (terrain.type.isBaseTerrain && tile.baseTerrain == terrain.name) return null
 
                 return {
