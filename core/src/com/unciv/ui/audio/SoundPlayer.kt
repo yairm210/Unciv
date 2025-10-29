@@ -10,6 +10,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import games.rednblack.miniaudio.MASound
 import games.rednblack.miniaudio.MiniAudioException
+import games.rednblack.miniaudio.effect.MADelayNode
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -19,7 +20,6 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 /* TODO
-    - Use MA's Reverb instead of playRepeated's approach
     - Use MASoundPool instead of MASound for concurrency? (that's a pool for one single file)
  */
 
@@ -32,6 +32,8 @@ import yairm210.purity.annotations.Readonly
  * app lifetime - and we do dispose them when the app is disposed.
  */
 object SoundPlayer {
+    private const val maxEchoes = 5
+
     private val soundMap = Cache()
 
     private val separator = File.separator      // just a shorthand for readability
@@ -199,14 +201,31 @@ object SoundPlayer {
      *  Runs the actual sound player decoupled on the GL thread unlike [SoundPlayer.play], which leaves that responsibility to the caller.
      */
     fun playRepeated(sound: UncivSound, count: Int = 2, delay: Long = 200) {
+        if (count <= 1) return play(sound)
+        val volume = UncivGame.Current.settings.soundEffectsVolume
+        if (sound == UncivSound.Silent || volume < 0.01) return
+        val (template, _) = get(sound) ?: return
+        // MiniAudio doesn't rely on GL, so this is just a little postponing
         Concurrency.runOnGLThread {
-            play(sound)
-            if (count > 1) Concurrency.run {
-                repeat(count - 1) {
-                    delay(delay)
-                    Concurrency.runOnGLThread { play(sound) }
-                }
+            val ma = UncivGame.Current.miniAudio
+            // Can't modify that instance, or else all normal plays will have the echo
+            val resource = ma.createSound(template.dataSource)
+            val echo = MADelayNode(ma, delay * 0.001f, 0.9f)
+            ma.attachToEngineOutput(echo, 0)
+            echo.attachToThisNode(resource, 0)
+            echo.setOutputBusVolume(0, volume)
+            //TODO won't stop echoing...
+            val stopAt = (resource.length * 1000).toLong() + (count.coerceAtMost(maxEchoes) - 1) * delay
+            Concurrency.run {
+                delay(stopAt)
+                resource.fadeOut(delay * 0.5f)
+                delay(delay)
+                resource.stop()
+                resource.dispose()
+                resource.chainSound(resource)
             }
+            resource.seekTo(0f)
+            resource.play()
         }
     }
 
