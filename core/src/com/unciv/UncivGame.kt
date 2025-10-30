@@ -20,6 +20,7 @@ import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MiniAudioFactory
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -123,7 +124,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
 
-        miniAudio = MiniAudio()
+        miniAudio = MiniAudioFactory.create(files)
         musicController = MusicController(miniAudio)  // early, but at this point does only copy volume from settings
         initAudio(miniAudio)  // Currently only Android connects the asset manager
 

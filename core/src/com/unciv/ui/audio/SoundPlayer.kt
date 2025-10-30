@@ -19,10 +19,6 @@ import kotlinx.coroutines.isActive
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
-/* TODO
-    - Use MASoundPool instead of MASound for concurrency? (that's a pool for one single file)
- */
-
 /**
  * Generates MiniAudio [MASound] objects from [UncivSound] ones on demand, only once per key
  * (two UncivSound custom instances with the same filename are considered equal).

@@ -17,14 +17,6 @@ import java.util.Timer
 import kotlin.concurrent.timer
 import kotlin.math.roundToInt
 
-/* TODO:
-       - Use MASound.fadeIn and fadeOut
-       - MA has a separate master volume
-       - Use MASound.cursorPosition / length for Player progressbar
-       - Use MASound's own end callback
-       - 
- */
-
 /**
  * Play, choose, fade-in/out and generally manage music track playback.
  *
