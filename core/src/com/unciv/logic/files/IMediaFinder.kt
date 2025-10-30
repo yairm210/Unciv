@@ -144,6 +144,7 @@ interface IMediaFinder {
         mp3, ogg, wav, flac;
         companion object {
             val names = entries.map { it.name }.toSet()
+            val namesWithDot = entries.map { "." + it.name }.toSet()
         }
     }
 
@@ -155,6 +156,7 @@ interface IMediaFinder {
         png, jpg, jpeg;
         companion object {
             val names = entries.map { it.name }.toSet()
+            val namesWithDot = entries.map { "." + it.name }.toSet()
         }
     }
 
@@ -168,7 +170,7 @@ interface IMediaFinder {
 
     open class Sounds : IMediaFinder {
         override val mediaSubFolderName = "sounds"
-        override val supportedMediaExtensions = SupportedAudioExtensions.names
+        override val supportedMediaExtensions = SupportedAudioExtensions.namesWithDot
 
         private val uncivSoundNames by lazy { uncivSoundNames().toList() }
         private val unitAttackSounds by lazy { unitAttackSounds().map { it.second }.toList() }
@@ -196,19 +198,19 @@ interface IMediaFinder {
 
     open class Music : IMediaFinder {
         override val mediaSubFolderName = "music"
-        override val supportedMediaExtensions = SupportedAudioExtensions.names
+        override val supportedMediaExtensions = SupportedAudioExtensions.namesWithDot
         val names = sequenceOf("Thatched Villagers - Ambient")
         override fun getInternalMediaNames(folder: FileHandle) = names
     }
 
     open class Voices : IMediaFinder {
         override val mediaSubFolderName = "voices"
-        override val supportedMediaExtensions = SupportedAudioExtensions.names
+        override val supportedMediaExtensions = SupportedAudioExtensions.namesWithDot
     }
 
     open class Images : IMediaFinder {
         override val mediaSubFolderName = "ExtraImages"
-        override val supportedMediaExtensions = SupportedImageExtensions.names
+        override val supportedMediaExtensions = SupportedImageExtensions.namesWithDot
         // no getInternalMediaNames - no listMediaFiles() for internal assets needed
     }
 

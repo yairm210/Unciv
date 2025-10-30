@@ -225,6 +225,8 @@ project(":core") {
             "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
             "implementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
+
+            "implementation"("games.rednblack.miniaudio:gdx-miniaudio-platform:$miniaudioVersion:natives-desktop")
         }
     }
 }

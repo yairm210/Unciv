@@ -63,9 +63,6 @@ import kotlin.reflect.KClass
  *  - contains references to [the game being played][gameInfo], and high-level UI elements.
  */
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
-    /** MiniAudio instance to use exclusively instead of Gdx.audio */
-    val miniAudio = MiniAudio()
-
     var deepLinkedMultiplayerGame: String? = null
     override var customDataDirectory: String? = null
 
@@ -76,6 +73,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: Multiplayer
     lateinit var files: UncivFiles
+    /** MiniAudio instance to use exclusively instead of Gdx.audio */
+    lateinit var miniAudio: MiniAudio
 
     var isTutorialTaskCollapsed = false
 
@@ -124,6 +123,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
 
+        miniAudio = MiniAudio()
         musicController = MusicController(miniAudio)  // early, but at this point does only copy volume from settings
         initAudio(miniAudio)  // Currently only Android connects the asset manager
 
