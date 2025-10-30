@@ -2,6 +2,7 @@ package com.unciv.ui.audio
 
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
+import com.unciv.logic.files.IMediaFinder
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import games.rednblack.miniaudio.MASound
@@ -59,7 +60,8 @@ internal class MusicTrackController(
 
         state = State.Loading
         try {
-            music = miniAudio.createSound(file.path(), MASound.Flags.MA_SOUND_FLAG_STREAM, null)
+            val flags = if (file.extension() == IMediaFinder.SupportedAudioExtensions.ogg.name) 0.toShort() else MASound.Flags.MA_SOUND_FLAG_STREAM
+            music = miniAudio.createSound(file.path(), flags, null)
             path = file.path()
             if (state != State.Loading) {  // in case dispose was called in the meantime
                 dispose()
