@@ -37,7 +37,7 @@ enum class UnitOverviewTabColumn(
                 UnitIconGroup(item, 20f).apply { if (!unit.isIdle()) color.a = 0.5f },
                 fontColor = if (item.isIdle()) Color.WHITE else Color.LIGHT_GRAY
             )
-            button.name = getUnitIdentifier(item)  // Marker to find a unit in select()
+            button.name = "unit-${item.id}"  // Marker to find a unit in select()
             button.onClick {
                 showWorldScreenAt(item)
             }
@@ -49,7 +49,7 @@ enum class UnitOverviewTabColumn(
     EditName("") {
         override val defaultSort get() = SortableGrid.SortDirection.None
         override fun getEntryActor(item: MapUnit, iconSize: Float, actionContext: UnitOverviewTab): Actor {
-            val selectKey = getUnitIdentifier(item)
+            val selectKey = item.id.toString()
             val editIcon = ImageGetter.getImage("OtherIcons/Pencil")
                 .apply { this.color = Color.WHITE }
                 .surroundWithCircle(30f, true, Color(0x000c31))
@@ -123,7 +123,7 @@ enum class UnitOverviewTabColumn(
         override fun getEntryString(item: MapUnit) = if (item.isCivilian()) ""
             else "{${item.promotions.XP}}/{${item.promotions.xpForNextPromotion()}}"
         override fun getComparator() = compareBy<MapUnit> { it.promotions.xpForNextPromotion() }.thenBy { it.promotions.XP }
-        override fun getTotalsActor(items: Iterable<MapUnit>) = items.map { it.promotions.XP }.sum().toLabel()
+        override fun getTotalsActor(items: Iterable<MapUnit>) = items.sumOf { it.promotions.XP }.toLabel()
     },
     ;
     //endregion
