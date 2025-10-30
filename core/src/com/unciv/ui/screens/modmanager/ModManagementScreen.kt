@@ -504,7 +504,7 @@ class ModManagementScreen private constructor(
                     val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     reloadCachesAfterModChange(modFolder.name()) {
                         toast.close()
-                        val msg = "{[$repoName] was downloaded, but is «RED»defective«»!}" +
+                        val msg = "{[$repoName] was downloaded, but is defective!}" +
                             "\n{For more information, see Options-Locate mod errors.}"
                         ToastPopup(msg, this@ModManagementScreen, 4000L)
                     }
