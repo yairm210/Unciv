@@ -17,6 +17,7 @@ import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 //todo Extending getEntryValue here to have a second String-based "channel" - could go into SortableGrid, possibly by defining a DataType per column???

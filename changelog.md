@@ -1,16 +1,12 @@
 ## 4.18.11
 
-Resolved  - Happiness shown in city stat overview
-
-Fix ConsoleLauncher - broken due to using concurrency to load rulesets, init'd GL dispatcher, dependent on Gdx.app therefore crash
+Happiness shown in city stat overview
 
 By SomeTroglodyte:
 - Show Mod json parse errors right after download 
 - Fix translation of multiple conditionals of the same type 
-- Fix upgrading from Unit overview won't show changes 
-- Make ToastPopups stay on screen when tapped, for leisurely reading 
-- Various code readability improvements around Notifications 
-- Mod downloading tweaks and fixes 
+- Fix upgrading from Unit overview won't show changes
+- Make ToastPopups stay on screen when tapped, for leisurely reading
 
 Fix City-States asking you to find Natural Wonders they already found - By RobLoach
 

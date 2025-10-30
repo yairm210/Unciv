@@ -19,6 +19,7 @@ import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import yairm210.purity.annotations.Readonly
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     /** Distribute UnitActions on "pages" */
@@ -71,6 +72,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
         numPages = 0
         val pageActionBuckets = Array<ArrayDeque<UnitAction>>(maxAllowedPages) { ArrayDeque() }
+        
+        @Readonly
         fun freeSlotsOnPage(page: Int) = buttonsPerPage -
             pageActionBuckets[page].size -
             (if (numPages > 1) 1 else 0) // room for the navigation buttons
