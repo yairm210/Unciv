@@ -57,7 +57,7 @@ class MusicController(private val miniAudio: MiniAudio) : Disposable {
         /** All Gdx-supported sound formats (file extensions) */
         internal val gdxSupportedFileExtensions = IMediaFinder.SupportedAudioExtensions.names
         /** Since we have MASound.cursorPosition, we can update listeners with smooth progress - but not every tick */
-        private val ticksPerOnChange = 4
+        private const val ticksPerOnChange = 4
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
