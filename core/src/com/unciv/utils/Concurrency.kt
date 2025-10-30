@@ -15,6 +15,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import yairm210.purity.annotations.Readonly
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -183,7 +184,7 @@ private class Dispatchers {
         }
     }
 
-    fun isStopped() = EXECUTORS.isEmpty()
+    @Readonly fun isStopped() = EXECUTORS.isEmpty()
 
     private fun createThreadpoolDispatcher(threadPrefix: String, isDaemon: Boolean): CrashHandlingDispatcher {
         val executor = Executors.newCachedThreadPool(object : ThreadFactory {

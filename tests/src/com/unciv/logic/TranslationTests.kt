@@ -12,6 +12,9 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
+import com.unciv.models.translations.Translations.Companion.conditionalUniqueOrderString
+import com.unciv.models.translations.Translations.Companion.englishConditionalOrderingString
+import com.unciv.models.translations.Translations.Companion.shouldCapitalizeString
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
@@ -40,6 +43,19 @@ class TranslationTests {
         translations.readAllLanguagesTranslation()
         RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache.getVanillaRuleset()
+    }
+
+    private fun setupUncivGame() {
+        // Needed for .tr() to work
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.settings = GameSettings()
+    }
+
+    private fun addTranslation(original: String, result: String) =
+        addTranslation(original.getPlaceholderText(), original, result)
+    private fun addTranslation(key: String, original: String, result: String) {
+        UncivGame.Current.translations[key] = TranslationEntry(original)
+            .apply { this[Constants.english] = result }
     }
 
     @Test
@@ -217,12 +233,9 @@ class TranslationTests {
         Assert.assertFalse(failed)
     }
 
-
     @Test
     fun allStringsTranslate() {
-        // Needed for .tr() to work
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.settings = GameSettings()
+        setupUncivGame()
 
         for ((key, value) in translations)
             UncivGame.Current.translations[key] = value
@@ -289,13 +302,8 @@ class TranslationTests {
         superNestedString.getPlaceholderParameters()[0]
             .getPlaceholderParameters())
 
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.settings = GameSettings()
+        setupUncivGame()
 
-        fun addTranslation(original: String, result: String) {
-            UncivGame.Current.translations[original.getPlaceholderText()] = TranslationEntry(original)
-                .apply { this[Constants.english] = result }
-        }
         addTranslation("The brother of [person]", "The sibling of [person]")
         Assert.assertEquals("The sibling of bob", "The brother of [bob]".tr())
 
@@ -318,8 +326,7 @@ class TranslationTests {
 
     @Test
     fun isStatsRecognizesStatsIncludingStatCharacter() {
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.settings = GameSettings()
+        setupUncivGame()
 
         Assert.assertTrue(Stats.isStats(Stats(1f,2f,3f).toStringForNotifications()))
     }
@@ -375,9 +382,9 @@ class TranslationTests {
     }
 
     private fun testRoundtrip(language: String, term: String, input: String, additionalTest: ((String)->Unit)? = null) {
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.settings = GameSettings()
+        setupUncivGame()
         UncivGame.Current.settings.language = language
+
         for ((key, value) in translations)
             UncivGame.Current.translations[key] = value
 
@@ -397,10 +404,9 @@ class TranslationTests {
 
     @Test
     fun testNumberTr() {
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.settings = GameSettings()
+        setupUncivGame()
 
-        val testCases = arrayOf(1, -1, 0.123, -0.123)
+        val testCases = arrayOf<Number>(1, -1, 0.123, -0.123)
 
         val expectedEnglishOutputs = arrayOf("1", "-1", "0.123", "-0.123")
         Assert.assertArrayEquals(
@@ -422,8 +428,7 @@ class TranslationTests {
 
     @Test
     fun testStringsWithNumbers() {
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.settings = GameSettings()
+        setupUncivGame()
 
         val tests = arrayOf("1", "+1", "-1", "1.0", "+1.0", "-1.0", "0%", "1/2", "(3/4)")
 
@@ -439,6 +444,50 @@ class TranslationTests {
             arrayOf("১", "+১", "-১", "১.০", "+১.০", "-১.০", "০%", "১/২", "(৩/৪)"),
             tests.map { it.tr() }.toTypedArray()
         )
+    }
+
+    @Test
+    fun testTranslateConditionals() {
+        fun setReordered() {
+            addTranslation(englishConditionalOrderingString, englishConditionalOrderingString, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
+        }
+        fun setBeforeAndCapitalized() {
+            addTranslation(conditionalUniqueOrderString, "before")
+            addTranslation(shouldCapitalizeString, "true")
+        }
+        data class TestData(val label: String, val text: String, val expected: String, val setup: ()->Unit = {})
+        val testData = listOf(
+            // from #14092 - code once merged all conditionals with the same placeholder and thus "ate" the first one
+            TestData("multiple conditionals of same UniqueType",
+                "Only available <when number of [Owned [All Road] Tiles] is more than [6]> <when number of [[in all cities connected to capital] Cities] is more than [1]>",
+                "Only available when number of Owned All Road Tiles is more than 6 when number of in all cities connected to capital Cities is more than 1"
+            ),
+            TestData("basic multi-conditional with default ordering",
+                "[+1] Strength <when attacking> <vs cities> <with a garrison>",
+                "+1 Strength with a garrison vs cities when attacking"
+            ),
+            TestData("non-default ordering",
+                "[+1] Strength <when attacking> <vs cities> <with a garrison>",
+                "+1 Strength when attacking with a garrison vs cities",
+                ::setReordered
+            ),
+            TestData("unique after capitalized conditionals",
+                "Only available <when attacking> <vs cities> <with a garrison>",
+                "When attacking with a garrison vs cities only available",
+                ::setBeforeAndCapitalized
+            ),
+        )
+
+        setupUncivGame()
+        var failures = 0
+        for (test in testData) {
+            test.setup()
+            val actual = test.text.tr()
+            if (actual == test.expected) continue
+            failures++
+            println("""Test "${test.label}" failed: Expected="${test.expected}", actual="$actual"""")
+        }
+        Assert.assertEquals(0, failures)
     }
 
 //    @Test

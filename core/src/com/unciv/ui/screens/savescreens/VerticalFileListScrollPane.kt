@@ -14,6 +14,7 @@ import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 
 //todo key auto-repeat for navigation keys?
@@ -160,7 +161,7 @@ open class VerticalFileListScrollPane(
     private fun onArrowKey(direction: Int) {
         if (buttonIndex.size == 0) return
 
-        fun wrapAround(index: Int) = when {
+        @Readonly fun wrapAround(index: Int) = when {
             index < 0 -> buttonIndex.size - 1
             index >= buttonIndex.size -> 0
             else -> index
