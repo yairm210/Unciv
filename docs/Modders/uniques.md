@@ -3264,6 +3264,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when nuclear weapons are enabled&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;when nuclear weapons are disabled&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
 
