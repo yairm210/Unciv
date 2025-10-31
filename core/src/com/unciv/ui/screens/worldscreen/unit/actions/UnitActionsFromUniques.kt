@@ -117,6 +117,7 @@ object UnitActionsFromUniques {
      * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
+    @Readonly
     private fun getLeadersWePromisedNotToSettleNear(civInfo: Civilization, tile: Tile): String? {
         val leadersWePromisedNotToSettleNear = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {

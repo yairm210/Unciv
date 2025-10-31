@@ -22,6 +22,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+import yairm210.purity.annotations.Readonly
 
 abstract class ReligionPickerScreenCommon(
     protected val choosingCiv: Civilization,
@@ -42,7 +43,7 @@ abstract class ReligionPickerScreenCommon(
             newButton.disable()
         }
         fun clear() { button = null }
-        fun isEmpty() = button == null
+        @Readonly fun isEmpty() = button == null
     }
 
     init {

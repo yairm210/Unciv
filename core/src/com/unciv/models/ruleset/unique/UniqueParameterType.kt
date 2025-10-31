@@ -705,7 +705,7 @@ enum class UniqueParameterType(
     protected fun String.isFilteringUniqueIn(map: Map<String, IHasUniques>)
         = map.values.any { this in it.uniques }
 
-    @Readonly
+    @Pure
     protected fun String.getInvariantSeverityUnless(@Readonly predicate: String.() -> Boolean) =
         if (predicate()) null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
 
