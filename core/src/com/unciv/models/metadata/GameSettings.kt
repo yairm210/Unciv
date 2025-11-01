@@ -10,6 +10,7 @@ import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
+import com.unciv.ui.audio.MiniAudioFactory
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -94,7 +95,7 @@ class GameSettings {
     var showZoomButtons: Boolean = false
     var forbidPopupClickBehindToClose: Boolean = false
     var useCirclesToIndicateMovableTiles: Boolean = false
-    
+
     var unitMovementButtonAnimation: Boolean = false
     var unitActionsTableAnimation: Boolean = false
 
@@ -145,6 +146,9 @@ class GameSettings {
     var keepConsoleOpen = false
     /** Persist the history of successful developer console commands */
     val consoleCommandHistory = ArrayList<String>()
+
+    /** Configuration for MiniAudio initialization, optional but no UI (maybe in the future) */
+    val audioConfig: MiniAudioFactory.MiniAudioConfig? = null
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null

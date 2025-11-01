@@ -8,7 +8,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
-import com.unciv.ui.audio.MusicController
+import com.unciv.ui.audio.MusicTrackInfo
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
@@ -77,7 +77,7 @@ class WorldScreenMusicPopup(
         }
 
     private fun addMusicMods(settings: GameSettings) {
-        val modsToTracks = musicController.getAllMusicFileInfo().groupBy{ it.mod }
+        val modsToTracks = musicController.getAllMusicFileInfo().groupBy { it.mod }
         val collator = settings.getCollatorFromLocale()
         val modsSorted = modsToTracks.entries.asSequence()
             .sortedWith(compareBy(collator) { it.key })
@@ -90,7 +90,7 @@ class WorldScreenMusicPopup(
 
     private fun addHistory() = addTrackList("—History—", musicController.getHistory())
 
-    private fun addTrackList(title: String, tracks: Sequence<MusicController.MusicTrackInfo>): ExpanderTab {
+    private fun addTrackList(title: String, tracks: Sequence<MusicTrackInfo>): ExpanderTab {
         // Note title is either a mod name or something that cannot be a mod name (thanks to the em-dashes)
         val icon = when (title) {
             in mods -> "OtherIcons/Mods"
@@ -108,7 +108,7 @@ class WorldScreenMusicPopup(
         return expander
     }
 
-    private fun Table.updateTrackList(tracks: Sequence<MusicController.MusicTrackInfo>) {
+    private fun Table.updateTrackList(tracks: Sequence<MusicTrackInfo>) {
         for (entry in tracks) {
             val trackLabel = entry.track.toSmallUntranslatedButton()
             trackLabel.onClick { musicController.startTrack(entry) }
