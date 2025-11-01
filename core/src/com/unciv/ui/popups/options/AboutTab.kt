@@ -7,7 +7,8 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
 fun aboutTab(): Table {
-    val versionAnchor = UncivGame.VERSION.text.replace(".", "")
+    // The changelog has no patches, and anchors per release tag omit the dots
+    val versionAnchor = Regex("""\.|-patch\d+$""").replace(UncivGame.VERSION.text, "")
     val lines = sequence {
         yield(FormattedLine(extraImage = "banner", imageSize = 240f, centered = true))
         yield(FormattedLine())
