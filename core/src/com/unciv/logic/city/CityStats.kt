@@ -461,7 +461,7 @@ class CityStats(val city: City) {
 
         newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(city.civ.goldenAges.isGoldenAge()),"Golden Age")
         newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
-        newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet City")
+        newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet city")
         newStatsBonusTree.addStats(getStatPercentBonusesFromUnitSupply(), "Unit Supply")
         newStatsBonusTree.add(getStatsPercentBonusesFromUniquesBySource(currentConstruction))
         
