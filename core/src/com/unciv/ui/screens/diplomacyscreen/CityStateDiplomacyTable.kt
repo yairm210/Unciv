@@ -155,7 +155,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val nextLevelString = when {
             atWar -> ""
             otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
-            ally == viewingCiv.civName -> ""
+            ally == viewingCiv -> ""
             else -> "Reach highest influence above 60 for alliance."
         }
         diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
