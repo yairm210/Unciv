@@ -18,7 +18,7 @@ object ResourceDescriptions {
         resource.uniquesToCivilopediaTextLines(textList)
 
         if (!(resource as Stats).isEmpty())
-            textList += FormattedLine((resource as Stats).toString())
+            textList += FormattedLine(resource.cloneStats().toString())
 
         if (!resource.revealedBy.isNullOrEmpty()) {
             textList += FormattedLine()
