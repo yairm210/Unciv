@@ -29,7 +29,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     private fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
-        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv.civName)
+        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         if (!otherCiv.isSpectator())

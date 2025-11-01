@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -188,6 +189,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
+        toReturn.mOtherCiv = mOtherCiv
         toReturn.diplomaticStatus = diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
         toReturn.influence = influence
@@ -203,9 +205,22 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         updateHasOpenBorders()
     }
 
+    constructor(civilization: Civilization, otherCiv: Civilization) : this() {
+        civInfo = civilization
+        mOtherCiv = otherCiv
+        otherCivName = otherCiv.civName
+        updateHasOpenBorders()
+    }
+
     //region pure functions
 
-    @Readonly fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
+    @Cache
+    private lateinit var mOtherCiv: Civilization
+    @Readonly fun otherCiv(): Civilization {
+        if (!::mOtherCiv.isInitialized)
+            mOtherCiv = civInfo.gameInfo.getCivilization(otherCivName)
+        return mOtherCiv
+    }
     @Readonly fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)!!
 
     @Readonly
@@ -303,7 +318,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (civInfo.isCityState) return when {
             getInfluence() <= -30 -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
             getInfluence() < 0 -> RelationshipLevel.Enemy
-            getInfluence() >= 60 && civInfo.getAllyCivName() == otherCivName -> RelationshipLevel.Ally
+            getInfluence() >= 60 && civInfo.getAllyCiv() == otherCiv() -> RelationshipLevel.Ally
             getInfluence() >= 30 -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
@@ -484,7 +499,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders() {
         // City-states can enter ally's territory (the opposite is true anyway even without open borders)
-        val newHasOpenBorders = civInfo.getAllyCivName() == otherCivName
+        val newHasOpenBorders = civInfo.getAllyCiv() == otherCiv()
                 || trades.flatMap { it.theirOffers }.any { it.name == Constants.openBorders && it.duration > 0 }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
@@ -492,7 +507,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         if (bordersWereClosed) { // borders were closed, get out!
             for (unit in civInfo.units.getCivUnits()
-                .filter { it.currentTile.getOwner()?.civName == otherCivName }.toList()) {
+                .filter { it.currentTile.getOwner() == otherCiv() }.toList()) {
                 unit.movement.teleportToClosestMoveableTile()
             }
         }
