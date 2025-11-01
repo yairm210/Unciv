@@ -30,6 +30,7 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -77,6 +78,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         const val mapFadeTime = 1.3f
         const val mapFirstFadeTime = 0.3f
         const val mapReplaceDelay = 20f
+        /** Inner size of the Civilopedia+Discord+Github buttons (effective size adds 2f for the thin circle) */
+        const val buttonsSize = 60f
+        /** Distance of the Civilopedia and Discord+Github buttons from the stage edges */
+        const val buttonsPosFromEdge = 30f
     }
 
     /** Create one **Main Menu Button** including onClick/key binding
@@ -199,32 +204,32 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         val civilopediaButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
-            .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
-            .surroundWithCircle(64f, resizeActor = false)
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
+            .apply { actor.y -= Fonts.getDescenderHeight(48) / 2 } // compensate font baseline
+            .surroundWithThinCircle(Color.WHITE)
         civilopediaButton.touchable = Touchable.enabled
         // Passing the binding directly to onActivation gives you a size 26 tooltip...
         civilopediaButton.onActivation { openCivilopedia() }
         civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
         civilopediaButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
-        civilopediaButton.setPosition(30f, 30f)
+        civilopediaButton.setPosition(buttonsPosFromEdge, buttonsPosFromEdge)
         stage.addActor(civilopediaButton)
 
-        val rightSideButtons = Table().apply { defaults().pad(10f) }
+        val rightSideButtons = Table().apply { defaults().space(10f) }
         val discordButton = ImageGetter.getImage("OtherIcons/Discord")
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
             .surroundWithThinCircle(Color.WHITE)
             .onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
         rightSideButtons.add(discordButton)
 
         val githubButton = ImageGetter.getImage("OtherIcons/Github")
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
             .surroundWithThinCircle(Color.WHITE)
             .onActivation { Gdx.net.openURI("https://github.com/yairm210/Unciv") }
         rightSideButtons.add(githubButton)
-        
+
         rightSideButtons.pack()
-        rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
+        rightSideButtons.setPosition(stage.width - buttonsPosFromEdge, buttonsPosFromEdge, Align.bottomRight)
         stage.addActor(rightSideButtons)
 
 
