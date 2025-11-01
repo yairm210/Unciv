@@ -119,7 +119,7 @@ object MotivationToAttackAutomation {
             //The more potential friends of this CS, the more times the friend bonus is shared and the utilitarian option is to leave it alive
             modifiers.add(Pair("Influence", -targetCiv.getDiplomacyManager(civInfo)!!.getInfluence() / 10f * personality.scaledFocus(PersonalityValue.Diplomacy)))
             // The more we invested into the city state already, the less likely we're going to attack it, and vice versa
-            if (targetCiv.allyCivName == civInfo.civName)
+            if (targetCiv.allyCiv == civInfo)
                 modifiers.add(Pair("Allied City-state", -20 * personality.scaledFocus(PersonalityValue.Diplomacy))) // There had better be a DAMN good reason
         }
 

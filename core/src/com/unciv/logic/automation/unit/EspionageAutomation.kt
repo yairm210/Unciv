@@ -73,7 +73,7 @@ class EspionageAutomation(val civInfo: Civilization) {
     private fun automateSpyRigElection(spy: Spy): Boolean {
         val cityToMoveTo = cityStatesToRig.flatMap { it.cities }
             .filter { !it.isBeingRazed && spy.canMoveTo(it)
-                    && (it.civ.getDiplomacyManager(civInfo)!!.getInfluence() < 150 || it.civ.allyCivName != civInfo.civName) }
+                    && (it.civ.getDiplomacyManager(civInfo)!!.getInfluence() < 150 || it.civ.allyCiv != civInfo) }
             .maxByOrNull { it.civ.getDiplomacyManager(civInfo)!!.getInfluence() }
         spy.moveTo(cityToMoveTo)
         return cityToMoveTo != null
@@ -95,7 +95,7 @@ class EspionageAutomation(val civInfo: Civilization) {
     private fun checkIfShouldStageCoup(spy: Spy) {
         if (!spy.canDoCoup()) return
         if (spy.getCoupChanceOfSuccess(false) < .7) return
-        val allyCiv = spy.getCity().civ.getAllyCiv()
+        val allyCiv = spy.getCity().civ.allyCiv
         // Don't coup city-states whose allies are out friends
         if (allyCiv != null && civInfo.getDiplomacyManager(allyCiv)?.isRelationshipLevelGE(RelationshipLevel.Friend) == true) return
         val spies = civInfo.espionageManager.spyList

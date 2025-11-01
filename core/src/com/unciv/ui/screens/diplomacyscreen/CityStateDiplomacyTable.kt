@@ -126,13 +126,14 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.row().padTop(15f)
 
         otherCiv.cityStateFunctions.updateAllyCivForCityState()
-        var ally = otherCiv.allyCivName
+        val ally = otherCiv.allyCiv
         if (ally != null) {
             val allyInfluence = otherCiv.getDiplomacyManager(ally)!!.getInfluence().toInt()
-            if (!viewingCiv.knows(ally) && ally != viewingCiv.civName)
-                ally = "Unknown civilization"
+            val allyName = if (!viewingCiv.knows(ally) && ally != viewingCiv)
+                "Unknown civilization"
+            else ally.civName
             diplomacyTable
-                .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
+                .add("Ally: [$allyName] with [$allyInfluence] Influence".toLabel())
                 .row()
         }
 
@@ -262,9 +263,9 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 diplomacyScreen.updateRightSide(otherCiv)
             }.open()
         }
-        val cityStatesAlly = otherCiv.allyCivName
+        val cityStatesAlly = otherCiv.allyCiv
         val atWarWithItsAlly = viewingCiv.getKnownCivs()
-            .any { it.civName == cityStatesAlly && it.isAtWarWith(viewingCiv) }
+            .any { it == cityStatesAlly && it.isAtWarWith(viewingCiv) }
         if (diplomacyScreen.isNotPlayersTurn() || atWarWithItsAlly) peaceButton.disable()
 
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {

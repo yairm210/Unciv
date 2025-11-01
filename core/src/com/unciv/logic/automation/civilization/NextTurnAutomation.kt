@@ -186,9 +186,9 @@ object NextTurnAutomation {
             value -= 5
         }
 
-        if (cityState.allyCivName != null && cityState.allyCivName != civInfo.civName) {
+        if (cityState.allyCiv != null && cityState.allyCiv != civInfo) {
             // easier not to compete if a third civ has this locked down
-            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.allyCivName!!)!!.getInfluence().toInt()
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.allyCiv!!)!!.getInfluence().toInt()
             value -= (thirdCivInfluence - 30) / 10
         }
 
@@ -540,8 +540,7 @@ object NextTurnAutomation {
     private fun tryVoteForDiplomaticVictory(civ: Civilization) {
         if (!civ.mayVoteForDiplomaticVictory()) return
 
-        val chosenCiv: String? = if (civ.isMajorCiv()) {
-
+        val chosenCiv: Civilization? = if (civ.isMajorCiv()) {
             val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
@@ -553,13 +552,13 @@ object NextTurnAutomation {
                 null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
             else knownMajorCivs
                 .filter { civ.getDiplomacyManager(it)!!.opinionOfOtherCiv() == highestOpinion }
-                .toList().random().civName
+                .toList().random()
 
         } else {
-            civ.allyCivName
+            civ.allyCiv
         }
 
-        civ.diplomaticVoteForCiv(chosenCiv)
+        civ.diplomaticVoteForCiv(chosenCiv?.civName)
     }
 
     private fun issueRequests(civInfo: Civilization) {

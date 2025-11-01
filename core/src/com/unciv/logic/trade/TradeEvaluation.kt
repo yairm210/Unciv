@@ -241,7 +241,7 @@ class TradeEvaluation {
                 
                 // We're buying peace if it's city state that is our ally
                 if (thirdCiv.isCityState) {
-                    val allyCiv = thirdCiv.getAllyCiv()
+                    val allyCiv = thirdCiv.allyCiv
                     if (allyCiv != null && allyCiv == civInfo) {
                         // TODO: More sophisticated formula needed, a reverse of [CityStateFunctions.influenceGainedByGift]
                         val surplusInfluence = (thirdCiv.getDiplomacyManager(civInfo)!!.getInfluence() - 60).coerceAtLeast(0f)
@@ -297,7 +297,7 @@ class TradeEvaluation {
         if (thirdCiv.isHuman()) return false
 
         if (thirdCiv.isCityState) {
-            val allyCiv = thirdCiv.getAllyCiv()
+            val allyCiv = thirdCiv.allyCiv
             if (allyCiv != null && civInfo.isAtWarWith(allyCiv)) {
                 // City state is allied to civ with whom trade partner is at war with,
                 // need to trade peace with that civ instead

@@ -95,7 +95,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // There may be no winner, in that case all spies will loose 5 influence
         if (winner != null) {
-            val allyCiv = civInfo.getAllyCiv()
+            val allyCiv = civInfo.allyCiv
 
             // Winning civ gets influence and all others loose influence
             for (civ in civInfo.getKnownCivs().toList()) {
@@ -284,59 +284,57 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     fun updateAllyCivForCityState() {
-        var newAllyName: String? = null
         if (!civInfo.isCityState) return
-        
+        var newAlly: Civilization? = null
+
         val maxInfluence = civInfo.diplomacy
             .filter { it.value.otherCiv().isMajorCiv() && !it.value.otherCiv().isDefeated() }
             .maxByOrNull { it.value.getInfluence() }
         if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
-            newAllyName = maxInfluence.key
+            newAlly = maxInfluence.value.otherCiv()
         }
 
-        if (civInfo.allyCivName == newAllyName) return
-        
-        val oldAllyName = civInfo.allyCivName
-        civInfo.allyCivName = newAllyName
+        if (civInfo == newAlly) return
 
-        if (newAllyName != null) {
-            val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
+        val oldAlly = civInfo.allyCiv
+        civInfo.allyCiv = newAlly
+
+        if (newAlly != null) {
             val text = "We have allied with [${civInfo.civName}]."
-            newAllyCiv.addNotification(text,
+            newAlly.addNotification(text,
                 getNotificationActions(),
                 NotificationCategory.Diplomacy, civInfo.civName,
                 NotificationIcon.Diplomacy
             )
-            newAllyCiv.cache.updateViewableTiles()
-            newAllyCiv.cache.updateCivResources()
-            for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
-                newAllyCiv.getDiplomacyManager(civInfo)!!.setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
+            newAlly.cache.updateViewableTiles()
+            newAlly.cache.updateCivResources()
+            for (unique in newAlly.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
+                newAlly.getDiplomacyManager(civInfo)!!.setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
 
             // Join the wars of our new ally - loop through all civs they are at war with
-            for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
+            for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAlly) && it.isAlive() } ) {
                 if (!civInfo.isAtWarWith(newEnemy)) {
                     if (!civInfo.knows(newEnemy))
-                        // We have to meet first (meet interesting people - and kill them!)
+                    // We have to meet first (meet interesting people - and kill them!)
                         civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
-                    civInfo.getDiplomacyManager(newEnemy)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
+                    civInfo.getDiplomacyManager(newEnemy)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAlly))
                 }
             }
         }
-        
-        if (oldAllyName != null && civInfo.isAlive()) {
-            val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
+
+        if (oldAlly != null && civInfo.isAlive()) {
             val text = "We have lost alliance with [${civInfo.civName}]."
-            oldAllyCiv.addNotification(text,
+            oldAlly.addNotification(text,
                 getNotificationActions(),
                 NotificationCategory.Diplomacy, civInfo.civName,
                 NotificationIcon.Diplomacy
             )
-            if (newAllyName != null && oldAllyCiv.knows(newAllyName)){
-                val diplomacyManager = oldAllyCiv.getDiplomacyManager(newAllyName)!!
+            if (newAlly != null && oldAlly.knows(newAlly)){
+                val diplomacyManager = oldAlly.getDiplomacyManager(newAlly)!!
                 diplomacyManager.addModifier(DiplomaticModifiers.StoleOurAlly, -10f)
             }
-            oldAllyCiv.cache.updateViewableTiles()
-            oldAllyCiv.cache.updateCivResources()
+            oldAlly.cache.updateViewableTiles()
+            oldAlly.cache.updateCivResources()
         }
     }
 
@@ -443,7 +441,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         if (civInfo.cityStatePersonality == CityStatePersonality.Hostile)
             modifiers["Hostile"] = -10
-        if (civInfo.allyCivName != null && civInfo.allyCivName != demandingCiv.civName)
+        if (civInfo.allyCiv != null && civInfo.allyCiv != demandingCiv)
             modifiers["Has Ally"] = -10
         if (getProtectorCivs().any { it != demandingCiv })
             modifiers["Has Protector"] = -20
@@ -668,7 +666,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         for (cityState in civInfo.gameInfo.getAliveCityStates()) {
             if (cityState == civInfo) // Must be a different minor
                 continue
-            if (cityState.allyCivName == attacker.civName) // Must not be allied to the attacker
+            if (cityState.allyCiv == attacker) // Must not be allied to the attacker
                 continue
             if (!cityState.knows(attacker)) // Must have met
                 continue
@@ -733,7 +731,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     private fun triggerAllyCivs(attacker: Civilization) {
-        val allyCiv = civInfo.getAllyCiv()
+        val allyCiv = civInfo.allyCiv
         if (allyCiv != null && allyCiv !in civInfo.cityStateFunctions.getProtectorCivs() && allyCiv.knows(attacker)) {
             val allyDiplomacy = allyCiv.getDiplomacyManager(attacker)!!
             // Less than if we were protectors
@@ -825,7 +823,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             .flatMap {
                 // We don't use DiplomacyManager.getRelationshipLevel for performance reasons - it tries to calculate getTributeWillingness which is heavy
                 val relationshipLevel =
-                        if (it.allyCivName == civInfo.civName) RelationshipLevel.Ally
+                        if (it.allyCiv == civInfo) RelationshipLevel.Ally
                         else if (it.getDiplomacyManager(civInfo)!!.getInfluence() >= 30) RelationshipLevel.Friend
                         else RelationshipLevel.Neutral
                 getCityStateBonuses(it.cityStateType, relationshipLevel, uniqueType)

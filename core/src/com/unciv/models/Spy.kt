@@ -266,7 +266,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     @Readonly fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
-            && getCity().civ.allyCivName != civInfo.civName
+            && getCity().civ.allyCiv != civInfo
 
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
@@ -281,7 +281,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             return
         }
         val cityState = getCity().civ
-        val allyCiv = cityState.allyCivName?.let { civInfo.gameInfo.getCivilization(it) }
+        val allyCiv = cityState.allyCiv
 
         val successChance = getCoupChanceOfSuccess(true)
         val randomValue = Random(randomSeed()).nextFloat()
@@ -333,15 +333,15 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         var successPercentage = 50f
 
         // Influence difference should always be a positive value
-        var influenceDifference: Float = if (cityState.allyCivName != null)
-            cityState.getDiplomacyManager(cityState.allyCivName!!)!!.getInfluence()
+        var influenceDifference: Float = if (cityState.allyCiv != null)
+            cityState.getDiplomacyManager(cityState.allyCiv!!)!!.getInfluence()
         else 60f
         influenceDifference -= cityState.getDiplomacyManager(civInfo)!!.getInfluence()
         successPercentage -= influenceDifference / 2f
 
         // If we are viewing the success chance we don't want to reveal that there is a defending spy
         val defendingSpy = if (includeunknownFactors) 
-            cityState.getAllyCiv()?.espionageManager?.getSpyAssignedToCity(getCity()) 
+            cityState.allyCiv?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
 
         val spyRanks = getSkillModifierPercent() - (defendingSpy?.getSkillModifierPercent() ?: 0)
