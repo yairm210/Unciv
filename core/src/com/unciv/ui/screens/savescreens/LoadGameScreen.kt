@@ -232,7 +232,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
             try {
                 loadMissingMods(missingModsToLoad,
                     onModDownloaded = {
-                        val labelText = descriptionLabel.text // Surprise - a StringBuilder
+                        val labelText = descriptionLabel.text // A Gdx CharArray that has StringBuilder-like methods
                         labelText.appendLine()
                         labelText.append("[$it] Downloaded!".tr())
                         launchOnGLThread { descriptionLabel.setText(labelText) }
