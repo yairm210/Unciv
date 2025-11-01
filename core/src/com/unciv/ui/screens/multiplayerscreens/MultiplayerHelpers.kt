@@ -57,8 +57,11 @@ object MultiplayerHelpers {
                 friend?.name ?: "Unknown"
             }
             val playerText = "{${preview.currentPlayer}}{ }({$playerDescriptor})"
-
-            descriptionText.appendLine("Current Turn: [$playerText] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+            
+            descriptionText.append("Current Turn: [$playerText]".tr())
+            if (preview.currentTurnStartTime > 0L)
+                descriptionText.append(" since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+            descriptionText.appendLine()
 
             val playerCivName = preview.civilizations
                 .firstOrNull{ it.playerId == UncivGame.Current.settings.multiplayer.getUserId() }?.civName ?: "Unknown"
