@@ -229,24 +229,23 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         rightSideButtons.pack()
         rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
         stage.addActor(rightSideButtons)
-
         val versionLabel = "{Version} ${UncivGame.VERSION.text}".toLabel()
         versionLabel.setAlignment(Align.center)
-        versionLabel.onClick {
-            val popup = Popup(stage)
-            popup.add(aboutTab()).row()
-            popup.add("Close".toTextButton().onClick { popup.close() }).padTop(10f)
-            popup.open()
-        }
         val versionTable = Table()
         versionTable.background = skinStrings.getUiBackground("MainMenuScreen/Version",
             skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a=0.7f })
         versionTable.add(versionLabel)
         versionTable.pack()
         versionTable.setPosition(stage.width/2, 10f, Align.bottom)
+        versionTable.touchable = Touchable.enabled
+        versionTable.onClick {
+            val popup = Popup(stage)
+            popup.add(aboutTab()).row()
+            popup.add("Close".toTextButton().onClick { popup.close() }).padTop(10f)
+            popup.open()
+        }
         stage.addActor(versionTable)
     }
-
     private fun startBackgroundMapGeneration() {
         stopBackgroundMapGeneration()  // shouldn't be necessary as resize re-instantiates this class
         backgroundMapGenerationJob = Concurrency.run("ShowMapBackground") {
