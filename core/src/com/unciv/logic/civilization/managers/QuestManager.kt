@@ -815,14 +815,16 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Returns a random Natural Wonder not yet discovered by [challenger].
+     * Returns a random Natural Wonder not yet discovered by [challenger], or the [civ] dispatching the quest.
+     *
+     * @param challenger The Civilization that will be receiving the quest.
      */
     @Readonly
-    private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? {
-        val naturalWondersToFind = civ.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)
-
-        return naturalWondersToFind.randomOrNull()
-    }
+    private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? =
+        civ.gameInfo.tileMap.naturalWonders
+            .subtract(challenger.naturalWonders)
+            .subtract(civ.naturalWonders)
+            .randomOrNull()
 
     /**
      * Returns a Great Person [BaseUnit] that is not owned by both the [challenger] and the [civ]

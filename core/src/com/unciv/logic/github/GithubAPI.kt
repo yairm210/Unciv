@@ -13,7 +13,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.delay
-import java.io.FileFilter
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -86,9 +87,11 @@ object GithubAPI {
     // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
     // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
     // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
+    @Pure
     internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) = "$gitRepoUrl/archive/refs/heads/$branch.zip"
 
     /** Format a download URL for a release archive */
+    @Readonly
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
 
     /** Format a URL to query a repo tree - to calculate actual size */
@@ -134,6 +137,9 @@ object GithubAPI {
 
     suspend fun fetchSingleRepo(owner: String, repoName: String) =
         request { url("/repos/$owner/$repoName") }
+
+    suspend fun fetchSingleRepoOwner(owner: String) =
+        request { url("/users/$owner") }
 
     /**
      * We are not using KtorGithubAPI here because the URL provided is not an API URL
@@ -209,6 +215,14 @@ object GithubAPI {
     class RepoOwner {
         var login = ""
         var avatar_url: String? = null
+        companion object {
+            /** Query Github API for [owner]'s metadata */
+            suspend fun query(owner: String): RepoOwner? {
+                val resp = fetchSingleRepoOwner(owner)
+                return if (!resp.status.isSuccess()) null
+                else json().fromJson(RepoOwner::class.java, resp.bodyAsText())
+            }
+        }
     }
 
     /** Topic search response */
@@ -313,6 +327,14 @@ object GithubAPI {
             return this
         }
 
+        val matchCommit = Regex("""^(.*/(.*)/(.*))/archive/([0-9a-z]{40})\.zip$""").matchEntire(url)
+        if (matchCommit != null && matchCommit.groups.size > 4) {
+            processMatch(matchCommit)
+            // the commit hash is now in the default_branch field - let's leave it at that
+            direct_zip_url = url
+            return this
+        }
+
         val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
         if (matchRepo != null && matchRepo.groups.size > 2) {
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
@@ -369,7 +391,25 @@ object GithubAPI {
             tempName = "temp-" + toString().hashCode().toString(16)
         }
 
-        val resp = UncivKtor.client.get(zipUrl)
+        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
+        // and assume low compression efficiency - bigger mods typically have mostly images.
+        val fallbackSize = size.toLong() * 1024L * 4L / 5L
+        @Pure
+        fun reportProgress(bytesReceivedTotal: Long, contentLength: Long?) {
+            val progressEndsAtSize = contentLength ?: fallbackSize
+            if (progressEndsAtSize <= 0L) return
+            val percent = bytesReceivedTotal * 100L / progressEndsAtSize
+            updateProgressPercent!!(percent.toInt().coerceIn(0, 100))
+        }
+
+        val resp = UncivKtor.client.get(zipUrl) {
+            timeout {
+                requestTimeoutMillis = Long.MAX_VALUE
+            }
+            if (updateProgressPercent != null)
+                onDownload(::reportProgress)
+        }
+
         /**
          * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
          * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
@@ -453,7 +493,9 @@ object GithubAPI {
     private val parseAttachmentDispositionRegex =
         Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
 
+    @Pure
     private fun parseNameFromDisposition(disposition: String?, default: String): String {
+        @Pure
         fun String.removeZipExtension() = removeSuffix(".zip").replace('.', ' ')
         if (disposition == null) return default.removeZipExtension()
         val match = parseAttachmentDispositionRegex.matchAt(disposition, 0)
@@ -475,22 +517,30 @@ object GithubAPI {
         moveTo(dest)
     }
 
-    private val goodFolders =
-        listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios", ".github")
-            .map { Regex(it, RegexOption.IGNORE_CASE) }
-    private val goodFiles = listOf(
+    @Pure
+    private fun regexListOf(vararg pattern: String) =
+        pattern.map { Regex(it, RegexOption.IGNORE_CASE) }
+
+    private val goodFolders = regexListOf(
+        "Images",
+        "jsons",
+        "maps",
+        "music",
+        "scenarios",
+        "sounds",
+        "voices",
+        "Images\\..*",
+        "\\.github"
+    )
+    private val goodFiles = regexListOf(
         ".*\\.atlas",
         ".*\\.png",
         "preview.jpg",
         ".*\\.md",
         "Atlases.json",
-        ".nomedia",
-        "license",
-        "contribute.md",
-        "readme.md",
-        "credits.md"
+        "\\.nomedia",
+        "license"
     )
-        .map { Regex(it, RegexOption.IGNORE_CASE) }
 
     private fun isValidModFolder(dir: FileHandle): Boolean {
         var good = 0
@@ -512,14 +562,23 @@ object GithubAPI {
     ): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs =
-            dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
+        val subdirs = dir.list { it.isDirectory }
         if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
             throw UncivShowableException("Invalid Mod archive structure")
         return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
     }
 
+    @Pure
     private fun choosePrettierName(folderName: String, defaultModName: String): String {
+        // kotlin's isHexLetter and isAsciiDigit are private
+        @Pure
+        fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
+        // Special case for specific commit (getting an older point-in-time version of a mod) zips
+        if (defaultModName.all { it.isHex() } && folderName.endsWith(defaultModName)) {
+            return folderName.removeSuffix(defaultModName).removeSuffix("-")
+        }
+
+        @Pure
         fun String.isMixedCase() = this != lowercase() && this != uppercase()
         if (defaultModName.startsWith(
                 folderName,

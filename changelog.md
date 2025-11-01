@@ -1,3 +1,15 @@
+## 4.18.11
+
+Happiness shown in city stat overview
+
+By SomeTroglodyte:
+- Show Mod json parse errors right after download 
+- Fix translation of multiple conditionals of the same type 
+- Fix upgrading from Unit overview won't show changes
+- Make ToastPopups stay on screen when tapped, for leisurely reading
+
+Fix City-States asking you to find Natural Wonders they already found - By RobLoach
+
 ## 4.18.10
 
 By RobLoach:
