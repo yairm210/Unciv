@@ -186,9 +186,9 @@ object NextTurnAutomation {
             value -= 5
         }
 
-        if (cityState.getAllyCivName() != null && cityState.getAllyCivName() != civInfo.civName) {
+        if (cityState.allyCivName != null && cityState.allyCivName != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
-            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCivName()!!)!!.getInfluence().toInt()
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.allyCivName!!)!!.getInfluence().toInt()
             value -= (thirdCivInfluence - 30) / 10
         }
 
@@ -556,7 +556,7 @@ object NextTurnAutomation {
                 .toList().random().civName
 
         } else {
-            civ.getAllyCivName()
+            civ.allyCivName
         }
 
         civ.diplomaticVoteForCiv(chosenCiv)

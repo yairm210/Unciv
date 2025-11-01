@@ -383,7 +383,7 @@ object DiplomacyAutomation {
                         || civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclaredWar)
             }.filter { !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedPeace) }
             // Don't allow AIs to offer peace to city states allied with their enemies
-            .filterNot { it.isCityState && it.getAllyCivName() != null && civInfo.isAtWarWith(it.getAllyCiv()!!) }
+            .filterNot { it.isCityState && it.allyCivName != null && civInfo.isAtWarWith(it.getAllyCiv()!!) }
             // ignore civs that we have already offered peace this turn as a counteroffer to another civ's peace offer
             .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
             .toList()

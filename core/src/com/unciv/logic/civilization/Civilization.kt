@@ -165,7 +165,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
     val popupAlerts = ArrayList<PopupAlert>()
-    private var allyCivName: String? = null
+    var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
 
     var notifications = ArrayList<Notification>()
@@ -1083,10 +1083,16 @@ class Civilization : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital, oldCapital)
     }
 
+    @get:Readonly
+    @Transient
+    var allyCiiv: Civilization? = null
+        get() {
+            if (allyCivName != null && field ==null)
+                field = gameInfo.getCivilization(allyCivName!!)
+            return field
+        }
     @Readonly fun getAllyCiv(): Civilization? = if (allyCivName == null) null
         else gameInfo.getCivilization(allyCivName!!)
-    @Readonly fun getAllyCivName() = allyCivName
-    fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
     /** Determine if this civ (typically as human player) is allowed to know how many major civs there are
      *

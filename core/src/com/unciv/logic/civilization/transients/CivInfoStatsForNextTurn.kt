@@ -253,7 +253,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness).sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
-            .filter { it.isCityState && it.getAllyCivName() == civInfo.civName }
+            .filter { it.isCityState && it.allyCivName == civInfo.civName }
             .flatMap { it.getCivResourceSupply().map { res -> res.resource } }
             .distinct()
             .count { it.resourceType === ResourceType.Luxury && ownedLuxuries.contains(it) }

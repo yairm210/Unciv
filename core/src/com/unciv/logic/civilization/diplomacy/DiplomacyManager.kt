@@ -215,6 +215,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     //region pure functions
 
     @Cache
+    @Transient
     private lateinit var mOtherCiv: Civilization
     @Readonly fun otherCiv(): Civilization {
         if (!::mOtherCiv.isInitialized)
@@ -523,7 +524,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             // Our ally city states make peace with us
-            if (thirdCiv.getAllyCivName() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv)) {
+            if (thirdCiv.allyCivName == civInfo.civName && thirdCiv.isAtWarWith(otherCiv)) {
                 val thirdCivDiplo = thirdCiv.getDiplomacyManager(otherCiv)!!
                 thirdCivDiplo.makePeace()
 
@@ -535,7 +536,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 thirdCivDiplo.otherCivDiplomacy().trades.add(tradeLogic.currentTrade.reverse())
             }
             // Other City-States that are not our ally don't like the fact that we made peace with their enemy
-            if (thirdCiv.getAllyCivName() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
+            if (thirdCiv.allyCivName != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo)!!.addInfluence(-10f)
         }
     }

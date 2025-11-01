@@ -294,10 +294,10 @@ class CityStateFunctions(val civInfo: Civilization) {
             newAllyName = maxInfluence.key
         }
 
-        if (civInfo.getAllyCivName() == newAllyName) return
+        if (civInfo.allyCivName == newAllyName) return
         
-        val oldAllyName = civInfo.getAllyCivName()
-        civInfo.setAllyCiv(newAllyName)
+        val oldAllyName = civInfo.allyCivName
+        civInfo.allyCivName = newAllyName
 
         if (newAllyName != null) {
             val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
@@ -443,7 +443,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         if (civInfo.cityStatePersonality == CityStatePersonality.Hostile)
             modifiers["Hostile"] = -10
-        if (civInfo.getAllyCivName() != null && civInfo.getAllyCivName() != demandingCiv.civName)
+        if (civInfo.allyCivName != null && civInfo.allyCivName != demandingCiv.civName)
             modifiers["Has Ally"] = -10
         if (getProtectorCivs().any { it != demandingCiv })
             modifiers["Has Protector"] = -20
@@ -668,7 +668,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         for (cityState in civInfo.gameInfo.getAliveCityStates()) {
             if (cityState == civInfo) // Must be a different minor
                 continue
-            if (cityState.getAllyCivName() == attacker.civName) // Must not be allied to the attacker
+            if (cityState.allyCivName == attacker.civName) // Must not be allied to the attacker
                 continue
             if (!cityState.knows(attacker)) // Must have met
                 continue
@@ -825,7 +825,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             .flatMap {
                 // We don't use DiplomacyManager.getRelationshipLevel for performance reasons - it tries to calculate getTributeWillingness which is heavy
                 val relationshipLevel =
-                        if (it.getAllyCivName() == civInfo.civName) RelationshipLevel.Ally
+                        if (it.allyCivName == civInfo.civName) RelationshipLevel.Ally
                         else if (it.getDiplomacyManager(civInfo)!!.getInfluence() >= 30) RelationshipLevel.Friend
                         else RelationshipLevel.Neutral
                 getCityStateBonuses(it.cityStateType, relationshipLevel, uniqueType)

@@ -503,8 +503,8 @@ class GlobalPoliticsOverviewTable(
                     else if (civ.isHuman() && otherCiv.isHuman() && diplomacy.hasModifier(DiplomaticModifiers.DeclarationOfFriendship))
                         RelationshipLevel.Friend.color
                     // Test for alliance with city state
-                    else if ((civ.isCityState && civ.getAllyCivName() == diplomacy.otherCivName)
-                        || (otherCiv.isCityState && otherCiv.getAllyCivName() == civ.civName)) RelationshipLevel.Ally.color
+                    else if ((civ.isCityState && civ.getAllyCiv() == diplomacy.otherCiv())
+                        || (otherCiv.isCityState && otherCiv.allyCivName == civ.civName)) RelationshipLevel.Ally.color
                     // Else the color depends on opinion between major civs, OR city state relationship with major civ
                     else diplomacy.relationshipLevel().color
 

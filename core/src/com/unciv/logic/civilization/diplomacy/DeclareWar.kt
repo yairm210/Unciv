@@ -72,7 +72,7 @@ object DeclareWar {
         otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
 
         // You attacked your own ally, you're a right bastard
-        if (otherCiv.getAllyCivName() == civInfo.civName) {
+        if (otherCiv.allyCivName == civInfo.civName) {
             otherCiv.cityStateFunctions.updateAllyCivForCityState()
             otherCivDiplomacy.setInfluence(-120f)
             for (knownCiv in civInfo.getKnownCivs()) {
@@ -334,7 +334,7 @@ object DeclareWar {
     private fun callInCityStateAllies(diplomacyManager: DiplomacyManager) {
         val civAtWarWith = diplomacyManager.otherCiv()
         for (thirdCiv in diplomacyManager.civInfo.getKnownCivs()
-            .filter { it.isCityState && it.getAllyCivName() == diplomacyManager.civInfo.civName }.toList()) {
+            .filter { it.isCityState && it.allyCivName == diplomacyManager.civInfo.civName }.toList()) {
 
             if (thirdCiv.isAtWarWith(civAtWarWith)) continue
             if (!thirdCiv.knows(civAtWarWith))

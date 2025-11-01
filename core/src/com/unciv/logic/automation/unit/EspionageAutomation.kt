@@ -73,7 +73,7 @@ class EspionageAutomation(val civInfo: Civilization) {
     private fun automateSpyRigElection(spy: Spy): Boolean {
         val cityToMoveTo = cityStatesToRig.flatMap { it.cities }
             .filter { !it.isBeingRazed && spy.canMoveTo(it)
-                    && (it.civ.getDiplomacyManager(civInfo)!!.getInfluence() < 150 || it.civ.getAllyCivName() != civInfo.civName) }
+                    && (it.civ.getDiplomacyManager(civInfo)!!.getInfluence() < 150 || it.civ.allyCivName != civInfo.civName) }
             .maxByOrNull { it.civ.getDiplomacyManager(civInfo)!!.getInfluence() }
         spy.moveTo(cityToMoveTo)
         return cityToMoveTo != null
