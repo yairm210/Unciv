@@ -666,7 +666,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             cityScreen.clearSelection()
         cityScreen.city.reassignPopulation()
         cityScreen.update()
-        cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
+        if (construction.name == "Worker" && cityConstructions.city.civ.isCurrentPlayer())
+            cityScreen.game.settings.addCompletedTutorialTask("Build a Worker")
     }
 
     private fun getConstructionSound(construction: IConstruction): UncivSound {
