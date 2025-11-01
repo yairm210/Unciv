@@ -65,6 +65,7 @@ class Terrain : RulesetStatsObject() {
         || ruleset.terrains[this.turnsInto]?.type == asType
 
     /** Gets a new [Color] instance from the [RGB] property, mutation e.g. via [Color.lerp] allowed */
+    @Readonly
     fun getColor(): Color { // Can't be a lazy initialize, see above
         if (RGB == null) return Color.GOLD.cpy()
         return colorFromRGB(RGB!!)

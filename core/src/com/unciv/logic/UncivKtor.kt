@@ -15,6 +15,8 @@ object UncivKtor {
             maxRetries = 3
             retryOnException()
         }
+        install(BodyProgress)
+
         defaultRequest {
             userAgent(UncivGame.getUserAgent())
         }

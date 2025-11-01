@@ -19,6 +19,7 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
@@ -167,6 +168,7 @@ class Nation : RulesetObject() {
         return textList
     }
 
+    @Readonly
     private fun getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
@@ -304,7 +306,9 @@ class Nation : RulesetObject() {
 
 
 /** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+@Pure
 fun getRelativeLuminance(color: Color): Double {
+    @Pure
     fun getRelativeChannelLuminance(channel: Float): Double =
             if (channel < 0.03928) channel / 12.92
             else ((channel + 0.055) / 1.055).pow(2.4)
