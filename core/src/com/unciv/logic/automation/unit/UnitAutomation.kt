@@ -649,7 +649,7 @@ object UnitAutomation {
                 .flatMap { it.cities.asSequence() }
                 .filter {
                     unit.civ.isAtWarWith(it.civ) &&
-                            unit.civ.civName == it.foundingCiv &&
+                            unit.civ == it.foundingCivObject &&
                             it.isInResistance() &&
                             it.health < it.getMaxHealth()
                 } //Most likely just been captured

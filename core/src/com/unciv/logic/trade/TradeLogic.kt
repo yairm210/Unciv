@@ -157,9 +157,9 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
                     // suggest an option to liberate the city
                     if (to.isHuman()
-                            && city.foundingCiv != ""
-                            && from.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
-                            && to.civName != city.foundingCiv
+                            && city.foundingCivObject != null
+                            && from != city.foundingCivObject // can't liberate if the city actually belongs to those guys
+                            && to != city.foundingCivObject
                     )  // can't liberate if it's our city
                         to.popupAlerts.add(PopupAlert(AlertType.CityTraded, city.id))
                 }

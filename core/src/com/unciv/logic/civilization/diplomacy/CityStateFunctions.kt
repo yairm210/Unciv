@@ -404,11 +404,9 @@ class CityStateFunctions(val civInfo: Civilization) {
         
 
         // Make sure this CS can never be liberated
-        civInfo.gameInfo.getCities().filter {
-            it.foundingCiv == civInfo.civName
-        }.forEach {
-            it.foundingCiv = ""
-            it.isOriginalCapital = false
+        for (city in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
+            city.foundingCivObject = null
+            city.isOriginalCapital = false
         }
 
         for (city in civInfo.cities) {
