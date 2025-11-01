@@ -30,7 +30,6 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -241,7 +240,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         versionTable.onClick {
             val popup = Popup(stage)
             popup.add(aboutTab()).row()
-            popup.add("Close".toTextButton().onClick { popup.close() }).padTop(10f)
+            popup.addCloseButton()
             popup.open()
         }
         stage.addActor(versionTable)
