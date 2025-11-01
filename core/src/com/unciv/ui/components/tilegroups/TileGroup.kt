@@ -23,7 +23,7 @@ open class TileGroup(
         3) Borders
         4) Misc: improvements, resources, yields, citizens, arrows, starting locations (editor)
         5) Unit Arts
-        6) Overlay: 
+        6) Overlay:
         7) Unit Flags
         8) City Button
     */
@@ -38,18 +38,18 @@ open class TileGroup(
     var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
 
-    @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
-    @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
-    @Suppress("LeakingThis") val layerBorders = TileLayerBorders(this, groupSize)
-    @Suppress("LeakingThis") val layerMisc = TileLayerMisc(this, groupSize)
-    @Suppress("LeakingThis") val layerResource = TileLayerResource(this, groupSize)
-    @Suppress("LeakingThis") val layerImprovement = TileLayerImprovement(this, groupSize)
-    @Suppress("LeakingThis") val layerYield = TileLayerYield(this, groupSize)
-    @Suppress("LeakingThis") val layerOverlay = TileLayerOverlay(this, groupSize)
-    @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
-    @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
-    @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
-    
+    val layerTerrain = TileLayerTerrain(this, groupSize)
+    val layerFeatures = TileLayerFeatures(this, groupSize)
+    val layerBorders = TileLayerBorders(this, groupSize)
+    val layerMisc = TileLayerMisc(this, groupSize)
+    val layerResource = TileLayerResource(this, groupSize)
+    val layerImprovement = TileLayerImprovement(this, groupSize)
+    val layerYield = TileLayerYield(this, groupSize)
+    val layerOverlay = TileLayerOverlay(this, groupSize)
+    val layerUnitArt = TileLayerUnitSprite(this, groupSize)
+    val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
+    val layerCityButton = TileLayerCityButton(this, groupSize)
+
     private val allLayers = listOf(
         layerTerrain,
         layerFeatures, // includes roads
@@ -103,9 +103,9 @@ open class TileGroup(
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
         layerOverlay.hideGoodCityLocationIndicator()
-        
+
         val wasPreviouslyVisible = layerTerrain.isVisible
-        
+
         // Show all layers by default
         setAllLayersVisible(true)
 
@@ -121,11 +121,11 @@ open class TileGroup(
         }
 
         removeMissingModReferences()
-        
+
         for (layer in allLayers) layer.update(viewingCiv, localUniqueCache)
-        
+
         if (!wasPreviouslyVisible){ // newly revealed tile!
-            layerTerrain.parent.addAction( 
+            layerTerrain.parent.addAction(
                 Actions.sequence(
                     Actions.targeting(layerTerrain, Actions.alpha(0f)),
                     Actions.targeting(layerTerrain, Actions.fadeIn(0.5f)),
