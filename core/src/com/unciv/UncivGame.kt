@@ -410,7 +410,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // Needs to go ASAP - on Android, there's a tiny race condition: The OS will stop our playback forcibly, it likely
         // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
         if (::musicController.isInitialized) musicController.pause()
-        miniAudio.stopEngine()
+        if (::miniAudio.isInitialized) miniAudio.stopEngine()
         val curGameInfo = gameInfo
         // Since we're pausing the game, we don't need to clone it before autosave - no one else will touch it
         if (curGameInfo != null) files.autosaves.requestAutoSaveUnCloned(curGameInfo)
@@ -446,7 +446,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         settings.save()
 
         if (::musicController.isInitialized) musicController.dispose()
-        miniAudio.dispose()
+        if (::miniAudio.isInitialized) miniAudio.dispose()
 
         Concurrency.stopThreadPools()
 
