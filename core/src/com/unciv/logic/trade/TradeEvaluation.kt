@@ -545,7 +545,7 @@ class TradeEvaluation {
             // (stats ~30 each)
             val absoluteAdvantage = theirCombatStrength - ourCombatStrength
             val percentageAdvantage = absoluteAdvantage / ourCombatStrength.toFloat()
-            return -(absoluteAdvantage * percentageAdvantage / (getGoldInflation(ourCiv) * 2)).coerceAtMost(10000.0).toInt()
+            return -(absoluteAdvantage * percentageAdvantage / (getGoldInflation(ourCiv) * 2)).coerceAtMost(ruleset.modOptions.constants.maxGoldTradeOffer).toInt()
         }
     }
 
