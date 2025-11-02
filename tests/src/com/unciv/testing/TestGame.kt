@@ -36,6 +36,7 @@ import com.unciv.models.ruleset.unit.UnitType
 /**
  *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place
  *  @param addGlobalUniques optional global uniques to add to the ruleset
+ *  @param setupUncivGame initialize UncivGame.Current and its settings. FasterUIDevelopment can use this only with that part turned off.
  */
 class TestGame(vararg addGlobalUniques: String, setupUncivGame: Boolean = true) {
 
