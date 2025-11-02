@@ -37,6 +37,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
+import com.unciv.ui.components.widgets.CircularButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.popups.Popup
@@ -197,12 +198,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             game.popScreen()
         }
 
-        val civilopediaButton = "?".toLabel(fontSize = 48)
-            .apply { setAlignment(Align.center) }
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
-            .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
-            .surroundWithCircle(64f, resizeActor = false)
-        civilopediaButton.touchable = Touchable.enabled
+        val civilopediaButton = CircularButton.fromText("?", 64f, 48)
         // Passing the binding directly to onActivation gives you a size 26 tooltip...
         civilopediaButton.onActivation { openCivilopedia() }
         civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
@@ -210,23 +206,18 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         civilopediaButton.setPosition(30f, 30f)
         stage.addActor(civilopediaButton)
 
-        val rightSideButtons = Table().apply { defaults().pad(10f) }
-        val discordButton = ImageGetter.getImage("OtherIcons/Discord")
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
-            .surroundWithThinCircle(Color.WHITE)
-            .onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
+        val rightSideButtons = Table().apply { defaults().space(10f) }
+        val discordButton = CircularButton.fromImage("OtherIcons/Discord", 64f)
+        discordButton.onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
         rightSideButtons.add(discordButton)
 
-        val githubButton = ImageGetter.getImage("OtherIcons/Github")
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
-            .surroundWithThinCircle(Color.WHITE)
-            .onActivation { Gdx.net.openURI("https://github.com/yairm210/Unciv") }
+        val githubButton = CircularButton.fromImage("OtherIcons/Github", 64f)
+        githubButton.onActivation { Gdx.net.openURI(Constants.uncivRepoURL) }
         rightSideButtons.add(githubButton)
-        
+
         rightSideButtons.pack()
         rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
         stage.addActor(rightSideButtons)
-
 
         val versionLabel = "{Version} ${UncivGame.VERSION.text}".toLabel()
         versionLabel.setAlignment(Align.center)
