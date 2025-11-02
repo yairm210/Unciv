@@ -340,7 +340,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 QuestName.DenounceCiv -> data1 = getMostRecentBully()!!
                 QuestName.SpreadReligion -> {
                     val playerReligion = civ.gameInfo.religions.values
-                        .first { it.foundingCivName == assignee.civName && it.isMajorReligion() }  // isQuestValid must have ensured this won't throw
+                        .first { it.foundingCiv == assignee && it.isMajorReligion() }  // isQuestValid must have ensured this won't throw
                     data1 = playerReligion.getReligionDisplayName() // For display
                     data2 = playerReligion.name // To check completion
                 }
@@ -400,7 +400,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             QuestName.GiveGold -> getMostRecentBully() != null
             QuestName.DenounceCiv -> isDenounceCivQuestValid(challenger, getMostRecentBully())
             QuestName.SpreadReligion -> {
-                val playerReligion = civ.gameInfo.religions.values.firstOrNull { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
+                val playerReligion = civ.gameInfo.religions.values.firstOrNull { it.foundingCiv == challenger && it.isMajorReligion() }?.name
                 playerReligion != null && civ.getCapital()!!.religion.getMajorityReligion()?.name != playerReligion
             }
             QuestName.ConquerCityState -> getCityStateTarget(challenger) != null && civ.cityStatePersonality != CityStatePersonality.Friendly
