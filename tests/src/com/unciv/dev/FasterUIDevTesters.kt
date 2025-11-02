@@ -5,19 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.testing.TestGame
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.LoadingImage.Style
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
-import kotlin.collections.set
-import kotlin.random.Random
 
 
 /**
@@ -28,6 +20,7 @@ import kotlin.random.Random
  */
 enum class FasterUIDevTesters : IFasterUITester {
 
+/* works with #14146
     GlobalPoliticsDiagram {
         override fun testCreateExample(screen: BaseScreen): Actor {
             val game = TestGame(setupUncivGame = false)
@@ -61,6 +54,7 @@ enum class FasterUIDevTesters : IFasterUITester {
             return mgr
         }
     },
+*/
 
     LoadingImage {
         override fun testGetLabel() = name
