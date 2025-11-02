@@ -301,10 +301,15 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
      *
      * Automatically [disposes][BaseScreen.dispose] the old screen.
      *
+     * @param silentQuit Don't ask for exit confirmation when popping the last screen (for FasterUIDevelopment, where musicController is not initialized)
      * @return the new screen
      */
-    fun popScreen(): BaseScreen? {
+    fun popScreen(silentQuit: Boolean = false): BaseScreen? {
         if (screenStack.size == 1) {
+            if (silentQuit) {
+                Gdx.app.exit()
+                return null
+            }
             musicController.pause()
             worldScreen?.autoPlay?.stopAutoPlay()
             ConfirmPopup(

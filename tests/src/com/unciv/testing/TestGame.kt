@@ -37,7 +37,7 @@ import com.unciv.models.ruleset.unit.UnitType
  *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place
  *  @param addGlobalUniques optional global uniques to add to the ruleset
  */
-class TestGame(vararg addGlobalUniques: String) {
+class TestGame(vararg addGlobalUniques: String, setupUncivGame: Boolean = true) {
 
     private var objectsCreated = 0
     val ruleset: Ruleset
@@ -47,10 +47,17 @@ class TestGame(vararg addGlobalUniques: String) {
         get() = gameInfo.tileMap
 
     init {
-        // Set UncivGame.Current so that debug variables are initialized
-        UncivGame.Current = UncivGame()
-        // And the settings can be reached for the locale used in .tr()
-        UncivGame.Current.settings = GameSettings()
+        if (setupUncivGame) {
+            // Set UncivGame.Current so that debug variables are initialized
+            UncivGame.Current = UncivGame()
+            // And the settings can be reached for the locale used in .tr()
+            UncivGame.Current.settings = GameSettings().apply {
+                musicVolume = 0f
+                soundEffectsVolume = 0f
+                citySoundsVolume = 0f
+                voicesVolume = 0f
+            }
+        }
         UncivGame.Current.gameInfo = gameInfo
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
@@ -147,8 +154,12 @@ class TestGame(vararg addGlobalUniques: String) {
             cities = arrayListOf("The Capital")
             this.cityStateType = cityStateType
         }
-        val nation = createRulesetObject(ruleset.nations, *uniques, factory = ::nationFactory)
 
+        val nation = createRulesetObject(ruleset.nations, *uniques, factory = ::nationFactory)
+        return addCiv(nation, isPlayer, cityStateType)
+    }
+
+    fun addCiv(nation: Nation, isPlayer: Boolean = false, cityStateType: String? = nation.cityStateType): Civilization {
         val civInfo = Civilization()
         civInfo.nation = nation
         civInfo.gameInfo = gameInfo
