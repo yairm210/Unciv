@@ -256,7 +256,7 @@ object MotivationToAttackAutomation {
     @Readonly
     private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Float {
         var theirAlliesValue = 0f
-        for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
+        for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv != civInfo }) {
             val thirdCivCombatStrengthRatio = (otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce) / ourCombatStrength
             theirAlliesValue += when {
                 thirdCivCombatStrengthRatio > 5 -> -15f

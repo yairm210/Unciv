@@ -374,7 +374,7 @@ class AlertPopup(
                 yield(LocationAction(tile.position))
                 if (closestCity != null)
                     yield(LocationAction(closestCity.location))
-                yield(DiplomacyAction(captor.civName))
+                yield(DiplomacyAction(captor))
                 yield(CivilopediaAction("Tutorial/Barbarians"))
             }
             originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.civName}]", notificationSequence, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)

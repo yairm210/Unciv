@@ -423,7 +423,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // We found a human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
-        currentPlayerCiv = getCivilization(currentPlayer)
+        currentPlayerCiv = player
 
         // Starting their turn
         TurnManager(player).startTurn(progressBar)

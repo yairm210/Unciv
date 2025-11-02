@@ -224,8 +224,8 @@ class CityStateFunctions(val civInfo: Civilization) {
     fun getProtectorCivs() : List<Civilization> {
         if(civInfo.isMajorCiv()) return emptyList()
         return civInfo.diplomacy.values
-            .filter{ !it.otherCiv().isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector }
-            .map{ it.otherCiv() }
+            .filter{ !it.otherCiv.isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector }
+            .map{ it.otherCiv }
     }
 
     fun addProtectorCiv(otherCiv: Civilization) {
@@ -288,10 +288,10 @@ class CityStateFunctions(val civInfo: Civilization) {
         var newAlly: Civilization? = null
 
         val maxInfluence = civInfo.diplomacy
-            .filter { it.value.otherCiv().isMajorCiv() && !it.value.otherCiv().isDefeated() }
+            .filter { it.value.otherCiv.isMajorCiv() && !it.value.otherCiv.isDefeated() }
             .maxByOrNull { it.value.getInfluence() }
         if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
-            newAlly = maxInfluence.value.otherCiv()
+            newAlly = maxInfluence.value.otherCiv
         }
 
         if (civInfo == newAlly) return
@@ -351,7 +351,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val capital = civInfo.getCapital()
         if (capital != null)
             yield(LocationAction(capital.location))
-        yield(DiplomacyAction(civInfo.civName))
+        yield(DiplomacyAction(civInfo))
     }
 
     @Readonly
@@ -404,9 +404,9 @@ class CityStateFunctions(val civInfo: Civilization) {
         
 
         // Make sure this CS can never be liberated
-        for (city in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
-            city.foundingCivObject = null
-            city.isOriginalCapital = false
+        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
+            it.foundingCivObject = null
+            it.isOriginalCapital = false
         }
 
         for (city in civInfo.cities) {
@@ -596,7 +596,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
 
         otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
-            DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName)
+            DiplomacyAction(civInfo), NotificationCategory.Diplomacy, civInfo.civName)
     }
 
     /** A city state was bullied. What are its protectors going to do about it??? */
