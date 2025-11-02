@@ -81,7 +81,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             otherCiv == civInfo -> false
             otherCiv.isBarbarian || civInfo.isBarbarian -> true
             else -> {
-                val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
+                val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
                     ?: return false // not encountered yet
                 return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
             }
@@ -237,7 +237,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         if (otherCiv.isBarbarian) return true
         if (civInfo.isBarbarian && civInfo.gameInfo.turns >= civInfo.gameInfo.getDifficulty().turnBarbariansCanEnterPlayerTiles)
             return true
-        val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
             return true
         // Players can always pass through city-state tiles

@@ -147,6 +147,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     var cache = MapUnitCache(this)
 
+    /** civ of original owner - relevant for returning captured workers from barbarians */
+    @delegate:Transient
+    val originalOwningCiv by lazy { originalOwner?.let { civ.gameInfo.getCivilization(it) } }
+
     // This is saved per each unit because if we need to recalculate viewable tiles every time a unit moves,
     //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
     // About 10% of total NextTurn performance time, at the time of this change!
@@ -437,7 +441,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return true
         if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
             return getTile().getTilesInDistance(1).none {
-                it.getUnits().any { unit -> unit.owner == to.civName }
+                it.getUnits().any { unit -> unit.civ == to }
             }
         return false
     }

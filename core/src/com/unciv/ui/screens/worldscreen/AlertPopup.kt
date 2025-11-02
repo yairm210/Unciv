@@ -342,7 +342,7 @@ class AlertPopup(
         val tile = gameInfo.tileMap[position]
         val capturedUnit = tile.civilianUnit  // This has got to be it
             ?: return false // the unit disappeared somehow? maybe a modded action?
-        val originalOwner = getCiv(capturedUnit.originalOwner!!)
+        val originalOwner = capturedUnit.originalOwningCiv!!
         if (originalOwner.isDefeated()) return false
         val captor = viewingCiv
 

@@ -78,11 +78,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-            .filter { it.civName != otherCiv.civName && it.isMajorCiv() && !it.isDefeated() }
+            .filter { it != otherCiv && it.isMajorCiv() && !it.isDefeated() }
 
         if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.TradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
-                .filter { !otherCiv.diplomacy.containsKey(it.civName) && !it.isDefeated() }
+                .filter { !otherCiv.knows(it) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.Introduction, speed = civInfo.gameInfo.speed))
             }
@@ -90,7 +90,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
         if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
-                    .filter { otherCiv.diplomacy.containsKey(it.civName) }
+                    .filter { otherCiv.knows(it) }
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it)!!.canDeclareWar() }
             for (thirdCiv in civsWeArentAtWarWith) {

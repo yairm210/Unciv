@@ -205,7 +205,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
 
         // Bonus due to "Invest" quests
-        influenceGained *= civInfo.questManager.getInvestmentMultiplier(donorCiv.civName)
+        influenceGained *= civInfo.questManager.getInvestmentMultiplier(donorCiv)
 
         influenceGained -= influenceGained % 5
         if (influenceGained < 5f) influenceGained = 5f

@@ -189,7 +189,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
-        toReturn.mOtherCiv = mOtherCiv
         toReturn.diplomaticStatus = diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
         toReturn.influence = influence

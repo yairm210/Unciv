@@ -200,7 +200,7 @@ object NextTurnAutomation {
 
         if (includeQuests) {
             // Investing is better if there is an investment bonus quest active.
-            value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
+            value += (cityState.questManager.getInvestmentMultiplier(civInfo) * 10).toInt() - 10
         }
 
         return value
@@ -216,7 +216,7 @@ object NextTurnAutomation {
 
     private fun bullyCityStates(civInfo: Civilization) {
         for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState }.toList()) {
-            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
+            val diplomacyManager = state.getDiplomacyManager(civInfo)!!
             if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0

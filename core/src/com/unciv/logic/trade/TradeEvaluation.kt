@@ -318,14 +318,14 @@ class TradeEvaluation {
 
     @Readonly
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
-        val borderingCivs: Set<String> = getNeighbouringCivs(city)
-        if (borderingCivs.contains(civInfo.civName))
+        val borderingCivs: Set<Civilization> = getNeighbouringCivs(city)
+        if (borderingCivs.contains(civInfo))
             return 3 // if the city has a border with trading civ
         return 0
     }
 
     @Readonly
-    private fun getNeighbouringCivs(city: City): Set<String> {
+    private fun getNeighbouringCivs(city: City): Set<Civilization> {
         val tilesList: HashSet<Tile> = city.getTiles().toHashSet()
         val cityPositionList: ArrayList<Tile> = arrayListOf()
 
@@ -336,7 +336,7 @@ class TradeEvaluation {
 
         return cityPositionList
             .asSequence()
-            .mapNotNull { it.getOwner()?.civName }
+            .mapNotNull { it.getOwner() }
             .toSet()
     }
 
