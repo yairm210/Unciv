@@ -1245,9 +1245,9 @@ object UniqueTriggerActivation {
                     unit.instanceName = pair.first
                     civInfo.gameInfo.unitNamesTaken.add(pair.first)
                     unit.promotions.addPromotion(pair.first, true)
-                    for (unique in pair.second.uniqueObjects) {
-                        if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(unit.cache.state)) {
-                            UniqueTriggerActivation.triggerUnique(unique, unit)
+                    for (groupUnique in pair.second.uniqueObjects) {
+                        if (groupUnique.isTriggerable && !groupUnique.hasTriggerConditional() && groupUnique.conditionalsApply(unit.cache.state)) {
+                            UniqueTriggerActivation.triggerUnique(groupUnique, unit)
                         }
                     }
                     true
