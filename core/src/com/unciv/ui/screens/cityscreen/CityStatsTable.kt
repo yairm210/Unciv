@@ -23,6 +23,7 @@ import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import kotlin.math.ceil
 import kotlin.math.round
 
@@ -162,16 +163,31 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
 
         val resourceTable = Table()
-
         val resourceCounter = Counter<TileResource>()
+
+        // Add resource supplies
         for (resourceSupply in CityResources.getCityResourcesAvailableToCity(city))
             resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
+
+        // Add resource stockpiles
+        for ((resourceName, amount) in city.resourceStockpiles) {
+            val resourceObj = city.getRuleset().tileResources[resourceName] ?: continue
+            if (resourceObj.getMatchingUniques(UniqueType.NotShownOnWorldScreen, city.state).none())
+                resourceCounter.add(resourceObj, amount)
+        }
+
         for ((resource, amount) in resourceCounter)
             if (resource.isCityWide) {
-                resourceTable.add(amount.toLabel())
-                resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
-                    .padRight(5f)
+                val icon = ImageGetter.getResourcePortrait(resource.name, 20f)
+                icon.addTooltip(resource.name, targetAlign = Align.bottom)
+                icon.onClick { cityScreen.openCivilopedia(resource.makeLink()) }
+                resourceTable.add(icon).padRight(5f)
+                resourceTable.add(amount.toLabel()).apply {
+                    // Only add right padding if it's not the last one in the list
+                    if (resourceCounter.keys.last() != resource) padRight(10f)
                 }
+            }
+
         if (resourceTable.cells.notEmpty())
             tableWithIcons.add(resourceTable)
 

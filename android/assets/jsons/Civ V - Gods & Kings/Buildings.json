@@ -1222,5 +1222,17 @@
 		"faith": 2,
 		"happiness": 2,
 		"uniques": ["Unbuildable", "Only available <when religion is enabled>"]
-	}
+	},
+    {
+        "name": "Synth Factory",
+        "cost": 0,
+        "uniques": ["Instantly provides [1] [Synth Construction] <upon turn end>"]
+    },
+    {
+        "name": "Synth Super Factory",
+        "cost": 0,
+        "uniques": [
+            "Costs [10] [Synth Construction]"
+        ]
+    }
 ]

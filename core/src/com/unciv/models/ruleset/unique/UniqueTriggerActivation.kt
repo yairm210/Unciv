@@ -554,12 +554,17 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeConsumeResources -> {
+                val amount = unique.params[0].toInt()
                 val resourceName = unique.params[1]
                 val resource = ruleset.tileResources[resourceName] ?: return null
                 if (!resource.isStockpiled) return null
+                // Validate that the resource is available.
+                if (city != null) {
+                    if (city.getAvailableResourceAmount(resourceName) < amount) return null
+                }
+                else if (civInfo.getResourceAmount(resourceName) < amount) return null
 
                 return {
-                    val amount = unique.params[0].toInt()
                     if (city != null) city.gainStockpiledResource(resource, -amount)
                     else civInfo.gainStockpiledResource(resource, -amount)
 

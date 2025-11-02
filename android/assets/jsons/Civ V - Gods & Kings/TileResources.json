@@ -507,5 +507,13 @@
 					"Generated near City States with weight [15]",
 					"Doesn't generate naturally <in [{Forest} {Hill}] tiles>",
 					"Doesn't generate naturally <in [{Tundra} {Forest}] tiles>"]
+	},
+	{
+		"name": "Synth Construction",
+		"resourceType": "Strategic",
+		"uniques": [
+            "City-level resource",
+            "Stockpiled"
+        ]
 	}
 ]

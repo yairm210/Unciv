@@ -924,8 +924,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun gainStockpiledResource(resource: TileResource, amount: Int) {
-        if (resource.isCityWide) return
-        resourceStockpiles.add(resource.name, amount)
+        if (!resource.isCityWide)
+            resourceStockpiles.add(resource.name, amount)
+        else // Add it to the capital as a fallback
+            getCapital()?.addGameResource(resource, amount)
     }
 
     @Readonly
