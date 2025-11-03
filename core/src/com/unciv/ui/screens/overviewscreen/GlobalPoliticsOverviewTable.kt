@@ -165,7 +165,7 @@ class GlobalPoliticsOverviewTable(
         val allWorldWonders = wonderInfo.collectInfo(viewingPlayer)
 
         for (wonder in allWorldWonders) {
-            if (wonder.civ?.civName == civ.civName) {
+            if (wonder.civ == civ) {
                 val wonderName = wonder.name.toLabel()
                 if (wonder.location != null) {
                     wonderName.onClick {
