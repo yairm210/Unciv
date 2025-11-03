@@ -25,7 +25,7 @@ import kotlin.random.Random
  *  Note implementations do not strictly need to live here, one might want to keep them closer to a widget in development - same package or file.
  *  This was tested and works when one moves the interface to the core project.
  */
-enum class FasterUIDevTesters : IFasterUITester {
+internal enum class FasterUIDevTesters : IFasterUITester {
 
     GlobalPoliticsDiagram {
         override fun testCreateExample(screen: BaseScreen): Actor {
@@ -64,8 +64,6 @@ enum class FasterUIDevTesters : IFasterUITester {
     },
 
     LoadingImage {
-        override fun testGetLabel() = name
-
         override fun testCreateExample(screen: BaseScreen): Actor = Table().apply {
             val testee = LoadingImage(52f, Style(
                 circleColor = Color.NAVY,
@@ -90,5 +88,5 @@ enum class FasterUIDevTesters : IFasterUITester {
         }
     },
     ;
-    override fun testGetLabel() = name // maybe use unCamelCase in KeyboardBinding?
+    override fun testGetLabel(): String? = name // maybe use unCamelCase in KeyboardBinding?
 }

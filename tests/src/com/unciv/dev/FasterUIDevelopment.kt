@@ -155,6 +155,8 @@ object FasterUIDevelopment {
     private class UIDevScreen(test: IFasterUITester) : BaseScreen() {
         init {
             val actor = test.testCreateExample(this)
+            if (actor.width == 0f || actor.height == 0f)
+                actor.setSize(stage.width * 0.9f, stage.height * 0.9f)
             actor.center(stage)
             addBorder(actor, Color.ORANGE)
             stage.addActor(actor)
