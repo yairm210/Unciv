@@ -34,6 +34,7 @@ import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
@@ -43,6 +44,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
+import com.unciv.ui.popups.options.aboutTab
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -222,7 +224,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             .surroundWithThinCircle(Color.WHITE)
             .onActivation { Gdx.net.openURI("https://github.com/yairm210/Unciv") }
         rightSideButtons.add(githubButton)
-        
+
         rightSideButtons.pack()
         rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
         stage.addActor(rightSideButtons)
@@ -236,6 +238,13 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         versionTable.add(versionLabel)
         versionTable.pack()
         versionTable.setPosition(stage.width/2, 10f, Align.bottom)
+        versionTable.touchable = Touchable.enabled
+        versionTable.onClick {
+            val popup = Popup(stage)
+            popup.add(aboutTab()).row()
+            popup.addCloseButton()
+            popup.open()
+        }
         stage.addActor(versionTable)
     }
 
