@@ -46,7 +46,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
  *  @param actors Provide initial actors - the first goes to the bottom of the z-order, the last to the top
  *  @param hoverCallback Optional callback fired when the mouse enters or exits the circular clickable area
  */
-class CircularButton(
+open class CircularButton(
     size: Float,
     private val clickableSize: Float? = null,
     private val centerActors: Boolean = true,
@@ -112,6 +112,11 @@ class CircularButton(
     }
 
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+        // ask children first, then check whether inside the circle
+        val child = super.hit(x, y, touchable)
+        if (child != null && child != this) return child
+        if (touchable && this.touchable != Touchable.enabled) return null
+        if (!isVisible) return null
         return if (center.dst2(x, y) <= maxDst2) this else null
     }
 
