@@ -5,10 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.HexMath
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
@@ -30,15 +30,17 @@ enum class FasterUIDevTesters : IFasterUITester {
     GlobalPoliticsDiagram {
         override fun testCreateExample(screen: BaseScreen): Actor {
             val game = TestGame(setupUncivGame = false)
+            game.makeHexagonalMap(3)
             val civNames = listOf("Rome", "Greece", "France", "Spain", "Lhasa", "Milan")
             val civs = civNames
                 .mapNotNull { game.ruleset.nations[it] }
                 .map { game.addCiv(it) }
 
             for ((i, civ) in civs.withIndex()) {
-                // civ.isDefeated() is still true
-                civ.hasEverOwnedOriginalCapital = true
-                civ.cities = listOf(City()) // isDefeated only looks as far as cities.size
+                // civ.isDefeated() is still true, and CS get-relation code runs deep, especially get tribute willingness needs a fully defined capital
+                val pos = HexMath.getClockPositionToHexVector(i * 2).cpy().scl(3f)
+                game.addCity(civ, game.tileMap[pos])
+                // create random relations
                 for ((j, other) in civs.withIndex()) {
                     if (j <= i || Random.nextInt(3) == 0) continue
                     // Do a makeCivilizationsMeet without gifts, notifications, or war joins
@@ -55,7 +57,7 @@ enum class FasterUIDevTesters : IFasterUITester {
         private fun diplomacyManagerFactory(civ: Civilization, other: Civilization, status: DiplomaticStatus): DiplomacyManager {
             val mgr = DiplomacyManager(civ, other.civName)
             mgr.diplomaticStatus = status
-            mgr.addInfluence(Random.nextDouble(-90.0, 90.0).toFloat())
+            mgr.setInfluenceWithoutSideEffects(Random.nextDouble(-90.0, 90.0).toFloat())
             mgr.diplomaticModifiers["Test"] = Random.nextDouble(-90.0, 90.0).toFloat()
             return mgr
         }
