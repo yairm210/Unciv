@@ -41,6 +41,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
+        civInfo.nation
         val nation = ruleset.nations[civInfo.civName]!!
         val cityStateType = ruleset.cityStateTypes[nation.cityStateType]!!
         uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
@@ -232,7 +233,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         if(!otherCivCanPledgeProtection(otherCiv))
             return
 
-        val diplomacy = civInfo.getDiplomacyManager(otherCiv.civName)!!
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)!!
         diplomacy.diplomaticStatus = DiplomaticStatus.Protector
         diplomacy.setFlag(DiplomacyFlags.RecentlyPledgedProtection, 10) // Can't break for 10 turns
     }
