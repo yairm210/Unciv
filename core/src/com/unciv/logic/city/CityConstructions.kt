@@ -389,6 +389,17 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
+    /**
+     * Takes any required action across all the city constructions when the turn starts.
+     *
+     * @see CityTurnManager::startTurn()
+     */
+    fun startTurn() {
+        // Invoke the <upon turn start> unique across all built buildings.
+        for (unique in builtBuildingUniqueMap.getTriggeredUniques(UniqueType.TriggerUponTurnStart, city.state))
+            UniqueTriggerActivation.triggerUnique(unique, city)
+    }
+
     fun endTurn(cityStats: Stats) {
         validateConstructionQueue()
         validateInProgressConstructions()
@@ -400,6 +411,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             addProductionPoints(cityStats.production.roundToInt() + productionOverflow)
             productionOverflow = 0
         }
+
+        // Invoke the <upon turn end> unique across all buildings.
+        for (unique in builtBuildingUniqueMap.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, city.state))
+            UniqueTriggerActivation.triggerUnique(unique, city)
     }
 
 

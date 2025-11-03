@@ -509,11 +509,20 @@
 					"Doesn't generate naturally <in [{Tundra} {Forest}] tiles>"]
 	},
 	{
-		"name": "Synth Construction",
-		"resourceType": "Strategic",
+		"name": "Mana",
+		"resourceType": "Bonus",
 		"uniques": [
             "City-level resource",
             "Stockpiled"
         ]
-	}
+	},
+    {
+        "name": "Arcane Ward Counters",
+        "resourceType": "Bonus",
+        "uniques": [
+            "Cannot be traded",
+            "City-level resource",
+            "Stockpiled"
+        ]
+    }
 ]

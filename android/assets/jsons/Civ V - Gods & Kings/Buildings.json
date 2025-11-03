@@ -1224,15 +1224,20 @@
 		"uniques": ["Unbuildable", "Only available <when religion is enabled>"]
 	},
     {
-        "name": "Synth Factory",
+        "name": "Mana Pool",
         "cost": 0,
-        "uniques": ["Instantly provides [1] [Synth Construction] <upon turn end>"]
+        "uniques": ["Instantly provides [1] [Mana] <upon turn end>"]
     },
     {
-        "name": "Synth Super Factory",
+        "name": "Arcane Ward",
         "cost": 0,
+		"cityStrength": 5,
+		"cityHealth": 50,
         "uniques": [
-            "Costs [10] [Synth Construction]"
+            "Costs [10] [Mana]",
+            "Instantly provides [5] [Arcane Ward Counters]",
+            "Instantly consumes [1] [Arcane Ward Counters] <upon turn start>",
+            "Remove [Arcane Ward] [in this city] <upon turn start> <without [Arcane Ward Counters]>"
         ]
     }
 ]

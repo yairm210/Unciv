@@ -44,6 +44,9 @@ class CityTurnManager(val city: City) {
                 CityFlags.ResourceDemand,
                 (if (city.isCapital()) 25 else 15) + Random.Default.nextInt(10))
         }
+
+        // Let the city constructions know that the turn has started.
+        city.cityConstructions.startTurn()
     }
 
     private fun tryWeLoveTheKing() {
