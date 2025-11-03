@@ -896,23 +896,59 @@ class QuestManager : IsPartOfGameInfoSerialization {
 }
 
 
-class AssignedQuest(
-    val questName: String = "",
-    assigner: Civilization,
-    assignee: Civilization,
-    val assignedOnTurn: Int = 0,
-    val data1: String = "",
-    val data2: String = ""
-) : IsPartOfGameInfoSerialization {
+class AssignedQuest : IsPartOfGameInfoSerialization {
 
-    val assigner = assigner.civName
+    val questName: String
+    val assignedOnTurn: Int
+    val data1: String
+    val data2: String
+
+    constructor(
+        questName: String = "",
+        assigner: Civilization,
+        assignee: Civilization,
+        assignedOnTurn: Int = 0,
+        data1: String = "",
+        data2: String = ""
+    ) {
+        this.questName = questName
+        this.assignedOnTurn = assignedOnTurn
+        this.data1 = data1
+        this.data2 = data2
+        this.assigner = assigner.civName
+        this.assignerCiv = assigner
+        this.assignee = assignee.civName
+        this.assigneeCiv = assignee
+    }
+
+    @Suppress("unused") // Used in deserialization
+    @JvmOverloads
+    constructor(
+        questName: String = "",
+        assigner: String = "",
+        assignee: String = "",
+        assignedOnTurn: Int = 0,
+        data1: String = "",
+        data2: String = ""
+    ) {
+        this.questName = questName
+        this.assignedOnTurn = assignedOnTurn
+        this.data1 = data1
+        this.data2 = data2
+        this.assigner = assigner
+        this.assignee = assignee
+    }
+
+    val assigner: String
+
     @Transient
-    var assignerCiv: Civilization = assigner
+    lateinit var assignerCiv: Civilization
         private set
 
-    val assignee = assignee.civName
+    val assignee: String
+
     @Transient
-    var assigneeCiv: Civilization = assignee
+    lateinit var assigneeCiv: Civilization
         private set
 
     @Transient

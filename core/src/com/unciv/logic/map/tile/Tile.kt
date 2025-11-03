@@ -827,6 +827,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     fun setOwningCity(city: City?) {
+        if (roadOwner != "" && roadOwnerOb == null)
+            roadOwnerOb = tileMap.gameInfo.getCivilization(roadOwner)
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
