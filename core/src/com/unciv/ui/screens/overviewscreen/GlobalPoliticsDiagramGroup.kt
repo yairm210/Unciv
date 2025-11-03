@@ -70,7 +70,7 @@ class GlobalPoliticsDiagramGroup(
                 val otherCiv = diplomacy.otherCiv
                 if (otherCiv !in undefeatedCivs || otherCiv.isDefeated()) continue
                 val civGroup = civGroups[civ.civName]!!
-                val otherCivGroup = civGroups[diplomacy.otherCiv.name]!!
+                val otherCivGroup = civGroups[diplomacy.otherCiv.civName]!!
 
                 val statusLine = ImageGetter.getLine(
                     startX = civGroup.x + civGroup.width / 2,
