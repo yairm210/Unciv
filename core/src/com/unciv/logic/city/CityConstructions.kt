@@ -397,7 +397,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun startTurn() {
         // Invoke the <upon turn start> unique across all built buildings.
         for (unique in builtBuildingUniqueMap.getTriggeredUniques(UniqueType.TriggerUponTurnStart, city.state))
-            UniqueTriggerActivation.triggerUnique(unique, city)
+            if (unique.hasModifier(UniqueType.ConditionalInThisCity) && unique.conditionalsApply(city.state))
+                UniqueTriggerActivation.triggerUnique(unique, city)
     }
 
     fun endTurn(cityStats: Stats) {
@@ -414,7 +415,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         // Invoke the <upon turn end> unique across all buildings.
         for (unique in builtBuildingUniqueMap.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, city.state))
-            UniqueTriggerActivation.triggerUnique(unique, city)
+            if (unique.hasModifier(UniqueType.ConditionalInThisCity) && unique.conditionalsApply(city.state))
+                UniqueTriggerActivation.triggerUnique(unique, city)
     }
 
 

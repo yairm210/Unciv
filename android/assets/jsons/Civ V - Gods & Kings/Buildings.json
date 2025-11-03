@@ -1226,18 +1226,18 @@
     {
         "name": "Mana Pool",
         "cost": 0,
-        "uniques": ["Instantly provides [1] [Mana] <upon turn end>"]
+        "uniques": ["Instantly provides [1] [Mana] <in this city> <upon turn end>"]
     },
     {
         "name": "Arcane Ward",
         "cost": 0,
-		"cityStrength": 5,
-		"cityHealth": 50,
+        "cityStrength": 5,
+        "cityHealth": 50,
         "uniques": [
             "Costs [10] [Mana]",
-            "Instantly provides [5] [Arcane Ward Counters]",
-            "Instantly consumes [1] [Arcane Ward Counters] <upon turn start>",
-            "Remove [Arcane Ward] [in this city] <upon turn start> <without [Arcane Ward Counters]>"
+            "Instantly provides [5] [Arcane Ward Counters] <in this city>",
+            "Instantly consumes [1] [Arcane Ward Counters] <in this city> <upon turn end>",
+            "Remove [Arcane Ward] [in this city] <upon turn end> <without [Arcane Ward Counters]>"
         ]
     }
 ]
