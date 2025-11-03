@@ -41,7 +41,6 @@ class CityStateFunctions(val civInfo: Civilization) {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
-        civInfo.nation
         val nation = ruleset.nations[civInfo.civName]!!
         val cityStateType = ruleset.cityStateTypes[nation.cityStateType]!!
         uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
