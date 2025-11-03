@@ -98,7 +98,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     @Readonly fun getNumberOfTechsResearched(): Int = techsResearched.size
 
-    fun getOverflowScience(): Int = overflowScience
+    @Readonly fun getOverflowScience(): Int = overflowScience
 
     @Readonly
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/

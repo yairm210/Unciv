@@ -10,6 +10,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import yairm210.purity.annotations.Readonly
 
 class NextTurnProgress(
     // nullable so we can free the reference once the ProgressBar is shown
@@ -51,8 +52,8 @@ class NextTurnProgress(
         val game = worldScreen.gameInfo
         worldScreenHash = worldScreen.hashCode()
 
-        fun GameParameters.isRandomNumberOfCivs() = randomNumberOfPlayers || randomNumberOfCityStates
-        fun GameParameters.minNumberOfCivs() =
+        @Readonly fun GameParameters.isRandomNumberOfCivs() = randomNumberOfPlayers || randomNumberOfCityStates
+        @Readonly fun GameParameters.minNumberOfCivs() =
             (if (randomNumberOfPlayers) minNumberOfPlayers else players.size) +
             (if (randomNumberOfCityStates) minNumberOfCityStates else numberOfCityStates)
 

@@ -124,7 +124,7 @@ object CityLocationTileRanker {
         }
 
         // Placing cities on the edge of the map is bad, we can't even build improvements on them!
-        tileValue -= (HexMath.getNumberOfTilesInHexagon(3) - tiles) * 2.4f
+        tileValue -= (HexMath.getNumberOfTilesInHexagon(2) - tiles) * 2.4f
         return tileValue
     }
 
