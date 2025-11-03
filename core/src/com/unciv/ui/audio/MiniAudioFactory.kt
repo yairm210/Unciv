@@ -14,9 +14,9 @@ import java.util.EnumSet
 /* TODO:
        - Use MASound.fadeIn and fadeOut - do they have an end callback?
        - MA has a separate master volume - no need?
-       - Use MASound's own end callback - where is ma_sound_set_end_callback?
+       - Use MASound's own end callback - where is ma_sound_set_end_callback? (https://github.com/rednblackgames/gdx-miniaudio/issues/25)
        - Use 4 MAGroups for Music, Voices, CityAmbient and Sounds - use the group volume control
-       - Use MA_SOUND_FLAG_NO_PITCH and MA_SOUND_FLAG_NO_SPATIALIZATION
+       - Use MA_SOUND_FLAG_NO_PITCH and MA_SOUND_FLAG_NO_SPATIALIZATION (In MASound.Flags, passed to createSound)
        - Choose good engine frame rate? Perf gains if same as input files and on roid same as device native
        - Use MASoundPool instead of MASound for concurrency (short sounds)? (that's a pool for one single file)
  */
@@ -52,19 +52,21 @@ object MiniAudioFactory {
     /**
      *  Factory for the single [MiniAudio] instance used in Unciv, called from [UncivGame.create][com.unciv.UncivGame.create]
      *
-     *  Allows tailoring the configuration by adding 
+     *  Allows tailoring the configuration by manually adding a [MiniAudioConfig] as "audioConfig" to the settings json.
      */
     fun create(files: UncivFiles): MiniAudio {
         val config = files.getGeneralSettings().audioConfig ?: MiniAudioConfig()
+        config.context.logCallback = UncivMALogCallback(config.logLevels)
+        val miniaudio = MiniAudio(config.context, null) // no engine config yet, maybe enumerate devices first
         if (config.device != null) {
             // ma_context_get_devices
             config.engine.playbackId =
-                MiniAudio().enumerateDevices()
+                miniaudio.enumerateDevices()
                 .firstOrNull { config.device in it.name }
                 ?.idAddress ?: -1
         }
-        config.context.logCallback = UncivMALogCallback(config.logLevels)
-        return MiniAudio(config.context, config.engine)
+        miniaudio.initEngine(config.engine)
+        return miniaudio
     }
 
     class MiniAudioConfig {
