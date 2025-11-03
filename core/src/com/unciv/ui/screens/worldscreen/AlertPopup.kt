@@ -33,6 +33,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
+import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 
 /**
@@ -67,8 +68,8 @@ class AlertPopup(
     private val viewingCiv get() = worldScreen.viewingCiv
     private val stageWidth get() = worldScreen.stage.width
     private val stageHeight get() = worldScreen.stage.height
-    private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
-    private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
+    @Readonly private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
+    @Readonly private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
     //endregion
 
     // This redirects all addCloseButton uses with only text and no action to accept the space key
@@ -448,9 +449,15 @@ class AlertPopup(
         }
 
         val centerTable = Table()
-        centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(stageWidth / 3).pad(10f)
-        centerTable.add(wonder.getShortDescription()
-            .toLabel().apply { wrap = true }).width(stageWidth / 3).pad(10f)
+        val centerTableColumnWidth = stageWidth / if (wonder.quote.isEmpty()) 2 else 3
+        if (wonder.quote.isNotEmpty()) {
+            centerTable.add(wonder.quote.toLabel().apply { wrap = true })
+                .width(centerTableColumnWidth)
+                .pad(10f)
+        }
+        centerTable.add(wonder.getShortDescription().toLabel().apply { wrap = true })
+            .width(centerTableColumnWidth)
+            .pad(10f)
         add(centerTable).row()
         addCloseButton()
         music.chooseTrack(wonder.name, MusicMood.Wonder, MusicTrackChooserFlags.setSpecific)

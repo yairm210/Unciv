@@ -112,8 +112,8 @@ class ModManagementScreen private constructor(
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
     // Keep metadata and buttons in separate pools
-    private val installedModInfo = previousInstalledMods ?: HashMap(10)
-    private val onlineModInfo = previousOnlineMods ?: HashMap(game.files.loadModCache().associateBy { it.name })
+    private val installedModInfo = previousInstalledMods ?: HashMap(RulesetCache.size)
+    private val onlineModInfo = previousOnlineMods ?: game.files.loadModCache().associateByTo(HashMap()) { it.name }
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
@@ -143,7 +143,7 @@ class ModManagementScreen private constructor(
                 game.settings.tileSet = tileSets.first()
             }
             val screen = game.popScreen()
-            
+
             // We want to immediately display/hide Scenario button based on changes
             if (screen is MainMenuScreen)
                 screen.game.replaceCurrentScreen(MainMenuScreen())
@@ -166,10 +166,10 @@ class ModManagementScreen private constructor(
         if (isPortrait) initPortrait()
         else initLandscape()
         showLoadingImage()
-        
+
         if (installedModInfo.isEmpty())
             refreshInstalledModInfo()
-        
+
         refreshInstalledModTable()
 
         refreshOnlineModTable() // Refresh table - chances are we have cached data...
@@ -245,7 +245,7 @@ class ModManagementScreen private constructor(
 
         loading.show()  // Now that it's on stage, start animation
         replaceLoadingWithOptions()
-        
+
         // Allow clicking the loading icon to stop the query
         loading.onClick {
             if (runningSearchJob?.isActive != true) return@onClick
@@ -293,7 +293,7 @@ class ModManagementScreen private constructor(
                     // If it's too large Android won't let you copy, hence the guardrails
                     Gdx.app.clipboard.contents = ex.stackTraceToString()
                 } catch (_:Exception) {}
-                
+
                 runningSearchJob = null
                 return@run
             }
@@ -476,7 +476,7 @@ class ModManagementScreen private constructor(
         rightSideButton.onClick {
             rightSideButton.setText("Downloading...".tr())
             rightSideButton.disable()
-            
+
             downloadMod(repo,{
                 rightSideButton.setText("{Downloading...} ${it}%".tr())
             }) {
@@ -501,8 +501,13 @@ class ModManagementScreen private constructor(
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
-                    ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
-                    reloadCachesAfterModChange()
+                    val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
+                    reloadCachesAfterModChange(modFolder.name()) {
+                        toast.close()
+                        val msg = "{[$repoName] was downloaded, but is defective!}" +
+                            "\n{For more information, see Options-Locate mod errors.}"
+                        ToastPopup(msg, this@ModManagementScreen, 4000L)
+                    }
 
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
@@ -669,8 +674,10 @@ class ModManagementScreen private constructor(
         refreshInstalledModTable()
     }
 
-    private fun reloadCachesAfterModChange() {
-        RulesetCache.loadRulesets()
+    private fun reloadCachesAfterModChange(newModName: String? = null, onError: (()->Unit)? = null) {
+        val errorLines = RulesetCache.loadRulesets()
+        if (newModName != null && errorLines.any { newModName in it })
+            onError?.invoke()
         TileSetCache.loadTileSetConfigs()
         ImageGetter.reloadImages()
         UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
