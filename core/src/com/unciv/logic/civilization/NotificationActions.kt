@@ -88,8 +88,10 @@ class DiplomacyAction : NotificationAction {
     @Transient
     private lateinit var otherCiv: Civilization
 
-    @JvmOverloads
-    constructor(otherCivName: String = "", showTrade: Boolean = false) {
+    @Suppress("unused") // Used for deserialization
+    constructor(): this("", false)
+
+    constructor(otherCivName: String, showTrade: Boolean = false) {
         this.otherCivName = otherCivName
         this.showTrade = showTrade
     }

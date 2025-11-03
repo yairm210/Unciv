@@ -357,14 +357,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
             }
 
             val newQuest = AssignedQuest(
-                    questName = quest.name,
-                    assigner = civ,
-                    assignee = assignee,
-                    assignedOnTurn = turn,
-                    data1 = data1,
-                    data2 = data2
+                gameInfo = civ.gameInfo,
+                quest = quest,
+                assigner = civ,
+                assignee = assignee,
+                assignedOnTurn = turn,
+                data1 = data1,
+                data2 = data2
             )
-            newQuest.setTransients(civ.gameInfo, quest)
 
             assignedQuests.add(newQuest)
             if (quest.isIndividual())
@@ -904,14 +904,17 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
     val data2: String
 
     constructor(
-        questName: String = "",
+        gameInfo: GameInfo,
+        quest: Quest,
         assigner: Civilization,
         assignee: Civilization,
         assignedOnTurn: Int = 0,
         data1: String = "",
         data2: String = ""
     ) {
-        this.questName = questName
+        this.gameInfo = gameInfo
+        this.quest = quest
+        this.questName = quest.name
         this.assignedOnTurn = assignedOnTurn
         this.data1 = data1
         this.data2 = data2
@@ -922,7 +925,8 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
     }
 
     @Suppress("unused") // Used in deserialization
-    @JvmOverloads
+    constructor(): this("", "", "", 0, "", "")
+    @Suppress("unused")
     constructor(
         questName: String = "",
         assigner: String = "",
@@ -955,28 +959,36 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
     private lateinit var gameInfo: GameInfo
 
     @Transient
-    private lateinit var questObject: Quest
+    lateinit var quest: Quest
+        private set
 
-    val questNameInstance get() = questObject.questNameInstance
+    val questNameInstance get() = quest.questNameInstance
 
     internal fun setTransients(gameInfo: GameInfo, quest: Quest? = null) {
         this.gameInfo = gameInfo
-        questObject = quest ?: gameInfo.ruleset.quests[questName]!!
-        assignerCiv = gameInfo.getCivilization(assigner)
-        assigneeCiv = gameInfo.getCivilization(assignee)
+        if (quest != null) {
+            this.quest = quest
+        }
+        else if (!::quest.isInitialized) {
+            this.quest = gameInfo.ruleset.quests[questName]!!
+        }
+        if (!::assignerCiv.isInitialized)
+            assignerCiv = gameInfo.getCivilization(assigner)
+        if (!::assigneeCiv.isInitialized)
+            assigneeCiv = gameInfo.getCivilization(assignee)
     }
 
     @Readonly fun isIndividual(): Boolean = !isGlobal()
-    @Readonly fun isGlobal(): Boolean = questObject.isGlobal()
+    @Readonly fun isGlobal(): Boolean = quest.isGlobal()
     @Suppress("MemberVisibilityCanBePrivate")
-    @Readonly fun doesExpire(): Boolean = questObject.duration > 0
+    @Readonly fun doesExpire(): Boolean = quest.duration > 0
     @Readonly fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
     @Suppress("MemberVisibilityCanBePrivate")
-    @Readonly fun getDuration(): Int = (gameInfo.speed.modifier * questObject.duration).toInt()
+    @Readonly fun getDuration(): Int = (gameInfo.speed.modifier * quest.duration).toInt()
     @Readonly fun getRemainingTurns(): Int = (assignedOnTurn + getDuration() - gameInfo.turns).coerceAtLeast(0)
-    @Readonly fun getInfluence() = questObject.influence
+    @Readonly fun getInfluence() = quest.influence
 
-    @Readonly fun getDescription(): String = questObject.description.fillPlaceholders(data1)
+    @Readonly fun getDescription(): String = quest.description.fillPlaceholders(data1)
 
     fun onClickAction() {
         when (questNameInstance) {

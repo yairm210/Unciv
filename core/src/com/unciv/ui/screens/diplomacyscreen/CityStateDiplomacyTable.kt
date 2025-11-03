@@ -447,7 +447,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val questTable = Table()
         questTable.defaults().pad(10f)
 
-        val quest: Quest = viewingCiv.gameInfo.ruleset.quests[assignedQuest.questName]!!
+        val quest: Quest = assignedQuest.quest
         val remainingTurns: Int = assignedQuest.getRemainingTurns()
         val title = if (quest.influence > 0)
             "[${quest.name}] (+[${quest.influence.toInt()}] influence)"
