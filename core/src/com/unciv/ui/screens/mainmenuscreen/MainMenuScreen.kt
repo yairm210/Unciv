@@ -62,7 +62,8 @@ import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
-import kotlin.math.min
+import yairm210.purity.annotations.Pure
+import kotlin.math.ceil
 
 
 class MainMenuScreen: BaseScreen(), RecreateOnResize {
@@ -229,7 +230,6 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
         stage.addActor(rightSideButtons)
 
-
         val versionLabel = "{Version} ${UncivGame.VERSION.text}".toLabel()
         versionLabel.setAlignment(Align.center)
         val versionTable = Table()
@@ -251,20 +251,17 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private fun startBackgroundMapGeneration() {
         stopBackgroundMapGeneration()  // shouldn't be necessary as resize re-instantiates this class
         backgroundMapGenerationJob = Concurrency.run("ShowMapBackground") {
-            var scale = 1f
-            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
-            var mapHeight = stage.height / TileGroupMap.groupSize
-            if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
-                scale = mapWidth * mapHeight / 3000f
-                mapWidth /= scale
-                mapHeight /= scale
-                scale = min(scale, 20f)
-            }
+            // MapSize.Small has easily enough tiles to fill the entire background - unless the user sized their window to some extreme aspect ratio
+            val mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
+            val mapHeight = stage.height / TileGroupMap.groupSize
+            @Pure fun Float.scaleCoord(scale: Float) = ceil(this * scale).toInt().coerceAtLeast(6)
+            // These scale values are chosen so that a common 4:3 screen minus taskbar gives the same as MapSize.Small
+            val backgroundMapSize = MapSize(mapWidth.scaleCoord(.77f), mapHeight.scaleCoord(1f))
 
             val newMap = MapGenerator(backgroundMapRuleset, this)
                 .generateMap(MapParameters().apply {
                     shape = MapShape.rectangular
-                    mapSize = MapSize.Small
+                    mapSize = backgroundMapSize
                     type = MapType.pangaea
                     temperatureintensity = .7f
                     waterThreshold = -0.1f // mainly land, gets about 30% water
@@ -277,7 +274,6 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                     this@MainMenuScreen,
                     newMap
                 ) {}
-                mapHolder.setScale(scale)
                 mapHolder.color = mapHolder.color.cpy()
                 mapHolder.color.a = 0f
                 backgroundStack.add(mapHolder)
