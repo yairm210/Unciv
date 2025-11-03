@@ -41,15 +41,20 @@ There's two ways to do so:
 
 ## The 'Gdx Scene2D debug' option
 
-This option (on the secret 'Debug' page) turns on several UI debug features:
+This option can be toggled on the secret 'Debug' page within Unciv's Options, or as described above in [FasterUIDevelopment](#the-fasteruidevelopment-class).
+
+It turns on several UI debug features:
+
 * Gdx Actor debug lines
 * Mouse coordinates and FPS
 * Descriptor of the Actor under the mouse
 * Coordinate scales
+* Logging touchDown on the stage level, before Scene2D gets to process the event
 
 ### Gdx Actor debug lines
 See [Gdx wiki](https://libgdx.com/wiki/graphics/2d/scene2d/table#logical-table)
 The Scene2D debug option turns on mouse-over Gdx debug lines at the stage level using `setDebugUnderMouse`, `setDebugTableUnderMouse` and `setDebugParentUnderMouse`.
+
 * Blue lines are Table bounds - Each Table has dimensions as a Widget and as a logical table determined by the cells. They will coincide if there is both expandX and expandY set somewhere.
 * Red lines are Cell bounds - the part within cell padding.
 * Green lines are Actor bounds of the Cell contents. If the Cell has both Fill directions set, they disappear below the red cell bounds (that is, unless the content Actor has a maxSize limiting the fill).
@@ -59,10 +64,16 @@ On the bottom right is a semi-transparent panel with 3 numbers on top: X and Y o
 
 ### Descriptor of the Actor under the mouse
 The lower part of said panel shows a string helping to identify which Actor the mouse is over. This will look for the actor's parent and potentially children, and the optional Actor.name field. Java class names or Label text are used when appropriate - it tries to build something short, but just descriptive enough. It uses the following separators / symbols:
+
 * `:` a colon separates class name from Actor.name - or Actor.name is used undecorated if it contains the class name.
 * `"` double-quotes show actual Label or TextButton text, max 20 characters, prefixed directly with the class name.
 * `.` a dot separates parent from hit Actor: If the above alone does not yield a descriptive label, the parent (if any) is added as descriptive label per the rules above or as simple class name.
 * `(`..`)` after the above designates a sample from the children (the first nicely descriptive one), only if the parent won't add good recognition value.
 
 ### Coordinate scales
-The bottom and right edges of the screen get tiny tick marks, each 20 units in the Gdx stage coordinates, to help estimate paddings or sizes.
+All four edges of the screen get tiny tick marks, each 20 units in the Gdx stage coordinates, to help estimate paddings or sizes.
+
+### Click logging
+Click logging happens through the regular logging system with the tag `[StageMouseOverDebug]`, which is excluded by default. So, to see these events, you must have your run environment set up for logging and enable that tag. 
+A line contains the screen coordinates (in pixels, y goes top-down), the pointer number (e.g. when someone has a trackpad and mouse), the button number, and the "descriptor" as described above for the "`hit`" actor.
+This hit test is performed with `touchable = true`, which can be different from the hit test used to show which actor the mouse is over.
