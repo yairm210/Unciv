@@ -680,7 +680,7 @@
             {"text":"Example: The 'Open Github page' button on the Mod management screen."},
             {},
             {"text":"View change log","header":5,"color":"#fa0"},
-            {"text":"After updating, you might want to see what has changed. The \"About\" in \"Options\" has the version number linked to the change log."}
+            {"text":"After updating, you might want to see what has changed. The \"About\" in \"Options\" has the version number linked to the change log. You can also see that info by clicking the version number on the main menu."}
         ]
     },
     {
