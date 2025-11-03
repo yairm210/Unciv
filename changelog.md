@@ -1,20 +1,12 @@
 ## 4.18.12
 
-chore: minor code reorg in CityStateFunctions
-
 By SomeTroglodyte:
 - Align buttons on MainMenuScreen 
 - Adapt main menu background maps to aspect ratio 
-- Force calling correct toString() in ResourceDescriptions 
-- Improve the FasterUIDevelopment tool 
-- Move and rename the diagram widget GlobalPoliticsDiagramGroup (tcfkaDiplomacyGroup) 
-- Fix module name in Desktop run configuration 
-- Fix incorrect comment 
-- Debug tool Scene2D debug: Draw axes on all 4 edges 
+- Fix resource stats in Civilopedia 
 
 By SidedYapper:
-- init 
-- Added popup for `aboutTab` under Version label (MainMenuScreen) 
+- Added popup for "about tab" when clicking Version in main menu 
 
 ## 4.18.11
 
