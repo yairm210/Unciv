@@ -71,6 +71,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         val newMinimapSize = worldScreen.game.settings.minimapSize
         if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true) return
         minimapSize = newMinimapSize
+        maximized = false
         rebuild(civ)
     }
 
