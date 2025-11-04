@@ -83,7 +83,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         val stack = Stack()
         stack.add(wrappedMinimap)
         stack.addInTable(getCornerHandleIcon()).size(20f).pad(8f).top().left()
-        stack.addInTable(getMaximizeToggleButton(civInfo)).size(40f).bottom().right() // more click area
+        stack.addInTable(getMaximizeToggleButton(civInfo)).size(35f).top().right() // more click area
         add(stack).bottom()
         
         pack()
@@ -120,7 +120,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             // table provides larger click area. we want the resize icon to be small to not cover the map    
             val name = if(maximized) "Reduce" else "Increase"
             val image = ImageGetter.getImage("OtherIcons/$name")
-            table.add(image).expand().size(20f).pad(8f).bottom().right()
+            table.add(image).expand().size(20f).pad(8f).top().right()
             table.touchable = Touchable.enabled
             table.onActivation(toggle)
         } else {
