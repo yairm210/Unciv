@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
@@ -22,17 +22,21 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.SceneDebugMode
 import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.utils.toGdxArray
 import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -143,13 +147,15 @@ object FasterUIDevelopment {
                 button.onClick {
                     game.pushScreen(UIDevScreen(test))
                 }
-                table.add(button).row()
+                table.add(button).colspan(2).row()
             }
 
-            val debugCheckbox = CheckBox("Gdx Scene2D debug", skin)
-            debugCheckbox.isChecked = enableSceneDebug
-            debugCheckbox.onClick { enableSceneDebug = debugCheckbox.isChecked }
-            table.add(debugCheckbox).padTop(5f)
+            val select = SelectBox<SceneDebugMode>(skin)
+            select.items = SceneDebugMode.entries.toGdxArray()
+            select.selected = enableSceneDebug
+            select.onChange { enableSceneDebug = select.selected }
+            table.add("Gdx Scene2D debug".toLabel()).left().fillX()
+            table.add(select).minWidth(120f).row()
 
             val scroll = AutoScrollPane(table, skin)
             scroll.setOverscroll(false, false)
@@ -195,11 +201,8 @@ object FasterUIDevelopment {
 
         private class ToggleDebugListener(private val stage: UncivStage) : ClickListener(2) {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                enableSceneDebug = !enableSceneDebug
-                stage.setDebugUnderMouse(enableSceneDebug)
-                stage.setDebugTableUnderMouse(enableSceneDebug)
-                stage.setDebugParentUnderMouse(enableSceneDebug)
-                stage.mouseOverDebug = enableSceneDebug
+                enableSceneDebug = enableSceneDebug.next()
+                stage.setSceneDebugMode()
             }
         }
     }
