@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -144,6 +145,12 @@ object FasterUIDevelopment {
                 }
                 table.add(button).row()
             }
+
+            val debugCheckbox = CheckBox("Gdx Scene2D debug", skin)
+            debugCheckbox.isChecked = enableSceneDebug
+            debugCheckbox.onClick { enableSceneDebug = debugCheckbox.isChecked }
+            table.add(debugCheckbox).padTop(5f)
+
             val scroll = AutoScrollPane(table, skin)
             scroll.setOverscroll(false, false)
             scroll.setFillParent(true)
@@ -155,6 +162,8 @@ object FasterUIDevelopment {
     private class UIDevScreen(test: IFasterUITester) : BaseScreen() {
         init {
             val actor = test.testCreateExample(this)
+            if (actor.width == 0f || actor.height == 0f)
+                actor.setSize(stage.width * 0.9f, stage.height * 0.9f)
             actor.center(stage)
             addBorder(actor, Color.ORANGE)
             stage.addActor(actor)
@@ -172,6 +181,7 @@ object FasterUIDevelopment {
             border.y = stageCoords.y - 1
             border.width = actor.width + 2
             border.height = actor.height + 2
+            border.name = "UIDev border"
             stage.addActor(border)
 
             val background = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = clearColor))
@@ -179,6 +189,7 @@ object FasterUIDevelopment {
             background.y = stageCoords.y
             background.width = actor.width
             background.height = actor.height
+            background.name = "UIDev background"
             stage.addActor(background)
         }
 

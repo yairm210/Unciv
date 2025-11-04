@@ -77,8 +77,10 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     override fun act(delta: Float) =
             { super.act(delta) }.wrapCrashHandlingUnit()()
 
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int) =
-            { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        mouseOverDebugImpl?.touchDown(this, screenX, screenY, pointer, button)
+        return { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int) =
             { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true
