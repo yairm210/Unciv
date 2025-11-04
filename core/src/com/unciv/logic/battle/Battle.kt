@@ -224,7 +224,7 @@ object Battle {
 
                 //Notification to attacker
                 attacker.getCivInfo().addNotification(
-                    "We have destroyed the city of [${defender.city.name}]!",
+                    "We have destroyed the city of [$cityName]!",
                     defender.getTile().position,
                     NotificationCategory.War,
                     NotificationIcon.War
