@@ -10,6 +10,7 @@ import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
+import com.unciv.ui.screens.basescreen.BaseScreen.Companion.enableSceneDebug
 import com.unciv.utils.Log
 
 
@@ -44,6 +45,14 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
             Log.debug("Visible stage area changed: %s", it.visibleArea)
             lastKnownVisibleArea = it.visibleArea
         }
+    }
+
+    fun setSceneDebugMode() {
+        isDebugAll = enableSceneDebug.all
+        setDebugUnderMouse(enableSceneDebug.active)
+        setDebugParentUnderMouse(enableSceneDebug.parent)
+        setDebugTableUnderMouse(enableSceneDebug.tables)
+        mouseOverDebug = enableSceneDebug.overlay
     }
 
     override fun dispose() {
