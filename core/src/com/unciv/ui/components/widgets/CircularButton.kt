@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
@@ -16,6 +17,7 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
 
 
@@ -82,6 +84,16 @@ open class CircularButton(
         addListener(EnterExitListener(hoverCallback))
     }
 
+    fun setHoverImage(altIconName: String) {
+        val icon = children.last() as? Image
+            ?: throw UnsupportedOperationException("setHoverImage requires the topmost child to be an Image")
+        val normalDrawable = icon.drawable
+        val altDrawable = ImageGetter.getDrawable(altIconName)
+        addHoverCallback { entered ->
+            icon.drawable = if (entered) altDrawable else normalDrawable
+        }
+    }
+
     private fun addHoverColorCallback(hoverColor: Color?) {
         if (hoverColor == null) return
         val iconOrLabel = children.last()
@@ -126,7 +138,7 @@ open class CircularButton(
             iconName: String,
             size: Float,
             iconScale: Float = 0.75f,
-            hoverColor: Color? = Color.RED,
+            hoverColor: Color? = defaultHoverColor(),
             innerCircleColor: Color? = skinStrings.skinConfig.baseColor,
             outerCircleColor: Color? = Color.WHITE,
             outerCircleWidth: Float = 1f
@@ -143,7 +155,7 @@ open class CircularButton(
             text: String,
             size: Float,
             fontSize: Int = Constants.headingFontSize,
-            hoverColor: Color? = Color.RED,
+            hoverColor: Color? = defaultHoverColor(),
             innerCircleColor: Color? = skinStrings.skinConfig.baseColor,
             outerCircleColor: Color? = Color.WHITE,
             outerCircleWidth: Float = 1f
@@ -154,6 +166,8 @@ open class CircularButton(
             name = "${CircularButton::class.simpleName} (\"$text\")"
             addHoverColorCallback(hoverColor)
         }
+
+        private fun defaultHoverColor() = BaseScreen.skin.getColor("highlight")
 
         private fun getCircleActors(
             size: Float,
