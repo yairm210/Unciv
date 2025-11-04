@@ -27,8 +27,6 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
@@ -214,11 +212,13 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(civilopediaButton)
 
         val rightSideButtons = Table().apply { defaults().space(10f) }
-        val discordButton = CircularButton.fromImage("OtherIcons/Discord", buttonsSize)
+        val discordColor = Color(0x8e9dffff.toInt()) // Discord's CI uses 'blurple', as `--brand: #5865f2` in their CSS, this is a lighter shade
+        val discordButton = CircularButton.fromImage("OtherIcons/Discord", buttonsSize, hoverColor = discordColor) // '--brand' from their css
         discordButton.onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
         rightSideButtons.add(discordButton)
 
-        val githubButton = CircularButton.fromImage("OtherIcons/Github", buttonsSize)
+        val githubButton = CircularButton.fromImage("OtherIcons/Github", buttonsSize, hoverColor = null)
+        githubButton.setHoverImage("OtherIcons/GithubMouseOver")
         githubButton.onActivation { Gdx.net.openURI(Constants.uncivRepoURL) }
         rightSideButtons.add(githubButton)
 
