@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
+import com.unciv.utils.Log
 
 
 private typealias AddToStringBuilderFactory = (sb: StringBuilder) -> Unit
@@ -85,6 +86,15 @@ internal class StageMouseOverDebug {
         batch.end()
 
         stage.drawAxes()
+    }
+
+    fun touchDown(stage: Stage, screenX: Int, screenY: Int, pointer: Int, button: Int) {
+        mouseCoords.set(screenX.toFloat(), screenY.toFloat())
+        stage.screenToStageCoordinates(mouseCoords)
+        sb.clear()
+        val actor = stage.hit(mouseCoords.x, mouseCoords.y, true)
+        addActorLabel(actor)
+        Log.debug("touchDown %d/%d, %d, %d hitting %s", screenX, screenY, pointer, button, sb)
     }
 
     private fun addActorLabel(actor: Actor?) {
