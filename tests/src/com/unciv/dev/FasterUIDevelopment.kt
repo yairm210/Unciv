@@ -112,6 +112,10 @@ object FasterUIDevelopment {
             Settings.save(UncivGame.Current.settings)
             super.pause()
         }
+
+        override fun resize(width: Int, height: Int) {
+            game.resize(width, height)
+        }
     }
 
     /** Persist window size over invocations, but separately from main Unciv */
