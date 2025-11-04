@@ -10,6 +10,7 @@ import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
+import com.unciv.ui.screens.basescreen.BaseScreen.Companion.enableSceneDebug
 import com.unciv.utils.Log
 
 
@@ -46,6 +47,14 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
         }
     }
 
+    fun setSceneDebugMode() {
+        isDebugAll = enableSceneDebug.all
+        setDebugUnderMouse(enableSceneDebug.active)
+        setDebugParentUnderMouse(enableSceneDebug.parent)
+        setDebugTableUnderMouse(enableSceneDebug.tables)
+        mouseOverDebug = enableSceneDebug.overlay
+    }
+
     override fun dispose() {
         events.stopReceiving()
         super.dispose()
@@ -77,8 +86,10 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     override fun act(delta: Float) =
             { super.act(delta) }.wrapCrashHandlingUnit()()
 
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int) =
-            { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        mouseOverDebugImpl?.touchDown(this, screenX, screenY, pointer, button)
+        return { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int) =
             { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true

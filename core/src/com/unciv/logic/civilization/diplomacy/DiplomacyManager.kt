@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -367,6 +368,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun setInfluence(amount: Float) {
         influence = max(amount, MINIMUM_INFLUENCE)
         civInfo.cityStateFunctions.updateAllyCivForCityState()
+    }
+
+    @VisibleForTesting
+    fun setInfluenceWithoutSideEffects(amount: Float) {
+        influence =amount
     }
 
     @Readonly
