@@ -137,6 +137,11 @@ class UnitUniquesTests {
         Assert.assertTrue(tree.allNodes().any { !it.unreachable && tree.canBuyUpTo(it.promotion) })
     }
 
+    /**
+     * Ensures units are assigned instance names.
+     *
+     * @see unciv.models.ruleset.unique.UniqueType.OneTimeUnitGetsName
+     */
     @Test
     fun testOneTimeUnitGetsName() {
         val unit = game.addDefaultMeleeUnitWithUniques(

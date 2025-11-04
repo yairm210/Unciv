@@ -30,7 +30,7 @@ class UnitNameGroup : RulesetObject() {
     }
 
     /**
-     * Retrieve a list of units that match this historical figure instance.
+     * Retrieve a list of units that match this unit group name instance.
      */
     @Readonly
     fun getUnits(ruleset: Ruleset, gameContext: GameContext = GameContext.IgnoreConditionals) =
