@@ -1,7 +1,7 @@
 [
     {
         "name": "Scientific",
-        "victoryScreenHeader": "Complete all the spaceship parts\nto win!",
+        "victoryScreenHeader": "Complete all the spaceship parts to win!",
         "milestones": [
             "Build [Apollo Program]", "Add all [spaceship parts] in capital"
         ],
@@ -13,21 +13,21 @@
     },
     {
         "name": "Cultural",
-        "victoryScreenHeader": "Complete 5 policy branches and\nbuild the Utopia Project to win!",
+        "victoryScreenHeader": "Complete 5 policy branches and build the Utopia Project to win!",
         "milestones": ["Complete [5] Policy branches", "Build [Utopia Project]"],
         "victoryString": "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.",
         "defeatString": "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
     },
     {
         "name": "Domination",
-        "victoryScreenHeader": "Capture all enemy Capitals\nto win!",
+        "victoryScreenHeader": "Capture all enemy Capitals to win!",
         "milestones": ["Capture all capitals"],
         "victoryString": "The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!",
         "defeatString": "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
     },
     {
         "name": "Diplomatic",
-        "victoryScreenHeader": "Build the UN and be voted\nworld leader to win!",
+        "victoryScreenHeader": "Build the UN and be voted world leader to win!",
         "milestones": ["Anyone should build [United Nations]", "Win diplomatic vote"],
         "victoryString": "You have triumphed over your foes through the art of diplomacy! Your cunning and wisdom have earned you great friends - and divided and sown confusion among your enemies! Forever will you be remembered as the leader who brought peace to this weary world!",
         "defeatString": "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"

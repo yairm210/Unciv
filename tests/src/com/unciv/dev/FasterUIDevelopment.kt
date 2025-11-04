@@ -10,19 +10,25 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.unciv.UncivGame
-import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.json.json
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -31,8 +37,11 @@ import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 
+
 /** Creates a basic GDX application that mimics [UncivGame] as closely as possible,
- *  starts up fast and shows one UI element, to be returned by [DevElement.createDevElement].
+ *  starts up fast and shows one UI element, or a list to pick from.
+ *
+ *  See [IFasterUITester] on how to integrate new tests for your UI classes.
  *
  *  - The parent will not size your Widget as the Gdx [Layout] contract promises,
  *    you'll need to do it yourself. E.g, if you're a [WidgetGroup], call [pack()][WidgetGroup.pack].
@@ -44,19 +53,13 @@ import java.awt.image.BufferedImage
  */
 object FasterUIDevelopment {
 
-    class DevElement(
-        @Suppress("unused") val screen: UIDevScreen
-    ) {
-        lateinit var actor: Actor
-
-        fun createDevElement() {
-            actor = "This could be your UI element in development!".toLabel()
-        }
-
-        @Suppress("EmptyFunctionBlock")
-        fun afterAdd() {
-        }
-    }
+    private val tests: List<IFasterUITester> =
+        (
+            listOf<IFasterUITester>(
+                // list instances of IFasterUITester that you didn't want to place in FasterUIDevTesters here
+            ) +
+            FasterUIDevTesters.entries
+        ).filter { it.testGetLabel() != null }
 
     @JvmStatic
     fun main(arg: Array<String>) {
@@ -74,7 +77,7 @@ object FasterUIDevelopment {
         Lwjgl3Application(UIDevGame(), config)
     }
 
-    class UIDevGame : Game() {
+    private class UIDevGame : Game() {
 
         private val game = UncivGame()
 
@@ -86,7 +89,14 @@ object FasterUIDevelopment {
             ImageGetter.resetAtlases()
             ImageGetter.reloadImages()
             BaseScreen.setSkin()
-            game.pushScreen(UIDevScreen())
+
+            val screen = when (tests.size) {
+                0 -> UIDevScreen(NoTestsAvailable())
+                1 -> UIDevScreen(tests[0])
+                else -> UIDevTestPicker(game, tests)
+            }
+            game.pushScreen(screen)
+
             Gdx.graphics.requestRendering()
         }
 
@@ -105,7 +115,13 @@ object FasterUIDevelopment {
         const val SETTINGS_FILE_NAME = "FasterUIDevSettings.json"
         val file: FileHandle = FileHandle(".").child(SETTINGS_FILE_NAME)
         fun load(): GameSettings {
-            if (!file.exists()) return GameSettings().apply { isFreshlyCreated = true }
+            if (!file.exists()) return GameSettings().apply {
+                isFreshlyCreated = true
+                musicVolume = 0f
+                citySoundsVolume = 0f
+                voicesVolume = 0f
+                // leave UI sounds on
+            }
             return json().fromJson(GameSettings::class.java, file)
         }
         fun save(settings: GameSettings) {
@@ -116,17 +132,44 @@ object FasterUIDevelopment {
         }
     }
 
-    class UIDevScreen : BaseScreen() {
-        private val devElement = DevElement(this)
-
+    private class UIDevTestPicker(game: UncivGame, tests: List<IFasterUITester>) : BaseScreen() {
         init {
-            devElement.createDevElement()
-            val actor = devElement.actor
+            val buttonStyle = SmallButtonStyle()
+            val table = Table()
+            table.defaults().space(10f).center()
+            for (test in tests) {
+                val text = test.testGetLabel() ?: continue
+                val button = TextButton(text, buttonStyle)
+                button.onClick {
+                    game.pushScreen(UIDevScreen(test))
+                }
+                table.add(button).row()
+            }
+
+            val debugCheckbox = CheckBox("Gdx Scene2D debug", skin)
+            debugCheckbox.isChecked = enableSceneDebug
+            debugCheckbox.onClick { enableSceneDebug = debugCheckbox.isChecked }
+            table.add(debugCheckbox).padTop(5f)
+
+            val scroll = AutoScrollPane(table, skin)
+            scroll.setOverscroll(false, false)
+            scroll.setFillParent(true)
+            stage.addActor(scroll)
+            globalShortcuts.add(KeyboardBinding.QuitMainMenu) { game.popScreen(silentQuit = true) }
+        }
+    }
+
+    private class UIDevScreen(test: IFasterUITester) : BaseScreen() {
+        init {
+            val actor = test.testCreateExample(this)
+            if (actor.width == 0f || actor.height == 0f)
+                actor.setSize(stage.width * 0.9f, stage.height * 0.9f)
             actor.center(stage)
             addBorder(actor, Color.ORANGE)
             stage.addActor(actor)
-            devElement.afterAdd()
+            test.testAfterAdd()
             stage.addListener(ToggleDebugListener(stage as UncivStage))
+            globalShortcuts.add(KeyboardBinding.QuitMainMenu) { game.popScreen(silentQuit = true) }
         }
 
         private fun addBorder(actor: Actor, color: Color) {
@@ -138,6 +181,7 @@ object FasterUIDevelopment {
             border.y = stageCoords.y - 1
             border.width = actor.width + 2
             border.height = actor.height + 2
+            border.name = "UIDev border"
             stage.addActor(border)
 
             val background = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = clearColor))
@@ -145,6 +189,7 @@ object FasterUIDevelopment {
             background.y = stageCoords.y
             background.width = actor.width
             background.height = actor.height
+            background.name = "UIDev background"
             stage.addActor(background)
         }
 
@@ -157,6 +202,12 @@ object FasterUIDevelopment {
                 stage.mouseOverDebug = enableSceneDebug
             }
         }
+    }
+
+    private class NoTestsAvailable : IFasterUITester {
+        override fun testGetLabel() = ""
+        override fun testCreateExample(screen: BaseScreen) =
+            Label("No enabled tests available", BaseScreen.skin)
     }
 }
 

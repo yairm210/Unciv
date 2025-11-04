@@ -1043,6 +1043,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Unable to pillage tiles"
 	Applicable to: Global, Unit
 
+??? example  "Destroys [cityFilter] cities instead of capturing"
+	The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities.Capital cities (including city states) are immune to this effect.
+
+	Example: "Destroys [in all cities] cities instead of capturing"
+
+	Applicable to: Global, Unit
+
 ??? example  "No movement cost to pillage"
 	Applicable to: Global, Unit
 
@@ -2059,6 +2066,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "Unable to pillage tiles"
+	Applicable to: Global, Unit
+
+??? example  "Destroys [cityFilter] cities instead of capturing"
+	The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities.Capital cities (including city states) are immune to this effect.
+
+	Example: "Destroys [in all cities] cities instead of capturing"
+
 	Applicable to: Global, Unit
 
 ??? example  "No movement cost to pillage"
@@ -3575,6 +3589,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;when stacked with a [mapUnitFilter] unit&gt;"
 	Example: "&lt;when stacked with a [Wounded] unit&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when not stacked with a [mapUnitFilter] unit&gt;"
+	Example: "&lt;when not stacked with a [Wounded] unit&gt;"
 
 	Applicable to: Conditional
 

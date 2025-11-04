@@ -162,6 +162,8 @@ object UniqueTriggerActivation {
                 if (!civInfo.isMajorCiv()) return null
                 return {
                     civInfo.leaderTitle = unique.params[0]
+                    if (notification != null)
+                        civInfo.addNotification(notification, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy)
                     true
                 }
             }
@@ -546,7 +548,7 @@ object UniqueTriggerActivation {
                         "You have gained [$amount] [$resourceName]"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, "ResourceIcons/$resourceName")
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
                     true
                 }
             }
@@ -566,14 +568,13 @@ object UniqueTriggerActivation {
                         "You have lost [$amount] [$resourceName]"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, "ResourceIcons/$resourceName")
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
                     true
                 }
             }
 
             UniqueType.OneTimeGainResource -> {
                 val resourceName = unique.params[1]
-
                 val resource = ruleset.getGameResource(resourceName) ?: return null
                 if (resource is TileResource && !resource.isStockpiled) return null
 
@@ -584,6 +585,13 @@ object UniqueTriggerActivation {
                         else (amount * civInfo.gameInfo.speed.modifier).roundToInt()
                     }
                     city?.addGameResource(resource, amount) ?: civInfo.addGameResource(resource, amount)
+
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "You have gained [$amount] [$resourceName]"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
                     true
                 }
             }
@@ -612,7 +620,7 @@ object UniqueTriggerActivation {
                             notification,
                             MapUnitAction(promotedUnits),
                             NotificationCategory.Units,
-                            "unitPromotionIcons/$promotionName"
+                            promotionName
                         )
                     }
                     true
@@ -782,10 +790,22 @@ object UniqueTriggerActivation {
                     return null // no more available beliefs of this type
 
                 return {
-                    if (beliefType == BeliefType.Any && religionManager.religionState <= ReligionState.Pantheon)
+                    var religionIcon = beliefType.name
+                    if (beliefType == BeliefType.Any && religionManager.religionState <= ReligionState.Pantheon) {
                         religionManager.freeBeliefs.add(BeliefType.Pantheon.name, 1) // add pantheon instead of any type
+                        religionIcon = BeliefType.Pantheon.name
+                    }
                     else
                         religionManager.freeBeliefs.add(beliefType.name, 1)
+
+                    if (notification != null) {
+                        civInfo.addNotification(
+                            notification,
+                            NotificationCategory.Religion,
+                            NotificationIcon.Faith,
+                            "ReligionIcons/${religionIcon}"
+                        )
+                    }
                     true
                 }
             }
@@ -939,6 +959,8 @@ object UniqueTriggerActivation {
                             applicableCity.expansion.takeOwnership(tileToOwn)
                         }
                     }
+                    if (notification != null)
+                        civInfo.addNotification(notification, LocationAction(applicableCities.map { it.location }), NotificationCategory.Cities, NotificationIcon.City)
                     true
                 }
             }
@@ -984,6 +1006,13 @@ object UniqueTriggerActivation {
                         }.toSet()
                         applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
                     }
+                    if (notification != null)
+                        civInfo.addNotification(
+                            notification,
+                            LocationAction(applicableCities.map { it.location }),
+                            NotificationCategory.Cities,
+                            NotificationIcon.Construction
+                        )
                     true
                 }
             }
@@ -1000,6 +1029,13 @@ object UniqueTriggerActivation {
 
                         for (building in buildingsToSell) applicableCity.sellBuilding(building)
                     }
+                    if (notification != null)
+                        civInfo.addNotification(
+                            notification,
+                            LocationAction(applicableCities.map { it.location }),
+                            NotificationCategory.Cities,
+                            NotificationIcon.Gold
+                        )
                     true
                 }
             }
@@ -1010,7 +1046,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.healBy(unique.params[1].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "Heal Instantly")
                     true
                 }
             }
@@ -1019,7 +1055,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.takeDamage(unique.params[1].toInt())
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units) // Do we have a heal icon?
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
@@ -1028,7 +1064,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.XP += unique.params[1].toInt()
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "UnitActionIcons/Promote")
                     true
                 }
             }
@@ -1040,6 +1076,8 @@ object UniqueTriggerActivation {
                             unique.params[1].toFloat()
                         else -unique.params[1].toFloat()
                     unit.useMovementPoints(movementToUse)
+                    if (notification != null)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
                 }
             }
@@ -1048,6 +1086,8 @@ object UniqueTriggerActivation {
                 if (unique.params[1] !in unit.civ.gameInfo.ruleset.unitPromotions) return null
                 return {
                     unit.setStatus(unique.params[1], unique.params[2].toInt())
+                    if (notification != null)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, unique.params[1])
                     true
                 }
             }
@@ -1056,12 +1096,16 @@ object UniqueTriggerActivation {
                 if (!unit.hasStatus(unique.params[1])) return null
                 return {
                     unit.removeStatus(unique.params[1])
+                    if (notification != null)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, unique.params[1])
                     true
                 }
             }
             UniqueType.OneTimeUnitDestroyed -> {
                 if (unit == null) return null
                 return {
+                    if (notification != null)
+                        unit.civ.addNotification(notification, LocationAction(unit.getTile().position), NotificationCategory.Units, unit.name, "OtherIcons/DisbandUnit")
                     unit.destroy()
                     true
                 }
@@ -1074,10 +1118,9 @@ object UniqueTriggerActivation {
                     else UnitActionsUpgrade.getFreeUpgradeAction(unit)
                 if (upgradeAction.none()) return null
                 return {
-
                     (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "UnitActionIcons/Upgrade")
                     true
                 }
             }
@@ -1089,7 +1132,7 @@ object UniqueTriggerActivation {
                 return {
                     unit.promotions.addPromotion(promotion, true)
                     if (notification != null)
-                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, promotion)
                     true
                 }
             }
@@ -1100,6 +1143,8 @@ object UniqueTriggerActivation {
                     ?: return null
                 return {
                     unit.promotions.removePromotion(promotion)
+                    if (notification != null)
+                        unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, promotion)
                     true
                 }
             }

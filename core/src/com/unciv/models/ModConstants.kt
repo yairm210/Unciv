@@ -101,7 +101,9 @@ class ModConstants {
     var pantheonBase = 10
     var pantheonGrowth = 5
 
+    // AI behaviour
     var workboatAutomationSearchMaxTiles = 20
+    var minimumCityLocationTileValue = 53f
 
     // Civilization
     var minimumWarDuration = 10

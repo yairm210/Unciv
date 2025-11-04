@@ -314,22 +314,21 @@ class CityStats(val city: City) {
 
     @Readonly
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
-        if (city.civ.cities.size < 2) return false// first city!
+        if (city.civ.cities.size < 2) return false // first city!
 
         // Railroad, or harbor from railroad
         return if (roadType == RoadStatus.Railroad)
                 city.isConnectedToCapital {
-                    roadTypes ->
-                    roadTypes.any { it.contains(RoadStatus.Railroad.name) }
+                    mediums ->
+                    mediums.any { it.roadType == RoadStatus.Railroad }
                 }
             else city.isConnectedToCapital()
     }
 
     @Readonly
     fun getRoadTypeOfConnectionToCapital(): RoadStatus {
-        return if (isConnectedToCapital(RoadStatus.Railroad)) RoadStatus.Railroad
-        else if (isConnectedToCapital(RoadStatus.Road)) RoadStatus.Road
-        else RoadStatus.None
+        return city.civ.cache.citiesConnectedToCapitalToMediums[city]?.maxOfOrNull { it.roadType }
+            ?: RoadStatus.None
     }
 
     @Readonly

@@ -117,6 +117,7 @@ object UnitActionsFromUniques {
      * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
+    @Readonly
     private fun getLeadersWePromisedNotToSettleNear(civInfo: Civilization, tile: Tile): String? {
         val leadersWePromisedNotToSettleNear = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
@@ -146,12 +147,6 @@ object UnitActionsFromUniques {
 
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         unit.cache.paradropDestinationTileFilters.clear()
-
-        // Support the old paradrop unique, going from Friendly Land to any Land tile
-        val paradropOldUniques = unit.getMatchingUniques(UniqueType.MayParadropOld)
-        if (paradropOldUniques.any() && !unit.isEmbarked() && !unit.getTile().isWater && unit.getTile().isFriendlyTerritory(unit.civ)) {
-            unit.cache.paradropDestinationTileFilters["Land"] = paradropOldUniques.maxOf { it.params[0] }.toInt()
-        }
 
         // Retrieve all parardrop uniques, considering the state of the unit
         val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)

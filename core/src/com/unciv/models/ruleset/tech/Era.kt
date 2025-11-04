@@ -12,6 +12,7 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 
 class Era : RulesetObject() {
     var eraNumber: Int = -1
@@ -64,6 +65,7 @@ class Era : RulesetObject() {
     }.toList()
     override fun getSortGroup(ruleset: Ruleset): Int = eraNumber
 
+    @Readonly
     private fun getEraGatedObjects(ruleset: Ruleset): Sequence<IRulesetObject> {
         val policyBranches = ruleset.policyBranches.values.asSequence()
             .filter { it.era == name }
@@ -83,6 +85,7 @@ class Era : RulesetObject() {
             }.map { it.first }.distinct()
     }
 
+    @Readonly
     fun getStartingUnits(ruleset: Ruleset): MutableList<String> {
         val startingUnits = mutableListOf<String>()
         val startingSettlerName: String =
@@ -103,10 +106,11 @@ class Era : RulesetObject() {
         return startingUnits
     }
 
+    @Readonly 
     fun getColor(): Color {
         if (iconRGB == null) return Color.WHITE.cpy()
         return colorFromRGB(iconRGB!![0], iconRGB!![1], iconRGB!![2])
     }
 
-    fun getHexColor() = "#" + getColor().toString().substring(0, 6)
+    @Readonly fun getHexColor() = "#" + getColor().toString().substring(0, 6)
 }

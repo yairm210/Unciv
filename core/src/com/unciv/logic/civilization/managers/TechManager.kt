@@ -98,7 +98,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     @Readonly fun getNumberOfTechsResearched(): Int = techsResearched.size
 
-    fun getOverflowScience(): Int = overflowScience
+    @Readonly fun getOverflowScience(): Int = overflowScience
 
     @Readonly
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
@@ -393,13 +393,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             return obsoleteUnits[old]?.name  // Replacement, or pass through null to remove from queue
         }
         for (city in civInfo.cities) {
-            // Replace queue - the sequence iteration and finalization happens before the result
-            // is reassigned, therefore no concurrent modification worries
-            city.cityConstructions.constructionQueue =
-                city.cityConstructions.constructionQueue
-                .asSequence()
-                .mapNotNull { transformConstruction(it, city) }
-                .toMutableList()
+            city.cityConstructions.transformQueue(::transformConstruction)
         }
 
         // Add notifications for obsolete units/constructions

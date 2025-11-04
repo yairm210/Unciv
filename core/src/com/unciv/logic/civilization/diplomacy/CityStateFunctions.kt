@@ -94,30 +94,31 @@ class CityStateFunctions(val civInfo: Civilization) {
         val winner: Civilization? = parties.randomWeighted(Random(randomSeed.toInt()))  { getVotesFromSpy(it) }?.civInfo
 
         // There may be no winner, in that case all spies will loose 5 influence
-        if (winner != null) {
-            val allyCiv = civInfo.getAllyCiv()
-
-            // Winning civ gets influence and all others loose influence
-            for (civ in civInfo.getKnownCivs().toList()) {
-                val influence = if (civ == winner) 20f else -5f
-                civInfo.getDiplomacyManager(civ)!!.addInfluence(influence)
-                if (civ == winner)  {
-                    civ.addNotification("Your spy successfully rigged the election in [${civInfo.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                } else if (spies.any { it.civInfo == civ}) {
-                    civ.addNotification("Your spy lost the election in [${civInfo.civName}] to [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                } else if (civ == allyCiv) {
-                    // If the previous ally has no spy in the city then we should notify them
-                    allyCiv.addNotification("The election in [${civInfo.civName}] was rigged by [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
-                }
-            }
-
-        } else {
+        if (winner == null) {
             // No spy won the election, the civs that tried to rig the election loose influence
             for (spy in spies) {
                 civInfo.getDiplomacyManager(spy.civInfo)!!.addInfluence(-5f)
                 spy.civInfo.addNotification("Your spy lost the election in [$capital]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
             }
+            return
         }
+        
+        val allyCiv = civInfo.getAllyCiv()
+
+        // Winning civ gets influence and all others loose influence
+        for (civ in civInfo.getKnownCivs().toList()) {
+            val influence = if (civ == winner) 20f else -5f
+            civInfo.getDiplomacyManager(civ)!!.addInfluence(influence)
+            if (civ == winner)  {
+                civ.addNotification("Your spy successfully rigged the election in [${civInfo.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+            } else if (spies.any { it.civInfo == civ}) {
+                civ.addNotification("Your spy lost the election in [${civInfo.civName}] to [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+            } else if (civ == allyCiv) {
+                // If the previous ally has no spy in the city then we should notify them
+                allyCiv.addNotification("The election in [${civInfo.civName}] was rigged by [${winner.civName}]!", capital.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+            }
+        }
+
     }
 
     @Readonly
@@ -314,12 +315,11 @@ class CityStateFunctions(val civInfo: Civilization) {
 
             // Join the wars of our new ally - loop through all civs they are at war with
             for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
-                if (!civInfo.isAtWarWith(newEnemy)) {
-                    if (!civInfo.knows(newEnemy))
-                        // We have to meet first (meet interesting people - and kill them!)
-                        civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
-                    civInfo.getDiplomacyManager(newEnemy)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
-                }
+                if (civInfo.isAtWarWith(newEnemy)) continue
+                if (!civInfo.knows(newEnemy))
+                    // We have to meet first (meet interesting people - and kill them!)
+                    civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
+                civInfo.getDiplomacyManager(newEnemy)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, newAllyCiv))
             }
         }
         

@@ -216,13 +216,11 @@ object Battle {
 
         // Must come before normal conquest logic so units that cannot capture cities can still destroy them
         // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capital cities
-        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant) {
-            if (defender.city.canBeDestroyed()) {
-                val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
-                if (destroyFilters.any { filter -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
-                    defender.city.destroyCity()
-                    return // stop further logic because city was destroyed
-                }
+        if (defender.isDefeated() && defender.city.canBeDestroyed()) {
+            val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
+            if (destroyFilters.any { filter -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                defender.city.destroyCity()
+                return // stop further logic because city was destroyed
             }
         }
         
@@ -495,12 +493,12 @@ object Battle {
         val defenderString =
                 if (defender.isCity())
                     if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
-                    else " [" + defender.getName() + "]"
-                else " our [" + defender.getName() + "]"
+                    else "[" + defender.getName() + "]"
+                else "our [" + defender.getName() + "]"
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
         val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
-        val notificationString = "[{$attackerString}{$attackerHurtString}] [$battleActionString] [{$defenderString}{$defenderHurtString}]"
+        val notificationString = "$attackerString$attackerHurtString $battleActionString $defenderString$defenderHurtString"
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
         val locations = LocationAction(attackedTile.position, attackerTile?.position)

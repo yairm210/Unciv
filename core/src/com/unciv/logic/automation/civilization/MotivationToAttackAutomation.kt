@@ -44,7 +44,7 @@ object MotivationToAttackAutomation {
         val modifiers: MutableList<Pair<String, Float>> = mutableListOf()
 
         // If our personality is to declare war more then we should have a higher base motivation (a negative number closer to 0)
-        modifiers.add(Pair("Base motivation", -(15f * personality.inverseModifierFocus(PersonalityValue.DeclareWar, 0.5f))))
+        modifiers.add(Pair("Base motivation", -(15f * personality.inverseScaledFocus(PersonalityValue.DeclareWar))))
 
         modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, targetCiv, ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
@@ -75,25 +75,25 @@ object MotivationToAttackAutomation {
             minTargetCityDistance > 14 -> -8f
             minTargetCityDistance > 10 -> -3f
             else -> 0f
-        } * personality.inverseModifierFocus(PersonalityValue.Aggressive, 0.2f)))
+        } * personality.inverseScaledFocus(PersonalityValue.Aggressive)))
 
         // Defensive civs want to deal with potential nearby cities to protect themselves
         if (minTargetCityDistance < 6)
-            modifiers.add(Pair("Close cities", 5f * personality.inverseModifierFocus(PersonalityValue.Aggressive, 1f)))
+            modifiers.add(Pair("Close cities", 5f * personality.inverseScaledFocus(PersonalityValue.Aggressive)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifiers.add(Pair("Research Agreement", -5f * personality.scaledFocus(PersonalityValue.Science) * personality.scaledFocus(PersonalityValue.Commerce)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            modifiers.add(Pair("Declaration of Friendship", -10f * personality.modifierFocus(PersonalityValue.Loyal, .5f)))
+            modifiers.add(Pair("Declaration of Friendship", -10f * personality.scaledFocus(PersonalityValue.Loyal)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
-            modifiers.add(Pair("Defensive Pact", -15f * personality.modifierFocus(PersonalityValue.Loyal, .3f)))
+            modifiers.add(Pair("Defensive Pact", -15f * personality.scaledFocus(PersonalityValue.Loyal)))
 
         modifiers.add(Pair("Relationship", getRelationshipModifier(diplomacyManager)))
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)) {
-            modifiers.add(Pair("Denunciation", 5f * personality.inverseModifierFocus(PersonalityValue.Diplomacy, .5f)))
+            modifiers.add(Pair("Denunciation", 5f * personality.inverseScaledFocus(PersonalityValue.Diplomacy)))
         }
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.WaryOf) && diplomacyManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
@@ -101,26 +101,26 @@ object MotivationToAttackAutomation {
             modifiers.add(Pair("PlanningAttack", -diplomacyManager.getFlag(DiplomacyFlags.WaryOf) * personality.scaledFocus(PersonalityValue.Aggressive) / 2))
         } else {
             val attacksPlanned = civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.WaryOf) && it.getFlag(DiplomacyFlags.WaryOf) < 0 }
-            modifiers.add(Pair("PlanningAttackAgainstOtherCivs", -attacksPlanned * 5f * personality.inverseModifierFocus(PersonalityValue.Aggressive, .5f)))
+            modifiers.add(Pair("PlanningAttackAgainstOtherCivs", -attacksPlanned * 5f * personality.inverseScaledFocus(PersonalityValue.Aggressive)))
         }
 
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
-            modifiers.add(Pair("Receiving trade resources", -8f * personality.modifierFocus(PersonalityValue.Commerce, .5f)))
+            modifiers.add(Pair("Receiving trade resources", -8f * personality.scaledFocus(PersonalityValue.Commerce)))
 
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
         if (targetCiv.getCapital(true) !in targetCities
                 && targetCities.all { theirCity -> !theirCity.neighboringCities.any { it !in targetCities } }) {
-            modifiers.add(Pair("Isolated city", 10f * personality.modifierFocus(PersonalityValue.Aggressive, .8f)))
+            modifiers.add(Pair("Isolated city", 10f * personality.scaledFocus(PersonalityValue.Aggressive)))
         }
 
         if (targetCiv.isCityState) {
-            modifiers.add(Pair("Protectors", -targetCiv.cityStateFunctions.getProtectorCivs().size * 3f * personality.modifierFocus(PersonalityValue.Diplomacy, .8f)))
+            modifiers.add(Pair("Protectors", -targetCiv.cityStateFunctions.getProtectorCivs().size * 3f * personality.scaledFocus(PersonalityValue.Diplomacy)))
             //The more potential friends of this CS, the more times the friend bonus is shared and the utilitarian option is to leave it alive
-            modifiers.add(Pair("Influence", -targetCiv.getDiplomacyManager(civInfo)!!.getInfluence() / 10f * personality.modifierFocus(PersonalityValue.Diplomacy, .8f)))
+            modifiers.add(Pair("Influence", -targetCiv.getDiplomacyManager(civInfo)!!.getInfluence() / 10f * personality.scaledFocus(PersonalityValue.Diplomacy)))
             // The more we invested into the city state already, the less likely we're going to attack it, and vice versa
             if (targetCiv.getAllyCivName() == civInfo.civName)
-                modifiers.add(Pair("Allied City-state", -20 * personality.modifierFocus(PersonalityValue.Diplomacy, .8f))) // There had better be a DAMN good reason
+                modifiers.add(Pair("Allied City-state", -20 * personality.scaledFocus(PersonalityValue.Diplomacy))) // There had better be a DAMN good reason
         }
 
         modifiers += getWonderBasedMotivations(targetCiv)
@@ -195,7 +195,7 @@ object MotivationToAttackAutomation {
                 else 2f
             }
         }
-        return alliedWarMotivation * civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .5f)
+        return alliedWarMotivation * civInfo.getPersonality().scaledFocus(PersonalityValue.Loyal)
     }
 
     @Readonly
@@ -210,7 +210,7 @@ object MotivationToAttackAutomation {
             // still possible for AI to declare war for isolated city
             else -> 0f
         }
-        return relationshipModifier * diplomacyManager.civInfo.getPersonality().modifierFocus(PersonalityValue.Loyal, .3f)
+        return relationshipModifier * diplomacyManager.civInfo.getPersonality().scaledFocus(PersonalityValue.Loyal)
     }
 
     @Readonly
@@ -250,7 +250,7 @@ object MotivationToAttackAutomation {
             scoreRatio > .25f -> -5f
             else -> -10f
         }
-        return scoreRatioModifier * civInfo.getPersonality().modifierFocus(PersonalityValue.Culture, .3f)
+        return scoreRatioModifier
     }
 
     @Readonly

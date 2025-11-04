@@ -52,7 +52,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
@@ -220,7 +219,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /**
      * The title for the Civilization's leader.
      *
-     * When empty, will display the nation's display name, otherwise will parse it with [leaderName]. For example: "King [leaderName]"
+     * When empty, will display the nation's display name, otherwise will parse it with [leaderName][Nation.leaderName]. For example: `"King [leaderName]"`
      */
     var leaderTitle = ""
 
@@ -698,9 +697,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        val leaderDisplayName = nation.getLeaderDisplayName()
-        var title = if (leaderTitle.isEmpty()) leaderDisplayName else leaderTitle.fillPlaceholders(leaderDisplayName)
-        return title.tr(hideIcons = true) +
+        return nation.getLeaderDisplayName(leaderTitle).tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"
@@ -947,18 +944,48 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     // region addNotification
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (No-action version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, null, category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-location version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-action version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, listOf(action), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Sequence version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, actions.asIterable(), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Iterable version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         notifications.add(Notification(text, notificationIcons, actions, category))
