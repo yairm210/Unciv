@@ -1,8 +1,10 @@
 package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
@@ -50,18 +52,21 @@ import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
  */
 open class CircularButton(
     size: Float,
-    private val clickableSize: Float? = null,
+    clickableSize: Float? = null,
     private val centerActors: Boolean = true,
     actors: Sequence<Actor>? = null,
     hoverCallback: ((Boolean) -> Unit)? = null
 ) : Group() {
-    private val center = Vector2(size / 2, size / 2)
-    private val maxDst2 = (clickableSize ?: size).let { it * it } / 4f
+    // Necessary because `hit` for input events is only checked at the stage level to determine the topmost target.
+    // When scene2d bubbles the event to ascendants, it ignores `hit`. This can lead to unwanted activation when
+    // `this` is an ascendant of the child that was clicked, so we don't implement our relevant `hit` on the Group itself...
+    private val clickReceiver = ClickReceiver(clickableSize)
 
     init {
         isTransform = false
-        touchable = Touchable.enabled
+        touchable = Touchable.childrenOnly
         setSize(size, size)
+        addActor(clickReceiver)
         if (actors != null)
             addActors(actors)
         if (hoverCallback != null)
@@ -94,6 +99,8 @@ open class CircularButton(
         }
     }
 
+    //region helpers
+
     private fun addHoverColorCallback(hoverColor: Color?) {
         if (hoverColor == null) return
         val iconOrLabel = children.last()
@@ -112,25 +119,63 @@ open class CircularButton(
         }
     }
 
-    override fun addActor(actor: Actor) {
-        if (centerActors) {
-            actor.center(this)
-            if (actor is Label) {
-                actor.y -= Fonts.getDescenderHeight(Fonts.ORIGINAL_FONT_SIZE.toInt()) * actor.fontScaleY / 2
-            }
-            actor.setOrigin(Align.center)
+    private class ClickReceiver(private val clickableSize: Float?) : Actor() {
+        private val center = Vector2()
+        private var radius = 0f
+        private var maxDst2 = 0f
+
+        override fun setSize(width: Float, height: Float) {
+            center.set(width / 2, height / 2)
+            val size = clickableSize ?: width.coerceAtMost(height)
+            radius = size * 0.5f
+            maxDst2 = radius * radius
+            super.setSize(width, height)
         }
+        override fun hit(x: Float, y: Float, touchable: Boolean): Actor? =
+            if (center.dst2(x, y) <= maxDst2) this else null
+        override fun act(delta: Float) {}
+        override fun drawDebug(shapes: ShapeRenderer) {
+            if (!debug) return
+            super.drawDebug(shapes)
+            shapes.color = Color.DARK_GRAY
+            shapes.circle(x + center.x, y + center.y, radius)
+        }
+    }
+
+    //endregion
+    //region overrides
+
+    override fun setSize(width: Float, height: Float) {
+        clickReceiver.setSize(width, height)
+        super.setSize(width, height)
+    }
+
+    private fun centerNewActor(actor: Actor) {
+        if (!centerActors) return
+        actor.center(this)
+        if (actor is Label) {
+            actor.y -= Fonts.getDescenderHeight(Fonts.ORIGINAL_FONT_SIZE.toInt()) * actor.fontScaleY / 2
+        }
+        actor.setOrigin(Align.center)
+    }
+
+    override fun addActor(actor: Actor) {
+        centerNewActor(actor)
         super.addActor(actor)
     }
 
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        // ask children first, then check whether inside the circle
-        val child = super.hit(x, y, touchable)
-        if (child != null && child != this) return child
-        if (touchable && this.touchable != Touchable.enabled) return null
-        if (!isVisible) return null
-        return if (center.dst2(x, y) <= maxDst2) this else null
+    override fun addActorAt(index: Int, actor: Actor) {
+        centerNewActor(actor)
+        super.addActorAt(if (index == 0) 1 else index, actor) // leave clickReceiver at the bottom
     }
+
+    override fun addListener(listener: EventListener?): Boolean {
+        // Hijack the listener to our ClickReceiver, but also _share_ the ActorAttachments object the listener will need
+        clickReceiver.userObject = this.userObject
+        return clickReceiver.addListener(listener)
+    }
+
+    //endregion
 
     companion object {
         /** Factory using an image */
@@ -174,12 +219,7 @@ open class CircularButton(
             innerCircleColor: Color?,
             outerCircleColor: Color?,
             outerCircleWidth: Float
-        ) = sequence<Actor> {
-            if (outerCircleColor != null)
-                yield(ImageGetter.getCircle(outerCircleColor, size))
-            if (innerCircleColor != null)
-                yield(ImageGetter.getCircle(innerCircleColor, size - 2 * outerCircleWidth))
-        }
+        ) = getCircle(outerCircleColor, size) + getCircle(innerCircleColor, size - 2 * outerCircleWidth)
 
         private fun getIconActor(
             iconName: String,
@@ -188,13 +228,22 @@ open class CircularButton(
         ) = sequence<Actor> {
             val image = ImageGetter.getImage(iconName)
             image.setSize(innerCircleSize * iconScale)
+            image.touchable = Touchable.disabled
             yield(image)
         }
 
         private fun getLabelActor(text: String, fontSize: Int) = sequence<Actor> {
             val label = text.toLabel(fontSize = fontSize)
-                .apply { setAlignment(Align.center) }
+            label.setAlignment(Align.center)
+            label.touchable = Touchable.disabled
             yield(label)
+        }
+
+        private fun getCircle(color: Color?, size: Float) = sequence<Actor> {
+            if (color == null) return@sequence
+            val circle = ImageGetter.getCircle(color, size)
+            circle.touchable = Touchable.disabled
+            yield(circle)
         }
     }
 }
