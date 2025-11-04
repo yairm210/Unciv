@@ -32,13 +32,14 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.images.ImageGetter
 
 /**
  *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place
  *  @param addGlobalUniques optional global uniques to add to the ruleset
- *  @param setupUncivGame initialize UncivGame.Current and its settings. FasterUIDevelopment can use this only with that part turned off.
+ *  @param forUITesting default initializes UncivGame.Current and its settings, `true` initializes ImageGetter ruleset instead. Needed for FasterUIDevelopment.
  */
-class TestGame(vararg addGlobalUniques: String, setupUncivGame: Boolean = true) {
+class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
 
     private var objectsCreated = 0
     val ruleset: Ruleset
@@ -48,7 +49,7 @@ class TestGame(vararg addGlobalUniques: String, setupUncivGame: Boolean = true) 
         get() = gameInfo.tileMap
 
     init {
-        if (setupUncivGame) {
+        if (!forUITesting) {
             // Set UncivGame.Current so that debug variables are initialized
             UncivGame.Current = UncivGame()
             // And the settings can be reached for the locale used in .tr()
@@ -66,6 +67,8 @@ class TestGame(vararg addGlobalUniques: String, setupUncivGame: Boolean = true) 
             RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone()
         ruleset.addGlobalUniques(*addGlobalUniques)
+        if (forUITesting)
+            ImageGetter.ruleset = ruleset
 
         gameInfo.ruleset = ruleset
         gameInfo.difficulty = "Prince"
