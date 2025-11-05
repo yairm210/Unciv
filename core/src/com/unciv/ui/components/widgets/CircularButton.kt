@@ -1,5 +1,6 @@
 package com.unciv.ui.components.widgets
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
@@ -18,9 +19,11 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
+import yairm210.purity.annotations.Pure
 
 
 /**
@@ -30,10 +33,10 @@ import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
  *  * Labels get a correction applied after centering so they actually look centered (using the font descender metric).
  *  * Does not implement [Layout], not resizable after instantiation (a WidgetGroup version was shelved @SomeTroglodyte).
  *
- *  ### Constructor or factories:
- *  * The default constructor allows stacking arbitrary actors and any kind of hover callback.
+ *  ### Factories:
  *  * For the typical circled icon usecase, use [fromImage]
  *  * For a circled text symbol or similar, use [fromText]
+ *  * For best flexibility, use the [builder][build]
  *
  *  ### Related:
  *  * [ClickableCircle][com.unciv.ui.components.input.ClickableCircle]
@@ -43,53 +46,33 @@ import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
  *  ### TODO:
  *  * Migrate [com.unciv.ui.screens.overviewscreen.GlobalPoliticsOverviewTable.DiplomacyGroup] (ball-of-yarn)
  *  * Migrate [com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder.unitActionOverlays] (move-to etc)
- *
- *  @param size Initial (square) size, actors added before any resize will be measured relative to this
- *  @param clickableSize If set, overrides the diameter of the clickable area, even if the widget is resized later
- *  @param centerActors If unset, [addActor] won't move anything, by default all actors are centered
- *  @param actors Provide initial actors - the first goes to the bottom of the z-order, the last to the top
- *  @param hoverCallback Optional callback fired when the mouse enters or exits the circular clickable area
  */
-open class CircularButton(
-    size: Float,
-    clickableSize: Float? = null,
-    private val centerActors: Boolean = true,
-    actors: Sequence<Actor>? = null,
-    hoverCallback: ((Boolean) -> Unit)? = null
-) : Group() {
+open class CircularButton(size: Float) : Group() {
     // Necessary because `hit` for input events is only checked at the stage level to determine the topmost target.
     // When scene2d bubbles the event to ascendants, it ignores `hit`. This can lead to unwanted activation when
     // `this` is an ascendant of the child that was clicked, so we don't implement our relevant `hit` on the Group itself...
-    private val clickReceiver = ClickReceiver(clickableSize)
+    private val clickReceiver = ClickReceiver()
+
+    // These exist for subclasses, normal instantiation should prefer the builder.
+    var centerActors: Boolean = true
+    var clickableSize by clickReceiver::clickableSize
 
     init {
         isTransform = false
         touchable = Touchable.childrenOnly
         setSize(size, size)
         addActor(clickReceiver)
-        if (actors != null)
-            addActors(actors)
-        if (hoverCallback != null)
-            addHoverCallback(hoverCallback)
     }
 
-    /** Add several actors */
-    fun addActors(actors: Sequence<Actor>) {
-        for (actor in actors)
-            addActor(actor)
-    }
+    //region helpers
 
-    /** Add a circle, filling the container by default */
-    fun addCircle(color: Color, size: Float = width) = ImageGetter.getCircle(color, size).apply { 
-        addActor(this)
-    }
-
-    /** Adds a listener that notifies your [hoverCallback] when the cursor enters (argument is `true`) or leaves (`false`) the circle */
-    fun addHoverCallback(hoverCallback: (Boolean) -> Unit) {
+    private fun addHoverCallback(hoverCallback: (Boolean) -> Unit) {
         addListener(EnterExitListener(hoverCallback))
     }
 
-    fun setHoverImage(altIconName: String) {
+    private fun hasHoverCallback() = listeners.any { it is EnterExitListener }
+
+    private fun setHoverImage(altIconName: String) {
         val icon = children.last() as? Image
             ?: throw UnsupportedOperationException("setHoverImage requires the topmost child to be an Image")
         val normalDrawable = icon.drawable
@@ -99,10 +82,7 @@ open class CircularButton(
         }
     }
 
-    //region helpers
-
-    private fun addHoverColorCallback(hoverColor: Color?) {
-        if (hoverColor == null) return
+    private fun addHoverColorCallback(hoverColor: Color) {
         val iconOrLabel = children.last()
         val originalColor = iconOrLabel.color.cpy()
         addHoverCallback { entered ->
@@ -119,17 +99,26 @@ open class CircularButton(
         }
     }
 
-    private class ClickReceiver(private val clickableSize: Float?) : Actor() {
+    private class ClickReceiver : Actor() {
+        var clickableSize: Float? = null
+            set(value) {
+                field = value
+                calculate()
+            }
         private val center = Vector2()
         private var radius = 0f
         private var maxDst2 = 0f
 
-        override fun setSize(width: Float, height: Float) {
-            center.set(width / 2, height / 2)
+        private fun calculate() {
             val size = clickableSize ?: width.coerceAtMost(height)
             radius = size * 0.5f
             maxDst2 = radius * radius
+        }
+
+        override fun setSize(width: Float, height: Float) {
             super.setSize(width, height)
+            center.set(width / 2, height / 2)
+            calculate()
         }
         override fun hit(x: Float, y: Float, touchable: Boolean): Actor? =
             if (center.dst2(x, y) <= maxDst2) this else null
@@ -178,72 +167,147 @@ open class CircularButton(
     //endregion
 
     companion object {
-        /** Factory using an image */
+        /** Factory using an image.
+         *  Custom configuration using [builderAction] is optional and can override [hoverColor] by defining any other [hover][CircularButtonBuilder.hover] method.
+         */
         fun fromImage(
             iconName: String,
             size: Float,
             iconScale: Float = 0.75f,
-            hoverColor: Color? = defaultHoverColor(),
-            innerCircleColor: Color? = skinStrings.skinConfig.baseColor,
+            hoverColor: Color? = CircularButtonBuilder.highlightColor,
+            innerCircleColor: Color? = CircularButtonBuilder.defaultColor,
             outerCircleColor: Color? = Color.WHITE,
-            outerCircleWidth: Float = 1f
-        ) = CircularButton(size,
-            actors = getCircleActors(size, innerCircleColor, outerCircleColor, outerCircleWidth) +
-            getIconActor(iconName, if (outerCircleColor == null) size else size - 2 * outerCircleWidth, iconScale)
-        ).apply {
-            name = "${CircularButton::class.simpleName} (\"$iconName\")"
-            addHoverColorCallback(hoverColor)
+            outerCircleWidth: Float = 1f,
+            builderAction: (CircularButtonBuilder.() -> Unit)? = null
+        ) = build(size) {
+            circles(outerCircleColor, innerCircleColor, width = outerCircleWidth)
+            image(iconName, (if (outerCircleColor == null) size else size - 2 * outerCircleWidth) * iconScale)
+            if (builderAction != null) builderAction()
+            if (!hasHover) hover(hoverColor)
+            name(iconName)
         }
 
-        /** Factory using a Label */
+        /** Factory using a Label.
+         *  Custom configuration using [builderAction] is optional and can override [hoverColor] by defining any other [hover][CircularButtonBuilder.hover] method.
+         */
         fun fromText(
             text: String,
             size: Float,
             fontSize: Int = Constants.headingFontSize,
-            hoverColor: Color? = defaultHoverColor(),
-            innerCircleColor: Color? = skinStrings.skinConfig.baseColor,
+            hoverColor: Color? = CircularButtonBuilder.highlightColor,
+            innerCircleColor: Color? = CircularButtonBuilder.defaultColor,
             outerCircleColor: Color? = Color.WHITE,
-            outerCircleWidth: Float = 1f
-        ) = CircularButton(size,
-            actors = getCircleActors(size, innerCircleColor, outerCircleColor, outerCircleWidth) +
-            getLabelActor(text, fontSize)
-        ).apply {
-            name = "${CircularButton::class.simpleName} (\"$text\")"
-            addHoverColorCallback(hoverColor)
+            outerCircleWidth: Float = 1f,
+            builderAction: (CircularButtonBuilder.() -> Unit)? = null
+        ) = build(size) {
+            circles(outerCircleColor, innerCircleColor, width = outerCircleWidth)
+            label(text, fontSize)
+            if (builderAction != null) builderAction()
+            if (!hasHover) hover(hoverColor)
+            name(text)
         }
 
-        private fun defaultHoverColor() = BaseScreen.skin.getColor("highlight")
+        /** Create a [CircularButton] using typical builder [syntax][CircularButtonBuilder]. */
+        @Pure
+        fun build(size: Float, builderAction: CircularButtonBuilder.() -> Unit) =
+            CircularButtonBuilder(size).apply { builderAction() }.result()
+    }
 
-        private fun getCircleActors(
-            size: Float,
-            innerCircleColor: Color?,
-            outerCircleColor: Color?,
-            outerCircleWidth: Float
-        ) = getCircle(outerCircleColor, size) + getCircle(innerCircleColor, size - 2 * outerCircleWidth)
+    /**
+     *  Flexible builder for a [CircularButton].
+     *
+     *  Variables [clickableSize] and [centerActors] can be modified if required.
+     *
+     *  [defaultColor] and [highlightColor] are supplied for convenience and map to [baseColor][com.unciv.models.skins.SkinConfig.baseColor] from the SkinConfig and "highlight" from the [Skin][BaseScreen.skin], respectively.
+     *
+     *  All actor methods ([circle], [circles], [image], [label], [actor]) must be called in order, from bottom in Z-order to top.
+     *
+     *  All other methods ([hover], [name]) must be called after all actor methods.
+     */
+    class CircularButtonBuilder(private val size: Float) {
+        private val result = CircularButton(size)
+        internal val hasHover get() = result.hasHoverCallback()
 
-        private fun getIconActor(
-            iconName: String,
-            innerCircleSize: Float,
-            iconScale: Float,
-        ) = sequence<Actor> {
-            val image = ImageGetter.getImage(iconName)
-            image.setSize(innerCircleSize * iconScale)
+        /** If set, overrides the diameter of the clickable area, even if the widget is resized later */
+        var clickableSize by result.clickReceiver::clickableSize
+
+        /** By default all actors are centered upon adding them. Turn this off or back on at any time during the build to prevent or reenable that. */
+        var centerActors by result::centerActors
+
+        companion object {
+            val defaultColor by skinStrings.skinConfig::baseColor
+            val highlightColor: Color get() = BaseScreen.skin.getColor("highlight")
+        }
+
+        /** Add an image by its texture path ([name]), sized to the widget by default. */
+        fun image(name: String, size: Float = this.size): Image {
+            val image = ImageGetter.getImage(name)
+            image.setSize(size)
             image.touchable = Touchable.disabled
-            yield(image)
+            actor(image)
+            return image
         }
 
-        private fun getLabelActor(text: String, fontSize: Int) = sequence<Actor> {
-            val label = text.toLabel(fontSize = fontSize)
-            label.setAlignment(Align.center)
-            label.touchable = Touchable.disabled
-            yield(label)
-        }
-
-        private fun getCircle(color: Color?, size: Float) = sequence<Actor> {
-            if (color == null) return@sequence
+        /** Add a circle, sized to the widget by default. */
+        fun circle(color: Color = defaultColor, size: Float = this.size): Image {
             val circle = ImageGetter.getCircle(color, size)
             circle.touchable = Touchable.disabled
-            yield(circle)
+            actor(circle)
+            return circle
         }
+
+        /** Add concentric circles with the given [colors], each [width] units smaller than the last. */
+        fun circles(vararg colors: Color?, width: Float = 1f) {
+            var size = this.size
+            for (color in colors) {
+                if (color == null) continue
+                if (size <= 0f) throw IllegalArgumentException("More circles than there's space for")
+                circle(color, size)
+                size -= width
+            }
+        }
+
+        /** Add a label, not scaled to the widget's size but by [fontSize] only. Centering ignores descenders. */
+        fun label(text: String, fontSize: Int = Constants.headingFontSize, fontColor: Color = Color.WHITE): Label {
+            val label = text.toLabel(fontColor, fontSize, Align.center)
+            label.touchable = Touchable.disabled
+            actor(label)
+            return label
+        }
+
+        /** Adds any [actor] */
+        fun actor(actor: Actor) = result.addActor(actor)
+
+        /** Adds a listener that swaps the top most actor's color when the cursor enters the circle and restores it when leaving. */
+        fun hover(color: Color?) {
+            if (color == null) return
+            result.addHoverColorCallback(color)
+        }
+
+        /** Adds a listener that swaps the icon drawable when the cursor enters the circle and restores it when leaving.
+         *  Topmost actor must be an [Image].
+         *  @param name A texture path recognized by [ImageGetter.getDrawable]
+         */
+        fun hover(name: String) {
+            result.setHoverImage(name)
+        }
+
+        /** Adds a listener that notifies your [callback] when the cursor enters (argument is `true`) or leaves (`false`) the circle */
+        fun hover(callback: (Boolean) -> Unit) {
+            result.addHoverCallback(callback)
+        }
+
+        /** Adds a click handler opening an external link in a browser */
+        fun link(uri: String) {
+            result.onActivation { Gdx.net.openURI(uri) }
+        }
+
+        /** Marks the widget with a name recognizable in Scene2D debug mode */
+        fun name(text: String) {
+            result.name = "${CircularButton::class.simpleName} (\"$text\")"
+        }
+
+        // Exists so we could add any finalization when required
+        internal fun result() = result
     }
 }

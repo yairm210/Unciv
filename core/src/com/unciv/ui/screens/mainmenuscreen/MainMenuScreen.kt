@@ -1,6 +1,5 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -213,13 +212,15 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         val rightSideButtons = Table().apply { defaults().space(10f) }
         val discordColor = Color(0x8e9dffff.toInt()) // Discord's CI uses 'blurple', as `--brand: #5865f2` in their CSS, this is a lighter shade
-        val discordButton = CircularButton.fromImage("OtherIcons/Discord", buttonsSize, hoverColor = discordColor) // '--brand' from their css
-        discordButton.onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
+        val discordButton = CircularButton.fromImage("OtherIcons/Discord", buttonsSize, hoverColor = discordColor) {
+            link("https://discord.gg/bjrB4Xw")
+        }
         rightSideButtons.add(discordButton)
 
-        val githubButton = CircularButton.fromImage("OtherIcons/Github", buttonsSize, hoverColor = null)
-        githubButton.setHoverImage("OtherIcons/GithubMouseOver")
-        githubButton.onActivation { Gdx.net.openURI(Constants.uncivRepoURL) }
+        val githubButton = CircularButton.fromImage("OtherIcons/Github", buttonsSize) {
+            hover("OtherIcons/GithubMouseOver")
+            link(Constants.uncivRepoURL)
+        }
         rightSideButtons.add(githubButton)
 
         rightSideButtons.pack()

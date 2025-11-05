@@ -504,11 +504,11 @@ class WorldMapHolder(
         }
 
         for (unit in unitList) {
-            val unitButton = CircularButton(68f).apply {
-                val circle = addCircle(Color.GRAY.cpy().apply { a = 0.5f })
-                addActor(UnitIconGroup(unit, 48f))
+            val unitButton = CircularButton.build(68f) {
+                val circle = circle(Color.GRAY.cpy().apply { a = 0.5f })
+                actor(UnitIconGroup(unit, 48f))
                 if (unit.hasMovement())
-                    addHoverCallback { entered ->
+                    hover { entered ->
                         circle.color.a = if (entered) 0.7f else 0.5f
                     }
                 else color.a = 0.66f
