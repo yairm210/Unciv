@@ -1,5 +1,6 @@
 package com.unciv.ui.popups.options
 
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -46,8 +47,6 @@ import kotlin.time.measureTime
  *  TODO
  *    * Sliders: 5 occurrences (Advanced, Automation, Debug, Display, Gameplay)
  *    * TextFields: 4 occurrences (Advanced, Debug, ModCheck, Multiplayer)
- *    * SettingsSelect and subclass
- *    * Performance - what is taking so long? Use tabs doing their heavy lifting only on activation, like ModCheckTab?
  *    * API: Open to specific tab? Run custom code on that tab (scroll-to or open mod expander)?
  */
 internal interface OptionsPopupHelpers {
@@ -165,7 +164,7 @@ internal interface OptionsPopupHelpers {
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         action: (T) -> Unit = {}
     ) {
-        add(text.toLabel()).left().fillX()
+        add(text.toLabel().apply { wrap = true }).left().fillX()
         val select = SelectBox<T>(BaseScreen.skin)
         add(select).pad(10f).row()
         select.isDisabled = true
@@ -184,6 +183,7 @@ internal interface OptionsPopupHelpers {
                     action(value)
                     property.set(value)
                 }
+                select.invalidateHierarchy()
             }
         }
     }
@@ -242,4 +242,19 @@ internal interface OptionsPopupHelpers {
         Log.debug("End of %s: %s", name, duration)
         return result
     }
+
+    /** Wrap something in a [Table] and add it to the receiver as single-cell row.
+     *
+     *  @receiver Destination [Table]
+     *  @param block Has the wrapper table as receiver, so you simply build with add(*) or any of the [OptionsPopupHelpers] methods.
+     *  @return The new Cell containing the wrapped result
+     */
+    fun Table.addWrapped(block: Table.() -> Unit): Cell<Table> {
+        val cell = add(Table().apply {
+            block()
+        })
+        cell.growX().colspan(2).row()
+        return cell
+    }
+
 }

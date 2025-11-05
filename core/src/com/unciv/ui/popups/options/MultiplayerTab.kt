@@ -6,39 +6,47 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.files.IMediaFinder
+import com.unciv.logic.files.IMediaFinder.LabeledSounds
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
-import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.GameSettings.GameSetting
+import com.unciv.models.UncivSound
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.format
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.options.SettingsSelect.SelectItem
+import com.unciv.ui.popups.options.RefreshSelect.Companion.createRefreshOptions
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
-import com.unciv.utils.toGdxArray
-import java.time.Duration
 import java.time.temporal.ChronoUnit
+import kotlinx.coroutines.flow.asFlow
 
 internal class MultiplayerTab(
-    optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin), OptionsPopupHelpers {
+    private val optionsPopup: OptionsPopup
+) : Table(BaseScreen.skin), TabbedPager.IPageExtensions, OptionsPopupHelpers {
     override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+
+    private var isInitialized = false
+    private lateinit var labeledSounds: IMediaFinder.LabeledSounds
+    private lateinit var currentGameTurnNotificationSound: SettingsSelect.SelectItem<UncivSound>
+    private lateinit var otherGameTurnNotificationSound: SettingsSelect.SelectItem<UncivSound>
 
     init {
         pad(10f)
         defaults().pad(5f)
+    }
+
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        if (isInitialized) return
 
         val settings = optionsPopup.settings
 
@@ -51,51 +59,42 @@ internal class MultiplayerTab(
 
         val curRefreshSelect = RefreshSelect(
             "Update status of currently played game every:",
+            settings.multiplayer::currentGameRefreshDelay,
             createRefreshOptions(ChronoUnit.SECONDS, 3, 5),
-            createRefreshOptions(ChronoUnit.SECONDS, 10, 20, 30, 60),
-            GameSetting.MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY,
-            settings
+            createRefreshOptions(ChronoUnit.SECONDS, 10, 20, 30, 60)
         )
-        addSelectAsSeparateTable(this, curRefreshSelect)
+        curRefreshSelect.addTo(this)
 
         val allRefreshSelect = RefreshSelect(
             "In-game, update status of all games every:",
+            settings.multiplayer::allGameRefreshDelay,
             createRefreshOptions(ChronoUnit.SECONDS, 15, 30),
-            createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15),
-            GameSetting.MULTIPLAYER_ALL_GAME_REFRESH_DELAY,
-            settings
+            createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15)
         )
-        addSelectAsSeparateTable(this, allRefreshSelect)
+        allRefreshSelect.addTo(this)
 
         addSeparator()
 
         // at the moment the notification service only exists on Android
         val turnCheckerSelect: RefreshSelect?
         if (Gdx.app.type == Application.ApplicationType.Android) {
-            turnCheckerSelect = addTurnCheckerOptions(this, optionsPopup)
+            turnCheckerSelect = addTurnCheckerOptions(this)
             addSeparator()
         } else {
             turnCheckerSelect = null
         }
 
-        val sounds = IMediaFinder.LabeledSounds().getLabeledSounds()
-        addSelectAsSeparateTable(
-            this, SettingsSelect(
-                "Sound notification for when it's your turn in your currently open game:",
-                sounds,
-                GameSetting.MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND,
-                settings
-            )
-        )
-
-        addSelectAsSeparateTable(
-            this, SettingsSelect(
-                "Sound notification for when it's your turn in any other game:",
-                sounds,
-                GameSetting.MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND,
-                settings
-            )
-        )
+        fun UncivSound.toSelect() = LabeledSounds.UncivSoundLabeled(this.fileName, this)
+        currentGameTurnNotificationSound = settings.multiplayer.currentGameTurnNotificationSound.toSelect()
+        otherGameTurnNotificationSound = settings.multiplayer.otherGameTurnNotificationSound.toSelect()
+        labeledSounds = LabeledSounds() // This is a cache - keep it around as long as the Tab lives
+        fun soundsProvider()= synchronized(labeledSounds) { labeledSounds.getLabeledSounds().asFlow() }
+        addAsyncSelectBox("Sound notification for when it's your turn in your currently open game:", ::currentGameTurnNotificationSound, ::soundsProvider) {
+            SoundPlayer.play(it.value)
+        }
+        addAsyncSelectBox("Sound notification for when it's your turn in any other game:", ::otherGameTurnNotificationSound, ::soundsProvider) {
+            SoundPlayer.play(it.value)
+        }
 
         addSeparator()
 
@@ -103,6 +102,8 @@ internal class MultiplayerTab(
             this, optionsPopup,
             listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect)
         )
+
+        isInitialized = true
     }
 
     private fun addMultiplayerServerOptions(
@@ -212,11 +213,8 @@ internal class MultiplayerTab(
     }
 
     private fun addTurnCheckerOptions(
-        tab: Table,
-        optionsPopup: OptionsPopup
+        tab: Table
     ): RefreshSelect? {
-        val settings = optionsPopup.settings
-
         tab.addCheckbox(
             "Enable out-of-game turn notifications",
             settings.multiplayer::turnCheckerEnabled
@@ -226,13 +224,13 @@ internal class MultiplayerTab(
 
         val turnCheckerSelect = RefreshSelect(
             "Out-of-game, update status of all games every:",
+            settings.multiplayer::turnCheckerDelay,
             createRefreshOptions(ChronoUnit.SECONDS, 30),
-            createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15),
-            GameSetting.MULTIPLAYER_TURN_CHECKER_DELAY,
-            settings
+            createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15)
         )
-        addSelectAsSeparateTable(tab, turnCheckerSelect)
-
+        tab.addWrapped {
+            turnCheckerSelect.addTo(this)
+        }
 
         tab.addCheckbox(
             "Show persistent notification for turn notifier service",
@@ -331,34 +329,6 @@ internal class MultiplayerTab(
         }
     }
 
-    private inner class RefreshSelect(
-        labelText: String,
-        extraCustomServerOptions: List<SelectItem<Duration>>,
-        dropboxOptions: List<SelectItem<Duration>>,
-        setting: GameSetting,
-        settings: GameSettings
-    ) : SettingsSelect<Duration>(labelText, getInitialOptions(extraCustomServerOptions, dropboxOptions), setting, settings) {
-        private val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
-        private val dropboxItems = dropboxOptions.toGdxArray()
-
-        fun update(isCustomServer: Boolean) {
-            if (isCustomServer && items.size != customServerItems.size) {
-                replaceItems(customServerItems)
-            } else if (!isCustomServer && items.size != dropboxItems.size) {
-                replaceItems(dropboxItems)
-            }
-        }
-    }
-
-    private fun getInitialOptions(
-        extraCustomServerOptions: List<SelectItem<Duration>>,
-        dropboxOptions: List<SelectItem<Duration>>
-    ): Iterable<SelectItem<Duration>> {
-        val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
-        val dropboxItems = dropboxOptions.toGdxArray()
-        return if (Multiplayer.usesCustomServer()) customServerItems else dropboxItems
-    }
-
     private fun fixTextFieldUrlOnType(textField: TextField) {
         var text: String = textField.text
         var cursor: Int = minOf(textField.cursorPosition, text.length)
@@ -377,18 +347,5 @@ internal class MultiplayerTab(
             textField.text = text
             textField.cursorPosition = cursor
         }
-    }
-
-    private fun createRefreshOptions(unit: ChronoUnit, vararg options: Long): List<SelectItem<Duration>> {
-        return options.map {
-            val duration = Duration.of(it, unit)
-            SelectItem(duration.format(), duration)
-        }
-    }
-
-    private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<*>) {
-        val table = Table()
-        settingsSelect.addTo(table)
-        tab.add(table).growX().fillX().row()
     }
 }

@@ -15,6 +15,7 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.SettingsSelect
+import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.full.declaredMemberProperties
 
 /**
@@ -195,6 +196,17 @@ interface IMediaFinder {
      *  - Note: Redesign if UncivSound should ever be made into or use an Enum, to store the label there.
      */
     open class LabeledSounds : Sounds() {
+        /** Holds an UncivSound with a prettified UI label for use in a SelectBox */
+        class UncivSoundLabeled(label: String, value: UncivSound) : SettingsSelect.SelectItem<UncivSound>(label, value) {
+            constructor(entry: Map.Entry<String, String>) : this(entry.value, UncivSound(entry.key))
+        }
+        /** Translate a reference for an UncivSound (stored in settings) -> UncivSoundLabeled field that can be used as callable reference for addSelectBox */
+        class UncivSoundProxy(private val property: KMutableProperty0<UncivSound>) {
+            var value: UncivSoundLabeled
+                get() = UncivSoundLabeled("", property.get()) // can do without pretty label as it's used only for selection
+                set(value) { property.set(value.value) }
+        }
+
         private companion object {
             // Also determines display order
             val prettifyUncivSoundNames = mapOf(
@@ -214,10 +226,10 @@ interface IMediaFinder {
 
         private val cache = mutableMapOf<String, String>()
 
-        fun getLabeledSounds(): Iterable<SettingsSelect.SelectItem<UncivSound>> {
+        fun getLabeledSounds(): Iterable<UncivSoundLabeled> {
             fillCache()
             return cache.asSequence()
-                .map { SettingsSelect.SelectItem(it.value, UncivSound(it.key)) }
+                .map { UncivSoundLabeled(it) }
                 .asIterable()
         }
 
