@@ -10,6 +10,7 @@ import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -261,7 +262,8 @@ class GameSettings {
         Small(900f,600f),
         Medium(1050f,700f),
         Large(1200f,800f),
-        Huge(1500f,1000f)
+        Huge(1500f,1000f);
+        override fun toString() = name.tr()
     }
 
     enum class NationPickerListMode { Icons, List }

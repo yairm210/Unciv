@@ -1,6 +1,7 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
+import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
@@ -8,11 +9,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
@@ -43,10 +40,19 @@ import com.unciv.utils.Display
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withoutItem
+import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlin.io.path.exists
+import kotlin.io.path.extension
+import kotlin.io.path.isDirectory
+import kotlin.io.path.name
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.pathString
 
 internal class AdvancedTab(
     private val optionsPopup: OptionsPopup,
@@ -141,96 +147,51 @@ internal class AdvancedTab(
     }
 
     private fun addAutosaveTurnsSelectBox() {
-        add("Turns between autosaves".toLabel()).left().fillX()
-
-        val autosaveTurnsSelectBox = SelectBox<Int>(skin)
-        val autosaveTurnsArray = Array<Int>()
-        autosaveTurnsArray.addAll(1,2,5,10,20,50,100,1000)
-        autosaveTurnsSelectBox.items = autosaveTurnsArray
-        autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
-
-        add(autosaveTurnsSelectBox).pad(10f).row()
-
-        autosaveTurnsSelectBox.onChange {
-            settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
-        }
-
+        addSelectBox("Turns between autosaves", settings::turnsBetweenAutosaves, listOf(1,2,5,10,20,50,100,1000))
     }
 
     private fun addFontFamilySelect(onFontChange: () -> Unit) {
-        add("Font family".toLabel()).left().fillX()
-        val selectCell = add()
-        row()
-
-        fun loadFontSelect(fonts: Array<FontFamilyData>, selectCell: Cell<Actor>) {
-            if (fonts.isEmpty) return
-
-            val fontSelectBox = SelectBox<FontFamilyData>(skin)
-            fontSelectBox.items = fonts
-
-            // `FontFamilyData` implements kotlin equality contract such that _only_ the invariantName field is compared.
-            // The Gdx SelectBox should honor that - but it doesn't, as it is a _kotlin_ thing to implement
-            // `==` by calling `equals`, and there's precompiled _Java_ `==` in the widget code.
-            // `setSelected` first calls a `contains` which can switch between using `==` and `equals` (set to `equals`)
-            // but just one step later (where it re-checks whether the new selection is equal to the old one)
-            // it does a hard `==`. Also, setSelection copies its argument to the selection var, it doesn't pull a match from `items`.
-            // Therefore, _selecting_ an item in a `SelectBox` by an instance of `FontFamilyData` where only the `invariantName` is valid won't work properly.
-            //
-            // This is why it's _not_ `fontSelectBox.selected = FontFamilyData(settings.fontFamily)`
-            val fontToSelect = settings.fontFamilyData
-            fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect.invariantName } // will default to first entry if `null` is passed
-
-            selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
-
-            fontSelectBox.onChange {
-                settings.fontFamilyData = fontSelectBox.selected
-                onFontChange()
+        /** Build provider for [addAsyncSelectBox]: per-mod scan */
+        @Suppress("NewApi")
+        fun loadModFonts(mod: Path) = flow {
+            kotlin.io.path.fileVisitor {  }
+            if (!mod.isDirectory()) return@flow
+            val fontsPath = mod.resolve("fonts")
+            if (!fontsPath.exists() || !fontsPath.isDirectory()) return@flow
+            java.nio.file.Files.list(fontsPath).use { stream->
+                for (file in stream) {
+                    if (file.extension.lowercase() != "ttf") continue
+                    emit(FontFamilyData(
+                        "${file.nameWithoutExtension} (${mod.name})",
+                        file.nameWithoutExtension,
+                        file.pathString
+                    ))
+                }
             }
         }
 
-        // This is a heavy operation and causes ANRs
-        Concurrency.run("Add Font Select") {
-
-            val fonts = Array<FontFamilyData>()
-
+        /** Build provider for [addAsyncSelectBox]: default, mods, system */
+        @Suppress("NewApi")
+        fun loadFonts() = flow {
             // Add default font
-            fonts.add(FontFamilyData.default)
-
-            // Add mods fonts
+            emit(FontFamilyData.default)
+            // List mod fonts
             val modsDir = UncivGame.Current.files.getModsFolder()
-            for (mod in modsDir.list()) {
-
-                // Not a dir, continue
-                if (!mod.isDirectory)
-                    continue
-
-                val modFontsDir = mod.child("fonts")
-
-                // Mod doesn't have fonts, continue
-                if (!modFontsDir.exists())
-                    continue
-
-                // Find .ttf files and add construct FontFamilyData
-                for (fontFile in modFontsDir.list()) {
-                    if (fontFile.extension().lowercase() == "ttf") {
-                        fonts.add(
-                            FontFamilyData(
-                                "${fontFile.nameWithoutExtension()} (${mod.name()})",
-                                fontFile.nameWithoutExtension(),
-                                fontFile.path()
-                            )
-                        )
+            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26) {
+                if (modsDir.type() == Files.FileType.External) {
+                    val modNio = modsDir.file().toPath()
+                    java.nio.file.Files.list(modNio).use { stream ->
+                        for (mod in stream)
+                            emitAll(loadModFonts(mod))
                     }
                 }
-
             }
-
             // Add system fonts
             for (font in Fonts.getSystemFonts())
-                fonts.add(font)
-
-            launchOnGLThread { loadFontSelect(fonts, selectCell) }
+                emit(font)
         }
+
+        addAsyncSelectBox("Font family", settings::fontFamilyData, ::loadFonts) { onFontChange() }
     }
 
     private fun addFontSizeMultiplier(onFontChange: () -> Unit) {
