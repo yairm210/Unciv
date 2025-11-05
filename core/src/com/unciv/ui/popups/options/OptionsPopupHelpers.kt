@@ -40,6 +40,13 @@ import kotlin.reflect.KMutableProperty0
  *     override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
  *     ...
  *  ```
+ *
+ *  TODO
+ *    * Sliders: 5 occurrences (Advanced, Automation, Debug, Display, Gameplay)
+ *    * TextFields: 4 occurrences (Advanced, Debug, ModCheck, Multiplayer)
+ *    * SettingsSelect and subclass
+ *    * Performance - what is taking so long? Use tabs doing their heavy lifting only on activation, like ModCheckTab?
+ *    * API: Open to specific tab? Run custom code on that tab (scroll-to or open mod expander)?
  */
 internal interface OptionsPopupHelpers {
     /** Suggested minimum width for a right-hand cell in a typical 2-column label/widget row.
