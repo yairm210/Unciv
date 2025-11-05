@@ -29,7 +29,9 @@ import com.unciv.utils.toGdxArray
 
 internal class DebugTab(
     private val optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin) {
+) : Table(BaseScreen.skin), OptionsPopupHelpers {
+    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+
     init {
         pad(10f)
         defaults().pad(5f)
@@ -54,18 +56,18 @@ internal class DebugTab(
             add(invalidInputLabel).colspan(2).row()
         }
 
-        optionsPopup.addCheckbox(this, "Supercharged", DebugUtils.SUPERCHARGED) { DebugUtils.SUPERCHARGED = it }
-        optionsPopup.addCheckbox(this, "View entire map", DebugUtils.VISIBLE_MAP) { DebugUtils.VISIBLE_MAP = it }
-        optionsPopup.addCheckbox(this, "Show coordinates on tiles", DebugUtils.SHOW_TILE_COORDS) { DebugUtils.SHOW_TILE_COORDS = it }
-        optionsPopup.addCheckbox(this, "Show tile image locations", DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) { DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it }
+        addCheckbox("Supercharged", DebugUtils.SUPERCHARGED) { DebugUtils.SUPERCHARGED = it }
+        addCheckbox("View entire map", DebugUtils.VISIBLE_MAP) { DebugUtils.VISIBLE_MAP = it }
+        addCheckbox("Show coordinates on tiles", DebugUtils.SHOW_TILE_COORDS) { DebugUtils.SHOW_TILE_COORDS = it }
+        addCheckbox("Show tile image locations", DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) { DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it }
 
         val curGameInfo = game.gameInfo
         if (curGameInfo != null) {
-            optionsPopup.addCheckbox(this, "God mode (current game)", curGameInfo.gameParameters.godMode) { curGameInfo.gameParameters.godMode = it }
+            addCheckbox("God mode (current game)", curGameInfo.gameParameters.godMode) { curGameInfo.gameParameters.godMode = it }
         }
 
-        optionsPopup.addCheckbox(this, "Save games compressed", UncivFiles.saveZipped) { UncivFiles.saveZipped = it }
-        optionsPopup.addCheckbox(this, "Save maps compressed", MapSaver.saveZipped) { MapSaver.saveZipped = it }
+        addCheckbox("Save games compressed", UncivFiles.saveZipped) { UncivFiles.saveZipped = it }
+        addCheckbox("Save maps compressed", MapSaver.saveZipped) { MapSaver.saveZipped = it }
 
         val select = SelectBox<SceneDebugMode>(skin)
         select.items = SceneDebugMode.entries.toGdxArray()
@@ -75,7 +77,7 @@ internal class DebugTab(
             (stage as UncivStage).setSceneDebugMode()
         }
         add("Gdx Scene2D debug".toLabel()).left().fillX()
-        add(select).minWidth(optionsPopup.selectBoxMinWidth).row()
+        add(select).minWidth(selectBoxMinWidth).row()
 
         add(Table().apply {
             add("Unique misspelling threshold".toLabel()).left().fillX()

@@ -51,7 +51,9 @@ import java.util.zip.Deflater
 internal class AdvancedTab(
     private val optionsPopup: OptionsPopup,
     onFontChange: () -> Unit
-): Table(BaseScreen.skin) {
+): Table(BaseScreen.skin), OptionsPopupHelpers {
+    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+
     private val settings = optionsPopup.settings
 
     init {
@@ -86,18 +88,18 @@ internal class AdvancedTab(
     }
 
     private fun addCutoutCheckbox() {
-        optionsPopup.addCheckbox(this, "Enable using display cutout areas", settings.androidCutout) {
-            optionsPopup.settings.androidCutout = it
+        addCheckbox("Enable using display cutout areas", settings.androidCutout) {
+            settings.androidCutout = it
             Display.setCutout(it)
-            optionsPopup.reopenAfterDisplayLayoutChange()
+            reopenAfterDisplayLayoutChange(optionsPopup.tabs.activePage)
         }
     }
 
     private fun addHideSystemUiCheckbox() {
-        optionsPopup.addCheckbox(this, "Hide system status and navigation bars", settings.androidHideSystemUi) {
-            optionsPopup.settings.androidHideSystemUi = it
+        addCheckbox("Hide system status and navigation bars", settings.androidHideSystemUi) {
+            settings.androidHideSystemUi = it
             Display.setSystemUiVisibility(hide = it)
-            optionsPopup.reopenAfterDisplayLayoutChange()
+            reopenAfterDisplayLayoutChange(optionsPopup.tabs.activePage)
         }
     }
 
@@ -178,7 +180,7 @@ internal class AdvancedTab(
             val fontToSelect = settings.fontFamilyData
             fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect.invariantName } // will default to first entry if `null` is passed
 
-            selectCell.setActor(fontSelectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f)
+            selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
 
             fontSelectBox.onChange {
                 settings.fontFamilyData = fontSelectBox.selected
@@ -304,7 +306,7 @@ internal class AdvancedTab(
                 val extraImagesLocation = "../../extraImages"
                 // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
                 generateScreenshots(
-                    optionsPopup.settings, arrayListOf(
+                    settings, arrayListOf(
                         ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f), false),
                         ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
                         ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png", Vector2(-2f, 6f)),
@@ -395,10 +397,11 @@ internal class AdvancedTab(
     }
 
     private fun addEasterEggsCheckBox() {
-        optionsPopup.addCheckbox(this, "Enable Easter Eggs", settings.enableEasterEggs) { settings.enableEasterEggs = it }
+        addCheckbox("Enable Easter Eggs", settings.enableEasterEggs) { settings.enableEasterEggs = it }
     }
 
     private fun addEnlargeNotificationsCheckBox() {
-        optionsPopup.addCheckbox(this, "Enlarge selected notifications", settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
+        addCheckbox("Enlarge selected notifications", settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
     }
+
 }

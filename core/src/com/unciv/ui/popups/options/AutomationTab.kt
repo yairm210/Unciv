@@ -12,7 +12,9 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 internal class AutomationTab(
     optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin) {
+) : Table(BaseScreen.skin), OptionsPopupHelpers {
+    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+
     init {
         pad(10f)
         defaults().pad(5f)
@@ -20,7 +22,7 @@ internal class AutomationTab(
         val settings = optionsPopup.settings
         add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
+        addCheckbox("Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
             settings.autoAssignCityProduction = shouldAutoAssignCityProduction
             val worldScreen = GUI.getWorldScreenIfActive()
             if (shouldAutoAssignCityProduction && worldScreen != null &&
@@ -31,29 +33,24 @@ internal class AutomationTab(
                 }
             }
         }
-        optionsPopup.addCheckbox(this, "Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        addCheckbox(
             "Automated workers replace improvements",
             settings.automatedWorkersReplaceImprovements
         ) { settings.automatedWorkersReplaceImprovements = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox(
             "Automated units move on turn start",
             settings.automatedUnitsMoveOnTurnStart, true
         ) { settings.automatedUnitsMoveOnTurnStart = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox(
             "Automated units can upgrade",
             settings.automatedUnitsCanUpgrade, false
         ) { settings.automatedUnitsCanUpgrade = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox(
             "Automated units choose promotions",
             settings.automatedUnitsChoosePromotions, false
         ) { settings.automatedUnitsChoosePromotions = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox(
             "Cities auto-bombard at end of turn",
             settings.citiesAutoBombardAtEndOfTurn, false
         ) { settings.citiesAutoBombardAtEndOfTurn = it }
@@ -61,45 +58,37 @@ internal class AutomationTab(
         addSeparator()
         add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 //    fun addAutoPlaySections() {
-//        optionsPopup.addCheckbox(
-//            this,
+//        addCheckbox(
 //            "AutoPlay Military",
 //            settings.autoPlay.autoPlayMilitary, false
 //        ) { settings.autoPlay.autoPlayMilitary = it }
-//        optionsPopup.addCheckbox(
-//            this,
+//        addCheckbox(
 //            "AutoPlay Civilian",
 //            settings.autoPlay.autoPlayCivilian, false
 //        ) { settings.autoPlay.autoPlayCivilian = it }
-//        optionsPopup.addCheckbox(
-//            this,
+//        addCheckbox(
 //            "AutoPlay Economy",
 //            settings.autoPlay.autoPlayEconomy, false
 //        ) { settings.autoPlay.autoPlayEconomy = it }
-//        optionsPopup.addCheckbox(
-//            this,
+//        addCheckbox(
 //            "AutoPlay Diplomacy",
 //            settings.autoPlay.autoPlayDiplomacy, false
 //        ) { settings.autoPlay.autoPlayDiplomacy = it }
-//        optionsPopup.addCheckbox(
-//            this,
+//        addCheckbox(
 //            "AutoPlay Technology",
 //            settings.autoPlay.autoPlayTechnology, false
 //        ) { settings.autoPlay.autoPlayTechnology = it }
-//        optionsPopup.addCheckbox(
-//            this,
+//        addCheckbox(
 //            "AutoPlay Policies",
 //            settings.autoPlay.autoPlayPolicies, false
 //        ) { settings.autoPlay.autoPlayPolicies = it }
-//        optionsPopup.addCheckbox(
-//            this,
+//        addCheckbox(
 //            "AutoPlay Religion",
 //            settings.autoPlay.autoPlayReligion, false
 //        ) { settings.autoPlay.autoPlayReligion = it }
 //    }
 
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox(
             "Show AutoPlay button",
             settings.autoPlay.showAutoPlayButton, true
         ) {
@@ -108,22 +97,20 @@ internal class AutomationTab(
         }
 
 
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox(
             "AutoPlay until victory",
             settings.autoPlay.autoPlayUntilEnd, false
         ) {
             settings.autoPlay.autoPlayUntilEnd = it
-            if (!it) addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+            if (!it) addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
             else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, AutomationTab(optionsPopup))
         }
 
 
         if (!settings.autoPlay.autoPlayUntilEnd)
-            addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+            addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
 
-//    optionsPopup.addCheckbox(
-//        this,
+//    addCheckbox(
 //        "Full AutoPlay AI",
 //        settings.autoPlay.fullAutoPlayAI, false
 //    ) { settings.autoPlay.fullAutoPlayAI = it

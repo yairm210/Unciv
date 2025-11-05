@@ -33,15 +33,17 @@ import java.time.temporal.ChronoUnit
 
 internal class MultiplayerTab(
     optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin) {
+) : Table(BaseScreen.skin), OptionsPopupHelpers {
+    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+
     init {
         pad(10f)
         defaults().pad(5f)
 
         val settings = optionsPopup.settings
 
-        optionsPopup.addCheckbox(
-            this, "Enable multiplayer status button in singleplayer games",
+        addCheckbox(
+            "Enable multiplayer status button in singleplayer games",
             settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
         )
 
@@ -215,8 +217,7 @@ internal class MultiplayerTab(
     ): RefreshSelect? {
         val settings = optionsPopup.settings
 
-        optionsPopup.addCheckbox(
-            tab,
+        tab.addCheckbox(
             "Enable out-of-game turn notifications",
             settings.multiplayer::turnCheckerEnabled
         )
@@ -233,8 +234,8 @@ internal class MultiplayerTab(
         addSelectAsSeparateTable(tab, turnCheckerSelect)
 
 
-        optionsPopup.addCheckbox(
-            tab, "Show persistent notification for turn notifier service",
+        tab.addCheckbox(
+            "Show persistent notification for turn notifier service",
             settings.multiplayer::turnCheckerPersistentNotificationEnabled
         )
 

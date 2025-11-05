@@ -3,7 +3,6 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -37,7 +36,9 @@ import com.unciv.utils.ScreenOrientation
 internal class DisplayTab(
     optionsPopup: OptionsPopup,
     onChange: () -> Unit,
-) : Table(skin) {
+) : Table(skin), OptionsPopupHelpers {
+    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+
     init {
         pad(10f)
         defaults().pad(2.5f)
@@ -46,72 +47,69 @@ internal class DisplayTab(
 
         add("Screen".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addScreenOrientationSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addScreenModeSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
+        addScreenSizeSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addScreenOrientationSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addScreenModeSelectBox(this, settings, selectBoxMinWidth)
 
 
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            optionsPopup.addCheckbox(this, "Map mouse auto-scroll", settings.mapAutoScroll, true) {
+            addCheckbox("Map mouse auto-scroll", settings.mapAutoScroll, true) {
                 settings.mapAutoScroll = it
                 if (GUI.isWorldLoaded())
                     GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
             }
-            addScrollSpeedSlider(this, settings, optionsPopup.selectBoxMinWidth)
+            addScrollSpeedSlider(this, settings, selectBoxMinWidth)
         }
 
         addSeparator()
         add("Graphics".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+        addTileSetSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addUnitSetSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addSkinSelectBox(this, settings, selectBoxMinWidth, onChange)
 
         addSeparator()
         add("UI".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addNotificationScrollSelect(this, settings, optionsPopup.selectBoxMinWidth)
-        optionsPopup.addCheckbox(this, "Show minimap", settings.showMinimap, updateWorld = true) { settings.showMinimap = it }
-        optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
+        addNotificationScrollSelect(this, settings, selectBoxMinWidth)
+        addCheckbox("Show minimap", settings.showMinimap, updateWorld = true) { settings.showMinimap = it }
+        addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials(this, settings)
-        optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox("Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
+        addCheckbox(
             "Never close popups by clicking outside",
             settings.forbidPopupClickBehindToClose,
             false
         ) { settings.forbidPopupClickBehindToClose = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox(
             "Use circles to indicate movable tiles",
             settings.useCirclesToIndicateMovableTiles,
             true
         ) { settings.useCirclesToIndicateMovableTiles = it }
-        addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
+        addPediaUnitArtSizeSlider(this, settings, selectBoxMinWidth)
 
         addSeparator()
         add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
-        optionsPopup.addCheckbox(
-            this,
+        addCheckbox("Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
+        addCheckbox(
             "Show suggested city locations for units that can found cities",
             settings.showSettlersSuggestedCityLocations,
             true
         ) { settings.showSettlersSuggestedCityLocations = it }
-        optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
-        optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-        optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) {
+        addCheckbox("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
+        addCheckbox("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
+        addCheckbox("Show resources and improvements", settings.showResourcesAndImprovements, true) {
             settings.showResourcesAndImprovements = it
         }
-        optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
+        addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
-        addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
+        addUnitIconAlphaSlider(this, settings, selectBoxMinWidth)
 
         addSeparator()
         add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
+        addCheckbox("Continuous rendering", settings.continuousRendering) {
             settings.continuousRendering = it
             Gdx.graphics.isContinuousRendering = it
         }
@@ -127,9 +125,9 @@ internal class DisplayTab(
         addSeparator()
         add("Experimental".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
-        optionsPopup.addCheckbox(this, "Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
-        optionsPopup.addCheckbox(this, "Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
+        addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+        addCheckbox("Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
+        addCheckbox("Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
     }
 
     private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
