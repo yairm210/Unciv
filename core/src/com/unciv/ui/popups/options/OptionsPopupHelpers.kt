@@ -12,6 +12,7 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.TranslatedSelectBox
+import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -45,8 +46,8 @@ import kotlin.time.measureTime
  *  ```
  *
  *  TODO
- *    * Sliders: 5 occurrences (Advanced, Automation, Debug, Display, Gameplay)
  *    * TextFields: 4 occurrences (Advanced, Debug, ModCheck, Multiplayer)
+ *    * Would buttons be worth it?
  *    * API: Open to specific tab? Run custom code on that tab (scroll-to or open mod expander)?
  */
 internal interface OptionsPopupHelpers {
@@ -185,6 +186,59 @@ internal interface OptionsPopupHelpers {
                 }
                 select.invalidateHierarchy()
             }
+        }
+    }
+
+    /**
+     *  Adds a [Label] and [UncivSlider] as two Cells into a table row, generic version.
+     *
+     *  Requires the caller to retrieve and write back the value.
+     *
+     *  @param initial Setting value as its original type, will be converted to Float
+     *  @param min, [max], [step] - passed to UncivSlider as Float
+     *  @param action Callback where you should convert and write back the value, and optionally take further action.
+     *         Arguments are the value and the state of isDragging - don't do heavy lifting while it is true.
+     */
+    fun <T: Number> Table.addSlider(
+        text: String, initial: T, min: T, max: T, step: T,
+        getTipText: ((Float) -> String)? = null,
+        action: ((Float, Boolean) -> Unit)
+    ): Cell<UncivSlider> {
+        add(text.toLabel()).left().fillX().padTop(5f)
+
+        // lateinit, otherwise the callback can't capture it, and by the time the callback fires this will be initialized
+        lateinit var slider: UncivSlider
+        slider = UncivSlider(
+            min.toFloat(), max.toFloat(), step.toFloat(),
+            initial = initial.toFloat(),
+            getTipText = getTipText
+        ) {
+            action(it, slider.isDragging)
+        }
+        val cell = add(slider).minWidth(selectBoxMinWidth).pad(5f).padTop(10f)
+        cell.row()
+        return cell
+    }
+
+    /**
+     *  Adds a [Label] and [UncivSlider] as two Cells into a table row, Float property.
+     *
+     *  Handles value retrieval and writeback for you.
+     *
+     *  @param property A reference to a Float field to link to the slider value
+     *  @param min, [max], [step] - passed to UncivSlider
+     *  @param action Callback only called when not dragging, optional (the value will be written automatically)
+     */
+    fun Table.addSlider(
+        text: String, property: KMutableProperty0<Float>,
+        min: Float, max: Float, step: Float = 1f,
+        getTipText: ((Float) -> String)? = null,
+        action: (Float) -> Unit = {}
+    ): Cell<UncivSlider> {
+        return addSlider(text, property.get(), min, max, step, getTipText) { value, dragging ->
+            if (!dragging)
+                action(value)
+            property.set(value)
         }
     }
 

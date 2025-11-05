@@ -1,17 +1,19 @@
 package com.unciv.ui.popups.options
 
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
 
 internal class AutomationTab(
     optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
+    lateinit var autoPlayMaxTurnsSliderTable: Table
+    lateinit var autoPlayMaxTurnsSliderCell: Cell<Table>
+
     override fun lateInitialize() {
         add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
@@ -92,16 +94,23 @@ internal class AutomationTab(
 
         addCheckbox(
             "AutoPlay until victory",
-            settings.autoPlay.autoPlayUntilEnd, false
+            settings.autoPlay.autoPlayUntilEnd
         ) {
             settings.autoPlay.autoPlayUntilEnd = it
-            if (!it) addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
-            else replacePage(::AutomationTab)
+
+            autoPlayMaxTurnsSliderCell.setActor(if (it) autoPlayMaxTurnsSliderTable else null)
+            pack()
         }
 
+        autoPlayMaxTurnsSliderCell = addWrapped {
+            addSlider("Multi-turn AutoPlay amount", settings.autoPlay.autoPlayMaxTurns, 1, 200, 1) { value, _ ->
+                settings.autoPlay.autoPlayMaxTurns = value.toInt()
+            }
+        }
+        autoPlayMaxTurnsSliderTable = autoPlayMaxTurnsSliderCell.actor
 
         if (!settings.autoPlay.autoPlayUntilEnd)
-            addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
+            autoPlayMaxTurnsSliderCell.setActor(null)
 
 //    addCheckbox(
 //        "Full AutoPlay AI",
@@ -114,22 +123,5 @@ internal class AutomationTab(
 //        addAutoPlaySections()
 
         super.lateInitialize()
-    }
-
-    private fun addAutoPlayMaxTurnsSlider(
-        table: Table,
-        settings: GameSettings,
-        selectBoxMinWidth: Float
-    ) {
-        table.add("Multi-turn AutoPlay amount".toLabel()).left().fillX()
-
-        val minimapSlider = UncivSlider(
-            1f, 200f, 1f,
-            initial = settings.autoPlay.autoPlayMaxTurns.toFloat()
-        ) {
-            val turns = it.toInt()
-            settings.autoPlay.autoPlayMaxTurns = turns
-        }
-        table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 }

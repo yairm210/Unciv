@@ -16,7 +16,6 @@ import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
@@ -51,7 +50,7 @@ internal class DisplayTab(
                 if (GUI.isWorldLoaded())
                     GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
             }
-            addScrollSpeedSlider(this, settings, selectBoxMinWidth)
+            addScrollSpeedSlider()
         }
 
         addSeparator()
@@ -79,7 +78,7 @@ internal class DisplayTab(
             settings.useCirclesToIndicateMovableTiles,
             true
         ) { settings.useCirclesToIndicateMovableTiles = it }
-        addPediaUnitArtSizeSlider(this, settings, selectBoxMinWidth)
+        addPediaUnitArtSizeSlider()
 
         addSeparator()
         add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
@@ -97,7 +96,7 @@ internal class DisplayTab(
         }
         addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
-        addUnitIconAlphaSlider(this, settings, selectBoxMinWidth)
+        addUnitIconAlphaSlider()
 
         addSeparator()
         add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
@@ -125,45 +124,27 @@ internal class DisplayTab(
         super.lateInitialize()
     }
 
-    private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-        table.add("Map panning speed".toLabel()).left().fillX()
-
-        val scrollSpeedSlider = UncivSlider(
-            0.2f, 25f, 0.2f, initial = settings.mapPanningSpeed
-        ) {
-            settings.mapPanningSpeed = it
+    private fun addScrollSpeedSlider() {
+        addSlider("Map panning speed", settings::mapPanningSpeed, 0.2f, 25f, 0.2f) {
             settings.save()
             if (GUI.isWorldLoaded())
                 GUI.getMap().mapPanningSpeed = settings.mapPanningSpeed
         }
-        table.add(scrollSpeedSlider).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
-    private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-        table.add("Unit icon opacity".toLabel()).left().fillX()
-
+    private fun addUnitIconAlphaSlider() {
         val getTipText: (Float) -> String = { "%.0f".format(it * 100) + "%" }
-
-        val unitIconAlphaSlider = UncivSlider(
-            0f, 1f, 0.1f, initial = settings.unitIconOpacity, getTipText = getTipText
-        ) {
-            settings.unitIconOpacity = it
+        addSlider("Unit icon opacity", settings::unitIconOpacity, 0f, 1f, 0.1f, getTipText) {
             GUI.setUpdateWorldOnNextRender()
         }
-        table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
-    private fun addPediaUnitArtSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-        table.add("Size of Unitset art in Civilopedia".toLabel()).left().fillX()
-
-        val unitArtSizeSlider = UncivSlider(
-            0f, 360f, 1f, initial = settings.pediaUnitArtSize
-        ) {
-            settings.pediaUnitArtSize = it
-            GUI.setUpdateWorldOnNextRender()
+    private fun addPediaUnitArtSizeSlider() {
+        addSlider("Size of Unitset art in Civilopedia", settings::pediaUnitArtSize, 0f, 360f) {
+            GUI.setUpdateWorldOnNextRender() // TODO: I doubt that helps, the setting has only influence on CivilopediaScreen
+        }.actor.apply {
+            setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
         }
-        unitArtSizeSlider.setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
-        table.add(unitArtSizeSlider).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
     private fun addScreenModeSelectBox() {
