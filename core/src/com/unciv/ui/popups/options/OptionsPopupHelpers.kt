@@ -17,6 +17,7 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.toGdxArray
 import com.unciv.utils.withGLContext
@@ -26,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KMutableProperty0
+import kotlin.time.measureTime
 
 /**
  *  Helper library for OptionsPopup and its tabs.
@@ -222,5 +224,22 @@ internal interface OptionsPopupHelpers {
                 screen.openOptionsPopup(activePage)
             }
         }
+    }
+
+    /**
+     *  Performance measuring tool - meant to be used temporarily
+     *  @param name Used in the log messages
+     *  @param factory Anything that returns a [T] - could be a lambda wihtout return value, a reference to a no-args constructor, a lambda-wrapped constructor..
+     *  @return The result of `factory()`
+     */
+    fun <T> measureAndLog(name: String, factory: () -> T): T {
+        if (Log.backend.isRelease()) return factory()
+        Log.debug("Start of %s", name)
+        var result: T
+        val duration = measureTime {
+            result = factory()
+        }
+        Log.debug("End of %s: %s", name, duration)
+        return result
     }
 }
