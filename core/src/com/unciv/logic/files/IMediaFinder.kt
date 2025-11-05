@@ -35,7 +35,7 @@ import kotlin.reflect.full.declaredMemberProperties
  *  - Direct instantiation is fine too when the call is simple.
  *
  *  ## Usages
- *  - OptionsPopup multiplayer notification sounds: [multiplayerTab][com.unciv.ui.popups.options.multiplayerTab]
+ *  - OptionsPopup multiplayer notification sounds: [multiplayerTab][com.unciv.ui.popups.options.MultiplayerTab]
  *  - todo, prepared: [SoundPlayer.getFolders]
  *  - todo, prepared: [MusicController.getAllMusicFiles]
  *  - todo, prepared: Leader voices: [MusicController.playVoice]

@@ -15,7 +15,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
 
-class KeyBindingsTab(
+internal class KeyBindingsTab(
     optionsPopup: OptionsPopup,
     private val labelWidth: Float
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {

@@ -27,7 +27,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.toGdxArray
 
-class DebugTab(
+internal class DebugTab(
     private val optionsPopup: OptionsPopup
 ) : Table(BaseScreen.skin) {
     init {

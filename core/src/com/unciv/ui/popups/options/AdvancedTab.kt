@@ -48,7 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
 
-class AdvancedTab(
+internal class AdvancedTab(
     private val optionsPopup: OptionsPopup,
     onFontChange: () -> Unit
 ): Table(BaseScreen.skin) {
@@ -57,10 +57,10 @@ class AdvancedTab(
     init {
         pad(10f)
         defaults().pad(5f)
-        
+
         addAutosaveField()
         addAutosaveTurnsSelectBox()
-        
+
         addSeparator()
 
         if (Display.hasCutout())
@@ -111,7 +111,7 @@ class AdvancedTab(
 
         autoSaveTrunsTextFieldButton.onClick {
             if (autoSaveTrunsTextField.text.isEmpty()) return@onClick
-            
+
             val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
 
             if (numberAutosaveTurns <= 0) {
@@ -131,13 +131,13 @@ class AdvancedTab(
 
             } else {
                 settings.maxAutosavesStored = numberAutosaveTurns
-            
+
             }
         }
         autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
         add(autosaveFieldTable).row()
     }
-    
+
     private fun addAutosaveTurnsSelectBox() {
         add("Turns between autosaves".toLabel()).left().fillX()
 

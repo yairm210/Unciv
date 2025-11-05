@@ -8,7 +8,7 @@ import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageKeySho
 import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.components.widgets.TabbedPager
 
-class LanguageTab(
+internal class LanguageTab(
     optionsPopup: OptionsPopup,
     private val onLanguageSelected: () -> Unit
 ): Table(), TabbedPager.IPageExtensions {

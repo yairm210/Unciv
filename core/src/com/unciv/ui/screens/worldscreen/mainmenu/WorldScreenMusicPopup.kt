@@ -15,7 +15,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.options.addMusicControls
+import com.unciv.ui.popups.options.SoundTab.Companion.addMusicControls
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 

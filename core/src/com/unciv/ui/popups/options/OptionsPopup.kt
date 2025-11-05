@@ -76,17 +76,17 @@ class OptionsPopup(
         )
         tabs.addPage(
             "Display",
-            displayTab(this, ::reloadWorldAndOptions),
+            DisplayTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f
         )
         tabs.addPage(
             "Gameplay",
-            gameplayTab(this),
+            GameplayTab(this),
             ImageGetter.getImage("OtherIcons/Options"), 24f
         )
         tabs.addPage(
             "Automation",
-            automationTab(this),
+            AutomationTab(this),
             ImageGetter.getImage("OtherIcons/NationSwap"), 24f
         )
         tabs.addPage(
@@ -96,12 +96,12 @@ class OptionsPopup(
         )
         tabs.addPage(
             "Sound",
-            soundTab(this),
+            SoundTab(this),
             ImageGetter.getImage("OtherIcons/Speaker"), 24f
         )
         tabs.addPage(
             "Multiplayer",
-            multiplayerTab(this),
+            MultiplayerTab(this),
             ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
         )
 
