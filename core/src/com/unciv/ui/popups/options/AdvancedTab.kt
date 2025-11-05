@@ -48,7 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
 
-class AdvancedTab(
+internal class AdvancedTab(
     private val optionsPopup: OptionsPopup,
     onFontChange: () -> Unit
 ): Table(BaseScreen.skin) {

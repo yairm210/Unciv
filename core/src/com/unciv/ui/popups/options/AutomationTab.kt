@@ -10,54 +10,56 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-fun automationTab(optionsPopup: OptionsPopup
-): Table = Table(BaseScreen.skin).apply {
-    pad(10f)
-    defaults().pad(5f)
+internal class AutomationTab(
+    optionsPopup: OptionsPopup
+) : Table(BaseScreen.skin) {
+    init {
+        pad(10f)
+        defaults().pad(5f)
 
-    val settings = optionsPopup.settings
-    add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        val settings = optionsPopup.settings
+        add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-    optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
-        settings.autoAssignCityProduction = shouldAutoAssignCityProduction
-        val worldScreen = GUI.getWorldScreenIfActive()
-        if (shouldAutoAssignCityProduction && worldScreen != null &&
-            worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
-        ) {
-            worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
-                city.cityConstructions.chooseNextConstruction()
+        optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
+            settings.autoAssignCityProduction = shouldAutoAssignCityProduction
+            val worldScreen = GUI.getWorldScreenIfActive()
+            if (shouldAutoAssignCityProduction && worldScreen != null &&
+                worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
+            ) {
+                worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
+                    city.cityConstructions.chooseNextConstruction()
+                }
             }
         }
-    }
-    optionsPopup.addCheckbox(this, "Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated workers replace improvements",
-        settings.automatedWorkersReplaceImprovements
-    ) { settings.automatedWorkersReplaceImprovements = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated units move on turn start",
-        settings.automatedUnitsMoveOnTurnStart, true
-    ) { settings.automatedUnitsMoveOnTurnStart = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated units can upgrade",
-        settings.automatedUnitsCanUpgrade, false
-    ) { settings.automatedUnitsCanUpgrade = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Automated units choose promotions",
-        settings.automatedUnitsChoosePromotions, false
-    ) { settings.automatedUnitsChoosePromotions = it }
-    optionsPopup.addCheckbox(
-        this,
-        "Cities auto-bombard at end of turn",
-        settings.citiesAutoBombardAtEndOfTurn, false
-    ) { settings.citiesAutoBombardAtEndOfTurn = it }
+        optionsPopup.addCheckbox(this, "Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        optionsPopup.addCheckbox(
+            this,
+            "Automated workers replace improvements",
+            settings.automatedWorkersReplaceImprovements
+        ) { settings.automatedWorkersReplaceImprovements = it }
+        optionsPopup.addCheckbox(
+            this,
+            "Automated units move on turn start",
+            settings.automatedUnitsMoveOnTurnStart, true
+        ) { settings.automatedUnitsMoveOnTurnStart = it }
+        optionsPopup.addCheckbox(
+            this,
+            "Automated units can upgrade",
+            settings.automatedUnitsCanUpgrade, false
+        ) { settings.automatedUnitsCanUpgrade = it }
+        optionsPopup.addCheckbox(
+            this,
+            "Automated units choose promotions",
+            settings.automatedUnitsChoosePromotions, false
+        ) { settings.automatedUnitsChoosePromotions = it }
+        optionsPopup.addCheckbox(
+            this,
+            "Cities auto-bombard at end of turn",
+            settings.citiesAutoBombardAtEndOfTurn, false
+        ) { settings.citiesAutoBombardAtEndOfTurn = it }
 
-    addSeparator()
-    add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addSeparator()
+        add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 //    fun addAutoPlaySections() {
 //        optionsPopup.addCheckbox(
 //            this,
@@ -96,53 +98,56 @@ fun automationTab(optionsPopup: OptionsPopup
 //        ) { settings.autoPlay.autoPlayReligion = it }
 //    }
 
-    optionsPopup.addCheckbox(
-        this,
-        "Show AutoPlay button",
-        settings.autoPlay.showAutoPlayButton, true
-    ) { settings.autoPlay.showAutoPlayButton = it
-        GUI.getWorldScreenIfActive()?.autoPlay?.stopAutoPlay() 
-    }
+        optionsPopup.addCheckbox(
+            this,
+            "Show AutoPlay button",
+            settings.autoPlay.showAutoPlayButton, true
+        ) {
+            settings.autoPlay.showAutoPlayButton = it
+            GUI.getWorldScreenIfActive()?.autoPlay?.stopAutoPlay()
+        }
 
 
-    optionsPopup.addCheckbox(
-        this,
-        "AutoPlay until victory",
-        settings.autoPlay.autoPlayUntilEnd, false
-    ) { settings.autoPlay.autoPlayUntilEnd = it
-        if (!it) addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth) 
-        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, automationTab(optionsPopup))}
+        optionsPopup.addCheckbox(
+            this,
+            "AutoPlay until victory",
+            settings.autoPlay.autoPlayUntilEnd, false
+        ) {
+            settings.autoPlay.autoPlayUntilEnd = it
+            if (!it) addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+            else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, AutomationTab(optionsPopup))
+        }
 
 
-    if (!settings.autoPlay.autoPlayUntilEnd)
-        addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+        if (!settings.autoPlay.autoPlayUntilEnd)
+            addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
 //    optionsPopup.addCheckbox(
 //        this,
 //        "Full AutoPlay AI",
 //        settings.autoPlay.fullAutoPlayAI, false
 //    ) { settings.autoPlay.fullAutoPlayAI = it
-//        if (!it) addAutoPlaySections() 
+//        if (!it) addAutoPlaySections()
 //        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, autoPlayTab(optionsPopup))
 //    }
 //    if (!settings.autoPlay.fullAutoPlayAI)
 //        addAutoPlaySections()
-}
-
-private fun addAutoPlayMaxTurnsSlider(
-    table: Table,
-    settings: GameSettings,
-    selectBoxMinWidth: Float
-) {
-    table.add("Multi-turn AutoPlay amount".toLabel()).left().fillX()
-
-    val minimapSlider = UncivSlider(
-        1f, 200f, 1f,
-        initial = settings.autoPlay.autoPlayMaxTurns.toFloat()
-    ) {
-        val turns = it.toInt()
-        settings.autoPlay.autoPlayMaxTurns = turns
     }
-    table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
-}
 
+    private fun addAutoPlayMaxTurnsSlider(
+        table: Table,
+        settings: GameSettings,
+        selectBoxMinWidth: Float
+    ) {
+        table.add("Multi-turn AutoPlay amount".toLabel()).left().fillX()
+
+        val minimapSlider = UncivSlider(
+            1f, 200f, 1f,
+            initial = settings.autoPlay.autoPlayMaxTurns.toFloat()
+        ) {
+            val turns = it.toInt()
+            settings.autoPlay.autoPlayMaxTurns = turns
+        }
+        table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+    }
+}
