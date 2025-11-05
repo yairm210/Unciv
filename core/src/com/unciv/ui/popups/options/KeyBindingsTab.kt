@@ -1,8 +1,6 @@
 package com.unciv.ui.popups.options
 
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
@@ -10,7 +8,6 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.KeyCapturingButton
 import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
@@ -18,8 +15,8 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 internal class KeyBindingsTab(
     optionsPopup: OptionsPopup,
     private val labelWidth: Float
-) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private val keyBindings = optionsPopup.settings.keyBindings
+): OptionsPopupTab(optionsPopup) {
+    private val keyBindings = settings.keyBindings
 
     // lazy triggers on activate(), not on init: init runs when Options is opened, even if we never look at this tab.
     private val groupedWidgets by lazy { createGroupedWidgets() }
@@ -36,8 +33,6 @@ internal class KeyBindingsTab(
 
     init {
         top()
-        pad(10f)
-        defaults().pad(5f)
     }
 
     private fun createGroupedWidgets(): LinkedHashMap<KeyboardBinding.Category, LinkedHashMap<KeyboardBinding, KeyCapturingButton>> {
@@ -45,7 +40,7 @@ internal class KeyBindingsTab(
         //     a sorted (by translated label) collection of all visible bindings in that category,
         //     associated with the actual UI widget (a KeyCapturingButton),
         //     and we want to easily index that by binding, so it should be a order-preserving map.
-        val collator = UncivGame.Current.settings.getCollatorFromLocale()
+        val collator = settings.getCollatorFromLocale()
         return KeyboardBinding.entries.asSequence()
             .filterNot { it.hidden }
             .groupBy { it.category }  // Materializes a Map<Category,List<KeyboardBinding>>
@@ -122,6 +117,7 @@ internal class KeyBindingsTab(
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        super.activated(index, caption, pager)
         update()
     }
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {

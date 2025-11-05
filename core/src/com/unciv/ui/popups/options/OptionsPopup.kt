@@ -32,7 +32,6 @@ class OptionsPopup(
     val settings = screen.game.settings
     val tabs: TabbedPager
     override val selectBoxMinWidth: Float
-    private val tabMinWidth: Float
 
     //endregion
 
@@ -48,16 +47,19 @@ class OptionsPopup(
             (screen as? WorldScreen)?.shouldUpdate = true
 
         innerTable.pad(0f)
+        val tabMinWidth: Float
         val tabMaxWidth: Float
         val tabMaxHeight: Float
         screen.run {
             selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
-            tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
             tabMinWidth = 0.6f * stage.width
+            tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
             tabMaxHeight = 0.8f * stage.height
         }
+        // Since all pages now initialize their content late, on activation, we can't measure their preferred size anymore -> use tabMaxHeight for tabMinHeight
+        // That's not really bad, the tabs are long enough so they'll need scrolling even on the largest UI size setting.
         tabs = TabbedPager(
-            tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
+            tabMinWidth, tabMaxWidth, tabMaxHeight, tabMaxHeight,
             headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8
         )
         add(tabs).pad(0f).grow().row()

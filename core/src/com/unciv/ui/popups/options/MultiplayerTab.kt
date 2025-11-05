@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.files.IMediaFinder.LabeledSounds
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.AuthStatus
@@ -19,12 +18,10 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.RefreshSelect.Companion.createRefreshOptions
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import java.time.temporal.ChronoUnit
@@ -32,24 +29,12 @@ import kotlinx.coroutines.flow.asFlow
 
 internal class MultiplayerTab(
     private val optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin), TabbedPager.IPageExtensions, OptionsPopupHelpers {
-    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
-
-    private var isInitialized = false
-    private lateinit var labeledSounds: IMediaFinder.LabeledSounds
+): OptionsPopupTab(optionsPopup) {
+    private lateinit var labeledSounds: LabeledSounds
     private lateinit var currentGameTurnNotificationSound: SettingsSelect.SelectItem<UncivSound>
     private lateinit var otherGameTurnNotificationSound: SettingsSelect.SelectItem<UncivSound>
 
-    init {
-        pad(10f)
-        defaults().pad(5f)
-    }
-
-    override fun activated(index: Int, caption: String, pager: TabbedPager) {
-        if (isInitialized) return
-
-        val settings = optionsPopup.settings
-
+    override fun lateInitialize() {
         addCheckbox(
             "Enable multiplayer status button in singleplayer games",
             settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
@@ -103,7 +88,7 @@ internal class MultiplayerTab(
             listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect)
         )
 
-        isInitialized = true
+        super.lateInitialize()
     }
 
     private fun addMultiplayerServerOptions(
@@ -111,8 +96,6 @@ internal class MultiplayerTab(
         optionsPopup: OptionsPopup,
         toUpdate: Iterable<RefreshSelect>
     ) {
-        val settings = optionsPopup.settings
-
         val connectionToServerButton = "Check connection".toTextButton()
 
         val textToShowForOnlineMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
@@ -166,7 +149,7 @@ internal class MultiplayerTab(
             }
         }).row()
 
-        if (UncivGame.Current.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion > 0) {
+        if (game.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion > 0) {
             val passwordTextField = UncivTextField(
                 settings.multiplayer.getCurrentServerPassword() ?: "Password"
             )
@@ -183,7 +166,7 @@ internal class MultiplayerTab(
                 authStatusLabel.setText("Validating your authentication status...")
                 Concurrency.run {
                     val userId = settings.multiplayer.getUserId()
-                    val authStatus = UncivGame.Current.onlineMultiplayer.multiplayerServer.fileStorage()
+                    val authStatus = game.onlineMultiplayer.multiplayerServer.fileStorage()
                         .checkAuthStatus(userId, password)
 
                     val newAuthStatusText = when (authStatus) {
@@ -243,11 +226,11 @@ internal class MultiplayerTab(
     private fun successfullyConnectedToServer(action: (Boolean, Boolean?) -> Unit) {
         Concurrency.run("TestIsAlive") {
             try {
-                val connectionSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.checkServerStatus()
+                val connectionSuccess = game.onlineMultiplayer.multiplayerServer.checkServerStatus()
                 var authSuccess: Boolean? = null
                 if (connectionSuccess) {
                     try {
-                        authSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(null)
+                        authSuccess = game.onlineMultiplayer.multiplayerServer.authenticate(null)
                     } catch (_: MultiplayerAuthException) {
                         authSuccess = false
                     } catch (_: Throwable) {
@@ -279,7 +262,7 @@ internal class MultiplayerTab(
             return
         }
 
-        if (UncivGame.Current.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion == 0) {
+        if (game.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion == 0) {
             popup.reuseWith("This server does not support authentication", true)
             return
         }
@@ -287,7 +270,7 @@ internal class MultiplayerTab(
         successfullySetPassword(password) { success, ex ->
             if (success) {
                 popup.reuseWith(
-                    "Password set successfully for server [${optionsPopup.settings.multiplayer.getServer()}]",
+                    "Password set successfully for server [${settings.multiplayer.getServer()}]",
                     true
                 )
             } else {
@@ -317,7 +300,7 @@ internal class MultiplayerTab(
     private fun successfullySetPassword(password: String, action: (Boolean, Exception?) -> Unit) {
         Concurrency.run("SetPassword") {
             try {
-                val setSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.setPassword(password)
+                val setSuccess = game.onlineMultiplayer.multiplayerServer.setPassword(password)
                 launchOnGLThread {
                     action(setSuccess, null)
                 }

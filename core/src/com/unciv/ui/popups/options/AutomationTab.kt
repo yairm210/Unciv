@@ -8,18 +8,11 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.screens.basescreen.BaseScreen
 
 internal class AutomationTab(
     optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin), OptionsPopupHelpers {
-    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
-
-    init {
-        pad(10f)
-        defaults().pad(5f)
-
-        val settings = optionsPopup.settings
+): OptionsPopupTab(optionsPopup) {
+    override fun lateInitialize() {
         add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
         addCheckbox("Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
@@ -103,7 +96,7 @@ internal class AutomationTab(
         ) {
             settings.autoPlay.autoPlayUntilEnd = it
             if (!it) addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
-            else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, AutomationTab(optionsPopup))
+            else replacePage(::AutomationTab)
         }
 
 
@@ -119,6 +112,8 @@ internal class AutomationTab(
 //    }
 //    if (!settings.autoPlay.fullAutoPlayAI)
 //        addAutoPlaySections()
+
+        super.lateInitialize()
     }
 
     private fun addAutoPlayMaxTurnsSlider(

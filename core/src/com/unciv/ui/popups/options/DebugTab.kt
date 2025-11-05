@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
@@ -26,14 +25,8 @@ import com.unciv.utils.DebugUtils
 
 internal class DebugTab(
     private val optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin), OptionsPopupHelpers {
-    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
-
-    init {
-        pad(10f)
-        defaults().pad(5f)
-        val game = UncivGame.Current
-
+): OptionsPopupTab(optionsPopup) {
+    override fun lateInitialize() {
         if (GUI.isWorldLoaded()) {
             val simulateButton = "Simulate until turn:".toTextButton()
             val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
@@ -99,6 +92,8 @@ internal class DebugTab(
             throw UncivShowableException("Intentional crash")
         }).colspan(2).row()
         addSeparator()
+
+        super.lateInitialize()
     }
 
     private fun GameInfo.unlockAllTechs() {

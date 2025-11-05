@@ -34,7 +34,6 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.isUUID
@@ -55,17 +54,10 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.pathString
 
 internal class AdvancedTab(
-    private val optionsPopup: OptionsPopup,
-    onFontChange: () -> Unit
-): Table(BaseScreen.skin), OptionsPopupHelpers {
-    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
-
-    private val settings = optionsPopup.settings
-
-    init {
-        pad(10f)
-        defaults().pad(5f)
-
+    optionsPopup: OptionsPopup,
+    private val onFontChange: () -> Unit
+): OptionsPopupTab(optionsPopup) {
+    override fun lateInitialize() {
         addAutosaveField()
         addAutosaveTurnsSelectBox()
 
@@ -91,13 +83,15 @@ internal class AdvancedTab(
         addSetUserId()
 
         addTranslationGeneration()
+
+        super.lateInitialize()
     }
 
     private fun addCutoutCheckbox() {
         addCheckbox("Enable using display cutout areas", settings.androidCutout) {
             settings.androidCutout = it
             Display.setCutout(it)
-            reopenAfterDisplayLayoutChange(optionsPopup.tabs.activePage)
+            reopenAfterDisplayLayoutChange(activePage)
         }
     }
 
@@ -105,7 +99,7 @@ internal class AdvancedTab(
         addCheckbox("Hide system status and navigation bars", settings.androidHideSystemUi) {
             settings.androidHideSystemUi = it
             Display.setSystemUiVisibility(hide = it)
-            reopenAfterDisplayLayoutChange(optionsPopup.tabs.activePage)
+            reopenAfterDisplayLayoutChange(activePage)
         }
     }
 
@@ -229,7 +223,7 @@ internal class AdvancedTab(
         val generateTranslationsButton = "Generate translation files".toTextButton()
 
         generateTranslationsButton.onActivation {
-            optionsPopup.tabs.selectPage("Advanced")  // only because key F12 works from any page
+            selectPage("Advanced")  // only because key F12 works from any page
             generateTranslationsButton.setText(Constants.working.tr())
             Concurrency.run("WriteTranslations") {
                 val result = TranslationFileWriter.writeNewTranslationFiles()

@@ -20,7 +20,6 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skin
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
@@ -30,19 +29,14 @@ import com.unciv.utils.ScreenOrientation
  *  @param onChange Callback for _major_ changes, OptionsPopup will rebuild itself and the WorldScreen
  */
 internal class DisplayTab(
-    optionsPopup: OptionsPopup,
-    onChange: () -> Unit,
-) : Table(skin), OptionsPopupHelpers {
-    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
-
+    private val optionsPopup: OptionsPopup,
+    private val onChange: () -> Unit,
+): OptionsPopupTab(optionsPopup) {
     // Only temporarily used instead of a local var so we can get a reference
     private lateinit var currentScreenMode: ScreenMode
 
-    init {
-        pad(10f)
+    override fun lateInitialize() {
         defaults().pad(2.5f)
-
-        val settings = optionsPopup.settings
 
         add("Screen".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
@@ -127,6 +121,8 @@ internal class DisplayTab(
         addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
         addCheckbox("Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
         addCheckbox("Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
+
+        super.lateInitialize()
     }
 
     private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
