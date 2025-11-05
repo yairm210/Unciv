@@ -642,7 +642,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
             // cannot settle in someone else's territory
-            owningCity != null && owningCity?.civ != civ -> false
+            owningCity != null && owningCity!!.civ != civ -> false
             else -> true
         }
     }
