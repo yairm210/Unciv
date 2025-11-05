@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
@@ -83,7 +84,8 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         val stack = Stack()
         stack.add(wrappedMinimap)
         stack.addInTable(getCornerHandleIcon()).size(20f).pad(8f).top().left()
-        stack.addInTable(getMaximizeToggleButton(civInfo)).size(35f).top().right() // more click area
+        val alignment = if (worldScreen.game.settings.androidCutout) Align.topRight else Align.bottomRight
+        stack.addInTable(getMaximizeToggleButton(civInfo, alignment)).size(40f).align(alignment) // more click area
         add(stack).bottom()
         
         pack()
@@ -98,7 +100,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         minimap.mapHolder.onViewportChanged() // update scroll position
     }
 
-    private fun getMaximizeToggleButton(civInfo: Civilization?): Actor {
+    private fun getMaximizeToggleButton(civInfo: Civilization?, alignment: Int): Actor {
 
         // when maximized, collapse map when a location was clicked
         if (maximized) {
@@ -120,7 +122,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             // table provides larger click area. we want the resize icon to be small to not cover the map    
             val name = if(maximized) "Reduce" else "Increase"
             val image = ImageGetter.getImage("OtherIcons/$name")
-            table.add(image).expand().size(20f).pad(8f).top().right()
+            table.add(image).expand().size(20f).pad(8f).align(alignment)
             table.touchable = Touchable.enabled
             table.onActivation(toggle)
         } else {
