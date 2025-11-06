@@ -10,7 +10,6 @@ import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
-import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
@@ -30,21 +29,17 @@ import kotlinx.coroutines.flow.asFlow
 internal class MultiplayerTab(
     private val optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
-    private lateinit var labeledSounds: LabeledSounds
-    private lateinit var currentGameTurnNotificationSound: SettingsSelect.SelectItem<UncivSound>
-    private lateinit var otherGameTurnNotificationSound: SettingsSelect.SelectItem<UncivSound>
+    private val mpSettings by settings::multiplayer
+    private val mpServer by game.onlineMultiplayer::multiplayerServer
 
     override fun lateInitialize() {
-        addCheckbox(
-            "Enable multiplayer status button in singleplayer games",
-            settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
-        )
+        addCheckbox("Enable multiplayer status button in singleplayer games", mpSettings::statusButtonInSinglePlayer, updateWorld = true)
 
         addSeparator()
 
         val curRefreshSelect = RefreshSelect(
             "Update status of currently played game every:",
-            settings.multiplayer::currentGameRefreshDelay,
+            mpSettings::currentGameRefreshDelay,
             createRefreshOptions(ChronoUnit.SECONDS, 3, 5),
             createRefreshOptions(ChronoUnit.SECONDS, 10, 20, 30, 60)
         )
@@ -52,7 +47,7 @@ internal class MultiplayerTab(
 
         val allRefreshSelect = RefreshSelect(
             "In-game, update status of all games every:",
-            settings.multiplayer::allGameRefreshDelay,
+            mpSettings::allGameRefreshDelay,
             createRefreshOptions(ChronoUnit.SECONDS, 15, 30),
             createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15)
         )
@@ -69,15 +64,14 @@ internal class MultiplayerTab(
             turnCheckerSelect = null
         }
 
-        fun UncivSound.toSelect() = LabeledSounds.UncivSoundLabeled(this.fileName, this)
-        currentGameTurnNotificationSound = settings.multiplayer.currentGameTurnNotificationSound.toSelect()
-        otherGameTurnNotificationSound = settings.multiplayer.otherGameTurnNotificationSound.toSelect()
-        labeledSounds = LabeledSounds() // This is a cache - keep it around as long as the Tab lives
+        val labeledSounds = LabeledSounds() // This is a cache but only used until the SelectBoxes are filled
         fun soundsProvider()= synchronized(labeledSounds) { labeledSounds.getLabeledSounds().asFlow() }
-        addAsyncSelectBox("Sound notification for when it's your turn in your currently open game:", ::currentGameTurnNotificationSound, ::soundsProvider) {
+        val currentSoundProxy = LabeledSounds.UncivSoundProxy(mpSettings::currentGameTurnNotificationSound)
+        val otherSoundProxy = LabeledSounds.UncivSoundProxy(mpSettings::otherGameTurnNotificationSound)
+        addAsyncSelectBox("Sound notification for when it's your turn in your currently open game:", currentSoundProxy::value, ::soundsProvider) {
             SoundPlayer.play(it.value)
         }
-        addAsyncSelectBox("Sound notification for when it's your turn in any other game:", ::otherGameTurnNotificationSound, ::soundsProvider) {
+        addAsyncSelectBox("Sound notification for when it's your turn in any other game:", otherSoundProxy::value, ::soundsProvider) {
             SoundPlayer.play(it.value)
         }
 
@@ -99,7 +93,7 @@ internal class MultiplayerTab(
         val connectionToServerButton = "Check connection".toTextButton()
 
         val textToShowForOnlineMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
-            settings.multiplayer.getServer()
+            mpSettings.getServer()
         } else {
             "https://"
         }
@@ -114,7 +108,7 @@ internal class MultiplayerTab(
         multiplayerServerTextField.onChange {
             fixTextFieldUrlOnType(multiplayerServerTextField)
             // we can't trim on 'fixTextFieldUrlOnType' for reasons
-            settings.multiplayer.setServer(multiplayerServerTextField.text.trimEnd('/'))
+            mpSettings.setServer(multiplayerServerTextField.text.trimEnd('/'))
 
             val isCustomServer = Multiplayer.usesCustomServer()
             connectionToServerButton.isEnabled = isCustomServer
@@ -149,9 +143,9 @@ internal class MultiplayerTab(
             }
         }).row()
 
-        if (game.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion > 0) {
+        if (mpServer.getFeatureSet().authVersion > 0) {
             val passwordTextField = UncivTextField(
-                settings.multiplayer.getCurrentServerPassword() ?: "Password"
+                mpSettings.getCurrentServerPassword() ?: "Password"
             )
             val setPasswordButton = "Set password".toTextButton()
 
@@ -161,12 +155,12 @@ internal class MultiplayerTab(
             // initially assume no password
             val authStatusLabel = "Set a password to secure your userId".toLabel()
 
-            val password = settings.multiplayer.getCurrentServerPassword()
+            val password = mpSettings.getCurrentServerPassword()
             if (password != null) {
                 authStatusLabel.setText("Validating your authentication status...")
                 Concurrency.run {
-                    val userId = settings.multiplayer.getUserId()
-                    val authStatus = game.onlineMultiplayer.multiplayerServer.fileStorage()
+                    val userId = mpSettings.getUserId()
+                    val authStatus = mpServer.fileStorage()
                         .checkAuthStatus(userId, password)
 
                     val newAuthStatusText = when (authStatus) {
@@ -198,16 +192,13 @@ internal class MultiplayerTab(
     private fun addTurnCheckerOptions(
         tab: Table
     ): RefreshSelect? {
-        tab.addCheckbox(
-            "Enable out-of-game turn notifications",
-            settings.multiplayer::turnCheckerEnabled
-        )
+        tab.addCheckbox( "Enable out-of-game turn notifications", mpSettings::turnCheckerEnabled)
 
-        if (!settings.multiplayer.turnCheckerEnabled) return null
+        if (!mpSettings.turnCheckerEnabled) return null
 
         val turnCheckerSelect = RefreshSelect(
             "Out-of-game, update status of all games every:",
-            settings.multiplayer::turnCheckerDelay,
+            mpSettings::turnCheckerDelay,
             createRefreshOptions(ChronoUnit.SECONDS, 30),
             createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15)
         )
@@ -215,10 +206,7 @@ internal class MultiplayerTab(
             turnCheckerSelect.addTo(this)
         }
 
-        tab.addCheckbox(
-            "Show persistent notification for turn notifier service",
-            settings.multiplayer::turnCheckerPersistentNotificationEnabled
-        )
+        tab.addCheckbox("Show persistent notification for turn notifier service", mpSettings::turnCheckerPersistentNotificationEnabled)
 
         return turnCheckerSelect
     }
@@ -226,11 +214,11 @@ internal class MultiplayerTab(
     private fun successfullyConnectedToServer(action: (Boolean, Boolean?) -> Unit) {
         Concurrency.run("TestIsAlive") {
             try {
-                val connectionSuccess = game.onlineMultiplayer.multiplayerServer.checkServerStatus()
+                val connectionSuccess = mpServer.checkServerStatus()
                 var authSuccess: Boolean? = null
                 if (connectionSuccess) {
                     try {
-                        authSuccess = game.onlineMultiplayer.multiplayerServer.authenticate(null)
+                        authSuccess = mpServer.authenticate(null)
                     } catch (_: MultiplayerAuthException) {
                         authSuccess = false
                     } catch (_: Throwable) {
@@ -262,7 +250,7 @@ internal class MultiplayerTab(
             return
         }
 
-        if (game.onlineMultiplayer.multiplayerServer.getFeatureSet().authVersion == 0) {
+        if (mpServer.getFeatureSet().authVersion == 0) {
             popup.reuseWith("This server does not support authentication", true)
             return
         }
@@ -270,7 +258,7 @@ internal class MultiplayerTab(
         successfullySetPassword(password) { success, ex ->
             if (success) {
                 popup.reuseWith(
-                    "Password set successfully for server [${settings.multiplayer.getServer()}]",
+                    "Password set successfully for server [${mpSettings.getServer()}]",
                     true
                 )
             } else {
@@ -300,7 +288,7 @@ internal class MultiplayerTab(
     private fun successfullySetPassword(password: String, action: (Boolean, Exception?) -> Unit) {
         Concurrency.run("SetPassword") {
             try {
-                val setSuccess = game.onlineMultiplayer.multiplayerServer.setPassword(password)
+                val setSuccess = mpServer.setPassword(password)
                 launchOnGLThread {
                     action(setSuccess, null)
                 }
