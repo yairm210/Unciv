@@ -46,11 +46,6 @@ import kotlin.time.measureTime
  *     override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
  *     ...
  *  ```
- *
- *  TODO
- *    * TextFields: 4 occurrences (Advanced, Debug, ModCheck, Multiplayer)
- *    * Would buttons be worth it?
- *    * API: Open to specific tab? Run custom code on that tab (scroll-to or open mod expander)?
  */
 internal interface OptionsPopupHelpers {
     /** Suggested minimum width for a right-hand cell in a typical 2-column label/widget row.

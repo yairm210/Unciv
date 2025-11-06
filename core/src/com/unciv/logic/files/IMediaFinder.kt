@@ -15,6 +15,8 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.SettingsSelect
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.full.declaredMemberProperties
 
@@ -139,8 +141,8 @@ interface IMediaFinder {
     //////////////////////////////////////////// Specializations
 
     companion object {
-        private fun supportedAudioExtensions() = setOf(".mp3", ".ogg", ".wav")   // Per Gdx docs, no aac/m4a
-        private fun supportedImageExtensions() = setOf(".png", ".jpg", ".jpeg")
+        @Pure private fun supportedAudioExtensions() = setOf(".mp3", ".ogg", ".wav")   // Per Gdx docs, no aac/m4a
+        @Pure private fun supportedImageExtensions() = setOf(".png", ".jpg", ".jpeg")
         private fun isRunFromJar(): Boolean =
             Gdx.app.type == Application.ApplicationType.Desktop &&
             this::class.java.`package`.specificationVersion != null
@@ -163,6 +165,7 @@ interface IMediaFinder {
             // Extract Unit attack sounds from the larger vanilla ruleset
             // Remember this replaces enumeration over *bundled* assets - not necessary for mods
             // Keeps unit around not for this class but for the labeled version
+            @Readonly
             fun unitAttackSounds(): Sequence<Pair<BaseUnit, String>> {
                 val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return emptySequence()
                 return ruleset.units.values.asSequence()

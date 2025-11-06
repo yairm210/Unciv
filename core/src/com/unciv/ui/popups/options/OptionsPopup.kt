@@ -14,7 +14,6 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.Log
 
 /**
  * The Options (Settings) Popup
@@ -40,7 +39,6 @@ class OptionsPopup(
     }
 
     init {
-        Log.debug("Start init OptionsPopup")
         clickBehindToClose = true
 
         if (settings.addCompletedTutorialTask("Open the options table"))
@@ -133,7 +131,6 @@ class OptionsPopup(
 
         pack() // Needed to show the background.
         center(screen.stage)
-        Log.debug("End init OptionsPopup")
     }
 
     override fun setVisible(visible: Boolean) {
