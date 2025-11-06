@@ -6,8 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
@@ -55,6 +57,17 @@ internal interface OptionsPopupHelpers {
      *  Calculated by [OptionsPopup] constructor from stage size.
      */
     val selectBoxMinWidth: Float
+
+    /**
+     *  Adds a header row (larger font, centered, colspan 2), after a separator unless the receiver is empty.
+     */
+    fun Table.addHeader(text: String): Cell<Label> {
+        if (children.isEmpty) // doesn't count empty cells
+            addSeparator()
+        val cell = add(text.toLabel(fontSize = Constants.headingFontSize))
+        cell.colspan(2).spaceTop(10f).row()
+        return cell
+    }
 
     /**
      *  Adds a [Label] and [CheckBox] as two Cells into a table row or cell (without using a reference).
