@@ -36,9 +36,13 @@ import kotlin.time.measureTime
 /**
  *  Helper library for OptionsPopup and its tabs.
  *
- *  Interface used as namespace and to share variables.
+ *  Interface used as namespace and to share variables, included in [OptionsPopupTab].
  *
- *  Usage:
+ *  Content Helpers: [addCheckbox], [addHeader], [addSelectBox], [addSlider], [addWrapped]
+ *  Variants: [addEnumAsStringSelectBox], [addTranslatedSelectBox], [addAsyncSelectBox]
+ *  Reload helpers: [reloadWorldAndOptions], [reopenAfterDisplayLayoutChange]
+ *
+ *  Usage without `OptionsPopupTab`:
  *  ```
  *  internal class NewOptionsPage(
  *     optionsPopup: OptionsPopup

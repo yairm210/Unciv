@@ -13,6 +13,13 @@ import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.popups.Popup
 import kotlin.math.floor
 
+/**
+ *  Library of extensions adding sound controls to a Table. Consume by 'implementing' it.
+ *
+ *  Used in [OptionsPopup][com.unciv.ui.popups.options.OptionsPopup].[SoundTab][com.unciv.ui.popups.options.SoundTab] and [WorldScreenMusicPopup][com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup].
+ *
+ *  @see [addMusicControls]
+ */
 interface MusicControls {
     fun Table.addVolumeSlider(text: String, initial: Float, silent: Boolean = false, onChange: (Float) -> Unit) {
         add(text.tr()).left().fillX()

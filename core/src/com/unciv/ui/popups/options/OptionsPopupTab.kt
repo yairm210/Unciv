@@ -4,10 +4,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skin
 
+/**
+ *  Common base for the page content Tables.
+ *
+ *  Provides the [OptionsPopupHelpers] functions, prepares late-loading of a page, and adds some shortcut accessors.
+ *  To support late-loading, simply move `init{}` code to `override fun lateInitialize` and call its super at the end.
+ *
+ *  Shortcuts: [settings], [game], [activePage], [selectPage], [replacePage]
+ *
+ *  Sets table padding to 10 and cell default padding to 5.
+ */
 internal abstract class OptionsPopupTab(
     private val optionsPopup: OptionsPopup,
 ) : Table(skin), TabbedPager.IPageExtensions, OptionsPopupHelpers {
     override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+
     val settings by optionsPopup::settings
     val game by optionsPopup::game
 
