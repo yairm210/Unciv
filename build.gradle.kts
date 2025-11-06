@@ -187,6 +187,8 @@ project(":core") {
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
+        "implementation"("io.ktor:ktor-client-okhttp:$ktorVersion")
+        "implementation"("io.ktor:ktor-client-android:$ktorVersion")
         "implementation"("io.ktor:ktor-client-websockets:$ktorVersion")
         // Gzip transport encoding
         "implementation"("io.ktor:ktor-client-encoding:$ktorVersion")

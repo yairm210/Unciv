@@ -146,6 +146,8 @@ class GameSettings {
     /** Persist the history of successful developer console commands */
     val consoleCommandHistory = ArrayList<String>()
 
+    var ktorEngine: String? = null
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 

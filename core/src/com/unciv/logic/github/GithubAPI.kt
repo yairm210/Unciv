@@ -8,14 +8,19 @@ import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI.parseUrl
+import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import java.io.InputStream
+import java.util.zip.ZipException
+import java.util.zip.ZipInputStream
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
-import java.util.zip.ZipException
+import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -391,8 +396,8 @@ object GithubAPI {
             tempName = "temp-" + toString().hashCode().toString(16)
         }
 
-        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
-        // and assume low compression efficiency - bigger mods typically have mostly images.
+        // If the Content-Length header was missing (which it is for github - shame on them), fall back to the reported
+        // repo size (which should be in kB) and assume low compression efficiency - bigger mods typically have mostly images.
         val fallbackSize = size.toLong() * 1024L * 4L / 5L
         @Pure
         fun reportProgress(bytesReceivedTotal: Long, contentLength: Long?) {
@@ -433,26 +438,21 @@ object GithubAPI {
                 throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
         }
 
-        val content = resp.bodyAsBytes()
-        if (content.isEmpty()) return null
-
         val disposition = resp.headers[HttpHeaders.ContentDisposition]
         modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
 
-        // Download to temporary zip
-        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
-        // and assume low compression efficiency - bigger mods typically have mostly images.
-        val tempZipFileHandle = modsFolder.child("$tempName.zip")
-        tempZipFileHandle.writeBytes(content, false)
-
         // prepare temp unpacking folder
-        val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
+        val unzipDestination = modsFolder.child(tempName) // folder, not file
         // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
         if (unzipDestination.exists())
             if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
 
         try {
-            Zip.extractFolder(tempZipFileHandle, unzipDestination)
+            resp.body<InputStream>().use { data ->
+                ZipInputStream(data).use { zipstream ->
+                    extractZipStream(zipstream, unzipDestination)
+                }
+            }
         } catch (ex: ZipException) {
             throw UncivShowableException("That is not a valid ZIP file", ex)
         }
@@ -481,7 +481,6 @@ object GithubAPI {
         }
 
         // clean up
-        tempZipFileHandle.delete()
         unzipDestination.deleteDirectory()
         if (tempBackup != null)
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
@@ -489,6 +488,21 @@ object GithubAPI {
         return finalDestination
     }
 
+    suspend fun extractZipStream(stream: ZipInputStream, unzipDestination: FileHandle) {
+        // Note: resolveZipStructure re-iterates the content from the file system. We might do that here,
+        // or keep the names for reuse, but that's complicated. Perf gains might not be worth it.
+
+        val job = coroutineContext[Job]
+        // Actual unpacking
+        while (job?.isActive != false) {
+            val entry = stream.nextEntry ?: break
+            if (entry.isDirectory) continue  // means we're not creating empty subdirectories, the subdirectory's contents come in other entries
+            val dest = unzipDestination.child(entry.name).file()
+            dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
+            dest.outputStream().use { stream.copyTo(it) }
+            stream.closeEntry()
+        }
+    }
 
     private val parseAttachmentDispositionRegex =
         Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
