@@ -81,6 +81,8 @@ internal class AdvancedTab(
         addSetUserId()
 
         addTranslationGeneration()
+        addUpdateModCategories()
+        addScreenhotGeneration()
 
         super.lateInitialize()
     }
@@ -102,15 +104,16 @@ internal class AdvancedTab(
     private fun addAutosaveField() {
         add("Number of autosave files stored".toLabel()).left().fillX()
         val autosaveFieldTable = Table()
-        val autoSaveTrunsTextField = UncivTextField("",settings.maxAutosavesStored.toString())
-        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in "1234567890" }
-        autosaveFieldTable.add(autoSaveTrunsTextField)
-        val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
+        autosaveFieldTable.defaults().space(5f)
+        val autoSaveTurnsTextField = UncivTextField("",settings.maxAutosavesStored.toString())
+        autoSaveTurnsTextField.setTextFieldFilter { _, c -> c in "1234567890" }
+        autosaveFieldTable.add(autoSaveTurnsTextField)
 
-        autoSaveTrunsTextFieldButton.onClick {
-            if (autoSaveTrunsTextField.text.isEmpty()) return@onClick
+        val autoSaveTurnsTextFieldButton = "Enter".toTextButton()
+        autoSaveTurnsTextFieldButton.onClick {
+            if (autoSaveTurnsTextField.text.isEmpty()) return@onClick
 
-            val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
+            val numberAutosaveTurns = autoSaveTurnsTextField.text.toInt()
 
             if (numberAutosaveTurns <= 0) {
                 val popup = Popup(stage)
@@ -132,7 +135,7 @@ internal class AdvancedTab(
 
             }
         }
-        autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
+        autosaveFieldTable.add(autoSaveTurnsTextFieldButton).row()
         add(autosaveFieldTable).row()
     }
 
@@ -218,7 +221,9 @@ internal class AdvancedTab(
         generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
         generateTranslationsButton.addTooltip("F12", 18f)
         add(generateTranslationsButton).colspan(2).row()
+    }
 
+    private fun addUpdateModCategories() {
         val updateModCategoriesButton = "Update Mod categories".toTextButton()
         updateModCategoriesButton.onActivation {
             updateModCategoriesButton.setText(Constants.working.tr())
@@ -231,6 +236,9 @@ internal class AdvancedTab(
         }
         add(updateModCategoriesButton).colspan(2).row()
 
+    }
+
+    private fun addScreenhotGeneration() {
         if (!UncivGame.Current.files.getSave("ScreenshotGenerationGame").exists()) return
 
         val generateScreenshotsButton = "Generate screenshots".toTextButton()

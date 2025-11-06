@@ -15,6 +15,8 @@ internal class AutomationTab(
     lateinit var autoPlayMaxTurnsSliderCell: Cell<Table>
 
     override fun lateInitialize() {
+        top()
+
         add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
         addCheckbox("Auto-assign city production", settings::autoAssignCityProduction, updateWorld = true) {

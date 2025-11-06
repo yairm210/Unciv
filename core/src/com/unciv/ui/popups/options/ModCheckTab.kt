@@ -36,6 +36,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
+import yairm210.purity.annotations.Readonly
 
 
 private const val MOD_CHECK_WITHOUT_BASE = "-none-"
@@ -212,9 +213,10 @@ internal class ModCheckTab(
         }
     }
 
-    private fun String.filterApplies() = contains(currentFilter, ignoreCase = true)
+    @Readonly private fun String.filterApplies() = contains(currentFilter, ignoreCase = true)
 
     /** Use the declarative mod compatibility Uniques to omit meaningless check combos */
+    @Readonly
     private fun shouldCheckMod(mod: Ruleset, base: String): Boolean {
         if (mod.modOptions.isBaseRuleset) return base == MOD_CHECK_WITHOUT_BASE
         if (ModCompatibility.isAudioVisualMod(mod)) return true
@@ -227,6 +229,7 @@ internal class ModCheckTab(
         return ModCompatibility.meetsBaseRequirements(mod, baseRuleset)  // yes this returns true for mods ignoring declarative compatibility
     }
 
+    @Readonly
     private fun getBaseForMod(mod: Ruleset): String? {
         if (mod.modOptions.isBaseRuleset || ModCompatibility.isAudioVisualMod(mod) || ModCompatibility.isConstantsOnly(mod))
             return MOD_CHECK_WITHOUT_BASE
