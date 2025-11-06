@@ -60,7 +60,7 @@ internal interface OptionsPopupHelpers {
      *  Adds a [Label] and [CheckBox] as two Cells into a table row or cell (without using a reference).
      *
      *  It's your responsibility to provide the inital value and to write it back in [action].
-     *  There's an overload using a reference instead.
+     *  There's an overload using a reference instead (recommended).
      *
      *  @param updateWorld If `true` and the active screen is a [WorldScreen], the [WorldScreen.shouldUpdate] flag is set when the value changes.
      *  @param newRow `true`: The cell gets `colspan(2)` and `row()`.
@@ -84,12 +84,12 @@ internal interface OptionsPopupHelpers {
      *
      *  @param settingsProperty A `::` reference to a class field (references to local variables aren't yet supported)
      *  @param updateWorld If `true` and the active screen is a [WorldScreen], the [WorldScreen.shouldUpdate] flag is set when the value changes.
-     *  @param action Optional if you need to take further action when the value is set. 
+     *  @param action Optional if you need to take further action when the value is set.
      */
     fun Table.addCheckbox(text: String, settingsProperty: KMutableProperty0<Boolean>, updateWorld: Boolean = false, action: (Boolean) -> Unit = {}) {
         addCheckbox(text, settingsProperty.get(), updateWorld) {
-            action(it)
             settingsProperty.set(it)
+            action(it)
         }
     }
 

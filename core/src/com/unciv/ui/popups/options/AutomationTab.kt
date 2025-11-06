@@ -17,41 +17,19 @@ internal class AutomationTab(
     override fun lateInitialize() {
         add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addCheckbox("Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
-            settings.autoAssignCityProduction = shouldAutoAssignCityProduction
-            val worldScreen = GUI.getWorldScreenIfActive()
-            if (shouldAutoAssignCityProduction && worldScreen != null &&
-                worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
-            ) {
-                worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
-                    city.cityConstructions.chooseNextConstruction()
-                }
-            }
+        addCheckbox("Auto-assign city production", settings::autoAssignCityProduction, updateWorld = true) {
+            allCitiesChooseNextConstruction(it)
         }
-        addCheckbox("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-        addCheckbox(
-            "Automated workers replace improvements",
-            settings.automatedWorkersReplaceImprovements
-        ) { settings.automatedWorkersReplaceImprovements = it }
-        addCheckbox(
-            "Automated units move on turn start",
-            settings.automatedUnitsMoveOnTurnStart, true
-        ) { settings.automatedUnitsMoveOnTurnStart = it }
-        addCheckbox(
-            "Automated units can upgrade",
-            settings.automatedUnitsCanUpgrade, false
-        ) { settings.automatedUnitsCanUpgrade = it }
-        addCheckbox(
-            "Automated units choose promotions",
-            settings.automatedUnitsChoosePromotions, false
-        ) { settings.automatedUnitsChoosePromotions = it }
-        addCheckbox(
-            "Cities auto-bombard at end of turn",
-            settings.citiesAutoBombardAtEndOfTurn, false
-        ) { settings.citiesAutoBombardAtEndOfTurn = it }
+        addCheckbox("Auto-build roads", settings::autoBuildingRoads)
+        addCheckbox("Automated workers replace improvements", settings::automatedWorkersReplaceImprovements)
+        addCheckbox("Automated units move on turn start", settings::automatedUnitsMoveOnTurnStart, updateWorld = true)
+        addCheckbox("Automated units can upgrade", settings::automatedUnitsCanUpgrade)
+        addCheckbox("Automated units choose promotions", settings::automatedUnitsChoosePromotions)
+        addCheckbox("Cities auto-bombard at end of turn", settings::citiesAutoBombardAtEndOfTurn)
 
         addSeparator()
         add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+
 //    fun addAutoPlaySections() {
 //        addCheckbox(
 //            "AutoPlay Military",
@@ -83,21 +61,11 @@ internal class AutomationTab(
 //        ) { settings.autoPlay.autoPlayReligion = it }
 //    }
 
-        addCheckbox(
-            "Show AutoPlay button",
-            settings.autoPlay.showAutoPlayButton, true
-        ) {
-            settings.autoPlay.showAutoPlayButton = it
+        addCheckbox("Show AutoPlay button", settings.autoPlay::showAutoPlayButton, updateWorld = true) {
             GUI.getWorldScreenIfActive()?.autoPlay?.stopAutoPlay()
         }
 
-
-        addCheckbox(
-            "AutoPlay until victory",
-            settings.autoPlay.autoPlayUntilEnd
-        ) {
-            settings.autoPlay.autoPlayUntilEnd = it
-
+        addCheckbox("AutoPlay until victory", settings.autoPlay::autoPlayUntilEnd) {
             autoPlayMaxTurnsSliderCell.setActor(if (it) autoPlayMaxTurnsSliderTable else null)
             pack()
         }
@@ -123,5 +91,14 @@ internal class AutomationTab(
 //        addAutoPlaySections()
 
         super.lateInitialize()
+    }
+
+    private fun allCitiesChooseNextConstruction(shouldAutoAssignCityProduction: Boolean) {
+        if (!shouldAutoAssignCityProduction) return
+        val worldScreen = GUI.getWorldScreenIfActive() ?: return
+        if (!worldScreen.viewingCiv.isCurrentPlayer() || worldScreen.viewingCiv.playerType != PlayerType.Human) return
+        for (city in worldScreen.gameInfo.getCurrentPlayerCivilization().cities) {
+            city.cityConstructions.chooseNextConstruction()
+        }
     }
 }

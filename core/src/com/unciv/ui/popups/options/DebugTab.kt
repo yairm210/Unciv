@@ -44,18 +44,18 @@ internal class DebugTab(
             add(invalidInputLabel).colspan(2).row()
         }
 
-        addCheckbox("Supercharged", DebugUtils.SUPERCHARGED) { DebugUtils.SUPERCHARGED = it }
-        addCheckbox("View entire map", DebugUtils.VISIBLE_MAP) { DebugUtils.VISIBLE_MAP = it }
-        addCheckbox("Show coordinates on tiles", DebugUtils.SHOW_TILE_COORDS) { DebugUtils.SHOW_TILE_COORDS = it }
-        addCheckbox("Show tile image locations", DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) { DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it }
+        addCheckbox("Supercharged", DebugUtils::SUPERCHARGED)
+        addCheckbox("View entire map", DebugUtils::VISIBLE_MAP, updateWorld = true)
+        addCheckbox("Show coordinates on tiles", DebugUtils::SHOW_TILE_COORDS, updateWorld = true)
+        addCheckbox("Show tile image locations", DebugUtils::SHOW_TILE_IMAGE_LOCATIONS, updateWorld = true)
 
         val curGameInfo = game.gameInfo
         if (curGameInfo != null) {
-            addCheckbox("God mode (current game)", curGameInfo.gameParameters.godMode) { curGameInfo.gameParameters.godMode = it }
+            addCheckbox("God mode (current game)", curGameInfo.gameParameters::godMode)
         }
 
-        addCheckbox("Save games compressed", UncivFiles.saveZipped) { UncivFiles.saveZipped = it }
-        addCheckbox("Save maps compressed", MapSaver.saveZipped) { MapSaver.saveZipped = it }
+        addCheckbox("Save games compressed", UncivFiles::saveZipped)
+        addCheckbox("Save maps compressed", MapSaver::saveZipped)
 
         addSelectBox("Gdx Scene2D debug", BaseScreen::enableSceneDebug, SceneDebugMode.entries) {
             BaseScreen.enableSceneDebug = it // addSelectBox will only update this after the callback

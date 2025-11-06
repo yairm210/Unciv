@@ -86,16 +86,14 @@ internal class AdvancedTab(
     }
 
     private fun addCutoutCheckbox() {
-        addCheckbox("Enable using display cutout areas", settings.androidCutout) {
-            settings.androidCutout = it
+        addCheckbox("Enable using display cutout areas", settings::androidCutout) {
             Display.setCutout(it)
             reopenAfterDisplayLayoutChange(activePage)
         }
     }
 
     private fun addHideSystemUiCheckbox() {
-        addCheckbox("Hide system status and navigation bars", settings.androidHideSystemUi) {
-            settings.androidHideSystemUi = it
+        addCheckbox("Hide system status and navigation bars", settings::androidHideSystemUi) {
             Display.setSystemUiVisibility(hide = it)
             reopenAfterDisplayLayoutChange(activePage)
         }
@@ -334,11 +332,11 @@ internal class AdvancedTab(
     }
 
     private fun addEasterEggsCheckBox() {
-        addCheckbox("Enable Easter Eggs", settings.enableEasterEggs) { settings.enableEasterEggs = it }
+        addCheckbox("Enable Easter Eggs", settings::enableEasterEggs)
     }
 
     private fun addEnlargeNotificationsCheckBox() {
-        addCheckbox("Enlarge selected notifications", settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
+        addCheckbox("Enlarge selected notifications", settings::enlargeSelectedNotification)
     }
 
 }

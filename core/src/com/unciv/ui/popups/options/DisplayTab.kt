@@ -45,10 +45,9 @@ internal class DisplayTab(
 
 
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            addCheckbox("Map mouse auto-scroll", settings.mapAutoScroll, true) {
-                settings.mapAutoScroll = it
+            addCheckbox("Map mouse auto-scroll", settings::mapAutoScroll, updateWorld = true) {
                 if (GUI.isWorldLoaded())
-                    GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
+                    GUI.getMap().isAutoScrollEnabled = it
             }
             addScrollSpeedSlider()
         }
@@ -67,42 +66,27 @@ internal class DisplayTab(
         addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
         addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials(this, settings)
-        addCheckbox("Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
-        addCheckbox(
-            "Never close popups by clicking outside",
-            settings.forbidPopupClickBehindToClose,
-            false
-        ) { settings.forbidPopupClickBehindToClose = it }
-        addCheckbox(
-            "Use circles to indicate movable tiles",
-            settings.useCirclesToIndicateMovableTiles,
-            true
-        ) { settings.useCirclesToIndicateMovableTiles = it }
+        addCheckbox("Show zoom buttons in world screen", settings::showZoomButtons, true)
+        addCheckbox("Never close popups by clicking outside", settings::forbidPopupClickBehindToClose)
+        addCheckbox("Use circles to indicate movable tiles", settings::useCirclesToIndicateMovableTiles, updateWorld = true)
         addPediaUnitArtSizeSlider()
 
         addSeparator()
         add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addCheckbox("Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
-        addCheckbox(
-            "Show suggested city locations for units that can found cities",
-            settings.showSettlersSuggestedCityLocations,
-            true
-        ) { settings.showSettlersSuggestedCityLocations = it }
-        addCheckbox("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
-        addCheckbox("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-        addCheckbox("Show resources and improvements", settings.showResourcesAndImprovements, true) {
-            settings.showResourcesAndImprovements = it
-        }
-        addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
+        addCheckbox("Show unit movement arrows", settings::showUnitMovements, updateWorld = true)
+        addCheckbox("Show suggested city locations for units that can found cities", settings::showSettlersSuggestedCityLocations, updateWorld = true)
+        addCheckbox("Show tile yields", settings::showTileYields, updateWorld = true)
+        addCheckbox("Show worked tiles", settings::showWorkedTiles, updateWorld = true)
+        addCheckbox("Show resources and improvements", settings::showResourcesAndImprovements, updateWorld = true)
+        addCheckbox("Show pixel improvements", settings::showPixelImprovements, updateWorld = true)
 
         addUnitIconAlphaSlider()
 
         addSeparator()
         add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addCheckbox("Continuous rendering", settings.continuousRendering) {
-            settings.continuousRendering = it
+        addCheckbox("Continuous rendering", settings::continuousRendering) {
             Gdx.graphics.isContinuousRendering = it
         }
 
@@ -117,9 +101,9 @@ internal class DisplayTab(
         addSeparator()
         add("Experimental".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
-        addCheckbox("Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
-        addCheckbox("Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
+        addCheckbox("Experimental Demographics scoreboard", settings::useDemographics)
+        addCheckbox("Unit movement button", settings::unitMovementButtonAnimation)
+        addCheckbox("Unit actions menu", settings::unitActionsTableAnimation)
 
         super.lateInitialize()
     }
