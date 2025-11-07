@@ -38,7 +38,6 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.isUUID
@@ -58,10 +57,10 @@ class AdvancedTab(
     init {
         pad(10f)
         defaults().pad(5f)
-        
+
         addAutosaveField()
         addAutosaveTurnsSelectBox()
-        
+
         addSeparator()
 
         if (Display.hasCutout())
@@ -116,7 +115,7 @@ class AdvancedTab(
 
         autoSaveTrunsTextFieldButton.onClick {
             if (autoSaveTrunsTextField.text.isEmpty()) return@onClick
-            
+
             val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
 
             if (numberAutosaveTurns <= 0) {
@@ -136,13 +135,13 @@ class AdvancedTab(
 
             } else {
                 settings.maxAutosavesStored = numberAutosaveTurns
-            
+
             }
         }
         autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
         add(autosaveFieldTable).row()
     }
-    
+
     private fun addAutosaveTurnsSelectBox() {
         add("Turns between autosaves".toLabel()).left().fillX()
 
