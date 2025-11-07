@@ -90,10 +90,7 @@ class AdvancedTab(
             optionsPopup.settings.androidCutout = it
             Display.setCutout(it)
             optionsPopup.reopenAfterDisplayLayoutChange()
-            val worldScreen = UncivGame.Current.worldScreen
-            if (worldScreen != null) {
-                worldScreen.shouldUpdate = true
-            }
+            GUI.setUpdateWorldOnNextRender()
         }
     }
 
