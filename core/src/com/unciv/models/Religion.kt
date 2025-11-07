@@ -59,7 +59,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     }
 
     fun clone(): Religion {
-        val toReturn = Religion(name, gameInfo, foundingCiv)
+        val toReturn = Religion(name, gameInfo, foundingCivName)
         toReturn.displayName = displayName
         toReturn.founderBeliefs.addAll(founderBeliefs)
         toReturn.followerBeliefs.addAll(followerBeliefs)

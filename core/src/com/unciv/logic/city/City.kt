@@ -161,7 +161,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.foundingCiv = foundingCiv
-        toReturn.foundingCivObject = foundingCivObject
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
