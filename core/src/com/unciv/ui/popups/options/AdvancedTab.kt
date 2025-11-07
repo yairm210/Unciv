@@ -38,6 +38,7 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.isUUID
@@ -90,6 +91,10 @@ class AdvancedTab(
             optionsPopup.settings.androidCutout = it
             Display.setCutout(it)
             optionsPopup.reopenAfterDisplayLayoutChange()
+            val worldScreen = UncivGame.Current.worldScreen
+            if (worldScreen != null) {
+                worldScreen.shouldUpdate = true
+            }
         }
     }
 

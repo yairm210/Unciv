@@ -25,6 +25,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
     private var minimapSize = Int.MIN_VALUE
     private var maximized = false
+    private var lastCutoutSetting = worldScreen.game.settings.androidCutout
     lateinit var minimap: Minimap
 
     /** Button, next to the minimap, to toggle the unit movement map overlay. */
@@ -70,7 +71,9 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         // For Spectator should not restrict minimap
         val civ: Civilization? = civInfo.takeUnless { GUI.getViewingPlayer().isSpectator() }
         val newMinimapSize = worldScreen.game.settings.minimapSize
-        if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true) return
+        val cutoutSetting = worldScreen.game.settings.androidCutout
+        if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true && cutoutSetting == lastCutoutSetting) return
+        lastCutoutSetting = cutoutSetting
         minimapSize = newMinimapSize
         rebuild(civ)
     }
