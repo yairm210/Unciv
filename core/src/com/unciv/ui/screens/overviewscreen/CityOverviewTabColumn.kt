@@ -162,16 +162,16 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             val unitIcon = ImageGetter.getConstructionPortrait(unit.baseUnit.getIconName(), iconSize * 0.7f)
             unitIcon.addTooltip(unitName, 18f, tipAlign = Align.topLeft)
             unitIcon.onClick {
-                actionContext.select(EmpireOverviewCategories.Units, UnitOverviewTabColumn.getUnitIdentifier(unit) )
+                actionContext.select(EmpireOverviewCategories.Units, unit.id.toString())
             }
             return unitIcon
         }
     },
-    
+
     CityDefense {
         override val headerTip = "City defense"
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
-        override fun getComparator() = compareBy<City>() { getEntryValue(it) }.thenBy { it.getMaxHealth() }
+        override fun getComparator() = compareBy<City> { getEntryValue(it) }.thenBy { it.getMaxHealth() }
         override fun getHeaderActor(iconSize: Float) = getCircledIcon("BuildingIcons/Walls", iconSize)
         override fun getEntryValue(item: City) = CityCombatant(item).getDefendingStrength()
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =

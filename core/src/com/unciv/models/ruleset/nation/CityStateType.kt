@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
 import com.unciv.ui.components.extensions.colorFromRGB
+import yairm210.purity.annotations.Readonly
 
 class CityStateType: INamed {
     override var name = ""
@@ -18,5 +19,5 @@ class CityStateType: INamed {
 
     var color: List<Int> = listOf(255,255,255)
     private val colorObject by lazy { colorFromRGB(color) }
-    fun getColor() = colorObject
+    @Readonly fun getColor() = colorObject
 }

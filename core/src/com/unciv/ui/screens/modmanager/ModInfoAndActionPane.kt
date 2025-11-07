@@ -19,6 +19,7 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.modmanager.ModManagementScreen.Companion.cleanModName
 import com.unciv.utils.Concurrency
 import kotlin.math.max
 
@@ -130,7 +131,7 @@ internal class ModInfoAndActionPane : Table() {
 
     fun addUpdateModButton(modInfo: ModUIData, doDownload: () -> Unit) {
         if (!modInfo.hasUpdate) return
-        val updateModTextbutton = "Update [${modInfo.name}]".toTextButton()
+        val updateModTextbutton = "Update [${cleanModName(modInfo.name)}]".toTextButton()
         updateModTextbutton.onClick {
             updateModTextbutton.setText("Downloading...".tr())
             doDownload()
