@@ -23,7 +23,8 @@ data class Version(
     @Suppress("unused") // used by json serialization
     internal constructor() : this("", -1)
 
-    @Pure fun toNiceString() = "$text (Build ${number.tr()})"
+    @Pure fun toNiceString() = "[$text] (Build [$number])".tr()
+    @Pure fun toSerializeString() = "$text (Build $number)"
 
     override operator fun compareTo(other: Version) = number.compareTo(other.number)
     override fun equals(other: Any?) = other is Version && number == other.number
