@@ -29,7 +29,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var oneCityChallenge = false
     var godMode = false
     var nuclearWeaponsEnabled = true
-    var espionageEnabled = false
+    var espionageEnabled = true
     var noStartBias = false
     var shufflePlayerOrder = false
 
