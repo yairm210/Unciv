@@ -5,7 +5,6 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame.Companion.Current
 import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
@@ -24,13 +23,13 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.GameStartScreen
 import com.unciv.ui.screens.LanguagePickerScreen
 import com.unciv.ui.screens.LoadingScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -534,15 +533,5 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         @Suppress("unused") // used by json serialization
         constructor() : this("", -1)
         @Pure fun toNiceString() = "$text (Build ${number.tr()})"
-    }
-}
-
-class GameStartScreen : BaseScreen() {
-    init {
-        val logoImage = ImageGetter.getExternalImage("banner.png")
-        logoImage.center(stage)
-        logoImage.color.a = 0f
-        logoImage.addAction(Actions.alpha(1f, 0.3f))
-        stage.addActor(logoImage)
     }
 }
