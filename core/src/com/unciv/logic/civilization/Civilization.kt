@@ -165,8 +165,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
     val popupAlerts = ArrayList<PopupAlert>()
-    var allyCivName: String? = null
-        private set
+    /**Serialization field for [allyCiv]. Is equivalent to ``allyCiv.civName``*/
+    private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
 
     var notifications = ArrayList<Notification>()
@@ -1084,14 +1084,17 @@ class Civilization : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital, oldCapital)
     }
 
+    /**
+     * Current ally (assuming this is a city-state)
+     * 
+     * Setting this also sets its backing serialization field ``allyCivName``
+     * */
     @get:Readonly
     @Transient
     var allyCiv: Civilization? = null
         get() {
             if (field == null && allyCivName != null)
                 field = gameInfo.getCivilization(allyCivName!!)
-            // Note if allyCivName is null and allyCiv is not, that's necessarily a bug 
-            // and thus usually shouldn't need additional checks
             return field
         }
         set(value) {

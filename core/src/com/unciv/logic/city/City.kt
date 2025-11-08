@@ -63,8 +63,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     override var name: String = ""
-    var foundingCiv = ""
-        private set
+    /**Serialization field for [foundingCivObject]. Is equivalient to ``foundingCivObject.civName``*/
+    private var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
     var turnAcquired = 0
@@ -110,7 +110,12 @@ class City : IsPartOfGameInfoSerialization, INamed {
     private var cityAIFocus: String = CityFocus.NoFocus.name
     @Readonly fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
-    
+
+    /**
+     * Civ object for the original founder of this city
+     * 
+     * Setting this also sets its backing serialization string ``foundingCiv``
+     * */
     @Transient
     @get:Readonly
     var foundingCivObject: Civilization? = null
