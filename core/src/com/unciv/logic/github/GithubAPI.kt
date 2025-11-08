@@ -12,6 +12,8 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.util.cio.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -402,12 +404,16 @@ object GithubAPI {
             updateProgressPercent!!(percent.toInt().coerceIn(0, 100))
         }
 
-        val resp = UncivKtor.client.get(zipUrl) {
-            timeout {
-                requestTimeoutMillis = Long.MAX_VALUE
-            }
-            if (updateProgressPercent != null)
-                onDownload(::reportProgress)
+        val tempZipFileHandle = modsFolder.child("$tempName.zip")
+
+        // Thanks to: https://stackoverflow.com/a/74328603/10585461
+        val resp = UncivKtor.client.prepareRequest {
+            url(zipUrl)
+            timeout { requestTimeoutMillis = Long.MAX_VALUE }
+            if (updateProgressPercent != null) onDownload(::reportProgress)
+        }.execute { resp ->
+            resp.bodyAsChannel().copyAndClose(tempZipFileHandle.file().writeChannel())
+            return@execute resp
         }
 
         /**
@@ -433,17 +439,13 @@ object GithubAPI {
                 throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
         }
 
-        val content = resp.bodyAsBytes()
-        if (content.isEmpty()) return null
+        if (tempZipFileHandle.length() == 0L) {
+            tempZipFileHandle.delete()
+            return null
+        }
 
         val disposition = resp.headers[HttpHeaders.ContentDisposition]
         modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
-
-        // Download to temporary zip
-        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
-        // and assume low compression efficiency - bigger mods typically have mostly images.
-        val tempZipFileHandle = modsFolder.child("$tempName.zip")
-        tempZipFileHandle.writeBytes(content, false)
 
         // prepare temp unpacking folder
         val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
