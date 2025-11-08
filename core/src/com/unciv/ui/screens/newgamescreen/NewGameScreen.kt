@@ -102,7 +102,10 @@ class NewGameScreen(
                     "Are you sure you want to reset all game options to defaults?",
                     "Reset to defaults",
                 ) {
-                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
+                    val gameSetupInfo = GameSetupInfo().apply {
+                        gameParameters.espionageEnabled = true
+                    }
+                    game.replaceCurrentScreen(NewGameScreen(gameSetupInfo))
                 }.open(true)
             }
             horizontalGroup.addActor(resetToDefaultsButton)
