@@ -14,6 +14,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
+import io.ktor.utils.io.jvm.javaio.toInputStream
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -436,7 +438,8 @@ object GithubAPI {
                     throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
             }
 
-            resp.bodyAsChannel().copyAndClose(tempZipFileHandle.file().writeChannel())
+            val stream = resp.bodyAsChannel().toInputStream()
+            tempZipFileHandle.write(stream, false)
             return@execute resp
         }
 
