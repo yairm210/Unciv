@@ -18,7 +18,7 @@
 
 ## What is this?
 
-An open source, moddability-focused Android and Desktop remake of Civ V, made with LibGDX
+An open source, moddability-focused Android and Desktop remake of Civ V, made with LibGDX.
 
 ## Is this any good?
 
@@ -43,7 +43,7 @@ In this order:
 * Polish!
     * UI+UX improvements ([suggestions welcome!](https://github.com/yairm210/Unciv/issues/new?assignees=&labels=feature&template=feature_request.md&title=Feature+request%3A+))
     * Better automation, AI etc. in-game
-* G&K mechanics - espionage, small other changes (see [#4697](https://www.github.com/yairm210/Unciv/issues/4697))
+* G&K mechanics - see [#4697](https://www.github.com/yairm210/Unciv/issues/4697)
 * BNW mechanics - trade routes, world congress, etc.
 
 ## Contributing
@@ -54,7 +54,7 @@ Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)! L
 
 Modders start [here](https://yairm210.github.io/Unciv/Modders/Mods/)!
 
-You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
+You can join us in any of the open issues, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
@@ -63,18 +63,17 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 
 ### How about iOS?
 
-I'm not planning on it. It means paying money to Apple, yet another release path,
- and since I don't have an iOS device it means I can't test it properly.
+I'm not planning on it. It means paying money to Apple, yet another release path, and since I don't have an iOS device it means I can't test it properly.
 
 ### Steam release?
 
-Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)
+Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below).
  
 ### Will you implement {feature}?
 
 If it's in the original Civ V, then yes!
 
-If not, then the feature won't be added to the base game - possibly it will be added as a way to mod the game, which is constantly expanding
+If not, then the feature won't be added to the base game - possibly it will be added as a way to mod the game, which is constantly expanding.
 
 #### Why not? This is its own game, why not add features that weren't in Civ V?
 
@@ -102,7 +101,7 @@ Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and as
 
 ### Aren't you basically making a Civ V clone? Is that even legal?
 
-According to the [US Copyright Office FL-108](https://upload.wikimedia.org/wikipedia/commons/9/96/U.S._Copyright_Office_fl108.pdf), intellectual property rights *do not* apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
+According to the [US Copyright Office FL-108](https://upload.wikimedia.org/wikipedia/commons/9/96/U.S._Copyright_Office_fl108.pdf), intellectual property rights *do not* apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs.
 
 It is definitely illegal:
  - To use any assets from the original game (images, sound etc) - they belong to Firaxis
