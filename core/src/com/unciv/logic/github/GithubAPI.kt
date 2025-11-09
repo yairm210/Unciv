@@ -412,31 +412,32 @@ object GithubAPI {
             timeout { requestTimeoutMillis = Long.MAX_VALUE }
             if (updateProgressPercent != null) onDownload(::reportProgress)
         }.execute { resp ->
+            /**
+             * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
+             * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
+             */
+            when {
+                resp.status == HttpStatusCode.NotFound -> return@execute resp
+
+                (resp.status == HttpStatusCode.Forbidden) &&
+                    resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
+                    throw UncivShowableException("Blocked by Cloudflare")
+
+                (resp.status.value in 401..403) || resp.status == HttpStatusCode.ProxyAuthenticationRequired ->
+                    throw UncivShowableException("Servers requiring authentication are not supported")
+
+                resp.status.value in 300..499 ->
+                    throw UncivShowableException("Unexpected response: [${resp.bodyAsText()}]")
+
+                resp.status.value in 500..599 ->
+                    throw UncivShowableException("Server failure: [${resp.bodyAsText()}}]")
+
+                !resp.status.isSuccess() ->
+                    throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
+            }
+
             resp.bodyAsChannel().copyAndClose(tempZipFileHandle.file().writeChannel())
             return@execute resp
-        }
-
-        /**
-         * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
-         * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
-         */
-        when {
-            resp.status == HttpStatusCode.NotFound -> return null
-            (resp.status == HttpStatusCode.Forbidden) &&
-                resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
-                throw UncivShowableException("Blocked by Cloudflare")
-
-            (resp.status.value in 401..403) || resp.status == HttpStatusCode.ProxyAuthenticationRequired ->
-                throw UncivShowableException("Servers requiring authentication are not supported")
-
-            resp.status.value in 300..499 ->
-                throw UncivShowableException("Unexpected response: [${resp.bodyAsText()}]")
-
-            resp.status.value in 500..599 ->
-                throw UncivShowableException("Server failure: [${resp.bodyAsText()}}]")
-
-            !resp.status.isSuccess() ->
-                throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
         }
 
         if (tempZipFileHandle.length() == 0L) {
