@@ -462,7 +462,7 @@ class ModManagementScreen private constructor(
                                 modActionTable.updateSize(repoSize)
                         }
                     }
-                } catch (ignore: IOException) {
+                } catch (_: IOException) {
                     /* Parsing of mod size failed, do nothing */
                 }
             }
@@ -512,7 +512,7 @@ class ModManagementScreen private constructor(
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
-                    reloadCachesAfterModChange(modFolder.name()) {
+                    reloadCachesAfterModChange(delete = false, modFolder.name()) {
                         toast.close()
                         val msg = "{[$repoName] was downloaded, but is defective!}" +
                             "\n{For more information, see Options-Locate mod errors.}"
@@ -684,16 +684,20 @@ class ModManagementScreen private constructor(
     /** Delete a Mod, refresh ruleset cache and update installed mod table */
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
-        reloadCachesAfterModChange()
+        reloadCachesAfterModChange(delete = true, mod.name)
         installedModInfo.remove(mod.name)
         unMarkUpdatedMod(mod.name)
         refreshInstalledModTable()
     }
 
-    private fun reloadCachesAfterModChange(newModName: String? = null, onError: (()->Unit)? = null) {
-        val errorLines = RulesetCache.loadRulesets()
-        if (newModName != null && errorLines.any { newModName in it })
-            onError?.invoke()
+    private fun reloadCachesAfterModChange(delete: Boolean, modName: String, onError: (()->Unit)? = null) {
+        if (delete) {
+            RulesetCache.remove(modName)
+        } else {
+            val errorLines = RulesetCache.reloadSingleRuleset(modName)
+            if (errorLines.isNotEmpty()) onError?.invoke()
+        }
+
         TileSetCache.loadTileSetConfigs()
         ImageGetter.reloadImages()
         UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
