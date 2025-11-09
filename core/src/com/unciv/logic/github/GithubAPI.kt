@@ -12,10 +12,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.cio.*
-import io.ktor.utils.io.*
-import io.ktor.utils.io.jvm.javaio.toInputStream
-import kotlinx.coroutines.Dispatchers
+import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
