@@ -21,6 +21,11 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+enum class DownloadAndExtractState {
+    Downloading,
+    Extracting
+}
+
 /**
  *  "Namespace" collects all Github API structural knowledge
  *  - Response schema
@@ -373,7 +378,7 @@ object GithubAPI {
     suspend fun Repo.downloadAndExtract(
         modsFolder: FileHandle,
         /** Should accept a number 0-100 */
-        updateProgressPercent: ((Int) -> Unit)? = null
+        updateProgressPercent: ((DownloadAndExtractState, Int?) -> Unit)? = null
     ): FileHandle? {
         var modNameFromFileName = name
 
@@ -400,7 +405,7 @@ object GithubAPI {
             val progressEndsAtSize = contentLength ?: fallbackSize
             if (progressEndsAtSize <= 0L) return
             val percent = bytesReceivedTotal * 100L / progressEndsAtSize
-            updateProgressPercent!!(percent.toInt().coerceIn(0, 100))
+            updateProgressPercent!!(DownloadAndExtractState.Downloading, percent.toInt().coerceIn(0, 100))
         }
 
         val tempZipFileHandle = modsFolder.child("$tempName.zip")
@@ -453,6 +458,9 @@ object GithubAPI {
         // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
         if (unzipDestination.exists())
             if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
+
+        if (updateProgressPercent !== null)
+            updateProgressPercent(DownloadAndExtractState.Extracting, null)
 
         try {
             Zip.extractFolder(tempZipFileHandle, unzipDestination)
