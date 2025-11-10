@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
@@ -24,6 +25,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
     private var minimapSize = Int.MIN_VALUE
     private var maximized = false
+    private var lastCutoutSetting = false
     lateinit var minimap: Minimap
 
     /** Button, next to the minimap, to toggle the unit movement map overlay. */
@@ -69,7 +71,9 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         // For Spectator should not restrict minimap
         val civ: Civilization? = civInfo.takeUnless { GUI.getViewingPlayer().isSpectator() }
         val newMinimapSize = worldScreen.game.settings.minimapSize
-        if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true) return
+        val cutoutSetting = worldScreen.game.settings.androidCutout
+        if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true && cutoutSetting == lastCutoutSetting) return
+        lastCutoutSetting = cutoutSetting
         minimapSize = newMinimapSize
         rebuild(civ)
     }
@@ -79,16 +83,17 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         minimap = Minimap(mapHolder, minimapSize, civInfo)
         val wrappedMinimap = getWrappedMinimap()
         add(getToggleIcons(wrappedMinimap.height)).bottom().padRight(5f)
-        
+
         val stack = Stack()
         stack.add(wrappedMinimap)
         stack.addInTable(getCornerHandleIcon()).size(20f).pad(8f).top().left()
-        stack.addInTable(getMaximizeToggleButton(civInfo)).size(40f).bottom().right() // more click area
+        val alignment = if (worldScreen.game.settings.androidCutout) Align.topRight else Align.bottomRight
+        stack.addInTable(getMaximizeToggleButton(civInfo, alignment)).size(40f).align(alignment) // more click area
         add(stack).bottom()
-        
+
         pack()
         if (stage != null) x = stage.width - width
-        
+
         addListener(ResizeDragListener(civInfo))
     }
 
@@ -98,7 +103,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         minimap.mapHolder.onViewportChanged() // update scroll position
     }
 
-    private fun getMaximizeToggleButton(civInfo: Civilization?): Actor {
+    private fun getMaximizeToggleButton(civInfo: Civilization?, alignment: Int): Actor {
 
         // when maximized, collapse map when a location was clicked
         if (maximized) {
@@ -114,13 +119,13 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             }
             rebuildAndUpdateMap(civInfo)
         }
-        
+
         val table = Table()
-        if(shouldShowMapButtons()) {
-            // table provides larger click area. we want the resize icon to be small to not cover the map    
-            val name = if(maximized) "Reduce" else "Increase"
+        if (shouldShowMapButtons()) {
+            // table provides larger click area. we want the resize icon to be small to not cover the map
+            val name = if (maximized) "Reduce" else "Increase"
             val image = ImageGetter.getImage("OtherIcons/$name")
-            table.add(image).expand().size(20f).pad(8f).bottom().right()
+            table.add(image).expand().size(20f).pad(8f).align(alignment)
             table.touchable = Touchable.enabled
             table.onActivation(toggle)
         } else {
@@ -140,7 +145,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         }
     }
 
-    private fun shouldShowMapButtons() = minimapSize > 0 && 
+    private fun shouldShowMapButtons() = minimapSize > 0 &&
         (minimap.width > 100f || minimap.height > 100f)
 
     private fun getWrappedMinimap(): Table {
@@ -167,10 +172,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     /** @return Layout table for the little green map overlay toggle buttons, show to the left of the minimap. */
     private fun getToggleIcons(minimapHeight: Float): Table {
         val toggleIconTable = Table()
-        
+
         val availableForPadding = minimapHeight - buttons.sumOf { it.height.toDouble() }.toFloat()
         val paddingBetweenElements = (availableForPadding/3).coerceIn(0f, 5f)
-        
+
         toggleIconTable.defaults().padTop(paddingBetweenElements)
 
         for (button in buttons) {
@@ -209,7 +214,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             super.touchUp(event, x, y, pointer, button)
             if (dragged) {
                 worldScreen.game.settings.minimapSize = minimapSize
-                GUI.setUpdateWorldOnNextRender() // full update    
+                GUI.setUpdateWorldOnNextRender() // full update
             }
         }
     }
