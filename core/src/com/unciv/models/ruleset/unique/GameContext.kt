@@ -115,7 +115,6 @@ data class GameContext(
          */
         @Readonly
         fun fromSerializedString(value: String, viewingCiv: Civilization, separator: String = Constants.stringSplitCharacter.toString()) : GameContext {
-            val splitString = value.split(separator)
             var civInfo = viewingCiv
             var city: City? = null
             var unit: MapUnit? = null
@@ -123,18 +122,18 @@ data class GameContext(
             var ignoreConditionals = false
             var tileX: Int? = null
             var tileY: Int? = null
-            for (entry in splitString) {
-                val (key, value) = entry.split("=", limit = 2).let {
+            for (entry in value.split(separator)) {
+                val (key, stringValue) = entry.split("=", limit = 2).let {
                     it[0] to it.getOrElse(1) { "" }
                 }
                 when (key) {
-                    "civName" -> civInfo = viewingCiv.gameInfo.getCivilization(value)
-                    "cityId" -> city = viewingCiv.gameInfo.getCities().firstOrNull { it.id == value }
-                    "tileX" -> tileX = value.toIntOrNull()
-                    "tileY" -> tileY = value.toIntOrNull()
+                    "civName" -> civInfo = viewingCiv.gameInfo.getCivilization(stringValue)
+                    "cityId" -> city = viewingCiv.gameInfo.getCities().firstOrNull { it.id == stringValue }
+                    "tileX" -> tileX = stringValue.toIntOrNull()
+                    "tileY" -> tileY = stringValue.toIntOrNull()
                     "ignoreConditionals" -> ignoreConditionals = true
                     "unitId" -> {
-                        val unitId = value.toIntOrNull()
+                        val unitId = stringValue.toIntOrNull()
                         if (unitId != null) {
                             unit = viewingCiv.units.getUnitById(unitId)
                         }
@@ -144,7 +143,7 @@ data class GameContext(
             if (tileX != null && tileY != null) {
                 tile = viewingCiv.gameInfo.tileMap.getIfTileExistsOrNull(tileX, tileY)
             }
-            else {
+            if (tile == null) {
                 tile = unit?.getTile() ?: city?.getCenterTileOrNull()
             }
             return GameContext(civInfo, city, unit, tile, ignoreConditionals = ignoreConditionals)

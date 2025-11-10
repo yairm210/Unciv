@@ -139,8 +139,9 @@ object UniqueTriggerActivation {
                 return when {
                     civInfo.isAI() || event.presentation == Event.Presentation.None -> {
                         {
-                            val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(gameContext) }
-                            choice.triggerChoice(gameContext)
+                            choices.toList()
+                                .randomWeighted { it.getWeightForAiDecision(gameContext) }
+                                .triggerChoice(gameContext)
                         }
                     }
                     event.presentation == Event.Presentation.Alert -> {
