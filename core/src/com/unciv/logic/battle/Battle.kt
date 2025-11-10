@@ -219,7 +219,23 @@ object Battle {
         if (defender.isDefeated() && defender.city.canBeDestroyed()) {
             val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
             if (destroyFilters.any { filter -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                val cityName = defender.city.name
+                val defendingCiv = defender.getCivInfo()
+
+                //Notification to attacker
+                attacker.getCivInfo().addNotification(
+                    "We have destroyed the city of [$cityName]!",
+                    defender.getTile().position,
+                    NotificationCategory.War,
+                    NotificationIcon.War
+                )
+
                 defender.city.destroyCity()
+
+                if (defendingCiv.cities.isEmpty()) {
+                    destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position)
+                }
+
                 return // stop further logic because city was destroyed
             }
         }
