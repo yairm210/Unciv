@@ -49,18 +49,18 @@ internal class DebugTab(
             add(invalidInputLabel).colspan(2).row()
         }
 
-        optionsPopup.addCheckbox(this, "Supercharged", DebugUtils.SUPERCHARGED) { DebugUtils.SUPERCHARGED = it }
-        optionsPopup.addCheckbox(this, "View entire map", DebugUtils.VISIBLE_MAP) { DebugUtils.VISIBLE_MAP = it }
-        optionsPopup.addCheckbox(this, "Show coordinates on tiles", DebugUtils.SHOW_TILE_COORDS) { DebugUtils.SHOW_TILE_COORDS = it }
-        optionsPopup.addCheckbox(this, "Show tile image locations", DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) { DebugUtils.SHOW_TILE_IMAGE_LOCATIONS = it }
+        addCheckbox("Supercharged", DebugUtils::SUPERCHARGED)
+        addCheckbox("View entire map", DebugUtils::VISIBLE_MAP, updateWorld = true)
+        addCheckbox("Show coordinates on tiles", DebugUtils::SHOW_TILE_COORDS, updateWorld = true)
+        addCheckbox("Show tile image locations", DebugUtils::SHOW_TILE_IMAGE_LOCATIONS, updateWorld = true)
 
         val curGameInfo = game.gameInfo
         if (curGameInfo != null) {
-            optionsPopup.addCheckbox(this, "God mode (current game)", curGameInfo.gameParameters.godMode) { curGameInfo.gameParameters.godMode = it }
+            addCheckbox("God mode (current game)", curGameInfo.gameParameters::godMode)
         }
 
-        optionsPopup.addCheckbox(this, "Save games compressed", UncivFiles.saveZipped) { UncivFiles.saveZipped = it }
-        optionsPopup.addCheckbox(this, "Save maps compressed", MapSaver.saveZipped) { MapSaver.saveZipped = it }
+        addCheckbox("Save games compressed", UncivFiles::saveZipped)
+        addCheckbox("Save maps compressed", MapSaver::saveZipped)
 
         val select = SelectBox<SceneDebugMode>(skin)
         select.items = SceneDebugMode.entries.toGdxArray()

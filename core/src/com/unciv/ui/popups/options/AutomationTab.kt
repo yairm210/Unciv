@@ -12,121 +12,47 @@ import com.unciv.ui.components.extensions.toLabel
 internal class AutomationTab(
     optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
+//     val fullAutoPlayTable: Table
+//     val fullAutoPlayCell: Cell<Table>
+
     init {
         add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
-            settings.autoAssignCityProduction = shouldAutoAssignCityProduction
-            val worldScreen = GUI.getWorldScreenIfActive()
-            if (shouldAutoAssignCityProduction && worldScreen != null &&
-                worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
-            ) {
-                worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
-                    city.cityConstructions.chooseNextConstruction()
-                }
-            }
+        addCheckbox("Auto-assign city production", settings::autoAssignCityProduction, updateWorld = true) {
+            allCitiesChooseNextConstruction(it)
         }
-        optionsPopup.addCheckbox(this, "Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Automated workers replace improvements",
-            settings.automatedWorkersReplaceImprovements
-        ) { settings.automatedWorkersReplaceImprovements = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Automated units move on turn start",
-            settings.automatedUnitsMoveOnTurnStart, true
-        ) { settings.automatedUnitsMoveOnTurnStart = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Automated units can upgrade",
-            settings.automatedUnitsCanUpgrade, false
-        ) { settings.automatedUnitsCanUpgrade = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Automated units choose promotions",
-            settings.automatedUnitsChoosePromotions, false
-        ) { settings.automatedUnitsChoosePromotions = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Cities auto-bombard at end of turn",
-            settings.citiesAutoBombardAtEndOfTurn, false
-        ) { settings.citiesAutoBombardAtEndOfTurn = it }
+        addCheckbox("Auto-build roads", settings::autoBuildingRoads)
+        addCheckbox("Automated workers replace improvements", settings::automatedWorkersReplaceImprovements)
+        addCheckbox("Automated units move on turn start", settings::automatedUnitsMoveOnTurnStart, updateWorld = true)
+        addCheckbox("Automated units can upgrade", settings::automatedUnitsCanUpgrade)
+        addCheckbox("Automated units choose promotions", settings::automatedUnitsChoosePromotions)
+        addCheckbox("Cities auto-bombard at end of turn", settings::citiesAutoBombardAtEndOfTurn)
 
         addSeparator()
         add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
-//    fun addAutoPlaySections() {
-//        optionsPopup.addCheckbox(
-//            this,
-//            "AutoPlay Military",
-//            settings.autoPlay.autoPlayMilitary, false
-//        ) { settings.autoPlay.autoPlayMilitary = it }
-//        optionsPopup.addCheckbox(
-//            this,
-//            "AutoPlay Civilian",
-//            settings.autoPlay.autoPlayCivilian, false
-//        ) { settings.autoPlay.autoPlayCivilian = it }
-//        optionsPopup.addCheckbox(
-//            this,
-//            "AutoPlay Economy",
-//            settings.autoPlay.autoPlayEconomy, false
-//        ) { settings.autoPlay.autoPlayEconomy = it }
-//        optionsPopup.addCheckbox(
-//            this,
-//            "AutoPlay Diplomacy",
-//            settings.autoPlay.autoPlayDiplomacy, false
-//        ) { settings.autoPlay.autoPlayDiplomacy = it }
-//        optionsPopup.addCheckbox(
-//            this,
-//            "AutoPlay Technology",
-//            settings.autoPlay.autoPlayTechnology, false
-//        ) { settings.autoPlay.autoPlayTechnology = it }
-//        optionsPopup.addCheckbox(
-//            this,
-//            "AutoPlay Policies",
-//            settings.autoPlay.autoPlayPolicies, false
-//        ) { settings.autoPlay.autoPlayPolicies = it }
-//        optionsPopup.addCheckbox(
-//            this,
-//            "AutoPlay Religion",
-//            settings.autoPlay.autoPlayReligion, false
-//        ) { settings.autoPlay.autoPlayReligion = it }
-//    }
 
-        optionsPopup.addCheckbox(
-            this,
-            "Show AutoPlay button",
-            settings.autoPlay.showAutoPlayButton, true
-        ) {
-            settings.autoPlay.showAutoPlayButton = it
+        addCheckbox("Show AutoPlay button", settings.autoPlay::showAutoPlayButton, updateWorld = true) {
             GUI.getWorldScreenIfActive()?.autoPlay?.stopAutoPlay()
         }
 
-
-        optionsPopup.addCheckbox(
-            this,
-            "AutoPlay until victory",
-            settings.autoPlay.autoPlayUntilEnd, false
-        ) {
-            settings.autoPlay.autoPlayUntilEnd = it
+        addCheckbox("AutoPlay until victory", settings.autoPlay::autoPlayUntilEnd) {
             if (!it) addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
             else replacePage { parent -> AutomationTab(parent) }
         }
 
-
         if (!settings.autoPlay.autoPlayUntilEnd)
             addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
 
-//    optionsPopup.addCheckbox(
-//        this,
-//        "Full AutoPlay AI",
-//        settings.autoPlay.fullAutoPlayAI, false
-//    ) { settings.autoPlay.fullAutoPlayAI = it
-//        if (!it) addAutoPlaySections()
-//        else replacePage { optionsPopup -> AutomationTab(optionsPopup) }
-//    }
-//    if (!settings.autoPlay.fullAutoPlayAI)
-//        addAutoPlaySections()
+//         addCheckbox("Full AutoPlay AI", settings.autoPlay::fullAutoPlayAI) {
+//             fullAutoPlayCell.setActor(if (it) fullAutoPlayTable else null)
+//             pack()
+//         }
+//         fullAutoPlayCell = addWrapped {
+//             addAutoPlaySections()
+//         }
+//         fullAutoPlayTable = fullAutoPlayCell.actor
+//         if (!settings.autoPlay.fullAutoPlayAI)
+//            fullAutoPlayCell.setActor(null)
     }
 
     private fun addAutoPlayMaxTurnsSlider(
@@ -144,5 +70,25 @@ internal class AutomationTab(
             settings.autoPlay.autoPlayMaxTurns = turns
         }
         table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+    }
+
+//     private fun Table.addAutoPlaySections() {
+//         defaults().space(5f)
+//         addCheckbox("AutoPlay Military", settings.autoPlay::autoPlayMilitary)
+//         addCheckbox("AutoPlay Civilian", settings.autoPlay::autoPlayCivilian)
+//         addCheckbox("AutoPlay Economy", settings.autoPlay::autoPlayEconomy)
+//         addCheckbox("AutoPlay Diplomacy", settings.autoPlay::autoPlayDiplomacy)
+//         addCheckbox("AutoPlay Technology", settings.autoPlay::autoPlayTechnology)
+//         addCheckbox("AutoPlay Policies", settings.autoPlay::autoPlayPolicies)
+//         addCheckbox("AutoPlay Religion", settings.autoPlay::autoPlayReligion)
+//     }
+
+    private fun allCitiesChooseNextConstruction(shouldAutoAssignCityProduction: Boolean) {
+        if (!shouldAutoAssignCityProduction) return
+        val worldScreen = GUI.getWorldScreenIfActive() ?: return
+        if (!worldScreen.viewingCiv.isCurrentPlayer() || worldScreen.viewingCiv.playerType != PlayerType.Human) return
+        for (city in worldScreen.gameInfo.getCurrentPlayerCivilization().cities) {
+            city.cityConstructions.chooseNextConstruction()
+        }
     }
 }

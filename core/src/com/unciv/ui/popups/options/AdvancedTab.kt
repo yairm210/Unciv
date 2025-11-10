@@ -69,9 +69,9 @@ internal class AdvancedTab(
 
         addMaxZoomSlider()
 
-        addEasterEggsCheckBox()
+        addCheckbox("Enable Easter Eggs", settings::enableEasterEggs)
 
-        addEnlargeNotificationsCheckBox()
+        addCheckbox("Enlarge selected notifications", settings::enlargeSelectedNotification)
         addSeparator()
 
         addSetUserId()
@@ -80,19 +80,17 @@ internal class AdvancedTab(
     }
 
     private fun addCutoutCheckbox() {
-        optionsPopup.addCheckbox(this, "Enable using display cutout areas", settings.androidCutout) {
-            settings.androidCutout = it
+        addCheckbox("Enable using display cutout areas", settings::androidCutout) {
             Display.setCutout(it)
-            optionsPopup.reopenAfterDisplayLayoutChange()
+            reopenAfterDisplayLayoutChange()
             GUI.setUpdateWorldOnNextRender()
         }
     }
 
     private fun addHideSystemUiCheckbox() {
-        optionsPopup.addCheckbox(this, "Hide system status and navigation bars", settings.androidHideSystemUi) {
-            settings.androidHideSystemUi = it
+        addCheckbox("Hide system status and navigation bars", settings::androidHideSystemUi) {
             Display.setSystemUiVisibility(hide = it)
-            optionsPopup.reopenAfterDisplayLayoutChange()
+            reopenAfterDisplayLayoutChange()
         }
     }
 
@@ -387,13 +385,5 @@ internal class AdvancedTab(
         }
         add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
         add(idSetLabel).colspan(2).row()
-    }
-
-    private fun addEasterEggsCheckBox() {
-        optionsPopup.addCheckbox(this, "Enable Easter Eggs", settings.enableEasterEggs) { settings.enableEasterEggs = it }
-    }
-
-    private fun addEnlargeNotificationsCheckBox() {
-        optionsPopup.addCheckbox(this, "Enlarge selected notifications", settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
     }
 }

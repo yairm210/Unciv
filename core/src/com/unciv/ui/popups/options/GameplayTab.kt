@@ -9,14 +9,14 @@ internal class GameplayTab(
     optionsPopup: OptionsPopup
 ) : OptionsPopupTab(optionsPopup) {
     init {
-        optionsPopup.addCheckbox(this, "Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
-        optionsPopup.addCheckbox(this, "'Next unit' button cycles idle units", settings.checkForDueUnitsCycles, true) { settings.checkForDueUnitsCycles = it }
-        optionsPopup.addCheckbox(this, "Show Small Skip/Cycle Unit Button", settings.smallUnitButton, true) { settings.smallUnitButton = it }
-        optionsPopup.addCheckbox(this, "Auto Unit Cycle", settings.autoUnitCycle, true) { settings.autoUnitCycle = it }
-        optionsPopup.addCheckbox(this, "Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-        optionsPopup.addCheckbox(this, "Move units with a long tap", settings.longTapMove) { settings.longTapMove = it }
-        optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
-        optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
+        addCheckbox("Check for idle units", settings::checkForDueUnits, updateWorld = true)
+        addCheckbox("'Next unit' button cycles idle units", settings::checkForDueUnitsCycles, updateWorld = true)
+        addCheckbox("Show Small Skip/Cycle Unit Button", settings::smallUnitButton, updateWorld = true)
+        addCheckbox("Auto Unit Cycle", settings::autoUnitCycle, updateWorld = true)
+        addCheckbox("Move units with a single tap", settings::singleTapMove)
+        addCheckbox("Move units with a long tap", settings::longTapMove)
+        addCheckbox("Order trade offers by amount", settings::orderTradeOffersByAmount)
+        addCheckbox("Ask for confirmation when pressing next turn", settings::confirmNextTurn)
 
         addNotificationLogMaxTurnsSlider(this, settings, selectBoxMinWidth)
     }

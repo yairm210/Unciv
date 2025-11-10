@@ -34,8 +34,8 @@ internal class MultiplayerTab(
     optionsPopup: OptionsPopup
 ) : OptionsPopupTab(optionsPopup) {
     init {
-        optionsPopup.addCheckbox(
-            this, "Enable multiplayer status button in singleplayer games",
+        addCheckbox(
+            "Enable multiplayer status button in singleplayer games",
             settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
         )
 
@@ -205,8 +205,7 @@ internal class MultiplayerTab(
         tab: Table,
         optionsPopup: OptionsPopup
     ): RefreshSelect? {
-        optionsPopup.addCheckbox(
-            tab,
+        tab.addCheckbox(
             "Enable out-of-game turn notifications",
             settings.multiplayer::turnCheckerEnabled
         )
@@ -223,8 +222,8 @@ internal class MultiplayerTab(
         addSelectAsSeparateTable(tab, turnCheckerSelect)
 
 
-        optionsPopup.addCheckbox(
-            tab, "Show persistent notification for turn notifier service",
+        tab.addCheckbox(
+            "Show persistent notification for turn notifier service",
             settings.multiplayer::turnCheckerPersistentNotificationEnabled
         )
 

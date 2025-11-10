@@ -1,6 +1,11 @@
 package com.unciv.ui.popups.options
 
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -9,6 +14,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.delay
+import kotlin.reflect.KMutableProperty0
 
 /**
  *  Helper library for OptionsPopup and its tabs.
@@ -25,7 +31,6 @@ import kotlinx.coroutines.delay
  *  ```
  *
  *  TODO
- *    * Move and simplify Checkboxes
  *    * Simplify headers in DisplayTab
  *    * Sliders: 5 occurrences (Advanced, Automation, Debug, Display, Gameplay)
  *    * TextFields: 4 occurrences (Advanced, Debug, ModCheck, Multiplayer)
@@ -41,6 +46,44 @@ internal interface OptionsPopupHelpers {
 
     /** Access the active page number of the TabbedPager in [OptionsPopup] */
     val activePage: Int
+
+
+    /**
+     *  Adds a [Label] and [CheckBox] as two Cells into a table row or cell (without using a reference).
+     *
+     *  It's your responsibility to provide the inital value and to write it back in [action].
+     *  There's an overload using a reference instead (recommended).
+     *
+     *  @param updateWorld If `true` and the active screen is a [WorldScreen], the [WorldScreen.shouldUpdate] flag is set when the value changes.
+     *  @param newRow `true`: The cell gets `colspan(2)` and `row()`.
+     *  @param action Mandatory - you'll need to write back the new value here.
+     */
+    fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
+        val checkbox = text.toCheckBox(initialState) {
+            action(it)
+            val worldScreen = GUI.getWorldScreenIfActive()
+            if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
+        }
+        if (newRow) add(checkbox).colspan(2).left().row()
+        else add(checkbox).left()
+    }
+
+    /**
+     *  Adds a [Label] and [CheckBox] as two Cells into a table row (using a reference).
+     *
+     *  Retrieving the value and writing it back is handled for you.
+     *  There's an overload using manual value passing instead.
+     *
+     *  @param settingsProperty A `::` reference to a class field (references to local variables aren't yet supported)
+     *  @param updateWorld If `true` and the active screen is a [WorldScreen], the [WorldScreen.shouldUpdate] flag is set when the value changes.
+     *  @param action Optional if you need to take further action when the value is set.
+     */
+    fun Table.addCheckbox(text: String, settingsProperty: KMutableProperty0<Boolean>, updateWorld: Boolean = false, action: (Boolean) -> Unit = {}) {
+        addCheckbox(text, settingsProperty.get(), updateWorld) {
+            settingsProperty.set(it)
+            action(it)
+        }
+    }
 
     /** Reload the [OptionsPopup] after major changes (resolution, tileset, language, font) */
     fun reloadWorldAndOptions() {

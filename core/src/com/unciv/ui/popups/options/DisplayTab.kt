@@ -47,10 +47,9 @@ internal class DisplayTab(
 
 
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            optionsPopup.addCheckbox(this, "Map mouse auto-scroll", settings.mapAutoScroll, true) {
-                settings.mapAutoScroll = it
+            addCheckbox("Map mouse auto-scroll", settings::mapAutoScroll, updateWorld = true) {
                 if (GUI.isWorldLoaded())
-                    GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
+                    GUI.getMap().isAutoScrollEnabled = it
             }
             addScrollSpeedSlider(this, settings, selectBoxMinWidth)
         }
@@ -66,48 +65,30 @@ internal class DisplayTab(
         add("UI".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
         addNotificationScrollSelect(this, settings, selectBoxMinWidth)
-        optionsPopup.addCheckbox(this, "Show minimap", settings.showMinimap, updateWorld = true) { settings.showMinimap = it }
-        optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
+        addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
+        addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials(this, settings)
-        optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Never close popups by clicking outside",
-            settings.forbidPopupClickBehindToClose,
-            false
-        ) { settings.forbidPopupClickBehindToClose = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Use circles to indicate movable tiles",
-            settings.useCirclesToIndicateMovableTiles,
-            true
-        ) { settings.useCirclesToIndicateMovableTiles = it }
+        addCheckbox("Show zoom buttons in world screen", settings::showZoomButtons, true)
+        addCheckbox("Never close popups by clicking outside", settings::forbidPopupClickBehindToClose)
+        addCheckbox("Use circles to indicate movable tiles", settings::useCirclesToIndicateMovableTiles, updateWorld = true)
         addPediaUnitArtSizeSlider(this, settings, selectBoxMinWidth)
 
         addSeparator()
         add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
-        optionsPopup.addCheckbox(
-            this,
-            "Show suggested city locations for units that can found cities",
-            settings.showSettlersSuggestedCityLocations,
-            true
-        ) { settings.showSettlersSuggestedCityLocations = it }
-        optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
-        optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-        optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) {
-            settings.showResourcesAndImprovements = it
-        }
-        optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
+        addCheckbox("Show unit movement arrows", settings::showUnitMovements, updateWorld = true)
+        addCheckbox("Show suggested city locations for units that can found cities", settings::showSettlersSuggestedCityLocations, updateWorld = true)
+        addCheckbox("Show tile yields", settings::showTileYields, updateWorld = true)
+        addCheckbox("Show worked tiles", settings::showWorkedTiles, updateWorld = true)
+        addCheckbox("Show resources and improvements", settings::showResourcesAndImprovements, updateWorld = true)
+        addCheckbox("Show pixel improvements", settings::showPixelImprovements, updateWorld = true)
 
         addUnitIconAlphaSlider(this, settings, selectBoxMinWidth)
 
         addSeparator()
         add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
-            settings.continuousRendering = it
+        addCheckbox("Continuous rendering", settings::continuousRendering) {
             Gdx.graphics.isContinuousRendering = it
         }
 
@@ -122,9 +103,9 @@ internal class DisplayTab(
         addSeparator()
         add("Experimental".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
-        optionsPopup.addCheckbox(this, "Unit movement button", settings.unitMovementButtonAnimation, true) { settings.unitMovementButtonAnimation = it }
-        optionsPopup.addCheckbox(this, "Unit actions menu", settings.unitActionsTableAnimation, true) { settings.unitActionsTableAnimation = it }
+        addCheckbox("Experimental Demographics scoreboard", settings::useDemographics)
+        addCheckbox("Unit movement button", settings::unitMovementButtonAnimation)
+        addCheckbox("Unit actions menu", settings::unitActionsTableAnimation)
     }
 
     private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
