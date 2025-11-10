@@ -90,7 +90,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var turns = 0
     var oneMoreTurnMode = false
     var currentPlayer = ""
-    var currentTurnStartTime = 0L
+    var currentTurnStartTime = System.currentTimeMillis()
     var gameId = UUID.randomUUID().toString() // random string
     var checksum = ""
     var lastUnitId = 0
