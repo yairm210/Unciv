@@ -5,8 +5,12 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import yairm210.purity.annotations.Readonly
 
 class UnitNameGroup : RulesetObject() {
