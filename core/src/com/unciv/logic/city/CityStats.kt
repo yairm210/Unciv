@@ -117,9 +117,9 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsFromProduction(production: Float): Stats? {
-        if (city.cityConstructions.currentConstructionFromQueue in Stat.statsWithCivWideField.map { it.name }) {
+        if (city.cityConstructions.currentConstructionName() in Stat.statsWithCivWideField.map { it.name }) {
             val stats = Stats()
-            val stat = Stat.valueOf(city.cityConstructions.currentConstructionFromQueue)
+            val stat = Stat.valueOf(city.cityConstructions.currentConstructionName())
             stats[stat] = production * getStatConversionRate(stat)
             return stats
         }
@@ -172,7 +172,7 @@ class CityStats(val city: City) {
 
     @Readonly
     fun hasExtraAnnexUnhappiness(): Boolean {
-        if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
+        if (city.civ == city.foundingCivObject || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemovesAnnexUnhappiness)
     }
 

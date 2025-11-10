@@ -69,6 +69,6 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
     /**
      * @return true if we should play at least 1 more turn and we are not currenlty processing any AutoPlay
      */
-    fun shouldContinueAutoPlaying(): Boolean = !autoPlayTurnInProgress && turnsToAutoPlay > 0
+    @Readonly fun shouldContinueAutoPlaying(): Boolean = !autoPlayTurnInProgress && turnsToAutoPlay > 0
 }
 

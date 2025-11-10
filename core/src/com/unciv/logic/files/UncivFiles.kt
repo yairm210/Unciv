@@ -10,11 +10,8 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.logic.CompatibilityVersion
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.GameInfoSerializationVersion
-import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
@@ -22,7 +19,10 @@ import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.modmanager.ModUIData
 import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
+import com.unciv.logic.GameInfoSerializationVersion
+import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.Writer

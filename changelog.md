@@ -1,3 +1,19 @@
+## 4.18.13
+
+By unciv-loof:
+- Fix broken minimap state after maximizing minimap + tile tap
+- Relocate maximize minimap button for compatibility with rounded corner displays 
+- New MP games display correct "time since last turn" 
+- Disallow settling cities in territory of other civs
+
+Add Great People Names - By RobLoach
+
+Faster mod download & display status - By touhidurrr
+
+Add Nuclear Weapons Disabled conditional unique - By PLynx01
+
+Bug fixes for city destroy mechanic - By PhiRite
+
 ## 4.18.12
 
 By SomeTroglodyte:
