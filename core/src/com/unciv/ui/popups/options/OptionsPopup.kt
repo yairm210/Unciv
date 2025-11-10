@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.extensions.areSecretKeysPressed
@@ -14,14 +13,9 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.Concurrency
-import com.unciv.utils.withGLContext
-import kotlinx.coroutines.delay
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -39,6 +33,7 @@ class OptionsPopup(
     val game = screen.game
     val settings = screen.game.settings
     val tabs: TabbedPager
+    override val activePage get() = tabs.activePage
     override val selectBoxMinWidth: Float
     private val tabMinWidth: Float
 
@@ -144,44 +139,6 @@ class OptionsPopup(
         super.setVisible(visible)
         if (!visible) return
         if (tabs.activePage < 0) tabs.selectPage(selectPage)
-    }
-
-    /** Reload this Popup after major changes (resolution, tileset, language, font) */
-    private fun reloadWorldAndOptions() {
-        Concurrency.run("Reload from options") {
-            withGLContext {
-                // We have to run setSkin before the screen is rebuild else changing skins
-                // would only load the new SkinConfig after the next rebuild
-                BaseScreen.setSkin()
-            }
-            val screen = UncivGame.Current.screen
-            if (screen is WorldScreen) {
-                UncivGame.Current.reloadWorldscreen()
-            } else if (screen is MainMenuScreen) {
-                withGLContext {
-                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen())
-                }
-            }
-            withGLContext {
-                UncivGame.Current.screen?.openOptionsPopup(tabs.activePage)
-            }
-        }
-    }
-
-    /** Call if an option change might trigger a Screen.resize
-     *
-     *  Does nothing if any Popup (which can only be this one) is still open after a short delay and context yield.
-     *  Reason: A resize might relaunch the parent screen ([MainMenuScreen] is [RecreateOnResize]) and thus close this Popup.
-     */
-    internal fun reopenAfterDisplayLayoutChange() {
-        Concurrency.run("Reload from options") {
-            delay(100)
-            withGLContext {
-                val screen = UncivGame.Current.screen ?: return@withGLContext
-                if (screen.hasOpenPopups()) return@withGLContext // e.g. Orientation auto to fixed while auto is already the new orientation
-                screen.openOptionsPopup(tabs.activePage)
-            }
-        }
     }
 
     internal fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {

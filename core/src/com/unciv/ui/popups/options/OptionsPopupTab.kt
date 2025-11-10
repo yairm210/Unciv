@@ -18,11 +18,11 @@ internal abstract class OptionsPopupTab(
     internal val optionsPopup: OptionsPopup,
 ) : Table(skin), OptionsPopupHelpers {
     override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+    override val activePage get() = optionsPopup.tabs.activePage
 
     val settings by optionsPopup::settings
     val game by optionsPopup::game
 
-    val activePage get() = optionsPopup.tabs.activePage
     fun selectPage(name: String) = optionsPopup.tabs.selectPage(name)
     fun replacePage(factory: (OptionsPopup) -> OptionsPopupTab) =
         optionsPopup.tabs.replacePage(activePage, factory(optionsPopup))
