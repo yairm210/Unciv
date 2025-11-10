@@ -17,7 +17,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MiniAudioFactory
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
@@ -50,7 +49,6 @@ import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
 import games.rednblack.miniaudio.MiniAudio
 import kotlinx.coroutines.CancellationException
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.io.PrintWriter
 import java.util.EnumSet

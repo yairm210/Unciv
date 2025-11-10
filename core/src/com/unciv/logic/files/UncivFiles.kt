@@ -93,7 +93,7 @@ class UncivFiles(
                 throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
             } ?: throw UncivShowableException("The file data seems to be corrupted.")
 
-            if (gameInfo.version > GameInfo.CURRENT_COMPATIBILITY_VERSION) {
+            if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
             }
@@ -111,7 +111,7 @@ class UncivFiles(
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
         fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum: Boolean = false): String {
-            game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
+            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
 
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
