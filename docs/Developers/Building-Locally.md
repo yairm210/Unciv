@@ -46,6 +46,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
       ![image](https://user-images.githubusercontent.com/44038014/169315352-9ba0c4cf-307c-44d1-b3bc-2a58752c6854.png)
     - Settings > Editor > General > On Save > Uncheck Remove trailing spaces on: [...] to prevent it from removing necessary trailing whitespace in template.properties for translation files
       ![image](https://user-images.githubusercontent.com/44038014/169316243-07e36b8e-4c9e-44c4-941c-47e634c68b4c.png)
+      > Important: Unchecking this creates annoying merge conflicts. Before commits (non-translation) remove those trailing space. For more info check [Coding Standard](https://yairm210.github.io/Unciv/Developers/Coding-standards/).
     - Right-click the `android/assets/SaveFiles` folder once you have one, "Mark directory as" > Excluded
       - If you download mods do the same for the `android/assets/mods` folder and any other files you may create while testing that do not belong in the public project.
       - This [disables indexing](https://www.jetbrains.com/help/idea/indexing.html#exclude) for performance.

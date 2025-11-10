@@ -165,6 +165,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
     val popupAlerts = ArrayList<PopupAlert>()
+    /**Serialization field for [allyCiv]. Is equivalent to ``allyCiv.civName``*/
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
 
@@ -215,6 +216,13 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     var totalCultureForContests = 0
     var totalFaithForContests = 0
+
+    /**
+     * The title for the Civilization's leader.
+     *
+     * When empty, will display the nation's display name, otherwise will parse it with [leaderName][Nation.leaderName]. For example: `"King [leaderName]"`
+     */
+    var leaderTitle = ""
 
     /**
      * Container class to represent a historical attack recently performed by this civilization.
@@ -280,6 +288,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.neutralRoads = neutralRoads
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
+        toReturn.leaderTitle = leaderTitle
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
@@ -336,11 +345,11 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  for major civs, but **will** do so for city-states after some gameplay.
      */
     @Readonly
-    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }
+    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv }
         .filter { !it.isDefeated() && !it.isSpectator() }
 
     @Readonly
-    fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv() }
+    fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv }
         .filter { !it.isDefeated() }
 
 
@@ -676,8 +685,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly fun getEra(): Era = tech.era
     @Readonly fun getEraNumber(): Int = getEra().eraNumber
     @Readonly fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
-    @Readonly fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
-    @Readonly fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }.map { it.otherCiv() }
+    @Readonly fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv.isDefeated() }
+    @Readonly fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv.isDefeated() }.map { it.otherCiv }
 
 
     /**
@@ -689,7 +698,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        return nation.getLeaderDisplayName().tr(hideIcons = true) +
+        return nation.getLeaderDisplayName(leaderTitle).tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"
@@ -936,18 +945,48 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     // region addNotification
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (No-action version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, null, category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-location version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-action version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, listOf(action), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Sequence version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, actions.asIterable(), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Iterable version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         notifications.add(Notification(text, notificationIcons, actions, category))
@@ -983,8 +1022,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.trades.clear()
             diplomacyManager.otherCivDiplomacy().trades.clear()
-            for (tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv == civName })
-                diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
+            for (tradeRequest in diplomacyManager.otherCiv.tradeRequests.filter { it.requestingCiv == civName })
+                diplomacyManager.otherCiv.tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
         if (gameInfo.isEspionageEnabled())
             espionageManager.removeAllSpies()
@@ -1045,10 +1084,23 @@ class Civilization : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital, oldCapital)
     }
 
-    @Readonly fun getAllyCiv(): Civilization? = if (allyCivName == null) null
-        else gameInfo.getCivilization(allyCivName!!)
-    @Readonly fun getAllyCivName() = allyCivName
-    fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
+    /**
+     * Current ally (assuming this is a city-state)
+     * 
+     * Setting this also sets its backing serialization field ``allyCivName``
+     * */
+    @get:Readonly
+    @Transient
+    var allyCiv: Civilization? = null
+        get() {
+            if (field == null && allyCivName != null)
+                field = gameInfo.getCivilization(allyCivName!!)
+            return field
+        }
+        set(value) {
+            allyCivName = value?.civName
+            field = value
+        }
 
     /** Determine if this civ (typically as human player) is allowed to know how many major civs there are
      *

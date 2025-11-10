@@ -18,7 +18,7 @@ class CityFounder {
     fun foundCity(civInfo: Civilization, cityLocation: Vector2, unit: MapUnit? = null): City {
         val city = City()
 
-        city.foundingCiv = civInfo.civName
+        city.foundingCivObject = civInfo
         city.turnAcquired = civInfo.gameInfo.turns
         city.location = cityLocation
         city.setTransients(civInfo)

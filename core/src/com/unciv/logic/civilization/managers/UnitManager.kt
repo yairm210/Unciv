@@ -55,11 +55,14 @@ class UnitManager(val civInfo: Civilization) {
 
         val unit = civInfo.getEquivalentUnit(baseUnit)
         val citiesNotInResistance = civInfo.cities.filterNot { it.isInResistance() }
-        
+
+        // To allow cities on water tiles to be able to build water units.
+        val canSpawnUnitOnWater = city?.isNaval() == true
         val cityToAddTo = when {
-            unit.isWaterUnit && (city == null || !city.isCoastal()) ->
-                citiesNotInResistance.filter { it.isCoastal() }.randomOrNull() ?:
-                civInfo.cities.filter { it.isCoastal() }.randomOrNull()
+            unit.isWaterUnit && canSpawnUnitOnWater -> city
+            unit.isWaterUnit ->
+                citiesNotInResistance.filter { it.isNaval() }.randomOrNull() ?:
+                civInfo.cities.filter { it.isNaval() }.randomOrNull()
             city != null -> city
             else -> citiesNotInResistance.randomOrNull() ?: civInfo.cities.random()
         } ?: return null // If we got a free water unit with no coastal city to place it in
@@ -134,7 +137,7 @@ class UnitManager(val civInfo: Civilization) {
 
     // Similar to getCivUnits(), but the returned list is rotated so that the
     // 'nextPotentiallyDueAt' unit is first here.
-    private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(unitList.subList(nextPotentiallyDueAt, unitList.size) + unitList.subList(0, nextPotentiallyDueAt)).flatten()
+    @Readonly private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(unitList.subList(nextPotentiallyDueAt, unitList.size) + unitList.subList(0, nextPotentiallyDueAt)).flatten()
 
     /** Assigns an existing [mapUnit] to this manager.
      *
@@ -172,13 +175,13 @@ class UnitManager(val civInfo: Civilization) {
             civInfo.cache.updateCivResources()
     }
 
-    fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
+    @Readonly fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
+    @Readonly fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
-    fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
+    @Readonly fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
 
     // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
     fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {

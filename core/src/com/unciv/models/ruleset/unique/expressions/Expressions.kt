@@ -34,6 +34,7 @@ class Expressions {
         return node.eval(gameContext).roundToInt()
     }
 
+    @Readonly
     fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
         val parseResult = parse(parameterText)
         return when {

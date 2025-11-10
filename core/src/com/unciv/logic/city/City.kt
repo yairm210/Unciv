@@ -12,6 +12,7 @@ import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
@@ -29,6 +30,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import yairm210.purity.annotations.Readonly
+import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -61,7 +63,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     override var name: String = ""
-    var foundingCiv = ""
+    /**Serialization field for [foundingCivObject]. Is equivalient to ``foundingCivObject.civName``*/
+    private var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
     var turnAcquired = 0
@@ -108,6 +111,23 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
+    /**
+     * Civ object for the original founder of this city
+     * 
+     * Setting this also sets its backing serialization string ``foundingCiv``
+     * */
+    @Transient
+    @get:Readonly
+    var foundingCivObject: Civilization? = null
+        get() {
+            if (field == null && foundingCiv.isNotEmpty()) field = civ.gameInfo.getCivilization(foundingCiv)
+            return field
+        }
+        set(value) {
+            field = value
+            foundingCiv = value?.civName ?: ""
+        }
+
 
 
     var avoidGrowth: Boolean = false
@@ -124,13 +144,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
     internal var flagsCountdown = HashMap<String, Int>()
 
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
-    // Unknown only exists to support older saves, so those do not generate spurious connected/disconnected messages.
-    // The other names are chosen so serialization is compatible with a Boolean to allow easy replacement in the future.
-    @Suppress("EnumEntryName")
-    enum class ConnectedToCapitalStatus { Unknown, `false`, `true` }
-    var connectedToCapitalStatus = ConnectedToCapitalStatus.Unknown
+    var connectedToCapitalStatus = false
 
-    @Readonly fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
+    @Readonly fun hasDiplomaticMarriage(): Boolean = foundingCivObject == null
 
     //region pure functions
     fun clone(): City {
@@ -175,13 +191,18 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()
-
+    @Readonly fun isNaval(): Boolean = centerTile.isWater || isCoastal()
+    
     @Readonly fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
     @Readonly fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
     @Readonly
-    fun isConnectedToCapital(@Readonly connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
+    fun isConnectedToCapital() = this in civ.cache.citiesConnectedToCapitalToMediums
+    @Readonly
+    fun isConnectedToCapital(
+        @Readonly connectionTypePredicate: (EnumSet<CapitalConnectionMedium>) -> Boolean
+    ): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
@@ -492,7 +513,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
                 && !civ.isAtWarWith(viewingCiv)
             "in enemy cities", "Enemy" -> civ.isAtWarWith(viewingCiv ?: civ)
             "in foreign cities", "Foreign" -> viewingCiv != null && viewingCiv != civ
-            "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
+            "in annexed cities", "Annexed" -> foundingCivObject != civ && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
             "in resisting cities", "Resisting" -> isInResistance()
             "in cities being razed", "Razing" -> isBeingRazed

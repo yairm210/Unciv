@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
@@ -19,6 +20,7 @@ import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
+import java.util.EnumSet
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
@@ -41,8 +43,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
-    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
-    
+    var citiesConnectedToCapitalToMediums = mapOf<City, EnumSet<CapitalConnectionMedium>>()
+
     fun updateState() {
         civInfo.state = GameContext(civInfo)
     }
@@ -199,7 +201,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         newViewableTiles.addAll(civInfo.units.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.getAllyCivName() == civInfo.civName || otherCiv.civName == civInfo.getAllyCivName()) {
+            if (otherCiv.allyCiv == civInfo || otherCiv == civInfo.allyCiv) {
                 newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
             }
         }
@@ -287,19 +289,15 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (civInfo.cities.isEmpty()) return // No cities to connect
 
         val oldConnectedCities = if (initialSetup)
-            civInfo.cities.filter { it.connectedToCapitalStatus == City.ConnectedToCapitalStatus.`true` }
+            civInfo.cities.filterTo(mutableSetOf()) { it.connectedToCapitalStatus }
             else citiesConnectedToCapitalToMediums.keys
-        val oldMaybeConnectedCities = if (initialSetup)
-            civInfo.cities.filter { it.connectedToCapitalStatus != City.ConnectedToCapitalStatus.`false` }
-        else citiesConnectedToCapitalToMediums.keys
 
-        citiesConnectedToCapitalToMediums = if (civInfo.getCapital() == null) mapOf()
-        else CapitalConnectionsFinder(civInfo).find()
+        citiesConnectedToCapitalToMediums = CapitalConnectionsFinder(civInfo).find()
 
         val newConnectedCities = citiesConnectedToCapitalToMediums.keys
 
         for (city in newConnectedCities)
-            if (city !in oldMaybeConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
+            if (city !in oldConnectedCities && city.civ == civInfo && city != civInfo.getCapital())
                 civInfo.addNotification("[${city.name}] has been connected to your capital!",
                     city.location, NotificationCategory.Cities, NotificationIcon.Gold
                 )
@@ -312,8 +310,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 )
 
         for (city in civInfo.cities)
-            city.connectedToCapitalStatus = if (city in newConnectedCities)
-                City.ConnectedToCapitalStatus.`true` else City.ConnectedToCapitalStatus.`false`
+            city.connectedToCapitalStatus = city in newConnectedCities
     }
 
     fun updateCivResources() {
@@ -327,7 +324,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             var resourceBonusPercentage = 1f
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
-            for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCivName() == civInfo.civName }) {
+            for (cityStateAlly in civInfo.getKnownCivs().filter { it.allyCiv == civInfo }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
                     if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, cityStateAlly.state)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()

@@ -22,6 +22,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -108,7 +109,7 @@ class TurnManager(val civInfo: Civilization) {
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies: List<Civilization> =
-                        civInfo.getKnownCivs().filter { it.isCityState && it.getAllyCivName() == civInfo.civName }.toList()
+                        civInfo.getKnownCivs().filter { it.isCityState && it.allyCiv == civInfo }.toList()
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
@@ -212,6 +213,7 @@ class TurnManager(val civInfo: Civilization) {
     }
 
     // Higher is better
+    @Readonly
     private fun rateTileForRevoltSpawn(tile: Tile): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible())
             return -1
@@ -226,7 +228,8 @@ class TurnManager(val civInfo: Civilization) {
             score += 4
         return score
     }
-
+    
+    @Readonly
     private fun getTurnsBeforeRevolt() =
         ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + Random.Default.nextInt(3)) 
             * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()

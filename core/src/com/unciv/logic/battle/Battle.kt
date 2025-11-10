@@ -209,9 +209,36 @@ object Battle {
     }
 
     private fun handleCityDefeated(defender: ICombatant, attacker: ICombatant) {
-        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || !attacker.isMelee()
+        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || 
+            (!attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true))
             || attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)
         ) return
+
+        // Must come before normal conquest logic so units that cannot capture cities can still destroy them
+        // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capital cities
+        if (defender.isDefeated() && defender.city.canBeDestroyed()) {
+            val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
+            if (destroyFilters.any { filter -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                val cityName = defender.city.name
+                val defendingCiv = defender.getCivInfo()
+
+                //Notification to attacker
+                attacker.getCivInfo().addNotification(
+                    "We have destroyed the city of [$cityName]!",
+                    defender.getTile().position,
+                    NotificationCategory.War,
+                    NotificationIcon.War
+                )
+
+                defender.city.destroyCity()
+
+                if (defendingCiv.cities.isEmpty()) {
+                    destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position)
+                }
+
+                return // stop further logic because city was destroyed
+            }
+        }
         
         // Barbarians can't capture cities, instead raiding them for gold
         if (attacker.unit.civ.isBarbarian) {
@@ -482,12 +509,12 @@ object Battle {
         val defenderString =
                 if (defender.isCity())
                     if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
-                    else " [" + defender.getName() + "]"
-                else " our [" + defender.getName() + "]"
+                    else "[" + defender.getName() + "]"
+                else "our [" + defender.getName() + "]"
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
         val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
-        val notificationString = "[{$attackerString}{$attackerHurtString}] [$battleActionString] [{$defenderString}{$defenderHurtString}]"
+        val notificationString = "$attackerString$attackerHurtString $battleActionString $defenderString$defenderHurtString"
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
         val locations = LocationAction(attackedTile.position, attackerTile?.position)
@@ -650,7 +677,7 @@ object Battle {
             return
         }
 
-        if (city.isOriginalCapital && city.foundingCiv == attackerCiv.civName) {
+        if (city.isOriginalCapital && city.foundingCivObject == attackerCiv) {
             // retaking old capital
             city.puppetCity(attackerCiv)
             //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
@@ -672,7 +699,7 @@ object Battle {
      * or raze a city */
     private fun automateCityConquer(civInfo: Civilization, city: City) {
         if (!city.hasDiplomaticMarriage()) {
-            val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
+            val foundingCiv = city.foundingCivObject!!
             var valueAlliance = NextTurnAutomation.valueCityStateAlliance(civInfo, foundingCiv)
             if (civInfo.getHappiness() < 0)
                 valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
@@ -686,7 +713,7 @@ object Battle {
 
         city.puppetCity(civInfo)
         if ((city.population.population < 4 || civInfo.isCityState)
-            && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
+            && city.foundingCivObject != civInfo && city.canBeDestroyed(justCaptured = true)) {
             // raze if attacker is a city state
             if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) city.annexCity()
             city.isBeingRazed = true

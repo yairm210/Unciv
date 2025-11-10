@@ -10,11 +10,8 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.logic.CompatibilityVersion
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.GameInfoSerializationVersion
-import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
@@ -22,11 +19,13 @@ import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.modmanager.ModUIData
 import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
+import com.unciv.logic.GameInfoSerializationVersion
+import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
-import java.io.File
 import java.io.Writer
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
@@ -56,7 +55,7 @@ class UncivFiles(
 
     fun getLocalFile(fileName: String): FileHandle {
         return if (customDataDirectory == null) files.local(fileName)
-        else files.absolute(customDataDirectory + File.separator + fileName)
+        else files.absolute(customDataDirectory).child(fileName)
     }
 
     fun getModsFolder() = getLocalFile("mods")
@@ -98,11 +97,11 @@ class UncivFiles(
      * @throws GdxRuntimeException if the [path] represents a directory
      */
     fun fileWriter(path: String, append: Boolean = false): Writer {
-        val file = pathToFileHandler(path)
+        val file = pathToFileHandle(path)
         return file.writer(append, Charsets.UTF_8.name())
     }
 
-    fun pathToFileHandler(path: String): FileHandle {
+    fun pathToFileHandle(path: String): FileHandle {
         return if (preferExternalStorage && files.isExternalStorageAvailable) files.external(path)
         else getLocalFile(path)
     }
@@ -160,7 +159,11 @@ class UncivFiles(
 
     //region Saving
 
-    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+    private fun rethrowIfNotNull(ex: Exception?) {
+        if (ex != null) throw ex
+    }
+
+    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull): FileHandle {
         val file = getSave(gameName)
         saveGame(game, file, saveCompletionCallback)
         return file
@@ -169,7 +172,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
@@ -183,7 +186,7 @@ class UncivFiles(
     /**
      * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
      */
-    fun saveMultiplayerGamePreview(game: GameInfoPreview, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+    fun saveMultiplayerGamePreview(game: GameInfoPreview, gameName: String, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull): FileHandle {
         val file = getMultiplayerSave(gameName)
         saveMultiplayerGamePreview(game, file, saveCompletionCallback)
         return file
@@ -192,7 +195,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveMultiplayerGamePreview(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveMultiplayerGamePreview(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfoPreview %s to %s", game.gameId, file.path())
             json().toJson(game, file)
@@ -337,7 +340,7 @@ class UncivFiles(
     //endregion
 
     //region Mod caching
-    fun saveModCache(modDataList: List<ModUIData>){
+    fun saveModCache(modDataList: List<ModUIData>) {
         val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
         try {
             json().toJson(modDataList, file)
@@ -348,12 +351,11 @@ class UncivFiles(
     }
 
 
-    fun loadModCache(): List<ModUIData>{
+    fun loadModCache(): Iterable<ModUIData> {
         val file = getLocalFile(MOD_LIST_CACHE_FILE_NAME)
         if (!file.exists()) return emptyList()
         try {
-            return json().fromJsonFile(Array<ModUIData>::class.java, file)
-                .toList()
+            return json().fromJsonFile(Array<ModUIData>::class.java, file).asIterable()
         }
         catch (ex: Exception){ // Not a huge deal if this fails
             Log.error("Error loading mod cache", ex)
@@ -386,7 +388,7 @@ class UncivFiles(
         fun getSettingsForPlatformLaunchers(baseDirectory: String): GameSettings {
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(baseDirectory + File.separator + SETTINGS_FILE_NAME)
+            val file = FileHandle(baseDirectory).child(SETTINGS_FILE_NAME)
             if (file.exists()){
                 try {
                     return json().fromJson(GameSettings::class.java, file)
@@ -413,7 +415,7 @@ class UncivFiles(
                 throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
             } ?: throw UncivShowableException("The file data seems to be corrupted.")
 
-            if (gameInfo.version > GameInfo.CURRENT_COMPATIBILITY_VERSION) {
+            if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
             }
@@ -431,7 +433,7 @@ class UncivFiles(
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
         fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum: Boolean = false): String {
-            game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
+            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
 
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
@@ -502,36 +504,40 @@ class Autosaves(val files: UncivFiles) {
             return  // not much we can do here
         }
 
-        // keep auto-saves for the last 10 turns for debugging purposes
-        if (nextTurn) {
-            val newAutosaveFilename =
-                SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-            val file = files.pathToFileHandler(newAutosaveFilename)
-            files.getSave(AUTOSAVE_FILE_NAME).copyTo(file)
+        if (!nextTurn) return
 
-            fun getAutosaves(): Sequence<FileHandle> {
-                return files.getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
-            }
-            // added the plus 1 to avoid player choosing 6,11,21,51,101, etc.. in options.
-//          // with the old version with 10 has example, it would start overriding after 9 instead of 10.
-            // like from autosave-1 to autosave-9 after the autosave-9 the autosave-1 would override to autosave-2.
-            // For me it should be after autosave-10 that it should start overriding old autosaves.
-            while (getAutosaves().count() > settings.maxAutosavesStored+1) {
-                val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
-                files.deleteSave(saveToDelete.name())
-            }
-        }
+        // keep auto-saves for the last `settings.maxAutosavesStored` turns
+        val newAutosaveFile = files.pathToFileHandle(SAVE_FILES_FOLDER)
+            .child("$AUTOSAVE_FILE_NAME-${gameInfo.currentPlayer}-${gameInfo.turns}")
+        files.getSave(AUTOSAVE_FILE_NAME).copyTo(newAutosaveFile)
+
+        purgeOldAutosaves(settings.maxAutosavesStored)
+    }
+
+    private fun purgeOldAutosaves(maxAutosavesStored: Int) {
+        // Since the latest numbered autosave is a copy of the un-numbered autosave file,
+        // we add 1 so `maxAutosavesStored` numbered files AND the un-numbered one are kept (see #12790).
+        val oldAutoSaves = files.getSaves()
+            .filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
+            .sortedByDescending { it.lastModified() }   // youngest to the top
+            .drop(maxAutosavesStored + 1)  // dropping those we want to keep
+            // The following only has an effect if an exception is thrown halfway through the list
+            // We delete the oldest first - principle of least surprise
+            .asIterable().reversed()
+        for (file in oldAutoSaves)
+            files.deleteSave(file)
     }
 
     fun loadLatestAutosave(): GameInfo {
         return try {
             files.loadGameByName(AUTOSAVE_FILE_NAME)
         } catch (_: Exception) {
-            // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
-            val autosaves = files.getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(
-                AUTOSAVE_FILE_NAME
-            ) }
-            files.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
+            // silent fail if we can't read the autosave for any reason - try to load the last autosave by timestamp first
+            val autosaves = files.getSaves().filter {
+                it.name() != AUTOSAVE_FILE_NAME &&
+                it.name().startsWith(AUTOSAVE_FILE_NAME)
+            }
+            files.loadGameFromFile(autosaves.maxBy { it.lastModified() })
         }
     }
 

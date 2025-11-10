@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
+import com.unciv.models.translations.hasPlaceholderParameters
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -588,6 +589,18 @@ enum class UniqueParameterType(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.victories.keys
     },
 
+    /** Used by [UniqueType.OneTimeUnitGetsName] */
+    UnitNameGroup("unitNameGroup",
+        "Scientist", "The name of a unit name group found in UnitNameGroups.json, or one of their unique tags"
+    ) {
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.unitNameGroups.keys
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
+            parameterText in ruleset.unitNameGroups -> true
+            ruleset.unitNameGroups.values.any { it.hasTagUnique(parameterText, GameContext.IgnoreConditionals) } -> true
+            else -> false
+        }
+    },
+
     /** Used by [UniqueType.KillUnitPlunder] and [UniqueType.KillUnitPlunderNearCity], implementation in [Battle.tryEarnFromKilling][com.unciv.logic.battle.Battle.tryEarnFromKilling] */
     CostOrStrength("costOrStrength", "Cost", "`Cost` or `Strength`",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
@@ -633,6 +646,12 @@ enum class UniqueParameterType(
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = null
+        override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
+    },
+
+    /** Used in [GetLeaderTitle], and validates a [leaderName] is provided. */
+    LeaderTitle("leaderTitle", "Sovereign [leaderName] the Great", "Provides a leader title that includes the leader's name in parameters.", "Leader Title") {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText.hasPlaceholderParameters()
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
@@ -688,7 +707,7 @@ enum class UniqueParameterType(
     protected fun String.isFilteringUniqueIn(map: Map<String, IHasUniques>)
         = map.values.any { this in it.uniques }
 
-    @Readonly
+    @Pure
     protected fun String.getInvariantSeverityUnless(@Readonly predicate: String.() -> Boolean) =
         if (predicate()) null else UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
 

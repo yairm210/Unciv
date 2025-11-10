@@ -5,11 +5,9 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame.Companion.Current
 import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
-import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
@@ -19,18 +17,17 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.GameStartScreen
 import com.unciv.ui.screens.LanguagePickerScreen
 import com.unciv.ui.screens.LoadingScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -44,6 +41,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import com.unciv.utils.PlatformSpecific
+import com.unciv.logic.Version
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
@@ -301,10 +299,15 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
      *
      * Automatically [disposes][BaseScreen.dispose] the old screen.
      *
+     * @param silentQuit Don't ask for exit confirmation when popping the last screen (for FasterUIDevelopment, where musicController is not initialized)
      * @return the new screen
      */
-    fun popScreen(): BaseScreen? {
+    fun popScreen(silentQuit: Boolean = false): BaseScreen? {
         if (screenStack.size == 1) {
+            if (silentQuit) {
+                Gdx.app.exit()
+                return null
+            }
             musicController.pause()
             worldScreen?.autoPlay?.stopAutoPlay()
             ConfirmPopup(
@@ -473,7 +476,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.18.5", 1167)
+        val VERSION = Version("4.18.13", 1175)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */
@@ -520,24 +523,5 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 // ignore
             }
         }
-    }
-
-    data class Version(
-        val text: String,
-        val number: Int
-    ) : IsPartOfGameInfoSerialization {
-        @Suppress("unused") // used by json serialization
-        constructor() : this("", -1)
-        @Pure fun toNiceString() = "$text (Build ${number.tr()})"
-    }
-}
-
-class GameStartScreen : BaseScreen() {
-    init {
-        val logoImage = ImageGetter.getExternalImage("banner.png")
-        logoImage.center(stage)
-        logoImage.color.a = 0f
-        logoImage.addAction(Actions.alpha(1f, 0.3f))
-        stage.addActor(logoImage)
     }
 }

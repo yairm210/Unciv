@@ -11,6 +11,7 @@ import com.unciv.models.translations.getPlaceholderText
 import yairm210.purity.annotations.Readonly
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.Pure
 
 /**
  *  Contains all knowledge about how to check and evaluate [countable Unique parameters][UniqueParameterType.Countable].

@@ -1,13 +1,12 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import yairm210.purity.annotations.Pure
 
 
 typealias NotificationCategory = Notification.NotificationCategory
@@ -56,7 +55,7 @@ class Notification() : IsPartOfGameInfoSerialization, Json.Serializable {
         ;
 
         companion object {
-            fun safeValueOf(name: String): NotificationCategory? =
+            @Pure fun safeValueOf(name: String): NotificationCategory? =
                 entries.firstOrNull { it.name == name }
         }
     }
@@ -67,19 +66,8 @@ class Notification() : IsPartOfGameInfoSerialization, Json.Serializable {
 
     fun addNotificationIconsTo(table: Table, ruleset: Ruleset, iconSize: Float) {
         if (icons.isEmpty()) return
-        for (icon in icons.reversed()) {
-            val image: Actor = when {
-                ruleset.technologies.containsKey(icon) ->
-                    ImageGetter.getTechIconPortrait(icon, iconSize)
-                ruleset.nations.containsKey(icon) ->
-                    ImageGetter.getNationPortrait(ruleset.nations[icon]!!, iconSize)
-                ruleset.units.containsKey(icon) ->
-                    ImageGetter.getUnitIcon(ruleset.units[icon]!!)
-                else ->
-                    ImageGetter.getImage(icon)
-            }
-            table.add(image).size(iconSize).padRight(5f)
-        }
+        for (icon in icons.reversed())
+            table.add(NotificationIcon.getImage(icon, ruleset, iconSize)).size(iconSize).padRight(5f)
     }
 
     fun execute(worldScreen: WorldScreen) {

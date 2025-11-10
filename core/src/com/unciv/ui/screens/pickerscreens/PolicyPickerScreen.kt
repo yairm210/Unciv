@@ -35,6 +35,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
@@ -72,6 +73,7 @@ private enum class PolicyColors(
     val color get() = BaseScreen.skinStrings.getUIColor("PolicyScreen/Colors/$name", default)
 }
 
+@Readonly
 private fun Policy.isPickable(viewingCiv: Civilization, canChangeState: Boolean) =
     viewingCiv.isCurrentPlayer()
         && canChangeState

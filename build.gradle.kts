@@ -41,7 +41,7 @@ plugins {
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("io.github.yairm210.purity-plugin") version "1.3.0" apply false
+    id("io.github.yairm210.purity-plugin") version "1.3.2" apply false
 }
 
 allprojects {
@@ -58,12 +58,17 @@ allprojects {
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
 
+            "com.badlogic.gdx.graphics.Color.cpy",
+            "com.badlogic.gdx.graphics.Color.toString",
+
             "com.badlogic.gdx.files.FileHandle.child",
             "com.badlogic.gdx.files.FileHandle.list",
             "com.badlogic.gdx.files.FileHandle.exists",
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
+            
+            "kotlin.sequences.shuffled",
         )
         wellKnownPureClasses = setOf(
         )

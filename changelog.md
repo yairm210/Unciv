@@ -1,3 +1,110 @@
+## 4.18.13
+
+By unciv-loof:
+- Fix broken minimap state after maximizing minimap + tile tap
+- Relocate maximize minimap button for compatibility with rounded corner displays 
+- New MP games display correct "time since last turn" 
+- Disallow settling cities in territory of other civs
+
+Add Great People Names - By RobLoach
+
+Faster mod download & display status - By touhidurrr
+
+Add Nuclear Weapons Disabled conditional unique - By PLynx01
+
+Bug fixes for city destroy mechanic - By PhiRite
+
+## 4.18.12
+
+By SomeTroglodyte:
+- Align buttons on MainMenuScreen 
+- Adapt main menu background maps to aspect ratio 
+- Fix resource stats in Civilopedia 
+
+By SidedYapper:
+- Added popup for "about tab" when clicking Version in main menu 
+
+## 4.18.11
+
+Happiness shown in city stat overview
+
+By SomeTroglodyte:
+- Show Mod json parse errors right after download 
+- Fix translation of multiple conditionals of the same type 
+- Fix upgrading from Unit overview won't show changes
+- Make ToastPopups stay on screen when tapped, for leisurely reading
+
+Fix City-States asking you to find Natural Wonders they already found - By RobLoach
+
+## 4.18.10
+
+By RobLoach:
+- Add more notifications to Triggerable Uniques 
+- Fix Victory Type translations in Civilopedia 
+- Fix Wonder Alert without a quote 
+- Great Admiral: Add 'Change Port' Ability 
+
+By EmperorPinguin:
+- Adjust luxury resource placement logic thresholds
+- Add minimumCityLocationTileValue mod constant
+
+By SomeTroglodyte:
+- Fix broken "download missing mods"  
+- Better Resource descriptions  
+
+Run Android tasks in parallel - By nbd-boss (new constributor!)
+
+## 4.18.9
+
+Updated Libgdx to 1.14.0 - solving Wayand and Android bugs
+
+Fix super-rare bug on bringing in allies when declaring war
+
+Fix Leader Titles when with a suffixing title - By RobLoach
+
+By SomeTroglodyte: 
+- Selecting local mods without preview will now display an avatar 
+- Workaround for certain rare Java Runtime quirks (construction queue crash) 
+
+## 4.18.8
+
+Remove building-improvement if the building is no longer buildable
+
+By RobLoach:
+- Add 'when not stacked with a [mapUnitFilter] unit' Conditional 
+- Fix relevent Civ for within tiles Conditional 
+- City Screen: Display Stockpile Amount Available for Cost 
+
+Display promises in diplomacy overview for human players - By unciv-loof
+
+Fix battle notification translations - by dadadnet (new contributor!)
+
+## 4.18.7
+
+Improve Civilopedia display of GlobalUniques - By SomeTroglodyte
+
+Naval Tradition Policy under Commerce as per Civ V - By JhandeFlores
+
+By RobLoach:
+- Fix Ancient Ruins when there are conditionals 
+- Add Leader Titles unique 
+
+Modding/Feature: Allow units to destroy cities instead of capturing - By PhiRite
+
+## 4.18.6
+
+Game startup performance improvements
+
+Mod preview performance improvements
+
+Avoid rare crash concurrent modification when calculating construction costs
+
+By RobLoach:
+- Modding: Ancient Ruins can have unit-related conditionals 
+- AbsoluteUnits: Add Great Admiral by Basil 
+
+Allow naval units to be spawn in water city - By Emandac
+
 ## 4.18.5
 
 AI will not attack cities with no health with siege units

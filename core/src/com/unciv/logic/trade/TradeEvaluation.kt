@@ -241,7 +241,7 @@ class TradeEvaluation {
                 
                 // We're buying peace if it's city state that is our ally
                 if (thirdCiv.isCityState) {
-                    val allyCiv = thirdCiv.getAllyCiv()
+                    val allyCiv = thirdCiv.allyCiv
                     if (allyCiv != null && allyCiv == civInfo) {
                         // TODO: More sophisticated formula needed, a reverse of [CityStateFunctions.influenceGainedByGift]
                         val surplusInfluence = (thirdCiv.getDiplomacyManager(civInfo)!!.getInfluence() - 60).coerceAtLeast(0f)
@@ -297,7 +297,7 @@ class TradeEvaluation {
         if (thirdCiv.isHuman()) return false
 
         if (thirdCiv.isCityState) {
-            val allyCiv = thirdCiv.getAllyCiv()
+            val allyCiv = thirdCiv.allyCiv
             if (allyCiv != null && civInfo.isAtWarWith(allyCiv)) {
                 // City state is allied to civ with whom trade partner is at war with,
                 // need to trade peace with that civ instead
@@ -318,14 +318,14 @@ class TradeEvaluation {
 
     @Readonly
     private fun surroundedByOurCities(city: City, civInfo: Civilization): Int {
-        val borderingCivs: Set<String> = getNeighbouringCivs(city)
-        if (borderingCivs.contains(civInfo.civName))
+        val borderingCivs: Set<Civilization> = getNeighbouringCivs(city)
+        if (borderingCivs.contains(civInfo))
             return 3 // if the city has a border with trading civ
         return 0
     }
 
     @Readonly
-    private fun getNeighbouringCivs(city: City): Set<String> {
+    private fun getNeighbouringCivs(city: City): Set<Civilization> {
         val tilesList: HashSet<Tile> = city.getTiles().toHashSet()
         val cityPositionList: ArrayList<Tile> = arrayListOf()
 
@@ -336,7 +336,7 @@ class TradeEvaluation {
 
         return cityPositionList
             .asSequence()
-            .mapNotNull { it.getOwner()?.civName }
+            .mapNotNull { it.getOwner() }
             .toSet()
     }
 
@@ -545,7 +545,8 @@ class TradeEvaluation {
             // (stats ~30 each)
             val absoluteAdvantage = theirCombatStrength - ourCombatStrength
             val percentageAdvantage = absoluteAdvantage / ourCombatStrength.toFloat()
-            return -(absoluteAdvantage * percentageAdvantage / (getGoldInflation(ourCiv) * 2)).coerceAtMost(10000.0).toInt()
+            val peaceCost = absoluteAdvantage * percentageAdvantage / (getGoldInflation(ourCiv) * 2.0)
+            return -peaceCost.toInt().coerceAtMost(ourCiv.gameInfo.ruleset.modOptions.constants.maxGoldTradeOffer)
         }
     }
 

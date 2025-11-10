@@ -169,7 +169,7 @@ class ResourceTests {
     @Test
     fun `should handle StatPercentFromObjectToResource with a buildingFilter`() {
         city.cityConstructions.addBuilding("Monument")
-        var building = game.createBuilding("[300]% of [Culture] from every [Monument] in the city added to [Iron]")
+        val building = game.createBuilding("[300]% of [Culture] from every [Monument] in the city added to [Iron]")
         city.cityConstructions.addBuilding(building)
         assertEquals(6, city.getAvailableResourceAmount("Iron")) // 2 Culture * 3
     }
@@ -181,7 +181,7 @@ class ResourceTests {
         tile.resourceAmount = 1
         tile.setImprovement("Farm")
         city.population.addPopulation(5) // Add population, since the tile needs to be worked
-        var building = game.createBuilding("[300]% of [Food] from every [Farm] in the city added to [Iron]")
+        val building = game.createBuilding("[300]% of [Food] from every [Farm] in the city added to [Iron]")
         city.cityConstructions.addBuilding(building)
         assertEquals(3, city.getAvailableResourceAmount("Iron"))
     }
@@ -307,7 +307,7 @@ class ResourceTests {
         
         val consumingBuilding = game.createBuilding("Costs [1] [${resource.name}]")
         assert(civInfo.getCivResourcesByName()[resource.name] == 2) // no change yet
-        city.cityConstructions.currentConstructionFromQueue = consumingBuilding.name
+        city.cityConstructions.setCurrentConstruction(consumingBuilding.name)
         civInfo.playerType = PlayerType.Human // to not loop endlessly on "next turn"
         game.gameInfo.currentPlayer = civInfo.civName
         game.gameInfo.currentPlayerCiv = civInfo

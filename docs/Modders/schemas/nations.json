@@ -12,6 +12,7 @@
               "uniqueItems": true,
               "description": "Currently not in use"
           },
+          "personality": { "type": "string" },
           "style": { "type": "string" },
           "cityStateType": { "type": "string" },
           "outerColor": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/color.json" },
@@ -27,8 +28,6 @@
 
           "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
 
-
-          // All of these are cosmetic
           "introduction": { "type": "string" },
           "tradeRequest": { "type": "string" },
           "neutralHello": { "type": "string" },
@@ -45,11 +44,12 @@
               "type": "array",
               "items": { "type": "string" },
               "uniqueItems": true,
+              "description": "Ordered list of names of cities unique to the nation, starting with the capital"
           },
           "spyNames": {
               "type": "array",
               "items": { "type": "string" },
-              "uniqueItems": true,
+              "uniqueItems": true
           },
           "favoredReligion": { "type": "string" },
 
