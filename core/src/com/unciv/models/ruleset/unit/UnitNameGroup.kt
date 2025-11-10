@@ -1,17 +1,16 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
-import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import yairm210.purity.annotations.Readonly
+import java.net.URLEncoder
 
 class UnitNameGroup : RulesetObject() {
     /** A list of names available for this historical figure group. */
@@ -62,6 +61,11 @@ class UnitNameGroup : RulesetObject() {
             lines.add(FormattedLine("Unit Names", header = 4))
             for (name in unitNames) {
                 lines.add(FormattedLine(name))
+            }
+            val (collator, language) = UncivGame.Current.settings.run { getCollatorFromLocale() to locale!!.language }
+            fun wikilink(name: String) = "https://$language.wikipedia.org/w/index.php?search=${URLEncoder.encode(name.tr(), Charsets.UTF_8.name())}"
+            for (name in unitNames.sortedWith(collator)) {
+                lines.add(FormattedLine(name, link = wikilink(name)))
             }
         }
 
