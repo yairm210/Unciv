@@ -63,7 +63,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     override var name: String = ""
-    var foundingCiv = ""
+    /**Serialization field for [foundingCivObject]. Is equivalient to ``foundingCivObject.civName``*/
+    private var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
     var turnAcquired = 0
@@ -110,6 +111,23 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
     fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
 
+    /**
+     * Civ object for the original founder of this city
+     * 
+     * Setting this also sets its backing serialization string ``foundingCiv``
+     * */
+    @Transient
+    @get:Readonly
+    var foundingCivObject: Civilization? = null
+        get() {
+            if (field == null && foundingCiv.isNotEmpty()) field = civ.gameInfo.getCivilization(foundingCiv)
+            return field
+        }
+        set(value) {
+            field = value
+            foundingCiv = value?.civName ?: ""
+        }
+
 
 
     var avoidGrowth: Boolean = false
@@ -128,7 +146,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
     var connectedToCapitalStatus = false
 
-    @Readonly fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
+    @Readonly fun hasDiplomaticMarriage(): Boolean = foundingCivObject == null
 
     //region pure functions
     fun clone(): City {
@@ -495,7 +513,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
                 && !civ.isAtWarWith(viewingCiv)
             "in enemy cities", "Enemy" -> civ.isAtWarWith(viewingCiv ?: civ)
             "in foreign cities", "Foreign" -> viewingCiv != null && viewingCiv != civ
-            "in annexed cities", "Annexed" -> foundingCiv != civ.civName && !isPuppet
+            "in annexed cities", "Annexed" -> foundingCivObject != civ && !isPuppet
             "in puppeted cities", "Puppeted" -> isPuppet
             "in resisting cities", "Resisting" -> isInResistance()
             "in cities being razed", "Razing" -> isBeingRazed

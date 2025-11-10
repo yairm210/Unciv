@@ -54,7 +54,7 @@ class ReligiousBeliefsPickerScreen (
     private var rightSelection = Selection()
 
     private val currentReligion = choosingCiv.religionManager.religion
-        ?: Religion("None", gameInfo, choosingCiv.civName)
+        ?: Religion("None", gameInfo, choosingCiv)
 
     init {
         leftChosenBeliefs.defaults().right().pad(10f).fillX()
@@ -200,7 +200,7 @@ class ReligiousBeliefsPickerScreen (
         val availableBeliefs = ruleset.beliefs.values
             .filter { it.type == beliefType || beliefType == BeliefType.Any }
 
-        val civReligionManager = currentReligion.getFounder().religionManager
+        val civReligionManager = currentReligion.foundingCiv.religionManager
 
         for (belief in availableBeliefs) {
             val beliefButton = getBeliefButton(belief)

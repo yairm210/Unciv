@@ -172,7 +172,7 @@ class CityStats(val city: City) {
 
     @Readonly
     fun hasExtraAnnexUnhappiness(): Boolean {
-        if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
+        if (city.civ == city.foundingCivObject || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemovesAnnexUnhappiness)
     }
 
