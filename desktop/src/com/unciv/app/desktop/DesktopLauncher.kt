@@ -10,6 +10,7 @@ import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.GameSettings.WindowState
 import com.unciv.models.ruleset.Ruleset
@@ -28,6 +29,7 @@ import java.awt.Taskbar
 import java.awt.Toolkit
 import java.io.File
 import java.net.URL
+import kotlinx.coroutines.runBlocking
 import kotlin.system.exitProcess
 
 
@@ -35,6 +37,22 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
+
+        // Find the index of the "-creategame" parameter
+        val createGameArg = arg.find { it.startsWith("--creategame=") }
+        if (createGameArg != null) {
+            val settingsPath = createGameArg.substringAfter("=")
+            val game = UncivGame(true)
+
+            UncivGame.Current = game
+            UncivGame.Current.settings = GameSettings()
+            RulesetCache.loadRulesets(consoleMode = true, noMods = false)
+            // Call the function to create a game with the specified path
+            runBlocking {
+                CreateGameFromSettings.startGame(settingsPath)
+            }
+            exitProcess(0)
+        }
 
         // The uniques checker requires the file system to be set up, which happens after lwjgl initializes it
         if (arg.isNotEmpty() && arg[0] == "mod-ci") {
