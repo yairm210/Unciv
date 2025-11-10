@@ -571,7 +571,7 @@ object TranslationFileWriter {
                     "Eras" -> emptyArray<Era>().javaClass
                     "Events" -> emptyArray<Event>().javaClass
                     "GlobalUniques" -> GlobalUniques().javaClass
-                    "HistoricalFigures" -> emptyArray<UnitNameGroup>().javaClass
+                    "UnitNameGroups" -> emptyArray<UnitNameGroup>().javaClass
                     "Nations" -> emptyArray<Nation>().javaClass
                     "Policies" -> emptyArray<PolicyBranch>().javaClass
                     "Quests" -> emptyArray<Quest>().javaClass
