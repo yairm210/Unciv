@@ -240,10 +240,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         versionLabel.setAlignment(Align.center)
         val versionTable = Table()
         versionTable.background = skinStrings.getUiBackground("MainMenuScreen/Version",
-            skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a=0.7f })
+            skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a = 0.7f })
         versionTable.add(versionLabel)
         versionTable.pack()
-        versionTable.setPosition(stage.width/2, 10f, Align.bottom)
+        versionTable.setPosition(stage.width / 2, 10f, Align.bottom)
         versionTable.touchable = Touchable.enabled
         versionTable.onClick {
             val popup = Popup(stage)

@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.DownloadAndExtractState
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
@@ -429,10 +430,16 @@ class ModManagementScreen private constructor(
                             actualDownloadButton.setText("Download".tr())
                             actualDownloadButton.enable()
                         }
-                    } else
-                        downloadMod(repo, {
-                            actualDownloadButton.setText("{Downloading...} ${it}%".tr())
+                    } else {
+                        downloadMod(repo, { state, progress ->
+                            when (state) {
+                                DownloadAndExtractState.Downloading ->
+                                    actualDownloadButton.setText("{Downloading...} ${progress}%".tr())
+                                DownloadAndExtractState.Extracting ->
+                                    actualDownloadButton.setText("Extracting...".tr())
+                            }
                         }) { popup.close() }
+                    }
                 }
             }
             popup.add(actualDownloadButton).row()
@@ -477,8 +484,11 @@ class ModManagementScreen private constructor(
             rightSideButton.setText("Downloading...".tr())
             rightSideButton.disable()
 
-            downloadMod(repo,{
-                rightSideButton.setText("{Downloading...} ${it}%".tr())
+            downloadMod(repo, { state, progress ->
+                when (state) {
+                    DownloadAndExtractState.Downloading -> rightSideButton.setText("{Downloading...} ${progress}%".tr())
+                    DownloadAndExtractState.Extracting -> rightSideButton.setText("Extracting...".tr())
+                }
             }) {
                 rightSideButton.setText("Downloaded!".tr())
             }
@@ -489,7 +499,7 @@ class ModManagementScreen private constructor(
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
-    private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((Int)->Unit)? = null, postAction: () -> Unit = {}) {
+    private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((DownloadAndExtractState, Int?)->Unit)? = null, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder =

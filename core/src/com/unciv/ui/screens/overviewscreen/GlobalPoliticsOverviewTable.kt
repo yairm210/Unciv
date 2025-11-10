@@ -25,6 +25,7 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 class GlobalPoliticsOverviewTable(
@@ -165,7 +166,7 @@ class GlobalPoliticsOverviewTable(
         val allWorldWonders = wonderInfo.collectInfo(viewingPlayer)
 
         for (wonder in allWorldWonders) {
-            if (wonder.civ?.civName == civ.civName) {
+            if (wonder.civ == civ) {
                 val wonderName = wonder.name.toLabel()
                 if (wonder.location != null) {
                     wonderName.onClick {
@@ -180,8 +181,9 @@ class GlobalPoliticsOverviewTable(
         return wonderTable
     }
 
+    @Readonly
     private fun getCivName(otherciv: Civilization): String {
-        if (viewingPlayer.knows(otherciv) || otherciv.civName == viewingPlayer.civName) {
+        if (viewingPlayer.knows(otherciv) || otherciv == viewingPlayer) {
             return otherciv.civName
         }
         return "an unknown civilization"
@@ -190,7 +192,7 @@ class GlobalPoliticsOverviewTable(
     private fun getPoliticsOfCivTable(civ: Civilization): Table {
         val politicsTable = Table(skin)
 
-        if (!viewingPlayer.knows(civ) && civ.civName != viewingPlayer.civName)
+        if (!viewingPlayer.knows(civ) && civ != viewingPlayer)
             return politicsTable
 
         if (civ.isDefeated()) {
@@ -209,14 +211,14 @@ class GlobalPoliticsOverviewTable(
 
         // defensive pacts and declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
-            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DefensivePact) == true) {
+            if (civ.getDiplomacyManager(otherCiv)?.hasFlag(DiplomacyFlags.DefensivePact) == true) {
                 val friendText = ColorMarkupLabel("Defensive pact with [${getCivName(otherCiv)}]", Color.CYAN)
-                val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DefensivePact)} ${Fonts.turn})".toLabel()
+                val turnsLeftText = " (${civ.getDiplomacyManager(otherCiv)?.getFlag(DiplomacyFlags.DefensivePact)} ${Fonts.turn})".toLabel()
                 politicsTable.add(friendText)
                 politicsTable.add(turnsLeftText).row()
-            } else if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
+            } else if (civ.getDiplomacyManager(otherCiv)?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendText = ColorMarkupLabel("Friends with [${getCivName(otherCiv)}]", Color.GREEN)
-                val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
+                val turnsLeftText = " (${civ.getDiplomacyManager(otherCiv)?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
                 politicsTable.add(friendText)
                 politicsTable.add(turnsLeftText).row()
             }
@@ -225,9 +227,9 @@ class GlobalPoliticsOverviewTable(
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
-            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
+            if (civ.getDiplomacyManager(otherCiv)?.hasFlag(DiplomacyFlags.Denunciation) == true) {
                 val denouncedText = ColorMarkupLabel("Denounced [${getCivName(otherCiv)}]", Color.RED)
-                val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
+                val turnsLeftText = "(${civ.getDiplomacyManager(otherCiv)?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
                 politicsTable.add(denouncedText)
                 politicsTable.add(turnsLeftText).row()
             }
@@ -236,7 +238,7 @@ class GlobalPoliticsOverviewTable(
 
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
-            if (cityState.diplomacy[civ.civName]?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
+            if (cityState.getDiplomacyManager(civ)?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
                 val alliedText = ColorMarkupLabel("Allied with [${getCivName(cityState)}]", Color.CYAN)
                 politicsTable.add(alliedText).row()
             }
@@ -320,6 +322,7 @@ class GlobalPoliticsOverviewTable(
     }
 
     /** Same as [Civilization.shouldHideCivCount] but for City-States instead of Major Civs */
+    @Readonly
     private fun Civilization.hideCityStateCount(): Boolean {
         if (!gameInfo.gameParameters.randomNumberOfCityStates) return false
         val knownCivs = 1 + getKnownCivs().count { it.isCityState }

@@ -159,6 +159,7 @@ object Conditionals {
             UniqueType.ConditionalEspionageEnabled -> checkOnGameInfo { isEspionageEnabled() }
             UniqueType.ConditionalEspionageDisabled -> checkOnGameInfo { !isEspionageEnabled() }
             UniqueType.ConditionalNuclearWeaponsEnabled -> checkOnGameInfo { gameParameters.nuclearWeaponsEnabled }
+            UniqueType.ConditionalNuclearWeaponsDisabled -> checkOnGameInfo { !gameParameters.nuclearWeaponsEnabled }
             UniqueType.ConditionalTech -> checkOnCiv {
                 val filter = conditional.params[0]
                 if (filter in gameInfo.ruleset.technologies) tech.isResearched(conditional.params[0]) // fast common case

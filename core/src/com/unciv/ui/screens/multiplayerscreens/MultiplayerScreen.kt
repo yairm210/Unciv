@@ -403,8 +403,10 @@ class MultiplayerScreen : PickerScreen() {
         selectedGame = multiplayerGame
 
         for (button in gameSpecificButtons) button.enable()
+
+        val preview = multiplayerGame.preview
         
-        if (multiplayerGame.preview != null) {
+        if (preview != null) {
             copyGameIdButton.enable()
             rightSideButton.enable()
         } else {
@@ -413,11 +415,9 @@ class MultiplayerScreen : PickerScreen() {
         }
 
         // is it our turn?
-        resignButton.isEnabled = multiplayerGame.preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.getUserId()
-
-        val preview = multiplayerGame.preview
-        // the latter checks if we are on the first turn on a new game, where the start time has not yet been set (default 0L)
-        if (resignButton.isEnabled || preview == null || preview.currentTurnStartTime == 0L){
+        resignButton.isEnabled = preview?.getCurrentPlayerCiv()?.playerId == game.settings.multiplayer.getUserId()
+        
+        if (resignButton.isEnabled || preview == null){
             skipTurnButton.isVisible = false
             forceResignButton.isVisible = false
         } else {

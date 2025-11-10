@@ -199,7 +199,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
-        val currentConstruction = cityConstructions.currentConstructionFromQueue
+        val currentConstruction = cityConstructions. currentConstructionName()
         val queue = cityConstructions.constructionQueue
 
         constructionsQueueTable.defaults().pad(0f)

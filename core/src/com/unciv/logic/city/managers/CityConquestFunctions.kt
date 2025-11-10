@@ -114,7 +114,7 @@ class CityConquestFunctions(val city: City) {
             city.population.addPopulation(-1 - city.population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         city.reassignAllPopulation()
 
-        if (!reconqueredCityWhileStillInResistance && city.foundingCiv != receivingCiv.civName) {
+        if (!reconqueredCityWhileStillInResistance && city.foundingCivObject != receivingCiv) {
             // add resistance
             // I checked, and even if you puppet there's resistance for conquering
             city.setFlag(CityFlags.Resistance, city.population.population)
@@ -182,13 +182,13 @@ class CityConquestFunctions(val city: City) {
     }
 
     fun liberateCity(conqueringCiv: Civilization) {
-        if (city.foundingCiv == "") { // this should never happen but just in case...
+        if (city.foundingCivObject == null) { // this should never happen but just in case...
             this.puppetCity(conqueringCiv)
             this.annexCity()
             return
         }
 
-        val foundingCiv = city.civ.gameInfo.getCivilization(city.foundingCiv)
+        val foundingCiv = city.foundingCivObject!!
         if (foundingCiv.isDefeated()) // resurrected civ
             for (diploManager in foundingCiv.diplomacy.values)
                 if (diploManager.diplomaticStatus == DiplomaticStatus.War)
@@ -231,7 +231,7 @@ class CityConquestFunctions(val city: City) {
 
 
     private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: Civilization, conqueredCiv: Civilization) {
-        val foundingCiv = conqueredCiv.gameInfo.civilizations.first { it.civName == city.foundingCiv }
+        val foundingCiv = city.foundingCivObject!!
         val percentageOfCivPopulationInThatCity = city.population.population *
                 100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
