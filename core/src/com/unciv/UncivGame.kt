@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame.Companion.Current
 import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
-import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
@@ -19,7 +18,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -44,6 +42,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import com.unciv.utils.PlatformSpecific
+import com.unciv.logic.Version
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
@@ -525,15 +524,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 // ignore
             }
         }
-    }
-
-    data class Version(
-        val text: String,
-        val number: Int
-    ) : IsPartOfGameInfoSerialization {
-        @Suppress("unused") // used by json serialization
-        constructor() : this("", -1)
-        @Pure fun toNiceString() = "$text (Build ${number.tr()})"
     }
 }
 
