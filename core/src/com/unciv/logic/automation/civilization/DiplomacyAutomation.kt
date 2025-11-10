@@ -513,7 +513,7 @@ object DiplomacyAutomation {
         
         civInfo.diplomacy.values.stream()
             // only denounce major civs
-            .filter { it.otherCiv().isMajorCiv() }
+            .filter { it.otherCiv.isMajorCiv() }
             .peek { if (debug) debugPrint(it) }
             // not able to denounce if we are at war, signed DoF, or already denounced them
             .filter {
