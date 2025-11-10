@@ -35,7 +35,6 @@ import yairm210.purity.annotations.Pure
  *
  *  ### Factories:
  *  * For the typical circled icon usecase, use [fromImage]
- *  * For a circled text symbol or similar, use [fromText]
  *  * For best flexibility, use the [builder][build]
  *
  *  ### Related:
@@ -187,26 +186,6 @@ open class CircularButton(size: Float) : Group() {
             name(iconName)
         }
 
-        /** Factory using a Label.
-         *  Custom configuration using [builderAction] is optional and can override [hoverColor] by defining any other [hover][CircularButtonBuilder.hover] method.
-         */
-        fun fromText(
-            text: String,
-            size: Float,
-            fontSize: Int = Constants.headingFontSize,
-            hoverColor: Color? = CircularButtonBuilder.highlightColor,
-            innerCircleColor: Color? = CircularButtonBuilder.defaultColor,
-            outerCircleColor: Color? = Color.WHITE,
-            outerCircleWidth: Float = 1f,
-            builderAction: (CircularButtonBuilder.() -> Unit)? = null
-        ) = build(size) {
-            circles(outerCircleColor, innerCircleColor, width = outerCircleWidth)
-            label(text, fontSize)
-            if (builderAction != null) builderAction()
-            if (!hasHover) hover(hoverColor)
-            name(text)
-        }
-
         /** Create a [CircularButton] using typical builder [syntax][CircularButtonBuilder]. */
         @Pure
         fun build(size: Float, builderAction: CircularButtonBuilder.() -> Unit) =
@@ -238,6 +217,10 @@ open class CircularButton(size: Float) : Group() {
             val defaultColor by skinStrings.skinConfig::baseColor
             val highlightColor: Color get() = BaseScreen.skin.getColor("highlight")
         }
+        /** Maps to [baseColor][com.unciv.models.skins.SkinConfig.baseColor] from the SkinConfig */
+        val defaultColor by Companion::defaultColor
+        /** Maps to "highlight" from the [Skin][BaseScreen.skin] */
+        val highlightColor by Companion::highlightColor
 
         /** Add an image by its texture path ([name]), sized to the widget by default. */
         fun image(name: String, size: Float = this.size): Image {

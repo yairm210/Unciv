@@ -82,6 +82,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         const val buttonsSize = 64f
         /** Distance of the Civilopedia and Discord+Github buttons from the stage edges */
         const val buttonsPosFromEdge = 30f
+        val circleButtonsHoverColor = Color(0x002854ff) // Unskinned baseColor (keep H&S, V 52->33, alpha .75->1)
     }
 
     /** Create one **Main Menu Button** including onClick/key binding
@@ -202,7 +203,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             game.popScreen()
         }
 
-        val civilopediaButton = CircularButton.fromText("?", buttonsSize, 48)
+        val civilopediaButton = CircularButton.build(buttonsSize) {
+            circles(Color.WHITE, defaultColor)
+            hover(circleButtonsHoverColor)
+            label("?", 48)
+        }
         // Passing the binding directly to onActivation gives you a size 26 tooltip...
         civilopediaButton.onActivation { openCivilopedia() }
         civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
@@ -211,14 +216,18 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(civilopediaButton)
 
         val rightSideButtons = Table().apply { defaults().space(10f) }
-        val discordColor = Color(0x8e9dffff.toInt()) // Discord's CI uses 'blurple', as `--brand: #5865f2` in their CSS, this is a lighter shade
-        val discordButton = CircularButton.fromImage("OtherIcons/Discord", buttonsSize, hoverColor = discordColor) {
+        val discordButton = CircularButton.build(buttonsSize) {
+            circles(Color.WHITE, defaultColor)
+            hover(circleButtonsHoverColor)
+            image("OtherIcons/Discord", buttonsSize * .75f)
             link("https://discord.gg/bjrB4Xw")
         }
         rightSideButtons.add(discordButton)
 
-        val githubButton = CircularButton.fromImage("OtherIcons/Github", buttonsSize) {
-            hover("OtherIcons/GithubMouseOver")
+        val githubButton = CircularButton.build(buttonsSize) {
+            circles(Color.WHITE, defaultColor)
+            hover(circleButtonsHoverColor)
+            image("OtherIcons/Github", buttonsSize * .75f)
             link(Constants.uncivRepoURL)
         }
         rightSideButtons.add(githubButton)
