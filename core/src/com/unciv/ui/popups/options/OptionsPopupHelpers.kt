@@ -1,11 +1,15 @@
 package com.unciv.ui.popups.options
 
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -31,7 +35,6 @@ import kotlin.reflect.KMutableProperty0
  *  ```
  *
  *  TODO
- *    * Simplify headers in DisplayTab
  *    * Sliders: 5 occurrences (Advanced, Automation, Debug, Display, Gameplay)
  *    * TextFields: 4 occurrences (Advanced, Debug, ModCheck, Multiplayer)
  *    * SelectBoxes
@@ -47,6 +50,20 @@ internal interface OptionsPopupHelpers {
     /** Access the active page number of the TabbedPager in [OptionsPopup] */
     val activePage: Int
 
+
+    /**
+     *  Adds a header row (larger font, centered, colspan 2).
+     *
+     *  Unless the receiver is empty, a separator is added before the header.
+     *  @return the [Label] cell for chaining
+     */
+    fun Table.addHeader(text: String): Cell<Label> {
+        if (!children.isEmpty) // doesn't count empty cells
+            addSeparator()
+        val cell = add(text.toLabel(fontSize = Constants.headingFontSize))
+        cell.colspan(2).spaceTop(10f).row()
+        return cell
+    }
 
     /**
      *  Adds a [Label] and [CheckBox] as two Cells into a table row or cell (without using a reference).

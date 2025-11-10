@@ -6,14 +6,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
-import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -39,7 +37,7 @@ internal class DisplayTab(
     init {
         defaults().pad(2.5f)
 
-        add("Screen".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("Screen")
 
         addScreenSizeSelectBox(this, settings, selectBoxMinWidth, onChange)
         addScreenOrientationSelectBox(this, settings, selectBoxMinWidth, onChange)
@@ -54,15 +52,13 @@ internal class DisplayTab(
             addScrollSpeedSlider(this, settings, selectBoxMinWidth)
         }
 
-        addSeparator()
-        add("Graphics".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("Graphics")
 
         addTileSetSelectBox(this, settings, selectBoxMinWidth, onChange)
         addUnitSetSelectBox(this, settings, selectBoxMinWidth, onChange)
         addSkinSelectBox(this, settings, selectBoxMinWidth, onChange)
 
-        addSeparator()
-        add("UI".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("UI")
 
         addNotificationScrollSelect(this, settings, selectBoxMinWidth)
         addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
@@ -73,8 +69,7 @@ internal class DisplayTab(
         addCheckbox("Use circles to indicate movable tiles", settings::useCirclesToIndicateMovableTiles, updateWorld = true)
         addPediaUnitArtSizeSlider(this, settings, selectBoxMinWidth)
 
-        addSeparator()
-        add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("Visual Hints")
 
         addCheckbox("Show unit movement arrows", settings::showUnitMovements, updateWorld = true)
         addCheckbox("Show suggested city locations for units that can found cities", settings::showSettlersSuggestedCityLocations, updateWorld = true)
@@ -85,8 +80,7 @@ internal class DisplayTab(
 
         addUnitIconAlphaSlider(this, settings, selectBoxMinWidth)
 
-        addSeparator()
-        add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("Performance")
 
         addCheckbox("Continuous rendering", settings::continuousRendering) {
             Gdx.graphics.isContinuousRendering = it
@@ -100,8 +94,7 @@ internal class DisplayTab(
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
-        addSeparator()
-        add("Experimental".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("Experimental")
 
         addCheckbox("Experimental Demographics scoreboard", settings::useDemographics)
         addCheckbox("Unit movement button", settings::unitMovementButtonAnimation)

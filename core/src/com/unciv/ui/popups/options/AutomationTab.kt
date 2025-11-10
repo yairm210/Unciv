@@ -16,7 +16,7 @@ internal class AutomationTab(
 //     val fullAutoPlayCell: Cell<Table>
 
     init {
-        add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("Automation")
 
         addCheckbox("Auto-assign city production", settings::autoAssignCityProduction, updateWorld = true) {
             allCitiesChooseNextConstruction(it)
@@ -28,8 +28,7 @@ internal class AutomationTab(
         addCheckbox("Automated units choose promotions", settings::automatedUnitsChoosePromotions)
         addCheckbox("Cities auto-bombard at end of turn", settings::citiesAutoBombardAtEndOfTurn)
 
-        addSeparator()
-        add("AutoPlay".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
+        addHeader("AutoPlay")
 
         addCheckbox("Show AutoPlay button", settings.autoPlay::showAutoPlayButton, updateWorld = true) {
             GUI.getWorldScreenIfActive()?.autoPlay?.stopAutoPlay()
